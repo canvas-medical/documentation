@@ -14,6 +14,25 @@ logo: assets/images/large-logo.png
 #google_analytics: id
 #cookie_consent: true
 
+### Collections
+collections_dir: "collections"
+collections:
+  api:
+    output: true
+    permalink: /:collection/:name
+  guides:
+    output: true
+    permalink: /:collection/:name
+  platform:
+    output: true
+    permalink: /:collection/:name
+  releases:
+    output: true
+    permalink: /:collection/:name
+  sdk:
+    output: true
+    permalink: /:collection/:name
+
 ### Build settings
 markdown: kramdown
 minify_html: false
@@ -23,13 +42,14 @@ plugins:
   - jekyll-sitemap
   - octopress-minify-html
 
-### Exclude from processing.
+### Exclude from processing
 exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
   - _images
   - _src
+  - amplify.yml
   - config
   - icon.png
   - node_modules
@@ -40,3 +60,4 @@ exclude:
   - webpack.config.js
   - yarn-error.log
   - yarn.lock
+
