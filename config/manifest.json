@@ -1,0 +1,11 @@
+{
+  "name": "Canvas Documentation",
+  "short_name": "Canvas Documentation",
+  "orientation": "portrait",
+  "display": "standalone",
+  "start_url": "/",
+  "description": "Canvas Documentation",
+  "scope": "/",
+  "theme_color": "#efeeff",
+  "background_color": "#efeeff"
+}

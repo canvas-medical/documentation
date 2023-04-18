@@ -1,4 +1,22 @@
-_site/
-.sass-cache/
+# Bundler ignore
+.bundle/
+vendor/
+
+# Jekyll ignore
 .jekyll-cache/
 .jekyll-metadata
+.sass-cache/
+_site/
+assets/
+
+# Node
+node_modules/
+
+# Yarn ignore
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
