@@ -20,13 +20,13 @@ collections:
   api:
     output: true
     permalink: /:collection/:name
+  documentation:
+    output: true
+    permalink: /:collection/:name
   guides:
     output: true
     permalink: /:collection/:name
-  platform:
-    output: true
-    permalink: /:collection/:name
-  releases:
+  release-notes:
     output: true
     permalink: /:collection/:name
   sdk:
@@ -38,6 +38,7 @@ markdown: kramdown
 minify_html: false
 plugins:
   - jekyll-feed
+  - jekyll-menus
   - jekyll-seo-tag
   - jekyll-sitemap
   - octopress-minify-html

@@ -87,6 +87,7 @@ a {
   padding-bottom: 10px;
   border-bottom: 1px solid lighten($link-color, 40%);
 
+
   &__branding {
       display: flex;
       align-items: center;
@@ -104,12 +105,18 @@ a {
 
   &__logo-img {
     height: 40px;
-    width: 40px;
+    width: auto;
   }
 
   &__links {
     display: flex;
+    gap: 2em;
     flex-direction: row;
+  }
+
+  &__menu {
+    display: flex;
+    gap: 1em;
   }
 
   &__link {

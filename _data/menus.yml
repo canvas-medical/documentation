@@ -1,0 +1,19 @@
+main:
+  - title: for developers
+    url: #
+    identifier: developers
+  - title: for users
+    url: #
+    identifier: resources
+resources:
+  - title: Platform Documentation
+    url: /documentation/
+  - title: Release Notes
+    url: /release-notes/
+  - title: Guides
+    url: /guides/
+developers:
+  - title: API
+    url: /api/
+  - title: SDKs
+    url: /sdk/
