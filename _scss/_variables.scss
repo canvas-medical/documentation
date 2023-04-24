@@ -1,0 +1,50 @@
+/** 
+ * COLOR PALLETE
+**/
+
+// Brand Primary Color
+$white: rgb(255, 255, 255);
+$cream: rgb(238, 233, 217);
+$babyblue: rgb(152, 210, 220);
+$navyblue: rgb(8, 43, 72);
+
+// Brand Secondary Colors 
+$softgold: rgb(244, 161, 85);
+$sienna: rgb(230, 122, 81);
+$crimson: rgb(106, 45, 31);
+$mediumblue: rgb(34, 105, 140);
+$green: rgb(0, 206, 125);
+$gold: rgb(255, 164, 0);
+
+// Variables
+$primary-color: $navyblue;
+$text-color: $navyblue;
+$link-color: $navyblue;
+$accent-color: $babyblue;
+
+
+/** 
+ * TYPOGRAPHY
+**/
+
+// TODO: Import font packages
+// Favorit - Regular and Bold for body copy, subheadlines and captions
+// Financier Display - Regular and Italic for large statement headlines
+$system-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+$primary-font-family: $system-font-family;
+
+
+/** 
+ * MEASUREMENTS
+**/
+
+// Font sizes calculated using Golden Ratio, per brand style guide
+$font-xs: 10px;
+$font-sm: 16.18px;
+$font-md: 26.17924px;
+$font-lg: 42.35801032px;
+$font-xl: 68.53526069776px;
+
+// Default container widths
+$container-width: 80rem;
+$container-padding: 1rem;

@@ -1,0 +1,63 @@
+### Canvas Medical
+#
+# This config file contains the config of your webpages
+# You may also want to update /config/webpack.pwa.js in case you want to generate a Progressive Web App
+
+title: Canvas Documentation
+description: Canvas Documentation
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+theme_color: '#eee9d9'
+logo: assets/images/large-logo.png
+
+### Google Analytics, and Cookie consent uncomment and put the API key
+#google_analytics: id
+#cookie_consent: true
+
+### Collections
+collections_dir: "collections"
+collections:
+  api:
+    output: true
+    permalink: /:collection/:title/
+  documentation:
+    output: true
+    permalink: /:collection/:title/
+  guides:
+    output: true
+    permalink: /:collection/:title/
+  release-notes:
+    output: true
+    permalink: /:collection/:title/
+  sdk:
+    output: true
+    permalink: /:collection/:title/
+
+### Build settings
+minify_html: false
+plugins:
+  - jekyll-feed
+  - jekyll-menus
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - octopress-minify-html
+
+### Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - _images
+  - _src
+  - amplify.yml
+  - config
+  - icon.png
+  - node_modules
+  - optimization-fix
+  - optimization-fix-this-file-is-ignored.js
+  - package.json
+  - vendor
+  - webpack.config.js
+  - yarn-error.log
+  - yarn.lock
+

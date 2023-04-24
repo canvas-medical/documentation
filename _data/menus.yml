@@ -1,0 +1,61 @@
+main:
+  - title: for developers
+    url: #
+    identifier: main_developers
+  - title: for users
+    url: #
+    identifier: main_resources
+main_resources:
+  - title: Platform Documentation
+    url: /documentation/
+  - title: Release Notes
+    url: /release-notes/
+  - title: Guides
+    url: /guides/
+main_developers:
+  - title: API
+    url: /api/
+  - title: SDKs
+    url: /sdk/
+api:
+ - title: "Getting Started"
+   url: #
+   identifier: api_getstart
+ - title: "Accounts & Workspaces"
+   url: #
+   identifier: api_accounts
+api_getstart:
+ - title: "Quick Start Guide"
+   url: /api/
+ - title: "Platform Overview"
+   url: /api/overview/
+ - title: "People"
+   url: /api/people/
+api_accounts:
+ - title: "Account Setup"
+   url: /api/account-setup/
+ - title: "Security"
+   url: /api/security/
+ - title: "Privacy"
+   url: /api/privacy/
+guides:
+ - title: "Guide page 1"
+   url: /guides/just-another-guide/
+ - title: "Guide page 2"
+   url: /guides/just-another-guide/
+ - title: "Guide page 3"
+   url: /guides/just-another-guide/
+ - title: "Guide page 4"
+   url: /guides/just-another-guide/
+ - title: "Guide page 5"
+   url: /guides/just-another-guide/
+ - title: "Guide page 6"
+   url: /guides/just-another-guide/
+ - title: "Guide page 7"
+   url: /guides/just-another-guide/
+ - title: "Guide page 8"
+   url: /guides/just-another-guide/
+ - title: "Guide page 9"
+   url: /guides/just-another-guide/
+ - title: "Guide page 10"
+   url: /guides/just-another-guide/
