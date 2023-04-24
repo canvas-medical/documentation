@@ -1,0 +1,18 @@
+---
+layout: default
+---
+<div class="pagelayout pagelayout__page">
+  <div class="pagelayout__page__content">
+    <h5>To do / discuss:</h5>
+    <ol>
+      <li>We can mange the Spotlight Guide either in front-matter in the index.md or as a special Menu item. Need to
+        discuss what information is to be pulled through.</li>
+      <li>For the filter, the assumption is that this will filter by tags/categories?</li>
+      <li>For search, there is an assumption that there'll be a global search, we can potentially have a narrower search
+        scope for individual sections.</li>
+      <li>For the main guide list, these can loop through the menu items (as below) and we can pull things like feature
+        images or any other front matter from them.</li>
+    </ol>
+    {% include cardnav.html menu=site.menus.guides %}
+  </div>
+</div>

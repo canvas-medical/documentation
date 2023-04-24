@@ -2,8 +2,17 @@ home:
   header:
     headline: This is a headline
     call_to_action:
-      title: Check out our blog
-      link: /blog
-
+      title: This is a button
+      link: #
+panels:
+  api:
+    panel1: "Useful guides"
+    panel2: "Request sample?"
+  sdk:
+    panel1: "Useful guides"
+    panel2: "On this page"
+  documentation:
+    panel1: "Useful guides"
+    panel2: "On this page"
 footer:
-  love: 'Made with <span class="accent">❤</span>'
+  notice: Copyright © 2023 Canvas Medical Inc.
