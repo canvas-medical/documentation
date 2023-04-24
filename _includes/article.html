@@ -1,0 +1,27 @@
+<article class="article" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article__container">
+    <header class="article__header">
+      <h1 class="article__title" itemprop="name headline">{{ page.title | escape }}</h1>
+      <p class="article__meta">
+        <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+          {% assign date_format = site.minima.date_format | default: "%-d %b %Y" %}
+          Last updated: {{ page.date | date: date_format }}
+        </time>
+        {% if page.author %}
+        by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ page.author
+            }}</span></span>
+        {% endif %}
+      </p>
+    </header>
+
+    <div class="article__content" itemprop="articleBody">
+      {{ content }}
+    </div>
+
+    <div class="article__comments">
+      {% if site.disqus.shortname %}
+      {% include disqus_comments.html %}
+      {% endif %}
+    </div>
+  </div>
+</article>

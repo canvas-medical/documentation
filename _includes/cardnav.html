@@ -1,0 +1,11 @@
+<nav class="cardnav" role="navigation">
+  <div class="cardnav__items">
+    {% for item in include.menu %}
+    <a class="cardnav__item" href="{{ item.url }}">
+      <div class="cardnav__title">
+        {{ item.title }}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</nav>

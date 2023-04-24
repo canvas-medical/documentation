@@ -13,26 +13,14 @@
   border-bottom: 1px solid $accent-color;
 
 
-  &__branding {
-      display: flex;
-      align-items: center;
-  }
-
-  &__title {
-    color: $text-color !important;
-    font-size: $font-md;
-    font-weight: 500;
-  }
-
   &__logo {
     margin-right: 10px;
+    img {
+      height: $font-lg;
+      width: auto;
+    }
   }
-
-  &__logo-img {
-    height: 40px;
-    width: auto;
-  }
-
+  
   &__links {
     display: flex;
     gap: 2em;
@@ -51,10 +39,18 @@
   &__link {
     margin-left: 30px;
     font-size: $font-xs;
-
-    &--active {
-      color: $primary-color;
-    }
   }
 
+  &__search { 
+    display: flex;
+    align-items: flex-end;
+    margin-top: 1em;
+    justify-content: center;
+    
+    svg {
+      height: 1rem;
+      width: auto;
+      fill: $primary-color;
+    }
+  }
 }

@@ -19,22 +19,21 @@ collections_dir: "collections"
 collections:
   api:
     output: true
-    permalink: /:collection/:name
+    permalink: /:collection/:title/
   documentation:
     output: true
-    permalink: /:collection/:name
+    permalink: /:collection/:title/
   guides:
     output: true
-    permalink: /:collection/:name
+    permalink: /:collection/:title/
   release-notes:
     output: true
-    permalink: /:collection/:name
+    permalink: /:collection/:title/
   sdk:
     output: true
-    permalink: /:collection/:name
+    permalink: /:collection/:title/
 
 ### Build settings
-markdown: kramdown
 minify_html: false
 plugins:
   - jekyll-feed

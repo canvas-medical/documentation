@@ -1,0 +1,27 @@
+.toc {
+
+  &__links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__section__title {
+    font-size: $font-md;
+    cursor: default;
+  }
+
+  &__menu {
+    font-size: $font-sm;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    &__item {
+      a:hover {
+        color: $accent-color;
+      }
+    }
+  }
+  
+}

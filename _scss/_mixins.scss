@@ -3,6 +3,8 @@
 @mixin container($padding) {
     width: 100%;
     max-width: $container-width;
-    padding: 0 $padding;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: $padding;
+    padding-right: $padding;
 }

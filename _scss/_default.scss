@@ -8,6 +8,7 @@ body {
 
 main {
   flex: 1;
+  height: 100%;
   width: 100%;
 }
 
@@ -19,4 +20,53 @@ a {
   &:hover {
     color: $primary-color;
   }
+}
+
+h1 {
+  display: block;
+  // font-family: "Financier Display"
+  font-size: $font-xl;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+h2 {
+  display: block;
+  font-size: $font-lg;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+h3 {
+  display: block;
+  font-size: $font-md;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+h4 {
+  display: block;
+  font-size: $font-md;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+h5 {
+  display: block;
+  font-size: $font-sm;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+h6 {
+  display: block;
+  font-size: $font-xs;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
 }

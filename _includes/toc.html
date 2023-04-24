@@ -1,0 +1,19 @@
+<nav class="toc" role="navigation">
+  {{ menu }}
+  <div class="toc__links">
+    {% for item in include.menu %}
+    <details class="toc__section" open>
+      <summary class="toc__section__title">{{ item.title }}</summary>
+      {% if item.children %}
+      <div class="toc__menu">
+        {% for item in item.children %}
+        <div class="toc__menu__item">
+          <a href="{{ item.url }}">{{ item.title }}</a>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </details>
+    {% endfor %}
+  </div>
+</nav>
