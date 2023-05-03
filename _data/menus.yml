@@ -43,6 +43,7 @@ documentation:
 documentation_collaboration:
  - title: Managing Tasks
    url: /documentation/managing-tasks/
+ - title: Chat
 guides:
  - title: "Guide page 1"
    url: /guides/just-another-guide/
