@@ -1,0 +1,15 @@
+{% for item in site.guides -%}
+{%- for guide_url in item.guide_for -%}
+{%- if guide_url == page.url -%}
+{% capture guide_links %}
+<a href="{{ item.url }}">{{ item.title }}</a><br />
+{% endcapture %}
+{%- endif -%}
+{%- endfor -%}
+{%- endfor %}
+{% if guide_links.size > 0 %}
+<div class="panel panel__container">
+    <h5>{{ site.data.globals.panels.guides }}</h5>
+    {{ guide_links }}
+</div>
+{% endif %}

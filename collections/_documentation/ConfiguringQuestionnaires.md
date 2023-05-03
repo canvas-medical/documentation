@@ -1,9 +1,6 @@
 ---
 layout: documentation
 title: "Configuring Questionnaires"
-categories: cat1 cat2
-tags: tag1 tag2
-request_sample: It may be difficult to display code blocks in front-matter
 ---
 
 Our Questionnaire, ROS, Physical Exam, and Structured Assessment Commands are all built on our interview model. They can be created by your admin team / supers users in order to support many use cases within your charting workflows. They are a great way to create custom templates, capture discreet data, and extend Canvas's data model to meet your needs.

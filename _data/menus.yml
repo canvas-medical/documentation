@@ -1,18 +1,10 @@
 main:
-  - title: for developers
-    url: #
-    identifier: main_developers
-  - title: for users
-    url: #
-    identifier: main_resources
-main_resources:
-  - title: Platform Documentation
+  - title: Application Documentation
     url: /documentation/
   - title: Release Notes
     url: /release-notes/
   - title: Guides
     url: /guides/
-main_developers:
   - title: API
     url: /api/
   - title: SDKs
@@ -31,6 +23,8 @@ api_getstart:
    url: /api/overview/
  - title: "People"
    url: /api/people/
+ - title: "Appointment Create"
+   url: /api/AppointmentCreate/
 api_accounts:
  - title: "Account Setup"
    url: /api/account-setup/

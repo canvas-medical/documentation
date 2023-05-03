@@ -1,0 +1,37 @@
+---
+layout: default
+---
+<div class="pagelayout pagelayout__index pagelayout__index__container">
+  <div class="pagelayout__index__content">
+    <div class="pagelayout__index__sidenav">
+      <p>This section is to display a list of tags and filter down release notes based on selected tag</p>
+      <p>Date filter to be implemented here</p>
+    </div>
+    <div class="pagelayout__index__items">
+      <div class="pagelayout__index__header">
+        {{ content}}
+      </div>
+      {% for item in site.release-notes %}
+      <article class="pagelayout__index__item">
+        <div class="pagelayout__index__title" itemprop="name headline">{{ item.title | escape }}</div>
+        <p class="pagelayout__index__meta">
+          <time datetime="{{ item.date | date_to_xmlschema }}" itemprop="datePublished">
+            {% assign date_format = site.minima.date_format | default: "%-d %b %Y" %}
+            Last updated: {{ item.date | date: date_format }}
+          </time>
+          {% if item.author %}
+          by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ item.author
+              }}</span></span>
+          {% endif %}
+        </p>
+        <p class="pagelayout__index__excerpt">
+          {{ content | strip_html }}
+        </p>
+        <a class="pagelayout__index__link" href="{{ item.url }}">
+          Read more
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</div>

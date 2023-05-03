@@ -21,7 +21,8 @@ $primary-color: $navyblue;
 $text-color: $navyblue;
 $link-color: $navyblue;
 $accent-color: $babyblue;
-
+$border-color: rgba($navyblue,0.2);
+$panel-color: rgba($babyblue,0.1);
 
 /** 
  * TYPOGRAPHY
@@ -46,5 +47,4 @@ $font-lg: 42.35801032px;
 $font-xl: 68.53526069776px;
 
 // Default container widths
-$container-width: 80rem;
-$container-padding: 1rem;
+$container-padding: 1vw;

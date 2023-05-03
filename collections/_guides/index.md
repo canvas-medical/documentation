@@ -1,5 +1,5 @@
 ---
 slug: /
-layout: guides-index
+layout: guides
 title: "Guides"
 ---

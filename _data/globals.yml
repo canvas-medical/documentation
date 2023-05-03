@@ -5,14 +5,8 @@ home:
       title: This is a button
       link: #
 panels:
-  api:
-    panel1: "Useful guides"
-    panel2: "Request sample?"
-  sdk:
-    panel1: "Useful guides"
-    panel2: "On this page"
-  documentation:
-    panel1: "Useful guides"
-    panel2: "On this page"
+  anchorlist: "On this page"
+  codesample: "Request sample"
+  guides: "Useful guides"
 footer:
   notice: Copyright © 2023 Canvas Medical Inc.
