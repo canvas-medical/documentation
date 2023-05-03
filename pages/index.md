@@ -13,10 +13,6 @@ permalink: "/"
 - Guides - Utilise same layout as SDK etc.
 - Discuss styles generally, incorporate mobile responsiveness, font packages
 
-// Menu
-Platform Docs --> Application Docs
-Remove section headings
-
 // General
 Prefer full width layout https://customer.io/docs/api/webhooks/#section/Timeouts-and-Failures
 Reference https://customer.io/docs/sdk/ios/getting-started/ for UI

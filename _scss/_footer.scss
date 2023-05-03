@@ -1,7 +1,14 @@
 .footer {
-  @include container($container-padding);
-  border-top: 1px solid $accent-color;
-  padding: 1rem 0;
-  margin-top: 80px;
-  color: $link-color;
+  &__container {
+    width: 100%;
+    border-top: 1px solid $accent-color;
+    padding: 1rem 0;
+    margin-top: 80px;
+    color: $link-color;
+    
+    &__inner {
+      padding-left: $container-padding;
+      padding-right: $container-padding;
+    }
+  }
 }

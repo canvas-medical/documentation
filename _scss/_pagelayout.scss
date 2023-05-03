@@ -1,6 +1,4 @@
 .pagelayout {
-  @include container(0);
-
   // Layout with ToC and side panels
   &__docpanels {
     display: grid;

@@ -1,17 +1,22 @@
 .navigation {
 
-  @include container($container-padding);
+  &__container {
 
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $accent-color;
 
-  margin-top: 10px;
+    &__inner {
+      padding-left: $container-padding;
+      padding-right: $container-padding;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-  padding-bottom: 10px;
-  border-bottom: 1px solid $accent-color;
-
+  }
 
   &__logo {
     margin-right: 10px;
@@ -19,16 +24,6 @@
       height: $font-lg;
       width: auto;
     }
-  }
-  
-  &__links {
-    display: flex;
-    gap: 2em;
-    flex-direction: row;
-  }
-
-  &__section {
-    color: $accent-color;
   }
   
   &__menu {
@@ -44,7 +39,6 @@
   &__search { 
     display: flex;
     align-items: flex-end;
-    margin-top: 1em;
     justify-content: center;
     
     svg {
