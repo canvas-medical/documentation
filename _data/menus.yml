@@ -31,6 +31,8 @@ api_getstart:
    url: /api/overview/
  - title: "People"
    url: /api/people/
+ - title: "Appointment Create"
+   url: /api/AppointmentCreate/
 api_accounts:
  - title: "Account Setup"
    url: /api/account-setup/
