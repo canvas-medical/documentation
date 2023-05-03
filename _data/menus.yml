@@ -40,6 +40,14 @@ api_accounts:
    url: /api/security/
  - title: "Privacy"
    url: /api/privacy/
+documentation:
+ - title: "Collaboration"
+   url: #
+   identifier: documentation_collaboration
+documentation_collaboration:
+ - title: Managing Tasks
+   url: /documentation/managing-tasks/
+ - title: Chat
 guides:
  - title: "Guide page 1"
    url: /guides/just-another-guide/
