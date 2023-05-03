@@ -3,8 +3,6 @@
   &__container {
 
     width: 100%;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
     border-bottom: 1px solid $accent-color;
 
     &__inner {
@@ -12,8 +10,14 @@
       padding-right: $container-padding;
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+    }
+    &__global {
+      background-color: $babyblue;
+      .navigation__menu__item:hover {
+        color: $navyblue;
+      }
     }
 
   }
@@ -29,6 +33,13 @@
   &__menu {
     display: flex;
     gap: 1em;
+    &__item {
+      padding-top: 1em;
+      padding-bottom: 1em;
+      &:hover {
+        color: $babyblue;
+      }
+    }
   }
 
   &__link {
@@ -37,14 +48,27 @@
   }
 
   &__search { 
+    width: 480px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
+    position: relative;
     
     svg {
+      position: absolute;
+      top: 0.4em;
+      left: 0.5em;
       height: 1rem;
       width: auto;
       fill: $primary-color;
+    }
+    input {
+      padding: 0.2em 0.2em 0.2em 2em;
+      width: 100%;
+      border: 1px solid $border-color;
+      &::placeholder {
+        color: $navyblue;
+      }
     }
   }
 }
