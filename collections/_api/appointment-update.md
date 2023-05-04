@@ -1,10 +1,6 @@
 ---
 title: "Appointment Update"
-slug: "appointment-update"
-excerpt: "Cancel or modify a booked appointment"
-hidden: false
-createdAt: "2022-06-23T19:48:39.076Z"
-updatedAt: "2022-12-14T21:38:56.812Z"
+layout: api
 ---
 This is almost identical to the [Appointment Create](ref:create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database. 
 
