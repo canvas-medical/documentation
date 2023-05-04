@@ -40,13 +40,13 @@ api_accounts:
    url: /api/privacy/
 api_appointment:
  - title: "Appointment Create"
-   url; /api/appointment-create
+   url: /api/appointment-create
  - title: "Appointment Read"
-   url; /api/appointment-read
+   url: /api/appointment-read
  - title: "Appointment Search"
-   url; /api/appointment-search
+   url: /api/appointment-search
  - title: "Appointment Update"
-   url; /api/appointment-update
+   url: /api/appointment-update
 documentation:
  - title: "Collaboration"
    url: #
