@@ -16,6 +16,12 @@ api:
  - title: "Accounts & Workspaces"
    url: #
    identifier: api_accounts
+    - title: "Appointment"
+   url: #
+   identifier: api_appointment
+    - title: "Allergy Intolerance"
+   url: #
+   identifier: api_allergy_intolerance
 api_getstart:
  - title: "Quick Start Guide"
    url: /api/
@@ -32,6 +38,15 @@ api_accounts:
    url: /api/security/
  - title: "Privacy"
    url: /api/privacy/
+api_appointment:
+ - title: "Appointment Create"
+   url; /api/appointment-create
+ - title: "Appointment Read"
+   url; /api/appointment-read
+ - title: "Appointment Search"
+   url; /api/appointment-search
+ - title: "Appointment Update"
+   url; /api/appointment-update
 documentation:
  - title: "Collaboration"
    url: #
