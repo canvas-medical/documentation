@@ -1,6 +1,10 @@
 ---
 title: "Appointment Search"
-layout: api
+slug: "appointment-search"
+excerpt: "Search for booked appointments by patient, practitioner, or date"
+hidden: false
+createdAt: "2021-05-14T03:03:54.407Z"
+updatedAt: "2022-08-18T00:21:46.073Z"
 ---
 ## Searching using a Date Range
 
