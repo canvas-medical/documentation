@@ -3,7 +3,7 @@ layout: default
 ---
 <div class="pagelayout pagelayout__docpanels">
   <div class="pagelayout__docpanels__sidenav">
-    Assuming this left navigation will need to be generated from content headings, unless this is to be managed as front matter or in the global menus yaml?
+    {% include toc.html menu=site.menus.guides %}
   </div>
   <div class="pagelayout__docpanels__content">
     {% include article.html %}

@@ -76,3 +76,6 @@ guides:
    url: /guides/just-another-guide/
  - title: "Guide page 10"
    url: /guides/just-another-guide/
+sdk:
+ - title: "SDK Intro`"
+   url: /sdk/
