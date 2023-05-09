@@ -4,15 +4,16 @@ layout: default
 <div class="pagelayout pagelayout__index pagelayout__index__container">
   <div class="pagelayout__index__content">
     <div class="pagelayout__index__sidenav">
-      <p>This section is to display a list of tags and filter down release notes based on selected tag</p>
-      <p>Date filter to be implemented here</p>
+      {% include filtertag.html collection=site.release-notes %}
+      {% include filterdate.html collection=site.release-notes %}
     </div>
     <div class="pagelayout__index__items">
       <div class="pagelayout__index__header">
         {{ content}}
       </div>
-      {% for item in site.release-notes %}
-      <article class="pagelayout__index__item">
+      {% assign posts = site.release-notes | sort: post.date | reverse %}
+      {% for item in posts %}
+      <article class="pagelayout__index__item" data-date={{ item.date | date: '%B %Y'" | slugify }} {% for tag in item.tags %}data-tag-{{tag | slugify }} {% endfor %}>
         <div class="pagelayout__index__title" itemprop="name headline">{{ item.title | escape }}</div>
         <p class="pagelayout__index__meta">
           <time datetime="{{ item.date | date_to_xmlschema }}" itemprop="datePublished">
