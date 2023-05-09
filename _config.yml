@@ -32,7 +32,27 @@ collections:
   sdk:
     output: true
     permalink: /:collection/:title/
-
+defaults:
+  - scope:
+      path          : "collections/_api/**/*"
+    values:
+      layout        : "api"
+  - scope:
+      path          : "collections/_documentation/**/*"
+    values:
+      layout        : "documentation"
+  - scope:
+      path          : "collections/_guides/**/*"
+    values:
+      layout        : "guides"
+  - scope:
+      path          : "collections/_release-notes/**/*"
+    values:
+      layout        : "releasenotes"
+  - scope:
+      path          : "collections/_sdk/**/*"
+    values:
+      layout        : "sdk"
 ### Build settings
 minify_html: false
 plugins:

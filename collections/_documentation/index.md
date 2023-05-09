@@ -1,6 +1,5 @@
 ---
 slug: /
-layout: documentation
 title: "Application Documentation"
 ---
 
