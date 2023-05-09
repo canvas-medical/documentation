@@ -1,6 +1,6 @@
 ---
 title: "Appointment Create"
-layout: API
+layout: api
 ---
 # Attributes that are pulled into Canvas:
 
