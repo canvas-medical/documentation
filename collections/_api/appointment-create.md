@@ -1,6 +1,10 @@
 ---
 title: "Appointment Create"
-layout: api
+slug: "appointment-create"
+excerpt: "Book an appointment with a provider in Canvas. If the appointment specifies a patient, then upon successful creation you will see the appointment on the Calendar view and within the Patient's Chart. An appointment is always created with a status of booked in FHIR (Confirmed in Canvas)."
+hidden: false
+createdAt: "2021-05-14T03:04:07.331Z"
+updatedAt: "2023-04-19T17:35:25.527Z"
 ---
 # Attributes that are pulled into Canvas:
 
