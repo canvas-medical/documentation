@@ -1,6 +1,6 @@
 ---
 title: "Appointment Read"
-layout: API
+layout: api
 ---
 ## Rescheduled Appointments
 
