@@ -1,39 +1,50 @@
 ---
-title: "Task Create"
-slug: "task-create"
-excerpt: "Create a task tied to a specific patient"
-hidden: false
-createdAt: "2022-05-17T14:51:16.845Z"
-updatedAt: "2022-07-28T00:04:26.940Z"
+title: "Task"
 ---
-# Getting the newly-created task's ID.
+## Task Search
+
+### Status Mapping
+
+Since Canvas only supports 3 statuses, the mapping back to FHIR is as follows:
+
+    "h-0" | "Canvas Status",
+    "h-1" | "FHIR Status",
+    "0-0" | "open",
+    "0-1" | "requested",
+    "1-0" | "completed",
+    "1-1" | "completed",
+    "2-0" | "closed",
+    "2-1" | "cancelled"
+
+### Creating Tasks in Canvas
+
+To learn how to create and manage tasks in Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks).
+
+## Task Create
+
+### Getting the newly-created task's ID.
 Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the `Location:` header.
 
-# Attributes that are pulled into Canvas:
+### Attributes that are pulled into Canvas:
 
 Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). Open tasks will also display in th [Task Panel ](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List) 
 
 ## status [REQUIRED]
 
 The current status of the task. The mapping from FHIR statuses to Canvas Task statuses is as follows:
-[block:parameters]
-{
-  "data": {
-    "h-0": "FHIR Task Status",
-    "h-1": "Canvas Mapping",
-    "0-0": "draft\nrequested\naccepted\nready\nin-progress\non-hold",
-    "1-0": "rejected\ncancelled\nfailed\nentered-in-error",
-    "2-0": "completed",
-    "0-1": "open",
-    "1-1": "closed",
-    "2-1": "completed"
-  },
-  "cols": 2,
-  "rows": 3
-}
+
+    "h-0" | "FHIR Task Status",
+    "h-1" |  "Canvas Mapping",
+    "0-0" | "draft\nrequested\naccepted\nready\nin-progress\non-hold",
+    "1-0" |  "rejected\ncancelled\nfailed\nentered-in-error",
+    "2-0" | "completed",
+    "0-1" | "open",
+    "1-1" | "closed",
+    "2-1" | "completed"
+
 [/block]
 These statuses are filterable on the canvas UI in the [patient chart](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). By default we only show open tasks. Only open tasks will show on the [Task Panel ](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List) 
-[block:code]
+```
 {
   "codes": [
     {
@@ -42,11 +53,11 @@ These statuses are filterable on the canvas UI in the [patient chart](https://ca
     }
   ]
 }
-[/block]
-## requester [REQUIRED]
+```
+### requester [REQUIRED]
 
  The user who requested the task. This must be a practitioner reference.
-[block:code]
+```
 {
   "codes": [
     {
@@ -55,11 +66,11 @@ These statuses are filterable on the canvas UI in the [patient chart](https://ca
     }
   ]
 }
-[/block]
-## for [REQUIRED]
+```
+### for [REQUIRED]
 
  The patient reference for whom the task is being done.
-[block:code]
+```
 {
   "codes": [
     {
@@ -68,11 +79,11 @@ These statuses are filterable on the canvas UI in the [patient chart](https://ca
     }
   ]
 }
-[/block]
-##  Description
+```
+###  Description
 
  The title for the task. If no description is given, the Canvas UI will not display any title for the task.
-[block:code]
+```
 {
   "codes": [
     {
@@ -81,11 +92,11 @@ These statuses are filterable on the canvas UI in the [patient chart](https://ca
     }
   ]
 }
-[/block]
-## owner 
+```
+### owner 
 
  The user that should handle the task. Must be a practitioner reference.
-[block:code]
+```
 {
   "codes": [
     {
@@ -94,11 +105,11 @@ These statuses are filterable on the canvas UI in the [patient chart](https://ca
     }
   ]
 }
-[/block]
-## authoredOn
+```
+### authoredOn
 
 This is the timestamp the Task was created on. If omitted from the message, it will default to the current timestamp at time of ingestion
-[block:code]
+```
 {
   "codes": [
     {
@@ -107,8 +118,8 @@ This is the timestamp the Task was created on. If omitted from the message, it w
     }
   ]
 }
-[/block]
-## restriction 
+```
+### restriction 
 [block:callout]
 {
   "type": "info",
@@ -117,7 +128,7 @@ This is the timestamp the Task was created on. If omitted from the message, it w
 }
 [/block]
 This object can be used to specify the due date timestamp of the Task. The due date is taken from the `restriction.period.end` attribute
-[block:code]
+```
 {
   "codes": [
     {
@@ -126,15 +137,15 @@ This object can be used to specify the due date timestamp of the Task. The due d
     }
   ]
 }
-[/block]
-## note 
+```
+### note 
 
 A comment thread about the task. For each note you can specify the:
 
 1.  comment's text [REQUIRED]
 2. timestamp the comment was left (If omitted it will default to current timestamp at data ingestion)
 3  reference to the practitioner that left the specific comment. [REQUIRED]
-[block:code]
+```
 {
   "codes": [
     {
@@ -143,11 +154,11 @@ A comment thread about the task. For each note you can specify the:
     }
   ]
 }
-[/block]
-## extension (task-group)
+```
+### extension (task-group)
 
 The team that the task is assigned to.  This optional field requires a reference to the team from the Group endpoint. In the Canvas UI, this will display under the field "team" in the task card.
-[block:code]
+```
 {
   "codes": [
     {
@@ -156,11 +167,11 @@ The team that the task is assigned to.  This optional field requires a reference
     }
   ]
 }
-[/block]
-## input
+```
+### input
 
 Adds labels to the task in the Canvas UI. If the label doesn't exist in Canvas already, it will be created.
-[block:image]
+
 {
   "images": [
     {
@@ -175,9 +186,8 @@ Adds labels to the task in the Canvas UI. If the label doesn't exist in Canvas a
     }
   ]
 }
-[/block]
 
-[block:code]
+```
 {
   "codes": [
     {
@@ -186,4 +196,14 @@ Adds labels to the task in the Canvas UI. If the label doesn't exist in Canvas a
     }
   ]
 }
-[/block]
+```
+
+## Task Update
+
+**Note**
+This endpoint is identical to the [Task Create](ref:task-create) endpoint with the exception of passing the Task id as a path parameter. 
+
+
+- Any note comments included in the Update message body will not be checked if they already exist in Canvas. Canvas will always assume each Note is an addition to the Task Comments.
+- Omitting the `group extension` and `authoredOn` in an update body does not delete the contents of that field. They remain set to the last value they were assigned. 
+- Omitting the `description`, `owner`, `restriction` and `input` attributes will delete the contents of the field in the Canvas database. In order to have a Task keep the values in these fields after an update, they must be included.

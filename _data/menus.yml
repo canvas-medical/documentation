@@ -10,51 +10,134 @@ main:
   - title: SDKs
     url: /sdk/
 api:
- - title: "Getting Started"
-   url: #
-   identifier: api_getstart
- - title: "Accounts & Workspaces"
-   url: #
-   identifier: api_accounts
+ - title: "AllergyIntolerance"
+   url: /api/allergyintolerance/
+   identifier: api_allergyintolerance
  - title: "Appointment"
-   url: #
+   url: /api/appointment/
    identifier: api_appointment
- - title: "Allergy Intolerance"
-   url: #
-   identifier: api_allergy_intolerance
-api_getstart:
- - title: "Quick Start Guide"
-   url: /api/
- - title: "Platform Overview"
-   url: /api/overview/
- - title: "People"
-   url: /api/people/
- - title: "Appointment Create"
-   url: /api/AppointmentCreate/
-api_accounts:
- - title: "Account Setup"
-   url: /api/account-setup/
- - title: "Security"
-   url: /api/security/
- - title: "Privacy"
-   url: /api/privacy/
+ - title: "CarePlan"
+   url: /api/careplan/
+   identifier: api_careplan
+ - title: "CareTeam"
+   url: /api/careteam/
+   identifier: api_careteam
+ - title: "Condition"
+   url: /api/condition/
+   identifier: api_condition
+ - title: "Communcation"
+   url: /api/communcation/
+   identifier: api_communication
+ - title: "Consent"
+   url: /api/consent/
+   identifier: api_consent
+ - title: "Coverage"
+   url: /api/coverage/
+   identifier: api_coverage
+ - title: "CoverageEligibilityResponse"
+   url: /api/coverageeligibilityresponse/
+   identifier: api_coverageeligibilityresponse
+ - title: "Device"
+   url: /api/device/
+   identifier: api_device
+ - title: "DiagnosticReport"
+   url: /api/diagnosticreport/
+   identifier: api_diagnosticreport
+ - title: "DocumentReference"
+   url: /api/documentreference/
+   identifier: api_documentreference
+ - title: "Encounter"
+   url: /api/encounter/
+   identifier: api_encounter
+ - title: "Goal"
+   url: /api/goal/
+   identifier: api_goal
+ - title: "Group"
+   url: /api/group/
+   identifier: api_group
+ - title: "Immunization"
+   url: /api/immunization/
+   identifier: api_immunization
+ - title: "Location"
+   url: /api/location/
+   identifier: api_location
+ - title: "Media"
+   url: /api/media/
+   identifier: api_media
+ - title: "Medication"
+   url: /api/medication/
+   identifier: api_medication
+ - title: "MedicationRequest"
+   url: /api/medicationrequest/
+   identifier: api_medicationrequest
+ - title: "MedicationStatement"
+   url: /api/medicationstatement/
+   identifier: api_medicationstatement
+ - title: "Observation"
+   url: /api/observation/
+   identifier: api_observation
+ - title: "Organization"
+   url: /api/organization/
+   identifier: api_organization
+ - title: "Patient"
+   url: /api/patient/
+   identifier: api_patient
+ - title: "PaymentNotice"
+   url: /api/paymentnotice/
+   identifier: api_paymentnotice
+ - title: "Practitioner"
+   url: /api/practitioner/
+   identifier: api_practitioner
+ - title: "Procedure"
+   url: /api/procedure/
+   identifier: api_procedure
+ - title: "Provenance"
+   url: /api/provenance/
+   identifier: api_provenance
+ - title: "Questionnaire"
+   url: /api/questionnaire/
+   identifier: api_questionnaire
+ - title: "QuestionnaireResponse"
+   url: /api/questionnareresponse/
+   identifier: api_questionnaireresponse
+ - title: "Schedule"
+   url: /api/schedule/
+   identifier: api_schedule
+ - title: "Slot"
+   url: /api/slot/
+   identifier: api_slot
+ - title: "Task"
+   url: /api/task/
+   identifier: api_task
 api_appointment:
  - title: "Appointment Create"
-   url: /api/appointment-create
+   url: /api/appointment/#appointment-create
  - title: "Appointment Read"
-   url: /api/appointment-read
+   url: /api/appointment/#apointment-read
  - title: "Appointment Search"
-   url: /api/appointment-search
+   url: /api/appointment/#appointment-search
  - title: "Appointment Update"
-   url: /api/appointment-update
+   url: /api/appointment/#appointment-update
+api_allergyintolerance:
+ - title: "AllergyIntolerance Read"
+   url: /api/allergyintolerance/#allergyinterolerance-read
+ - title: "AllergyInterolerance Search"
+   url: /api/allergyintolerance/#allergyinterolerance-search
+api_task:
+ - title: "Task Search"
+   url: /api/task/#task-search
+ - title: "Task Create"
+   url: /api/task/#task-create
+ - title: "Task Update"
+   url: /api/task/#task-update
 documentation:
  - title: "Collaboration"
    url: #
    identifier: documentation_collaboration
 documentation_collaboration:
- - title: Managing Tasks
+ - title: "Managing Tasks"
    url: /documentation/managing-tasks/
- - title: Chat
+ - title: "Chat"
    url: /documentation/chat/
 guides:
  - title: "Just Another Guide"
