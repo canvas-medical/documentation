@@ -2,7 +2,7 @@
 title: "Managing Tasks"
 ---
 
-## Introduction to the Task Panel
+## Introduction to the Task Management Panel
 
 To access the task panel in Canvas, navigate to the panel filter badge icons on the top right of the Schedule View and select the "Tasks" icon. By default, the task list displays open tasks assigned to you or your team, with any label, and created by anyone.
 
@@ -14,7 +14,7 @@ To sort tasks, locate the task list column headers, which include Task, Patient,
 
 ## Adding Activity
 
-If you want to comment on a task, find the desired task in the Task List and click on the underlined "No Activity" or "# comment" within the Activity column. Type your comment in the Comment Box that opens, and click "Add Comment." All comments made on this task will be visible within the Comment Box.
+If you want to comment on a task, find the desired task in the Task List and click on the underlined "No Activity" or "# comment" within the Activity column. Type your comment in the Comment Box that opens, and click "Add Comment." All comments made on this task will be visible within the Comment Box. 
 
 ## Assigning Tasks to Individuals and Teams
 

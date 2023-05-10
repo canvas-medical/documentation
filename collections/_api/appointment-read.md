@@ -73,3 +73,116 @@ The mapping is as follows:
 In addition to this dropdown there is the following statuses:
 - `cancelled` an appointment will read as cancelled if the appointment was marked as cancelled via the patient chart or if we are reading an appointment that was rescheduled to a different time
 - `entered-in-error` an appointment will read as entered-in-error if the appointment was deleted via the patient chart
+
+``` json
+{
+  "resourceType": "Appointment",
+  "id": "94d34e0f-b5c2-4af1-b806-acec8866da18",
+  "contained": [
+      {
+        "resourceType": "Endpoint",
+        "id": "appointment-meeting-endpoint",
+        "status": "active",
+        "connectionType": {
+          "code": "https"
+        },
+        "payloadType": [
+          {
+            "coding": [
+              {
+                "code": "video-call"
+              }
+            ]
+          }
+        ],
+
+{
+    "resourceType": "Appointment",
+    "id": "94d34e0f-b5c2-4af1-b806-acec8866da18",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2021-11-05T19:32:09.539+00:00"
+    },
+    "contained": [
+        {
+            "resourceType": "Endpoint",
+            "id": "appointment-meeting-endpoint",
+            "status": "active",
+            "connectionType": {
+                "code": "https"
+            },
+            "payloadType": [
+                {
+                    "coding": [
+                        {
+                            "code": "video-call"
+                        }
+                    ]
+                }
+            ],
+            "address": "https://url-for-video-chat.example.com?meetingi=abc123"
+        }
+    ],
+    "status": "booked",
+    "appointmentType": {
+        "coding": [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "448337001",
+                "display": "Telemedicine consultation with patient (procedure)"
+            }
+        ]
+    },
+    "reasonCode": [
+      {
+        "coding": [
+          {
+            "system": "internal",
+            "code": "0",
+            "display": "annual follow up",
+            "userSelected": false
+          }
+        ],
+        "text": "Need to check condition annually"
+      }
+    ],
+    "description": "Need to check condition annually",
+    "supportingInformation": [
+        {
+          "reference": "Location/1"
+        },
+        {
+          "reference": "#appointment-meeting-endpoint-1",
+          "type": "Endpoint"
+        },
+        {
+          "reference": "Encounter/c08dcf8d-a23c-448f-acc8-1a5832dc9006",
+          "type": "Encounter"
+        },
+        {
+          "reference": "Appointment/fc512e54-a5ce-4046-9101-03df00f5572f",
+          "display": "Previously Rescheduled Appointment"
+        },
+        {
+          "reference": "Appointment/0d4a422d-0d61-47bd-bf84-eade0115e59a",
+          "display": "Rescheduled Replacement Appointment"
+        }
+    ],
+    "start": "2021-03-20T13:30:00.000Z",
+    "end": "2021-03-20T14:00:00.000Z",
+    "participant": [
+        {
+            "actor": {
+                "reference": "Patient/5350cd20de8a470aa570a852859ac87e"
+            },
+            "status": "accepted"
+        },
+        {
+            "actor": {
+                "reference": "Practitioner/dbf184ad28a1408bbed184fc8fd2b029"
+            },
+            "status": "accepted"
+        }
+    ]
+}
+```
