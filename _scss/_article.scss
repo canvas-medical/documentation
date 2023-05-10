@@ -5,4 +5,18 @@
   &__title {
     font-size: $font-lg;
   }
+
+  &__heading {
+    > .article__anchor {
+      display: none;
+    }
+    &:hover > .article__anchor {
+      display: inline-block;
+    }
+  }
+  &__anchor {
+    font-size: 0.5em;
+    padding-bottom: 0.333em;
+    vertical-align: middle;
+  }
 }

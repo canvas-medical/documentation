@@ -15,7 +15,7 @@
     </header>
 
     <div class="article__content" itemprop="articleBody">
-      {{ content }}
+      {% include content-anchorheadings.html html=content anchorBody="#" headerAttrs="class='article__heading'" anchorClass="article__anchor" %}
     </div>
     
   </div>

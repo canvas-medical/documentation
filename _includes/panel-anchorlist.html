@@ -1,61 +1,7 @@
 <div class="panel panel__container">
     <h5>{{ site.data.globals.panels.anchorlist }}</h5>
-    Use js to loop through and add headings to list with anchor link.<br/>
-    Example output:
-    <ul>
-        <li>Heading Level 1
-            <ul>
-                <li>Heading Level 2
-                    <ul>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                    </ul>
-                </li>
-                <li>Heading Level 2
-                    <ul>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-        <li>Heading Level 1
-            <ul>
-                <li>Heading Level 2
-                    <ul>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                    </ul>
-                </li>
-                <li>Heading Level 2
-                    <ul>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-        <li>Heading Level 1
-            <ul>
-                <li>Heading Level 2
-                    <ul>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                    </ul>
-                </li>
-                <li>Heading Level 2
-                    <ul>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                        <li>Heading Level 3</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
+    {% include panel-anchorlist-loop.html html=content class="anchorlist__menu" submenu_class="anchorlist__submenu"
+    item_class="anchorlist__item" h_min=2 h_max=4 %}
+    <hr/>
+    <em>We'll use javascript to bold or add other emphasis to the heading which is top of view</em>
 </div>
