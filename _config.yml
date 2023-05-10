@@ -53,6 +53,15 @@ defaults:
       path          : "collections/_sdk/**/*"
     values:
       layout        : "sdk"
+
+### Feed settings
+feed:
+  posts_limit: 20
+  collections:
+    release-notes:
+      path: "/release-notes.xml"
+    
+
 ### Build settings
 minify_html: false
 plugins:
