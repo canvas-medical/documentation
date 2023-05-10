@@ -1,6 +1,5 @@
 ---
 title: "Appointment Search"
-layout: API
 ---
 ## Searching using a Date Range
 

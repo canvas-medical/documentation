@@ -8,5 +8,7 @@ panels:
   anchorlist: "On this page"
   codesample: "Request sample"
   guides: "Useful guides"
+  filtertag: "Filter by tags"
+  filterdate: "Filter by date"
 footer:
   notice: Copyright © 2023 Canvas Medical Inc.

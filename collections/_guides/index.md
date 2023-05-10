@@ -1,5 +1,5 @@
 ---
 slug: /
-layout: guides
 title: "Guides"
 ---
+This index page will live on Webflow

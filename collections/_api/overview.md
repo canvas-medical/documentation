@@ -1,5 +1,4 @@
 ---
-layout: api
 title: "Platform Overview"
 ---
 

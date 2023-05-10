@@ -2,18 +2,16 @@
   {{ menu }}
   <div class="toc__links">
     {% for item in include.menu %}
-    <details class="toc__section" open>
-      <summary class="toc__section__title">{{ item.title }}</summary>
+    <ul class="toc__menu" open>
+      <li class="toc__item"><a href="{{ item.url }}">{{ item.title }}</a></li>
       {% if item.children %}
-      <div class="toc__menu">
+      <ul class="toc__submenu">
         {% for item in item.children %}
-        <div class="toc__menu__item">
-          <a href="{{ item.url }}">{{ item.title }}</a>
-        </div>
+        <li class="toc__item{% if page.url == item.url %} toc__item__active{% endif %}"><a href="{{ item.url }}">{{ item.title }}</a></li>
         {% endfor %}
-      </div>
+      </ul>
       {% endif %}
-    </details>
+    </ul>
     {% endfor %}
   </div>
 </nav>

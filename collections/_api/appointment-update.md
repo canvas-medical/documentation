@@ -1,6 +1,5 @@
 ---
 title: "Appointment Update"
-layout: API
 ---
 This is almost identical to the [Appointment Create](ref:create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database. 
 

@@ -56,23 +56,8 @@ documentation_collaboration:
    url: /documentation/managing-tasks/
  - title: Chat
 guides:
- - title: "Guide page 1"
+ - title: "Just Another Guide"
    url: /guides/just-another-guide/
- - title: "Guide page 2"
-   url: /guides/just-another-guide/
- - title: "Guide page 3"
-   url: /guides/just-another-guide/
- - title: "Guide page 4"
-   url: /guides/just-another-guide/
- - title: "Guide page 5"
-   url: /guides/just-another-guide/
- - title: "Guide page 6"
-   url: /guides/just-another-guide/
- - title: "Guide page 7"
-   url: /guides/just-another-guide/
- - title: "Guide page 8"
-   url: /guides/just-another-guide/
- - title: "Guide page 9"
-   url: /guides/just-another-guide/
- - title: "Guide page 10"
-   url: /guides/just-another-guide/
+sdk:
+ - title: "SDK Intro`"
+   url: /sdk/
