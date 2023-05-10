@@ -1,10 +1,6 @@
 ---
 title: "Appointment Read"
-slug: "appointment-read"
-excerpt: "Get information about a particular appointment"
-hidden: false
-createdAt: "2021-10-12T19:08:53.371Z"
-updatedAt: "2022-03-09T15:46:37.087Z"
+layout: api
 ---
 ## Rescheduled Appointments
 
