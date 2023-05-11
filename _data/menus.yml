@@ -1,14 +1,14 @@
 main:
-  - title: Application Documentation
+  - title: User Docs
     url: /documentation/
-  - title: Release Notes
-    url: /release-notes/
-  - title: Guides
-    url: /guides/
   - title: API
     url: /api/
-  - title: SDKs
+  - title: SDK
     url: /sdk/
+  - title: Release Notes
+    url: /release-notes/  
+  - title: Guides
+    url: /guides/
 api:
  - title: "AllergyIntolerance"
    url: /api/allergyintolerance/
@@ -22,18 +22,21 @@ api:
  - title: "CareTeam"
    url: /api/careteam/
    identifier: api_careteam
+ - title: "Communication"
+   url: /api/communication/
+   identifier: api_communication
  - title: "Condition"
    url: /api/condition/
    identifier: api_condition
- - title: "Communcation"
-   url: /api/communcation/
-   identifier: api_communication
  - title: "Consent"
    url: /api/consent/
    identifier: api_consent
  - title: "Coverage"
    url: /api/coverage/
    identifier: api_coverage
+ - title: "CoverageEligibilityRequest"
+   url: /api/coverageeligibilityrequest/
+   identifier: api_coverageeligibilityrequest
  - title: "CoverageEligibilityResponse"
    url: /api/coverageeligibilityresponse/
    identifier: api_coverageeligibilityresponse
@@ -98,7 +101,7 @@ api:
    url: /api/questionnaire/
    identifier: api_questionnaire
  - title: "QuestionnaireResponse"
-   url: /api/questionnareresponse/
+   url: /api/questionnaireresponse/
    identifier: api_questionnaireresponse
  - title: "Schedule"
    url: /api/schedule/
@@ -109,6 +112,12 @@ api:
  - title: "Task"
    url: /api/task/
    identifier: api_task
+   
+api_allergyintolerance:
+ - title: "AllergyIntolerance Read"
+   url: /api/allergyintolerance/#allergyinterolerance-read
+ - title: "AllergyInterolerance Search"
+   url: /api/allergyintolerance/#allergyinterolerance-search
 api_appointment:
  - title: "Appointment Create"
    url: /api/appointment/#appointment-create
@@ -118,11 +127,163 @@ api_appointment:
    url: /api/appointment/#appointment-search
  - title: "Appointment Update"
    url: /api/appointment/#appointment-update
-api_allergyintolerance:
- - title: "AllergyIntolerance Read"
-   url: /api/allergyintolerance/#allergyinterolerance-read
- - title: "AllergyInterolerance Search"
-   url: /api/allergyintolerance/#allergyinterolerance-search
+api_careplan:
+ - title: "CarePlan Read"
+   url: /api/careplan/#careplan-read
+ - title: "CarePlan Search"
+   url: /api/careplan/#careplan-create
+api_careteam:
+ - title: "CareTeam Read"
+   url: /api/careteam/#careteam-read
+ - title: "CareTeam Search"
+   url: /api/careteam/#careteam-create
+ - title: "CareTeam Update"
+   url: /api/careteam/#careteam-update
+api_communication:
+ - title: "Communication Create"
+   url: /api/communication/#communication-create
+ - title: "Communication Update"
+   url: /api/communication/#communication-update
+api_condition:
+ - title: "Condition Read"
+   url: /api/condition/#condition-read
+ - title: "Condition Search"
+   url: /api/condition/#condition-search
+api_consent:
+ - title: "Consent Create"
+   url: /api/consent/#consent-create
+ - title: "Consent Read"
+   url: /api/consent/#consent-read
+ - title: "Consent Search"
+   url: /api/consent/#consent-search
+api_coverage:
+ - title: "Coverage Create"
+   url: /api/coverage/#coverage-create
+ - title: "Coverage Search"
+   url: /api/coverage/#coverage-search
+ - title: "Coverage Update"
+   url: /api/coverage/#coverage-update
+api_coverageeligibilityrequest:
+ - title: "Coverage Eligibility Request Create"
+   url: /api/coverageeligibilityrequest/#coverageeligibilityrequest-create
+api_coverageeligibilityresponse:
+ - title: "Coverage Eligibility Response Search"
+   url: /api/coverageeligibilityresponse/#coverageeligibilityresponse-search
+api_device:
+ - title: "Device Read"
+   url: /api/device/#device-read
+ - title: "Device Search"
+   url: /api/device/#device-search
+api_diagnosticreport:
+ - title: "DiagnosticReport Read"
+   url: /api/diagnosticreport/#diagnosticreport-read
+ - title: "DiagnosticReport Search"
+   url: /api/diagnosticreport/#diagnosticreport-search
+api_documentreference:
+ - title: "DocumentReference Read"
+   url: /api/documentreference/#documentreference-read
+ - title: "DocumentReference Search"
+   url: /api/documentreference/#documentreference-search
+api_encounter:
+ - title: "Encounter Read"
+   url: /api/encounter/#encounter-read
+ - title: "Encounter Search"
+   url: /api/encounter/#encounter-search   
+api_goal:
+ - title: "Goal Create"
+   url: /api/goal/#goal-create
+ - title: "Goal Read"
+   url: /api/goal/#goal-read
+ - title: "Goal Search"
+   url: /api/goal/#goal-search
+ - title: "Goal Update"
+   url: /api/goal/#goal-update
+api_group:
+ - title: "Group Read"
+   url: /api/group/#group-read
+ - title: "Group Search"
+   url: /api/group/#group-search 
+api_immunization:
+ - title: "Immunization Read"
+   url: /api/immunization/#immunization-read
+ - title: "Immunization Search"
+   url: /api/immunization/#immunization-search 
+api_location:
+ - title: "Location Read"
+   url: /api/location/#location-read
+ - title: "Location Search"
+   url: /api/location/#location-search
+api_media:
+ - title: "Media Create"
+   url: /api/media/#media-create 
+api_medication:
+ - title: "Medication Read"
+   url: /api/medication/#medication-read
+api_medicationrequest:
+ - title: "MedicationRequest Read"
+   url: /api/medicationrequest/#medicationrequest-read
+ - title: "MedicationRequest Search"
+   url: /api/medicationrequest/#medicationrequest-search
+api_medicationstatement:
+ - title: "MedicationStatement Search"
+   url: /api/medicationstatement/#medicationstatement-search
+api_observation:
+ - title: "Observation Create"
+   url: /api/observation/#observation-create
+ - title: "Observation Read"
+   url: /api/observation/#observation-read
+ - title: "Observation Search"
+   url: /api/observation/#observation-search
+api_organization:
+ - title: "Organization Search"
+   url: /api/organization/#organization-search
+api_patient:
+ - title: "Patient Create"
+   url: /api/patient/#patient-create
+ - title: "Patient Read"
+   url: /api/patient/#patient-read
+ - title: "Patient Search"
+   url: /api/patient/#patient-search
+ - title: "Patient Update"
+   url: /api/patient/#patient-update
+api_paymentnotice:
+ - title: "PaymentNotice Create"
+   url: /api/paymentnotice/#paymentnotice-create
+ - title: "PaymentNotice Search"
+   url: /api/paymentnotice/#paymentnotice-search
+api_practitioner:
+ - title: "Practitioner Read"
+   url: /api/practitioner/#practitioner-read
+ - title: "Practitioner Search"
+   url: /api/practitioner/#practitioner-search
+api_procedure:
+ - title: "Procedure Read"
+   url: /api/procedure/#procedure-read
+ - title: "Procedure Search"
+   url: /api/procedure/#procedure-search
+api_provenance:
+ - title: "Provenance Read"
+   url: /api/provenance/#provenance-read
+ - title: "Provenance Search"
+   url: /api/provenance/#provenance-search
+api_questionnaire:
+ - title: "Questionnaire Read"
+   url: /api/questionnaire/#questionnaire-read
+ - title: "Questionnaire Search"
+   url: /api/questionnaire/#questionnaire-search
+api_questionnaireresponse:
+ - title: "QuestionnaireResponse Create"
+   url: /api/questionnaireresponse/#questionnaireresponse-create
+ - title: "QuestionnaireResponse Read"
+   url: /api/questionnaireresponse/#questionnaireresponse-read
+ - title: "QuestionnaireResponse Search"
+   url: /api/questionnaireresponse/#questionnaireresponse-search
+api_schedule:
+ - title: "Schedule Search"
+   url: /api/schedule/#schedule-search
+api_slot:
+ - title: "Slot Search"
+   url: /api/slot/#slot-search
 api_task:
  - title: "Task Search"
    url: /api/task/#task-search

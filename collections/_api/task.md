@@ -29,7 +29,7 @@ Upon successful creation, the Canvas-issued identifier assigned for the new reso
 
 Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). Open tasks will also display in th [Task Panel ](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List) 
 
-## status [REQUIRED]
+### status [REQUIRED]
 
 The current status of the task. The mapping from FHIR statuses to Canvas Task statuses is as follows:
 
