@@ -112,7 +112,6 @@ api:
  - title: "Task"
    url: /api/task/
    identifier: api_task
-   
 api_allergyintolerance:
  - title: "AllergyIntolerance Read"
    url: /api/allergyintolerance/#allergyinterolerance-read
