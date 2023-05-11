@@ -4,4 +4,4 @@ title: "Privacy"
 
 Example content
 
-privacy...
+privacy
