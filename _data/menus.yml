@@ -291,14 +291,49 @@ api_task:
  - title: "Task Update"
    url: /api/task/#task-update
 documentation:
- - title: "Collaboration"
+ - title: "Setup & Configuration"
    url: #
+   identifier: documentation_config
+ - title: "Chart"
+   url: #
+   identifier: documentation_chart
+ - title: "Narrative Charting"
+   url: #
+   identifier: documentation_narrativecharting
+ - title: "Collaboration"
+   url: 
    identifier: documentation_collaboration
-documentation_collaboration:
- - title: "Managing Tasks"
-   url: /documentation/managing-tasks/
- - title: "Chat"
-   url: /documentation/chat/
+ - title: "Scheduling"
+   url: #
+   identifier: documentation_scheduling
+ - title: "Revenue"
+   url: #
+   identifier: documentation_revenue
+ - title: "Patient App"
+   url: #
+   identifier: documentation_patientapp
+ - title: "Reporting"
+   url: #
+   identifier: documentation_reporting
+ - title: "Populations"
+   url: #
+   identifier: documentation_populations
+ - title: "Support"
+   url: #
+   identifier: documentation_support
+documentation_config:
+ - title: "Organization"
+   url: #
+   identifier: documentation_config_organization
+ - title: "Clinical Configuration"
+   url: #
+   identifier: documentation_config_clinical
+ - title: "Admin Configuration"
+   url: #
+   identifier: documentation_config_admin
+ - title: "Revenue Configuration"
+   url: #
+   identifier: documentation_config_revenue
 guides:
  - title: "Just Another Guide"
    url: /guides/just-another-guide/

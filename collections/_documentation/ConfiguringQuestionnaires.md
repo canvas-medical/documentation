@@ -6,7 +6,7 @@ Our Questionnaire, ROS, Physical Exam, and Structured Assessment Commands are al
 
 ### Building a Questionnaire
 
-Questionnaires are created using a Google Sheet template that was shared with you during your onboarding. Please reach out to your internal administrators or our support team if you need help locating this template. The template allows you to configure your own questionnaires without needing code. We have enforced some validation in creating the questionnaires In order to ensure data is captured in a consistent way and can be used programmatically once collected.
+Questionnaires are created using a Google Sheet template that was shared with you during your onboarding. Please reach out to your internal administrators first, and then our support team if you need help locating this template. The template allows you to configure your own questionnaires without needing code. We have enforced some validation in creating the questionnaires In order to ensure data is captured in a consistent way and can be used programmatically once collected.
 
 **Questionnaires** are built as a series of **Questions,** each having associated **Question Responses**
 
@@ -24,3 +24,8 @@ The "use case in charting" field within the template will determine which Comman
 ### Questionnaire, Question, & Question Response Codings
 
 All questionnaires, questions, and question responses must be code backed. We allow you to use the following standard code systems: **CPT, LOINC, SNOMED, or ICD-10**. or you can leverage an custom code system by indicating that it is **INTERNAL. CANVAS** is used by our team for specific Canvas concepts. These are case sensitive. When loading a questionnaire, the following must be true:
+
+
+### Settings
+
+These are set by updating the appropriate columns within the row for each Questionnaire and Question  fdsfasfsa
