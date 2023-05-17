@@ -46,5 +46,10 @@ $font-md: 26.17924px;
 $font-lg: 42.35801032px;
 $font-xl: 68.53526069776px;
 
-// Default container widths
+// Breakpoints and containers
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1400px;
 $container-padding: 1vw;

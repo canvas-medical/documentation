@@ -28,7 +28,7 @@ To start the development server just run  `yarn dev`
 ### Assets
 * SCSS partials should be located in `_scss` for better reading
 * Images should be in `_images` and the content of this folder will be moved to the `_site/assets/images` so you can access them with this path `/assets/images/**` 
-* Javascript files are saved in `_src` and import them from `index.js` or you can also add them as a new entry point in your webpack configuration file
+* Javascript files are saved in `_js` and import them from `index.js` or you can also add them as a new entry point in your webpack configuration file
 
 ## Build
 
