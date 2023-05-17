@@ -14,11 +14,11 @@ bundle install
 
 Start development server
 ```
-yarn start
+yarn dev
 ```
 
 ## Development
-To start the development server just run  `yarn start`
+To start the development server just run  `yarn dev`
 
 ### Configuration
 * The required configurations are in `_config.yml`
@@ -36,24 +36,24 @@ To start the development server just run  `yarn start`
 To build the website run the following line
 
 ```sh
-npm run build
+yarn build
 ```
 The built website will be in `_site` folder.
 
 You can also run a local server to test it with this command
 ```sh
-npm run serve:dist
+yarn serve:dist
 ```
 
 ### PWA
 If you want to build a PWA (including the manifest.json and the service worker) run the following. Please ensure to have configured this file `config/manifest.json`
 The built website will be in `_site` folder.
 ```sh
-npm run build:pwa
+yarn build:pwa
 ```
 
 ### Clean assets & \_site folders
 This will remove the generated folders
 ```sh
-npm run clean:project
+yarn clean:project
 ```
