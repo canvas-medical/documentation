@@ -322,18 +322,21 @@ documentation:
    url: #
    identifier: documentation_support
 documentation_config:
- - title: "Organization"
-   url: #
-   identifier: documentation_config_organization
- - title: "Clinical Configuration"
-   url: #
-   identifier: documentation_config_clinical
- - title: "Admin Configuration"
-   url: #
-   identifier: documentation_config_admin
- - title: "Revenue Configuration"
-   url: #
-   identifier: documentation_config_revenue
+  - title: "Organization"
+    url: #
+    identifier: documentation_config_organization
+  - title: "Clinical Configuration"
+    url: #
+    identifier: documentation_config_clinical
+  - title: "Admin Configuration"
+    url: #
+    identifier: documentation_config_admin
+  - title: "Revenue Configuration"
+    url: #
+    identifier: documentation_config_revenue
+documentation_config_clinical:
+  - title: "Configuring Questionnaires"
+    url: /documentation/configuringquestionnaires
 guides:
  - title: "Just Another Guide"
    url: /guides/just-another-guide/
