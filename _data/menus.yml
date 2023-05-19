@@ -340,6 +340,8 @@ documentation_config_clinical:
 guides:
  - title: "Just Another Guide"
    url: /guides/just-another-guide/
+ - title: "Care Modeling: Behavioral Health"
+   url: /guides/behavioralhealth/   
 sdk:
  - title: "SDK Intro`"
    url: /sdk/

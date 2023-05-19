@@ -31,7 +31,7 @@ This image displays on the login page. Our default image is the XXXX. If you wou
 
 ***
 **Background Gradient**<br><br>
-The background colors in the patient chart can be customized. The default setting is a gradient of blue to orange to mimic the sunset of our default background image. You can change this to match your brand colors if desired"
+The background colors in the patient chart can be customized. The default setting is a gradient of blue to orange to mimic the sunset of our default background image. You can change this to match your brand colors if desired.
 
 ***
 **Active**<br><br>

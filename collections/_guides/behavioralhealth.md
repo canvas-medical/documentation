@@ -1,10 +1,11 @@
 ---
-title: "Behavioral Health"
+title: "Care Modeling: Behavioral Health"
 guide_for:
-	--api/patient
-zendesk articles: 
-https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers
-https://canvas-medical.zendesk.com/hc/en-us/articles/5524511564947-Patient-Consents
+ - /api/patient/
+ - /api/coverage/
+ - /api/consent/
+ - /api/questionnaireresponse/
+ - /documentation/configuringquestionnaires/
 ---
 ## **Care Modeling: Behavioral Health**
 
