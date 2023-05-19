@@ -8,7 +8,7 @@ guide_for:
  - /documentation/configuringquestionnaires/
 ---
 
-**Canvas is purpose built to accommodate every stage and scale for a care delivery organization. This is absolutely true for behavioral health. Canvas can meet your ever-evolving needs, whether you’re building a cash-pay digital mental health clinic, an evidence-based treatment program targeting Medicare/Medicaid, or any meaningful behavioral health care model in between. Let’s learn about how you can launch your behavioral health program in as little as 8 weeks.**
+Canvas is purpose built to accommodate every stage and scale for a care delivery organization. This is absolutely true for behavioral health. Canvas can meet your ever-evolving needs, whether you’re building a cash-pay digital mental health clinic, an evidence-based treatment program targeting Medicare/Medicaid, or any meaningful behavioral health care model in between. Let’s learn about how you can launch your behavioral health program in as little as 8 weeks.
 
 ### **Patient Sourcing and Intake**
 
