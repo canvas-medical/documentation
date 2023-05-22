@@ -1,9 +1,10 @@
 .footer {
   &__container {
+    height: var(--footer-height);
     width: 100%;
+    display: flex;
+    align-items: center;
     border-top: 1px solid $accent-color;
-    padding: 1rem 0;
-    margin-top: 80px;
     color: $link-color;
     
     &__inner {

@@ -4,6 +4,7 @@
 
     width: 100%;
     border-bottom: 1px solid $accent-color;
+    height: var(--header-height);
 
     &__inner {
       padding-left: $container-padding;

@@ -5,9 +5,15 @@
   &__docpanels {
     display: grid;
     grid-template-columns: min-content minmax(0px, max-content);
-        word-wrap: break-word;
+    word-wrap: break-word;
+    overflow-x: auto;
+    width: 100%;
     @media (min-width: $breakpoint-xl) {
       grid-template-columns: 2fr 6fr 2fr;
+    }
+    > div {
+      max-height: var(--body-height);
+      overflow-y: auto;
     }
 
     &__sidenav {
