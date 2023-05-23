@@ -8,7 +8,7 @@ guide_for:
  - /documentation/configuringquestionnaires/
 ---
 
-Canvas is purpose built to accommodate every stage and scale for care delivery organization such as yours. This is absolutely true for behavioral health. Canvas can meet your ever-evolving needs, whether you’re building a cash-pay digital mental health clinic, an evidence-based treatment program targeting Medicare/Medicaid, or any meaningful behavioral health care model in between. This guide applies our Care Modeling framework to Behavioral Health and provides relevant examples of how to employ various Canvas capabilities for each of the seven elements of Care Modeling.   
+Canvas is purpose built to accommodate every stage and scale for care delivery organization such as yours. This is absolutely true for behavioral health. Canvas can meet your ever-evolving needs, whether you’re building a cash-pay digital mental health clinic, an evidence-based treatment program targeting Medicare/Medicaid, or any meaningful behavioral health care model in between. This guide applies our Care Modeling framework to Behavioral Health and provides relevant examples of how to implement various Canvas capabilities for each of the seven elements of Care Modeling.   
 
 ### **Patient Sourcing and Intake**
 
@@ -19,10 +19,13 @@ Whether you are **sourcing patients** from your direct-to-consumer site, getting
 
 [**`Patient:`**](https://main.d298pum72820gn.amplifyapp.com/api/patient/) The create and update endpoints allow you to sync the patient's demographic data, including addresses, contact methods, patient preferences, patient contacts, and more. 
 
-#### Surfacing custom data points using Banner Protocols
-The `identifier` attribute is a great place to store unique identifiers and additional data for that patient that does not fit elsewhere. 
+[**`Coverage:`**](https://main.d298pum72820gn.amplifyapp.com/api/coverage/)  Whether you are billing to commercial insurance plans, or need to add custom employer-based coverages, the Coverage endpoint can be leveraged to add a Patient's coverage information. We populate the [initial list of availble insurers](https://www.claim.md/payer_list.html) through our integration with ClaimMD. Additional coverage options such as employee programs can be added and updated following [these steps](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers). The ID associated with each insurer is needed to create the coverage throught the API. 
 
-Although identifiers added through the API do not display in the Canvas UI by default, this Banner Alert Protocol can be used to display the values. You can update both [`alertplacement` and `alertintent`](https://docs.canvasmedical.com/docs/banner-alerts-for-contacts#alertplacement) as needed. 
+[**`Consent:`**](https://main.d298pum72820gn.amplifyapp.com/api/consent/) Consents also have to be [configured](https://canvas-medical.zendesk.com/hc/en-us/articles/5524511564947-Patient-Consents) before they can be added through the API. The `ConsentCoding` cannot be changed once created, so make sure to configure your consents with that in mind. In addition to recording the consent, you can attach a PDF version using the `sourceAttachment` attribute. 
+
+
+#### Surfacing custom data points using Banner Protocols
+The `identifier` attribute on the `patient` resource is a great place to store unique identifiers and additional data for that patient that does not fit elsewhere. With a cardinality of zero to many, you can use the `identifier` attribute to store multiple values. Although `identifiers` added through the API do not display in the Canvas UI by default, this Banner Alert Protocol can be used to surface the information to your end users. You can update both [`alertplacement` and `alertintent`](https://docs.canvasmedical.com/docs/banner-alerts-for-contacts#alertplacement) in the code below as needed. 
 
 ``` 
 from canvas_workflow_kit.protocol import (
@@ -88,13 +91,6 @@ class ExternalIdentifierBanner(ClinicalQualityMeasure):
         return result     
 ```
 
-
-
-**`Coverage:`** Whether you are billing to commercial insurance plans, or need to add custom employer-based coverages, the Coverage endpoint can be leveraged to add a Patient's coverage information. We populate the [initial list of availble insurers](https://www.claim.md/payer_list.html) through our integration with ClaimMD. Additional coverage options such as employee programs can be added and updated following [these steps](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers). The ID associated with each insurer is needed to create the coverage throught the API. 
-
-
-**`Consent:`** Consents also have to be [configured](https://canvas-medical.zendesk.com/hc/en-us/articles/5524511564947-Patient-Consents) before they can be added through the API. The `ConsentCoding` cannot be changed once created, so make sure to configure your consents with that in mind. In addition to recording the consent, you can attach a PDF version using the `sourceAttachment` attribute. 
-
 #### Incorporating patient collected data with Questionnaires
 
 Leading up to a scheduled appointment, you can streamline **patient intake** by writing patient data that has been collected through your patient application to Canvas with our FHIR API. 
@@ -104,24 +100,20 @@ Leading up to a scheduled appointment, you can streamline **patient intake** by 
 
 <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTIe3s2zh0FAZMaIxaxg2EQ5x7ot4U4iSX95tLNClkNvQ4LQAr_qZm6b9nmdG68xDf4NdeNqEIvKlpo/pubhtml?gid=2051129171&amp;single=true&amp;widget=true&amp;headers=false" width=800px height=600px ></iframe>
 
-They are designed to be code-backed to ensure that you can interact with them programatically. Make sure to coordinate across your Clinical Operations and Engineering, Product, & Design (EPD) teams to set them up with unique codes, using our supported code systems. We do offer some pre-built questionnaires, including many common behavioral health assessments such as the PHQ-9 shown above.<Br>
+They are designed to be code-backed to ensure that you can interact with them programatically. Make sure to coordinate across your Clinical Operations, Engineering and Product teams to set them up with unique codes, using our supported code systems. We do offer some pre-built questionnaires, including many common behavioral health assessments such as the PHQ-9 shown above.<Br>
 
-To load this PHQ-9 questionniare into your sandbox, navigate to Settings>Practice>Questionnaire Loader or to: https://{sandboxname}-preview.canvasmedical.com/admin/api/questionnaireloader/ and paste in the following:<br> 
+```
+💡Evaluating Canvas? To load this PHQ-9 questionniare into your sandbox, navigate to Settings>Practice>Questionnaire
+Loader or to: https://{sandboxname}-preview.canvasmedical.com/admin/api/questionnaireloader/ and paste in the following:
+```
 
 
 **Google Sheet ID:** 1RIYAvyp62EOlQ6DPRV4tRPyca8xgEbg4z2vGo_EEhT4<br>
 **Google Sheet tab name:** ques-PHQ9-all<br>
 
 
-You may want your patients to complete these assessments, or your custom built workflows, prior to their visit. Canvas Notes are meant to be collaborative and authored by multiple people, **including the patient**. When adding patient-collected data you can set the `author` attribute to patient/{patientkey}. Doing so will then be visible within the Command history tooltip in the Note.<br>
+You may want your patients to complete these assessments, or your custom built workflows, prior to their visit. **Canvas Notes are meant to be collaborative and authored by multiple people, including the patient**. When adding patient-collected data you can set the `author` attribute to `patient/{patientkey}`. Doing so will then be visible within the Command history tooltip in the Note.
 
-The `QuestionnaireResponse` endpoint allows you to **specify the encounter** you would like to add it to. One thing to note is that an encounter is only generated once an appointment is checked in. If you would like to add your questionnaire to the Encounter being used by your clinicians, you can use a notification protocol to act as a webhook. The Encounter `change_type` allows you to respond to the act of checking in an appointment and send a payload that includes the encounter ID needed for the `QuestionnaireResponse` Create api call. 
-
-```
-Protocol: Respond to check in and send encounter ID (or use API to get it if its not availble 
-in the protocol input)
-
-```
 
 #### Canvas + Zus 🔱 
 
@@ -131,43 +123,56 @@ If you find that your care team is spending countless hours hunting down your pa
 
 #### Configure Canvas to support your scheduling needs
 
-Releasing [**configurable Note Types**](https://canvas-medical.zendesk.com/hc/en-us/articles/6623684024083-Note-Types-) was tightly aligned with our strategy shift away from focusing on primary care. The differentiated care models of our customers often include all types of patient interactions, including in-person visits, telehealth, and asynchronous encounters. You can configure your note types to fit your behavioral health offering by creating custom note types and codes, or using an established system such as the [LOINC®](https://loinc.org/LG41826-5) codes listed below. <br><br>
+**Note Types:** Releasing [**configurable Note Types**](https://canvas-medical.zendesk.com/hc/en-us/articles/6623684024083-Note-Types-) was tightly aligned with our strategy shift away from focusing on primary care. The differentiated care models of our customers often include all types of patient interactions, including in-person visits, telehealth, and asynchronous encounters. You can configure your note types to fit your behavioral health offering by creating custom note types and codes. Or, you can use an established system such as the [LOINC®](https://loinc.org/LG41826-5) codes listed below. <br><br>
 18776-5	Plan of care note <br>
-28627-8	Psychiatry Progress note <br>
 28628-6	Psychiatry Note<br>
-28635-1	Psychiatry Initial evaluation note<br>
-28653-4	Social worker Note<br>
-34748-4 Telephone encounter Note<br>
-34787-2	Mental health Group counseling note<br>
-34786-4	Mental health Note<br>
-34790-6	Psychiatry Group counseling note<br>
 34792-2	Psychology Note<br>
+28653-4	Social worker Note<br>
+34786-4	Mental health Note<br>
+34748-4 Telephone encounter Note<br>
+34790-6	Psychiatry Group counseling note<br>
 34793-0	Psychology Group counseling note<br>
-34864-9	Mental health Counseling note<br>
-34865-6	Psychiatry Counseling note<br>
-34866-4	Psychology Counseling note<br>
+34787-2	Mental health Group counseling note<br>
 
-Other Events/
 
-[**Availabilty in Canvas**](https://canvas-medical.zendesk.com/knowledge/articles/360058400553/en-us?brand_id=360005403014&return_to=%2Fhc%2Fen-us%2Farticles%2F360058400553) is managed through and integration with Google Calendar. 
+
+**Appointment Types** [Creating Custom Appointment Types](https://canvas-medical.zendesk.com/hc/en-us/articles/15704289792659-Scheduling-Other-Events-#h_01GXV9832Z74GRAQKDD4JA9677) allows your team to schedule other events that block time but do no generate Notes within the Timeline. They can be associated with a specific patient (but do not require one) and can be used to account for meetings, travel time, or co-visits during which multiple providers need to be included, but only one Note needs to be generated. 
+
+[**Availabilty in Canvas**](https://canvas-medical.zendesk.com/knowledge/articles/360058400553/en-us?brand_id=360005403014&return_to=%2Fhc%2Fen-us%2Farticles%2F360058400553) is managed through and integration with Google Calendar. This allows you to set availability using recurring events that are easy to update as needed. 
 
 #### Manage your schedules with the Canvas API
-Once your availabilty has been set, you can use the `schedule` and `slot` search endpoints to find provider availability.
+Once your availabilty has been set, you can use the `schedule` and `slot` search endpoints to find provider availability and then schedule appointments using the `appointment` endpoint.<
 
-Schedule appointments using the `appointment` endpoint 
 
-Your providers may be part time or juggling both clinical hours and internal meetings. Syncing clinical and administrative calendars is often a must. You can use the notification protocol to know when and appointment has been created or updated in Canvas and use it to write that appointment to your administrative calendars. With this you can control what info is shared, whether you have a BAA with Google and can write PHI, or just need to block time. You can also block time in Canvas through the API by writing other events  
+#### Syncing clinical and administrative calendars
+Your providers may be part time or juggling both clinical hours and internal meetings. Syncing clinical and administrative calendars is often a must. You can use the notification protocol to know when and appointment has been created or updated in Canvas and use it to write that appointment to your administrative calendars in Google or Outlook. With this, you can control what info is shared, whether you have a BAA with Google and can write PHI, or just need to block time. You can also block time in Canvas through the API by writing other events through the appointment endpoint. 
 
 
 #### Communicate with your patients in between visits
-Communication API <br>
-Post visit notification protocols <br>
+Staying in touch with your patients in between visits is often essential. Checking in with them needs to be frictionless for your providers. The messaging workflow in Canvas allows clinicians to generate an outbound message using free text or templates. Use the notification protocol below to know when a message has been created. You then have the ability to send the contents of the message as a payload to your outbound messaging system, or you can use the `communication` endpoint to read the message. 
 
-#### Manage queue based workflows
+```
+message notification protocol with contents in payload
+```
+
+Notification protocols are also a great way to kickoff automated follow up communications. You can trigger them based on many events within the Chart, including signing a Note. After the visit is complete, the notification protocol can be used to pass certain information from the note to your patient application, including our customizable patient instructions. It can also leverage an API call to search for available documents, including any healthwise materials that were added to the visit. 
+
+The example below shows how you can use a notification protocol to pull both the contents of the instruct command as well as the selected Healthwise content to the 
+
+```
+notification protocol instruct command
+```
+
+Patient responses can be written to Canvas using the `communication` create endpoint. They can be assigned to a user through the  `recipient` attribute, which ingests either a patient or practitioner reference. All users in Canvas have a practictioner ID, not just clinicians. The `practictioner` search includes a query param to include non-schedulable providers. 
 
 
 ### **Diagnostic Range and Inputs**
-Assessments
+What is your target population? Does your care mdoel support a broad range of mental health concerns for all genders and ages, or are you hyper focused on adolescents suffering from eating disorders. Either way, you can configure Canvas to support your specific diagnostic range. 
+
+Our diagnose command defaults 
+
+Alternatively, you can leverage the questionnaireresponse endpoint to capture responses in a more structured format. You may want to poll your patients daily through your patient facing application to capture and track their mood. A simple questionnaire will ensure you can report and analyze those responses using our read-only replica database. 
+
 <ul>
 <li>PHQ-2</li>
 <li>PHQ-9</li>
@@ -199,7 +204,22 @@ Route Referrals to correct Team Protocol <br>
 
 
 ### **Content and Automation**
-Sample Automation for MDD <br>
+As your Care Team meets with your patient, Canvas drives top-of-license care by enabling efficiency and custom workflow at every step.
+
+[Automations](https://canvas-medical.zendesk.com/hc/en-us/articles/360059338953-Automations) are a key feature in Canvas that allow you to sequence many Commands together. Think of these as Macros in Excel / Google Sheets, but supercharged for clinical context.
+
+Below, you'll find an example of a “Major Depressive Disorder” automation you could create:
+
+Questionnaire - PHQ-9 <br>
+Perform - CPT Code 90801: Psychiatric diagnostic interview examination<br>
+Diagnose - Major Depressive Disorder<br>
+Prescribe - Fluoxetine 40, take once per day with or witout food <br>
+Instruct - Depression Education <br>
+
+Once building the Automation, every time you diagnose MDD, you can enter the Automation to surface the Commands in sequence, adjusting where relevant to fit the needs of your patient. 
+
+
+
 Automated Follow Up Protocol <br>
 Prescribe recommendation <br>
 
