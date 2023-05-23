@@ -218,6 +218,7 @@ Instruct - Depression Education <br>
 
 Once building the Automation, every time you diagnose MDD, you can enter the Automation to surface the Commands in sequence, adjusting where relevant to fit the needs of your patient. 
 
+![MDD Automation](https://github.com/canvas-medical/documentation/assets/91080969/5cc17b2b-6a82-4609-9bb7-3e33e29e917b)
 
 
 Automated Follow Up Protocol <br>
