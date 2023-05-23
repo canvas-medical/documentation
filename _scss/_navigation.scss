@@ -16,6 +16,9 @@
     }
     &__global {
       background-color: $babyblue;
+      // temp: don't wrap until we know what this looks like
+      overflow: hidden;
+      white-space: nowrap;
       .navigation__menu__item:hover {
         color: $navyblue;
       }

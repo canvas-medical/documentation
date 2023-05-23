@@ -9,14 +9,12 @@
     overflow-x: auto;
     width: 100%;
     @media (min-width: $breakpoint-xl) {
-      grid-template-columns: 2fr 6fr 2fr;
-    }
-    > div {
-      max-height: var(--body-height);
-      overflow-y: auto;
+      grid-template-columns: 280px 6fr 280px;
     }
 
     &__sidenav {
+      max-height: var(--body-height);
+      overflow-y: auto;
       background-color: $panel-color;
       padding: 1em 1em 2em 1em;
       width: 240px;
@@ -46,6 +44,8 @@
     }
 
     &__sidepanels {
+      max-height: var(--body-height);
+      overflow-y: auto;
       display: none;
       @media (min-width: $breakpoint-xl) {
         display: flex;
@@ -53,6 +53,11 @@
         gap: 1rem;
         background: $panel-color;
       }
+    }
+
+    &__content {
+      max-height: var(--body-height);
+      overflow-y: auto;
     }
 
   }
@@ -68,9 +73,15 @@
       grid-template-columns: 1fr 4fr;
     }
     &__sidenav {
+      max-height: var(--body-height);
+      overflow-y: auto;
       background-color: $panel-color;
       padding: 1em 1em 2em 1em;
       margin-right: 1.5rem;
+    }
+    &__items {
+      max-height: var(--body-height);
+      overflow-y: auto;
     }
 
     &__header {
@@ -106,6 +117,8 @@
       &__inner {
         padding-left: $container-padding;
         padding-right: $container-padding;
+        max-height: var(--body-height);
+        overflow-y: auto;
       }
     }
   }
