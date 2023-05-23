@@ -53,3 +53,17 @@ $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
 $breakpoint-xxl: 1400px;
 $container-padding: 1vw;
+
+// Height calculations
+:root {
+    @media (max-width: calc( $breakpoint-lg - 1px ) ) {
+            --header-height: 148px;
+            --footer-height: 52px;
+            --body-height: calc(var(--viewport-height) - (var(--header-height) + var(--footer-height) + 2px));
+    }
+    @media (min-width: $breakpoint-lg) {
+        --header-height: 102px;
+        --footer-height: 52px;
+        --body-height: calc( var(--viewport-height) - ( var(--header-height) + var(--footer-height) + 2px ) );
+    }
+}

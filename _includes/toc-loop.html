@@ -1,0 +1,10 @@
+<ul class="toc__submenu">
+  {% for item in item.children %}
+  <li class="toc__item">
+    <a href="{{ item.url }}">{{ item.title }}</a>
+    {% if item.children %}
+    {% include toc-loop.html %}
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>

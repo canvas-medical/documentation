@@ -3,14 +3,12 @@
   <div class="toc__links">
     {% for item in include.menu %}
     <ul class="toc__menu" open>
-      <li class="toc__item"><a href="{{ item.url }}">{{ item.title }}</a></li>
-      {% if item.children %}
-      <ul class="toc__submenu">
-        {% for item in item.children %}
-        <li class="toc__item{% if page.url == item.url %} toc__item__active{% endif %}"><a href="{{ item.url }}">{{ item.title }}</a></li>
-        {% endfor %}
-      </ul>
-      {% endif %}
+      <li class="toc__item">
+        <a href="{{ item.url }}">{{ item.title }}</a>
+        {% if item.children %}
+        {% include toc-loop.html %}
+        {% endif %}
+      </li>
     </ul>
     {% endfor %}
   </div>

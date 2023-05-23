@@ -89,4 +89,3 @@ exclude:
   - webpack.config.js
   - yarn-error.log
   - yarn.lock
-

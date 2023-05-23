@@ -2,7 +2,6 @@
 title: "Configuring Questionnaires"
 layout: documentation
 ---
-
 Our **Questionnaire, ROS, Physical Exam, and Structured Assessment Commands** are all built on our interview model. They can be created by your admin team and/or supers users in order to support many use cases within your charting workflows. They are a great way to create custom templates, capture discreet data, and extend Canvas's data model to meet the needs of your care model.
 
 #### Building a Questionnaire
