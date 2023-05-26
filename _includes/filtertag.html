@@ -1,9 +1,9 @@
 <div class="filtertag">
   <h5>{{ site.data.globals.panels.filtertag }}</h5>
-  <div class="filtertag__items">
+  <div class="filtertag__links">
     {% assign tags = include.collection | map: 'tags' | join: ',' | split: ',' | uniq | sort %}
       {% for tag in tags %}
-      <div class="filtertag__item" filter-tag="{{ tag | slugify }}">{{ tag }}</div>
+      <div class="filtertag__link" filter-tag="{{ tag | slugify }}">{{ tag }}</div>
     {% endfor %}
   </div>
 </div>
