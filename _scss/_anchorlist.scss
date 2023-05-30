@@ -10,8 +10,9 @@
   &__item {
     line-height: 2;
     &__active {
-      font-weight: 900;
+      &::before {
+        content: '➞ ';
+      }
     }
   }
-
 }

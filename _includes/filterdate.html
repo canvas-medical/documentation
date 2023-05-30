@@ -1,9 +1,9 @@
 <div class="filterdate">
   <h5>{{ site.data.globals.panels.filterdate }}</h5>
   {% assign postsByYearMonth = include.collection | group_by_exp:"post", "post.date | date: '%B %Y'" %}
-  <div class="filterdate__items">
+  <div class="filterdate__links">
     {% for yearMonth in postsByYearMonth %}
-    <div class="filterdate__item" filter-date="{{ yearMonth.name | slugify }}">{{ yearMonth.name }}</div>
+    <div class="filterdate__link" filter-date="{{ yearMonth.name | date: '%Y-%m' }}">{{ yearMonth.name }}</div>
     {% endfor %}
   </div>
 </div>
