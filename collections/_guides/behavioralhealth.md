@@ -909,9 +909,15 @@ Below, you will see a custom-built Structured Assessment for behavioral health t
 After adding a patient's `coverage` as part of your intake process, you can leverage the following endpoints to automate charges and payments. <br><br>
 [**`CoverageEligibilityRequest`**](https://main.d298pum72820gn.amplifyapp.com/api/coverageeligibilityrequest/) & [**`CoverageEligibilityResponse:`**](https://main.d298pum72820gn.amplifyapp.com/api/coverageeligibilityresponse/) You may need to ensure that a patient's Coverage is active. We will automatically run eligibility leading up to scheduled appointments, but you may also want or need to run them using the API prior to providing asynchronous care.  <br>
 [**`Claim:`**](https://main.d298pum72820gn.amplifyapp.com/api/claim/) Creating a claim through the API will populate the patient's record with a Data Import note. <br> 
-[**`PaymentNotice:`**](https://main.d298pum72820gn.amplifyapp.com/api/paymentnotice/)  HOW DO WE KNOW BALANCE?<br>
+[**`PaymentNotice:`**](https://main.d298pum72820gn.amplifyapp.com/api/paymentnotice/) Note a payment that has been collected from a patient and deduct the amount from their balance.
 
+[//]: # (TODO Kristen - How do I know the balance) 
 
 #### Conclusion
-...
+
+[//]: # (TODO Kristen - write this) 
+In conclusion...
+
+[//]: # (TODO Kristen - check and update all links, add GIFs, add SA google sheet (work with reba for guide sheets)
+[//]: # (TODO Camer - code blocks, syntax highlighting, link formating, header formatting, linking using stubs?) 
 
