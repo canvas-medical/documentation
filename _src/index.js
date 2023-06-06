@@ -4,5 +4,6 @@ import './index.scss';
 import '../_js/anchorlist';
 import '../_js/filterdate';
 import '../_js/filtertag';
+import '../_js/roguefullscreen';
 import '../_js/getheight';
 import '../_js/toggle';
