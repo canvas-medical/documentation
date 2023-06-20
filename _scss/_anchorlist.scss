@@ -12,7 +12,7 @@
     border-left: 1px solid $babyblue;
     &__active {
       border-left: 2px solid $babyblue;
-      color: $text-color;
+      color: $active-color;
     }
     > a {
       display: inline-block;

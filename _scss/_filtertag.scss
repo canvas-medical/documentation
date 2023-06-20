@@ -1,8 +1,9 @@
 .filtertag {
   &__link {
     cursor: pointer;
+    color: $link-color;
     &__active {
-      font-weight: 700;
+      color: $active-color;
     }
   }
   &__item {

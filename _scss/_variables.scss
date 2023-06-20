@@ -5,6 +5,7 @@
 // Brand Primary Color
 $white: rgb(255, 255, 255);
 $cream: rgb(238, 233, 217);
+$black: rgb(38, 38, 38);
 $babyblue: rgb(152, 210, 220);
 $navyblue: rgb(8, 43, 72);
 
@@ -18,8 +19,9 @@ $gold: rgb(255, 164, 0);
 
 // Variables
 $primary-color: $navyblue;
-$text-color: $navyblue;
+$text-color: $black;
 $link-color: $mediumblue;
+$active-color: $navyblue;
 $accent-color: $babyblue;
 $border-color: rgba($navyblue,0.2);
 $panel-color: rgba($babyblue,0.3);
@@ -28,11 +30,8 @@ $panel-color: rgba($babyblue,0.3);
  * TYPOGRAPHY
 **/
 
-// TODO: Import font packages
-// Favorit - Regular and Bold for body copy, subheadlines and captions
-// Financier Display - Regular and Italic for large statement headlines
 $system-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-$primary-font-family: $system-font-family;
+$primary-font-family: 'Helvetica', $system-font-family;
 
 
 /** 
