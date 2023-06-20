@@ -5,7 +5,6 @@
 // Brand Primary Color
 $white: rgb(255, 255, 255);
 $cream: rgb(238, 233, 217);
-$black: rgb(38, 38, 38);
 $babyblue: rgb(152, 210, 220);
 $navyblue: rgb(8, 43, 72);
 
@@ -17,10 +16,14 @@ $mediumblue: rgb(34, 105, 140);
 $green: rgb(0, 206, 125);
 $gold: rgb(255, 164, 0);
 
+// Additional colors
+$black: rgb(38, 38, 38);
+$blue: rgb(33, 133, 208);
+
 // Variables
 $primary-color: $navyblue;
 $text-color: $black;
-$link-color: $mediumblue;
+$link-color: $blue;
 $active-color: $navyblue;
 $accent-color: $babyblue;
 $border-color: rgba($navyblue,0.2);
