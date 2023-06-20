@@ -1,0 +1,13 @@
+.sidepanels {
+  margin-top: $container-padding;
+  max-height: var(--body-height);
+  overflow-y: auto;
+  display: none;
+
+  @media (min-width: $breakpoint-xl) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+}

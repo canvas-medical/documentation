@@ -1,12 +1,25 @@
 .toc {
+  margin-top: $container-padding;
+  padding-top: $container-padding;
   &__menu {
     padding-left: 0;
     list-style-type: none;
+    margin: 0;
+    > .toc__item > a {
+      font-weight: 600;
+      color: $text-color;
+    }
   }
 
   &__submenu {
-    padding-left: 1em;
+    padding-left: $container-padding;
     list-style-type: none;
+    a {
+      color: $link-color;
+    }
+    .toc__submenu a {
+      color: $text-color;
+    }
   }
 
   &__item {
@@ -15,5 +28,7 @@
       font-weight: bolder;
     }
   }
+
+
 
 }

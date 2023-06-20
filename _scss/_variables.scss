@@ -19,10 +19,10 @@ $gold: rgb(255, 164, 0);
 // Variables
 $primary-color: $navyblue;
 $text-color: $navyblue;
-$link-color: $navyblue;
+$link-color: $mediumblue;
 $accent-color: $babyblue;
 $border-color: rgba($navyblue,0.2);
-$panel-color: rgba($babyblue,0.1);
+$panel-color: rgba($babyblue,0.3);
 
 /** 
  * TYPOGRAPHY
@@ -52,7 +52,7 @@ $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
 $breakpoint-xxl: 1400px;
-$container-padding: 1vw;
+$container-padding: 14px;
 
 // Height calculations
 :root {

@@ -6,8 +6,9 @@
   &__container {
     width: 100%;
     &__inner {
-      padding-left: $container-padding;
-      padding-right: $container-padding;
+      // @TODO: removed in designs, but may be useful later
+      // padding-left: $container-padding;
+      // padding-right: $container-padding;
     }
   }
 

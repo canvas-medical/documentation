@@ -4,15 +4,19 @@
     list-style-type: none;
   }
   &__submenu {
-    padding-left: 1em;
+    padding-left: $container-padding;
     list-style-type: none;
   }
   &__item {
     line-height: 2;
+    border-left: 1px solid $babyblue;
     &__active {
-      &::before {
-        content: '➞ ';
-      }
+      border-left: 2px solid $babyblue;
+      color: $text-color;
+    }
+    > a {
+      display: inline-block;
+      padding-left: $container-padding;
     }
   }
 }
