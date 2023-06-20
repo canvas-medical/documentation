@@ -60,12 +60,12 @@ $container-padding: 14px;
 :root {
     @media (max-width: calc( $breakpoint-lg - 1px ) ) {
             --header-height: 148px;
-            --footer-height: 52px;
+            --footer-height: 0px;
             --body-height: calc(var(--viewport-height) - (var(--header-height) + var(--footer-height) + 2px));
     }
     @media (min-width: $breakpoint-lg) {
         --header-height: 102px;
-        --footer-height: 52px;
+        --footer-height: 0px;
         --body-height: calc( var(--viewport-height) - ( var(--header-height) + var(--footer-height) + 2px ) );
     }
 }
