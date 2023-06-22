@@ -3,7 +3,7 @@
   <div class="filtertag__links">
     {% assign tags = include.collection | map: 'tags' | join: ',' | split: ',' | uniq | sort %}
       {% for tag in tags %}
-      <div class="filtertag__link" filter-tag="{{ tag | slugify }}">{{ tag }}</div>
+      <a class="filtertag__link" filter-tag="{{ tag | slugify }}">{{ tag }}</a>
     {% endfor %}
   </div>
 </div>

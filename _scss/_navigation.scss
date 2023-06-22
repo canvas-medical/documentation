@@ -3,7 +3,6 @@
   &__container {
 
     width: 100%;
-    border-bottom: 1px solid $accent-color;
     height: var(--header-height);
 
     &__inner {
@@ -14,7 +13,8 @@
       align-items: center;
     }
     &__global {
-      padding-top: 9px;
+      padding-top: 12px;
+      padding-bottom: 12px;
       background-color: $panel-color;
       overflow: hidden;
       white-space: nowrap;
@@ -24,9 +24,10 @@
     }
     &__site {
       background-color: $panel-color;
+      border-bottom: 1px solid $babyblue;
       @media (max-width: $breakpoint-lg) {
         flex-direction: column;
-        padding-bottom: 1em;
+        padding-bottom: 14px;
         align-items: center;
       }
     }
@@ -39,13 +40,15 @@
     align-content: center;
     align-items: center;
     img {
-      height: $font-lg;
+      height: 20px;
       width: auto;
+      margin-bottom: 4px;
     }
     span {
-      color: $text-color;
-      font-size: $font-md;
-      padding-left: 0.25em;
+      font-size: 1.25rem;
+      font-weight: 300;
+      color: $navyblue;
+      padding-left: 0.5em;
     }
     &:hover {
       text-decoration: none;
@@ -56,18 +59,19 @@
     display: flex;
     gap: 1em;
     &__item {
+      font-size: 0.875rem;
       padding-top: 1em;
       padding-bottom: 1em;
+      border-bottom: 2px solid transparent;
+      &__active {
+        text-decoration: none;
+        border-bottom-color: $babyblue;
+      }
     }
   }
 
   &__alt {
     margin-left: auto;
-  }
-
-  &__link {
-    margin-left: 30px;
-    font-size: $font-xs;
   }
 
   &__search { 
@@ -77,13 +81,20 @@
     align-items: flex-end;
     justify-content: center;
     position: relative;
+    padding: 2px;
+    margin-left: 0.25rem;
 
     input {
-      padding: 0.2em 0.2em 0.2em 0.5em;
+      padding: 3px 0 3px 8px;
       width: 100%;
-      border: 0px solid $border-color;
+      border: 1px solid transparent;
+      outline: 1px solid transparent;
       &::placeholder {
+        font-size: 0.75em;
         color: $navyblue;
+      }
+      &:focus-visible {
+        outline-color: $border-color;
       }
     }
   }

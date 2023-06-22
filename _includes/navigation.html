@@ -5,20 +5,18 @@
         alt="{{ site.title | escape }}">
         <span>Documentation</span>
     </a>
-    <div class="navigation__menu">
-      <div class="navigation__search">
-        <input placeholder="Search" />
-      </div>
+    <div class="navigation__search">
+      <input placeholder="Search" />
     </div>
   </div>
   <div class="navigation__container__inner navigation__container__site">
     <div class="navigation__menu">
       {% for item in site.menus.main %}
-        <a class="navigation__menu__item" href="{{ item.url }}">{{ item.title }}</a>
+        <a class="navigation__menu__item{% if page.url contains item.url %} navigation__menu__item__active{% endif %}" href="{{ item.url }}">{{ item.title }}</a>
       {% endfor %}
     </div>
     <div class="navigation__alt">
-      <a class="navigation__menu__item" href="https://www.canvasmedical.com/">Canvas Medical Website</a>
+      <a class="navigation__menu__item" href="https://www.canvasmedical.com/" target="_blank">Canvas Medical Website</a>
     </div>
   </div>
 </nav>
