@@ -1,0 +1,52 @@
+.alert {
+  padding: 1em;
+  margin-bottom: 1rem;
+  background-color: $lightgrey;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  border-left-width: 8px;
+  border-left-color: $black;
+  &__wrapper {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  &__icon {
+    svg {
+      width: auto;
+      height: 1.5rem;
+    }
+  }
+  &__content {
+    flex: 1;
+    font-size: 14px;
+  }
+  &__info {
+    border-left-color: $blue;
+    svg {
+      fill: $blue;
+    }
+  }
+
+  &__success {
+    border-left-color: $green;
+    svg {
+      fill: $green;
+    }
+  }
+
+  &__warning {
+    border-left-color: $gold;
+    svg {
+      fill: $gold;
+    }
+  }
+
+  &__danger {
+    border-left-color: $red;
+    svg {
+      fill: $red;
+    }
+  }
+}
