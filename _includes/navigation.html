@@ -12,7 +12,7 @@
   <div class="navigation__container__inner navigation__container__site">
     <div class="navigation__menu">
       {% for item in site.menus.main %}
-        <a class="navigation__menu__item{% if page.url contains item.url %} navigation__menu__item__active{% endif %}" href="{{ item.url }}">{{ item.title }}</a>
+        <a class="navigation__menu__item{% if page.url == '/' %}{% if item.url == '/' %} navigation__menu__item__active{% endif %}{% elsif item.url contains page.url %} navigation__menu__item__active{% endif %}" href="{{ item.url }}">{{ item.title }}</a>
       {% endfor %}
     </div>
     <div class="navigation__alt">
