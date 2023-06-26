@@ -1,7 +1,7 @@
 # Canvas Documentation
 
 ## Requirements
-* Ruby 3.1.x, Bunder 2.x
+* Ruby 3.1.x, Bundler 2.x
 * Node >16, Yarn 3.x
 
 ## Quick start
