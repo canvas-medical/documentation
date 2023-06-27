@@ -2,6 +2,7 @@
 @import 'variables';
 @import 'mixins';
 // stylesheets
+@import 'alert';
 @import 'anchorlist';
 @import 'article';
 @import 'button';
@@ -15,4 +16,6 @@
 @import 'pagelayout';
 @import 'panel';
 @import 'rogue';
+@import 'sidenav';
+@import 'sidepanels';
 @import 'toc';

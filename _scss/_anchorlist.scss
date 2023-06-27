@@ -2,17 +2,30 @@
   &__menu {
     padding-left: 0;
     list-style-type: none;
+    border-left: 1px solid $babyblue;
+    >.anchorlist__item>a {
+      padding-left: $container-padding;
+    }
   }
   &__submenu {
-    padding-left: 1em;
+    padding-left: 0;
     list-style-type: none;
+    >.anchorlist__item>a {
+      padding-left: $container-padding + $container-padding;
+    }
+    >.anchorlist__item .anchorlist__item a {
+      padding-left: $container-padding + $container-padding + $container-padding;
+    }
   }
   &__item {
-    line-height: 2;
+    line-height: 1.5;
+    
     &__active {
-      &::before {
-        content: '➞ ';
-      }
+      border-left: 2px solid $babyblue;
+      color: $active-color;
+    }
+    > a {
+      display: inline-block;
     }
   }
 }

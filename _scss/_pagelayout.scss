@@ -5,54 +5,42 @@
   &__docpanels {
     display: grid;
     grid-template-columns: min-content minmax(0px, max-content);
+    grid-column-gap: $container-padding;
     word-wrap: break-word;
     overflow-x: auto;
     width: 100%;
     @media (min-width: $breakpoint-xl) {
-      grid-template-columns: 280px 6fr 280px;
+      grid-template-columns: 280px 6fr 250px;
+      grid-column-gap: $container-padding;
     }
 
-    &__sidenav {
+    &__content {
+      max-width: 800px;
       max-height: var(--body-height);
       overflow-y: auto;
-      background-color: $panel-color;
-      padding: 1em 1em 2em 1em;
-      width: 240px;
-      margin-right: 1.5rem;
-      position: relative;
-      &__toggle {
-        @media (min-width: $breakpoint-lg) {
-          display: none;
-        }
-        position: sticky;
-        top: 0.5rem;
-        margin-left: auto;
-        cursor: pointer;
-        width: 1rem;
-        height: 1rem;
-        svg {
-          fill: $navyblue;
-        }
-      }
-      &__collapsed {
-        width: 1rem;
-        overflow: hidden;
-        nav {
-          visibility: hidden;
-        }
-      }
+    }
+  }
+
+  // Centered layout with ToC and side panels
+  &__centerdocs {
+    display: grid;
+    grid-template-columns: min-content minmax(0px, max-content);
+    grid-column-gap: $container-padding;
+    word-wrap: break-word;
+    overflow-x: auto;
+    width: 100%;
+
+    @media (min-width: $breakpoint-xl) {
+      grid-template-columns: 280px 1fr;
+      grid-column-gap: 14px;
     }
 
-    &__sidepanels {
-      max-height: var(--body-height);
-      overflow-y: auto;
-      display: none;
-      @media (min-width: $breakpoint-xl) {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        background: $panel-color;
-      }
+    &__wrapper {
+      margin-left: auto;
+      margin-right: auto;
+      display: grid;
+      grid-template-columns: 800px 250px;
+      grid-column-gap: $container-padding;
     }
 
     &__content {
@@ -70,14 +58,8 @@
     }
     &__content {
       display: grid;
-      grid-template-columns: 1fr 4fr;
-    }
-    &__sidenav {
-      max-height: var(--body-height);
-      overflow-y: auto;
-      background-color: $panel-color;
-      padding: 1em 1em 2em 1em;
-      margin-right: 1.5rem;
+      grid-template-columns: 280px auto;
+      grid-column-gap: $container-padding;
     }
     &__items {
       max-height: var(--body-height);
