@@ -14,6 +14,8 @@ layout: default
   <div class="pagelayout__centerdocs__wrapper">
     <div class="pagelayout__centerdocs__content">
       {% include article.html %}
+      {% assign loop = page.sections %}
+      {% include sections.html %}
     </div>
     <div class="sidepanels">
       <div class="sidepanels__sidepanel">
