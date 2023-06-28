@@ -6,7 +6,7 @@
     {%- endif -%}
     {%- endfor -%}
 <section class="section__container">
-    <div class="section__row">
+    <div class="section__row" {% if column_count != 0 %}data-columns="{{ column_count }}"{% endif %}{% if section.columns  %}data-columns="{{ section.columns }}"{% endif %}>
         <div class="section__column">
             {% if section.blocks %}
             {% for block in section.blocks %}
