@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-<div class="pagelayout pagelayout__centerdocs">
+<div class="pagelayout pagelayout__largedocs">
   <div class="sidenav sidenav__open">
     <div class="sidenav__toggle">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
@@ -11,8 +11,8 @@ layout: default
     </div>
     {% include toc.html menu=site.menus.api %}
   </div>
-  <div class="pagelayout__centerdocs__wrapper">
-    <div class="pagelayout__centerdocs__content">
+  <div class="pagelayout__largedocs__wrapper">
+    <div class="pagelayout__largedocs__content">
       {% include article.html %}
       {% assign loop = page.sections %}
       {% include sections.html %}
