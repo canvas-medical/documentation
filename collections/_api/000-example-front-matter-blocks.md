@@ -31,25 +31,7 @@ sections:
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. 
             type: string
-        example_payload:
-          format: json
-          example: |
-            {
-              "access_token": "eyJhbGciOiJFUzI1NiJ9.eyJqdGkiOiI5NmQ5Njgw...",
-              "expires_in": 3600,
-              "refresh_expires_in": 86400,
-              "endpoint": {
-                "id": "d39433b7-0fbd-4bc2-bdae-fb276799979f",
-                "label": ["Humana"],
-                "name": "humana-sandbox",
-                "refreshable": true,
-                "resources": [
-                  "Coverage",
-                  "ExplanationOfBenefit",
-                  "Patient"
-                ]
-              }
-            }
+        example_payload: example-payload-code
         endpoints:
           - summary: AllergyIntolerance create
             method: post
@@ -79,42 +61,8 @@ sections:
                 description: >-
                   Claim create request could not be parsed or failed basic FHIR
                   validation rules.
-            example_request:
-              format: javascript
-              example: >
-                const request = await
-                fetch("https://api.flexpa.com/link/exchange", {
-                  method: "POST",
-                  headers: {
-                    "content-type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    public_token: "public_token...",
-                    secret_key: "sk_test...",
-                  }),
-                });
-
-                const { access_token: accessToken, expires_in: expiresIn } =
-                await request.json();
-            example_response:
-              format: json
-              example: |
-                {
-                  "access_token": "eyJhbGciOiJFUzI1NiJ9.eyJqdGkiOiI5NmQ5Njgw...",
-                  "expires_in": 3600,
-                  "refresh_expires_in": 86400,
-                  "endpoint": {
-                    "id": "d39433b7-0fbd-4bc2-bdae-fb276799979f",
-                    "label": ["Humana"],
-                    "name": "humana-sandbox",
-                    "refreshable": true,
-                    "resources": [
-                      "Coverage",
-                      "ExplanationOfBenefit",
-                      "Patient"
-                    ]
-                  }
-                }
+            example_request: example-request-one
+            example_response: example-response-one
           - summary: AllergyIntolerance read
             method: get
             url: '/AllergyIntolerance/{id}'
@@ -143,41 +91,136 @@ sections:
                 description: >-
                   Claim create request could not be parsed or failed basic FHIR
                   validation rules.
-            example_request:
-              format: javascript
-              example: >
-                const request = await
-                fetch("https://api.flexpa.com/link/exchange", {
-                  method: "POST",
-                  headers: {
-                    "content-type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    public_token: "public_token...",
-                    secret_key: "sk_test...",
-                  }),
-                });
-
-                const { access_token: accessToken, expires_in: expiresIn } =
-                await request.json();
-            example_response:
-              format: json
-              example: |
-                {
-                  "access_token": "eyJhbGciOiJFUzI1NiJ9.eyJqdGkiOiI5NmQ5Njgw...",
-                  "expires_in": 3600,
-                  "refresh_expires_in": 86400,
-                  "endpoint": {
-                    "id": "d39433b7-0fbd-4bc2-bdae-fb276799979f",
-                    "label": ["Humana"],
-                    "name": "humana-sandbox",
-                    "refreshable": true,
-                    "resources": [
-                      "Coverage",
-                      "ExplanationOfBenefit",
-                      "Patient"
-                    ]
-                  }
-                }
+            example_request: example-request-two
+            example_response: example-response-two
 ---
+<div id="example-payload-code">
+
+{% tabs log %}
+
+{% tab log php %}
+```php
+var_dump('hello');
+```
+{% endtab %}
+
+{% tab log js %}
+```javascript
+console.log('hello');
+```
+{% endtab %}
+
+{% tab log ruby %}
+```javascript
+puts 'hello'
+```
+{% endtab %}
+
+{% endtabs %}
+
+</div>
+
+<div id="example-request-one">
+
+{% tabs log %}
+
+{% tab log php %}
+```php
+var_dump('hello');
+```
+{% endtab %}
+
+{% tab log js %}
+```javascript
+console.log('hello');
+```
+{% endtab %}
+
+{% tab log ruby %}
+```javascript
+puts 'hello'
+```
+{% endtab %}
+
+{% endtabs %}
+
+</div>
+
+<div id="example-response-one">
+
+{% tabs log %}
+
+{% tab log php %}
+```php
+var_dump('hello');
+```
+{% endtab %}
+
+{% tab log js %}
+```javascript
+console.log('hello');
+```
+{% endtab %}
+
+{% tab log ruby %}
+```javascript
+puts 'hello'
+```
+{% endtab %}
+
+{% endtabs %}
+
+</div>
+
+<div id="example-request-two">
+
+{% tabs log %}
+
+{% tab log php %}
+```php
+var_dump('hello');
+```
+{% endtab %}
+
+{% tab log js %}
+```javascript
+console.log('hello');
+```
+{% endtab %}
+
+{% tab log ruby %}
+```javascript
+puts 'hello'
+```
+{% endtab %}
+
+{% endtabs %}
+
+</div>
+
+<div id="example-response-two">
+
+{% tabs log %}
+
+{% tab log php %}
+```php
+var_dump('hello');
+```
+{% endtab %}
+
+{% tab log js %}
+```javascript
+console.log('hello');
+```
+{% endtab %}
+
+{% tab log ruby %}
+```javascript
+puts 'hello'
+```
+{% endtab %}
+
+{% endtabs %}
+
+</div>
 

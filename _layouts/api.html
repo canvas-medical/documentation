@@ -13,16 +13,28 @@ layout: default
   </div>
   <div class="pagelayout__largedocs__wrapper">
     <div class="pagelayout__largedocs__content">
-      {% include article.html %}
-      {% assign loop = page.sections %}
-      {% include sections.html %}
-    </div>
-    <div class="sidepanels">
-      <div class="sidepanels__sidepanel">
-        {% include panel-guides.html %}
-      </div>
-      <div class="sidepanels__sidepanel">
-        {% include panel-codesample.html %}
+    <article class="article" itemscope itemtype="http://schema.org/BlogPosting">
+      <div class="article__container">
+        <div class="article__container__inner">
+          <header class="article__header">
+            <h1 class="article__title" itemprop="name headline">{{ page.title | escape }}</h1>
+            <p class="article__meta">
+              <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+                {% assign date_format = site.minima.date_format | default: '%-d %b %Y' %}
+                Last updated: {{ page.date | date: date_format }}
+              </time>
+              {% if page.author %}
+              by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ page.author
+                  }}</span></span>
+              {% endif %}
+            </p>
+          </header>
+          {% assign loop = page.sections %}
+          {% include sections.html %}
+          <div class="pagelayout__largedocs__hidden">
+            {{ content }}
+          </div>
+        </div>
       </div>
     </div>
   </div>

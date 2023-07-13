@@ -71,10 +71,15 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.example_payload %}
-            <div class="apidoc__example">
-                <h3>Example Payload</h3>
-                <div>{{ block.example_payload.example | strip_html }}</div>
-            </div>
+            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            <div id="payload-{{ randomId }}"></div>
+            <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                const exampleCode = document.querySelector('#{{ block.example_payload }}');
+                const randomId = document.querySelector('#payload-{{ randomId }}');
+                randomId.appendChild(exampleCode);
+            });
+            </script>
             {% endif %}
         </div>
     </div>
@@ -116,10 +121,15 @@
         </div>
         <div class="apidoc__gridcol">
             {% if endpoint.example_request %}
-            <div class="apidoc__example">
-                <h3>Example Request</h3>
-                <div>{{ endpoint.example_request.example | strip_html }}</div>
-            </div>
+            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            <div id="request-{{ randomId }}"></div>
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    const exampleCode = document.querySelector('#{{ endpoint.example_request }}');
+                    const randomId = document.querySelector('#request-{{ randomId }}');
+                    randomId.appendChild(exampleCode);
+                });
+            </script>
             {% endif %}
         </div>
     </div>
@@ -189,10 +199,15 @@
         </div>
         <div class="apidoc__gridcol">
             {% if endpoint.example_response %}
-            <div class="apidoc__example">
-                <h3>Example Response</h3>
-                <div>{{ endpoint.example_response.example | strip_html }}</div>
-            </div>
+            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            <div id="response-{{ randomId }}"></div>
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    const exampleCode = document.querySelector('#{{ endpoint.example_response }}');
+                    const randomId = document.querySelector('#response-{{ randomId }}');
+                    randomId.appendChild(exampleCode);
+                });
+            </script>
             {% endif %}
         </div>
     </div>

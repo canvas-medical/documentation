@@ -74,6 +74,10 @@
         max-height: var(--body-height);
         overflow-y: auto;
       }
+
+      &__hidden {
+        display: none;
+      }
   
     }
 

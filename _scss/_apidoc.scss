@@ -1,9 +1,9 @@
 .apidoc {
-    &__gridrow {
-      display: grid;
-      grid-template-columns: 800px 250px;
-      grid-column-gap: $container-padding;
-    }
+  &__gridrow {
+    display: grid;
+    grid-template-columns: 800px 250px;
+    grid-column-gap: $container-padding;
+  }
   &__info {
     &__summary {
       font-weight: 700;
