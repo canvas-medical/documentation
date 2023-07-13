@@ -104,8 +104,8 @@ curl --location 'https://fumage-training.canvasmedical.com/Condition?patient=Pat
 
 ### Search Parameters Supported by Canvas
 
-* _id
-* patient
+* `_id`
+* `patient`
 
 ### Error Codes
 
@@ -125,13 +125,13 @@ provided, a new data import note will be created.
 
 #### Fields
 
-`clinicalStatus`: supported codes are: **active**, **resolved**\
-`verificationStatus`: supported codes are: **confirmed**, **entered-in-error**\
-`category`: supported codes are: **encounter-diagnosis**\
-`code`: supported codes are from: http://hl7.org/fhir/sid/icd-10-cm \
-`onsetDateTime`: must be a YYYY-MM-DD date\
-`abatementDateTime`: must be a YYYY-MM-DD date\
-`recordedDate`: must be a full ISO 8601 datetime
+- `clinicalStatus`: supported codes are: **active**, **resolved**\
+- `verificationStatus`: supported codes are: **confirmed**, **entered-in-error**\
+- `category`: supported codes are: **encounter-diagnosis**\
+- `code`: supported codes are from: http://hl7.org/fhir/sid/icd-10-cm \
+- `onsetDateTime`: must be a YYYY-MM-DD date\
+- `abatementDateTime`: must be a YYYY-MM-DD date\
+- `recordedDate`: must be a full ISO 8601 datetime
 
 ### Example
 
