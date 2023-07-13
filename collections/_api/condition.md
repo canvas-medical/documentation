@@ -125,12 +125,12 @@ provided, a new data import note will be created.
 
 #### Fields
 
-- `clinicalStatus`: supported codes are: **active**, **resolved**\
-- `verificationStatus`: supported codes are: **confirmed**, **entered-in-error**\
-- `category`: supported codes are: **encounter-diagnosis**\
-- `code`: supported codes are from: http://hl7.org/fhir/sid/icd-10-cm \
-- `onsetDateTime`: must be a YYYY-MM-DD date\
-- `abatementDateTime`: must be a YYYY-MM-DD date\
+- `clinicalStatus`: supported codes are: **active**, **resolved**
+- `verificationStatus`: supported codes are: **confirmed**, **entered-in-error**
+- `category`: supported codes are: **encounter-diagnosis**
+- `code`: supported codes are from: http://hl7.org/fhir/sid/icd-10-cm
+- `onsetDateTime`: must be a YYYY-MM-DD date
+- `abatementDateTime`: must be a YYYY-MM-DD date
 - `recordedDate`: must be a full ISO 8601 datetime
 
 ### Example
