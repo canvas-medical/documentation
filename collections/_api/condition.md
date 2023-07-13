@@ -95,7 +95,7 @@ curl --location 'https://fumage-customer.canvasmedical.com/Condition/00a6a9f1-ff
 ## Example
 
 ```shell
-curl --location 'https://fumage-training.canvasmedical.com/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0' \
+curl --location 'https://fumage-customer.canvasmedical.com/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0' \
      --header 'Content-Type: application/fhir+json' \
      --header 'Authorization: Bearer <token>'
 ```
@@ -134,7 +134,7 @@ provided, a new data import note will be created.
 ## Example
 
 ```shell
-curl --location 'https://fumage-training.canvasmedical.com/Condition' \
+curl --location 'https://fumage-customer.canvasmedical.com/Condition' \
      --header 'Content-Type: application/fhir+json' \
      --header 'Authorization: Bearer <token>' \
      --data '
@@ -220,7 +220,7 @@ Condition as **entered-in-error**. No changes to other fields will be processed.
 ## Example
 
 ```shell
-curl --location --request PUT 'https://fumage-training.canvasmedical.com/Condition/00a6a9f1-ffdb-4cf8-8e11-f2d6459dec3f' \
+curl --location --request PUT 'https://fumage-customer.canvasmedical.com/Condition/00a6a9f1-ffdb-4cf8-8e11-f2d6459dec3f' \
      --header 'Content-Type: application/fhir+json' \
      --header 'Authorization: Bearer <token>' \
      --data '
