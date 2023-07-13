@@ -137,7 +137,8 @@ provided, a new data import note will be created.
 curl --location 'https://fumage-training.canvasmedical.com/Condition' \
      --header 'Content-Type: application/fhir+json' \
      --header 'Authorization: Bearer <token>' \
-     --data '{
+     --data '
+{
     "resourceType": "Condition",
     "clinicalStatus": {
         "coding": [
@@ -222,7 +223,8 @@ Condition as **entered-in-error**. No changes to other fields will be processed.
 curl --location --request PUT 'https://fumage-training.canvasmedical.com/Condition/00a6a9f1-ffdb-4cf8-8e11-f2d6459dec3f' \
      --header 'Content-Type: application/fhir+json' \
      --header 'Authorization: Bearer <token>' \
-     --data '{
+     --data '
+{
     "resourceType": "Condition",
     "clinicalStatus": {
         "coding": [
