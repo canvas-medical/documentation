@@ -2,13 +2,11 @@
 title: "Condition"
 ---
 
-# Condition
-
-## FHIR Specification
+# FHIR Specification
 
 http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-condition.html
 
-## Fields Supported by Canvas
+# Fields Supported by Canvas
 
 ```json
 {
@@ -76,9 +74,9 @@ http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-condition.html
 }
 ```
 
-## Read
+# Read
 
-### Example
+## Example
 
 ```shell
 curl --location 'https://fumage-customer.canvasmedical.com/Condition/00a6a9f1-ffdb-4cf8-8e11-f2d6459dec3f' \
@@ -86,15 +84,15 @@ curl --location 'https://fumage-customer.canvasmedical.com/Condition/00a6a9f1-ff
      --header 'Authorization: Bearer <token>'
 ```
 
-### Error Codes
+## Error Codes
 
 - 401 Unauthorized
 - 403 Forbidden
 - 404 Not Found
 
-## Search
+# Search
 
-### Example
+## Example
 
 ```shell
 curl --location 'https://fumage-training.canvasmedical.com/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0' \
@@ -102,20 +100,20 @@ curl --location 'https://fumage-training.canvasmedical.com/Condition?patient=Pat
      --header 'Authorization: Bearer <token>'
 ```
 
-### Search Parameters Supported by Canvas
+## Search Parameters Supported by Canvas
 
 * `_id`
 * `patient`
 
-### Error Codes
+## Error Codes
 
 - 400 Bad Request
 - 401 Unauthorized
 - 403 Forbidden
 
-## Create
+# Create
 
-### Usage Notes
+## Usage Notes
 
 If `clinicalStatus` is **active**, the Condition will be added as a `Diagnose` command. If it is not
 **active**, the Condition will be added as a `Past Medical History` command.
@@ -123,7 +121,7 @@ If `clinicalStatus` is **active**, the Condition will be added as a `Diagnose` c
 If `encounter` is provided, the Condition will be added to existing encounter (note). If it is not
 provided, a new data import note will be created.
 
-#### Fields
+### Fields
 
 - `clinicalStatus`: supported codes are: **active**, **resolved**
 - `verificationStatus`: supported codes are: **confirmed**, **entered-in-error**
@@ -133,7 +131,7 @@ provided, a new data import note will be created.
 - `abatementDateTime`: must be a YYYY-MM-DD date
 - `recordedDate`: must be a full ISO 8601 datetime
 
-### Example
+## Example
 
 ```shell
 curl --location 'https://fumage-training.canvasmedical.com/Condition' \
@@ -203,7 +201,7 @@ curl --location 'https://fumage-training.canvasmedical.com/Condition' \
 }'
 ```
 
-### Error Codes
+## Error Codes
 
 - 400 Bad Request
 - 401 Unauthorized
@@ -211,14 +209,14 @@ curl --location 'https://fumage-training.canvasmedical.com/Condition' \
 - 405 Method Not Allowed
 - 422 Unprocessable Entity
 
-## Update
+# Update
 
-### Usage Notes
+## Usage Notes
 
 The only type of Condition update interaction that is supported by Canvas is to mark an existing
 Condition as **entered-in-error**. No changes to other fields will be processed.
 
-### Example
+## Example
 
 ```shell
 curl --location --request PUT 'https://fumage-training.canvasmedical.com/Condition/00a6a9f1-ffdb-4cf8-8e11-f2d6459dec3f' \
@@ -288,7 +286,7 @@ curl --location --request PUT 'https://fumage-training.canvasmedical.com/Conditi
 }'
 ```
 
-### Error Codes
+## Error Codes
 - 400 Bad Request
 - 401 Unauthorized
 - 403 Forbidden
