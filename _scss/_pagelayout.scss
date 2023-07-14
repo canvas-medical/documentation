@@ -50,6 +50,37 @@
 
   }
 
+    // Large docs layout with ToC 
+    &__largedocs {
+      display: grid;
+      grid-template-columns: min-content minmax(0px, max-content);
+      grid-column-gap: $container-padding;
+      word-wrap: break-word;
+      overflow-x: auto;
+      width: 100%;
+  
+      @media (min-width: $breakpoint-xl) {
+        grid-template-columns: 280px 1fr;
+        grid-column-gap: 14px;
+      }
+
+      &__wrapper {
+        max-width: 250px + 800px + $container-padding;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    
+      &__content {
+        max-height: var(--body-height);
+        overflow-y: auto;
+      }
+
+      &__hidden {
+        display: none;
+      }
+  
+    }
+
   // Layout for Release Notes
 
   &__index {

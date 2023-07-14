@@ -1,0 +1,22 @@
+{%- for section in loop %}
+    {%- assign column_count = 0 -%}
+    {%- for block in section.blocks -%}
+    {%- if block.type == 'column' -%}
+    {%- assign column_count = column_count | plus: 1 -%}    
+    {%- endif -%}
+    {%- endfor -%}
+<section class="section__container">
+    <div class="section__row" {% if column_count != 0 %}data-columns="{{ column_count }}"{% endif %}{% if section.columns  %}data-columns="{{ section.columns }}"{% endif %}>
+        <div class="section__column">
+            {% if section.blocks %}
+            {% for block in section.blocks %}
+            {% if block.type %}
+                {% assign block_include = "blocks/block-" | append: block.type | append: ".html" %}
+                {% include {{ block_include }} %}
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+{%- endfor %}

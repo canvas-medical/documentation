@@ -1,0 +1,217 @@
+<div class="apidoc">
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            <div class="apidoc__info">
+                {% if block.name %}
+                <h3 class="apidoc__info__summary">{{ block.summary }}</h3>
+                {% endif %}
+                {% if block.description %}
+                <div class="apidoc__info__description">
+                    {{ block.description }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="apidoc__guides">
+                <div>Related guides ...</div>
+            </div>
+        </div>
+        <div class="apidoc__gridcol">
+            {% if block.endpoints %}
+            <div class="apidoc__endpoint">
+                <h3>Endpoints</h3>
+                <div class="apidoc__endpoint__list">
+                    {% for endpoint in block.endpoints %}
+                    {% if endpoint.method %}
+                    <a href="#{{ endpoint.method | slugify }}-{{ endpoint.url | slugify }}" class="apidoc__endpoint__list__item">
+                        <span class="apidoc__endpoint__method apidoc__endpoint__method__{{endpoint.method}}">{{ endpoint.method
+                            }}</span>
+                        <div class="apidoc__endpoint__url">{{ endpoint.url }}</div>{% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            {% if block.attributes %}
+            <h3>Attributes</h3>
+            {% for attributes in block.attributes %}
+            <div class="apidoc__object">
+                <div class="apidoc__object__name">
+                    {{ attributes.name }}
+                </div>
+                <div class="apidoc__object__type">
+                    {{ attributes.type }}
+                </div>
+                <div class="apidoc__object__description">
+                    {{ attributes.description }}
+                </div>
+                {% if attributes.attributes %}
+                <div class="apidoc__object__children">
+                    {% for attributes in block.attributes %}
+                    <div class="apidoc__object">
+                        <div class="apidoc__object__name">
+                            {{ attributes.name }}
+                        </div>
+                        <div class="apidoc__object__type">
+                            {{ attributes.type }}
+                        </div>
+                        <div class="apidoc__object__description">
+                            {{ attributes.description }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        <div class="apidoc__gridcol">
+            {% if block.example_payload %}
+            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            <div id="payload-{{ randomId }}"></div>
+            <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                const exampleCode = document.querySelector('#{{ block.example_payload }}');
+                const randomId = document.querySelector('#payload-{{ randomId }}');
+                randomId.appendChild(exampleCode);
+            });
+            </script>
+            {% endif %}
+        </div>
+    </div>
+    {% if block.endpoints %}
+    {% for endpoint in block.endpoints %}
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            <div id="{{ endpoint.method | slugify }}-{{ endpoint.url | slugify }}" class="apidoc__info">
+                {% if endpoint.method %}<span class="apidoc__info__method apidoc__info__method__{{endpoint.method}}">{{ endpoint.method }}</span>
+                <div class="apidoc__info__url">{{ endpoint.url }}</div>{% endif %}
+                {% if endpoint.summary %}<h4 class="apidoc__info__summary">{{ endpoint.summary }}</h4>{% endif %}
+                {% if endpoint.description %}<div class="apidoc__info__description">
+                    {{ endpoint.description }}
+                </div>{% endif %}
+            </div>
+        </div>
+        <div class="apidoc__gridcol">
+        </div>
+    </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            {% if endpoint.parameters %}
+            <h3>Parameters</h3>
+            {% for parameters in endpoint.parameters %}
+            <div class="apidoc__object">
+                <div class="apidoc__object__name">
+                    {{ parameters.name }}
+                    {% if parameters.required %}<span class="apidoc__object__required">required</span>{% endif %}
+                </div>
+                <div class="apidoc__object__type">
+                    {{ parameters.type }}
+                </div>
+                <div class="apidoc__object__description">
+                    {{ parameters.description }}
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        <div class="apidoc__gridcol">
+            {% if endpoint.example_request %}
+            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            <div id="request-{{ randomId }}"></div>
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    const exampleCode = document.querySelector('#{{ endpoint.example_request }}');
+                    const randomId = document.querySelector('#request-{{ randomId }}');
+                    randomId.appendChild(exampleCode);
+                });
+            </script>
+            {% endif %}
+        </div>
+    </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            {% if endpoint.responses %}
+            <h3>Responses</h3>
+            {% for response in endpoint.responses %}
+            {% if response.response < 299 %}
+            <div class="apidoc__object">
+                <div class="apidoc__object__name">
+                    {{ response.response }}
+                </div>
+                <div class="apidoc__object__description">
+                    {{ response.description }}
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            <h3>Errors</h3>
+            {% for response in endpoint.responses %}
+            {% if response.response > 299 %}
+            <div class="apidoc__object">
+                <div class="apidoc__object__name">
+                    {{ response.response }}
+                </div>
+                <div class="apidoc__object__description">
+                    {{ response.description }}
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% if endpoint.attributes %}
+            <h3>Attributes</h3>
+            {% for attributes in endpoint.attributes %}
+            <div class="apidoc__object">
+                <div class="apidoc__object__name">
+                    {{ attributes.name }}
+                </div>
+                <div class="apidoc__object__type">
+                    {{ attributes.type }}
+                </div>
+                <div class="apidoc__object__description">
+                    {{ attributes.description }}
+                </div>
+                {% if attributes.attributes %}
+                <div class="apidoc__object__children">
+                    {% for attributes in endpoint.attributes %}
+                    <div class="apidoc__object">
+                        <div class="apidoc__object__name">
+                            {{ attributes.name }}
+                        </div>
+                        <div class="apidoc__object__type">
+                            {{ attributes.type }}
+                        </div>
+                        <div class="apidoc__object__description">
+                            {{ attributes.description }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        <div class="apidoc__gridcol">
+            {% if endpoint.example_response %}
+            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            <div id="response-{{ randomId }}"></div>
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    const exampleCode = document.querySelector('#{{ endpoint.example_response }}');
+                    const randomId = document.querySelector('#response-{{ randomId }}');
+                    randomId.appendChild(exampleCode);
+                });
+            </script>
+            {% endif %}
+        </div>
+    </div>
+
+            {% endfor %}
+            {% endif %}
+</div>

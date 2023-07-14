@@ -1,0 +1,99 @@
+.apidoc {
+  &__gridrow {
+    display: grid;
+    grid-template-columns: 800px 250px;
+    grid-column-gap: $container-padding;
+  }
+  &__info {
+    &__summary {
+      font-weight: 700;
+    }
+    &__description {
+      margin-bottom: 2rem;
+    }
+    &__method {
+      text-transform: uppercase;
+      font-weight: 700;
+      font-size: 0.8em;
+      color: $white;
+      border-radius: 5px;
+      padding: 0.4em 0.6em;
+      font-family: $primary-font-family;
+      &__get {
+        background-color: $navyblue;
+      }
+      &__post {
+        background-color: $green;
+      }
+      &__delete {
+        background-color: $red;
+      }
+    }
+    &__url {
+      font-family: $mono-font-family;
+      display: inline-block;
+      border: 1px solid $black;
+      padding: 0.2em;
+    }
+  }
+  &__endpoint {
+    background-color: $lightgrey;
+    padding: 0.5em 1em;
+    &__list__item {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      margin-bottom: 0.5em;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    &__method {
+      text-transform: uppercase;
+      font-weight: 700;
+      font-size: 0.8em;
+      font-family: $primary-font-family;
+
+      &__get {
+        color: $navyblue;
+      }
+
+      &__post {
+        color: $green;
+      }
+
+      &__delete {
+        color: $red;
+      }
+    }
+  }
+  &__object {
+    border: 2px solid $black;
+    margin-bottom: 1rem;
+    padding: 0.5em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+    &__name {
+      font-family: $mono-font-family;
+      font-weight: 700;
+    }
+    &__required {
+      font-size: 0.8em;
+      color: $white;
+      background-color: $navyblue;
+      border-radius: 5px;
+      padding: 0.2em 0.6em;
+      font-family: $primary-font-family;
+    }
+    &__type {
+      font-family: $mono-font-family;
+    }
+    &___description {
+      margin-bottom: 0;
+    }
+    &__children {
+      margin: 2rem;
+    }
+  }
+}
