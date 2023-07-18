@@ -5,6 +5,7 @@
     grid-column-gap: $container-padding;
   }
   &__info {
+    margin-top: 2rem;
     &__summary {
       font-weight: 700;
     }
@@ -24,6 +25,9 @@
       }
       &__post {
         background-color: $green;
+      }
+      &__put {
+        background-color: $crimson;
       }
       &__delete {
         background-color: $red;

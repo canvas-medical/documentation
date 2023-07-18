@@ -43,11 +43,13 @@
                     {{ attributes.name }}
                 </div>
                 <div class="apidoc__object__type">
-                    {{ attributes.type }}
+                    {{ attributes.type }} {% if attributes.required %}<span class="apidoc__object__required">required</span>{% endif %}
                 </div>
+                {% if attributes.description %}
                 <div class="apidoc__object__description">
                     {{ attributes.description }}
                 </div>
+                {% endif %}
                 {% if attributes.attributes %}
                 <div class="apidoc__object__children">
                     {% for attributes in block.attributes %}
@@ -143,9 +145,11 @@
                 <div class="apidoc__object__name">
                     {{ response.response }}
                 </div>
+                {% if response.description %}
                 <div class="apidoc__object__description">
                     {{ response.description }}
                 </div>
+                {% endif %}
             </div>
             {% endif %}
             {% endfor %}
