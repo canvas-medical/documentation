@@ -1,0 +1,20 @@
+{% if endpoint == 'read' %}
+    {% assign description = 'Get information about' %}
+    {% assign method = 'get' %}
+    {% assign url = '/{_id}' %}
+{% endif %}
+{% if endpoint == 'search' %}
+    {% assign description = 'Search for' %}
+    {% assign method = 'get' %}
+    {% assign url = '' %}
+{% endif %}
+{% if endpoint == 'create' %}
+    {% assign description = 'Create' %}
+    {% assign method = 'post' %}
+    {% assign url = '' %}
+{% endif %}
+{% if endpoint == 'update' %}
+    {% assign description = 'Update' %}
+    {% assign method = 'put' %}
+    {% assign url = '/{_id}' %}
+{% endif %}
