@@ -342,8 +342,21 @@ documentation_config_clinical:
 guides:
  - title: "Just Another Guide"
    url: /guides/just-another-guide/
+ - title: "Canvas For..."
+   identifier: guides_templates
+   url: /guides/templates/
+guides_templates:
  - title: "Care Modeling: Behavioral Health"
-   url: /guides/behavioralhealth/   
+   url: /guides/bh/
+   identifier: guides_templates_bh
+ - title: "Care Modeling: Primary Care"
+   url: /guides/primary_care/
+   identifier: guides_templates_pc
+guides_templates_bh:
+ - title: "Customizing Search Results"
+   url: /guides/customizgin-search-results/ 
+ - title: "Team Based Care"
+   url: /guides/team-based-care/ 
 sdk:
  - title: "SDK Intro`"
    url: /sdk/
