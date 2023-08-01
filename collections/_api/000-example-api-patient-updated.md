@@ -86,20 +86,13 @@ sections:
         endpoints: [read, search, create, update]
         read:
           responses: [200, 400]
-          example_request: example-read-request
-          example_response: example-read-response
         search:
           responses: [200, 400]
-          example_request: example-search-request
           example_response: example-search-response
         create:
-          responses: [200, 400]
           example_request: example-create-request
-          example_response: example-create-response
         update:
-          responses: [200, 400]
           example_request: example-update-request
-          example_response: example-update-response
 ---
 <div id="example-payload-code">
 {% tabs payload %}
