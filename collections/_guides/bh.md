@@ -24,7 +24,7 @@ What is your target population? Does your care model support a broad range of me
 Next you’ll need to determine what services and treatments you plan to offer. As your Scope of Interventions broadens - and your care model gets more complex - you will also need to apply more rigor in your safety framework.<br><br>
 <b>After determining your scope of interventions you can:</b><br><br>
 👉Set up staff permissions to ensure team members can perform the duties of their role<br>
-👉Suggest alternative interventions when clinically appropriate <br>
+👉[Suggest alternative interventions]({{site.baseurl}}/guides/promote-patient-safety/#suggesting-alternative-interventions) when clinically appropriate <br>
 ### What is the makeup of our Care Team? 
 As the demand for behavioral health services continues to rise, various factors, including an aging workforce, recruitment and retention challenges, geographic disparities, and financial barriers, have contributed to the scarcity of providers. As a result, fewer than half of people with a mental illness were able to access timely care in 2021. Innovating on the makeup of your care team can help to address this shortage and set you apart. Canvas was built to support interdisciplinary care teams that take advantage of team members’ strengths, bring in more assistive clinical workers, and allow everybody to operate at the top of their license.
 <br><br>
