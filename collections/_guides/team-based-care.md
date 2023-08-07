@@ -159,15 +159,11 @@ The minimum necessary rule requires that covered entities make reasonable effort
 {% endtab %}
 
 {% endtabs %}
-
-
 <br>
 <br>
 ***
+
 ### Routing work to the right team or individual
-
-
-
 {% tabs RTI %}
 
 {% tab RTI Developers %}
