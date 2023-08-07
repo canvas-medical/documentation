@@ -354,7 +354,7 @@ guides_templates:
    identifier: guides_templates_pc
 guides_templates_bh:
  - title: "Customize Search Results"
-   url: /guides/customizgin-search-results/ 
+   url: /guides/customize-search-results/ 
  - title: "Promote Patient Safety"
    url: /guides/promote-patient-safety/  
  - title: "Team Based Care"
@@ -367,8 +367,6 @@ guides_templates_bh:
    url: /guides/queu-based-workflows/
  - title: "Manage Revenue Outside of Canvas"
    url: /guides/outside-revenue/
-
-
 sdk:
  - title: "SDK Intro`"
    url: /sdk/
