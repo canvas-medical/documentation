@@ -16,14 +16,10 @@ In this guide, you will learn how to do the following:
 - Grant appropriate access levels
 - Route work to the right team or individual
 <br><br>
+***
 ### Defining roles and responsibilities 
-
-
-
 {% tabs DRR %}
-
 {% tab DRR  Developers %}
-
 Once you’ve determined your appropriate staffing model and hired a team, your Super Users will need to set up [Roles](https://canvas-medical.zendesk.com/hc/en-us/articles/12851926883859-Creating-and-modifying-roles), [Teams](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams), and [Care teams](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams) to ensure everyone can collaborate effectively. Make sure to advise them on what code systems and values will best support leveraging the data programmatically, either through your custom developed workflows using the Workflow Kit or API, or for reporting purposes.  
 
 <b>Teams</b> in Canvas map to the [FHIR Group]({{site.baseurl}}/api/group/) Resource. After working with your Super Users to set up Teams in your admin settings, they can be leveraged in the [FHIR Task Create]({{site.baseurl}}/api/task/) endpoint. You can do a FHIR Group Search to determine the Group ID associated with each Team and then assign a Task to that Team using the task-group extension.
@@ -53,16 +49,11 @@ Once you’ve determined your appropriate staffing model and hired a team, you c
 Teams and Care Teams are exposed via the FHIR API and can be leveraged in Protocols. Make sure to coordinate with your engineers to ensure they are set up with the appropriate code systems. When making changes or additions, make sure to communicate those internal so that any custom workflows can be updated as well.  
 
 {% endtab %}
-
 {% endtabs %}
-
-
 <br>
-
+<br>
+***
 ### Granting appropriate access
-
-
-
 {% tabs GAA %}
 
 {% tab GAA Developers %}
@@ -172,7 +163,7 @@ The minimum necessary rule requires that covered entities make reasonable effort
 
 <br>
 <br>
-
+***
 ### Routing work to the right team or individual
 
 
