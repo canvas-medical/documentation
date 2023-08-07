@@ -10,6 +10,7 @@ Since the 1960s, teamwork has emerged as the preferred approach to collaboration
 Although the benefits are well established, forming the right team to support your care model requires a careful balance between productivity and experience levels to ensure optimal care without compromising safety. The Canvas platform was purpose built to make this easier, supporting efficient team-based delivery through the following features and workflows.
 <br>
 <br>
+***
 ### What you'll learn
 In this guide, you will learn how to do the following:
 - Define the roles and responsibilities for your care team
