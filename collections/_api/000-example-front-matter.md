@@ -5,6 +5,7 @@ sections:
     blocks:
       - type: apidoc
         name: Patient
+        article: "a"
         description: >-
           At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
         attributes:
@@ -48,150 +49,51 @@ sections:
           - name: contact
             type: json
             required: false
+        search_parameters:
+          - name: _id
+            type: string
+            description: A Canvas-issued unique identifier
+          - name: identifier
+            type: string
+            description: The Canvas-issued MRN or a saved identifier from an external system  
+          - name: name
+            type: string
+            description: Part of a first or last name
+          - name: family
+            type: string
+            description: Last name
+          - name: given
+            type: string
+            description: First Name
+          - name: birthdate
+            type: date
+            description: The patient's birthdate
+          - name: gender
+            type: string
+          - name: nickname
+            type: string
+            description: Preferred or alternate name
+          - name: email
+            type: string
+            description: Patient email address
+          - name: phone
+            type: string
+            description: Patient phone number, expected to be 10 digits
+          - name: active
+            type: boolean
+            description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false)
         example_payload: example-payload-code
-        endpoints:
-          - summary: Patient read
-            method: get
-            url: '/Patient/{_id}'
-            description: >-
-              Get information about a particular patient
-            parameters:
-              - name: _id
-                description: A Canvas-issued unique identifier. This is not an MRN.
-                required: true
-                type: string
-            responses:
-              - response: 200
-              - response: 400
-            example_request: example-read-request
-            example_response: example-read-response
-          - summary: Patient search
-            method: get
-            url: '/Patient'
-            description: >-
-              Search for patients
-            parameters:
-              - name: id
-                description: Logical id of this artifact
-                required: true
-                type: string
-              - name: _format
-                description: >-
-                  Override the HTTP content negotiation to specify JSON or XML
-                  response format
-                required: false
-                type: string
-              - name: _pretty
-                description: Ask for a pretty printed response for human convenience
-                required: false
-                type: string
-            responses:
-              - response: 200
-              - response: 400
-            example_request: example-search-request
-            example_response: example-search-response
-          - summary: Patient create
-            method: post
-            url: '/Patient'
-            description: >-
-              Create a patient
-            parameters:
-              - name: _id
-                description: >-
-                  The identifier of the patient
-                type: string
-                required: true
-              - name: resourceType
-                type: string
-                required: true
-              - name: extension
-                type: json
-                required: true
-              - name: identifier
-                type: json
-                required: false
-              - name: active
-                type: boolean
-                required: false
-              - name: name
-                type: json
-                required: true
-              - name: telecom
-                type: json
-                required: false
-              - name: gender
-                description: >-
-                  Default: male
-                type: string
-                required: false
-              - name: deceased
-                type: boolean
-                required: false
-              - name: address
-                type: json
-                required: false
-              - name: photo
-                type: json
-                required: false
-              - name: contact
-                type: json
-                required: false
-            responses:
-              - response: 200
-              - response: 400
-            example_request: example-create-request
-            example_response: example-create-response
-          - summary: Patient update
-            method: put
-            url: '/Patient/{_id}'
-            description: >-
-              Update a patient
-            parameters:
-              - name: _id
-                description: >-
-                  The identifier of the patient
-                type: string
-                required: true
-              - name: resourceType
-                type: string
-                required: true
-              - name: extension
-                type: json
-                required: true
-              - name: identifier
-                type: json
-                required: false
-              - name: active
-                type: boolean
-                required: false
-              - name: name
-                type: json
-                required: true
-              - name: telecom
-                type: json
-                required: false
-              - name: gender
-                description: >-
-                  Default: male
-                type: string
-                required: false
-              - name: deceased
-                type: boolean
-                required: false
-              - name: address
-                type: json
-                required: false
-              - name: photo
-                type: json
-                required: false
-              - name: contact
-                type: json
-                required: false
-            responses:
-              - response: 200
-              - response: 400
-            example_request: example-create-request
-            example_response: example-create-response
+        endpoints: [read, search, create, update]
+        read:
+          responses: [200, 400]
+          example_response: example-payload-code
+        search:
+          responses: [200, 400]
+          example_response: example-search-response
+        create:
+          example_request: example-create-request
+        update:
+          example_request: example-update-request
 ---
 <div id="example-payload-code">
 {% tabs payload %}
@@ -211,25 +113,6 @@ curl --request GET \
      --url https://fhir-example.canvasmedical.com/Patient/_id \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
-</div>
-
-<div id="example-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
-```json
-200 {
-  ...
-}
-```
-{% endtab %}
-{% tab read-response 400 %}
-```json
-400 {
-  ...
-}
 ```
 {% endtab %}
 {% endtabs %}
