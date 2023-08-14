@@ -1,5 +1,5 @@
 ---
-title: "Promote Patient Safety"
+title: "Build a Safety Framework"
 guide_for:
 ---
 
@@ -12,8 +12,13 @@ Healthcare has come a long way since the US Institute of Medicine published its 
 
 {% tab SAI Developers %}
 Using the simple framework below may help your super users translate clinical guidelines or clinical pathways into protocols. Work with them to confirm what change types, data, and recommendations are available to support your custom protocols. Knowing how you plan to leverage your patient data in your protocols may help inform how you build your clinical workflows into Canvas. 
-
+{:refdef: style="text-align: center;"}
+![Protocol framework](/assets/images/protocol-framework.png){:width="60%"}
+{: refdef}
 Leveraging that framework, the example below surfaces a recommendation to switch a patient’s schizophrenia medication from Olanzapine to Ziprasidone if diabetes is added to the condition list.
+{:refdef: style="text-align: center;"}
+![Protocol framework](/assets/images/alternative-med.png){:width="60%"}
+{: refdef}
 
 To ensure your clinicians have the appropriate context, you can use the narrative to provide background and then surface the relevant studies or guidelines in the info button. 
 <br>
@@ -134,8 +139,9 @@ class ZiprasidoneRx(ClinicalQualityMeasure):
 Our Workflow Kit allows you to program complex clinical logic into the point of care. Recommendations, presented as either protocol cards or banners, allow you to implement evidence-based-care in your clinical workflows. Possible use cases include recommending interventions with less side effects, suggesting preferred internal programs or partners that deliver better outcomes, or alerting providers to possible contraindications. 
 
 When working with your developers, you can leverage the framework below to help build these workflow helpers into the platform. 
-
-
+{:refdef: style="text-align: center;"}
+![Protocol framework](/assets/images/protocol-framework.png){:width="60%"}
+{: refdef}
 {% endtab %}
 {% endtabs %}
 <br><br>

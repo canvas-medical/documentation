@@ -342,21 +342,21 @@ documentation_config_clinical:
 guides:
  - title: "Just Another Guide"
    url: /guides/just-another-guide/
- - title: "Canvas For..."
-   identifier: guides_templates
-   url: /guides/templates/
-guides_templates:
- - title: "Care Modeling: Behavioral Health"
+ - title: "Care Models"
+   identifier: guides_care-models
+   url: /guides/care-models/
+guides_care-models:
+ - title: "Behavioral Health"
    url: /guides/bh/
    identifier: guides_templates_bh
- - title: "Care Modeling: Primary Care"
+ - title: "Primary Care"
    url: /guides/primary_care/
    identifier: guides_templates_pc
 guides_templates_bh:
  - title: "Customize Search Results"
    url: /guides/customize-search-results/ 
- - title: "Promote Patient Safety"
-   url: /guides/promote-patient-safety/  
+ - title: "Build a Safety Framework"
+   url: /guides/build-a-safety-framework/  
  - title: "Team Based Care"
    url: /guides/team-based-care/
  - title: "Optimize Patient Intake"

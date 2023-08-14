@@ -1,5 +1,5 @@
 ---
-title: "Care Modeling: Behavioral Health"
+title: "Care Model: Behavioral Health"
 guide_for:
  - /api/patient/
  - /api/coverage/
@@ -8,9 +8,7 @@ guide_for:
  - /documentation/configuringquestionnaires/
 ---
 
-Most of today’s EMR’s work like cash registers, treating patient interactions as transactional. The transactional design forces data to be captured and represented in the same transactional manner. This ultimately pushes the clinician to think transactionally. The Canvas approach to charting is fundamentally different. We invented Narrative Charting in order to model the actual work of the clinician instead. We start all of our notes with a blank canvas and allow you to pull in Commands to document what is relevant for that patient and interaction. This works extremely well for behavioral health, as our application doesn’t force your clinicians to navigate through a set workflow or the typical SOAP note, if it’s not necessary to do so.
-
-In addition to our entirely new way of charting, our FHIR API and Workflow Kit make Canvas extremely extensible. You can build both a differentiated patient experience and influence the in-application workflows using the available read and write endpoints, and Protocols.
+Something quick about Behavioral Health
 
 ## Launching your Behavioral Health Care Model: Questions to Ask
 The world is facing a mental health crisis and you want to help tackle it 🙌. With recent cultural changes, scientific and technological advancements, improved data sharing, and a shift towards consumerism, the behavioral health space is prime for disruption.  To be successful and drive value, you’ll need to differentiate on your care model. You’ll likely start by asking the questions outlined below. Once you’ve settled on a direction for each, we’ve outlined recommended next steps to get started. <br> <br> 

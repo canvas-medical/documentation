@@ -10,15 +10,16 @@ Since the 1960s, teamwork has emerged as the preferred approach to collaboration
 Although the benefits are well established, forming the right team to support your care model requires a careful balance between productivity and experience levels to ensure optimal care without compromising safety. The Canvas platform was purpose built to make this easier, supporting efficient team-based delivery through the following features and workflows.
 <br>
 <br>
-***
-### What you'll learn
+* * *
+## What you'll learn
 In this guide, you will learn how to do the following:
 - Define the roles and responsibilities for your care team
 - Grant appropriate access levels
 - Route work to the right team or individual
 <br><br>
-***
-### Defining roles and responsibilities 
+
+* * *
+## Defining roles and responsibilities 
 {% tabs DRR %}
 {% tab DRR  Developers %}
 Once you’ve determined your appropriate staffing model and hired a team, your Super Users will need to set up [Roles](https://canvas-medical.zendesk.com/hc/en-us/articles/12851926883859-Creating-and-modifying-roles), [Teams](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams), and [Care teams](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams) to ensure everyone can collaborate effectively. Make sure to advise them on what code systems and values will best support leveraging the data programmatically, either through your custom developed workflows using the Workflow Kit or API, or for reporting purposes.  
@@ -38,7 +39,6 @@ Once you’ve determined your appropriate staffing model and hired a team, your 
 A patient's <b>Care Team</b> can also be defined by assigning internal users (represented through the practitioner resource) to a patient's Care Team with a set role that has been configured in your admin settings (i.e. Primary Care Provider or Care Manager). A code and system is necessary here as well, so coordinate with your Super Users to make sure you are aligned. 
 <br><br>
 Our [FHIR CareTeam]({{site.baseurl}}/api/careteam/) resource allows you to read a patients care team, assign practitioners to patients with careteam roles using the update endpoint (acting as an upsert), and search for care team participation. Participation is often leveraged to then drive logic in your other workflows, including messaging and scheduling. 
-
 {% endtab %}
 
 {% tab DRR Super Users %}
@@ -53,8 +53,8 @@ Teams and Care Teams are exposed via the FHIR API and can be leveraged in Protoc
 {% endtabs %}
 <br>
 <br>
-***
-### Granting appropriate access
+* * *
+## Granting appropriate access
 {% tabs GAA %}
 
 {% tab GAA Developers %}
@@ -162,9 +162,9 @@ The minimum necessary rule requires that covered entities make reasonable effort
 {% endtabs %}
 <br>
 <br>
-***
 
-### Routing work to the right team or individual
+* * *
+## Routing work to the right team or individual
 {% tabs RTI %}
 
 {% tab RTI Developers %}
