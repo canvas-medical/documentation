@@ -19,10 +19,10 @@ In this guide, you will learn how to do the following:
 <br><br>
 
 * * *
-## Defining roles and responsibilities 
+### Defining roles and responsibilities 
 {% tabs DRR %}
 {% tab DRR  Developers %}
-Once you’ve determined your appropriate staffing model and hired a team, your Super Users will need to set up [Roles](https://canvas-medical.zendesk.com/hc/en-us/articles/12851926883859-Creating-and-modifying-roles), [Teams](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams), and [Care teams](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams) to ensure everyone can collaborate effectively. Make sure to advise them on what code systems and values will best support leveraging the data programmatically, either through your custom developed workflows using the Workflow Kit or API, or for reporting purposes.  
+Once you have determined your appropriate staffing model and hired a team, your Super Users will need to set up [Roles](https://canvas-medical.zendesk.com/hc/en-us/articles/12851926883859-Creating-and-modifying-roles), [Teams](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams), and [Care teams](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams) to ensure everyone can collaborate effectively. Make sure to advise them on what code systems and values will best support leveraging the data programmatically, either through your custom developed workflows using the Workflow Kit or API, or for reporting purposes.  
 
 <b>Teams</b> in Canvas map to the [FHIR Group]({{site.baseurl}}/api/group/) Resource. After working with your Super Users to set up Teams in your admin settings, they can be leveraged in the [FHIR Task Create]({{site.baseurl}}/api/task/) endpoint. You can do a FHIR Group Search to determine the Group ID associated with each Team and then assign a Task to that Team using the task-group extension.
 ```
@@ -42,23 +42,21 @@ Our [FHIR CareTeam]({{site.baseurl}}/api/careteam/) resource allows you to read 
 {% endtab %}
 
 {% tab DRR Super Users %}
-Once you’ve determined your appropriate staffing model and hired a team, you can set up Roles, Teams, and Care Teams to ensure everyone can collaborate effectively. 
+Once you have determined your appropriate staffing model and hired a team, you can set up Roles, Teams, and Care Teams to ensure everyone can collaborate effectively. 
 <br><br>
 [Roles](https://canvas-medical.zendesk.com/hc/en-us/articles/12851926883859-Creating-and-modifying-roles): are configurable in Canvas and can drive a default permission set though [Auth Groups](https://canvas-medical.zendesk.com/hc/en-us/articles/13143167734291-User-permissions). <br>
 [Teams](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams) are used to group work. By assigning responsibilities to teams, you can drive how automated tasks in Canvas are assigned. For instance, you may want all delegated referrals to go to a care coordination team.<br>
 [Care teams](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams) are used to define the role an individual plays in a patient’s care. Once created you can assign staff to patients with a Care Team role. <br><br>
 Teams and Care Teams are exposed via the FHIR API and can be leveraged in Protocols. Make sure to coordinate with your engineers to ensure they are set up with the appropriate code systems. When making changes or additions, make sure to communicate those internal so that any custom workflows can be updated as well.  
-
 {% endtab %}
 {% endtabs %}
 <br>
-<br>
 * * *
-## Granting appropriate access
+### Granting appropriate access
 {% tabs GAA %}
 
 {% tab GAA Developers %}
-Restriciting access to specific groups of patients can be accomplished by assigning [object permissions via auth groups](https://canvas-medical.zendesk.com/hc/en-us/articles/13143167734291-User-permissions). You can leverage any available data point available to the Workflow Kit to programtically create these groupings. You may need to partner with your Super Users to understand how each group should be defined, leveraging the Canvas data model. <br><br> If you cannot use one of the existing data points within a patient's profile, writing identifiers using the [FHIR Patient Create]({{site.baseurl}}/api/patient/) endpoint may be a good option. Using this attribute allows you to leverage external data (like payer program enrollments) to define your groups.
+Restriciting access to specific groups of patients can be accomplished by assigning [object permissions via auth groups](https://canvas-medical.zendesk.com/hc/en-us/articles/13143167734291-User-permissions). You can leverage any available data point available to the Workflow Kit to programmatically create these groupings. You may need to partner with your Super Users to understand how each group should be defined, leveraging the Canvas data model. <br><br> If you cannot use one of the existing data points within a patient's profile, writing identifiers using the [FHIR Patient Create]({{site.baseurl}}/api/patient/) endpoint may be a good option. Using this attribute allows you to leverage external data (like payer program enrollments) to define your groups.
 
 The Protocol below groups patients based on having a consent on file.
 
@@ -164,7 +162,7 @@ The minimum necessary rule requires that covered entities make reasonable effort
 <br>
 
 * * *
-## Routing work to the right team or individual
+### Routing work to the right team or individual
 {% tabs RTI %}
 
 {% tab RTI Developers %}

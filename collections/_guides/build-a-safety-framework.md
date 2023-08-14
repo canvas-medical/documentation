@@ -5,9 +5,19 @@ guide_for:
 
 Healthcare has come a long way since the US Institute of Medicine published its landmark To Err is Human report in 1999. While patients are safer, practicing evidence-based medicine is often still too hard. Canvas was designed to leverage data to better inform your workflows. 
 <br>
+<br>
+* * *
+## What you'll learn
+In this guide, you will learn how to do the following:
+- Suggest an alternative intervention
+- Track performance and outcomes
+<br>
+<br>
+
+* * *
 
 
-### Suggesting Alternative Interventions
+### Suggest an alternative interventions
 {% tabs SAI %}
 
 {% tab SAI Developers %}
@@ -145,6 +155,7 @@ When working with your developers, you can leverage the framework below to help 
 {% endtab %}
 {% endtabs %}
 <br><br>
+* * *
 ### Tracking Performance and Outcomes
 An essential aspect of preventing medical errors and improving patient safety is using data effectively to understand, track and communicate performance on patient safety metrics. 
 <br><br>

@@ -2,11 +2,22 @@
 title: "Customize Search Results"
 guide_for:
 ---
-Canvas's search functions are typically used dozens of times in a single patient interaction. Navigating through the thousands of options within a dropdown can be a daunting task for a clinician. Keywords and quickpicks can help improve the experience, but their impact is often limited. Our plugins allow you to add your own complex logic to help surface the right options, with the right context, at the right time. We currently support altering our condition search results through the Plugins beta, and will continue to expand this offering throughout the platform. 
+Canvas's search functions are typically used dozens of times in a single patient interaction. Navigating through the thousands of options within a drop-down can be a daunting task for a clinician. Keywords and quick-picks can help improve the experience, but their impact is often limited. Our plugins allow you to add your own complex logic to help surface the right options, with the right context, at the right time. We currently support altering our condition search results through the Plugins beta, and will continue to expand this offering throughout the platform. 
 
-{% include alert.html type="info" content=" If you are interested in participating in our beta for Plugins, please reach out to product@canvasmedical.com." %}
+{% include alert.html type="info" content=" <b>Plugins are currently in beta.</b> If you are interested in participating in our beta for Plugins, please reach out to product@canvasmedical.com." %}
+<br>
+* * *
+## What you'll learn
+In this guide, you will learn how to do the following:
+- Customize Condition Search
+- Customize Medication Search (coming soon)
+- Customize Refer Search (coming soon)
+<br>
+<br>
 
-## Customize Condition Search
+* * *
+
+### Customize Condition Search
 
 {% tabs CSR %}
 {% tab CSR Developers %}
@@ -17,6 +28,7 @@ If your super users identify a way to optimize the current condition search resu
 Use <b>PreSearch</b> if you want to entirely bypass the built-in Canvas search function entirely, and supply your own results based on the user query. In this case, you need to add results to the pre search event. They need to be formatted properly so that the application can use them correctly. You can specify the order and add annotations if desired. This could be useful if your care model has a narrow diagnostic range. The example below replaces the Canvas condition search results with the six options listed.
 
 {% include alert.html type="warning" content="If you are going to remove all the Canvas results as a matter of course, it is better to use PreSearch, to avoid the delay associated with calling the Canvas search function."%}
+<br>
 
 ```python
 from canvas_core import events, logging
@@ -34,7 +46,7 @@ def handle_condition_presearch(event: PreSearch[Condition]) -> None:
     if event.usage != 'command.diagnose':
         return
 
-    logger.info("Pre-searching for diangose conditions", query=event.query, usage=event.usage)
+    logger.info("Pre-searching for diagnose conditions", query=event.query, usage=event.usage)
 
 
     event.results = [
@@ -72,8 +84,8 @@ def handle_condition_presearch(event: PreSearch[Condition]) -> None:
 
     logger.info("Finished results for condition search", query=event.query)
 ```
-
-Use <b>PostSearch</b> if you want to start with the results from the built-in Canvas search function and work with those. You can add results, remove results, reorder results, or annotate results. The example below adds HCC weight information to the search results for the specfied ICD10 codes.  
+<br>
+Use <b>PostSearch</b> if you want to start with the results from the built-in Canvas search function and work with those. You can add results, remove results, reorder results, or annotate results. The example below adds HCC weight information to the search results for the specified ICD10 codes.  
 
 ```python
 from canvas_core import events, logging
