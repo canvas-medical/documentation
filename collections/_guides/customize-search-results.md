@@ -21,6 +21,8 @@ In this guide, you will learn how to do the following:
 
 {% tabs CSR %}
 {% tab CSR Developers %}
+First time using plugins? Follow our [quickstart guide](https://canvas-medical.github.io/canvas-core/quickstart/plugins.html#) to get started. 
+
 If your super users identify a way to optimize the current condition search results for your care model, you can leverage a plugin to alter the results as desired. Check out the super user tab for some examples.
 
 <b>Condition search</b> can be modified by intercepting one of two events: <b>PreSearch</b> and <b>PostSearch</b>.
@@ -133,20 +135,27 @@ def handle_search_condition_post_search(event: search_events.PostSearch[results.
 <br>
 
 
-
-
-
-
-
 {% endtab %}
 {% tab CSR  Super Users %}
 Custom plugins can be used to alter the condition search in the following ways:
 - Replace the results entirely
-    - 
+    - Only surface the 10 diagnoses that are treated based on your diagnostic range
 - Add Results
+    - Add additional descriptions for difficult to find ICD-10 codes
 - Remove Results 
+    - Remove pediatric codes if you only treat adults or vice versa
+    - Remove codes that are not covered based on the patient's coverage
+    - Remove BMI codes that don't match the patient's vitals
 - Reorder Results
+    - Use custom search tags to prioritize surface the right ICD-10 codes
+    - Prioritize specific codes over unspecified codes
+    - Add your own frequency data to reorder based on past user behavior
+    - Highlight suspect diagnoses based on captured clinical data
 - Add Annotations to Result
+    - Add warnings for unspecified codes
+    - Add warnings for already diagnosed conditions
+    - Surface payer specific HCC and risk adjustment data
+    - Surface necessary buddy code warnings 
 
 
 {% endtab %}
