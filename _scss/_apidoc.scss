@@ -72,12 +72,17 @@
     }
   }
   &__object {
-    border: 2px solid $black;
+    border: 2px solid $lightgrey;
+    border-radius: 0.6rem;
     margin-bottom: 1rem;
     padding: 0.5em;
     display: flex;
     flex-direction: column;
-    gap: 0.25em;
+    gap: 0.25em;  
+    header{
+      display: flex;
+      gap:0.5rem;
+    }
     &__name {
       font-family: $mono-font-family;
       font-weight: 700;
@@ -97,8 +102,52 @@
       margin-bottom: 0;
     }
     &__children {
-      margin: 2rem;
+      // margin: 2rem;
+      margin: 0.5rem;
+      border: 0px solid $lightgrey;
+      border-radius: 0.6rem;
+      .apidoc{
+        &__object{
+          border:0px;
+        }
+      }
     }
+  }
+
+  
+.accordion {
+  cursor: pointer;
+  padding: 10px;
+  border: none;
+  text-align: left;
+  outline: none;
+  transition: 0.4s;
+  display: inline-block;
+  border-radius: 0.6rem;
+  border: 2px solid $lightgrey;
+
+  &.active{    
+    border-bottom: 2px solid $lightgrey;
+    display: block;
+    border-color: transparent transparent $lightgrey transparent;
+    border-radius: 0.6rem 0.6rem 0px 0px;
+
+  }
+}
+
+
+.panel {
+  border-radius: 0.6rem;
+  display: none;
+  background-color: white;
+  overflow: hidden;
+  .apidoc__object {
+    border-bottom: 1px solid $lightgrey;
+
+    &:last-child{
+      border-bottom: 0px;
+    }
+
   }
   &__hidden {
     display: none;

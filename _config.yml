@@ -60,6 +60,14 @@ feed:
   collections:
     release-notes:
       path: "/release-notes.xml"
+
+algolia:
+  application_id: 'Z7V1BV6RHQ'
+  index_name: 'collection'
+  search_only_api_key: 'c133ef1b2b0b4f5297f1ce3a1aeb50e9'
+
+
+  
     
 
 ### Build settings
@@ -71,6 +79,7 @@ plugins:
   - jekyll-sitemap
   - jekyll-tabs
   - octopress-minify-html
+  - jekyll-algolia
 
 ### Exclude from processing
 exclude:

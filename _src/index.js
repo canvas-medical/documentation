@@ -8,3 +8,5 @@ import '../_js/getheight';
 import '../_js/jekylltabs';
 import '../_js/roguetoolbar';
 import '../_js/toggle';
+import '../_js/accordian';
+
