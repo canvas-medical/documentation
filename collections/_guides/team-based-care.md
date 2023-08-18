@@ -166,11 +166,186 @@ The minimum necessary rule requires that covered entities make reasonable effort
 {% tabs RTI %}
 
 {% tab RTI Developers %}
-hi
+Work with your super users to use the following framework to determine how tasks can be rerouted to create efficiencies. <br><br>
+When <b>X</b> occurs: When a task is created <br>
+Under <b>Y</b> conditions: `targeted_task_title ` = tbd <br>
+I want <b>Z</b> to happen: Assign to `group_name` or `pracitioner` and add `label(s)` <br>
+
+The example below looks for the task name referral_task_title = "Refer patient to Psychiatry (TBD)", updates the team assignment, and adds a label. 
+
+``` python
+import requests
+from canvas_workflow_kit.protocol import ClinicalQualityMeasure, ProtocolResult
+from canvas_workflow_kit.constants import CHANGE_TYPE
+
+
+class BehvaioralReferralTaskUpdate(ClinicalQualityMeasure):
+
+    class Meta:
+        title = "Behavioral Referral Task Update"
+        version = "2023-v01"
+        description = "This protocol updates the label and team for a task created "
+        information = "https://link_to_protocol_information"
+        types = ["Task"]
+        compute_on_change_types = [CHANGE_TYPE.TASK]
+        authors = ["Canvas Example Medical Association (CEMA)"]
+        notification_only = True
+
+    token = None
+    task_id = None
+
+    # TODO: These are hard coded variables that can be updated based on your needs
+
+    # The group ID you can retreive from a FHIR Group Search call
+    group_fhir_id = "Group/e3fabb40-1ccc-4bb4-9e64-e813f27bf2e2"
+
+    # This is the name of the Team/Group you want to use when re-assigning a task
+    group_name = "Behavioral Health Coordinators"
+
+    # This is the label you want to add to the task we are updating
+    task_label = "Internal Referral"
+
+    # This is the exact title of the Task we are trying to find and update
+    targeted_task_title = "Refer patient to Psychiatry (TBD)"
+
+    ##################### HELPER FUNCTIONS ##################################
+
+    def get_fhir_api_token(self):
+        """Given the Client ID and Client Secret for authentication to FHIR,
+        return a bearer token"""
+
+        grant_type = "client_credentials"
+        client_id = self.settings.CLIENT_ID
+        client_secret = self.settings.CLIENT_SECRET
+
+        token_response = requests.request(
+            "POST",
+            f"https://{self.settings.INSTANCE_NAME}.canvasmedical.com/auth/token/",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data=f"grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}",
+        )
+
+        if token_response.status_code != 200:
+            raise Exception('Unable to get a valid FHIR bearer token')
+
+        return token_response.json().get("access_token")
+
+    def get_fhir_task(self):
+        """Given a Task ID, request a FHIR Task Resource"""
+
+        if not self.token or not self.task_id:
+            return None
+
+        response = requests.get(
+            (
+                f"https://fhir-{self.settings.INSTANCE_NAME}.canvasmedical.com/"
+                f"Task?identifier={self.task_id}"
+            ),
+            headers={
+                "Authorization": f"Bearer {self.token}",
+                "accept": "application/json",
+            },
+        )
+
+        if response.status_code != 200:
+            raise Exception('Failed to get FHIR Task')
+
+        resources = response.json().get("entry", [])
+        if len(resources) == 0:
+            return None
+
+        return resources[0].get("resource")
+
+    def update_fhir_task(self, task):
+        """Given a Task ID and Task Resource perform a FHIR Task Update"""
+
+        if not self.token or not self.task_id:
+            return None
+
+        response = requests.put(
+            (
+                f"https://fhir-{self.settings.INSTANCE_NAME}.canvasmedical.com/"
+                f"Task/{self.task_id}"
+            ),
+            json=task,
+            headers={
+                "Authorization": f"Bearer {self.token}",
+                "accept": "application/json",
+                "content-type": "application/json",
+            },
+        )
+
+        if response.status_code != 200:
+            raise Exception(f"Failed to mark Task as completed with {response.status_code} and payload {payload}")
+
+    def edit_task(self, task):
+        """Given a Task update the payload to supply a Group extension and label"""
+
+        # Add an extension for Group assignee in the task payload
+        new_extension = {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+            "valueReference": {
+                "reference": self.group_fhir_id,
+                "display": self.group_name,
+            },
+        }
+        extension = [*task.get("extension", []), new_extension]
+
+        # add label to the task payload
+        new_input = {
+            "type": {"text": "label"},
+            "valueString": self.task_label,
+        }
+        input = [*task.get("input", []), new_input]
+
+        new_task = task | {"extension": extension, "input": input}
+        return {k: v for k, v in new_task.items() if k != "note"}
+
+    def is_targeted_task(self):
+        """Returns true if the task has the title we are targetting """
+
+        return (
+            len(
+                self.patient.tasks.filter(
+                    externallyExposableId=self.task_id, title=self.targeted_task_title
+                )
+            )
+            == 1
+        )
+
+    ##################### END HELPER FUNCTIONS ##################################
+
+    def compute_results(self):
+        """ This is the main function that will check if the task that triggered this protocol
+        is the one that we are hoping to update. If it is, we fetch the task payload from FHIR
+        and update the assignee and label
+        """
+
+        # First get a FHIR API Token
+        if not (token := self.get_fhir_api_token()):
+            return result
+        self.token = token
+
+        result = ProtocolResult()
+
+        field_changes = self.field_changes or {}
+        self.task_id = str(field_changes.get("external_id", ""))
+        created = field_changes.get("created") == True
+        if not created or not self.task_id or not self.is_targeted_task():
+            return result
+
+        if not (task := self.get_fhir_task()):
+            return result
+
+        self.update_fhir_task(self.edit_task(task))
+
+        return result
+
+```
 {% endtab %}
 
-{% tab RTI Super User %}
-hello
+{% tab RTI Super Users %}
+You’ll need to determine how you’ll leverage your care team, what types of tasks should be delegated, and to whom they should be assigned. Our [Teams](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams) setup allows you to assign the Canvas automated tasks to a team; however, the way we’ve grouped responsibilities may not be granular enough for you. You can partner with your engineering team to use Protocols to re-route tasks based on their titles. Given a known task title, you can reassign to an individual or team, and also add labels. 
 {% endtab %}
 
 {% endtabs %}

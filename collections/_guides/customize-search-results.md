@@ -23,13 +23,15 @@ In this guide, you will learn how to do the following:
 {% tab CSR Developers %}
 First time using plugins? Follow our [quickstart guide](https://canvas-medical.github.io/canvas-core/quickstart/plugins.html#) to get started. 
 
-If your super users identify a way to optimize the current condition search results for your care model, you can leverage a plugin to alter the results as desired. Check out the super user tab for some examples.
+Your care team may identify ways to make searching easier in Canvas (see the super user tab for some examples). Plugins can be used to add custom logic, tags, and/or options to the Canvas's search results. 
 
 <b>Condition search</b> can be modified by intercepting one of two events: <b>PreSearch</b> and <b>PostSearch</b>.
 
-Use <b>PreSearch</b> if you want to entirely bypass the built-in Canvas search function entirely, and supply your own results based on the user query. In this case, you need to add results to the pre search event. They need to be formatted properly so that the application can use them correctly. You can specify the order and add annotations if desired. This could be useful if your care model has a narrow diagnostic range. The example below replaces the Canvas condition search results with the six options listed.
+Use <b>PreSearch</b> if you want to entirely bypass the built-in Canvas search function entirely, and supply your own results based on the user query. In this case, you need to add results to the pre search event. They need to be formatted properly, including `icd10_code`, `icd10_text`, and `preferred_snomed_term` so that the application can use them correctly. You can specify the order and add annotations if desired. This could be useful if your care model has a narrow diagnostic range or if you are calling out another tool's API to return results. 
 
 {% include alert.html type="warning" content="If you are going to remove all the Canvas results as a matter of course, it is better to use PreSearch, to avoid the delay associated with calling the Canvas search function."%}
+
+The example below replaces the Canvas condition search results with the six options listed.
 <br>
 
 ```python
@@ -87,7 +89,8 @@ def handle_condition_presearch(event: PreSearch[Condition]) -> None:
     logger.info("Finished results for condition search", query=event.query)
 ```
 <br>
-Use <b>PostSearch</b> if you want to start with the results from the built-in Canvas search function and work with those. You can add results, remove results, reorder results, or annotate results. The example below adds HCC weight information to the search results for the specified ICD10 codes.  
+Use <b>PostSearch</b> if you want to start with the results from the built-in Canvas search function and work with those. You can add results, remove results, reorder results, or annotate results.<br><br>
+The example below adds HCC weight information to the search results for the specified ICD10 codes.  
 
 ```python
 from canvas_core import events, logging
@@ -137,19 +140,19 @@ def handle_search_condition_post_search(event: search_events.PostSearch[results.
 
 {% endtab %}
 {% tab CSR  Super Users %}
-Custom plugins can be used to alter the condition search in the following ways:
+Custom plugins can be used to alter the condition search in many ways. Use the examples below to help you brainstorm with your developers how to implement changes that would better support your care model. 
 - Replace the results entirely
     - Only surface the 10 diagnoses that are treated based on your diagnostic range
+    - Call out to an external API to leverage a different source of data or search tool (i.e IMO)
 - Add Results
-    - Add additional descriptions for difficult to find ICD-10 codes
+    - Update descriptions for difficult to find ICD-10 codes
 - Remove Results 
-    - Remove pediatric codes if you only treat adults or vice versa
-    - Remove codes that are not covered based on the patient's coverage
-    - Remove BMI codes that don't match the patient's vitals
+    - Remove age specific codes that do not match the patient's profile
+    - Remove codes that are excluded benefits
+    - Remove BMI codes that do not match the patient's vitals
 - Reorder Results
-    - Use custom search tags to prioritize surface the right ICD-10 codes
     - Prioritize specific codes over unspecified codes
-    - Add your own frequency data to reorder based on past user behavior
+    - Prioritize risk adjustable codes
     - Highlight suspect diagnoses based on captured clinical data
 - Add Annotations to Result
     - Add warnings for unspecified codes

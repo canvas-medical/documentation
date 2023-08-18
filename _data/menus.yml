@@ -368,5 +368,22 @@ guides_templates_bh:
  - title: "Manage Revenue Outside of Canvas"
    url: /guides/outside-revenue/
 sdk:
- - title: "SDK Intro`"
-   url: /sdk/
+ - title: "SDK Overview`"
+   url: /sdk
+ - title: "Canvas Core`"
+   identifier: sdk_canvas_core      
+ - title: "Workflow Kit`"
+   identifier: sdk_workflow_kit 
+sdk_workflow_kit:
+ - title: "Quickstart" 
+   url: /sdk/sdk-quickstart/
+ - title: "Necessary Data and Methods" 
+ - title: "Interventions" 
+ - title: "Examples"
+   identifier: sdk_workflow_kit_examples
+sdk_workflow_kit_examples:
+ - title: "Appointment Notification"
+   url: /sdk/appointment-notification
+ - title: "Appointment Task Creator"
+   url: /sdk/appointment-task-creator
+
