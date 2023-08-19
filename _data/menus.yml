@@ -363,8 +363,8 @@ guides_templates_bh:
    url: /guides/optimize-patient-intake/
  - title: "External Scheduling"
    url: /guides/external-scheduling/
- - title: "Queue Based Workflows"
-   url: /guides/queu-based-workflows/
+ - title: "Asynchronous Care"
+   url: /guides/asynchronous-care/
  - title: "Manage Revenue Outside of Canvas"
    url: /guides/outside-revenue/
 sdk:
