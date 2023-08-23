@@ -82,27 +82,29 @@ sections:
           - name: active
             type: boolean
             description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false)
-        # example_payload: example-payload-code
-        endpoints: [read, search, create, update]
+        endpoints: [read, search, create]
         read:
-          example_request: example-read-request
-          example_response: example-read-response
-        search:
-          example_request: example-search-request
-          example_response: example-search-response
-        create:
-          example_request: example-create-request
-          example_response: example-create-response
-        update:
+          example_request: patient-read-request
+          example_response: patient-read-response
           responses: [200, 400]
-          example_request: example-update-request
-          example_request: example-update-response
+        search:
+          example_request: patient-search-request
+          example_response: patient-search-response
+          responses: [200, 400]
+        create:
+          example_request: patient-create-request
+          example_response: patient-create-response
+          responses: [200, 400]
+        update:  
+          example_request: patient-update-request
+          example_response: patient-update-response
+          responses: [200, 400]
 ---
 
 
-<div id="example-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+<div id="patient-read-request">
+{% tabs patient-read-request %}
+{% tab patient-read-request python %}
 ```sh
 import requests
 import json
@@ -120,7 +122,7 @@ print(response.text)
 
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab patient-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fhir-example.canvasmedical.com/Patient/_id \
@@ -131,237 +133,16 @@ curl --request GET \
 {% endtabs %}
 </div>
 
-<div id="example-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+<div id="patient-read-response">
+{% tabs patient-read-response %}
+{% tab patient-read-response 200 %}
 ```json
 200 {
-  {
-    "resourceType": "Patient",
-    "id": "496db9b3dff044448384e0bcba5e67c4",
-    "text": {
-        "status": "generated",
-        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Megan<b>Jones</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>427087947</td></tr><tr><td>Date of birth</td><td><span>1971-07-08</span></td></tr></tbody></table></div>"
-    },
-    "extension": [
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
-            "valueCodeableConcept": {
-                "coding": [
-                    {
-                        "system": "http://snomed.info/sct",
-                        "code": "446141000124107",
-                        "display": "Identifies as female gender (finding)"
-                    }
-                ],
-                "text": "Identifies as female gender (finding)"
-            }
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation",
-            "valueCode": "20430005"
-        },
-        {
-            "extension": [
-                {
-                    "url": "ombCategory",
-                    "valueCoding": {
-                        "system": "urn:oid:2.16.840.1.113883.6.238",
-                        "code": "2106-3",
-                        "display": "White"
-                    }
-                },
-                {
-                    "url": "text",
-                    "valueString": "White"
-                }
-            ],
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
-        },
-        {
-            "extension": [
-                {
-                    "url": "ombCategory",
-                    "valueCoding": {
-                        "system": "urn:oid:2.16.840.1.113883.6.238",
-                        "code": "2186-5",
-                        "display": "Not Hispanic or Latino"
-                    }
-                },
-                {
-                    "url": "text",
-                    "valueString": "Not Hispanic or Latino"
-                }
-            ],
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
-        },
-        {
-            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
-            "valueCode": "America/Chicago"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
-            "valueString": "This is an administrative caption"
-        },
-        {
-            "extension": [
-                {
-                    "url": "ncpdp-id",
-                    "valueIdentifier": {
-                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber",
-                        "value": "3061582"
-                    }
-                },
-                {
-                    "url": "specialty_type",
-                    "valueString": "Retail~TwentyFourHourStore~SupportsDigitalSignature"
-                },
-                {
-                    "url": "default",
-                    "valueBoolean": true
-                }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
-        }
-    ],
-    "identifier": [
-        {
-            "use": "usual",
-            "type": {
-                "coding": [
-                    {
-                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                        "code": "MR"
-                    }
-                ]
-            },
-            "system": "http://canvasmedical.com",
-            "value": "427087947",
-            "assigner": {
-                "display": "Canvas Medical"
-            }
-        }
-    ],
-    "active": true,
-    "name": [
-        {
-            "use": "official",
-            "family": "Jones",
-            "given": [
-                "Megan"
-            ],
-            "period": {
-                "start": "0001-01-01T00:00:00+00:00",
-                "end": "9999-12-31T23:59:59.999999+00:00"
-            }
-        }
-    ],
-    "telecom": [
-        {
-            "id": "8e2b867c-6770-4e21-b296-fca8de3803c6",
-            "extension": [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
-                    "valueBoolean": false
-                }
-            ],
-            "system": "email",
-            "value": "megan.jones@zahoo.com",
-            "use": "home",
-            "rank": 1
-        },
-        {
-            "id": "587652b2-c739-4ac2-a44a-7488c060ac11",
-            "extension": [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
-                    "valueBoolean": false
-                }
-            ],
-            "system": "phone",
-            "value": "5893263689",
-            "use": "home",
-            "rank": 1
-        }
-    ],
-    "gender": "female",
-    "birthDate": "1971-07-08",
-    "deceasedBoolean": false,
-    "address": [
-        {
-            "id": "4c87b7af-2a2e-4cb0-ac84-559ab021780b",
-            "use": "home",
-            "type": "physical",
-            "line": [
-                "123 Main St"
-            ],
-            "city": "Nashville",
-            "state": "TN",
-            "postalCode": "37206",
-            "country": "us"
-        }
-    ],
-    "photo": [
-        {
-            "url": "https://d3hn0m4rbsz438.cloudfront.net/avatar1.png"
-        }
-    ],
-    "contact": [
-        {
-            "id": "96f20c90-a631-4ffc-acd4-94d6ee4efd38",
-            "extension": [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": true
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": true
-                }
-            ],
-            "relationship": [
-                {
-                    "text": "Husband"
-                }
-            ],
-            "name": {
-                "text": "Kevin Jones"
-            },
-            "telecom": [
-                {
-                    "system": "phone",
-                    "value": "5555555555"
-                },
-                {
-                    "system": "email",
-                    "value": "kj@zahoo.com"
-                }
-            ]
-        }
-    ],
-    "communication": [
-        {
-            "language": {
-                "coding": [
-                    {
-                        "system": "urn:ietf:bcp:47",
-                        "code": "en",
-                        "display": "English"
-                    }
-                ],
-                "text": "English"
-            }
-        }
-    ]
-}
+  ...
 }
 ```
 {% endtab %}
-{% tab read-response 400 %}
+{% tab patient-read-response 400 %}
 ```json
 400 {
   ...
@@ -369,12 +150,11 @@ curl --request GET \
 ```
 {% endtab %}
 {% endtabs %}
+</div>
 
-
-
-<div id="example-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+<div id="patient-search-request">
+{% tabs patient-search-request %}
+{% tab patient-search-request python %}
 ```sh
 import requests
 
@@ -389,7 +169,7 @@ print(response.text)
 
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab patient-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fhir-example.canvasmedical.com/Patient \
@@ -400,130 +180,13 @@ curl --request GET \
 {% endtabs %}
 </div>
 
-<div id="example-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+<div id="patient-search-response">
+{% tabs patient-search-response %}
+{% tab patient-search-response 200 %}
 ```json
 200 {
-  {
-    "resourceType": "Bundle",
-    "type": "searchset",
-    "total": 1,
-    "link": [
-        {
-            "relation": "self",
-            "url": "/Patient?given=mary&active=&_count=10&_offset=0"
-        },
-        {
-            "relation": "first",
-            "url": "/Patient?given=mary&active=&_count=10&_offset=0"
-        },
-        {
-            "relation": "last",
-            "url": "/Patient?given=mary&active=&_count=10&_offset=0"
-        }
-    ],
-    "entry": [
-        {
-            "resource": {
-                "resourceType": "Patient",
-                "id": "d1daa66c306e402682d88fc082939fc1",
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Mary<b>Winslow</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>568532137</td></tr><tr><td>Date of birth</td><td><span>1987-05-05</span></td></tr></tbody></table></div>"
-                },
-                "extension": [
-                    {
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                        "valueCode": "F"
-                    },
-                    {
-                        "extension": [
-                            {
-                                "url": "text",
-                                "valueString": "UNK"
-                            }
-                        ],
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
-                    },
-                    {
-                        "extension": [
-                            {
-                                "url": "text",
-                                "valueString": "UNK"
-                            }
-                        ],
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
-                    }
-                ],
-                "identifier": [
-                    {
-                        "use": "usual",
-                        "type": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                                    "code": "MR"
-                                }
-                            ]
-                        },
-                        "system": "http://canvasmedical.com",
-                        "value": "568532137",
-                        "assigner": {
-                            "display": "Canvas Medical"
-                        }
-                    }
-                ],
-                "active": true,
-                "name": [
-                    {
-                        "use": "official",
-                        "family": "Winslow",
-                        "given": [
-                            "Mary"
-                        ],
-                        "period": {
-                            "start": "0001-01-01T00:00:00+00:00",
-                            "end": "9999-12-31T23:59:59.999999+00:00"
-                        }
-                    }
-                ],
-                "telecom": [
-                    {
-                        "id": "3978856a-d790-40b5-9c12-8d295832b3a8",
-                        "extension": [
-                            {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
-                                "valueBoolean": false
-                            }
-                        ],
-                        "system": "phone",
-                        "value": "2022222222",
-                        "use": "home",
-                        "rank": 1
-                    }
-                ],
-                "gender": "unknown",
-                "birthDate": "1987-05-05",
-                "deceasedBoolean": false,
-                "communication": [
-                    {
-                        "language": {
-                            "coding": [
-                                {
-                                    "system": "urn:ietf:bcp:47",
-                                    "code": "en",
-                                    "display": "English"
-                                }
-                            ],
-                            "text": "English"
-                        }
-                    }
-                ]
-            }
-        }
-    ]
-}
+  ...
+
 }
 ```
 {% endtab %}
@@ -537,9 +200,9 @@ curl --request GET \
 {% endtabs %}
 </div>
 
-<div id="example-create-request">
-{% tabs create-request %}
-{% tab create-request python %}
+<div id="patient-create-request">
+{% tabs patient-create-request %}
+{% tab patient-create-request python %}
 ```sh
 import requests
 
@@ -554,7 +217,7 @@ response = requests.request("POST", url, headers=headers, data=payload)
 print(response.text)
 ```
 {% endtab %}
-{% tab create-request curl %}
+{% tab patient-create-request curl %}
 ```sh
 curl --request POST \
      --url https://fhir-example.canvasmedical.com/Patient \
@@ -594,16 +257,16 @@ curl --request POST \
 {% endtabs %}
 </div>
 
-<div id="example-create-response">
-{% tabs create-response %}
-{% tab create-response 200 %}
+<div id="patient-create-response">
+{% tabs patient-create-response %}
+{% tab patient-create-response 200 %}
 ```json
 200 {
   ...
 }
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab patient-create-response 400 %}
 ```json
 400 {
   ...
@@ -613,9 +276,9 @@ curl --request POST \
 {% endtabs %}
 </div>
 
-<div id="example-update-request">
-{% tabs update-request %}
-{% tab update-request curl %}
+<div id="patient-update-request">
+{% tabs patient-update-request %}
+{% tab patient-update-request curl %}
 ```sh
 curl --request PUT \
      --url https://fhir-example.canvasmedical.com/Patient/_id \
@@ -700,16 +363,16 @@ curl --request PUT \
 {% endtabs %}
 </div>
 
-<div id="example-update-response">
-{% tabs update-response %}
-{% tab update-response 200 %}
+<div id="patient-update-response">
+{% tabs patient-update-response %}
+{% tab patient-update-response 200 %}
 ```json
 200 {
   ...
 }
 ```
 {% endtab %}
-{% tab update-response 400 %}
+{% tab patient-update-response 400 %}
 ```json
 400 {
   ...
