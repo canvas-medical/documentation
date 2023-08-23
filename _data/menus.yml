@@ -365,8 +365,6 @@ guides_templates_bh:
    url: /guides/external-scheduling/
  - title: "Asynchronous Care"
    url: /guides/asynchronous-care/
- - title: "Manage Revenue Outside of Canvas"
-   url: /guides/outside-revenue/
 sdk:
  - title: "SDK Overview`"
    url: /sdk
