@@ -1,286 +1,281 @@
 ---
-title: "Patient"
+title: FHIR Patient 
+sections:
+  - type: section
+    blocks:
+      - type: apidoc
+        name: Patient
+        article: "a"
+        description: >-
+          At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
+        attributes:
+          - name: _id
+            description: >-
+              The identifier of the patient
+            type: string
+            required: true
+          - name: resourceType
+            type: string
+            required: true
+          - name: extension
+            type: json
+            required: true
+          - name: identifier
+            type: json
+            required: false
+          - name: active
+            type: boolean
+            required: false
+          - name: name
+            type: json
+            required: true
+          - name: telecom
+            type: json
+            required: false
+          - name: gender
+            description: >-
+              Default: male
+            type: string
+            required: false
+          - name: deceased
+            type: boolean
+            required: false
+          - name: address
+            type: json
+            required: false
+          - name: photo
+            type: json
+            required: false
+          - name: contact
+            type: json
+            required: false
+        search_parameters:
+          - name: _id
+            type: string
+            description: A Canvas-issued unique identifier
+          - name: identifier
+            type: string
+            description: The Canvas-issued MRN or a saved identifier from an external system  
+          - name: name
+            type: string
+            description: Part of a first or last name
+          - name: family
+            type: string
+            description: Last name
+          - name: given
+            type: string
+            description: First Name
+          - name: birthdate
+            type: date
+            description: The patient's birthdate
+          - name: gender
+            type: string
+          - name: nickname
+            type: string
+            description: Preferred or alternate name
+          - name: email
+            type: string
+            description: Patient email address
+          - name: phone
+            type: string
+            description: Patient phone number, expected to be 10 digits
+          - name: active
+            type: boolean
+            description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false)
+        # example_payload: example-payload-code
+        endpoints: [read, search, create, update]
+        read:
+          example_request: example-read-request
+          example_response: example-read-response
+        search:
+          example_request: example-search-request
+          example_response: example-search-response
+        create:
+          example_request: example-create-request
+          example_response: example-create-response
+        update:
+          responses: [200, 400]
+          example_request: example-update-request
+          example_request: example-update-response
 ---
-## Patient Create
 
-### Getting the newly-created patient's ID.
 
-Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the `Location:` header. You will use this for subsequent requests that reference this patient. 
+<div id="example-read-request">
+{% tabs read-request %}
+{% tab read-request python %}
+```sh
+import requests
+import json
 
-This ID will also match the url when navigated to the patient chart.  
-https\://<instance>.canvasmedical.com/patient/<patient-id>
+url = "{{base_url}}/Patient/797e5f30447545a4823fe1c8ebcd0ba6/"
 
-Most of the fields that are populated through this endpoint will display and be editable on the Patient Registration page. You can navigate to this view when you click the Patient's name in the top left corner on their patient chart or if you click the three dot menu next to the patient name and click `Registration`
+payload={}
+headers = {
+  'Content-Type': 'application/fhir+json'
+}
 
-### Patient Attributes:
+response = requests.request("GET", url, headers=headers, data=payload)
 
-Canvas accepts a FHIR standard request body, you may refer to [FHIR Patient Documentation](https://www.hl7.org/fhir/patient.html) to help out in building your patient request. Below is our documentation on how Canvas specifically will use each attribute
+print(response.text)
 
-### name [REQUIRED]
+```
+{% endtab %}
+{% tab read-request curl %}
+```sh
+curl --request GET \
+     --url https://fhir-example.canvasmedical.com/Patient/_id \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-Name is a **required** list of objects. 
-
-One iteration must be marked with `"use": "official"`. The first object with use=official will determine the Patient's first, last, prefix, suffix or middle name. The First and Last name is required within Canvas.  
-If you look at the example: 
-
-- the `family` attribute will populate the Patient's Last Name
-- the `given` list will populate the Patient's First/Middle Name.  The first item in the list will be the First Name,  while if more items in the list exists, it will populate the Patient's Middle Name and be joined together with an empty space.
-- the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI. 
-- the `suffix` attribute will be displayed on the Canvas UI but it will not be editable through the UI.
-
-This example also demonstrates that Canvas ingests a Nick Name (preferred name) for the Patient. This element is identified by `use` = `nickname` and the first item in the `given` list will be the Patient's nickname. 
-
-Canvas can also ingest old names or maiden names using `use` = `maiden` or `use`= `old`. These will not show up on the Canvas UI but will be stored by Canvas (and will be returned via a read request).
-
-```curl
-"name": [
+<div id="example-read-response">
+{% tabs read-response %}
+{% tab read-response 200 %}
+```json
+200 {
+  {
+    "resourceType": "Patient",
+    "id": "496db9b3dff044448384e0bcba5e67c4",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Megan<b>Jones</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>427087947</td></tr><tr><td>Date of birth</td><td><span>1971-07-08</span></td></tr></tbody></table></div>"
+    },
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
+            "valueCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": "446141000124107",
+                        "display": "Identifies as female gender (finding)"
+                    }
+                ],
+                "text": "Identifies as female gender (finding)"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation",
+            "valueCode": "20430005"
+        },
+        {
+            "extension": [
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2106-3",
+                        "display": "White"
+                    }
+                },
+                {
+                    "url": "text",
+                    "valueString": "White"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+        },
+        {
+            "extension": [
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2186-5",
+                        "display": "Not Hispanic or Latino"
+                    }
+                },
+                {
+                    "url": "text",
+                    "valueString": "Not Hispanic or Latino"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+            "valueCode": "America/Chicago"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+            "valueString": "This is an administrative caption"
+        },
+        {
+            "extension": [
+                {
+                    "url": "ncpdp-id",
+                    "valueIdentifier": {
+                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber",
+                        "value": "3061582"
+                    }
+                },
+                {
+                    "url": "specialty_type",
+                    "valueString": "Retail~TwentyFourHourStore~SupportsDigitalSignature"
+                },
+                {
+                    "url": "default",
+                    "valueBoolean": true
+                }
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
+        }
+    ],
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "http://canvasmedical.com",
+            "value": "427087947",
+            "assigner": {
+                "display": "Canvas Medical"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
         {
             "use": "official",
-            "family": "Mark",
+            "family": "Jones",
             "given": [
-                "Isabella",
-                "Robel"
+                "Megan"
             ],
-            "prefix": "Mrs.",
-            "suffix": "Jr."
-        },
-        {
-            "use": "nickname",
-            "given": [
-                "Izzy"
-            ]
-        },
-        {
-            "use": "maiden",
-            "family": "Smith"
+            "period": {
+                "start": "0001-01-01T00:00:00+00:00",
+                "end": "9999-12-31T23:59:59.999999+00:00"
+            }
         }
-    ]
-```
-
-
-
-In the Canvas UI, each Patient will be displayed with `First Last Suffix (Nick name)`. You will be able to search for a patient by any of these attributes defined here: First, Middle, Last, Suffix or Nick Name.
-
-If there are any other objects defined in the name list they will currently be ignored in Canvas. 
-
-### birthDate [REQUIRED]
-
-The birthDate field is required in Canvas for a patient. This is a string date format that is defined [here](https://www.hl7.org/fhir/datatypes.html#date). For Canvas it is best to get the format `YYYY-MM-DD`.
-
-If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
-
-```curl
-"birthDate": "1980-11-13",
-```
-
-
-
-### extension
-
-Canvas allows a few specific FHIR extensions to be ingested. For us to identify which extension maps to specific fields in Canvas, we use the `url` field as an exact string match. Here are the following extensions we support in Canvas:
-
-### Birthsex Extension [REQUIRED]
-
-There is one extensions that is **required** and that is the Patient's sex at birth. We identify this extension with the `url` equal to `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`. The values allowed in the `valueCode` attribute is 
-
-- M   (for Male)
-- F    (for Female)
-- O    (for Other) 
-- UNK  (for Unknown)
-
-```text
-{
-  "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-  "valueCode": "M"
-}
-```
-
-
-
-### Ethnicity Extension
-
-There is an extension to specify the ethnicities of a patient. [Us Core Ethnicity extension](http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity). 
-
-- The `url` must match "<http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity>"
-- Then you will define an `extension` list of objects where each object needs a `valueCoding` object. The `system` of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate `code` of each ethnicity needed from the ValueSet.
-
-```text
-{
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-      "extension": [
+    ],
+    "telecom": [
         {
-          "valueCoding": {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2186-5"
-        	}
-        },
-        {
-          "valueCoding": {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2180-8"
-        	}  
-        }
-      ]
-    },
-```
-
-
-
-### Race Extension
-
-There is an extension to specify the races of a patient. This is defined using the [Us Core Race extension](http://hl7.org/fhir/us/core/StructureDefinition/us-core-race). 
-
-- The `url` must match "<http://hl7.org/fhir/us/core/StructureDefinition/us-core-race>"
-- Then you will define an `extension` list of objects where each object needs a `valueCoding` object. The `system` of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate `code` of each race needed from the ValueSet. 
-
-```text
-{
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-      "extension": [
-        {
-          "valueCoding": {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2110-5"
-          }  
-        }
-      ]
-    },
-```
-
-
-
-### Timezone Extension
-
-An optional extension Canvas accepts is to specify the timezone a Patient live in. The extension must have the `url` equal to "<http://hl7.org/fhir/StructureDefinition/tz-code">. Then the `valueCode` field can be anything defined [here](http://hl7.org/fhir/StructureDefinition/tz-code). You can see examples [here](http://build.fhir.org/valueset-timezones.html). If the URL does not match exactly, a timezone will not be set. If the URL matches exactly but a valid timezone is not given, the database will save what is passed in; however, the UI will display the current user's timezone. 
-
-```text
-{
-	"url": "http://hl7.org/fhir/StructureDefinition/tz-code",
-	"valueCode": "America/New_York"
-},
-```
-
-
-
-### Clinical Note Extension
-
-An optional extension Canvas accepts is to define a Clinical Note. This note will display on the Patient's Chart right under the patient's name. 
-
-The `url` must equal "<http://schemas.canvasmedical.com/fhir/extensions/clinical-note">, while the `valueString` is a free text field.
-
-```text
-{
-	"url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
-	"valueString": "I am a clinical caption from a Create message"
-},
-```
-
-
-
-### Administrative Note Extension
-
-An optional extension Canvas accepts is to define a Adminstrative Note. To learn more about this attribute, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360056388234-Administrative-Caption).
-
-The `url` must equal "<http://schemas.canvasmedical.com/fhir/extensions/administrative-note">, while the `valueString` is a free text field.
-
-```text
-{
-	"url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
-	"valueString": "I am an administrative caption from a Create message"
-}
-```
-
-
-
-### Preferred Pharmacy Extension
-
-This extension is used to set a patient's preferred pharmacy using the NCPDP id. This is one of the many preferences you can set on a patient that is documented in this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057339654-Patient-Preferences)
-
-The extension contains the following attributes:
-
-- The `url` must match `http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy`.
-- The `extension` list of objects where each object needs:
-  - `url` that must match `ncpdp-id`
-  - `valueIdentifier` object that contains the `system` that must equal  
-     "<http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber">. Then you can specify the  
-     appropriate `value` of the pharmacy, which is a 7 digit NDPDP ID.
-
-```text
-{
-  "url" : "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
-  "extension": [
-    {
-      "url": "ncpdp-id",
-      "valueIdentifier": {
-        "value": "5670496",
-        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
-      }
-    }
-  ]
-}
-```
-
-
-
-Here are a few callouts on workflow for the value attribute:
-
-1. If a valid 7 digit NCPDP id value is specified, then the patient's preferred pharmacy will be updated accordingly with the pharmacy's name, phone, fax and address.
-2. If there is any other value given that is not a 7 digit number, you will see an error that they message did not adhere to the Patient Schema. 
-3. If a 7 digit number is passed, but it is not a valid NCPDP id and does not correlate to a pharmacy in Canvas, the patient's preferred pharmacy will be blank. 
-4. If this extension is not specified in the request body, any current preferred pharmacy set for the patient will remain. 
-
-### gender
-
-The gender attribute is an optional string enum value that feds into our gender identity attribute on our UI. Currently we are tied to the FHIR values allowed: 
-
-- male
-- female
-- other
-- unknown
-
-If `unknown` is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If `other` is selected, the patient chart will display 'Additional gender category or other, please specify' in the gender field. 
-
-On the Canvas UI we do allow more options than the just the FHIR standards. 
-
-```text
-"gender": "female",
-```
-
-
-
-### active
-
-The active attribute is a boolean to specify if the patient is active in your healthcare system. If this value is not set, Canvas will default this to `true`
-
-```text
-"active": true,
-```
-
-
-
-### telecom
-
-Telecom is an optional list of objects where you can provide the following attributes in each object: 
-
-- `system` : This can be phone, fax, email, pager, url, sms, or other (This will default to other if you try to pass anything else). 
-- `value` [REQUIRED]\: Free text string of the actual value for this contact point
-- `use`: This can be home, work, temp, old, mobile  (default is home)
-- `rank`: This is an integer to specified the preferred order of contact points per system (default is 1)
-- `extension` : This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that we have the Patient's consent to send text messages or emails to this number. We identify this extension with the `url` equal to "<http://schemas.canvasmedical.com/fhir/extensions/has-consent>" and then you can specify a boolean for the `valueBoolean` attribute. **Note: This will not send the verification email or text as our UI does. It will bypass this step and mark the contact as verified**
-
-Email and Phone system's will be surfaced in the Canvas UI. Currently we do store the other systems in our database, we just do not display them. 
-
-```text
-"telecom": [
-        {
-            "id": "46c850f4-bf87-47fe-88d1-1eb9883ab095",
-            "system": "other",
-            "value": "other test",
+            "id": "8e2b867c-6770-4e21-b296-fca8de3803c6",
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
+                    "valueBoolean": false
+                }
+            ],
+            "system": "email",
+            "value": "megan.jones@zahoo.com",
             "use": "home",
             "rank": 1
         },
         {
-            "id": "5e610aac-4627-40b5-bff0-892a7040a0a4",
+            "id": "587652b2-c739-4ac2-a44a-7488c060ac11",
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
@@ -288,122 +283,36 @@ Email and Phone system's will be surfaced in the Canvas UI. Currently we do stor
                 }
             ],
             "system": "phone",
-            "value": "5554320555",
-            "use": "mobile",
+            "value": "5893263689",
+            "use": "home",
             "rank": 1
         }
     ],
-```
-
-
-
-### identifier
-
-The identifier list defines additional identifiers you may want to store for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system. For each identifier object you can specify the following attributes:
-
-- `use`:  This could be usual, official, temp, secondary, old (This will default to usual if omitted)
-- `system`:  Free text field to help you identify what this value represents
-- `value`: Free text to store the patient's identifier
-- `period`: This is used to specify the start and end dates (format YYYY-MM-DD). If period is omitted it will default to `start` = 1970-01-01 and `end` = 2100-12-31. There is currently no validation if the end date is before the start date.
-
-```text
-"identifier": [
+    "gender": "female",
+    "birthDate": "1971-07-08",
+    "deceasedBoolean": false,
+    "address": [
         {
-            "use": "usual",
-            "system": "HealthCo Internal Identifer",
-            "value": "s07960990",
-            "period": {
-                "start": "1980-03-01",
-                "end": "2051-12-31"
-            }
-        }
-]
-```
-
-
-
-### address
-
-The address is a list of objects. For each address we allow the following attributes:
-
-- `use`: choices allowed are home, work, temp, old (default is home)
-- `type`: choices allowed are both, physical, postal (default is both)
-- `line`: List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be the address line 2
-- 'city': String representing the city of the address
-- `state`: This should be the 2 letter abbreviation for the state of the address
-- `postalCode`: This should be the 5 digit postal code of the address
-
-```text
-"address": [
-        {
+            "id": "4c87b7af-2a2e-4cb0-ac84-559ab021780b",
             "use": "home",
-            "type": "both",
+            "type": "physical",
             "line": [
-                "4247 Murry Street"
+                "123 Main St"
             ],
-            "city": "Chesapeake",
-            "state": "VA",
-            "postalCode": "23322"
+            "city": "Nashville",
+            "state": "TN",
+            "postalCode": "37206",
+            "country": "us"
         }
     ],
-```
-
-
-
-### photo
-
-The photo attribute is where you can define a [base64binary](https://www.hl7.org/fhir/datatypes.html#base64Binary) string representing the image you want to upload for the patient avatar on the Canvas UI. The example below binary represents a rubber duck. 
-
-```text
-"photo": [
-    {
-      "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
-    }
-  ],
-```
-
-
-
-### deceased
-
-This is an optional boolean that defaults to false. This variable is not displayed in the Canvas UI but is stored by Canvas.
-
-```text
-"deceased": false,
-```
-
-
-
-### contact
-
-The contact attribute is a list of contact objects. They specify a contact party for the patient (friend, parent, emergency contact). The will display on the Patient Registration page. 
-
-The following attributes are allowed for each contact object:
-
-- `name` [REQUIRED]\:  This is an object where you can specify the `text` that stores the contact's name. 
-- `relationship`: This is a list of objects where you can specify the `text` that stores the contact's relationship. It is a free text field. While a list, we currently only store and display the first object's text
-- `telecom`: This is a list of objects where Canvas will take the first `system` equal to `phone` and store as the contact's phone number. Then the first `system` equal to `email` will be stored as this contact's email address. The value of the email or phone number is stored in the `value` field. If any other option is passed in the system field, the data will not be stored. 
-- `extension`: Optional extensions are allowed in Canvas to specify a few additional information about a patient's contact.  
-  If you want to specify if this contact is  "authorized for release of information" or not we want to pass in an extensions with a `url` equal to "<http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information>" and pass a boolean to the `valueBoolean` field.  
-  If you want to specify if this contact is the patient's "emergency contact" or not we want to pass in an extension with a `url` equal to "<http://schemas.canvasmedical.com/fhir/extensions/emergency-contact>" and pass a boolean to the `valueBoolean` field. 
-
-```text
-"contact": [
+    "photo": [
         {
-            "name": {
-                "text": "Nick Smith"
-            },
-            "relationship": [
-                {
-                    "text": "Spouse"
-                }
-            ],
-            "telecom": [
-                {
-                    "system": "email",
-                    "value": "test@me.com"
-                }
-            ],
+            "url": "https://d3hn0m4rbsz438.cloudfront.net/avatar1.png"
+        }
+    ],
+    "contact": [
+        {
+            "id": "96f20c90-a631-4ffc-acd4-94d6ee4efd38",
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
@@ -413,61 +322,399 @@ The following attributes are allowed for each contact object:
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
                     "valueBoolean": true
                 }
+            ],
+            "relationship": [
+                {
+                    "text": "Husband"
+                }
+            ],
+            "name": {
+                "text": "Kevin Jones"
+            },
+            "telecom": [
+                {
+                    "system": "phone",
+                    "value": "5555555555"
+                },
+                {
+                    "system": "email",
+                    "value": "kj@zahoo.com"
+                }
             ]
         }
-]
+    ],
+    "communication": [
+        {
+            "language": {
+                "coding": [
+                    {
+                        "system": "urn:ietf:bcp:47",
+                        "code": "en",
+                        "display": "English"
+                    }
+                ],
+                "text": "English"
+            }
+        }
+    ]
+}
+}
 ```
-
-## Patient Read
-
-## Patient Search
-### Creating a New Patient in Canvas
-
-To create a new patient chart in Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360059207113-Creating-a-New-Patient-Chart). 
-[block:api-header]
-{
-  "title": "Searching by identifier."
+{% endtab %}
+{% tab read-response 400 %}
+```json
+400 {
+  ...
 }
-[/block]
+```
+{% endtab %}
+{% endtabs %}
 
-We support the following for searching by patient identifier in the identifier query param:
 
-- `/Patient?identifier=abc123` will return patients with an identifier of “abc123” issued by any system, including Canvas-issued MRNs
-- `/Patient?identifier=foo|abc123` will return patients with an identifier of “abc123" issued by the system named “foo”
-- `/Patient?identifier=http://canvasmedical.com|012345` will return the patient with the Canvas-issued MRN of “012345"
-- `/Patient?identifier=foo|` will return all patients with an identifier issued by the system named “foo”
-- `/Patient?identifier=|abc123` will return patients with an identifier of “abc123" issued by the system named “” (empty string)
-[block:api-header]
-{
-  "title": "Pagination"
+
+<div id="example-search-request">
+{% tabs search-request %}
+{% tab search-request python %}
+```sh
+import requests
+
+url = "{{base_url}}/Patient?_id=797e5f30447545a4823fe1c8ebcd0ba6"
+
+payload={}
+headers = {}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+
+```
+{% endtab %}
+{% tab search-request curl %}
+```sh
+curl --request GET \
+     --url https://fhir-example.canvasmedical.com/Patient \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="example-search-response">
+{% tabs search-response %}
+{% tab search-response 200 %}
+```json
+200 {
+  {
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/Patient?given=mary&active=&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Patient?given=mary&active=&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Patient?given=mary&active=&_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Patient",
+                "id": "d1daa66c306e402682d88fc082939fc1",
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Mary<b>Winslow</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>568532137</td></tr><tr><td>Date of birth</td><td><span>1987-05-05</span></td></tr></tbody></table></div>"
+                },
+                "extension": [
+                    {
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+                        "valueCode": "F"
+                    },
+                    {
+                        "extension": [
+                            {
+                                "url": "text",
+                                "valueString": "UNK"
+                            }
+                        ],
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+                    },
+                    {
+                        "extension": [
+                            {
+                                "url": "text",
+                                "valueString": "UNK"
+                            }
+                        ],
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+                    }
+                ],
+                "identifier": [
+                    {
+                        "use": "usual",
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                    "code": "MR"
+                                }
+                            ]
+                        },
+                        "system": "http://canvasmedical.com",
+                        "value": "568532137",
+                        "assigner": {
+                            "display": "Canvas Medical"
+                        }
+                    }
+                ],
+                "active": true,
+                "name": [
+                    {
+                        "use": "official",
+                        "family": "Winslow",
+                        "given": [
+                            "Mary"
+                        ],
+                        "period": {
+                            "start": "0001-01-01T00:00:00+00:00",
+                            "end": "9999-12-31T23:59:59.999999+00:00"
+                        }
+                    }
+                ],
+                "telecom": [
+                    {
+                        "id": "3978856a-d790-40b5-9c12-8d295832b3a8",
+                        "extension": [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
+                                "valueBoolean": false
+                            }
+                        ],
+                        "system": "phone",
+                        "value": "2022222222",
+                        "use": "home",
+                        "rank": 1
+                    }
+                ],
+                "gender": "unknown",
+                "birthDate": "1987-05-05",
+                "deceasedBoolean": false,
+                "communication": [
+                    {
+                        "language": {
+                            "coding": [
+                                {
+                                    "system": "urn:ietf:bcp:47",
+                                    "code": "en",
+                                    "display": "English"
+                                }
+                            ],
+                            "text": "English"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
 }
-[/block]
-To paginate patient search results, use the query param `_count`.
-Example:
-`GET /Patient?_count=10` will return the first 10 patients, along with relative links to see the subsequent pages.
-The pages are specified by a combination of `_count` and `_offset`.
+}
+```
+{% endtab %}
+{% tab search-response 400 %}
+```json
+400 {
+  ...
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-## Patient Update
-### Attributes that are pulled into Canvas:
+<div id="example-create-request">
+{% tabs create-request %}
+{% tab create-request python %}
+```sh
+import requests
 
-This is the exact same schema that is used in the [Patient Create](ref:patient-create). Please refer to that documentation for Patient Update. The only difference is addition of the `id` field used to identify the patient we are updating. 
+url = "{{base_url}}/Patient"
 
-### How we handle updates/deletions to the identifier, telecom, address, and contact fields:
+payload = "{\n    \"resourceType\": \"Patient\",\n    \"extension\": [\n        {\n            \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\n            \"valueCode\": \"M\"\n        },\n        {\n            \"url\" : \"http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy\",\n            \"extension\": [\n                {\n                    \"url\": \"ncpdp-id\",\n                    \"valueIdentifier\": {\n                        \"value\": \"1123152\",\n                        \"system\": \"http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber\"\n                    }\n                }\n            ]\n        },\n        {\n            \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity\",\n            \"extension\": [\n                {\n                    \"url\": \"text\",\n                    \"valueString\": \"UNK\"\n                }\n            ]\n        },\n        {\n            \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-race\",\n            \"extension\": [\n                {\n                    \"url\": \"text\",\n                    \"valueString\": \"UNK\"\n                }\n            ]\n        },\n        {\n            \"url\": \"http://hl7.org/fhir/StructureDefinition/tz-code\",\n            \"valueCode\": \"America/New_York\"\n        },\n        {\n            \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/clinical-note\",\n            \"valueString\": \"I am a clinical caption from a Create message\"\n        },\n        {\n            \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/administrative-note\",\n            \"valueString\": \"I am an administrative caption from a Create message\"\n        }\n    ],\n    \"identifier\": [\n        {\n            \"use\": \"usual\",\n            \"system\": \"HealthCo\",\n            \"value\": \"s07960990\"\n        }\n    ],\n    \"active\": true,\n    \"name\": [\n        {\n            \"use\": \"official\",\n            \"family\": \"Bahar\",\n            \"given\": [\n                \"Issam\",\n                \"Khuzaimah\"\n            ]\n        },\n        {\n            \"use\": \"nickname\",\n            \"given\": [\n                \"Nick Name\"\n            ]\n        }\n    ],\n    \"telecom\": [\n        {\n            \"system\": \"phone\",\n            \"value\": \"5554320555\",\n            \"use\": \"mobile\",\n            \"rank\": 1\n        },\n        {\n            \"system\": \"email\",\n            \"value\": \"i.k.bahar@example.com\",\n            \"use\": \"work\",\n            \"rank\": 1\n        }\n    ],\n    \"gender\": \"male\",\n    \"birthDate\": \"1949-11-13\",\n    \"address\": [\n        {\n            \"use\": \"home\",\n            \"type\": \"both\",\n            \"text\": \"4247 Murry Street, Chesapeake, VA 23322\",\n            \"line\": [\n                \"4247 Murry Street\"\n            ],\n            \"city\": \"Chesapeake\",\n            \"state\": \"VA\",\n            \"postalCode\": \"23322\"\n        }\n    ],\n    \"contact\": [\n        {\n            \"name\": {\n                \"text\": \"Test Spouse\"\n            },\n            \"relationship\": [\n                {\n                    \"text\": \"Spouse\"\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"email\",\n                    \"value\": \"test@me.com\"\n                }\n            ],\n            \"extension\": [\n                {\n                    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/emergency-contact\",\n                    \"valueBoolean\": true\n                },\n                {\n                    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information\",\n                    \"valueBoolean\": true\n                }\n            ]\n        },\n        {\n            \"name\": {\n                \"text\": \"Test Mom\"\n            },\n            \"relationship\": [\n                {\n                    \"text\": \"Mom\"\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"phone\",\n                    \"value\": \"7177327068\"\n                }\n            ],\n            \"extension\": [\n                {\n                    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information\",\n                    \"valueBoolean\": true\n                }\n            ]\n        },\n        {\n            \"name\": {\n                \"text\": \"Test Email\"\n            },\n            \"relationship\": [\n                {\n                    \"text\": \"Father\"\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"email\",\n                    \"value\": \"test.email@email.test\"\n                }\n            ]\n        }\n    ],\n    \"communication\": [\n        {\n            \"language\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/ValueSet/all-languages\",\n                        \"code\": \"en\",\n                        \"display\": \"English\"\n                    }\n                ],\n                \"text\": \"English\"\n            }\n        }\n    ]\n}"
 
-- Patient Search/Read will include an `id` value for these fields.  
-- If the `id` field is included in the iteration, then we will attempt to match to an existing value for that field.
-- If the `id` field is **not** included in the iteration, then we will attempt to create a new entry in the database for that field.
+headers = {}
 
-- If a `telecom`, `address`, or 'contact' iteration returned via Search/Read  is **not** included in the Update message, then it will be deleted.
+response = requests.request("POST", url, headers=headers, data=payload)
 
-### identifier
+print(response.text)
+```
+{% endtab %}
+{% tab create-request curl %}
+```sh
+curl --request POST \
+     --url https://fhir-example.canvasmedical.com/Patient \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+  "resourceType": "Patient",
+  "name": [
+    {
+      "use": "official",
+      "family": "Mark",
+      "given": [
+        "Isabella",
+        "Robel"
+      ],
+      "prefix": "Mrs.",
+      "suffix": "Jr."
+    },
+    {
+      "use": "nickname",
+      "given": [
+        "Izzy"
+      ]
+    },
+    {
+      "use": "maiden",
+      "family": "Smith"
+    }
+  ],
+  "birthDate": "1980-11-13"
+}
+'
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-If an `identifier` already exists in the Canvas database and is **not** included in the Update message, it will be deleted if and only if the `period.end` date is in the future. 
+<div id="example-create-response">
+{% tabs create-response %}
+{% tab create-response 200 %}
+```json
+200 {
+  ...
+}
+```
+{% endtab %}
+{% tab create-response 400 %}
+```json
+400 {
+  ...
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-### communication
+<div id="example-update-request">
+{% tabs update-request %}
+{% tab update-request curl %}
+```sh
+curl --request PUT \
+     --url https://fhir-example.canvasmedical.com/Patient/_id \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+  "resourceType": "Patient",
+  "id": "c9491183c38b4fe793db70c60046db3f",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+      "valueCode": "M"
+    },
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+      "extension": [
+        {
+          "url": "text",
+          "valueString": "UNK"
+        }
+      ]
+    },
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+      "extension": [
+        {
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2106-3",
+            "display": "White"
+          }
+        }
+      ]
+    },
+    {
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
+      "extension": [
+        {
+          "url": "ncpdp-id",
+          "valueIdentifier": {
+            "value": "1123152",
+            "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
+          }
+        }
+      ]
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+      "valueCode": "America/New_York"
+    },
+    {
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+      "valueString": "I am a clinical caption from a Create message"
+    },
+    {
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+      "valueString": "I am an administrative caption from a Create message"
+    }
+  ],
+  "name": [
+    {
+      "use": "official",
+      "family": "Mark",
+      "given": [
+        "Jade",
+        "Robel"
+      ]
+    },
+    {
+      "use": "nickname",
+      "given": [
+        "Nick Name"
+      ]
+    }
+  ],
+  "birthDate": "1980-11-13"
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-`communication.language` is an object that contains a coding and a text description. Currently, Canvas only supports the language being set to English. If no language is added, it will default to English. Currently, it cannot be updated. 
-
-### Other fields
-
-If a field is required according to [Patient Create](ref:patient-create), it is also required in the update. If the field is not required and is not added to the update request, the saved data will not be changed.
+<div id="example-update-response">
+{% tabs update-response %}
+{% tab update-response 200 %}
+```json
+200 {
+  ...
+}
+```
+{% endtab %}
+{% tab update-response 400 %}
+```json
+400 {
+  ...
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
