@@ -81,7 +81,6 @@ sections:
             type: boolean
             description: By default, both active and inactive practitioners are returned. Use this parameter to only return active (true) or inactive (false)
         endpoints: [read, search]
-        # example_payload: example-payload-code
         read:
           responses: [200, 400]
           example_request: example-read-request
@@ -160,7 +159,7 @@ print(response.text)
 {% tab read-response 400 %}
 ```json
 400 {
-  ...
+  
 }
 ```
 {% endtab %}
@@ -318,7 +317,7 @@ print(response.text)
 {% tab search-response 400 %}
 ```json
 400 {
-  ...
+  
 }
 ```
 {% endtab %}
