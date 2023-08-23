@@ -6,8 +6,6 @@ sections:
       - type: apidoc
         name: Patient
         article: "a"
-        description: >-
-          At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
         attributes:
           - name: _id
             description: >-
@@ -82,18 +80,23 @@ sections:
           - name: active
             type: boolean
             description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false)
-        example_payload: example-payload-code
         endpoints: [read, search, create, update]
         read:
           responses: [200, 400]
-          example_response: example-payload-code
+          example_request: example-read-request
+          example_response: example-read-response
         search:
           responses: [200, 400]
+          example_request: example-search-request
           example_response: example-search-response
         create:
+          responses: [201, 400]
           example_request: example-create-request
+          example_response: example-create-response
         update:
+          responses: [200, 400]
           example_request: example-update-request
+          example_response: example-update-response
 ---
 <div id="example-payload-code">
 {% tabs payload %}
@@ -113,6 +116,263 @@ curl --request GET \
      --url https://fhir-example.canvasmedical.com/Patient/_id \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
+```
+{% endtab %}
+{% tab read-request python %}
+```sh
+import requests
+import json
+
+url = "https://fhir-example.canvasmedical.com/Patient/797e5f30447545a4823fe1c8ebcd0ba6/"
+
+payload={}
+headers = {
+  'Content-Type': 'application/fhir+json'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="example-read-response">
+{% tabs read-response %}
+{% tab read-response 200 %}
+```json
+200 {
+  {
+    "resourceType": "Patient",
+    "id": "496db9b3dff044448384e0bcba5e67c4",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Megan<b>Jones</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>427087947</td></tr><tr><td>Date of birth</td><td><span>1971-07-08</span></td></tr></tbody></table></div>"
+    },
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
+            "valueCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": "446141000124107",
+                        "display": "Identifies as female gender (finding)"
+                    }
+                ],
+                "text": "Identifies as female gender (finding)"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation",
+            "valueCode": "20430005"
+        },
+        {
+            "extension": [
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2106-3",
+                        "display": "White"
+                    }
+                },
+                {
+                    "url": "text",
+                    "valueString": "White"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+        },
+        {
+            "extension": [
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2186-5",
+                        "display": "Not Hispanic or Latino"
+                    }
+                },
+                {
+                    "url": "text",
+                    "valueString": "Not Hispanic or Latino"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+            "valueCode": "America/Chicago"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+            "valueString": "This is an administrative caption"
+        },
+        {
+            "extension": [
+                {
+                    "url": "ncpdp-id",
+                    "valueIdentifier": {
+                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber",
+                        "value": "3061582"
+                    }
+                },
+                {
+                    "url": "specialty_type",
+                    "valueString": "Retail~TwentyFourHourStore~SupportsDigitalSignature"
+                },
+                {
+                    "url": "default",
+                    "valueBoolean": true
+                }
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
+        }
+    ],
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "http://canvasmedical.com",
+            "value": "427087947",
+            "assigner": {
+                "display": "Canvas Medical"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "Jones",
+            "given": [
+                "Megan"
+            ],
+            "period": {
+                "start": "0001-01-01T00:00:00+00:00",
+                "end": "9999-12-31T23:59:59.999999+00:00"
+            }
+        }
+    ],
+    "telecom": [
+        {
+            "id": "8e2b867c-6770-4e21-b296-fca8de3803c6",
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
+                    "valueBoolean": false
+                }
+            ],
+            "system": "email",
+            "value": "megan.jones@zahoo.com",
+            "use": "home",
+            "rank": 1
+        },
+        {
+            "id": "587652b2-c739-4ac2-a44a-7488c060ac11",
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
+                    "valueBoolean": false
+                }
+            ],
+            "system": "phone",
+            "value": "5893263689",
+            "use": "home",
+            "rank": 1
+        }
+    ],
+    "gender": "female",
+    "birthDate": "1971-07-08",
+    "deceasedBoolean": false,
+    "address": [
+        {
+            "id": "4c87b7af-2a2e-4cb0-ac84-559ab021780b",
+            "use": "home",
+            "type": "physical",
+            "line": [
+                "123 Main St"
+            ],
+            "city": "Nashville",
+            "state": "TN",
+            "postalCode": "37206",
+            "country": "us"
+        }
+    ],
+    "photo": [
+        {
+            "url": "https://d3hn0m4rbsz438.cloudfront.net/avatar1.png"
+        }
+    ],
+    "contact": [
+        {
+            "id": "96f20c90-a631-4ffc-acd4-94d6ee4efd38",
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": true
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
+                }
+            ],
+            "relationship": [
+                {
+                    "text": "Husband"
+                }
+            ],
+            "name": {
+                "text": "Kevin Jones"
+            },
+            "telecom": [
+                {
+                    "system": "phone",
+                    "value": "5555555555"
+                },
+                {
+                    "system": "email",
+                    "value": "kj@zahoo.com"
+                }
+            ]
+        }
+    ],
+    "communication": [
+        {
+            "language": {
+                "coding": [
+                    {
+                        "system": "urn:ietf:bcp:47",
+                        "code": "en",
+                        "display": "English"
+                    }
+                ],
+                "text": "English"
+            }
+        }
+    ]
+}}
+```
+{% endtab %}
+{% tab read-response 400 %}
+```json
+400 {
+  ...
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -194,9 +454,9 @@ curl --request POST \
 
 <div id="example-create-response">
 {% tabs create-response %}
-{% tab create-response 200 %}
+{% tab create-response 201 %}
 ```json
-200 {
+201 {
   ...
 }
 ```
