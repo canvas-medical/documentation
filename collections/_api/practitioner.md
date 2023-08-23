@@ -80,22 +80,18 @@ sections:
           - name: active
             type: boolean
             description: By default, both active and inactive practitioners are returned. Use this parameter to only return active (true) or inactive (false)
-        example_payload: example-payload-code
         endpoints: [read, search]
+        # example_payload: example-payload-code
         read:
           responses: [200, 400]
-          example_response: example-payload-code
+          example_request: example-read-request
+          example_response: example-read-response
         search:
           responses: [200, 400]
+          example_request: example-search-request
           example_response: example-search-response
   
 ---
-### Adding a New Practitioner in Canvas
-
-To create a new staff member in Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360058232193-Add-a-new-staff-member).
-
----
-
 <div id="example-payload-code">
 {% tabs payload %}
 {% tab payload json %}
@@ -111,9 +107,61 @@ some data here
 {% tab read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fhir-example.canvasmedical.com/Practitioner/_id \
+     --url https://fhir-example.canvasmedical.com/Patient/_id \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
+```
+{% endtab %}
+{% tab read-request python %}
+```sh
+import requests
+
+url = "{{base_url}}/Practitioner/"
+
+payload={}
+headers = {}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="example-read-response">
+{% tabs read-response %}
+{% tab read-response 200 %}
+```json
+200 {
+  {
+      "resourceType": "Practitioner",
+      "id": "e766816672f34a5b866771c773e38f3c",
+      "identifier": [
+          {
+              "system": "http://hl7.org/fhir/sid/us-npi",
+              "value": "3554694505"
+          }
+      ],
+      "name": [
+          {
+              "use": "usual",
+              "text": "Youta Priti MD",
+              "family": "Priti",
+              "given": [
+                  "Youta"
+              ]
+          }
+      ]
+  }}
+```
+{% endtab %}
+{% tab read-response 400 %}
+```json
+400 {
+  ...
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -124,9 +172,27 @@ curl --request GET \
 {% tab search-request curl %}
 ```sh
 curl --request GET \
-     --url https://fhir-example.canvasmedical.com/Practitioner \
+     --url https://fhir-example.canvasmedical.com/Patient \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
+```
+{% endtab %}
+{% tab search-request python %}
+```sh
+import requests
+import json
+
+url = "{{base_url}}/Practitioner"
+
+payload={}
+headers = {
+  'Content-Type': 'application/fhir+json'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+
 ```
 {% endtab %}
 {% endtabs %}
@@ -137,7 +203,115 @@ curl --request GET \
 {% tab search-response 200 %}
 ```json
 200 {
-  ...
+  {
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 4,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/Practitioner?_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Practitioner?_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Practitioner?_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Practitioner",
+                "id": "e766816672f34a5b866771c773e38f3c",
+                "identifier": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/us-npi",
+                        "value": "3554694505"
+                    }
+                ],
+                "name": [
+                    {
+                        "use": "usual",
+                        "text": "Youta Priti MD",
+                        "family": "Priti",
+                        "given": [
+                            "Youta"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Practitioner",
+                "id": "3a182f42885645e0bc3d608e7c02aad8",
+                "identifier": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/us-npi",
+                        "value": "123456789"
+                    }
+                ],
+                "name": [
+                    {
+                        "use": "usual",
+                        "text": "Nikhil Krishnan MD",
+                        "family": "Krishnan",
+                        "given": [
+                            "Nikhil"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Practitioner",
+                "id": "77bd177f81b14c9f943e1e30ed3dd989",
+                "identifier": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/us-npi",
+                        "value": "123456789"
+                    }
+                ],
+                "name": [
+                    {
+                        "use": "usual",
+                        "text": "Breanna Heller LMFT",
+                        "family": "Heller",
+                        "given": [
+                            "Breanna"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Practitioner",
+                "id": "f65c2bed0d8643cc808e25d5cfcf5070",
+                "identifier": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/us-npi",
+                        "value": "1366978173"
+                    }
+                ],
+                "name": [
+                    {
+                        "use": "usual",
+                        "text": "Patrick van Nieuwenhuizen MD",
+                        "family": "van Nieuwenhuizen",
+                        "given": [
+                            "Patrick"
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
 }
 ```
 {% endtab %}
@@ -150,3 +324,4 @@ curl --request GET \
 {% endtab %}
 {% endtabs %}
 </div>
+
