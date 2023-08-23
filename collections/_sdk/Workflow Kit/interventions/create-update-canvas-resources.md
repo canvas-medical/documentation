@@ -1,9 +1,5 @@
 ---
-title: "Create/Update Canvas Resources from a Protocol"
-slug: "createupdate-canvas-resources-from-a-protocol"
-hidden: false
-createdAt: "2022-08-23T17:09:19.722Z"
-updatedAt: "2023-03-08T01:52:17.925Z"
+title: "Create or Update Canvas Resources from a Protocol"
 ---
 The Canvas SDK allows the ability to create or update specific resources in Canvas. Instead of posting a network request to your Canvas instance's API endpoint, there's a shortcut where you can ask your protocol to do it for you when it computes! 
 

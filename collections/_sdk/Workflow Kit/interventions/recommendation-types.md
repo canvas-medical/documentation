@@ -1,18 +1,14 @@
 ---
 title: "Canvas SDK Recommendation Types"
-slug: "recommendationtypes"
-excerpt: "Recommendation Classes available in the Canvas SDK"
-hidden: false
-createdAt: "2022-07-05T15:38:44.500Z"
-updatedAt: "2023-06-13T21:25:42.617Z"
+
 ---
-# Recommendation Types
+## Recommendation Types
 
 We saw in our [last example](doc:sdk-adding-more-functionality-to-a-protocol) that instead of adding an instance of a generic `Recommendation` to be passed to the `add_recommendation` method, we used an instance of the more specific `InterviewRecommendation` class. The Canvas Workflow Kit contains many built-in Recommendation classes that can be used to add different types of recommendations to a Protocol. These are used in order to provide guidance to a course of action for a patient.
 
 To get you started using these recommendations, we have written out some example protocol code for you. Please see our [Open Source SDK repo](https://github.com/canvas-medical/open-source-sdk/tree/main/canvas_workflow_helpers/protocols/recommendations).
 
-## AllergyRecommendation
+### AllergyRecommendation
 
 **Description**: A recommendation specifying that a patient may have an allergy that should be recorded via the [allergy command](https://canvas-medical.zendesk.com/hc/en-us/articles/360056920593-Document-an-Allergy).
 
@@ -59,58 +55,30 @@ result.add_narrative(allergy_recommendation.narrative)
 
 An allergy recommendation will appear in the list of Protocols for applicable patients along with an allergy button:
 
-![](https://files.readme.io/7559882-Screen_Shot_2022-08-10_at_2.58.20_PM.png "Screen Shot 2022-08-10 at 2.58.20 PM.png")
+![](https://files.readme.io/7559882-Screen_Shot_2022-08-10_at_2.58.20_PM.png "Screen Shot 2022-08-10 at 2.58.20 PM.png"){:width="50%"}
 
 When the "Allergy" button is clicked, it will generate an Allergy command:
 
-![](https://files.readme.io/2a66399-Screen_Shot_2022-08-10_at_2.58.32_PM.png "Screen Shot 2022-08-10 at 2.58.32 PM.png")
+![](https://files.readme.io/2a66399-Screen_Shot_2022-08-10_at_2.58.32_PM.png "Screen Shot 2022-08-10 at 2.58.32 PM.png"){:width="70%"}
 
-## AssessRecommendation
-
-> 🚧 COMING SOON 2023-06-21
+### AssessRecommendation
 
 **Description**: A recommendation specifying that a patient may need to have an active condition assessed that should be recorded via the [assess condition command](https://canvas-medical.zendesk.com/hc/en-us/articles/360055230394-Assess-a-Patient-Condition).
 
 **Parameters**:
 
-[block:parameters]
-{
-  "data": {
-    "h-0": "Name",
-    "h-1": "Type",
-    "h-2": "Required",
-    "h-3": "Description",
-    "0-0": "`key`",
-    "0-1": "_string_",
-    "0-2": "`true`",
-    "0-3": "A unique identifier for the recommendation.",
-    "1-0": "`rank`",
-    "1-1": "_integer_",
-    "1-2": "`true`",
-    "1-3": "A value to control the sort order of recommendations within a Protocol. For each Protocol listed in the Canvas UI, recommendations with lower rank values will appear at the top.",
-    "2-0": "`button`",
-    "2-1": "_string_",
-    "2-2": "`false`",
-    "2-3": "The text that will appear on the button next to a Protocol recommendation. If not provided it will default to `Assess`",
-    "3-0": "`title`",
-    "3-1": "_string_",
-    "3-2": "`false`",
-    "3-3": "The text to show on a patient's chart that describes the recommendation. It will display next to the assess button on the protocol window. If it is omitted, it will default to `Assess condition`",
-    "4-0": "`context`",
-    "4-1": "_dict_",
-    "4-2": "`false`",
-    "4-3": "A dictionary that stores various information to pass to the command fields. It accepts the following keys (all are optional):  \n- `background`: String text representing the background of the condition.  \n- `narrative`: Text representing \"today's assessment\" of the condition  \n- `condition_id`: This is an integer representing one of the conditions. You can find this id by searching for the condition in the `self.patient.conditions` list  \n- `status`: This string represents the status of the condition you are assessing. You can specify it to be `improved`, `stable`, or `deteriorated`"
-  },
-  "cols": 4,
-  "rows": 5,
-  "align": [
-    null,
-    null,
-    null,
-    null
-  ]
-}
-[/block]
+| Name     | Type       | Required | Description                                                                                                                         |
+|----------|------------|----------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `key`    | _string_   | `true`   | A unique identifier for the recommendation.                                                                                         |
+| `rank`   | _integer_  | `true`   | A value to control the sort order of recommendations within a Protocol. For each Protocol listed in the Canvas UI, recommendations with lower rank values will appear at the top. |
+| `button` | _string_   | `false`  | The text that will appear on the button next to a Protocol recommendation. If not provided, it will default to `Assess`.             |
+| `title`  | _string_   | `false`  | The text to show on a patient's chart that describes the recommendation. It will display next to the assess button on the protocol window. If omitted, it will default to `Assess condition`. |
+| `context`| _dict_     | `false`  | A dictionary that stores various information to pass to the command fields. It accepts the following keys (all are optional):    |
+|          |            |          | - `background`: String text representing the background of the condition.                                                         |
+|          |            |          | - `narrative`: Text representing "today's assessment" of the condition.                                                            |
+|          |            |          | - `condition_id`: This is an integer representing one of the conditions. You can find this id by searching for the condition in the `self.patient.conditions` list. |
+|          |            |          | - `status`: This string represents the status of the condition you are assessing. You can specify it to be `improved`, `stable`, or `deteriorated`. |
+
 
 **Note:** In the SDK patient object, only allergy records that have an onset date will be shown. If an allergy record does not have an associated date, it will not be able to satisfy the protocol because it will be filtered out of the dataset. 
 
@@ -146,13 +114,13 @@ if len(conditions):
 
 An assess recommendation will appear in the list of Protocols for applicable patients along with an assess button:
 
-![](https://files.readme.io/ad3bb90-Screenshot_2023-06-13_at_5.18.16_PM.png)
+![](https://files.readme.io/ad3bb90-Screenshot_2023-06-13_at_5.18.16_PM.png){:width="50%"}
 
 When the "Assess" button is clicked, it will generate an Assess command:
 
-![](https://files.readme.io/3afa278-Screenshot_2023-06-13_at_5.22.23_PM.png)
+![](https://files.readme.io/3afa278-Screenshot_2023-06-13_at_5.22.23_PM.png){:width="70%"}
 
-## DiagnoseRecommendation
+### DiagnoseRecommendation
 
 **Description**: A recommendation specifying that a patient may require a condition to be diagnosed. A Diagnose Recommendation allows providers the ability to create a [Diagnose Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057089133-Making-a-Diagnosis) with the click of a button directly in a patient's chart.
 
@@ -194,13 +162,13 @@ result.add_narrative(diagnose_recommendation.narrative)
 
 A Diagnose recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/ffbb4bc-Screen_Shot_2022-08-08_at_4.57.53_PM.png "Screen Shot 2022-08-08 at 4.57.53 PM.png")
+![](https://files.readme.io/ffbb4bc-Screen_Shot_2022-08-08_at_4.57.53_PM.png "Screen Shot 2022-08-08 at 4.57.53 PM.png"){:width="50%"}
 
 When the "Diagnose" button is clicked, it will generate a Diagnose command and populate it with the title of the recommendation as the diagnosis name followed by the code in the conditions ValueSet:
 
-![](https://files.readme.io/975dca0-Screen_Shot_2022-08-08_at_4.57.44_PM.png "Screen Shot 2022-08-08 at 4.57.44 PM.png")
+![](https://files.readme.io/975dca0-Screen_Shot_2022-08-08_at_4.57.44_PM.png "Screen Shot 2022-08-08 at 4.57.44 PM.png"){:width="70%"}
 
-## FollowUpRecommendation
+### FollowUpRecommendation
 
 **Description**: A recommendation specifying that a patient may require a Follow Up appointment, which can be indicated using the [Follow Up](https://canvas-medical.zendesk.com/hc/en-us/articles/360055261874-Follow-Up-Command) command.
 
@@ -242,13 +210,13 @@ result.add_narrative(followUp_recommendation.narrative)
 
 A Follow Up recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/7cb8e24-Screen_Shot_2022-08-11_at_12.13.52_PM.png "Screen Shot 2022-08-11 at 12.13.52 PM.png")
+![](https://files.readme.io/7cb8e24-Screen_Shot_2022-08-11_at_12.13.52_PM.png "Screen Shot 2022-08-11 at 12.13.52 PM.png"){:width="50%"}
 
 Upon clicking the Follow up button, the `Follow Up` command will be populated: 
 
-![](https://files.readme.io/7004a3f-Screen_Shot_2022-08-11_at_10.38.56_AM.png "Screen Shot 2022-08-11 at 10.38.56 AM.png")
+![](https://files.readme.io/7004a3f-Screen_Shot_2022-08-11_at_10.38.56_AM.png "Screen Shot 2022-08-11 at 10.38.56 AM.png"){:width="70%"}
 
-## ImagingRecommendation
+### ImagingRecommendation
 
 **Description**: A recommendation specifying that a patient may be due for an imaging order. An Imaging Recommendation allows providers the ability to create an [Image command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057918193) with the click of a button directly in a patient's chart.
 
@@ -308,13 +276,13 @@ result.add_narrative(imaging_recommendation.narrative)
 
 An Imaging recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/110df3c-Screen_Shot_2022-08-05_at_12.41.12_PM.png "Screen Shot 2022-08-05 at 12.41.12 PM.png")
+![](https://files.readme.io/110df3c-Screen_Shot_2022-08-05_at_12.41.12_PM.png "Screen Shot 2022-08-05 at 12.41.12 PM.png"){:width="50%"}
 
 After pressing the _Order_ button, a Note Command to order imaging will be populated in the chart:
 
-![](https://files.readme.io/6867ab1-Screen_Shot_2022-08-05_at_12.40.58_PM.png "Screen Shot 2022-08-05 at 12.40.58 PM.png")
+![](https://files.readme.io/6867ab1-Screen_Shot_2022-08-05_at_12.40.58_PM.png "Screen Shot 2022-08-05 at 12.40.58 PM.png"){:width="70%"}
 
-## ImmunizationRecommendation
+### ImmunizationRecommendation
 
 **Description**: A recommendation specifying that a patient may be due for an immunization. Use this to guide the user to the [immunization command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293-Documenting-an-Immunization).
 
@@ -362,13 +330,13 @@ result.add_narrative(immunization_recommendation.narrative)
 
 An immunization recommendation will appear in the list of Protocols for applicable patients along with an immunize button:
 
-![](https://files.readme.io/31bf15d-Screen_Shot_2022-08-12_at_11.41.51_AM.png "Screen Shot 2022-08-12 at 11.41.51 AM.png")
+![](https://files.readme.io/31bf15d-Screen_Shot_2022-08-12_at_11.41.51_AM.png "Screen Shot 2022-08-12 at 11.41.51 AM.png"){:width="50%"}
 
 Upon clicking the _Immunize_ button, the _Immunize_ command will be populated in the patient's chart:
 
-![](https://files.readme.io/a14a2f9-Screen_Shot_2022-08-05_at_1.34.07_PM.png "Screen Shot 2022-08-05 at 1.34.07 PM.png")
+![](https://files.readme.io/a14a2f9-Screen_Shot_2022-08-05_at_1.34.07_PM.png "Screen Shot 2022-08-05 at 1.34.07 PM.png"){:width="70%"}
 
-## InstructionRecommendation
+### InstructionRecommendation
 
 **Description**: A recommendation specifying that a provider may need to provide a set of instructions to a patient. An Instruction Recommendation allows providers the ability to create an [Instruct command](https://canvas-medical.zendesk.com/hc/en-us/articles/360055309574) with the click of a button directly in a patient's chart.
 
@@ -414,13 +382,13 @@ result.add_narrative(instruction_recommendation.narrative)
 
 An Instruction recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/12b633d-Screen_Shot_2022-08-05_at_2.14.10_PM.png "Screen Shot 2022-08-05 at 2.14.10 PM.png")
+![](https://files.readme.io/12b633d-Screen_Shot_2022-08-05_at_2.14.10_PM.png "Screen Shot 2022-08-05 at 2.14.10 PM.png"){:width="50%"}
 
 Upon clicking the _Instruct_ button, the _Instruct_ command will be populated in the patient's chart:
 
-![](https://files.readme.io/5dc873b-Screen_Shot_2022-08-05_at_2.14.24_PM.png "Screen Shot 2022-08-05 at 2.14.24 PM.png")
+![](https://files.readme.io/5dc873b-Screen_Shot_2022-08-05_at_2.14.24_PM.png "Screen Shot 2022-08-05 at 2.14.24 PM.png"){:width="70%"}
 
-## InterviewRecommendation
+### InterviewRecommendation
 
 **Description**: A recommendation specifying that a patient may need to complete one or more questionnaires.  
 An Interview Recommendation allows providers the ability to create a [Questionnaire command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057544593-Command-Questionnaire) with the click of a button directly in a patient's chart.
@@ -463,72 +431,30 @@ result.add_recommendation(interview_recommendation)
 
 An Interview recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/4c11524-Screen_Shot_2022-08-05_at_3.18.35_PM.png "Screen Shot 2022-08-05 at 3.18.35 PM.png")
+![](https://files.readme.io/4c11524-Screen_Shot_2022-08-05_at_3.18.35_PM.png "Screen Shot 2022-08-05 at 3.18.35 PM.png"){:width="50%"}
 
 Upon pressing the _Interview_ button, the _Questionnaire_ command will populate the patient's chart:
 
-![](https://files.readme.io/a7dfe43-Screen_Shot_2022-08-05_at_3.22.24_PM.png "Screen Shot 2022-08-05 at 3.22.24 PM.png")
+![](https://files.readme.io/a7dfe43-Screen_Shot_2022-08-05_at_3.22.24_PM.png "Screen Shot 2022-08-05 at 3.22.24 PM.png"){:width="70%"}
 
-## LabRecommendation
+### LabRecommendation
 
 **Description**: A recommendation specifying that a patient may be due for a Lab order. A Lab Recommendation allows providers the ability to create a [Lab Order](https://canvas-medical.zendesk.com/hc/en-us/articles/360056890753) with the click of a button directly in a patient's chart.
 
 **Parameters**:
 
-[block:parameters]
-{
-  "data": {
-    "h-0": "Name",
-    "h-1": "Type",
-    "h-2": "Required",
-    "h-3": "Description",
-    "0-0": "`key`",
-    "0-1": "_string_",
-    "0-2": "`true`",
-    "0-3": "A unique identifier for the recommendation.",
-    "1-0": "`rank`",
-    "1-1": "_integer_",
-    "1-2": "`true`",
-    "1-3": "A value to control the sort order of recommendations within a Protocol. For each Protocol listed in the Canvas UI, recommendations with lower rank values will appear at the top.",
-    "2-0": "`button`",
-    "2-1": "_string_",
-    "2-2": "`true`",
-    "2-3": "The text that will appear on the button next to a Protocol recommendation.",
-    "3-0": "`patient`",
-    "3-1": "`Patient`",
-    "3-2": "`true`",
-    "3-3": "An instance of a `Patient`. This should always be passed as `self.patient`.",
-    "4-0": "`condition`",
-    "4-1": "`ValueSet`",
-    "4-2": "`true`",
-    "4-3": "A `ValueSet` class for the patient's condition associated with the reason for the lab recommendation. While this argument is required, it is only used if title is not added. The ValueSet's name will be used to generate a narrative.",
-    "5-0": "`lab`",
-    "5-1": "`ValueSet`",
-    "5-2": "`true`",
-    "5-3": "A `ValueSet` class for the laboratory test.",
-    "6-0": "`title`",
-    "6-1": "_string_",
-    "6-2": "`false`",
-    "6-3": "The text to show on a patient's chart that describes the recommendation.",
-    "7-0": "`context`",
-    "7-1": "_dict_",
-    "7-2": "`false`",
-    "7-3": "A dictionary that may contain the key 'conditions'.  \n  \nIf 'conditions' is included, it will populate the indications field of the `lab order` command.  \n  \nIf  'health_gorilla_order_codes' included, this will prioritize searching for laboratory tests that include the given code over the one specified in the  lab parameter. (e.g `'health_gorilla_order_codes': ['1234']`)",
-    "8-0": "`narrative`",
-    "8-1": "_string_",
-    "8-2": "`false`",
-    "8-3": "The text to show on a patient's chart under the title of the recommendation. For this to successfully display, the command \\`add_narrative(lab_recommendation.narrative) must be used."
-  },
-  "cols": 4,
-  "rows": 9,
-  "align": [
-    null,
-    null,
-    null,
-    null
-  ]
-}
-[/block]
+| Name       | Type       | Required | Description                                                                                                                       |
+|------------|------------|----------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `key`      | _string_   | `true`   | A unique identifier for the recommendation.                                                                                        |
+| `rank`     | _integer_  | `true`   | A value to control the sort order of recommendations within a Protocol. Recommendations with lower rank values will appear at the top. |
+| `button`   | _string_   | `true`   | The text that will appear on the button next to a Protocol recommendation.                                                       |
+| `patient`  | _Patient_  | `true`   | An instance of a `Patient`. This should always be passed as `self.patient`.                                                       |
+| `condition`| _ValueSet_ | `true`   | A `ValueSet` class for the patient's condition associated with the reason for the lab recommendation. This argument is required, and if the title is not added, the ValueSet's name will be used to generate a narrative. |
+| `lab`      | _ValueSet_ | `true`   | A `ValueSet` class for the laboratory test.                                                                                       |
+| `title`    | _string_   | `false`  | The text to show on a patient's chart that describes the recommendation.                                                          |
+| `context`  | _dict_     | `false`  | A dictionary that may contain the key 'conditions'. If 'conditions' is included, it will populate the indications field of the `lab order` command. If 'health_gorilla_order_codes' is included, it will prioritize searching for laboratory tests that include the given code over the one specified in the lab parameter (e.g., `'health_gorilla_order_codes': ['1234']`). |
+| `narrative`| _string_   | `false`  | The text to show on a patient's chart under the title of the recommendation. For this to display successfully, use the command `add_narrative(lab_recommendation.narrative)`. |
+
 
 Additional notes:
 
@@ -573,13 +499,13 @@ result.add_recommendation(lab_recommendation)
 
 A Lab recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/080ad6e-Screen_Shot_2022-08-05_at_3.37.21_PM.png "Screen Shot 2022-08-05 at 3.37.21 PM.png")
+![](https://files.readme.io/080ad6e-Screen_Shot_2022-08-05_at_3.37.21_PM.png "Screen Shot 2022-08-05 at 3.37.21 PM.png"){:width="50%"}
 
 Upon pressing the _Order_ button, the _Lab Order_ command will populate the patient's chart:
 
-![](https://files.readme.io/9b5a9ce-Screen_Shot_2022-08-05_at_3.37.31_PM.png "Screen Shot 2022-08-05 at 3.37.31 PM.png")
+![](https://files.readme.io/9b5a9ce-Screen_Shot_2022-08-05_at_3.37.31_PM.png "Screen Shot 2022-08-05 at 3.37.31 PM.png"){:width="70%"}
 
-## PerformRecommendation
+### PerformRecommendation
 
 **Description**: A recommendation specifying that a provider may need to [perform an In-Office Procedure](https://canvas-medical.zendesk.com/hc/en-us/articles/360055626874-Perform-Command-for-In-Office-Procedures) for a patient. A Perform Recommendation allows providers the ability to create an Instruction command with the click of a button directly in a patient's chart.
 
@@ -631,13 +557,13 @@ result.add_narrative(perform_recommendation.narrative)
 
 A Perform recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/0a3ff5a-recs_perform_card.png "recs_perform_card.png")
+![](https://files.readme.io/0a3ff5a-recs_perform_card.png "recs_perform_card.png"){:width="50%"}
 
 Upon pressing the _Perform_ button, the _Perform_ command will populate the patient's chart:
 
-![](https://files.readme.io/f2be03e-Screen_Shot_2022-07-18_at_12.44.06_PM.png "Screen Shot 2022-07-18 at 12.44.06 PM.png")
+![](https://files.readme.io/f2be03e-Screen_Shot_2022-07-18_at_12.44.06_PM.png "Screen Shot 2022-07-18 at 12.44.06 PM.png"){:width="70%"}
 
-## PlanRecommendation
+### PlanRecommendation
 
 **Description**: A recommendation specifying that a provider may need to document a Plan. A Plan Recommendation allows providers the ability to create a [Plan Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057457013) with the click of a button directly in a patient's chart.
 
@@ -676,13 +602,13 @@ result.add_narrative(f'Discussing planning an exercise regimen with {self.patien
 
 A Plan recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/4d9208b-recs_plan_card.png "recs_plan_card.png")
+![](https://files.readme.io/4d9208b-recs_plan_card.png "recs_plan_card.png"){:width="50%"}
 
 Upon pressing the _Plan_ button, the _Plan_ command will populate the patient's chart. The _narrative_ that was passed to the recommendation will populate the text in the command:
 
-![](https://files.readme.io/af679df-recs_plan_chart.png "recs_plan_chart.png")
+![](https://files.readme.io/af679df-recs_plan_chart.png "recs_plan_chart.png"){:width="70%"}
 
-## PrescribeRecommendation
+### PrescribeRecommendation
 
 **Description**: A recommendation advising the provider to prescribe a treatment for a patient.
 
@@ -761,13 +687,13 @@ result.add_recommendation(prescribe_recommendation)
 
 A Prescribe recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/de5a9e0-Screen_Shot_2022-08-05_at_6.40.15_PM.png "Screen Shot 2022-08-05 at 6.40.15 PM.png")
+![](https://files.readme.io/de5a9e0-Screen_Shot_2022-08-05_at_6.40.15_PM.png "Screen Shot 2022-08-05 at 6.40.15 PM.png"){:width="50%"}
 
 A Prescribe command will appear after clicking the prescribe button:
 
-![](https://files.readme.io/3577c92-Screen_Shot_2022-08-05_at_6.40.05_PM.png "Screen Shot 2022-08-05 at 6.40.05 PM.png")
+![](https://files.readme.io/3577c92-Screen_Shot_2022-08-05_at_6.40.05_PM.png "Screen Shot 2022-08-05 at 6.40.05 PM.png"){:width="70%"}
 
-## ReferRecommendation
+### ReferRecommendation
 
 **Description**: A recommendation advising a provider to create a referral for a patient. A Refer Recommendation allows providers the ability to create an [Refer Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360055709494) with the click of a button directly in a patient's chart.
 
@@ -786,7 +712,6 @@ A Prescribe command will appear after clicking the prescribe button:
 | `narrative` | _string_   | `false`  | The text to show on a patient's chart under the title of the recommendation. For this to successfully display, the command \`add_narrative(refer_recommendation.narrative) must be used.          |
 
 **Notes: **
-
 - If no title is included, the narrative will also be autogenerated.  
       - If condition is included, the narrative will be set to "`patient.name` has `condition.name` and should be referred for `referral.name`".  
       - If condition is not included, the narrative will be set to "`patient.name` should be referred for `referral.name`"
@@ -827,14 +752,17 @@ result.add_recommendation(refer_recommendation)
 ```
 
 A Refer recommendation will appear in the list of Protocols for applicable patients:
+{:refdef: style="text-align: center;"}
+![](https://files.readme.io/214d728-Screen_Shot_2022-08-05_at_6.57.10_PM.png "Screen Shot 2022-08-05 at 6.57.10 PM.png"){:width="50%"}
+{: refdef}
 
-![](https://files.readme.io/214d728-Screen_Shot_2022-08-05_at_6.57.10_PM.png "Screen Shot 2022-08-05 at 6.57.10 PM.png")
 
 A Refer command will appear after clicking the refer button:
+{:refdef: style="text-align: center;"}
+![](https://files.readme.io/aa5ce68-Screen_Shot_2022-08-05_at_6.57.00_PM.png "Screen Shot 2022-08-05 at 6.57.00 PM.png"){:width="70%"}
+{: refdef}
 
-![](https://files.readme.io/aa5ce68-Screen_Shot_2022-08-05_at_6.57.00_PM.png "Screen Shot 2022-08-05 at 6.57.00 PM.png")
-
-## StructuredAssessmentRecommendation
+### StructuredAssessmentRecommendation
 
 **Description**: A recommendation specifying that one or more Structured Assessments should be completed for a patient.  An Assess Recommendation allows providers the ability to create an [Assess command](https://canvas-medical.zendesk.com/hc/en-us/articles/4415631833875-Structured-Assessment) with the click of a button directly in a patient's chart.
 
@@ -880,13 +808,13 @@ result.add_narrative(f'{self.patient.first_name} is recommended to take a COPD A
 
 An Assessment recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/901cc17-recs_struct_card.png "recs_struct_card.png")
+![](https://files.readme.io/901cc17-recs_struct_card.png "recs_struct_card.png"){:width="50%"}
 
 Upon pressing the _Assess_ button, the _Structured Assessment_ command will populate the patient's chart:
 
-![](https://files.readme.io/bce9ad2-recs_structure_chart_updated.png "recs_structure_chart_updated.png")
+![](https://files.readme.io/bce9ad2-recs_structure_chart_updated.png "recs_structure_chart_updated.png"){:width="70%"}
 
-## TaskRecommendation
+### TaskRecommendation
 
 **Description**: A recommendation advising the provider to set up a task for another staff member. A provider can use the [Task command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks) to fulfill this recommendation.
 
@@ -925,13 +853,13 @@ result.add_recommendation(task_recommendation)
 
 A Task recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/7613698-Screen_Shot_2022-07-22_at_9.50.48_AM.png "Screen Shot 2022-07-22 at 9.50.48 AM.png")
+![](https://files.readme.io/7613698-Screen_Shot_2022-07-22_at_9.50.48_AM.png "Screen Shot 2022-07-22 at 9.50.48 AM.png"){:width="50%"}
 
 Once the task button is selected, it will generate a task command that has been autofilled: 
 
-![](https://files.readme.io/c9ef318-Screen_Shot_2022-07-22_at_9.53.38_AM.png "Screen Shot 2022-07-22 at 9.53.38 AM.png")
+![](https://files.readme.io/c9ef318-Screen_Shot_2022-07-22_at_9.53.38_AM.png "Screen Shot 2022-07-22 at 9.53.38 AM.png"){:width="70%"}
 
-## VitalSignRecommendation
+### VitalSignRecommendation
 
 **Description**: A recommendation specifying a vital sign reading should be taken. This recommendation can be fulfilled with the [Vitals command](https://canvas-medical.zendesk.com/hc/en-us/articles/360056077654-Logging-Vital-Signs).
 
@@ -966,13 +894,13 @@ result.add_recommendation(vital_sign_recommendation)
 
 A Vital Sign recommendation will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/6ec6c69-Screen_Shot_2022-07-22_at_11.29.30_AM.png "Screen Shot 2022-07-22 at 11.29.30 AM.png")
+![](https://files.readme.io/6ec6c69-Screen_Shot_2022-07-22_at_11.29.30_AM.png "Screen Shot 2022-07-22 at 11.29.30 AM.png"){:width="50%"}
 
 A vitals command will be generated upon clicking the vitals button:
 
-![](https://files.readme.io/c7d7c5c-Screen_Shot_2022-07-22_at_11.30.31_AM.png "Screen Shot 2022-07-22 at 11.30.31 AM.png")
+![](https://files.readme.io/c7d7c5c-Screen_Shot_2022-07-22_at_11.30.31_AM.png "Screen Shot 2022-07-22 at 11.30.31 AM.png"){:width="70%"}
 
-## HyperlinkRecommendation
+### HyperlinkRecommendation
 
 **Description**: A recommendation specifying a button and href that opens a link in a new tab.
 
@@ -1007,4 +935,4 @@ result.add_narrative(f'{self.patient.first_name} should be provided with further
 
 A recommendation that contains the link will appear in the list of Protocols for applicable patients:
 
-![](https://files.readme.io/56c85b4-recs_href_card.png "recs_href_card.png")
+![](https://files.readme.io/56c85b4-recs_href_card.png "recs_href_card.png"){:width="60%"}

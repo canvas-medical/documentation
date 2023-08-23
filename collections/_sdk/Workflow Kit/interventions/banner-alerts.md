@@ -1,9 +1,5 @@
 ---
-title: "Banner Alerts for Contacts"
-slug: "banner-alerts-for-contacts"
-hidden: false
-createdAt: "2021-12-27T21:24:23.273Z"
-updatedAt: "2022-08-23T17:31:07.452Z"
+title: "Banner Alerts"
 ---
 The workflow kit also allows the user to place Banner's on the canvas UI. 
 

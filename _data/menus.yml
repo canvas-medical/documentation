@@ -1,16 +1,13 @@
 main:
-  - title: Home
-    url: /
   - title: User Docs
     url: /documentation/
   - title: API
     url: /api/
-  - title: SDK
-    url: /sdk/
-  - title: Release Notes
-    url: /release-notes/  
+  - title: SDKs
+    url: /sdk/ 
   - title: Guides
     url: /guides/
+    
 api:
  - title: "AllergyIntolerance"
    url: /api/allergyintolerance/
@@ -340,11 +337,25 @@ documentation_config_clinical:
   - title: "Configuring Questionnaires"
     url: /documentation/configuringquestionnaires
 guides:
- - title: "Just Another Guide"
-   url: /guides/just-another-guide/
+ - title: "Elements of Care Modeling"
+   identifier: guides_elements
  - title: "Care Models"
    identifier: guides_care-models
-   url: /guides/care-models/
+guides_elements:
+ - title: "Diagnostic Range & Inputs"
+   identifier: guides_diagnostic-range
+ - title: "Scope of Interventions & Safety Framework"
+   identifier: guides_scope-of-interventions
+ - title: "Care Team Composition & Sourcing"
+   identifier: guides_care-team-composition
+ - title: "Patient Sourcing & Intake"
+   identifier: guides_patient-sourcing
+ - title: "Ongoing Interaction Modes & Utilization Policies"
+   identifier: guides_ongoing-interaction-modes
+ - title: "Content & Automation"
+   identifier: guides_content-and-automation
+ - title: "Healthcare Pricing & Payments"
+   identifier: guides_healthcare-pricing
 guides_care-models:
  - title: "Behavioral Health"
    url: /guides/bh/
@@ -365,6 +376,9 @@ guides_templates_bh:
    url: /guides/external-scheduling/
  - title: "Asynchronous Care"
    url: /guides/asynchronous-care/
+guides_diagnostic-range:
+ - title: "Customize Search Results"
+   url: /guides/customize-search-results/ 
 sdk:
  - title: "SDK Overview`"
    url: /sdk
@@ -377,6 +391,7 @@ sdk_workflow_kit:
    url: /sdk/sdk-quickstart/
  - title: "Necessary Data and Methods" 
  - title: "Interventions" 
+   identifier: sdk_workflow_kit_interventions
  - title: "Examples"
    identifier: sdk_workflow_kit_examples
 sdk_workflow_kit_examples:
@@ -384,4 +399,29 @@ sdk_workflow_kit_examples:
    url: /sdk/appointment-notification
  - title: "Appointment Task Creator"
    url: /sdk/appointment-task-creator
+ - title: "Appointment Updater"
+   url: /sdk/appointment-updater
+ - title: "Hyperlink Helpers"
+   url: /sdk/hyperlink-helpers
+ - title: "Message Notifications"
+   url: /sdk/message-notifications
+ - title: "Plan Command Recommendation"
+   url: /sdk/plan-command-recommendation
+ - title: "Survey Driven Diagnosis"
+   url: /sdk/survey-driven-diagnosis
+ - title: "Task Notification and Update"
+   url: /sdk/task-notification-and-update
+ - title: "Update Patient Group Membership"
+   url: /sdk/update-patient-group-membership
+sdk_workflow_kit_interventions:
+ - title: "Recommendation Types"
+   url: /sdk/recommendation-types
+ - title: "Banner Alerts"
+   url: /sdk/banner-alerts
+ - title: "Create/Update Canvas Resources"
+   url: /sdk/create-update-canvas-resources
+ - title: "Notification Protocol"
+   url: /sdk/notification-protocol
+ - title: "Making FHIR Requests"
+   url: /sdk/making-fhir-requests
 
