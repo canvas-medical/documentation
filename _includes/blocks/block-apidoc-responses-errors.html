@@ -4,7 +4,7 @@
         400 Failure
     </div>
     <div class="apidoc__object__description">
-        Some response description
+        The request was invalid or cannot be otherwise served. An accompanying error message will explain further.
     </div>
 </div>
 {% endif %}
@@ -14,7 +14,17 @@
         400 Another Failure
     </div>
     <div class="apidoc__object__description">
-        Some response description
+        The request requires user authentication.
+    </div>
+</div>
+{% endif %}
+{% if response == 404 %}
+<div class="apidoc__object">
+    <div class="apidoc__object__name">
+        404 Not Found
+    </div>
+    <div class="apidoc__object__description">
+        The requested resource was not found.
     </div>
 </div>
 {% endif %}
