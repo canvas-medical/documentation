@@ -1,5 +1,5 @@
 ---
-title: FHIR Slot 
+title: Slot 
 sections:
   - type: section
     blocks:
@@ -36,16 +36,15 @@ sections:
 {% tab search-request python %}
 ```sh
 import requests
-import json
 
-url = "{{base_url}}/Slot"
+url = "https://fumage-example.canvasmedical.com/Slot?schedule=Schedule%2FLocation.1-Staff.c2ff4546548e46ab8959af887b563eab&start=2022-03-10&duration=20&end=2022-03-30"
 
-payload={}
 headers = {
-  'Content-Type': 'application/fhir+json'
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
 }
 
-response = requests.request("GET", url, headers=headers, data=payload)
+response = requests.get(url, headers=headers)
 
 print(response.text)
 
@@ -54,7 +53,7 @@ print(response.text)
 {% tab search-request curl %}
 ```sh
 curl --request GET \
-     --url https://fhir-example.canvasmedical.com/Slot \
+     --url https://fumage-example.canvasmedical.com/Slot \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```

@@ -1,5 +1,5 @@
 ---
-title: FHIR Schedule 
+title: Schedule 
 sections:
   - type: section
     blocks:
@@ -36,16 +36,15 @@ sections:
 {% tab search-request python %}
 ```sh
 import requests
-import json
 
-url = "{{base_url}}/Schedule"
+url = "https://fumage-example.canvasmedical.com/Schedule"
 
-payload={}
 headers = {
-  'Content-Type': 'application/fhir+json'
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
 }
 
-response = requests.request("GET", url, headers=headers, data=payload)
+response = requests.get(url, headers=headers)
 
 print(response.text)
 
@@ -54,7 +53,7 @@ print(response.text)
 {% tab search-request curl %}
 ```sh
 curl --request GET \
-     --url https://fhir-example.canvasmedical.com/Schedule \
+     --url https://fumage-example.canvasmedical.com/Schedule \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -66,7 +65,6 @@ curl --request GET \
 {% tabs search-response %}
 {% tab search-response 200 %}
 ```json
-200 {
   {
     "resourceType": "Bundle",
     "type": "searchset",
@@ -192,7 +190,6 @@ curl --request GET \
             }
         }
     ]
-}
 }
 ```
 {% endtab %}
