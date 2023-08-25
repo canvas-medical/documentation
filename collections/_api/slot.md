@@ -7,7 +7,7 @@ sections:
         name: Slot
         article: "a"
         description: >-
-         This will give you a list of location/practitioner combinations that is necessary for identifying open slots when booking appointments.
+            A bookable time-slot from a specific schedule, used when creating or updating an appointment
         attributes:
           - name: _id
             description: >-
@@ -17,13 +17,34 @@ sections:
           - name: resourceType
             type: string
             required: true
+          - name: schedule
+            type: string
+            description: This is a FHIR Schedule reference. GET /Schedule for a list of schedule ids.
+          - name: start
+            type: date
+            description: If provided, we will search for available appointment slots on or after this date. NOTE- If not provided, we will use the current UTC date.
+          - name: duration
+            type: int32
+            description: If provided, we will search for available appointment slots with the given duration in minutes. NOTE- If not provided, we will search for 20 minute slots.
+          - name: end
+            type: date
+            description: If provided, we will search for available appointment slots up until this date. NOTE- If not provided, we will show a week as default (7 days from the start date)
         search_parameters:
-          - name: _id
+          - name: schedule
             type: string
-            description: A Canvas-issued unique identifier
-          - name: identifier
-            type: string
-            description: The Canvas-issued MRN or a saved identifier from an external system  
+            description: This is a FHIR Schedule reference. GET /Schedule for a list of schedule ids.
+            required: true
+          - name: start
+            type: date
+            description: If provided, we will search for available appointment slots on or after this date. NOTE- If not provided, we will use the current UTC date.
+          - name: duration
+            type: int32
+            description: If provided, we will search for available appointment slots with the given duration in minutes. NOTE- If not provided, we will search for 20 minute slots.
+          - name: end
+            type: date
+            description: If provided, we will search for available appointment slots up until this date. NOTE- If not provided, we will show a week as default (7 days from the start date)
+            
+
         endpoints: [search]
         search:
           responses: [200, 400]
@@ -65,140 +86,67 @@ curl --request GET \
 {% tabs search-response %}
 {% tab search-response 200 %}
 ```json
-200 {
   {
     "resourceType": "Bundle",
     "type": "searchset",
-    "total": 8,
+    "total": 3,
     "entry": [
         {
+                 {
             "resource": {
                 "resourceType": "Slot",
-                "id": "Location.1-Staff.e766816672f34a5b866771c773e38f3c",
-                "text": {
-                    "status": "generated",
-                    "div": "<div>Slot for Youta Priti MD at California</div>"
+                "schedule": {
+                    "reference": "Schedule/Location.1-Staff.4150cd20de8a470aa570a852859ac87e",
+                    "type": "Schedule"
                 },
-                "actor": [
-                    {
-                        "reference": "Practitioner/e766816672f34a5b866771c773e38f3c",
-                        "type": "Practitioner"
-                    }
-                ],
-                "comment": "Slot for Youta Priti MD at California"
+                "status": "free",
+                "start": "2023-08-25T06:15:00-07:00",
+                "end": "2023-08-25T06:35:00-07:00"
             }
         },
         {
             "resource": {
                 "resourceType": "Slot",
-                "id": "Location.1-Staff.77bd177f81b14c9f943e1e30ed3dd989",
-                "text": {
-                    "status": "generated",
-                    "div": "<div>Slot for Breanna Heller LMFT at California</div>"
+                "schedule": {
+                    "reference": "Schedule/Location.1-Staff.4150cd20de8a470aa570a852859ac87e",
+                    "type": "Schedule"
                 },
-                "actor": [
-                    {
-                        "reference": "Practitioner/77bd177f81b14c9f943e1e30ed3dd989",
-                        "type": "Practitioner"
-                    }
-                ],
-                "comment": "Slot for Breanna Heller LMFT at California"
+                "status": "free",
+                "start": "2023-08-25T06:30:00-07:00",
+                "end": "2023-08-25T06:50:00-07:00"
             }
         },
         {
             "resource": {
                 "resourceType": "Slot",
-                "id": "Location.1-Staff.f65c2bed0d8643cc808e25d5cfcf5070",
-                "text": {
-                    "status": "generated",
-                    "div": "<div>Slot for Patrick van Nieuwenhuizen MD at California</div>"
+                "schedule": {
+                    "reference": "Schedule/Location.1-Staff.4150cd20de8a470aa570a852859ac87e",
+                    "type": "Schedule"
                 },
-                "actor": [
-                    {
-                        "reference": "Practitioner/f65c2bed0d8643cc808e25d5cfcf5070",
-                        "type": "Practitioner"
-                    }
-                ],
-                "comment": "Slot for Patrick van Nieuwenhuizen MD at California"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Slot",
-                "id": "Location.2-Staff.e766816672f34a5b866771c773e38f3c",
-                "text": {
-                    "status": "generated",
-                    "div": "<div>Slot for Youta Priti MD at Tennessee</div>"
-                },
-                "actor": [
-                    {
-                        "reference": "Practitioner/e766816672f34a5b866771c773e38f3c",
-                        "type": "Practitioner"
-                    }
-                ],
-                "comment": "Slot for Youta Priti MD at Tennessee"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Slot",
-                "id": "Location.2-Staff.3a182f42885645e0bc3d608e7c02aad8",
-                "text": {
-                    "status": "generated",
-                    "div": "<div>Slot for Nikhil Krishnan MD at Tennessee</div>"
-                },
-                "actor": [
-                    {
-                        "reference": "Practitioner/3a182f42885645e0bc3d608e7c02aad8",
-                        "type": "Practitioner"
-                    }
-                ],
-                "comment": "Slot for Nikhil Krishnan MD at Tennessee"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Slot",
-                "id": "Location.2-Staff.77bd177f81b14c9f943e1e30ed3dd989",
-                "text": {
-                    "status": "generated",
-                    "div": "<div>Slot for Breanna Heller LMFT at Tennessee</div>"
-                },
-                "actor": [
-                    {
-                        "reference": "Practitioner/77bd177f81b14c9f943e1e30ed3dd989",
-                        "type": "Practitioner"
-                    }
-                ],
-                "comment": "Slot for Breanna Heller LMFT at Tennessee"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Slot",
-                "id": "Location.2-Staff.f65c2bed0d8643cc808e25d5cfcf5070",
-                "text": {
-                    "status": "generated",
-                    "div": "<div>Slot for Patrick van Nieuwenhuizen MD at Tennessee</div>"
-                },
-                "actor": [
-                    {
-                        "reference": "Practitioner/f65c2bed0d8643cc808e25d5cfcf5070",
-                        "type": "Practitioner"
-                    }
-                ],
-                "comment": "Slot for Patrick van Nieuwenhuizen MD at Tennessee"
+                "status": "free",
+                "start": "2023-08-25T06:35:00-07:00",
+                "end": "2023-08-25T06:55:00-07:00"
             }
         }
+        }
     ]
-}
 }
 ```
 {% endtab %}
 {% tab search-response 400 %}
 ```json
-400 {
-  ...
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
 }
 ```
 {% endtab %}
