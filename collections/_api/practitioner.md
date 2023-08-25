@@ -17,20 +17,10 @@ sections:
             required: true
           - name: identifier
             type: json
-            required: false
+            required: true
           - name: name
             type: json
             required: true
-          - name: family
-            type: string
-            description: Last name
-          - name: given
-            type: string
-            description: First Name
-          - name: prefix
-            type: string
-          - name: suffix
-            type: string
         search_parameters:
           - name: _id
             type: string
@@ -43,7 +33,7 @@ sections:
             description: By default we only display schedule-able staff, marking this as True will return all active staff
         endpoints: [read, search]
         read:
-          responses: [200, 404]
+          responses: [200, 400, 404]
           example_request: practitioner-read-request
           example_response: practitioner-read-response
         search:
@@ -75,7 +65,7 @@ print(response.text)
 {% tab read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Patient/<id> \
+     --url https://fumage-example.canvasmedical.com/Practitioner/<id> \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -93,7 +83,7 @@ curl --request GET \
     "id": "e766816672f34a5b866771c773e38f3c",
     "identifier": [
         {
-            "system": "http://hl7.org/fumage/sid/us-npi",
+            "system": "http://hl7.org/fhir/sid/us-npi",
             "value": "3554694505"
         }
     ],
@@ -110,6 +100,20 @@ curl --request GET \
 }
 ```
 {% endtab %}
+{% tab read-response 400 %}
+```json
+{
+    "resourceType": "OperationOutcome",
+    "issue": [
+        {
+            "severity": "error",
+            "code": "Bad Request",
+        }
+    ]
+}
+
+```
+{% endtab %}
 {% tab read-response 404 %}
 ```json
 {
@@ -119,7 +123,7 @@ curl --request GET \
             "severity": "error",
             "code": "not-found",
             "details": {
-                "text": "Unknown Practitioner resource 'abc'"
+                "text": "text": "Unknown Practitioner resource '7d1ce256fcd7408193b0459650937a07'"
             }
         }
     ]
@@ -152,7 +156,7 @@ print(response.text)
 {% tab search-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Patient \
+     --url https://fumage-example.canvasmedical.com/Practitioner \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -190,7 +194,7 @@ curl --request GET \
                 "id": "e766816672f34a5b866771c773e38f3c",
                 "identifier": [
                     {
-                        "system": "http://hl7.org/fumage/sid/us-npi",
+                        "system": "http://hl7.org/fhir/sid/us-npi",
                         "value": "3554694505"
                     }
                 ],
@@ -212,7 +216,7 @@ curl --request GET \
                 "id": "3a182f42885645e0bc3d608e7c02aad8",
                 "identifier": [
                     {
-                        "system": "http://hl7.org/fumage/sid/us-npi",
+                        "system": "http://hl7.org/fhir/sid/us-npi",
                         "value": "123456789"
                     }
                 ],
@@ -234,7 +238,7 @@ curl --request GET \
                 "id": "77bd177f81b14c9f943e1e30ed3dd989",
                 "identifier": [
                     {
-                        "system": "http://hl7.org/fumage/sid/us-npi",
+                        "system": "http://hl7.org/fhir/sid/us-npi",
                         "value": "123456789"
                     }
                 ],
@@ -256,7 +260,7 @@ curl --request GET \
                 "id": "f65c2bed0d8643cc808e25d5cfcf5070",
                 "identifier": [
                     {
-                        "system": "http://hl7.org/fuamge/sid/us-npi",
+                        "system": "http://hl7.org/fhir/sid/us-npi",
                         "value": "1366978173"
                     }
                 ],
