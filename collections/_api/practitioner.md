@@ -21,6 +21,16 @@ sections:
           - name: name
             type: json
             required: true
+          - name: family
+            type: string
+            description: Last name
+          - name: given
+            type: string
+            description: First Name
+          - name: prefix
+            type: string
+          - name: suffix
+            type: string
         search_parameters:
           - name: _id
             type: string
@@ -33,7 +43,7 @@ sections:
             description: By default we only display schedule-able staff, marking this as True will return all active staff
         endpoints: [read, search]
         read:
-          responses: [200, 400]
+          responses: [200, 404]
           example_request: practitioner-read-request
           example_response: practitioner-read-response
         search:
@@ -49,7 +59,7 @@ sections:
 ```sh
 import requests
 
-url = "https://fumage-example.canvasmedical.com/Practitioner/_id"
+url = "https://fumage-example.canvasmedical.com/Practitioner/<id>"
 
 headers = {
     "accept": "application/json",
@@ -65,7 +75,7 @@ print(response.text)
 {% tab read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Patient/<_id> \
+     --url https://fumage-example.canvasmedical.com/Patient/<id> \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -78,16 +88,43 @@ curl --request GET \
 {% tabs read-response %}
 {% tab read-response 200 %}
 ```json
-200 {
-  OK
+{
+    "resourceType": "Practitioner",
+    "id": "e766816672f34a5b866771c773e38f3c",
+    "identifier": [
+        {
+            "system": "http://hl7.org/fumage/sid/us-npi",
+            "value": "3554694505"
+        }
+    ],
+    "name": [
+        {
+            "use": "usual",
+            "text": "Youta Priti MD",
+            "family": "Priti",
+            "given": [
+                "Youta"
+            ]
+        }
+    ]
 }
 ```
 {% endtab %}
-{% tab read-response 400 %}
+{% tab read-response 404 %}
 ```json
-404 {
-  Not Found
+{
+    "resourceType": "OperationOutcome",
+    "issue": [
+        {
+            "severity": "error",
+            "code": "not-found",
+            "details": {
+                "text": "Unknown Practitioner resource 'abc'"
+            }
+        }
+    ]
 }
+
 ```
 {% endtab %}
 {% endtabs %}
@@ -241,8 +278,18 @@ curl --request GET \
 {% endtab %}
 {% tab search-response 400 %}
 ```json
-400 {
-  
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
 }
 ```
 {% endtab %}
