@@ -11,10 +11,20 @@
 {% if response == 401 %}
 <div class="apidoc__object">
     <div class="apidoc__object__name">
-        400 Another Failure
+        401 Unauthorized
     </div>
     <div class="apidoc__object__description">
         The request requires user authentication.
+    </div>
+</div>
+{% endif %}
+{% if response == 403 %}
+<div class="apidoc__object">
+    <div class="apidoc__object__name">
+        403 Forbidden
+    </div>
+    <div class="apidoc__object__description">
+        The requested resource was not found.
     </div>
 </div>
 {% endif %}
@@ -22,6 +32,36 @@
 <div class="apidoc__object">
     <div class="apidoc__object__name">
         404 Not Found
+    </div>
+    <div class="apidoc__object__description">
+        The requested resource was not found.
+    </div>
+</div>
+{% endif %}
+{% if response == 405 %}
+<div class="apidoc__object">
+    <div class="apidoc__object__name">
+        405 Method Not Allowed
+    </div>
+    <div class="apidoc__object__description">
+        The requested resource was not found.
+    </div>
+</div>
+{% endif %}
+{% if response == 412 %}
+<div class="apidoc__object">
+    <div class="apidoc__object__name">
+        412 Precondition Failed
+    </div>
+    <div class="apidoc__object__description">
+        The requested resource was not found.
+    </div>
+</div>
+{% endif %}
+{% if response == 422 %}
+<div class="apidoc__object">
+    <div class="apidoc__object__name">
+        422 Unprocessable Entity
     </div>
     <div class="apidoc__object__description">
         The requested resource was not found.
