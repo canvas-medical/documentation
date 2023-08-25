@@ -1,9 +1,7 @@
 main:
-  - title: User Docs
-    url: /documentation/
   - title: API
     url: /api/
-  - title: SDKs
+  - title: SDK
     url: /sdk/ 
   - title: Guides
     url: /guides/
@@ -424,4 +422,5 @@ sdk_workflow_kit_interventions:
    url: /sdk/notification-protocol
  - title: "Making FHIR Requests"
    url: /sdk/making-fhir-requests
+
 

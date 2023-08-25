@@ -9,7 +9,7 @@ updatedAt: "2022-02-18T20:32:50.391Z"
 
 In the previous article on how to [Create a Protocol](doc:sdk-create-a-protocol), it was shown how to upload your Protocol code using the `canvas-cli upload` command. In this section, we will explore how to find and view your uploaded Protocol in the Settings section of the Canvas UI.
 
- ### Navigating to Settings
+### Navigating to Settings
 
 To access the Settings section in the Canvas UI, click the hamburger menu in the top portion of the main screen, and then select _Settings_ in the expanded menu:
 [block:image]
