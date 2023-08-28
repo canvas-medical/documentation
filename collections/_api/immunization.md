@@ -7,7 +7,7 @@ sections:
         name: Immunization
         article: "a"
         description: >-
-         
+         Describes the event of a patient being administered a vaccine or a record of an immunization as reported by a patient, a clinician or another party.
         attributes:
           - name: id
             description: >-
@@ -121,7 +121,7 @@ curl --request GET \
             "severity": "error",
             "code": "not-found",
             "details": {
-                "text": "Unknown Encounter resource '7d1ce256fcd7408193b0459650937a07'"
+                "text": "Unknown Immunization resource '7d1ce256fcd7408193b0459650937a07'"
             }
         }
     ]

@@ -7,7 +7,7 @@ sections:
         name: Encounter
         article: "a"
         description: >-
-         
+         An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.
         attributes:
           - name: id
             description: >-
@@ -87,7 +87,7 @@ sections:
               The date the encounter was created
         endpoints: [read, search]
         read:
-          responses: [200, 400, 404]
+          responses: [200, 404]
           example_response: encounter-read-response
           example_request: encounter-read-request
         search:
