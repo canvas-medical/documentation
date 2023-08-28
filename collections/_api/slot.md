@@ -9,7 +9,7 @@ sections:
         description: >-
             A bookable time-slot from a specific schedule, used when creating or updating an appointment
         attributes:
-          - name: _id
+          - name: id
             description: >-
               The identifier of the slot
             type: string
@@ -19,30 +19,26 @@ sections:
             required: true
           - name: schedule
             type: string
-            description: This is a FHIR Schedule reference. GET /Schedule for a list of schedule ids.
+            description: The schedule resource that this slot defines an interval of status information
           - name: start
             type: date
-            description: If provided, we will search for available appointment slots on or after this date. NOTE- If not provided, we will use the current UTC date.
-          - name: duration
-            type: int32
-            description: If provided, we will search for available appointment slots with the given duration in minutes. NOTE- If not provided, we will search for 20 minute slots.
+            description: Date/Time that the slot is to begin
           - name: end
             type: date
-            description: If provided, we will search for available appointment slots up until this date. NOTE- If not provided, we will show a week as default (7 days from the start date)
+            description: Date/Time that the slot is to end
+          - name: status
+            type: string
         search_parameters:
           - name: schedule
             type: string
-            description: This is a FHIR Schedule reference. GET /Schedule for a list of schedule ids.
+            description: The schedule resource that this slot defines an interval of status information
             required: true
           - name: start
             type: date
-            description: If provided, we will search for available appointment slots on or after this date. NOTE- If not provided, we will use the current UTC date.
-          - name: duration
-            type: int32
-            description: If provided, we will search for available appointment slots with the given duration in minutes. NOTE- If not provided, we will search for 20 minute slots.
+            description: Date/Time that the slot is to begin
           - name: end
             type: date
-            description: If provided, we will search for available appointment slots up until this date. NOTE- If not provided, we will show a week as default (7 days from the start date)
+            description: Date/Time that the slot is to end
             
 
         endpoints: [search]

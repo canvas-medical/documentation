@@ -26,7 +26,7 @@ sections:
           - name: comment 
             type: string
             description: >-
-              Comments about the schedule  
+              Comment about the schedule containing the provider's name and location 
         endpoints: [search]
         search:
           responses: [200, 400]
