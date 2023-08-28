@@ -1,4 +1,6 @@
-------------------------------------------------------------------------
+---
+title: Events
+---
 
 The Events API is responsible for defining, emitting, and handling
 events throughout the system.

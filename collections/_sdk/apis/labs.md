@@ -1,3 +1,7 @@
+---
+title: Labs
+---
+
 # Labs
 
 The Labs API is responsible for managing lab orders.

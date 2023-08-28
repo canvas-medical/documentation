@@ -1,3 +1,7 @@
+---
+title: Plugins
+---
+
 # Plugins
 
 The Plugins API is responsible for managing plugins in the system.

@@ -1,3 +1,7 @@
+---
+title: Storage
+---
+
 # Storage
 
 The Storage API is responsible for handling object storage. It provides

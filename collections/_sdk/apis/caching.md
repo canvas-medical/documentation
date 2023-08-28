@@ -1,3 +1,7 @@
+---
+title: Caching
+---
+
 # Caching
 
 The Caching API provides a simple interface for caching objects with

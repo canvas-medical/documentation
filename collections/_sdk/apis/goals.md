@@ -1,3 +1,7 @@
+---
+title: Goals
+---
+
 # Goals
 
 The Goals API is responsible for managing goals. The API provides events

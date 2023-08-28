@@ -1,3 +1,7 @@
+---
+title: Events Handbook
+---
+
 # Events Handbook {#quickstart-event-handbook}
 
 Events are used throughout the Canvas Core as the way to interact and

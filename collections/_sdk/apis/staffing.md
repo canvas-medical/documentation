@@ -1,3 +1,7 @@
+---
+title: Staffing
+---
+
 # Staffing
 
 The Staffing API is responsible for managing staffing-related resources.

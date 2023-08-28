@@ -1,3 +1,7 @@
+---
+title: Requests
+---
+
 # Requests
 
 The Requests API is responsible for handling HTTP requests. It provides

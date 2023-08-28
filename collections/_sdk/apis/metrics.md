@@ -1,3 +1,7 @@
+---
+title: Metrics
+---
+
 # Metrics
 
 The Metrics API provides a preconfigured client for the StatsD protocol,

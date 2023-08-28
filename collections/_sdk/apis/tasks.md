@@ -1,3 +1,7 @@
+---
+title: Tasks
+---
+
 # Tasks
 
 The Tasks API is responsible for managing tasks (i.e., work to be done

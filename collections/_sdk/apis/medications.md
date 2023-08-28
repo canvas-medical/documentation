@@ -1,3 +1,7 @@
+---
+title: Medications
+---
+
 # Medications
 
 The Medications API is responsible for managing medications and

@@ -1,3 +1,7 @@
+---
+title: Patients
+---
+
 # Patients
 
 The Patients API is responsible for providing a simple interface for

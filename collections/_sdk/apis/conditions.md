@@ -1,3 +1,7 @@
+---
+title: Conditions
+---
+
 # Conditions
 
 The Conditions API is responsible for managing patient\'s clinical

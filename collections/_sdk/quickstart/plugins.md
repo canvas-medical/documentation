@@ -1,3 +1,7 @@
+---
+title: Plugins
+---
+
 # Getting Started with Plugins {#quickstart-plugins}
 
 This quickstart guide will take you through the basic cycle of

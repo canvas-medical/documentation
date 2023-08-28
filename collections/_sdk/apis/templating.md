@@ -1,3 +1,7 @@
+---
+title: Templating
+---
+
 # Templating
 
 The Templating API is responsible for providing a simple interface to

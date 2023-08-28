@@ -1,3 +1,7 @@
+---
+title: Configuration Management
+---
+
 # Configuration Management
 
 The Configuration Management API (\"config\", for short) provides a

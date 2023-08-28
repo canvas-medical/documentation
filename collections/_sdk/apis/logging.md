@@ -1,3 +1,7 @@
+---
+title: Logging
+---
+
 # Logging
 
 The Logging API is responsible for handling structured logging. It

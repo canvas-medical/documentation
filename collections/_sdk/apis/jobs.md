@@ -1,3 +1,7 @@
+---
+title: Jobs
+---
+
 # Jobs
 
 The Jobs API provides a seamless way of running any function
