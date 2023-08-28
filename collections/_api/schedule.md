@@ -7,9 +7,9 @@ sections:
         name: Schedule
         article: "a"
         description: >-
-         This will give you a list of location/practitioner combinations that is necessary for identifying open slots when booking appointments.
+             Used to group Slot resources together for practitioner/location combinations
         attributes:
-          - name: _id
+          - name: id
             description: >-
               The identifier of the schedule
             type: string
@@ -17,13 +17,16 @@ sections:
           - name: resourceType
             type: string
             required: true
-        search_parameters:
-          - name: _id
+          - name: text
+            type: json
+          - name: actor
+            type: json
+            description: >-
+              The practitioner or location that this schedule is associated with
+          - name: comment 
             type: string
-            description: A Canvas-issued unique identifier
-          - name: identifier
-            type: string
-            description: The Canvas-issued MRN or a saved identifier from an external system  
+            description: >-
+              Comments about the schedule  
         endpoints: [search]
         search:
           responses: [200, 400]
@@ -195,8 +198,18 @@ curl --request GET \
 {% endtab %}
 {% tab search-response 400 %}
 ```json
-400 {
-  ...
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
 }
 ```
 {% endtab %}
