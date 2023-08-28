@@ -6,6 +6,8 @@ sections:
       - type: apidoc
         name: Practitioner
         article: "a"
+        description: >-
+            A person who is directly or indirectly involved in the provisioning of healthcare.
         attributes:
           - name: id
             description: >-
