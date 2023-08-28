@@ -55,7 +55,7 @@ sections:
             type: string
           - name: encounter
             type: string
-        endpoints: [read, search]
+        endpoints: [read, search, create, update]
         read:
           responses: [200, 401, 403, 404]
           example_response: condition-read-response
