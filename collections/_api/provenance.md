@@ -64,10 +64,26 @@ sections:
 ---
 <div id="provenance-read-request">
 {% tabs read-request %}
+{% tab read-request python %}
+```sh
+import requests
+
+url = "https://fhir-example.canvasmedical.com/Provenance/<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
 {% tab read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Provenance/_id \
+     --url https://fumage-example.canvasmedical.com/Provenance/<id> \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -79,15 +95,59 @@ curl --request GET \
 {% tabs read-response %}
 {% tab read-response 200 %}
 ```json
-200 {
-  ...
+{
+    "resourceType": "Provenance",
+    "id": "1df85d92-05ae-4965-bed3-9f2d6418e53b",
+    "target": [
+        {
+            "reference": "Observation/1267a082-f12e-4c84-b715-5839e2cec392",
+            "type": "Observation"
+        }
+    ],
+    "recorded": "2022-01-10T03:46:59.312603+00:00",
+    "location": {
+        "extension": [
+            {
+                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                "valueCode": "unsupported"
+            }
+        ]
+    },
+    "activity": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                "code": "CREATE"
+            }
+        ]
+    },
+    "agent": [
+        {
+            "who": {
+                "display": "Not available"
+            },
+            "onBehalfOf": {
+                "display": "Not available"
+            }
+        }
+    ]
 }
 ```
 {% endtab %}
-{% tab read-response 400 %}
+{% tab read-response 404 %}
 ```json
-400 {
-  ...
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Resource not found"
+      }
+    }
+  ]
 }
 ```
 {% endtab %}
@@ -96,6 +156,22 @@ curl --request GET \
 
 <div id="provenance-search-request">
 {% tabs search-request %}
+{% tab read-request python %}
+```sh
+import requests
+
+url = "https://fhir-example.canvasmedical.com/Provenance/"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
 {% tab search-request curl %}
 ```sh
 curl --request GET \
@@ -111,15 +187,437 @@ curl --request GET \
 {% tabs search-response %}
 {% tab search-response 200 %}
 ```json
-200 {
-  ...
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 97722,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/Provenance?_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Provenance?_count=10&_offset=0"
+        },
+        {
+            "relation": "next",
+            "url": "/Provenance?_count=10&_offset=10"
+        },
+        {
+            "relation": "last",
+            "url": "/Provenance?_count=10&_offset=97720"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "e2c6ff9b-6a04-4a73-81e2-5fa4bc605a15",
+                "target": [
+                    {
+                        "reference": "Observation/eb38c5f7-09fd-4cc1-8e7b-73b0bc87dd0b",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.036676+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "596bffc9-fda6-4503-8e08-9bdf4045a31f",
+                "target": [
+                    {
+                        "reference": "Observation/c903ee1c-a3b1-424a-b3bc-469354316e34",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.083833+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "023ae5a7-8949-4422-a39b-8118f0d51a39",
+                "target": [
+                    {
+                        "reference": "Observation/1cb9be26-f43b-4556-ac97-564a6b7f5654",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.291160+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "1df85d92-05ae-4965-bed3-9f2d6418e53b",
+                "target": [
+                    {
+                        "reference": "Observation/1267a082-f12e-4c84-b715-5839e2cec392",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.312603+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "5839cf69-855d-4277-bb63-961d6c74f826",
+                "target": [
+                    {
+                        "reference": "Observation/28349f01-9820-42a0-9b39-7730877dbc6c",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.362657+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "b503e886-6d36-41a9-a5e7-8486db304293",
+                "target": [
+                    {
+                        "reference": "Observation/d6193b4a-11cb-4560-9dc0-3ffa1f03c94a",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.386909+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "ed2db4c0-6dde-4fb3-9934-b4a07b45338f",
+                "target": [
+                    {
+                        "reference": "Observation/5e27a8d6-9f06-4d79-b6f5-2aaaccb4966c",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.434493+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "3a137a73-66aa-45ad-ad97-c6537c9283dc",
+                "target": [
+                    {
+                        "reference": "Observation/87020167-7bcb-4e30-a534-ea9b1325f6f6",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.602605+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "2ad5933f-2d49-4ca7-aed0-401d73cdd269",
+                "target": [
+                    {
+                        "reference": "Observation/53138e50-8eaf-48b5-9351-b9084a2c0bdb",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.619071+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Provenance",
+                "id": "c5684741-5110-408b-9e7a-1d60df4f11c6",
+                "target": [
+                    {
+                        "reference": "Observation/0a5142b7-7195-4e1c-8b36-595f4637340a",
+                        "type": "Observation"
+                    }
+                ],
+                "recorded": "2022-01-10T03:46:59.636894+00:00",
+                "location": {
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                            "valueCode": "unsupported"
+                        }
+                    ]
+                },
+                "activity": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
+                            "code": "CREATE"
+                        }
+                    ]
+                },
+                "agent": [
+                    {
+                        "who": {
+                            "display": "Not available"
+                        },
+                        "onBehalfOf": {
+                            "display": "Not available"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
 }
 ```
 {% endtab %}
 {% tab search-response 400 %}
 ```json
-400 {
-  ...
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
 }
 ```
 {% endtab %}
