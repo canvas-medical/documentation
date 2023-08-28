@@ -11,9 +11,11 @@ Navigate to Care Team Roles in your admin settings. New instances are created wi
 
 ![default-care-team-roles](/assets/images/default-care-team-roles.png){:width="60%"}
 
+## Adding Care Team Roles
+
 To add a new role, click ![care-team-role-button](/assets/images/care-team-role-button.png){:width="10%"} in the top right and then complete the following form:
 
-<b>System:</b> This refer to the system that the code below belongs to. Canvas supports using the following existing systems, ICD10, CPT, SNOMED, and LOINC, or you can leverage a custom code by specifying INTERNAL as the system.
+<b>System:</b> This refers to the system that the code below belongs to. Canvas supports using the following existing systems, ICD10, CPT, SNOMED, and LOINC, or you can leverage a custom code by specifying INTERNAL as the system.
 
 <b>Version</b> This is not required
 
@@ -26,3 +28,7 @@ To add a new role, click ![care-team-role-button](/assets/images/care-team-role-
 {:refdef: style="text-align: center;"}
 ![Protocol framework](/assets/images/care-team-roles.gif){:width="100%"}
 {: refdef}
+
+## Updating Care Team Roles
+
+To edit a care team role, click into an existing care team role and make changes as needed. You can also take bulk actions to activate or deactive care team roles by checking the boxes next to each and using the action drop-down. 

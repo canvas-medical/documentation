@@ -3,7 +3,7 @@ title: "Optimize Patient Intake"
 guide_for: (https://canvas-medical.zendesk.com/hc/en-us/articles/5804335726483-Patient-Metadata)
 ---
 
-Patient intake is how care delivery organizations ensure they have everything they need from a patient before an encounter. Historically, this typically consists of manual processes to gather and verify important information including demographics, billing and insurance, medical histories, and consents; however, it can and <b>should</b> be so much more than that. Current data continues to support the idea that traditional patient intake is a consumer pain point. Canvas's extensibility enables you to differentiate your care model by using external data to create operational efficiencies, resulting in an enhanced patient experience.
+Patient intake is how care delivery organizations ensure they have everything they need from a patient before an encounter. Historically, this typically consists of manual processes to gather and verify important information including demographics, billing and insurance, medical histories, and consents; however, it can and <b>should</b> be so much more than that. Current data continues to support the idea that traditional patient intake is a consumer pain point. Canvas's extensibility enables you to differentiate your care model by leveraging external data to create operational efficiencies and better the patient experience.
 <br>
 <br>
 * * *
@@ -76,7 +76,7 @@ class ExternalIdentifierBanner(ClinicalQualityMeasure):
 * * *
 ###  3. Incorporate patient collected data with Questionnaires
 
-[Questionnaires](({{site.baseurl}}/documentation/questionnaires)) in Canvas represent a structured set of questions intended to guide the collection of answers from end-users and promote consistent data collection. They support many workflows, from evidence-based assessments to completely custom forms and templates. Your team can utilize our no-code google sheet template to build, update, and load questionnaires into Canvas.  When buidling your questionnaires, make sure to use unique codes, using our supported code systems, so that they can be leveraged in the FHIR API and with Protocols. 
+[Questionnaires]({{site.baseurl}}/documentation/questionnaires) in Canvas represent a structured set of questions intended to guide the collection of answers from end-users and promote consistent data collection. They support many workflows, from evidence-based assessments to completely custom forms and templates. Your team can utilize our no-code google sheet template to build, update, and load questionnaires into Canvas.  When buidling your questionnaires, make sure to use unique codes, using our supported code systems, so that they can be leveraged in the FHIR API and with Protocols. 
 
 Questionnaires can be added to an upcoming appointment or open encounter by adding an `encounter` reference. The [FHIR Encounter Search]({{site.baseurl}}/api/encounter/) endpoint can be used to obtain the encounter_id. 
 

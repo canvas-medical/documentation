@@ -288,52 +288,9 @@ api_task:
  - title: "Task Update"
    url: /api/task/#task-update
 documentation:
- - title: "Setup & Configuration"
-   url: #
-   identifier: documentation_config
- - title: "Chart"
-   url: #
-   identifier: documentation_chart
- - title: "Narrative Charting"
-   url: #
-   identifier: documentation_narrativecharting
- - title: "Collaboration"
-   url: 
-   identifier: documentation_collaboration
- - title: "Scheduling"
-   url: #
-   identifier: documentation_scheduling
- - title: "Revenue"
-   url: #
-   identifier: documentation_revenue
- - title: "Patient App"
-   url: #
-   identifier: documentation_patientapp
- - title: "Reporting"
-   url: #
-   identifier: documentation_reporting
- - title: "Populations"
-   url: #
-   identifier: documentation_populations
- - title: "Support"
-   url: #
-   identifier: documentation_support
-documentation_config:
-  - title: "Organization"
-    url: #
-    identifier: documentation_config_organization
-  - title: "Clinical Configuration"
-    url: #
-    identifier: documentation_config_clinical
-  - title: "Admin Configuration"
-    url: #
-    identifier: documentation_config_admin
-  - title: "Revenue Configuration"
-    url: #
-    identifier: documentation_config_revenue
-documentation_config_clinical:
-  - title: "Configuring Questionnaires"
-    url: /documentation/configuringquestionnaires
+ - title: "Transition"
+   url: /documentation/transition
+   identifier: documentation_transition
 guides:
  - title: "Elements of Care Modeling"
    identifier: guides_elements
