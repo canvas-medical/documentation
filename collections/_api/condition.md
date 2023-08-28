@@ -468,14 +468,12 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% endtab %}
 {% tab update-response 412 %}
 ```json
 {
     "detail": "Predondition Failed"
 }
 ```
-{% endtab %}
 {% endtab %}
 {% tab update-response 422 %}
 ```json
