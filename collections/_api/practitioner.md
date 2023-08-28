@@ -125,7 +125,7 @@ curl --request GET \
             "severity": "error",
             "code": "not-found",
             "details": {
-                "text": "text": "Unknown Practitioner resource '7d1ce256fcd7408193b0459650937a07'"
+                "text": "Unknown Practitioner resource '7d1ce256fcd7408193b0459650937a07'"
             }
         }
     ]
