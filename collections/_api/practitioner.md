@@ -32,7 +32,7 @@ sections:
             description: Look up practitioner by name. Partial search is supported. If the practitioner you are looking for is inactive, you still need to use the include-non-scheduleable-practitioners = True
           - name: include-non-scheduleable-practitioners
             type: boolean
-            description: By default we only display schedule-able staff, marking this as True will return all active staff
+            description: By default we only display scheduleable staff, marking this as True will return all active staff
         endpoints: [read, search]
         read:
           responses: [200, 400, 404]
