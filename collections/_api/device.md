@@ -51,7 +51,7 @@ sections:
               The patient
         endpoints: [read, search]
         read:
-          responses: [200, 404]
+          responses: [200, 400, 404]
           example_response: device-read-response
           example_request: device-read-request
         search:
@@ -81,9 +81,9 @@ print(response.text)
 {% tab read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Patient/<id> \
+     --url https://fumage-example.canvasmedical.com/Device/<id> \
      --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
+     --header 'accept: application/json'z
 ```
 {% endtab %}
 {% endtabs %}
@@ -122,22 +122,6 @@ curl --request GET \
         "type": "Patient",
         "display": "Giant Cube"
     }
-}
-```
-{% endtab %}
-{% tab read-response 404 %}
-```json
-{
-    "resourceType": "OperationOutcome",
-    "issue": [
-        {
-            "severity": "error",
-            "code": "not-found",
-            "details": {
-                "text": "Unknown Device resource 'abc'"
-            }
-        }
-    ]
 }
 ```
 {% endtab %}

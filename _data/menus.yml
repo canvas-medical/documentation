@@ -150,7 +150,7 @@ api_condition:
    url: /api/condition/#condition-read
  - title: "Condition Search"
    url: /api/condition/#condition-search
-    - title: "Condition Create"
+ - title: "Condition Create"
    url: /api/condition/#condition-create
  - title: "Condition Update"
    url: /api/condition/#condition-update

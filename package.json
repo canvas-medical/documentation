@@ -51,5 +51,6 @@
   },
   "dependencies": {
     "normalize.css": "^8.0.1"
-  }
+  },
+  "packageManager": "yarn@3.6.3"
 }
