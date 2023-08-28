@@ -1,5 +1,0 @@
----
-title: "Security"
----
-
-Example content

@@ -5,6 +5,8 @@ guide_for:
 Canvas's search functions are typically used dozens of times in a single patient interaction. Navigating through the thousands of options within a drop-down can be a daunting task for a clinician. Keywords and quick-picks can help improve the experience, but their impact is often limited. Our plugins allow you to add your own complex logic to help surface the right options, with the right context, at the right time. We currently support altering our condition search results through the Plugins beta, and will continue to expand this offering throughout the platform. 
 
 {% include alert.html type="info" content=" <b>Plugins are currently in beta.</b> If you are interested in participating in our beta for Plugins, please reach out to product@canvasmedical.com." %}
+
+First time using plugins? Follow our [quickstart guide](https://canvas-medical.github.io/canvas-core/quickstart/plugins.html#) to get started. 
 <br>
 * * *
 ## What you'll learn
@@ -19,13 +21,27 @@ In this guide, you will learn how to do the following:
 
 ### Customize Condition Search
 
-{% tabs CSR %}
-{% tab CSR Developers %}
-First time using plugins? Follow our [quickstart guide](https://canvas-medical.github.io/canvas-core/quickstart/plugins.html#) to get started. 
+Your care team may identify ways to make searching easier in Canvas. Plugins can be used to add custom logic, tags, and/or options to the Canvas's search results. Use the examples below to help you brainstorm with your team how to implement changes that would better support your care model. 
+- Replace the results entirely
+    - Only surface the 10 diagnoses that are treated based on your diagnostic range
+    - Call out to an external API to leverage a different source of data or search tool (i.e IMO)
+- Add Results
+    - Add updated descriptions for difficult to find ICD-10 codes
+- Remove Results 
+    - Remove age specific codes that do not match the patient's profile
+    - Remove codes that are excluded benefits
+    - Remove BMI codes that do not match the patient's vitals
+- Reorder Results
+    - Prioritize specific codes over unspecified codes
+    - Prioritize risk adjustable codes
+    - Highlight suspect diagnoses based on captured clinical data
+- Add Annotations to Result
+    - Add warnings for unspecified codes
+    - Add warnings for already diagnosed conditions
+    - Surface payer specific HCC and risk adjustment data
+    - Surface necessary buddy code warnings 
 
-Your care team may identify ways to make searching easier in Canvas (see the super user tab for some examples). Plugins can be used to add custom logic, tags, and/or options to the Canvas's search results. 
-
-<b>Condition search</b> can be modified by intercepting one of two events: <b>PreSearch</b> and <b>PostSearch</b>.
+Condition search can be modified by intercepting one of two events: <b>PreSearch</b> and <b>PostSearch</b>.
 
 Use <b>PreSearch</b> if you want to entirely bypass the built-in Canvas search function entirely, and supply your own results based on the user query. In this case, you need to add results to the pre search event. They need to be formatted properly, including `icd10_code`, `icd10_text`, and `preferred_snomed_term` so that the application can use them correctly. You can specify the order and add annotations if desired. This could be useful if your care model has a narrow diagnostic range or if you are calling out another tool's API to return results. 
 
@@ -137,29 +153,10 @@ def handle_search_condition_post_search(event: search_events.PostSearch[results.
 ```
 <br>
 
-
-{% endtab %}
-{% tab CSR  Super Users %}
-Custom plugins can be used to alter the condition search in many ways. Use the examples below to help you brainstorm with your developers how to implement changes that would better support your care model. 
-- Replace the results entirely
-    - Only surface the 10 diagnoses that are treated based on your diagnostic range
-    - Call out to an external API to leverage a different source of data or search tool (i.e IMO)
-- Add Results
-    - Update descriptions for difficult to find ICD-10 codes
-- Remove Results 
-    - Remove age specific codes that do not match the patient's profile
-    - Remove codes that are excluded benefits
-    - Remove BMI codes that do not match the patient's vitals
-- Reorder Results
-    - Prioritize specific codes over unspecified codes
-    - Prioritize risk adjustable codes
-    - Highlight suspect diagnoses based on captured clinical data
-- Add Annotations to Result
-    - Add warnings for unspecified codes
-    - Add warnings for already diagnosed conditions
-    - Surface payer specific HCC and risk adjustment data
-    - Surface necessary buddy code warnings 
+### Customize Medication Search (coming soon)
+### Customize Refer Search (coming soon)
 
 
-{% endtab %}
-{% endtabs %}
+
+
+

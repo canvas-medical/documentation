@@ -358,9 +358,7 @@ guides_care-models:
  - title: "Behavioral Health"
    url: /guides/bh/
    identifier: guides_templates_bh
- - title: "Primary Care"
-   url: /guides/primary_care/
-   identifier: guides_templates_pc
+
 guides_templates_bh:
  - title: "Customize Search Results"
    url: /guides/customize-search-results/ 
@@ -374,15 +372,39 @@ guides_templates_bh:
    url: /guides/external-scheduling/
  - title: "Asynchronous Care"
    url: /guides/asynchronous-care/
+ - title: "Patient Messaging"
+   url: /guides/patient-messaging/
+
 guides_diagnostic-range:
  - title: "Customize Search Results"
    url: /guides/customize-search-results/ 
+
+guides_scope-of-interventions:
+ - title: "Build a Safety Framework"
+   url: /guides/build-a-safety-framework/  
+
+guides_care-team-composition:
+ - title: "Team Based Care"
+   url: /guides/team-based-care/
+
+guides_patient-sourcing:
+ - title: "Optimize Patient Intake"
+   url: /guides/optimize-patient-intake/
+
+guides_ongoing-interaction-modes:
+ - title: "External Scheduling"
+   url: /guides/external-scheduling/
+ - title: "Asynchronous Care"
+   url: /guides/asynchronous-care/
+ - title: "Patient Messaging"
+   url: /guides/patient-messaging/
+
 sdk:
- - title: "SDK Overview`"
+ - title: "SDK Overview"
    url: /sdk
- - title: "Canvas Core`"
+ - title: "Canvas SDK"
    identifier: sdk_canvas_core      
- - title: "Workflow Kit`"
+ - title: "Workflow Kit"
    identifier: sdk_workflow_kit 
 sdk_workflow_kit:
  - title: "Quickstart" 
@@ -390,27 +412,7 @@ sdk_workflow_kit:
  - title: "Necessary Data and Methods" 
  - title: "Interventions" 
    identifier: sdk_workflow_kit_interventions
- - title: "Examples"
-   identifier: sdk_workflow_kit_examples
-sdk_workflow_kit_examples:
- - title: "Appointment Notification"
-   url: /sdk/appointment-notification
- - title: "Appointment Task Creator"
-   url: /sdk/appointment-task-creator
- - title: "Appointment Updater"
-   url: /sdk/appointment-updater
- - title: "Hyperlink Helpers"
-   url: /sdk/hyperlink-helpers
- - title: "Message Notifications"
-   url: /sdk/message-notifications
- - title: "Plan Command Recommendation"
-   url: /sdk/plan-command-recommendation
- - title: "Survey Driven Diagnosis"
-   url: /sdk/survey-driven-diagnosis
- - title: "Task Notification and Update"
-   url: /sdk/task-notification-and-update
- - title: "Update Patient Group Membership"
-   url: /sdk/update-patient-group-membership
+
 sdk_workflow_kit_interventions:
  - title: "Recommendation Types"
    url: /sdk/recommendation-types
