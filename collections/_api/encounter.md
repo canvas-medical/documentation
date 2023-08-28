@@ -297,116 +297,88 @@ curl --request GET \
 {% tabs search-response %}
 {% tab search-response 200 %}
 ```json
-
 {
-    "resourceType": "Bundle",
-    "type": "searchset",
-    "total": 1,
-    "link": [
+    "resourceType": "Encounter",
+    "id": "7720a218-c0bd-4cee-82a2-729bd9c101f3",
+    "identifier": [
         {
-            "relation": "self",
-            "url": "/Encounter?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
-        },
-        {
-            "relation": "first",
-            "url": "/Encounter?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
-        },
-        {
-            "relation": "next",
-            "url": "/Encounter?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=10"
-        },
-        {
-            "relation": "last",
-            "url": "/Encounter?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=30"
+            "id": "7720a218-c0bd-4cee-82a2-729bd9c101f3",
+            "system": "http://canvasmedical.com",
+            "value": "7720a218-c0bd-4cee-82a2-729bd9c101f3"
         }
     ],
-    "entry": [
+    "status": "in-progress",
+    "class": {
+        "system": "https://www.hl7.org/fhir/v3/ActEncounterCode/vs.html"
+    },
+    "type": [
         {
-            "resource": {
-                "resourceType": "Encounter",
-                "id": "7720a218-c0bd-4cee-82a2-729bd9c101f3",
-                "identifier": [
-                    {
-                        "id": "7720a218-c0bd-4cee-82a2-729bd9c101f3",
-                        "system": "http://canvasmedical.com",
-                        "value": "7720a218-c0bd-4cee-82a2-729bd9c101f3"
-                    }
-                ],
-                "status": "in-progress",
-                "class": {
-                    "system": "https://www.hl7.org/fhir/v3/ActEncounterCode/vs.html"
-                },
-                "type": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://snomed.info/sct",
-                                "code": "308335008",
-                                "display": "Office Visit"
-                            }
-                        ]
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "participant": [
-                    {
-                        "type": [
-                            {
-                                "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-                                        "code": "PART",
-                                        "display": "Participation"
-                                    }
-                                ]
-                            }
-                        ],
-                        "period": {
-                            "start": "2022-04-04T05:26:34.711718+00:00"
-                        },
-                        "individual": {
-                            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
-                            "type": "Practitioner",
-                            "display": "Canvas Support MD"
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "308335008",
+                    "display": "Office Visit"
+                }
+            ]
+        }
+    ],
+    "subject": {
+        "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+        "type": "Patient"
+    },
+    "participant": [
+        {
+            "type": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                            "code": "PART",
+                            "display": "Participation"
                         }
-                    }
-                ],
-                "period": {
-                    "start": "2022-04-04T05:26:34.711718+00:00"
-                },
-                "reasonCode": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://snomed.info/sct",
-                                "code": "308335008",
-                                "display": "Patient encounter procedure (procedure)"
-                            }
-                        ]
-                    }
-                ],
-                "hospitalization": {
-                    "dischargeDisposition": {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/discharge-disposition",
-                                "code": "oth",
-                                "display": "Other"
-                            }
-                        ]
-                    }
-                },
-                "location": [
-                    {
-                        "location": {
-                            "reference": "Location/50ea08f9-f4a5-4315-90e3-10d38922daa8",
-                            "type": "Location"
-                        }
-                    }
-                ]
+                    ]
+                }
+            ],
+            "period": {
+                "start": "2022-04-04T05:26:34.711718+00:00"
+            },
+            "individual": {
+                "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                "type": "Practitioner",
+                "display": "Canvas Support MD"
+            }
+        }
+    ],
+    "period": {
+        "start": "2022-04-04T05:26:34.711718+00:00"
+    },
+    "reasonCode": [
+        {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "308335008",
+                    "display": "Patient encounter procedure (procedure)"
+                }
+            ]
+        }
+    ],
+    "hospitalization": {
+        "dischargeDisposition": {
+            "coding": [
+                {
+                    "system": "http://terminology.hl7.org/CodeSystem/discharge-disposition",
+                    "code": "oth",
+                    "display": "Other"
+                }
+            ]
+        }
+    },
+    "location": [
+        {
+            "location": {
+                "reference": "Location/50ea08f9-f4a5-4315-90e3-10d38922daa8",
+                "type": "Location"
             }
         }
     ]
