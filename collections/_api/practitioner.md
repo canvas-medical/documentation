@@ -35,7 +35,7 @@ sections:
             description: By default we only display scheduleable staff, marking this as True will return all active staff
         endpoints: [read, search]
         read:
-          responses: [200, 400, 404]
+          responses: [200, 404]
           example_request: practitioner-read-request
           example_response: practitioner-read-response
         search:
@@ -100,20 +100,6 @@ curl --request GET \
         }
     ]
 }
-```
-{% endtab %}
-{% tab read-response 400 %}
-```json
-{
-    "resourceType": "OperationOutcome",
-    "issue": [
-        {
-            "severity": "error",
-            "code": "Bad Request",
-        }
-    ]
-}
-
 ```
 {% endtab %}
 {% tab read-response 404 %}
