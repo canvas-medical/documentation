@@ -1,5 +1,5 @@
 ---
-title: FHIR Patient 
+title: Patient
 sections:
   - type: section
     blocks:
@@ -7,9 +7,9 @@ sections:
         name: Patient
         article: "a"
         description: >-
-          At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
+          Demographics and other administrative information about an individual or animal receiving care or other health-related services.
         attributes:
-          - name: _id
+          - name: id
             description: >-
               The identifier of the patient
             type: string
@@ -17,6 +17,13 @@ sections:
           - name: resourceType
             type: string
             required: true
+          - name: text
+            type: json
+            attributes:
+              - name: status
+                type: string
+              - name: div
+                type: string
           - name: extension
             type: json
             required: true
@@ -32,47 +39,137 @@ sections:
           - name: telecom
             type: json
             required: false
+            attributes:
+              - name: id
+                type: string
+              - name: extension
+                type: array
+                attributes:
+                  - name: url
+                    type: string
+                  - name: valueBoolean
+                    type: boolean
+              - name: system
+                type: string
+              - name: value
+                type: string
+              - name: use
+                type: string
+              - name: rank
+                type: string
           - name: gender
             description: >-
               Default: male
             type: string
             required: false
-          - name: deceased
+          - name: birthDate
+            type: date
+            required: false
+          - name: deceasedBoolean
             type: boolean
             required: false
           - name: address
             type: json
             required: false
+            attributes:
+              - name: id
+                type: string
+              - name: use
+                type: string
+              - name: type
+                type: string
+              - name: line
+                type: string
+              - name: city
+                type: string
+              - name: state
+                type: string
+              - name: postalCode
+                type: string
+              - name: country
+                type: string
+              - name: period
+                type: json
+                attributes:
+                  - name: start
+                    type: date
+                  - name: end
+                    type: date
           - name: photo
-            type: json
+            type: string
             required: false
+            attributes:
+              - name: url
+                type: string
           - name: contact
             type: json
             required: false
+            attributes:
+              - name: id
+                type: string
+              - name: name
+                type: json
+                attributes:
+                  - name: text
+                    type: string
+              - name: relationship
+                type: json
+                attributes:
+                  - name: text
+                    type: string
+              - name: telecom
+                type: json
+                attributes:
+                  - name: system
+                    type: string
+                  - name: value
+                    type: string
+              - name: extension
+                type: array
+                attributes:
+                  - name: url
+                    type: string
+                  - name: valueBoolean
+                    type: boolean
+          - name: communication
+            type: json
+            required: false
+            attributes:
+              - name: language
+                type: json
+                attributes:
+                  - name: coding
+                    type: json
+                    attributes:
+                      - name: system
+                        type: string
+                      - name: code
+                        type: string
+                      - name: display
+                        type: string
+                  - name: text
+                    type: string
         search_parameters:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier
           - name: identifier
             type: string
-            description: The Canvas-issued MRN or a saved identifier from an external system  
+            description: The Canvas-issued MRN or a saved identifier from an external system
           - name: name
             type: string
             description: Part of a first or last name
+          - name: birthdate
+            type: date
+            description: The patient's birthdate
+          - name: sexAtBirth
+            type: string
           - name: family
             type: string
             description: Last name
           - name: given
             type: string
             description: First Name
-          - name: birthdate
-            type: date
-            description: The patient's birthdate
-          - name: gender
-            type: string
-          - name: nickname
-            type: string
-            description: Preferred or alternate name
           - name: email
             type: string
             description: Patient email address
@@ -82,6 +179,12 @@ sections:
           - name: active
             type: boolean
             description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false)
+          - name: nickname
+            type: string
+            description: Preferred or alternate name
+          - name: hasCareTeamMember
+            type: boolean
+            description: If true, only return patients that have a care team member
         endpoints: [read, search, create]
         read:
           example_request: patient-read-request
