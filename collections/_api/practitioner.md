@@ -1,5 +1,5 @@
 ---
-title: Practitioner 
+title: Practitioner
 sections:
   - type: section
     blocks:
@@ -7,7 +7,7 @@ sections:
         name: Practitioner
         article: "a"
         description: >-
-            A person who is directly or indirectly involved in the provisioning of healthcare.
+         A person who is directly or indirectly involved in the provisioning of healthcare.
         attributes:
           - name: id
             description: >-
@@ -23,6 +23,19 @@ sections:
           - name: name
             type: json
             required: true
+            attributes:
+             - name: use
+               type: string
+             - name: text
+               type: string
+             - name: family
+               type: string
+             - name: given
+               type: string
+             - name: prefix
+               type: string
+             - name: suffix
+               type: string
         search_parameters:
           - name: _id
             type: string
@@ -42,7 +55,6 @@ sections:
           responses: [200, 400]
           example_request: practitioner-search-request
           example_response: practitioner-search-response
-  
 ---
 
 <div id="practitioner-read-request">
@@ -61,7 +73,6 @@ headers = {
 response = requests.get(url, headers=headers)
 
 print(response.text)
-
 ```
 {% endtab %}
 {% tab read-request curl %}
@@ -72,7 +83,6 @@ curl --request GET \
      --header 'accept: application/json'
 ```
 {% endtab %}
-
 {% endtabs %}
 </div>
 
@@ -102,6 +112,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
+
 {% tab read-response 404 %}
 ```json
 {
