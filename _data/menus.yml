@@ -136,10 +136,10 @@ api_careteam:
  - title: "CareTeam Update"
    url: /api/careteam/#careteam-update
 api_communication:
+ - title: "Communication Search"
+   url: /api/communication/#communication-search
  - title: "Communication Create"
    url: /api/communication/#communication-create
- - title: "Communication Update"
-   url: /api/communication/#communication-update
 api_condition:
  - title: "Condition Read"
    url: /api/condition/#condition-read
