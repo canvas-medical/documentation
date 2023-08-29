@@ -43,6 +43,12 @@ super user text
 
 ## Helpful Markdown / HTML 
 
+## Link within docs
+[text]({{site.baseurl}}/api/appointment/)
+
+## External link
+[text](https://canvas-medical.zendesk.com/hc/en-us/articles/4417495811859-Structured-Reason-for-Visit)
+
 ## Tabs
 {% tabs XXY %}
 {% tab XXY Developers %}
