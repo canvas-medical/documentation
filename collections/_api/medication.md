@@ -11,7 +11,7 @@ sections:
         attributes:
           - name: id
             description: >-
-              The identifier of the medication 
+              The identifier of the medication
             type: string
             required: true
           - name: resourceType
@@ -23,6 +23,28 @@ sections:
             description: >-
               A code that identifies the medication
             type: string
+            attributes:
+              - name: coding
+                description: >-
+                  A code that identifies the medication
+                type: array
+                attributes:
+                  - name: system
+                    description: >-
+                      The system that defines the code
+                    type: string
+                  - name: code
+                    description: >-
+                      The code that identifies the medication
+                    type: string
+                  - name: display
+                    description: >-
+                      The display name of the medication
+                    type: string
+              - name: text
+                description: >-
+                  The display name of the medication
+                type: string
         endpoints: [read]
         read:
           responses: [200, 400]

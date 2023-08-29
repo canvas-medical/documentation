@@ -21,6 +21,13 @@ sections:
             type: string
             description: >-
               Identifier(s) by which this encounter is known
+            attributes:
+             - name: id
+               type: string
+             - name: system
+               type: string
+             - name: value
+               type: string
           - name: status
             type: string
             description: >-
@@ -29,10 +36,27 @@ sections:
             type: json
             description: >-
               Classification of patient encounter
+            attributes:
+             - name: system
+               type: string
+             - name: code
+               type: string
+             - name: display
+               type: string
           - name: type
             type: json
             description: >-
               Specific type of encounter
+            attributes:
+             - name: coding
+               type: string
+               attributes:
+                 - name: system
+                   type: string
+                 - name: code
+                   type: string
+                 - name: display
+                   type: string
           - name: subject
             type: string
             description: >-
@@ -41,6 +65,28 @@ sections:
             type: json
             description: >-
               List of participants involved in the encounter
+            attributes:
+              - name: type
+                type: string
+                attributes:
+                  - name: coding
+                    type: string
+                    attributes:
+                      - name: system
+                        type: string
+                      - name: code
+                        type: string
+                      - name: display
+                        type: string
+              - name: period
+                type: json
+                attributes:
+                  - name: start
+                    type: datetime
+                  - name: end
+                    type: datetime
+              - name: individual
+                type: string
           - name: appointment
             type: string
             description: >-
@@ -48,7 +94,12 @@ sections:
           - name: period
             type: json
             description: >-
-              The start and end time of the encounter  
+              The start and end time of the encounter
+            attributes:
+              - name: start
+                type: datetime
+              - name: end
+                type: datetime
           - name: reasonCode
             type: string
             description: >-
@@ -61,6 +112,19 @@ sections:
             type: json
             description: >-
               Details about the admission to a healthcare service
+            attributes:
+              - name: dischargeDisposition
+                type: json
+                attributes:
+                 - name: coding
+                   type: string
+                   attributes:
+                    - name: system
+                      type: string
+                    - name: code
+                      type: string
+                    - name: display
+                      type: string
           - name: location
             type: string
             description: >-

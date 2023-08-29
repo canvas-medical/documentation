@@ -34,7 +34,7 @@ sections:
           - name: medicationReference
             description: >-
               Medication to be taken
-            type: string  
+            type: string
           - name: subject
             description: >-
               The patient who is the subject of the medication request
@@ -59,6 +59,16 @@ sections:
             description: >-
               The reason for the medication request
             type: string
+            attributes:
+              - name: coding
+                type: string
+                attributes:
+                  - name: system
+                    type: string
+                  - name: code
+                    type: string
+                  - name: display
+                    type: string
           - name: note
             description: >-
               Additional notes about the medication request
@@ -67,10 +77,38 @@ sections:
             description: >-
               Details of how medication is/was taken or should be taken
             type: string
+            attributes:
+              - name: text
+                type: string
+              - name: doseAndRate
+                type: string
+                attributes:
+                  - name: doseQuantity
+                    type: string
+                    attributes:
+                      - name: value
+                        type: number
+                      - name: unit
+                        type: string
           - name: dispenseRequest
             description: >-
               Medication supply authorization
             type: string
+            attributes:
+              - name: numberOfRepeatsAllowed
+                type: number
+              - name: quantity
+                type: string
+                attributes:
+                  - name: value
+                    type: number
+              - name: expectedSupplyDuration
+                type: string
+                attributes:
+                  - name: value
+                    type: number
+                  - name: unit
+                    type: string
           - name: substitution
             description: >-
               Whether substitution is allowed or not

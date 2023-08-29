@@ -35,10 +35,16 @@ sections:
             type: string
           - name: statusReason
             type: string
+            attributes:
+              - name: coding
+                type: string
           - name: vaccineCode
             description: >-
               The vaccine administered
             type: string
+            attributes:
+              - name: coding
+                type: string
         search_parameters:
           - name: _id
             type: string

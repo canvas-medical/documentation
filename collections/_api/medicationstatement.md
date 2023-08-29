@@ -31,7 +31,7 @@ sections:
             type: string
           - name: effectivePeriod
             description: >-
-              	The date/time or interval when the medication is/was/will be taken
+              The date/time or interval when the medication is/was/will be taken
             type: string
           - name: dateAsserted
             description: >-
