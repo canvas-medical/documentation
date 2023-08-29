@@ -9,23 +9,25 @@ Healthcare has come a long way since the US Institute of Medicine published its 
 * * *
 ## What you'll learn
 In this guide, you will learn how to do the following:
-- Suggest an alternative intervention
-- Track performance and outcomes
+1. Suggest an alternative intervention
+2. Track performance and outcomes
 <br>
 <br>
 
 * * *
 
 
-### Suggest an alternative interventions
-{% tabs SAI %}
+### 1. Suggest an alternative interventions
 
-{% tab SAI Developers %}
-Using the simple framework below may help your super users translate clinical guidelines or clinical pathways into protocols. Work with them to confirm what change types, data, and recommendations are available to support your custom protocols. Knowing how you plan to leverage your patient data in your protocols may help inform how you build your clinical workflows into Canvas. 
+Our Workflow Kit allows you to program complex clinical logic into the point of care. Recommendations, presented as either protocol cards or banners, allow you to implement evidence-based-care in your clinical workflows. Possible use cases include recommending interventions with less side effects, suggesting preferred internal programs or partners that deliver better outcomes, or alerting providers to possible contraindications. 
+
+You can leverage the framework below to help build these workflow helpers into the platform. Make sure to reference what change types, data, and interventions are available to support your custom protocols. 
+
 {:refdef: style="text-align: center;"}
 ![Protocol framework](/assets/images/protocol-framework.png){:width="60%"}
 {: refdef}
-Leveraging that framework, the example below surfaces a recommendation to switch a patient’s schizophrenia medication from Olanzapine to Ziprasidone if diabetes is added to the condition list.
+
+The example below surfaces a recommendation to switch a patient’s schizophrenia medication from Olanzapine to Ziprasidone if diabetes is added to the condition list.
 {:refdef: style="text-align: center;"}
 ![Protocol framework](/assets/images/alternative-med.png){:width="60%"}
 {: refdef}
@@ -144,19 +146,12 @@ class ZiprasidoneRx(ClinicalQualityMeasure):
 
         return result
 ```
-{% endtab %}
-{% tab SAI  Super Users %}
-Our Workflow Kit allows you to program complex clinical logic into the point of care. Recommendations, presented as either protocol cards or banners, allow you to implement evidence-based-care in your clinical workflows. Possible use cases include recommending interventions with less side effects, suggesting preferred internal programs or partners that deliver better outcomes, or alerting providers to possible contraindications. 
 
-When working with your developers, you can leverage the framework below to help build these workflow helpers into the platform. 
-{:refdef: style="text-align: center;"}
-![Protocol framework](/assets/images/protocol-framework.png){:width="60%"}
-{: refdef}
-{% endtab %}
-{% endtabs %}
+
+
 <br><br>
 * * *
-### Tracking Performance and Outcomes
+### 2. Track Performance and Outcomes
 An essential aspect of preventing medical errors and improving patient safety is using data effectively to understand, track and communicate performance on patient safety metrics. 
 <br><br>
 You can leverage your read-only replica to report on outcomes and iterate on your Care Model.  
