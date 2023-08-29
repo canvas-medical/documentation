@@ -51,7 +51,7 @@ sections:
               The patient
         endpoints: [read, search]
         read:
-          responses: [200, 400, 404]
+          responses: [200, 404]
           example_response: device-read-response
           example_request: device-read-request
         search:

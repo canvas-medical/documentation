@@ -61,7 +61,7 @@ print(response.text)
 {% tab read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Patient/<id> \
+     --url https://fumage-example.canvasmedical.com/Location/<id> \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
