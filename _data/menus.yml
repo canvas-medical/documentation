@@ -1,16 +1,11 @@
 main:
-  - title: Home
-    url: /
-  - title: User Docs
-    url: /documentation/
   - title: API
     url: /api/
   - title: SDK
-    url: /sdk/
-  - title: Release Notes
-    url: /release-notes/  
+    url: /sdk/ 
   - title: Guides
     url: /guides/
+    
 api:
  - title: "AllergyIntolerance"
    url: /api/allergyintolerance/
@@ -293,65 +288,34 @@ api_task:
  - title: "Task Update"
    url: /api/task/#task-update
 documentation:
- - title: "Setup & Configuration"
-   url: #
-   identifier: documentation_config
- - title: "Chart"
-   url: #
-   identifier: documentation_chart
- - title: "Narrative Charting"
-   url: #
-   identifier: documentation_narrativecharting
- - title: "Collaboration"
-   url: 
-   identifier: documentation_collaboration
- - title: "Scheduling"
-   url: #
-   identifier: documentation_scheduling
- - title: "Revenue"
-   url: #
-   identifier: documentation_revenue
- - title: "Patient App"
-   url: #
-   identifier: documentation_patientapp
- - title: "Reporting"
-   url: #
-   identifier: documentation_reporting
- - title: "Populations"
-   url: #
-   identifier: documentation_populations
- - title: "Support"
-   url: #
-   identifier: documentation_support
-documentation_config:
-  - title: "Organization"
-    url: #
-    identifier: documentation_config_organization
-  - title: "Clinical Configuration"
-    url: #
-    identifier: documentation_config_clinical
-  - title: "Admin Configuration"
-    url: #
-    identifier: documentation_config_admin
-  - title: "Revenue Configuration"
-    url: #
-    identifier: documentation_config_revenue
-documentation_config_clinical:
-  - title: "Configuring Questionnaires"
-    url: /documentation/configuringquestionnaires
+ - title: "Transition"
+   url: /documentation/transition
+   identifier: documentation_transition
 guides:
- - title: "Just Another Guide"
-   url: /guides/just-another-guide/
+ - title: "Elements of Care Modeling"
+   identifier: guides_elements
  - title: "Care Models"
    identifier: guides_care-models
-   url: /guides/care-models/
+guides_elements:
+ - title: "Diagnostic Range & Inputs"
+   identifier: guides_diagnostic-range
+ - title: "Scope of Interventions & Safety Framework"
+   identifier: guides_scope-of-interventions
+ - title: "Care Team Composition & Sourcing"
+   identifier: guides_care-team-composition
+ - title: "Patient Sourcing & Intake"
+   identifier: guides_patient-sourcing
+ - title: "Ongoing Interaction Modes & Utilization Policies"
+   identifier: guides_ongoing-interaction-modes
+ - title: "Content & Automation"
+   identifier: guides_content-and-automation
+ - title: "Healthcare Pricing & Payments"
+   identifier: guides_healthcare-pricing
 guides_care-models:
  - title: "Behavioral Health"
    url: /guides/bh/
    identifier: guides_templates_bh
- - title: "Primary Care"
-   url: /guides/primary_care/
-   identifier: guides_templates_pc
+
 guides_templates_bh:
  - title: "Customize Search Results"
    url: /guides/customize-search-results/ 
@@ -365,25 +329,57 @@ guides_templates_bh:
    url: /guides/external-scheduling/
  - title: "Asynchronous Care"
    url: /guides/asynchronous-care/
- - title: "Manage Revenue Outside of Canvas"
-   url: /guides/outside-revenue/
+ - title: "Patient Messaging"
+   url: /guides/patient-messaging/
+
+guides_diagnostic-range:
+ - title: "Customize Search Results"
+   url: /guides/customize-search-results/ 
+
+guides_scope-of-interventions:
+ - title: "Build a Safety Framework"
+   url: /guides/build-a-safety-framework/  
+
+guides_care-team-composition:
+ - title: "Team Based Care"
+   url: /guides/team-based-care/
+
+guides_patient-sourcing:
+ - title: "Optimize Patient Intake"
+   url: /guides/optimize-patient-intake/
+
+guides_ongoing-interaction-modes:
+ - title: "External Scheduling"
+   url: /guides/external-scheduling/
+ - title: "Asynchronous Care"
+   url: /guides/asynchronous-care/
+ - title: "Patient Messaging"
+   url: /guides/patient-messaging/
+
 sdk:
- - title: "SDK Overview`"
+ - title: "SDK Overview"
    url: /sdk
- - title: "Canvas Core`"
+ - title: "Canvas SDK"
    identifier: sdk_canvas_core      
- - title: "Workflow Kit`"
+ - title: "Workflow Kit"
    identifier: sdk_workflow_kit 
 sdk_workflow_kit:
  - title: "Quickstart" 
    url: /sdk/sdk-quickstart/
  - title: "Necessary Data and Methods" 
  - title: "Interventions" 
- - title: "Examples"
-   identifier: sdk_workflow_kit_examples
-sdk_workflow_kit_examples:
- - title: "Appointment Notification"
-   url: /sdk/appointment-notification
- - title: "Appointment Task Creator"
-   url: /sdk/appointment-task-creator
+   identifier: sdk_workflow_kit_interventions
+
+sdk_workflow_kit_interventions:
+ - title: "Recommendation Types"
+   url: /sdk/recommendation-types
+ - title: "Banner Alerts"
+   url: /sdk/banner-alerts
+ - title: "Create/Update Canvas Resources"
+   url: /sdk/create-update-canvas-resources
+ - title: "Notification Protocol"
+   url: /sdk/notification-protocol
+ - title: "Making FHIR Requests"
+   url: /sdk/making-fhir-requests
+
 
