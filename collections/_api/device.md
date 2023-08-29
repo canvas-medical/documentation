@@ -18,6 +18,11 @@ sections:
             required: true
           - name: udiCarrier
             type: string
+            attributes:
+              - name: deviceIdentifier
+                type: string
+              - name: carrierHRF
+                type: string
           - name: status
             type: string 
           - name: distinctIdentifier
@@ -36,6 +41,16 @@ sections:
             type: string
           - name: type
             type: json
+            attributes:
+              - name: coding
+                type: json
+                attributes:
+                  - name: system
+                    type: string
+                  - name: code
+                    type: string
+                  - name: display
+                    type: string
           - name: patient
             type: string
             description: >-

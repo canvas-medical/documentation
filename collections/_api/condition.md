@@ -19,14 +19,46 @@ sections:
             required: true
           - name: text
             type: json
+            attributes:
+              - name: status
+                type: string
+              - name: div
+                type: string
           - name: clinicalStatus
             type: json
+            attributes:
+              - name: coding
+                type: string
+              - name: text
+                type: string
           - name: verificationStatus
+            attributes:
+              - name: coding
+                type: string
+              - name: text
+                type: string
             type: json
           - name: category
             type: json
+            attributes:
+              - name: coding
+                type: string
+                attributes:
+                  - name: system
+                    type: string
+                  - name: code
+                    type: string
+                  - name: display
+                    type: string
+              - name: text
+                type: string
           - name: code
             type: json
+            attributes:
+              - name: coding
+                type: string
+              - name: text
+                type: string
           - name: subject
             type: string
           - name: encounter

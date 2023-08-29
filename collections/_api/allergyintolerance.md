@@ -14,11 +14,88 @@ sections:
               The identifier of the allergyintolerance
             type: string
             required: true
-          - name: patient
+          - name: resourceType
             description: >-
-              The patient
+              The type of resource
             type: string
             required: true
+          - name: clinicalStatus
+            description: >-
+              The clinical status of the allergy or intolerance
+            type: string
+            attributes:
+              - name: coding
+                type: json
+                attributes:
+                  - name: system
+                    type: string
+                  - name: code
+                    type: string
+                  - name: display
+                    type: string
+              - name: text
+                type: string
+          - name: verificationStatus
+            type: string
+            attributes:
+              - name: coding
+                type: json
+                attributes:
+                  - name: system
+                    type: string
+                  - name: code
+                    type: string
+                  - name: display
+                    type: string
+              - name: text
+                type: string
+          - name: type
+            type: string
+          - name: code
+            type: string
+            attributes:
+              - name: coding
+                type: string
+              - name: text
+                type: string
+          - name: patient
+            description: >-
+              Who the sensitivity is for
+            type: string
+            required: true
+          - name: encounter
+            description: >-
+              The encounter when the allergy or intolerance was asserted
+            type: string
+          - name: onsetDateTime
+            type: datetime
+          - name: recordedDate
+            type: datetime
+          - name: recorder
+            type: string
+          - name: lastOccurrence
+            type: datetime
+          - name: note
+            type: string
+          - name: reaction
+            type: string
+            attributes:
+            - name: manifestation
+              type: string
+              attributes:
+               - name: coding
+                 type: json
+                 attributes:
+                 - name: system
+                   type: string
+                 - name: code
+                   type: string
+                 - name: display
+                   type: string
+               - name: text
+                 type: string
+            - name: severity
+              type: string
         search_parameters:
           - name: _id
             type: string

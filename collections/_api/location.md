@@ -18,7 +18,7 @@ sections:
             type: string
             required: true
           - name: status
-            type: string  
+            type: string
           - name: name
             type: string
             description: >-
