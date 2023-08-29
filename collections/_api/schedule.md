@@ -1,5 +1,5 @@
 ---
-title: Schedule 
+title: Schedule
 sections:
   - type: section
     blocks:
@@ -7,7 +7,7 @@ sections:
         name: Schedule
         article: "a"
         description: >-
-             Used to group Slot resources together for practitioner/location combinations
+         Used to group Slot resources together for practitioner/location combinations
         attributes:
           - name: id
             description: >-
@@ -19,11 +19,20 @@ sections:
             required: true
           - name: text
             type: json
+            attributes:
+              - name: status
+                type: string
+                description: >-
+                  The status of the narrative
+              - name: div
+                type: string
+                description: >-
+                  The actual narrative content
           - name: actor
             type: json
             description: >-
               The practitioner or location that this schedule is associated with
-          - name: comment 
+          - name: comment
             type: string
             description: >-
               Comment about the schedule containing the provider's name and location 
