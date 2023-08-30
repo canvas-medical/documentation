@@ -60,8 +60,8 @@ sections:
           example_request: medication-statement-search-request
 ---
 <div id="medication-statement-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs medication-statement-search-request %}
+{% tab medication-statement-search-request python %}
 ```sh
 import requests
 
@@ -77,7 +77,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab medication-statement-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/MedicationStatement/?patient=Patient/<patient_id> \
@@ -89,8 +89,8 @@ curl --request GET \
 </div>
 
 <div id="medication-statement-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs medication-statement-search-response %}
+{% tab medication-statement-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -239,7 +239,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab medication-statement-search-response 400 %}
 ```json
 {
     "resourceType": "OperationOutcome",

@@ -160,8 +160,8 @@ sections:
           example_request: encounter-search-request
 ---
 <div id="encounter-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs encounter-read-request %}
+{% tab encounter-read-request python %}
 ```sh
 import requests
 
@@ -177,7 +177,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab encounter-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Encounter/<id> \
@@ -189,8 +189,8 @@ curl --request GET \
 </div>
 
 <div id="encounter-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs encounter-read-response %}
+{% tab encounter-read-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -309,7 +309,7 @@ curl --request GET \
 
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab encounter-read-response 404 %}
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -329,8 +329,8 @@ curl --request GET \
 </div>
 
 <div id="encounter-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs encounter-search-request %}
+{% tab encounter-search-request python %}
 ```sh
 import requests
 
@@ -346,7 +346,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab encounter-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Encounter \
@@ -358,8 +358,8 @@ curl --request GET \
 </div>
 
 <div id="encounter-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs encounter-search-response %}
+{% tab encounter-search-response 200 %}
 ```json
 {
     "resourceType": "Encounter",
@@ -449,7 +449,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab encounter-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

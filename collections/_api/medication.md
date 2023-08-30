@@ -53,8 +53,8 @@ sections:
 
 ---
 <div id="medication-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs medication-read-request %}
+{% tab medication-read-request python %}
 ```sh
 import requests
 
@@ -70,7 +70,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab medication-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Medication/<id> \
@@ -82,8 +82,8 @@ curl --request GET \
 </div>
 
 <div id="medication-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs medication-read-response %}
+{% tab medication-read-response 200 %}
 ```json
 {
     "resourceType": "Medication",
@@ -106,7 +106,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 400 %}
+{% tab medication-read-response 404 %}
 ```json
 {
     "detail": "Not Found"

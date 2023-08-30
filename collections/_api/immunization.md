@@ -64,8 +64,8 @@ sections:
           example_request: immunization-search-request
 ---
 <div id="immunization-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs immunization-read-request %}
+{% tab immunization-read-request python %}
 ```sh
 import requests
 
@@ -81,7 +81,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab immunization-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Immunization/<id> \
@@ -93,8 +93,8 @@ curl --request GET \
 </div>
 
 <div id="immunization-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs immunization-read-response %}
+{% tab immunization-read-response 200 %}
 ```json
 {
     "resourceType": "Immunization",
@@ -118,7 +118,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab immunization-read-response 404 %}
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -138,8 +138,24 @@ curl --request GET \
 </div>
 
 <div id="immunization-search-request">
-{% tabs search-request %}
-{% tab search-request curl %}
+{% tabs immunization-search-request %}
+{% tab read-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Immunization/?patient=Patient/<patient_id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% tab immunization-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Immunization \
