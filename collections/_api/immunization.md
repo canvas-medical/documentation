@@ -1,5 +1,5 @@
 ---
-title: FHIR Immunization
+title: Immunization
 sections:
   - type: section
     blocks:

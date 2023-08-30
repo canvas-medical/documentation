@@ -1,5 +1,5 @@
 ---
-title: FHIR Medication
+title: Medication
 sections:
   - type: section
     blocks:

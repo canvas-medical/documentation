@@ -1,5 +1,5 @@
 ---
-title: FHIR Encounter
+title: Encounter
 sections:
   - type: section
     blocks:

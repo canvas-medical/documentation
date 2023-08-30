@@ -1,5 +1,5 @@
 ---
-title: FHIR MedicationRequest
+title: MedicationRequest
 sections:
   - type: section
     blocks:

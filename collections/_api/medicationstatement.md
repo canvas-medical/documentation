@@ -1,5 +1,5 @@
 ---
-title: FHIR MedicationStatement
+title: MedicationStatement
 sections:
   - type: section
     blocks:
@@ -61,7 +61,7 @@ sections:
 ---
 <div id="medication-statement-search-request">
 {% tabs search-request %}
-{% tab read-request python %}
+{% tab search-request python %}
 ```sh
 import requests
 
