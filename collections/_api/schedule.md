@@ -44,8 +44,8 @@ sections:
 ---
 
 <div id="schedule-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs schedule-search-request %}
+{% tab schedule-search-request python %}
 ```sh
 import requests
 
@@ -62,7 +62,7 @@ print(response.text)
 
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab schedule-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Schedule \
@@ -74,12 +74,12 @@ curl --request GET \
 </div>
 
 <div id="schedule-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs schedule-search-response %}
+{% tab schedule-search-response 200 %}
 ```json
   {
     "resourceType": "Bundle",
-    "type": "searchset",
+    "type": "schedule-searchset",
     "total": 8,
     "entry": [
         {
@@ -205,7 +205,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab schedule-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

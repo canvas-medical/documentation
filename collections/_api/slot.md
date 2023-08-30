@@ -1,5 +1,5 @@
 ---
-title: Slot 
+title: Slot
 sections:
   - type: section
     blocks:
@@ -7,7 +7,7 @@ sections:
         name: Slot
         article: "a"
         description: >-
-            A bookable time-slot from a specific schedule, used when creating or updating an appointment
+          A bookable time-slot from a specific schedule, used when creating or updating an appointment
         attributes:
           - name: id
             description: >-
@@ -49,8 +49,8 @@ sections:
 ---
 
 <div id="slot-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs slot-search-request %}
+{% tab slot-search-request python %}
 ```sh
 import requests
 
@@ -67,7 +67,7 @@ print(response.text)
 
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab slot-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Slot \
@@ -79,8 +79,8 @@ curl --request GET \
 </div>
 
 <div id="slot-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs slot-search-response %}
+{% tab slot-search-response 200 %}
 ```json
   {
     "resourceType": "Bundle",
@@ -129,7 +129,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab slot-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
