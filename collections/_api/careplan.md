@@ -62,8 +62,8 @@ sections:
           example_response: care-plan-search-response
 ---
 <div id="care-plan-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs care-plan-read-request %}
+{% tab care-plan-read-request python %}
 ```sh
 import requests
 
@@ -79,7 +79,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab care-plan-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/CarePlan/<id> \
@@ -91,8 +91,8 @@ curl --request GET \
 </div>
 
 <div id="care-plan-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs care-plan-read-response %}
+{% tab care-plan-read-response 200 %}
 ```json
 {
     "resourceType": "CarePlan",
@@ -129,7 +129,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab care-plan-read-response 404 %}
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -149,8 +149,8 @@ curl --request GET \
 </div>
 
 <div id="care-plan-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs care-plan-search-request %}
+{% tab care-plan-search-request python %}
 ```sh
 import requests
 
@@ -166,7 +166,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab care-plan-search-request curl %}
 ```sh
 curl --request GET \
      --url 'https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan' \
@@ -178,8 +178,8 @@ curl --request GET \
 </div>
 
 <div id="care-plan-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs care-plan-search-response %}
+{% tab care-plan-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -239,7 +239,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab care-plan-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

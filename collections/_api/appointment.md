@@ -121,8 +121,8 @@ sections:
           example_response: appointment-update-response
 ---
 <div id="appointment-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs appointment-read-request %}
+{% tab appointment-read-request python %}
 ```sh
 import requests
 
@@ -138,7 +138,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab appointment-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Appointment/<id> \
@@ -150,8 +150,8 @@ curl --request GET \
 </div>
 
 <div id="appointment-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs appointment-read-response %}
+{% tab appointment-read-response 200 %}
 ```json
 {
     "resourceType": "Appointment",
@@ -209,7 +209,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab appointment-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -230,8 +230,8 @@ curl --request GET \
 </div>
 
 <div id="appointment-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs appointment-search-request %}
+{% tab appointment-search-request python %}
 ```sh
 import requests
 
@@ -247,7 +247,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab appointment-search-request curl %}
 ```sh
 curl --request GET \
      --url 'https://fumage-example.canvasmedical.com/Appointment?patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e' \
@@ -259,8 +259,8 @@ curl --request GET \
 </div>
 
 <div id="appointment-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs appointment-search-response %}
+{% tab appointment-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -397,7 +397,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab appointment-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -418,8 +418,114 @@ curl --request GET \
 </div>
 
 <div id="appointment-create-request">
-{% tabs create-request %}
-{% tab create-request curl %}
+{% tabs appointment-create-request %}
+{% tab appointment-create-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Appointment"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+payload = {
+  {
+  "resourceType": "Appointment",
+  "reasonCode": "[{       \"coding\": [{         \"system\": \"INTERNAL\"         \"code\": \"9903\",         \"display\": \"Urgent Visit\"       }],         \"text\": \"Weekly check-in\"     }]",
+  "description": "Weekly check-in.",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/5350cd20de8a470aa570a852859ac87e"
+      },
+      "status": "accepted"
+    },
+    {
+      "actor": {
+        "reference": "Practitioner/dbf184ad28a1408bbed184fc8fd2b029"
+      },
+      "status": "accepted"
+    }
+  ],
+  "appointmentType": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "448337001",
+        "display": "Telemedicine consultation with patient (procedure)"
+      }
+    ]
+  },
+  "start": "2022-03-20T13:30:00.000Z",
+  "end": "2022-03-20T14:00:00.000Z",
+  "supportingInformation": [
+    {
+      "reference": "Location/1"
+    },
+    {
+      "reference": "#appointment-meeting-endpoint",
+      "type": "Endpoint"
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "Endpoint",
+      "id": "appointment-meeting-endpoint",
+      "status": "active",
+      "connectionType": {
+        "code": "https"
+      },
+      "payloadType": [
+        {
+          "coding": [
+            {
+              "code": "video-call"
+            }
+          ]
+        }
+      ],
+      "address": "https://url-for-video-chat.example.com?meetingi=abc123"
+    }
+  ],
+  "status": "proposed"
+}
+'
+{
+  "resourceType": "Patient",
+  "name": [
+    {
+      "use": "official",
+      "family": "Mark",
+      "given": [
+        "Isabella",
+        "Robel"
+      ],
+      "prefix": "Mrs.",
+      "suffix": "Jr."
+    },
+    {
+      "use": "nickname",
+      "given": [
+        "Izzy"
+      ]
+    },
+    {
+      "use": "maiden",
+      "family": "Smith"
+    }
+  ],
+  "birthDate": "1980-11-13"
+}
+}
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% tab appointment-create-request curl %}
 ```sh
 curl --request POST \
      --url https://fumage-example.canvasmedical.com/Appointment \
@@ -521,13 +627,13 @@ curl --request POST \
 </div>
 
 <div id="appointment-create-response">
-{% tabs create-response %}
-{% tab create-response 201 %}
+{% tabs appointment-create-response %}
+{% tab appointment-create-response 201 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab appointment-create-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -548,8 +654,8 @@ null
 </div>
 
 <div id="appointment-update-request">
-{% tabs update-request %}
-{% tab update-request curl %}
+{% tabs appointment-update-request %}
+{% tab appointment-update-request curl %}
 ```sh
 curl --request PUT \
      --url https://fumage-example.canvasmedical.com/Appointment/<id> \
@@ -613,13 +719,13 @@ curl --request PUT \
 </div>
 
 <div id="appointment-update-response">
-{% tabs update-response %}
-{% tab update-response 200 %}
+{% tabs appointment-update-response %}
+{% tab appointment-update-response 200 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab update-response 400 %}
+{% tab appointment-update-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

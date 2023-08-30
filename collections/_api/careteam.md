@@ -65,8 +65,8 @@ sections:
           example_response: care-team-update-response
 ---
 <div id="care-team-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs care-team-read-request %}
+{% tab care-team-read-request python %}
 ```sh
 import requests
 
@@ -82,7 +82,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab care-team-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/CareTeam/<id> \
@@ -94,8 +94,8 @@ curl --request GET \
 </div>
 
 <div id="care-team-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs care-team-read-response %}
+{% tab care-team-read-response 200 %}
 ```json
 {
     "resourceType": "CareTeam",
@@ -130,7 +130,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab care-team-read-response 404 %}
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -150,8 +150,8 @@ curl --request GET \
 </div>
 
 <div id="care-team-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs care-team-search-request %}
+{% tab care-team-search-request python %}
 ```sh
 import requests
 
@@ -167,7 +167,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab care-team-search-request curl %}
 ```sh
 curl --request GET \
      --url 'https://fumage-example.canvasmedical.com/CareTeam?patient=Patient%<id>' \
@@ -179,8 +179,8 @@ curl --request GET \
 </div>
 
 <div id="care-team-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs care-team-search-response %}
+{% tab care-team-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -293,7 +293,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab care-team-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -315,8 +315,8 @@ curl --request GET \
 
 
 <div id="care-team-update-request">
-{% tabs update-request %}
-{% tab update-request python %}
+{% tabs care-team-update-request %}
+{% tab care-team-update-request python %}
 ```sh
 import requests
 
@@ -359,7 +359,7 @@ response = requests.put(url, json=payload, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab update-request curl %}
+{% tab care-team-update-request curl %}
 ```sh
 curl --request PUT \
      --url https://fhir-example.canvasmedical.com/CareTeam/<id> \
@@ -414,13 +414,13 @@ curl --request PUT \
 </div>
 
 <div id="care-team-update-response">
-{% tabs update-response %}
-{% tab update-response 200 %}
+{% tabs care-team-update-response %}
+{% tab care-team-update-response 200 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab update-response 400 %}
+{% tab care-team-update-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

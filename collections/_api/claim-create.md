@@ -63,8 +63,8 @@ sections:
           responses: [201, 400]
 ---
 <div id="claim-create-request">
-{% tabs create-request %}
-{% tab create-request python %}
+{% tabs claim-create-create-request %}
+{% tab claim-create-create-request python %}
 ```sh
 import requests
 
@@ -152,7 +152,7 @@ print(response.text)
 
 ```
 {% endtab %}
-{% tab create-request curl %}
+{% tab claim-create-create-request curl %}
 ```sh
 curl --request POST \
      --url https://fumage-example.canvasmedical.com/Claim \
@@ -256,13 +256,13 @@ curl --request POST \
 </div>
 
 <div id="claim-create-response">
-{% tabs create-response %}
-{% tab create-response 201 %}
+{% tabs claim-create-create-response %}
+{% tab claim-create-create-response 201 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab claim-create-create-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
