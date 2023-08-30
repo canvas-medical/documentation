@@ -1,5 +1,6 @@
 body {
   font-family: $primary-font-family;
+  font-size: $font-sm;
   color: $text-color;
 }
 
@@ -46,23 +47,23 @@ h4 {
   font-size: $font-md;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 h5 {
   display: block;
-  font-size: $font-sm;
+  font-size: $font-md;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 h6 {
   display: block;
-  font-size: $font-xs;
+  font-size: $font-md;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 table {
