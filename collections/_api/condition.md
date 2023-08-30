@@ -107,8 +107,8 @@ sections:
 
 ---
 <div id="condition-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs condition-read-request %}
+{% tab condition-read-request python %}
 ```sh
 import requests
 
@@ -124,7 +124,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab condition-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Condition/<id> \
@@ -136,8 +136,8 @@ curl --request GET \
 </div>
 
 <div id="condition-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs condition-read-response %}
+{% tab condition-read-response 200 %}
 ```json
 {
     "resourceType": "Condition",
@@ -210,7 +210,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 401 %}
+{% tab condition-read-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -227,7 +227,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 403 %}
+{% tab condition-read-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -244,7 +244,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab condition-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -265,8 +265,8 @@ curl --request GET \
 </div>
 
 <div id="condition-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs condition-search-request %}
+{% tab condition-search-request python %}
 ```sh
 import requests
 
@@ -282,7 +282,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab condition-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Condition/<pa> \
@@ -294,8 +294,8 @@ curl --request GET \
 </div>
 
 <div id="condition-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs condition-search-response %}
+{% tab condition-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -1025,7 +1025,24 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 401 %}
+{% tab condition-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab condition-search-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1042,7 +1059,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 403 %}
+{% tab condition-search-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1063,8 +1080,8 @@ curl --request GET \
 </div>
 
 <div id="condition-create-request">
-{% tabs create-request %}
-{% tab create-request curl %}
+{% tabs condition-create-request %}
+{% tab condition-create-request curl %}
 ```sh
 curl --location 'https://fumage-customer.canvasmedical.com/Condition' \
      --header 'Content-Type: application/fhir+json' \
@@ -1138,13 +1155,13 @@ curl --location 'https://fumage-customer.canvasmedical.com/Condition' \
 </div>
 
 <div id="condition-create-response">
-{% tabs create-response %}
-{% tab create-response 201 %}
+{% tabs condition-create-response %}
+{% tab condition-create-response 201 %}
 ```json
   null
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab condition-create-response 400 %}
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -1167,7 +1184,7 @@ curl --location 'https://fumage-customer.canvasmedical.com/Condition' \
 }
 ```
 {% endtab %}
-{% tab create-response 401 %}
+{% tab condition-create-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1184,7 +1201,7 @@ curl --location 'https://fumage-customer.canvasmedical.com/Condition' \
 }
 ```
 {% endtab %}
-{% tab create-response 403 %}
+{% tab condition-create-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1205,8 +1222,8 @@ curl --location 'https://fumage-customer.canvasmedical.com/Condition' \
 </div>
 
 <div id="condition-update-request">
-{% tabs update-request %}
-{% tab update-request python %}
+{% tabs condition-update-request %}
+{% tab condition-update-request python %}
 ```sh
 import requests
 
@@ -1222,7 +1239,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab update-request curl %}
+{% tab condition-update-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Condition/<pa> \
@@ -1234,13 +1251,13 @@ curl --request GET \
 </div>
 
 <div id="condition-update-response">
-{% tabs update-response %}
-{% tab update-response 200 %}
+{% tabs condition-update-response %}
+{% tab condition-update-response 200 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab update-response 401 %}
+{% tab condition-update-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1257,7 +1274,7 @@ null
 }
 ```
 {% endtab %}
-{% tab update-response 403 %}
+{% tab condition-update-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1274,21 +1291,21 @@ null
 }
 ```
 {% endtab %}
-{% tab update-response 405 %}
+{% tab condition-update-response 405 %}
 ```json
 {
     "detail": "Method Not Allowed"
 }
 ```
 {% endtab %}
-{% tab update-response 412 %}
+{% tab condition-update-response 412 %}
 ```json
 {
     "detail": "Predondition Failed"
 }
 ```
 {% endtab %}
-{% tab update-response 422 %}
+{% tab condition-update-response 422 %}
 ```json
 {
     "detail": "Unprocessable Entity"

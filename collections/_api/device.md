@@ -76,8 +76,8 @@ sections:
 
 ---
 <div id="device-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs device-read-request %}
+{% tab device-read-request python %}
 ```sh
 import requests
 
@@ -93,7 +93,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab device-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Device/<id> \
@@ -105,8 +105,8 @@ curl --request GET \
 </div>
 
 <div id="device-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs device-read-response %}
+{% tab device-read-response 200 %}
 ```json
 {
     "resourceType": "Device",
@@ -140,12 +140,29 @@ curl --request GET \
 }
 ```
 {% endtab %}
+{% tab device-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Resource not found"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
 {% endtabs %}
 </div>
 
 <div id="device-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs device-search-request %}
+{% tab device-search-request python %}
 ```sh
 import requests
 
@@ -161,7 +178,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab device-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Device \
@@ -173,8 +190,8 @@ curl --request GET \
 </div>
 
 <div id="device-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs device-search-response %}
+{% tab device-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -231,7 +248,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab device-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

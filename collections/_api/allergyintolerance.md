@@ -113,8 +113,8 @@ sections:
           example_request: allergyintolerance-search-request
 ---
 <div id="allergyintolerance-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs allergyintolerance-read-request %}
+{% tab allergyintolerance-read-request python %}
 ```sh
 import requests
 
@@ -130,7 +130,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab allergyintolerance-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>\
@@ -142,8 +142,8 @@ curl --request GET \
 </div>
 
 <div id="allergyintolerance-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs allergyintolerance-read-response %}
+{% tab allergyintolerance-read-response 200 %}
 ```json
 {
     "resourceType": "AllergyIntolerance",
@@ -204,7 +204,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab allergyintolerance-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -225,8 +225,8 @@ curl --request GET \
 </div>
 
 <div id="allergyintolerance-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs allergyintolerance-search-request %}
+{% tab allergyintolerance-search-request python %}
 ```sh
 import requests
 
@@ -242,7 +242,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab allergyintolerance-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
@@ -254,8 +254,8 @@ curl --request GET \
 </div>
 
 <div id="allergyintolerance-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs allergyintolerance-search-response %}
+{% tab allergyintolerance-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -339,7 +339,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab allergyintolerance-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
