@@ -87,8 +87,8 @@ curl --request GET \
 </div>
 
 <div id="practitioner-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs practitioner-read-response %}
+{% tab practitioner-read-response 200 %}
 ```json
 {
     "resourceType": "Practitioner",
@@ -113,7 +113,7 @@ curl --request GET \
 ```
 {% endtab %}
 
-{% tab read-response 404 %}
+{% tab practitioner-read-response 404 %}
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -134,8 +134,8 @@ curl --request GET \
 </div>
 
 <div id="practitioner-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs practitioner-search-request %}
+{% tab practitioner-search-request python %}
 ```sh
 import requests
 
@@ -165,8 +165,8 @@ curl --request GET \
 </div>
 
 <div id="practitioner-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs practitioner-search-response %}
+{% tab practitioner-search-response 200 %}
 ```json
   {
     "resourceType": "Bundle",
@@ -279,7 +279,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab practitioner-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
