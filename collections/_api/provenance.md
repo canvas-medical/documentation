@@ -1,5 +1,5 @@
 ---
-title: FHIR Provenance
+title: Provenance
 sections:
   - type: section
     blocks:
@@ -19,7 +19,7 @@ sections:
               The type of resource
             type: string
             required: true
-          - name: recorded 
+          - name: recorded
             description: >-
               When the activity occurred
             type: string
@@ -31,14 +31,47 @@ sections:
             description: >-
               Where the activity occurred, if relevant
             type: string
+            attributes:
+              - name: extension
+                type: array
+                attributes:
+                  - name: url
+                    type: string
+                  - name: valueCode
+                    type: string
           - name: activity
             description: >-
               The activity that occurred
             type: string
+            attributes:
+              - name: coding
+                type: array
+                attributes:
+                  - name: system
+                    type: string
+                  - name: code
+                    type: string
           - name: agent
             description: >-
               The agent that created the provenance
-            type: array      
+            type: array
+            attributes:
+              - name: type
+                type: json
+                attributes:
+                  - name: coding
+                    type: array
+                    attributes:
+                      - name: system
+                        type: string
+                      - name: code
+                        type: string
+                      - name: display
+                        type: string
+              - name: who
+                type: string
+              - name: onBehalfOf
+                type: string
         search_parameters:
           - name: _id
             type: string

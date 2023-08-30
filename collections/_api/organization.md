@@ -1,5 +1,5 @@
 ---
-title: FHIR Organization
+title: Organization
 sections:
   - type: section
     blocks:
@@ -21,8 +21,13 @@ sections:
             required: true
           - name: identifier
             description: >-
-              Identifies this organization  across multiple systems
+              Identifies this organization across multiple systems
             type: array
+            attributes:
+              - name: system
+                type: string
+              - name: value
+                type: string
           - name: active
             description: >-
               Whether the organization's record is still in active use
@@ -35,10 +40,32 @@ sections:
             description: >-
               A contact detail for the organization
             type: array
+            attributes:
+              - name: system
+                type: string
+              - name: value
+                type: string
+              - name: use
+                type: string
           - name: address
             description: >-
               An address for the organization
-            type: array          
+            type: array
+            attributes:
+              - name: use
+                type: string
+              - name: type
+                type: string
+              - name: line
+                type: string
+              - name: city
+                type: string
+              - name: state
+                type: string
+              - name: postalCode
+                type: string
+              - name: country
+                type: string
         search_parameters:
           - name: _id
             type: string

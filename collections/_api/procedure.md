@@ -1,5 +1,5 @@
 ---
-title: FHIR Procedure
+title: Procedure
 sections:
   - type: section
     blocks:
@@ -35,14 +35,24 @@ sections:
             description: >-
               A code that identifies the procedure.
             type: string
+            attributes:
+             - name: coding
+               type: array
+               attributes:
+                 - name: system
+                   type: string
+                 - name: code
+                   type: string
+                 - name: display
+                   type: string
           - name: subject
             description: >-
               The patient who is the focus of this procedure
-            type: string   
+            type: string
           - name: performedDateTime
             description: >-
               The date and time the procedure was performed
-            type: date     
+            type: date
         search_parameters:
           - name: _id
             type: string
