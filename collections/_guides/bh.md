@@ -14,31 +14,36 @@ Something quick about Behavioral Health
 The world is facing a mental health crisis and you want to help tackle it 🙌. With recent cultural changes, scientific and technological advancements, improved data sharing, and a shift towards consumerism, the behavioral health space is prime for disruption.  To be successful and drive value, you’ll need to differentiate on your care model. You’ll likely start by asking the questions outlined below. Once you’ve settled on a direction for each, we’ve outlined recommended next steps to get started. <br> <br> 
 
 ### What problem and/or population are we addressing?  
-What is your target population? Does your care model support a broad range of mental health concerns for all genders and ages (everything in the DSM), or are you focused on adolescents suffering from eating disorders? Recognizing your Diagnostic Range is a critical starting point, as it informs the complexity of your healthcare practice.<br><br>
-<b>After defining your target population you may want to:</b> <br><br>
-👉Customize search results throughout the application to reduce noise and drive focus.<br>
-👉Configure clinical templates in order to collect the necessary data to inform your clinical decision <br>making.
+What is your target population? Does your care model support a broad range of mental health concerns for all genders and ages (everything in the DSM), or are you focused on adolescents suffering from eating disorders? Recognizing your Diagnostic Range is a critical starting point, as it informs the complexity of your healthcare practice. After defining your target population you may want to: 
+<br>
+
+👉 [Build and load Behavioral Health Questionnaires](/guides/bh-configuration/#questionnaires) in order to collect the necessary data to inform your clinical decision making<br>
+👉 [Customize Search Results](/guides/customize-search-results) to only surface behavioral health ICD-10 codes in the diagnose command. 
+    
+
+
+<br><br>
 ### How will we treat our patients?
-Next you’ll need to determine what services and treatments you plan to offer. As your Scope of Interventions broadens - and your care model gets more complex - you will also need to apply more rigor in your safety framework.<br><br>
-<b>After determining your scope of interventions you can:</b><br><br>
-👉Set up staff permissions to ensure team members can perform the duties of their role<br>
-👉[Suggest alternative interventions]({{site.baseurl}}/guides/promote-patient-safety/#suggesting-alternative-interventions) when clinically appropriate <br>
+Next you’ll need to determine what services and treatments you plan to offer. As your Scope of Interventions broadens - and your care model gets more complex - you will also need to apply more rigor in your safety framework.<br>
+
+
+<br><br>
 ### What is the makeup of our Care Team? 
 As the demand for behavioral health services continues to rise, various factors, including an aging workforce, recruitment and retention challenges, geographic disparities, and financial barriers, have contributed to the scarcity of providers. As a result, fewer than half of people with a mental illness were able to access timely care in 2021. Innovating on the makeup of your care team can help to address this shortage and set you apart. Canvas was built to support interdisciplinary care teams that take advantage of team members’ strengths, bring in more assistive clinical workers, and allow everybody to operate at the top of their license.
+
+
 <br><br>
-<b>Effective [Team Based Care]({{site.baseurl}}/guides/team-based-care/) is made possible through:</b> <br><br>
-👉 Defining roles and responsibilities<br>
-👉 Granting appropriate access<br>
-👉 Routing work to the right team or individual<br>
 ### How will we acquire patients?
-Strategy around how you source and onboard new patients (or clients) is necessary to successfully attract and connect with individuals in need of mental health services, establish a positive first impression, gather comprehensive patient information, and prioritize the well-being and safety of patients throughout their care journey.<br><br>
-You’ve acquired prospective patients, now you can:<br><br>
-👉 Create your patient profiles to get started<br>
-👉 Surface custom data points to ensure your care team has the necessary information<br>
-👉 Incorporate patient collected data to expedite onboarding<br>
-👉 Partner with Zus to avoid having to hunt down and manually enter historical records
+Strategy around how you source and onboard new patients (or clients) is necessary to successfully attract and connect with individuals in need of mental health services, establish a positive first impression, gather comprehensive patient information, and prioritize the well-being and safety of patients throughout their care journey.
+
+
+<br><br>
 ### How will we interact with our patients/clients?
-Understanding and effectively managing interaction modes in your behavioral healthcare model is crucial to providing a seamless and efficient patient experience. Implementing interconnected synchronous and asynchronous communication channels, guided by well-structured Utilization Policies, can streamline your operations, enhance patient engagement, and ultimately improve care outcomes.<br><br>
+Understanding and effectively managing interaction modes in your behavioral healthcare model is crucial to providing a seamless and efficient patient experience. Implementing interconnected synchronous and asynchronous communication channels, guided by well-structured Utilization Policies, can streamline your operations, enhance patient engagement, and ultimately improve care outcomes.
+
+![External-Scheduling](/assets/images/config-permissions.png){:width="23%"}&nbsp;&nbsp;&nbsp;&nbsp;![Safety](/assets/images/guide-safety.png){:width="23%"}&nbsp;&nbsp;&nbsp;&nbsp;
+
+<br><br>
 Depending on how you choose to interact with your patients, you may need to:<br><br>
 👉Set your availability and define your appointment settings to maximize scheduling efficiency <br>
 👉Create appointments using the API to support patient or third-party scheduling <br>
