@@ -71,8 +71,8 @@ sections:
           example_request: procedure-search-request
 ---
 <div id="procedure-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs procedure-read-request %}
+{% tab procedure-read-request python %}
 ```sh
 import requests
 
@@ -88,7 +88,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab procedure-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/procedure/_id \
@@ -100,8 +100,8 @@ curl --request GET \
 </div>
 
 <div id="procedure-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs procedure-read-response %}
+{% tab procedure-read-response 200 %}
 ```json
 {
     "resourceType": "Procedure",
@@ -124,7 +124,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab procedure-read-response 404 %}
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -144,8 +144,8 @@ curl --request GET \
 </div>
 
 <div id="procedure-search-request">
-{% tabs search-request %}
-{% tab read-request python %}
+{% tabs procedure-search-request %}
+{% tab procedure-search-request python %}
 ```sh
 import requests
 
@@ -161,7 +161,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab procedure-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Procedure?patient=Patient/<patient_id> \
@@ -173,8 +173,8 @@ curl --request GET \
 </div>
 
 <div id="procedure-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs procedure-search-response %}
+{% tab procedure-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -345,7 +345,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab procedure-search-response 400 %}
 ```json
 {
     "resourceType": "OperationOutcome",

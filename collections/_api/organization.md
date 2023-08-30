@@ -87,8 +87,8 @@ sections:
           example_request: organization-search-request
 ---
 <div id="organization-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs organization-read-request %}
+{% tab organization-read-request python %}
 ```sh
 import requests
 
@@ -104,7 +104,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab organization-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Organization/_id \
@@ -116,8 +116,8 @@ curl --request GET \
 </div>
 
 <div id="organization-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs organization-read-response %}
+{% tab organization-read-response 200 %}
 ```json
 {
     "resourceType": "Organization",
@@ -127,7 +127,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab organization-read-response 404 %}
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -147,8 +147,8 @@ curl --request GET \
 </div>
 
 <div id="organization-search-request">
-{% tabs search-request %}
-{% tab read-request python %}
+{% tabs organization-search-request %}
+{% tab organization-search-request python %}
 ```sh
 import requests
 
@@ -164,7 +164,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab organization-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Organization?name=Austin Resolutions \
@@ -176,8 +176,8 @@ curl --request GET \
 </div>
 
 <div id="organization-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs organization-search-response %}
+{% tab organization-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -210,7 +210,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab organization-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
