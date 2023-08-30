@@ -1,6 +1,7 @@
 ---
 title: "Template"
 guide_for: 
+ - /api/000-example-front-matter/
 ---
 
 BLURB
