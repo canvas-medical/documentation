@@ -38,7 +38,7 @@ Our [FHIR CareTeam]({{site.baseurl}}/api/careteam/) resource allows you to read 
 * * *
 ### 2. Grant appropriate access levels
 
-The minimum necessary rule requires that covered entities make reasonable efforts to limit access to protected health information to those in the workforce that need access based on their roles. Canvas allows you to limit access to established [Patient Groups]({{site.baseurl}}/documentation/permissions/), ensuring that appropriate privacy restrictions are in place. Once the Patient Groups are defined in your admin settings, you can partner with your engineering team to leverage Protocols to programmatically add patients to the groups based on any patient attribute that is available to the Workflow Kit. 
+The minimum necessary rule requires that covered entities make reasonable efforts to limit access to protected health information to those in the workforce that need access based on their roles. Canvas allows you to limit access to established [Patient Groups]({{site.baseurl}}/documentation/patient-groups/), ensuring that appropriate privacy restrictions are in place. Once the Patient Groups are defined in your admin settings, you can partner with your engineering team to leverage Protocols to programmatically add patients to the groups based on any patient attribute that is available to the Workflow Kit. 
 
 {% include alert.html type="info" content="If you want to know what type of information is available to the Workflow Kit, replace ‘patient’ in the patient chart URL with ‘api/PatientProtocolInput'" %}
 <br>
@@ -324,7 +324,6 @@ class BehvaioralReferralTaskUpdate(ClinicalQualityMeasure):
 
 
 
-You’ll need to determine how you’ll leverage your care team, what types of tasks should be delegated, and to whom they should be assigned. Our [Teams](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams) setup allows you to assign the Canvas automated tasks to a team; however, the way we’ve grouped responsibilities may not be granular enough for you. You can partner with your engineering team to use Protocols to re-route tasks based on their titles. Given a known task title, you can reassign to an individual or team, and also add labels. 
 
 
 
