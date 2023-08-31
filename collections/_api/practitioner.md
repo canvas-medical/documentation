@@ -152,7 +152,7 @@ print(response.text)
 
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab practitioner-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Practitioner \
@@ -160,7 +160,6 @@ curl --request GET \
      --header 'accept: application/json'
 ```
 {% endtab %}
-
 {% endtabs %}
 </div>
 
