@@ -1,5 +1,6 @@
 ---
 title: "Appointment and Note Types"
+layout: documentation
 ---
 
 The differentiated care models of our customers often include all types of patient interactions, including in-person visits, telehealth, and asynchronous encounters. Configuring appointment and note types allow you to tailor your scheduling and visit settings to your care model. 
@@ -90,11 +91,7 @@ Check or uncheck the Is active checkbox to enable or disable the note type as an
 Select mceclip3.png
 Ensure you see a message stating the changes were saved successfully at the top of the page mceclip5.png
 NOTE: * text above signals a required fields when setting up note types. Changes made to existing or new note types will apply to all end users across your organization's environment.
-
 NoteTypes.gif
-
 Place of Service (POS)
 As background, Place of service is a billing concept that is included in every claim created in Canvas. The options for place of service are determined by CMS.
-
 As shown above, Configurable note types allows you to configure the place of service for each note type. The algorithm to determine which place of service ultimately goes on the claim is as follows:
-
