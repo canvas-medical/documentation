@@ -136,7 +136,7 @@ curl --request POST \
 </div>
 
 <div id="media-create-response">
-{% tabs media- create-response %}
+{% tabs media-create-response %}
 {% tab media-create-response 200 %}
 ```json
 null
