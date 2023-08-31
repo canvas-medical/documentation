@@ -117,8 +117,8 @@ sections:
           example_response: coverage-update-response
 ---
 <div id="coverage-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs coverage-search-request %}
+{% tab coverage-search-request python %}
 ```sh
 import requests
 
@@ -134,7 +134,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab coverage-search-request curl %}
 ```sh
 curl --request GET \
      --url 'https://fumage-example.canvasmedical.com/Coverage?subscriberid=12345&_count=10&_offset=0&patient=patient' \
@@ -146,8 +146,8 @@ curl --request GET \
 </div>
 
 <div id="coverage-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs coverage-search-response %}
+{% tab coverage-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -320,7 +320,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab coverage-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -341,8 +341,8 @@ curl --request GET \
 </div>
 
 <div id="coverage-create-request">
-{% tabs create-request %}
-{% tab create-request python %}
+{% tabs coverage-create-request %}
+{% tab coverage-create-request python %}
 ```sh
 import requests
 
@@ -429,7 +429,7 @@ print(response.text)
 
 ```
 {% endtab %}
-{% tab create-request curl %}
+{% tab coverage-create-request curl %}
 ```sh
 curl --request POST \
      --url https://fumage-example.canvasmedical.com/Coverage \
@@ -529,13 +529,13 @@ curl --request POST \
 </div>
 
 <div id="coverage-create-response">
-{% tabs create-response %}
-{% tab create-response 201 %}
+{% tabs coverage-create-response %}
+{% tab coverage-create-response 201 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab coverage-create-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -556,8 +556,8 @@ null
 </div>
 
 <div id="coverage-update-request">
-{% tabs update-request %}
-{% tab update-request curl %}
+{% tabs coverage-update-request %}
+{% tab coverage-update-request curl %}
 ```sh
 import requests
 
@@ -610,7 +610,7 @@ print(response.text)
 
 ```
 {% endtab %}
-{% tab update-request curl %}
+{% tab coverage-update-request curl %}
 ```sh
 curl --request PUT \
      --url https://fumage-example.canvasmedical.com/Coverage/_id \
@@ -669,13 +669,13 @@ curl --request PUT \
 </div>
 
 <div id="coverage-update-response">
-{% tabs update-response %}
-{% tab update-response 200 %}
+{% tabs coverage-update-response %}
+{% tab coverage-update-response 200 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab update-response 400 %}
+{% tab coverage-update-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

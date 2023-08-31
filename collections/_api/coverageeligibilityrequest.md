@@ -43,8 +43,8 @@ sections:
           example_response: coverage-eligibility-request-create-response
 ---
 <div id="coverage-eligibility-request-create-request">
-{% tabs create-request %}
-{% tab create-request python %}
+{% tabs coverage-eligibility-request-create-request %}
+{% tab coverage-eligibility-request-create-request python %}
 ```sh
 import requests
 
@@ -73,7 +73,7 @@ response = requests.post(url, json=payload, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab create-request curl %}
+{% tab coverage-eligibility-request-create-request curl %}
 ```sh
 curl --request POST \
      --url https://fumage-example.canvasmedical.com/CoverageEligibilityRequest \
@@ -106,13 +106,13 @@ curl --request POST \
 </div>
 
 <div id="coverage-eligibility-request-create-response">
-{% tabs create-response %}
-{% tab create-response 201 %}
+{% tabs coverage-eligibility-request-create-response %}
+{% tab coverage-eligibility-request-create-response 201 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab coverage-eligibility-request-create-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

@@ -127,8 +127,8 @@ sections:
           example_response: document-reference-search-response
 ---
 <div id="document-reference-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs document-reference-read-request %}
+{% tab document-reference-read-request python %}
 ```sh
 import requests
 
@@ -144,7 +144,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab document-reference-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/DocumentReference/<id> \
@@ -155,9 +155,9 @@ curl --request GET \
 {% endtabs %}
 </div>
 
-<div id="document-reference-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+<div id="document-reference-read-response">
+{% tabs document-reference-read-response %}
+{% tab document-reference-read-response 200 %}
 ```json
 {
     "resourceType": "DocumentReference",
@@ -212,7 +212,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 404 %}
+{% tab document-reference-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -234,8 +234,8 @@ curl --request GET \
 
 
 <div id="document-reference-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs document-reference-search-request %}
+{% tab document-reference-search-request python %}
 ```sh
 import requests
 
@@ -251,7 +251,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab document-reference-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/DocumentReference \
@@ -263,8 +263,8 @@ curl --request GET \
 </div>
 
 <div id="document-reference-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs document-reference-search-response %}
+{% tab document-reference-search-response 200 %}
 ```json
    "resourceType": "Bundle",
     "type": "searchset",
@@ -397,7 +397,7 @@ curl --request GET \
     ]
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab document-reference-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

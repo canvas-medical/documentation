@@ -84,8 +84,8 @@ sections:
 ---
 
 <div id="goal-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs goal-read-request %}
+{% tab goal-read-request python %}
 ```sh
 import requests
 
@@ -101,7 +101,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab goal-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Goal/<id> \
@@ -113,8 +113,8 @@ curl --request GET \
 </div>
 
 <div id="goal-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs goal-read-response %}
+{% tab goal-read-response 200 %}
 ```json
 {
     "resourceType": "Goal",
@@ -155,7 +155,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab goal-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -176,8 +176,8 @@ curl --request GET \
 </div>
 
 <div id="goal-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs goal-search-request %}
+{% tab goal-search-request python %}
 ```sh
 import requests
 
@@ -193,7 +193,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab goal-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Goal \
@@ -205,8 +205,8 @@ curl --request GET \
 </div>
 
 <div id="goal-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs goal-search-response %}
+{% tab goal-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -289,7 +289,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab goal-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

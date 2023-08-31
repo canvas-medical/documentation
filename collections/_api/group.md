@@ -66,8 +66,8 @@ sections:
           example_response: group-update-response
 ---
 <div id="group-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs group-read-request %}
+{% tab group-read-request python %}
 ```sh
 import requests
 
@@ -83,7 +83,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab group-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Group/<id> \
@@ -95,8 +95,8 @@ curl --request GET \
 </div>
 
 <div id="group-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs group-read-response %}
+{% tab group-read-response 200 %}
 ```json
 {
     "resourceType": "Group",
@@ -128,7 +128,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 404 %}
+{% tab group-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -149,8 +149,8 @@ curl --request GET \
 </div>
 
 <div id="group-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs group-search-request %}
+{% tab group-search-request python %}
 ```sh
 import requests
 
@@ -166,7 +166,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab group-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Group \
@@ -178,8 +178,8 @@ curl --request GET \
 </div>
 
 <div id="group-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs group-search-response %}
+{% tab group-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -352,7 +352,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab group-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -373,8 +373,8 @@ curl --request GET \
 </div>
 
 <div id="group-create-request">
-{% tabs create-request %}
-{% tab create-request python %}
+{% tabs group-create-request %}
+{% tab group-create-request python %}
 ```sh
 import requests
 
@@ -407,7 +407,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab create-request curl %}
+{% tab group-create-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Group \
@@ -435,13 +435,13 @@ curl --request GET \
 </div>
 
 <div id="group-create-response">
-{% tabs create-response %}
-{% tab create-response 201 %}
+{% tabs group-create-response %}
+{% tab group-create-response 201 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab group-create-response 400 %}
 ```json
 {
     "resourceType": "Group",
@@ -464,8 +464,8 @@ null
 </div>
 
 <div id="group-update-request">
-{% tabs update-request %}
-{% tab update-request python %}
+{% tabs group-update-request %}
+{% tab group-update-request python %}
 ```sh
 import requests
 
@@ -500,7 +500,7 @@ print(response.text)
 
 ```
 {% endtab %}
-{% tab update-request curl %}
+{% tab group-update-request curl %}
 ```sh
 curl --request PUT \
      --url https://fumage-example.canvasmedical.com/Group/<id> \
@@ -529,13 +529,13 @@ curl --request PUT \
 </div>
 
 <div id="group-update-response">
-{% tabs update-response %}
-{% tab update-response 200 %}
+{% tabs group-update-response %}
+{% tab group-update-response 200 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab update-response 400 %}
+{% tab group-update-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

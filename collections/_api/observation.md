@@ -94,8 +94,8 @@ sections:
 
 ---
 <div id="observation-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs observation-read-request %}
+{% tab observation-read-request python %}
 ```sh
 import requests
 
@@ -111,7 +111,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab observation-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Observation/<id> \
@@ -123,8 +123,8 @@ curl --request GET \
 </div>
 
 <div id="observation-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs observation-read-response %}
+{% tab observation-read-response 200 %}
 ```json
 {
     "resourceType": "Observation",
@@ -209,7 +209,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab observation-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -230,8 +230,8 @@ curl --request GET \
 </div>
 
 <div id="observation-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs observation-search-request %}
+{% tab observation-search-request python %}
 ```sh
 import requests
 
@@ -247,7 +247,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab observation-search-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Observation \
@@ -259,8 +259,8 @@ curl --request GET \
 </div>
 
 <div id="observation-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs observation-search-response %}
+{% tab observation-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -412,7 +412,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab observation-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -433,8 +433,8 @@ curl --request GET \
 </div>
 
 <div id="observation-create-request">
-{% tabs create-request %}
-{% tab create-request python %}
+{% tabs observation-create-request %}
+{% tab observation-create-request python %}
 ```sh
 import requests
 
@@ -473,7 +473,7 @@ response = requests.post(url, json=payload, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab create-request curl %}
+{% tab observation-create-request curl %}
 ```sh
 curl --request POST \
      --url https://fumage-example.canvasmedical.com/Observation \
@@ -528,13 +528,13 @@ curl --request POST \
 </div>
 
 <div id="observation-create-response">
-{% tabs create-response %}
-{% tab create-response 200 %}
+{% tabs observation-create-response %}
+{% tab observation-create-response 201 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab observation-create-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

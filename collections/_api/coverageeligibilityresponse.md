@@ -61,8 +61,8 @@ sections:
           example_response: coverage-eligibility-response-search-response
 ---
 <div id="coverage-eligibility-response-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs coverage-eligibility-response-search-request %}
+{% tab coverage-eligibility-response-search-request python %}
 ```sh
 import requests
 
@@ -78,7 +78,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab coverage-eligibility-response-search-request curl %}
 ```sh
 curl --request GET \
      --url 'https://fumage-example.canvasmedical.com/CoverageEligibilityResponse?request=request_reference' \
@@ -90,8 +90,8 @@ curl --request GET \
 </div>
 
 <div id="coverage-eligibility-response-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs coverage-eligibility-response-search-response %}
+{% tab coverage-eligibility-response-search-response 200 %}
 ```json
 {
   "resourceType": "Bundle",
@@ -264,7 +264,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab coverage-eligibility-response-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

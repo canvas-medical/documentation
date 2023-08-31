@@ -78,8 +78,8 @@ sections:
           example_response: consent-create-response
 ---
 <div id="consent-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
+{% tabs consent-read-request %}
+{% tab consent-read-request python %}
 ```sh
 import requests
 
@@ -95,7 +95,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab consent-read-request curl %}
 ```sh
 curl --request GET \
      --url https://fumage-example.canvasmedical.com/Consent/<id> \
@@ -107,8 +107,8 @@ curl --request GET \
 </div>
 
 <div id="consent-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+{% tabs consent-read-response %}
+{% tab consent-read-response 200 %}
 ```json
 {
     "resourceType": "Consent",
@@ -144,7 +144,7 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab read-response 404 %}
+{% tab consent-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -165,8 +165,8 @@ curl --request GET \
 </div>
 
 <div id="consent-search-request">
-{% tabs search-request %}
-{% tab search-request python %}
+{% tabs consent-search-request %}
+{% tab consent-search-request python %}
 ```sh
 import requests
 
@@ -182,7 +182,7 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab search-request curl %}
+{% tab consent-search-request curl %}
 ```sh
 curl --request GET \
      --url 'https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F5350cd20de8a470aa570a852859ac87e' \
@@ -194,15 +194,15 @@ curl --request GET \
 </div>
 
 <div id="consent-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs consent-search-response %}
+{% tab consent-search-response 200 %}
 ```json
 200 {
   ...
 }
 ```
 {% endtab %}
-{% tab search-response 400 %}
+{% tab consent-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -223,8 +223,8 @@ curl --request GET \
 </div>
 
 <div id="consent-create-request">
-{% tabs create-request %}
-{% tab create-request python %}
+{% tabs consent-create-request %}
+{% tab consent-create-request python %}
 ```sh
 import requests
 
@@ -268,7 +268,7 @@ response = requests.post(url, json=payload, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab create-request curl %}
+{% tab consent-create-request curl %}
 ```sh
 curl --request POST \
      --url https://fumage-example.canvasmedical.com/Consent \
@@ -320,13 +320,13 @@ curl --request POST \
 </div>
 
 <div id="consent-create-response">
-{% tabs create-response %}
-{% tab create-response 201 %}
+{% tabs consent-create-response %}
+{% tab consent-create-response 201 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab consent-create-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",

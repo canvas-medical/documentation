@@ -64,12 +64,12 @@ sections:
           example_response: media-create-response
 ---
 <div id="media-create-request">
-{% tabs create-request %}
-{% tab create-request python %}
+{% tabs media-create-request %}
+{% tab media-create-request python %}
 ```sh
 import requests
 
-url = "https://fhir-example.canvasmedical.com/Media"
+url = "https://fumage-example.canvasmedical.com/Media"
 
 payload = {
     "resourceType": "Media",
@@ -95,10 +95,10 @@ response = requests.post(url, json=payload, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab create-request curl %}
+{% tab media-create-request curl %}
 ```sh
 curl --request POST \
-     --url https://fhir-example.canvasmedical.com/Media \
+     --url https://fumage-example.canvasmedical.com/Media \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -136,13 +136,13 @@ curl --request POST \
 </div>
 
 <div id="media-create-response">
-{% tabs create-response %}
-{% tab create-response 200 %}
+{% tabs media- create-response %}
+{% tab media-create-response 200 %}
 ```json
 null
 ```
 {% endtab %}
-{% tab create-response 400 %}
+{% tab media-create-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
