@@ -7,11 +7,11 @@ sections:
         name: Condition
         article: "a"
         description: >-
-          Get information about a location (via Canvas's practice location)
+          A clinical condition, problem, diagnosis, or other event, situation, issue, or clinical concept that has risen to a level of concern.
         attributes:
           - name: id
             description: >-
-              The identifier of the patient
+              The identifier of the condition
             type: string
             required: true
           - name: resourceType
