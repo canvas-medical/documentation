@@ -199,6 +199,10 @@ api_group:
    url: /api/group/#group-read
  - title: "Group Search"
    url: /api/group/#group-search 
+ - title: "Group Create"
+   url: /api/group/#group-create
+ - title: "Group Update"
+   url: /api/group/#group-update 
 api_immunization:
  - title: "Immunization Read"
    url: /api/immunization/#immunization-read
