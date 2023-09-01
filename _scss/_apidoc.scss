@@ -1,17 +1,22 @@
 .apidoc {
   &__gridrow {
     display: grid;
-    grid-template-columns: 800px 250px;
+    grid-template-columns: 1fr 1fr;
     grid-column-gap: $container-padding;
+    padding: 0 $container-padding; 
   }
+
   &__info {
     margin-top: 2rem;
+
     &__summary {
       font-weight: 700;
     }
+
     &__description {
       margin-bottom: 2rem;
     }
+
     &__method {
       text-transform: uppercase;
       font-weight: 700;
@@ -20,19 +25,24 @@
       border-radius: 5px;
       padding: 0.4em 0.6em;
       font-family: $primary-font-family;
+
       &__get {
         background-color: $navyblue;
       }
+
       &__post {
         background-color: $green;
       }
+
       &__put {
         background-color: $crimson;
       }
+
       &__delete {
         background-color: $red;
       }
     }
+
     &__url {
       font-family: $mono-font-family;
       display: inline-block;
@@ -40,18 +50,22 @@
       padding: 0.2em;
     }
   }
+
   &__endpoint {
     background-color: $lightgrey;
     padding: 0.5em 1em;
+
     &__list__item {
       display: flex;
       align-items: center;
       gap: 1em;
       margin-bottom: 0.5em;
+
       &:hover {
         text-decoration: none;
       }
     }
+
     &__method {
       text-transform: uppercase;
       font-weight: 700;
@@ -71,17 +85,26 @@
       }
     }
   }
+
   &__object {
-    border: 2px solid $black;
+    border-bottom: 2px solid $lightgrey;
+    border-radius: 0.6rem;
     margin-bottom: 1rem;
     padding: 0.5em;
     display: flex;
     flex-direction: column;
     gap: 0.25em;
+
+    header {
+      display: flex;
+      gap: 0.5rem;
+    }
+
     &__name {
       font-family: $mono-font-family;
       font-weight: 700;
     }
+
     &__required {
       font-size: 0.8em;
       color: $white;
@@ -90,16 +113,67 @@
       padding: 0.2em 0.6em;
       font-family: $primary-font-family;
     }
+
     &__type {
       font-family: $mono-font-family;
     }
+
     &___description {
       margin-bottom: 0;
     }
+
     &__children {
-      margin: 2rem;
+      // margin: 2rem;
+      margin: 0.5rem;
+      border: 0px solid $lightgrey;
+      border-radius: 0.6rem;
+
+      .apidoc {
+        &__object {
+          border: 0px;
+        }
+      }
+    }
+
+    &__children__toggle {
+
+      cursor: pointer;
+      padding: 10px;
+      border: none;
+      text-align: left;
+      outline: none;
+      transition: 0.4s;
+      display: block;
+      border-radius: 0.6rem;
+      border: 2px solid $lightgrey;
+
+      &.is-active {
+        display: block;
+        border-bottom: 2px solid $lightgrey;
+        border-color: transparent transparent $lightgrey transparent;
+        border-radius: 0.6rem 0.6rem 0px 0px;
+
+      }
+
+    }
+
+    &__children__panel {
+      display: none;
+      border-radius: 0.6rem;
+      background-color: white;
+      overflow: hidden;
+
+      .apidoc__object {
+        border-bottom: 1px solid $lightgrey;
+
+        &:last-child {
+          border-bottom: 0px;
+        }
+
+      }
     }
   }
+
   &__hidden {
     display: none;
   }

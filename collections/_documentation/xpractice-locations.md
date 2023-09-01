@@ -1,5 +1,6 @@
 ---
 title: "Practice Locations"
+layout: documentation
 ---
 
 Practice locations allow you to configure your Canvas instance to support multiple regions, offices, or use cases. Practice locations are used to group schedules, drive billing workflows, customize outbound communications for both patients and other providers, and drive preferences in clinical workflows.
