@@ -11,7 +11,7 @@ sections:
         attributes:
           - name: id
             description: >-
-              The identifier of the care team
+              The identifier of the patient
             type: string
             required: true
           - name: resourceType
@@ -66,14 +66,6 @@ sections:
 ---
 <div id="care-team-read-request">
 {% tabs care-team-read-request %}
-{% tab care-team-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/CareTeam/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
 {% tab care-team-read-request python %}
 ```sh
 import requests
@@ -88,6 +80,14 @@ headers = {
 response = requests.get(url, headers=headers)
 
 print(response.text)
+```
+{% endtab %}
+{% tab care-team-read-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/CareTeam/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
 ```
 {% endtab %}
 {% endtabs %}
@@ -151,14 +151,6 @@ print(response.text)
 
 <div id="care-team-search-request">
 {% tabs care-team-search-request %}
-{% tab care-team-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/CareTeam?patient=Patient%<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
 {% tab care-team-search-request python %}
 ```sh
 import requests
@@ -173,6 +165,14 @@ headers = {
 response = requests.get(url, headers=headers)
 
 print(response.text)
+```
+{% endtab %}
+{% tab care-team-search-request curl %}
+```sh
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/CareTeam?patient=Patient%<id>' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
 ```
 {% endtab %}
 {% endtabs %}
@@ -316,6 +316,49 @@ print(response.text)
 
 <div id="care-team-update-request">
 {% tabs care-team-update-request %}
+{% tab care-team-update-request python %}
+```sh
+import requests
+
+url = "https://fhir-example.canvasmedical.com/CareTeam/<id>"
+
+payload = {
+    "resourceType": "CareTeam",
+    "participant": [
+        {
+            "role": [{ "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "17561000",
+                            "display": "Cardiologist"
+                        }
+                    ] }],
+            "member": { "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e" }
+        },
+        {
+            "role": [{ "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "453231000124104",
+                            "display": "Primary care provider"
+                        }
+                    ] }],
+            "member": { "reference": "Practitioner/2a6cfdb145c8469b9d935fe91f6b0172" }
+        }
+    ],
+    "subject": { "reference": "Patient/3e72c07b5aac4dc5929948f82c9afdfd" }
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
 {% tab care-team-update-request curl %}
 ```sh
 curl --request PUT \
@@ -365,49 +408,6 @@ curl --request PUT \
   }
 }
 '
-```
-{% endtab %}
-{% tab care-team-update-request python %}
-```sh
-import requests
-
-url = "https://fhir-example.canvasmedical.com/CareTeam/<id>"
-
-payload = {
-    "resourceType": "CareTeam",
-    "participant": [
-        {
-            "role": [{ "coding": [
-                        {
-                            "system": "http://snomed.info/sct",
-                            "code": "17561000",
-                            "display": "Cardiologist"
-                        }
-                    ] }],
-            "member": { "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e" }
-        },
-        {
-            "role": [{ "coding": [
-                        {
-                            "system": "http://snomed.info/sct",
-                            "code": "453231000124104",
-                            "display": "Primary care provider"
-                        }
-                    ] }],
-            "member": { "reference": "Practitioner/2a6cfdb145c8469b9d935fe91f6b0172" }
-        }
-    ],
-    "subject": { "reference": "Patient/3e72c07b5aac4dc5929948f82c9afdfd" }
-}
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>",
-    "content-type": "application/json"
-}
-
-response = requests.put(url, json=payload, headers=headers)
-
-print(response.text)
 ```
 {% endtab %}
 {% endtabs %}

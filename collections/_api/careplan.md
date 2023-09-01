@@ -11,7 +11,7 @@ sections:
         attributes:
           - name: id
             description: >-
-              The identifier of the care plan
+              The identifier of the patient
             type: string
             required: true
           - name: resourceType
@@ -63,14 +63,6 @@ sections:
 ---
 <div id="care-plan-read-request">
 {% tabs care-plan-read-request %}
-{% tab care-plan-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/CarePlan/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
 {% tab care-plan-read-request python %}
 ```sh
 import requests
@@ -85,6 +77,14 @@ headers = {
 response = requests.get(url, headers=headers)
 
 print(response.text)
+```
+{% endtab %}
+{% tab care-plan-read-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/CarePlan/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
 ```
 {% endtab %}
 {% endtabs %}
@@ -150,14 +150,6 @@ print(response.text)
 
 <div id="care-plan-search-request">
 {% tabs care-plan-search-request %}
-{% tab care-plan-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
 {% tab care-plan-search-request python %}
 ```sh
 import requests
@@ -172,6 +164,14 @@ headers = {
 response = requests.get(url, headers=headers)
 
 print(response.text)
+```
+{% endtab %}
+{% tab care-plan-search-request curl %}
+```sh
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
 ```
 {% endtab %}
 {% endtabs %}

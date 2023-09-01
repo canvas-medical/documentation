@@ -64,94 +64,6 @@ sections:
 ---
 <div id="claim-create-request">
 {% tabs claim-create-create-request %}
-{% tab claim-create-create-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Claim"
-
-payload = {
-    "resourceType": "Claim",
-    "status": "active",
-    "type": { "coding": [
-            {
-                "system": "http://hl7.org/fhir/ValueSet/claim-type",
-                "code": "professional"
-            }
-        ] },
-    "use": "claim",
-    "patient": "Patient/865058f6654149bd921264d91519af9e",
-    "created": "2021-08-16",
-    "provider": {
-        "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
-        "type": "http://canvasmedical.com"
-    },
-    "supportingInfo": [
-        {
-            "sequence": 0,
-            "category": { "coding": [
-                    {
-                        "code": "patientreasonforvisit",
-                        "system": "http://hl7.org/fhir/ValueSet/claim-informationcategory",
-                        "display": "Patient Reason for Visit"
-                    }
-                ] },
-            "valueString": "This is only...a test"
-        }
-    ],
-    "diagnosis": [
-        {
-            "sequence": 1,
-            "diagnosisCodeableConcept": { "coding": [
-                    {
-                        "code": "F41.1",
-                        "system": "http://hl7.org/fhir/ValueSet/icd-10",
-                        "display": "Generalized anxiety"
-                    }
-                ] }
-        }
-    ],
-    "insurance": [
-        {
-            "sequence": 1,
-            "focal": True,
-            "coverage": { "reference": "Coverage/7afeaa26-48e1-43c2-b414-fd8aa9780af1" }
-        }
-    ],
-    "item": [
-        {
-            "sequence": 1,
-            "diagnosisSequence": [1],
-            "productOrService": { "coding": [
-                    {
-                        "system": "http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code",
-                        "code": "exam",
-                        "display": "Office visit"
-                    }
-                ] },
-            "modifier": [{ "coding": [
-                        {
-                            "system": "http://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers",
-                            "code": "21"
-                        }
-                    ] }],
-            "quantity": 1,
-            "unitPrice": { "value": 75 }
-        }
-    ]
-}
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>",
-    "content-type": "application/json"
-}
-
-response = requests.post(url, json=payload, headers=headers)
-
-print(response.text)
-
-```
-{% endtab %}
 {% tab claim-create-create-request curl %}
 ```sh
 curl --request POST \
@@ -249,6 +161,94 @@ curl --request POST \
   ]
 }
 '
+
+```
+{% endtab %}
+{% tab claim-create-create-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Claim"
+
+payload = {
+    "resourceType": "Claim",
+    "status": "active",
+    "type": { "coding": [
+            {
+                "system": "http://hl7.org/fhir/ValueSet/claim-type",
+                "code": "professional"
+            }
+        ] },
+    "use": "claim",
+    "patient": "Patient/865058f6654149bd921264d91519af9e",
+    "created": "2021-08-16",
+    "provider": {
+        "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+        "type": "http://canvasmedical.com"
+    },
+    "supportingInfo": [
+        {
+            "sequence": 0,
+            "category": { "coding": [
+                    {
+                        "code": "patientreasonforvisit",
+                        "system": "http://hl7.org/fhir/ValueSet/claim-informationcategory",
+                        "display": "Patient Reason for Visit"
+                    }
+                ] },
+            "valueString": "This is only...a test"
+        }
+    ],
+    "diagnosis": [
+        {
+            "sequence": 1,
+            "diagnosisCodeableConcept": { "coding": [
+                    {
+                        "code": "F41.1",
+                        "system": "http://hl7.org/fhir/ValueSet/icd-10",
+                        "display": "Generalized anxiety"
+                    }
+                ] }
+        }
+    ],
+    "insurance": [
+        {
+            "sequence": 1,
+            "focal": True,
+            "coverage": { "reference": "Coverage/7afeaa26-48e1-43c2-b414-fd8aa9780af1" }
+        }
+    ],
+    "item": [
+        {
+            "sequence": 1,
+            "diagnosisSequence": [1],
+            "productOrService": { "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code",
+                        "code": "exam",
+                        "display": "Office visit"
+                    }
+                ] },
+            "modifier": [{ "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers",
+                            "code": "21"
+                        }
+                    ] }],
+            "quantity": 1,
+            "unitPrice": { "value": 75 }
+        }
+    ]
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.text)
 
 ```
 {% endtab %}

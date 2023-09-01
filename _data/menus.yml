@@ -19,6 +19,9 @@ api:
  - title: "CareTeam"
    url: /api/careteam/
    identifier: api_careteam
+ - title: "Claim"
+   url: /api/claim/
+   identifier: api_claim
  - title: "Communication"
    url: /api/communication/
    identifier: api_communication
@@ -135,6 +138,9 @@ api_careteam:
    url: /api/careteam/#careteam-create
  - title: "CareTeam Update"
    url: /api/careteam/#careteam-update
+api_claim:
+ - title: "Claim Create"
+   url: /api/claim/#claim-create
 api_communication:
  - title: "Communication Search"
    url: /api/communication/#communication-search
