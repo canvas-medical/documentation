@@ -20,6 +20,15 @@ sections:
           - name: extension
             type: json
             required: true
+            attributes:
+              - name: _id
+                description: >-
+                  The identifier of the patient
+                type: string
+                required: true
+              - name: resourceType
+                type: string
+                required: true
           - name: identifier
             type: json
             required: false

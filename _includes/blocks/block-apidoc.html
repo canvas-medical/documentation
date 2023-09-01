@@ -46,39 +46,7 @@
         <div class="apidoc__gridcol">
             {% if block.attributes %}
             <h3>Attributes</h3>
-            {% for attribute in block.attributes %}
-            <div class="apidoc__object">
-                <div class="apidoc__object__name">
-                    {{ attribute.name }}
-                </div>
-                <div class="apidoc__object__type">
-                    {{ attribute.type }} {% if attribute.required %}<span
-                        class="apidoc__object__required">required</span>{% endif %}
-                </div>
-                {% if attribute.description %}
-                <div class="apidoc__object__description">
-                    {{ attribute.description }}
-                </div>
-                {% endif %}
-                {% if attribute.attributes %}
-                <div class="apidoc__object__children">
-                    {% for attribute in attribute.attributes %}
-                    <div class="apidoc__object">
-                        <div class="apidoc__object__name">
-                            {{ attribute.name }}
-                        </div>
-                        <div class="apidoc__object__type">
-                            {{ attribute.type }}
-                        </div>
-                        <div class="apidoc__object__description">
-                            {{ attribute.description }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-            {% endfor %}
+            {% include blocks/block-apidoc-attributes.html %}
             {% endif %}
         </div>
         <div class="apidoc__gridcol">
@@ -249,41 +217,10 @@
     {% if endpoint == 'create' %}
     <div class="apidoc__gridrow">
         <div class="apidoc__gridcol">
+            {% if block.attributes %}
             <h3>Attributes</h3>
-            {% for attribute in block.attributes %}
-            <div class="apidoc__object">
-                <div class="apidoc__object__name">
-                    {{ attribute.name }}
-                </div>
-                <div class="apidoc__object__type">
-                    {{ attribute.type }} {% if attribute.required %}<span
-                        class="apidoc__object__required">required</span>{% endif
-                    %}
-                </div>
-                {% if attribute.description %}
-                <div class="apidoc__object__description">
-                    {{ attribute.description }}
-                </div>
-                {% endif %}
-                {% if attribute.attributes %}
-                <div class="apidoc__object__children">
-                    {% for attribute in attribute.attributes %}
-                    <div class="apidoc__object">
-                        <div class="apidoc__object__name">
-                            {{ attribute.name }}
-                        </div>
-                        <div class="apidoc__object__type">
-                            {{ attribute.type }}
-                        </div>
-                        <div class="apidoc__object__description">
-                            {{ attribute.description }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-            {% endfor %}
+            {% include blocks/block-apidoc-attributes.html %}
+            {% endif %}
         </div>
         <div class="apidoc__gridcol">
             {% if block.create.example_request %}
@@ -336,41 +273,10 @@
     {% if endpoint == 'update' %}
     <div class="apidoc__gridrow">
         <div class="apidoc__gridcol">
+            {% if block.attributes %}
             <h3>Attributes</h3>
-            {% for attribute in block.attributes %}
-            <div class="apidoc__object">
-                <div class="apidoc__object__name">
-                    {{ attribute.name }}
-                </div>
-                <div class="apidoc__object__type">
-                    {{ attribute.type }} {% if attribute.required %}<span
-                        class="apidoc__object__required">required</span>{% endif
-                    %}
-                </div>
-                {% if attribute.description %}
-                <div class="apidoc__object__description">
-                    {{ attribute.description }}
-                </div>
-                {% endif %}
-                {% if attribute.attributes %}
-                <div class="apidoc__object__children">
-                    {% for attribute in attribute.attributes %}
-                    <div class="apidoc__object">
-                        <div class="apidoc__object__name">
-                            {{ attribute.name }}
-                        </div>
-                        <div class="apidoc__object__type">
-                            {{ attribute.type }}
-                        </div>
-                        <div class="apidoc__object__description">
-                            {{ attribute.description }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-            {% endfor %}
+            {% include blocks/block-apidoc-attributes.html %}
+            {% endif %}
         </div>
         <div class="apidoc__gridcol">
             {% if block.update.example_request %}
