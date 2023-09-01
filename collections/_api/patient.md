@@ -32,13 +32,13 @@ sections:
             required: true
           - name: active
             type: boolean
-            description: >-
-              Whether this patient's record is in active use
+            required: false
           - name: name
             type: json
             required: true
           - name: telecom
             type: json
+            required: false
             attributes:
               - name: id
                 type: string
@@ -61,18 +61,16 @@ sections:
             description: >-
               Default: male
             type: string
+            required: false
           - name: birthDate
             type: date
-            description: >-
-              The date of birth for the individual
+            required: false
           - name: deceasedBoolean
             type: boolean
-            description: >-
-              Indicates if the individual is deceased or not
+            required: false
           - name: address
             type: json
-            description: >-
-              An address for the individual
+            required: false
             attributes:
               - name: id
                 type: string
@@ -99,15 +97,13 @@ sections:
                     type: date
           - name: photo
             type: string
-            description: >-
-              Image of the patient
+            required: false
             attributes:
               - name: url
                 type: string
           - name: contact
             type: json
-            description: >-
-              A contact party (e.g. guardian, partner, friend) for the patient
+            required: false
             attributes:
               - name: id
                 type: string
@@ -123,8 +119,6 @@ sections:
                     type: string
               - name: telecom
                 type: json
-                description: >-
-                  A contact detail for the individual
                 attributes:
                   - name: system
                     type: string
@@ -139,6 +133,7 @@ sections:
                     type: boolean
           - name: communication
             type: json
+            required: false
             attributes:
               - name: language
                 type: json
@@ -175,14 +170,6 @@ sections:
           - name: given
             type: string
             description: First Name
-          - name: birthdate
-            type: date
-            description: The patient's birthdate
-          - name: gender
-            type: string
-          - name: nickname
-            type: string
-            description: Preferred or alternate name
           - name: email
             type: string
             description: Patient email address
@@ -191,7 +178,7 @@ sections:
             description: Patient phone number, expected to be 10 digits
           - name: active
             type: boolean
-            description: Whether this patient's record is in active use
+            description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false)
           - name: nickname
             type: string
             description: Preferred or alternate name
@@ -220,14 +207,6 @@ sections:
 
 <div id="patient-read-request">
 {% tabs patient-read-request %}
-{% tab patient-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Patient/<id> \
-     --header 'Authorization: Bearer <token>' 
-     --header 'accept: application/json'
-```
-{% endtab %}
 {% tab patient-read-request python %}
 ```sh
 import requests
@@ -244,6 +223,14 @@ response = requests.request("GET", url, headers=headers, data=payload)
 
 print(response.text)
 
+```
+{% endtab %}
+{% tab patient-read-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/Patient/<id> \
+     --header 'Authorization: Bearer <token>' 
+     --header 'accept: application/json'
 ```
 {% endtab %}
 {% endtabs %}
@@ -417,9 +404,9 @@ print(response.text)
         {
             "id": "6c54eb4a-8c54-4965-a729-ab9f3223b63d",
             "use": "home",
-            "type": "physical",
+            "type": "both",
             "line": [
-                "123 Main St"
+                "4247 Murry Street"
             ],
             "city": "Chesapeake",
             "state": "VA",
@@ -447,8 +434,7 @@ print(response.text)
             ],
             "relationship": [
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": true
+                    "text": "Spouse"
                 }
             ],
             "name": {
@@ -456,7 +442,8 @@ print(response.text)
             },
             "telecom": [
                 {
-                    "text": "Husband"
+                    "system": "email",
+                    "value": "test@me.com"
                 }
             ]
         },
@@ -468,8 +455,8 @@ print(response.text)
                     "valueBoolean": false
                 },
                 {
-                    "system": "email",
-                    "value": "kj@zahoo.com"
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
                 }
             ],
             "relationship": [
@@ -553,14 +540,6 @@ print(response.text)
 
 <div id="patient-search-request">
 {% tabs patient-search-request %}
-{% tab patient-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Patient \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
 {% tab patient-search-request python %}
 ```sh
 import requests
@@ -574,6 +553,14 @@ response = requests.request("GET", url, headers=headers, data=payload)
 
 print(response.text)
 
+```
+{% endtab %}
+{% tab patient-search-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/Patient \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
 ```
 {% endtab %}
 {% endtabs %}
@@ -773,6 +760,21 @@ print(response.text)
 
 <div id="patient-create-request">
 {% tabs patient-create-request %}
+{% tab patient-create-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Patient"
+
+payload = "{\n    \"resourceType\": \"Patient\",\n    \"extension\": [\n        {\n            \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\n            \"valueCode\": \"M\"\n        },\n        {\n            \"url\" : \"http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy\",\n            \"extension\": [\n                {\n                    \"url\": \"ncpdp-id\",\n                    \"valueIdentifier\": {\n                        \"value\": \"1123152\",\n                        \"system\": \"http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber\"\n                    }\n                }\n            ]\n        },\n        {\n            \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity\",\n            \"extension\": [\n                {\n                    \"url\": \"text\",\n                    \"valueString\": \"UNK\"\n                }\n            ]\n        },\n        {\n            \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-race\",\n            \"extension\": [\n                {\n                    \"url\": \"text\",\n                    \"valueString\": \"UNK\"\n                }\n            ]\n        },\n        {\n            \"url\": \"http://hl7.org/fhir/StructureDefinition/tz-code\",\n            \"valueCode\": \"America/New_York\"\n        },\n        {\n            \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/clinical-note\",\n            \"valueString\": \"I am a clinical caption from a Create message\"\n        },\n        {\n            \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/administrative-note\",\n            \"valueString\": \"I am an administrative caption from a Create message\"\n        }\n    ],\n    \"identifier\": [\n        {\n            \"use\": \"usual\",\n            \"system\": \"HealthCo\",\n            \"value\": \"s07960990\"\n        }\n    ],\n    \"active\": true,\n    \"name\": [\n        {\n            \"use\": \"official\",\n            \"family\": \"Bahar\",\n            \"given\": [\n                \"Issam\",\n                \"Khuzaimah\"\n            ]\n        },\n        {\n            \"use\": \"nickname\",\n            \"given\": [\n                \"Nick Name\"\n            ]\n        }\n    ],\n    \"telecom\": [\n        {\n            \"system\": \"phone\",\n            \"value\": \"5554320555\",\n            \"use\": \"mobile\",\n            \"rank\": 1\n        },\n        {\n            \"system\": \"email\",\n            \"value\": \"i.k.bahar@example.com\",\n            \"use\": \"work\",\n            \"rank\": 1\n        }\n    ],\n    \"gender\": \"male\",\n    \"birthDate\": \"1949-11-13\",\n    \"address\": [\n        {\n            \"use\": \"home\",\n            \"type\": \"both\",\n            \"text\": \"4247 Murry Street, Chesapeake, VA 23322\",\n            \"line\": [\n                \"4247 Murry Street\"\n            ],\n            \"city\": \"Chesapeake\",\n            \"state\": \"VA\",\n            \"postalCode\": \"23322\"\n        }\n    ],\n    \"contact\": [\n        {\n            \"name\": {\n                \"text\": \"Test Spouse\"\n            },\n            \"relationship\": [\n                {\n                    \"text\": \"Spouse\"\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"email\",\n                    \"value\": \"test@me.com\"\n                }\n            ],\n            \"extension\": [\n                {\n                    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/emergency-contact\",\n                    \"valueBoolean\": true\n                },\n                {\n                    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information\",\n                    \"valueBoolean\": true\n                }\n            ]\n        },\n        {\n            \"name\": {\n                \"text\": \"Test Mom\"\n            },\n            \"relationship\": [\n                {\n                    \"text\": \"Mom\"\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"phone\",\n                    \"value\": \"7177327068\"\n                }\n            ],\n            \"extension\": [\n                {\n                    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information\",\n                    \"valueBoolean\": true\n                }\n            ]\n        },\n        {\n            \"name\": {\n                \"text\": \"Test Email\"\n            },\n            \"relationship\": [\n                {\n                    \"text\": \"Father\"\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"email\",\n                    \"value\": \"test.email@email.test\"\n                }\n            ]\n        }\n    ],\n    \"communication\": [\n        {\n            \"language\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/ValueSet/all-languages\",\n                        \"code\": \"en\",\n                        \"display\": \"English\"\n                    }\n                ],\n                \"text\": \"English\"\n            }\n        }\n    ]\n}"
+
+headers = {}
+
+response = requests.request("POST", url, headers=headers, data=payload)
+
+print(response.text)
+```
+{% endtab %}
 {% tab patient-create-request curl %}
 ```sh
 curl --request POST \
@@ -810,21 +812,6 @@ curl --request POST \
 '
 ```
 {% endtab %}
-{% tab patient-create-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Patient"
-
-payload = "{\n    \"resourceType\": \"Patient\",\n    \"extension\": [\n        {\n            \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\n            \"valueCode\": \"M\"\n        },\n        {\n            \"url\" : \"http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy\",\n            \"extension\": [\n                {\n                    \"url\": \"ncpdp-id\",\n                    \"valueIdentifier\": {\n                        \"value\": \"1123152\",\n                        \"system\": \"http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber\"\n                    }\n                }\n            ]\n        },\n        {\n            \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity\",\n            \"extension\": [\n                {\n                    \"url\": \"text\",\n                    \"valueString\": \"UNK\"\n                }\n            ]\n        },\n        {\n            \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-race\",\n            \"extension\": [\n                {\n                    \"url\": \"text\",\n                    \"valueString\": \"UNK\"\n                }\n            ]\n        },\n        {\n            \"url\": \"http://hl7.org/fhir/StructureDefinition/tz-code\",\n            \"valueCode\": \"America/New_York\"\n        },\n        {\n            \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/clinical-note\",\n            \"valueString\": \"I am a clinical caption from a Create message\"\n        },\n        {\n            \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/administrative-note\",\n            \"valueString\": \"I am an administrative caption from a Create message\"\n        }\n    ],\n    \"identifier\": [\n        {\n            \"use\": \"usual\",\n            \"system\": \"HealthCo\",\n            \"value\": \"s07960990\"\n        }\n    ],\n    \"active\": true,\n    \"name\": [\n        {\n            \"use\": \"official\",\n            \"family\": \"Bahar\",\n            \"given\": [\n                \"Issam\",\n                \"Khuzaimah\"\n            ]\n        },\n        {\n            \"use\": \"nickname\",\n            \"given\": [\n                \"Nick Name\"\n            ]\n        }\n    ],\n    \"telecom\": [\n        {\n            \"system\": \"phone\",\n            \"value\": \"5554320555\",\n            \"use\": \"mobile\",\n            \"rank\": 1\n        },\n        {\n            \"system\": \"email\",\n            \"value\": \"i.k.bahar@example.com\",\n            \"use\": \"work\",\n            \"rank\": 1\n        }\n    ],\n    \"gender\": \"male\",\n    \"birthDate\": \"1949-11-13\",\n    \"address\": [\n        {\n            \"use\": \"home\",\n            \"type\": \"both\",\n            \"text\": \"4247 Murry Street, Chesapeake, VA 23322\",\n            \"line\": [\n                \"4247 Murry Street\"\n            ],\n            \"city\": \"Chesapeake\",\n            \"state\": \"VA\",\n            \"postalCode\": \"23322\"\n        }\n    ],\n    \"contact\": [\n        {\n            \"name\": {\n                \"text\": \"Test Spouse\"\n            },\n            \"relationship\": [\n                {\n                    \"text\": \"Spouse\"\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"email\",\n                    \"value\": \"test@me.com\"\n                }\n            ],\n            \"extension\": [\n                {\n                    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/emergency-contact\",\n                    \"valueBoolean\": true\n                },\n                {\n                    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information\",\n                    \"valueBoolean\": true\n                }\n            ]\n        },\n        {\n            \"name\": {\n                \"text\": \"Test Mom\"\n            },\n            \"relationship\": [\n                {\n                    \"text\": \"Mom\"\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"phone\",\n                    \"value\": \"7177327068\"\n                }\n            ],\n            \"extension\": [\n                {\n                    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information\",\n                    \"valueBoolean\": true\n                }\n            ]\n        },\n        {\n            \"name\": {\n                \"text\": \"Test Email\"\n            },\n            \"relationship\": [\n                {\n                    \"text\": \"Father\"\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"email\",\n                    \"value\": \"test.email@email.test\"\n                }\n            ]\n        }\n    ],\n    \"communication\": [\n        {\n            \"language\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/ValueSet/all-languages\",\n                        \"code\": \"en\",\n                        \"display\": \"English\"\n                    }\n                ],\n                \"text\": \"English\"\n            }\n        }\n    ]\n}"
-
-headers = {}
-
-response = requests.request("POST", url, headers=headers, data=payload)
-
-print(response.text)
-```
-{% endtab %}
 {% endtabs %}
 </div>
 
@@ -857,88 +844,6 @@ null
 
 <div id="patient-update-request">
 {% tabs patient-update-request %}
-{% tab patient-update-request curl %}
-```sh
-curl --request PUT \
-     --url https://fumage-example.canvasmedical.com/Patient/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json' \
-     --header 'content-type: application/json' \
-     --data '
-{
-  "resourceType": "Patient",
-  "id": "c9491183c38b4fe793db70c60046db3f",
-  "extension": [
-    {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-      "valueCode": "M"
-    },
-    {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-      "extension": [
-        {
-          "url": "text",
-          "valueString": "UNK"
-        }
-      ]
-    },
-    {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-      "extension": [
-        {
-          "valueCoding": {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2106-3",
-            "display": "White"
-          }
-        }
-      ]
-    },
-    {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
-      "extension": [
-        {
-          "url": "ncpdp-id",
-          "valueIdentifier": {
-            "value": "1123152",
-            "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
-          }
-        }
-      ]
-    },
-    {
-      "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
-      "valueCode": "America/New_York"
-    },
-    {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
-      "valueString": "I am a clinical caption from a Create message"
-    },
-    {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
-      "valueString": "I am an administrative caption from a Create message"
-    }
-  ],
-  "name": [
-    {
-      "use": "official",
-      "family": "Mark",
-      "given": [
-        "Jade",
-        "Robel"
-      ]
-    },
-    {
-      "use": "nickname",
-      "given": [
-        "Nick Name"
-      ]
-    }
-  ],
-  "birthDate": "1980-11-13"
-}
-```
-{% endtab %}
 {% tab patient-update-request python %}
 ```sh
 curl --request PUT \
@@ -1148,6 +1053,88 @@ curl --request PUT \
   ]
 }
 '
+```
+{% endtab %}
+{% tab patient-update-request curl %}
+```sh
+curl --request PUT \
+     --url https://fumage-example.canvasmedical.com/Patient/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+  "resourceType": "Patient",
+  "id": "c9491183c38b4fe793db70c60046db3f",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+      "valueCode": "M"
+    },
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+      "extension": [
+        {
+          "url": "text",
+          "valueString": "UNK"
+        }
+      ]
+    },
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+      "extension": [
+        {
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2106-3",
+            "display": "White"
+          }
+        }
+      ]
+    },
+    {
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
+      "extension": [
+        {
+          "url": "ncpdp-id",
+          "valueIdentifier": {
+            "value": "1123152",
+            "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
+          }
+        }
+      ]
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+      "valueCode": "America/New_York"
+    },
+    {
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+      "valueString": "I am a clinical caption from a Create message"
+    },
+    {
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+      "valueString": "I am an administrative caption from a Create message"
+    }
+  ],
+  "name": [
+    {
+      "use": "official",
+      "family": "Mark",
+      "given": [
+        "Jade",
+        "Robel"
+      ]
+    },
+    {
+      "use": "nickname",
+      "given": [
+        "Nick Name"
+      ]
+    }
+  ],
+  "birthDate": "1980-11-13"
+}
 ```
 {% endtab %}
 {% endtabs %}
