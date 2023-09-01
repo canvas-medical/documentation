@@ -11,7 +11,7 @@ sections:
         attributes:
           - name: id
             description: >-
-              The identifier of the patient
+              The identifier of the organization
             type: string
             required: true
           - name: resourceType
@@ -107,7 +107,7 @@ print(response.text)
 {% tab organization-read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Organization/_id \
+     --url https://fumage-example.canvasmedical.com/Organization/<id> \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```

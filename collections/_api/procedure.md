@@ -24,7 +24,7 @@ sections:
         attributes:
           - name: id
             description: >-
-              The identifier of the patient
+              The identifier of the procedure
             type: string
             required: true
           - name: status
@@ -91,7 +91,7 @@ print(response.text)
 {% tab procedure-read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/procedure/_id \
+     --url https://fumage-example.canvasmedical.com/procedure/<id> \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
