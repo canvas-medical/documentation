@@ -175,6 +175,14 @@ sections:
           - name: given
             type: string
             description: First Name
+          - name: birthdate
+            type: date
+            description: The patient's birthdate
+          - name: gender
+            type: string
+          - name: nickname
+            type: string
+            description: Preferred or alternate name
           - name: email
             type: string
             description: Patient email address
@@ -409,9 +417,9 @@ print(response.text)
         {
             "id": "6c54eb4a-8c54-4965-a729-ab9f3223b63d",
             "use": "home",
-            "type": "both",
+            "type": "physical",
             "line": [
-                "4247 Murry Street"
+                "123 Main St"
             ],
             "city": "Chesapeake",
             "state": "VA",
@@ -439,7 +447,8 @@ print(response.text)
             ],
             "relationship": [
                 {
-                    "text": "Spouse"
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
                 }
             ],
             "name": {
@@ -447,8 +456,7 @@ print(response.text)
             },
             "telecom": [
                 {
-                    "system": "email",
-                    "value": "test@me.com"
+                    "text": "Husband"
                 }
             ]
         },
@@ -460,8 +468,8 @@ print(response.text)
                     "valueBoolean": false
                 },
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": true
+                    "system": "email",
+                    "value": "kj@zahoo.com"
                 }
             ],
             "relationship": [

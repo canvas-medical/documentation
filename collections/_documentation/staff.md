@@ -1,5 +1,6 @@
 ---
 title: "Staff"
+layout: documentation
 ---
 
 #### Adding a New Staff Member
