@@ -170,7 +170,7 @@ curl --request GET \
 ```sh
 import requests
 
-url = "https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F5350cd20de8a470aa570a852859ac87e"
+url = "https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>"
 
 headers = {
     "accept": "application/json",
@@ -185,7 +185,7 @@ print(response.text)
 {% tab consent-search-request curl %}
 ```sh
 curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F5350cd20de8a470aa570a852859ac87e' \
+     --url 'https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```

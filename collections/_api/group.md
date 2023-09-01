@@ -469,7 +469,7 @@ null
 ```sh
 import requests
 
-url = "https://fumage-example.canvasmedical.com/Appointment/_id"
+url = "https://fumage-example.canvasmedical.com/Appointment/<id>"
 
 payload = {
   {

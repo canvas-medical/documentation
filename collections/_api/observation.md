@@ -275,6 +275,11 @@ curl --request GET \
             "relation": "first",
             "url": "/Observation?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
         }
+        ,
+        {
+            "relation": "last",
+            "url": "/Observation?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=850"
+        }
     ],
     "entry": [
         {
