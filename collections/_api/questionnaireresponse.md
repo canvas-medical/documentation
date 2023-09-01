@@ -1,229 +1,611 @@
 ---
-title: "QuestionnaireResponse"
+title: QuestionnaireResponse
+sections:
+  - type: section
+    blocks:
+      - type: apidoc
+        name: QuestionnaireResponse
+        article: "a"
+        description: >-
+          A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.
+        attributes:
+          - name: id
+            description: >-
+              The identifier of the questionnaire response
+            type: string
+            required: true
+          - name: resourceType
+            type: string
+            required: true
+          - name: questionnaire
+            type: string
+            required: true
+          - name: status
+            type: string
+            required: true
+          - name: subject
+            type: string
+            required: true
+          - name: authored
+            type: string
+            required: true
+          - name: author
+            type: string
+            required: true
+          - name: item
+            type: string
+            required: true
+          - name: extension
+            type: array
+            required: true
+        search_parameters:
+          - name: _id
+            type: string
+            description: A Canvas-issued unique identifier
+          - name: authored
+            type: string
+          - name: patient
+            type: string
+            description: The patient that is the subject of the questionnaire response
+          - name: questionnaire
+            type: string
+            description: The questionnaire that was used to generate the questionnaire response
+        endpoints: [read, search, create]
+        read:
+          responses: [200, 404]
+          example_request: questionnaire-response-read-request
+          example_response: questionnaire-response-read-response
+        search:
+          responses: [200, 400]
+          example_request: questionnaire-response-search-request
+          example_response: questionnaire-response-search-response
+        create:
+          responses: [201, 400]
+          example_request: questionnaire-response-create-request
+          example_response: questionnaire-response-create-response
 ---
-## QuestionnaireResponse Create
+<div id="questionnaire-response-read-request">
+{% tabs questionnaire-response-read-request %}
+{% tab questionnaire-response-read-request python %}
+```sh
+import requests
 
-### Getting the newly-created questionnaire response ID.
-Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the `Location:` header. You will use this for subsequent requests that reference this questionnaire response.
+url = "https://fumage-example.canvasmedical.com/QuestionnaireResponse/<id>"
 
-### QuestionnaireResponses in Canvas
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
 
-Upon successful creation of a Questionnaire Response, it will show up as a Data import note within the patient chart. It will be inserted into the timeline using the timestamp passed in `authored`. 
+response = requests.get(url, headers=headers)
 
-### Building a Questionnaire in Canvas
+print(response.text)
+```
+{% endtab %}
+{% tab questionnaire-response-read-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/QuestionnaireResponse/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-To learn how to build questionnaires in Canvas see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4403561447827-Creating-a-New-Questionnaire). The most important thing when using the Questionnaire Response Create endpoint is to ensure the questionnaire was built with unique codings. 
-
-### Attributes that are pulled into Canvas:
-
-### resourceType [REQUIRED]
-
-This should be hardcoded to `QuestionnaireResponse`
-[block:code]
+<div id="questionnaire-response-read-response">
+{% tabs questionnaire-response-read-response %}
+{% tab questionnaire-response-read-response 200 %}
+```json
 {
-  "codes": [
+    "resourceType": "QuestionnaireResponse",
+    "id": "9a884b0a-ed2c-448f-b186-56a7813f01d4",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
+            "valueString": "https://training.canvasmedical.com/permalinks/v1/SW50ZXJ2aWV3OjUxOjcwOA=="
+        }
+    ],
+    "questionnaire": "Questionnaire/e26d16dd-c54b-4909-a016-a508c73a3448",
+    "status": "completed",
+    "subject": {
+        "reference": "Patient/51af861606aa4fb1b2cf8f2716008267",
+        "type": "Patient"
+    },
+    "encounter": {
+        "reference": "Encounter/4759f784-e9d2-4ebb-b73f-968c435d620a",
+        "type": "Encounter"
+    },
+    "authored": "2021-09-16T17:15:00.709137+00:00",
+    "author": {
+        "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+        "type": "Practitioner"
+    },
+    "item": [
+        {
+            "linkId": "d9fc7bbe-ddca-4bf3-ae32-c85e2c95cd8e",
+            "text": "Feeling nervous, anxious or on edge?",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "404684003",
+                        "display": "Several days"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "d07f2e92-d6c1-469c-9d8a-9a3dfc0a00bf",
+            "text": "Not being able to control or stop worrying?",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "404684003",
+                        "display": "Several days"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "7e391e73-d4e5-496d-b3c7-611880aa3dc7",
+            "text": "Worrying too much about different things?",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "404684003",
+                        "display": "More than half the days"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "4dd15d5d-2b77-4f69-bd99-2d36e2b20267",
+            "text": "Trouble relaxing?",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "404684003",
+                        "display": "Several days"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "7b69f499-ed9e-4c02-b309-cebc1a56fc59",
+            "text": "Being so restless that it is hard to sit still?",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "404684003",
+                        "display": "Several days"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "55526753-4540-4320-9643-9e25ccba64d2",
+            "text": "Becoming easily annoyed or irritable?",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "404684003",
+                        "display": "Several days"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "4edd55c1-a80b-4a03-a52a-fd975248aebc",
+            "text": "Being afraid as if something awful might happen?",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "404684003",
+                        "display": "Several days"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "44848247-57a2-463a-a4a7-60b3e3a95463",
+            "text": "How difficult have these problems made it for you to do you work, take care of things at home or get along with other people?",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "404684003",
+                        "display": "Somewhat difficult"
+                    }
+                }
+            ]
+        }
+    ]
+}
+```
+{% endtab %}
+{% tab questionnaire-response-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
     {
-      "code": "\"resourceType\": \"QuestionnaireResponse\"",
-      "language": "text"
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Resource not found"
+      }
     }
   ]
 }
-[/block]
- ### questionnaire [REQUIRED]
+```
+{% endtab %}
+{% endtabs %}
+</div
 
-Canvas questionnaire resource that the responses are for, formatted like "Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129". You can obtain this id by using our [Questionnaire Search](ref:questionnaire-search) 
-[block:code]
+<div id="questionnaire-response-search-request">
+{% tabs questionnaire-response-search-request %}
+{% tab questionnaire-response-search-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/QuestionnaireResponse?questionnaire=Questionnaire/e26d16dd-c54b-4909-a016-a508c73a3448&authored=ge2021-09-16&authored=le2021-10-01"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% tab questionnaire-response-search-request curl %}
+```sh
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/QuestionnaireResponse?questionnaire=Questionnaire/e26d16dd-c54b-4909-a016-a508c73a3448&authored=ge2021-09-16&authored=le2021-10-01' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="questionnaire-response-search-response">
+{% tabs questionnaire-response-search-response %}
+{% tab questionnaire-response-search-response 200 %}
+```json
 {
-  "codes": [
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/QuestionnaireResponse?questionnaire=Questionnaire%2Fe26d16dd-c54b-4909-a016-a508c73a3448&authored=ge2021-09-16&authored=le2021-10-01&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/QuestionnaireResponse?questionnaire=Questionnaire%2Fe26d16dd-c54b-4909-a016-a508c73a3448&authored=ge2021-09-16&authored=le2021-10-01&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/QuestionnaireResponse?questionnaire=Questionnaire%2Fe26d16dd-c54b-4909-a016-a508c73a3448&authored=ge2021-09-16&authored=le2021-10-01&_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "QuestionnaireResponse",
+                "id": "9a884b0a-ed2c-448f-b186-56a7813f01d4",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
+                        "valueString": "https://training.canvasmedical.com/permalinks/v1/SW50ZXJ2aWV3OjUxOjcwOA=="
+                    }
+                ],
+                "questionnaire": "Questionnaire/e26d16dd-c54b-4909-a016-a508c73a3448",
+                "status": "completed",
+                "subject": {
+                    "reference": "Patient/51af861606aa4fb1b2cf8f2716008267",
+                    "type": "Patient"
+                },
+                "encounter": {
+                    "reference": "Encounter/4759f784-e9d2-4ebb-b73f-968c435d620a",
+                    "type": "Encounter"
+                },
+                "authored": "2021-09-16T17:15:00.709137+00:00",
+                "author": {
+                    "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                    "type": "Practitioner"
+                },
+                "item": [
+                    {
+                        "linkId": "d9fc7bbe-ddca-4bf3-ae32-c85e2c95cd8e",
+                        "text": "Feeling nervous, anxious or on edge?",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "404684003",
+                                    "display": "Several days"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "d07f2e92-d6c1-469c-9d8a-9a3dfc0a00bf",
+                        "text": "Not being able to control or stop worrying?",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "404684003",
+                                    "display": "Several days"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "7e391e73-d4e5-496d-b3c7-611880aa3dc7",
+                        "text": "Worrying too much about different things?",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "404684003",
+                                    "display": "More than half the days"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "4dd15d5d-2b77-4f69-bd99-2d36e2b20267",
+                        "text": "Trouble relaxing?",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "404684003",
+                                    "display": "Several days"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "7b69f499-ed9e-4c02-b309-cebc1a56fc59",
+                        "text": "Being so restless that it is hard to sit still?",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "404684003",
+                                    "display": "Several days"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "55526753-4540-4320-9643-9e25ccba64d2",
+                        "text": "Becoming easily annoyed or irritable?",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "404684003",
+                                    "display": "Several days"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "4edd55c1-a80b-4a03-a52a-fd975248aebc",
+                        "text": "Being afraid as if something awful might happen?",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "404684003",
+                                    "display": "Several days"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "44848247-57a2-463a-a4a7-60b3e3a95463",
+                        "text": "How difficult have these problems made it for you to do you work, take care of things at home or get along with other people?",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://snomed.info/sct",
+                                    "code": "404684003",
+                                    "display": "Somewhat difficult"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+{% endtab %}
+{% tab questionnaire-response-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
     {
-      "code": "\"questionnaire\": \"Questionnaire/7291013b-81c6-41b6-9212-6c96b8b44f94\"",
-      "language": "text"
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
-[/block]
-### subject [REQUIRED] 
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-Canvas patient resource that the responses are for
-[block:code]
-{
-  "codes": [
-    {
-      "code": "\"subject\": {\n\t\"reference\": \"Patient/a39cafb9d1b445be95a2e2548e12a787\"\n}",
-      "language": "text"
-    }
-  ]
+<div id="questionnaire-response-create-request">
+{% tabs questionnaire-response-create-request %}
+{% tab questionnaire-response-create-request python %}
+```sh
+import requests
+
+url = "https://fhir-example.canvasmedical.com/QuestionnaireResponse"
+
+payload = {
+    "resourceType": "QuestionnaireResponse",
+    "questionnaire": "Questionnaire/7291013b-81c6-41b6-9212-6c96b8b44f94",
+    "subject": { "reference": "Patient/a39cafb9d1b445be95a2e2548e12a787" },
+    "authored": "2022-03-19T14:54:12.194952+00:00",
+    "author": { "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e" },
+    "item": [
+        {
+            "linkId": "c79da8bd-d20e-4f56-909f-f3dabae7f64f",
+            "text": "This is question #1",
+            "answer": [{ "valueCoding": {
+                        "system": "http://schemas.training.canvasmedical.com/fhir/systems/internal",
+                        "code": "10101-1",
+                        "display": "Single select response #1"
+                    } }]
+        },
+        {
+            "linkId": "f25af10f-5d26-42a8-90a1-d86c2b363600",
+            "text": "This is question #2",
+            "answer": [{ "valueCoding": {
+                        "system": "http://schemas.training.canvasmedical.com/fhir/systems/internal",
+                        "code": "10102-1",
+                        "display": "Multi select response #1"
+                    } }, { "valueCoding": {
+                        "system": "http://schemas.training.canvasmedical.com/fhir/systems/internal",
+                        "code": "10102-2",
+                        "display": "Multi select response #2"
+                    } }]
+        },
+        {
+            "linkId": "24178e3c-c67c-4524-bcb1-522aef068795",
+            "text": "This is question #3",
+            "answer": [{ "valueString": "This is a free text response" }]
+        }
+    ]
 }
-[/block]
-### authored
-
-The UTC datetime string for when the questionnaire responses were provided, iso8601 format.
-If omitted from the body, the current timestamp at data ingestion will be used 
-[block:code]
-{
-  "codes": [
-    {
-      "code": "\"authored\": \"2022-03-19T14:54:12.194952+00:00\"",
-      "language": "text"
-    }
-  ]
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
 }
-[/block]
-### author
 
- This is a reference to the person that filled out the questionnaire. If this is not included, then the built in automation user, "Canvas Bot" will be used instead. 
+response = requests.post(url, json=payload, headers=headers)
 
-It could be a practitioner resource that recorded the questionnaire, formatted like "Practitioner/4150cd20de8a470aa570a852859ac87e".  
-[block:code]
+print(response.text)
+```
+{% endtab %}
+{% tab questionnaire-response-create-request curl %}
+```sh
+curl --request POST \
+     --url https://fhir-example.canvasmedical.com/QuestionnaireResponse \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
 {
-  "codes": [
-    {
-      "code": "\"author\": {\n\t\"reference\": \"Practitioner/fc87cbb2525f4c5eb50294f620c7a15e\"\n},",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-We also accept patient authored questionnaires, formatted like (matching the `subject` attribute):
-[block:code]
-{
-  "codes": [
-    {
-      "code": "\"author\": {\n\t\"reference\": \"Patient/a39cafb9d1b445be95a2e2548e12a787\"\n}",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-### item [REQUIRED]
-
-A list of one or more questions and how they were answered. If a question is omitted it will be left unanswered in Canvas. However, if it is a questionnaire tied to a scoring function, Canvas requires all questions to be answered in order to accurately score the questionnaire. 
-
-Perform a [Questionnaire Search](ref:questionnaire-search) in order to know each question's attributes to fill in below. 
-
- Each item object in the list should contain:
-   - **[Required]** `linkId` A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload.
-   - `text` Human readable text of the question.   Not stored but can be helpful to include for troubleshooting.
-   - **[Required]** `answer` A list of one or more answers to this question. 
-      - If this is for a question where the answer is a free-text field (i.e. Questionnaire item `type` = "text"), then the list will contain a single object containing a `valueString` field with the response text.
-[block:code]
-{
-  "codes": [
-    {
-      "code": "\"item\": [\n\t{\n  \t\"linkId\": \"24178e3c-c67c-4524-bcb1-522aef068795\",\n  \t\"text\": \"This is question #3\",\n  \t\"answer\": [\n  \t\t{\n  \t\t\t\"valueString\": \"This is a free text response\"\n  \t\t}\n  \t]\n  }\n ]",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-      - If this is for a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more objects containing:
-        -  **[Required]** `code` Value that can uniquely identify this answer within the associated `system`
-        -  **[Required]** `display` Text of answer that was selected
-        -  **[Required]** `system` Coding system where the `code` comes from
-
-Currently we only support specific system's in Canvas through our FHIR endpoints. Here is the mapping of system uri in FHIR to systems in Canvas
-[block:parameters]
-{
-  "data": {
-    "0-0": "http://loinc.org",
-    "1-0": "http://snomed.info/sct",
-    "2-0": "http://canvasmedical.com",
-    "3-0": "http://www.ama-assn.org/go/cpt",
-    "4-0": "http://hl7.org/fhir/sid/icd-10",
-    "0-1": "LOINC",
-    "1-1": "SNOMED",
-    "2-1": "CANVAS",
-    "3-1": "CPT",
-    "4-1": "ICD-10",
-    "5-0": "http://schemas.<instance_name>.canvasmedical.com/fhir/systems/internal",
-    "5-1": "INTERNAL",
-    "h-0": "FHIR System URI",
-    "h-1": "Canvas System (uploaded via google sheet)"
+  "resourceType": "QuestionnaireResponse",
+  "questionnaire": "Questionnaire/7291013b-81c6-41b6-9212-6c96b8b44f94",
+  "subject": {
+    "reference": "Patient/a39cafb9d1b445be95a2e2548e12a787"
   },
-  "cols": 2,
-  "rows": 6
-}
-[/block]
-Example of a single select answer:
-[block:code]
-{
-  "codes": [
-    {
-      "code": "    \"item\": [\n        {\n            \"linkId\": \"c79da8bd-d20e-4f56-909f-f3dabae7f64f\",\n            \"text\": \"This is question #1\",\n            \"answer\": [\n                {\n                  \"valueCoding\": {\n                    \"system\": \"http://schemas.training.canvasmedical.com/fhir/systems/internal\",\n                    \"code\": \"10101-1\",\n                    \"display\": \"Single select response #1\"\n                  }\n                }\n            ]\n        }\n   ]",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-Example of a multiple response allowed:
-[block:code]
-{
-  "codes": [
-    {
-      "code": "\"item\": [\n\t{\n    \"linkId\": \"f25af10f-5d26-42a8-90a1-d86c2b363600\",\n    \"text\": \"This is question #2\",\n    \"answer\": [\n      {\n        \"valueCoding\": {\n          \"system\": \"http://schemas.training.canvasmedical.com/fhir/systems/internal\",\n          \"code\": \"10102-1\",\n          \"display\": \"Multi select response #1\"\n      \t}\n      },\n      {\n        \"valueCoding\": {\n          \"system\": \"http://schemas.training.canvasmedical.com/fhir/systems/internal\",\n          \"code\": \"10102-2\",\n          \"display\": \"Multi select response #2\"\n        }\n      }              \n    ]\n  }\n]",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-### Validation
-[block:callout]
-{
-  "type": "warning",
-  "title": "Beware of ambiguous choices!",
-  "body": "If the questionnaire you are responding to contains a question with identical codings for different choices, we won't know which of the choices were made. In this case, we'll reject the request. To avoid this, make sure each question has a uniquely coded set of choices. You can re-use choice codings across questions, but not within them.\n\nYou will know this occurred when you see the message:\n`Question received a response option code: {coding['code']} that belongs to more than one option response`"
-}
-[/block]
-
-[block:callout]
-{
-  "type": "warning",
-  "title": "More Coding Validation",
-  "body": "The system is the ValueCoding answer needs to match the system that the question specified in the Questionnaire Search Response. If it does not you will see the message:\n`Question expects answer of code system {system} but {coding['code_system']} was given`\n\nIf a code is passed that does not exist for that question in Canvas, you will see the following message:\n`Question received an invalid response option code: {coding['code']}`"
-}
-[/block]
-
-[block:callout]
-{
-  "type": "warning",
-  "title": "Answer Validation",
-  "body": "For single or free text questions, if the length of `answer` is greater than one, you will see the message \n`Question of type {_type} is expecting at most one answer`\n\nFor free text questions, the answer object needs to include ValueString or you will see this message:\n`Question of type TXT expects a valueString answer`\n\nFor single or multi select questions, the answer object(s) need to include ValueCoding or you will see:\n`Question of type {_type} expects a valueCoding answer`"
-}
-[/block]
-
-## QuestionnaireResponse Read
-
-Answers for Questionnaire items with `type` = 'text' will be returned as `valueString` answers.  
-
-Answers for Questionnaire items with `type` = 'choice' will be returned as `valueCoding` answers. This could either be a single or multi select choice. See [QuestionnaireResponse Create](ref:questionnaireresponse-create)to understand the mappings of system's from Canvas to FHIR.
-
-## QuestionnaireResponse Search
-
-Answers for Questionnaire items with `type` = 'text' will be returned as `valueString` answers.  
-
-Answers for Questionnaire items with `type` = 'choice' will be returned as `valueCoding` answers. This could either be a single or multi select choice. See [QuestionnaireResponse Create](ref:questionnaireresponse-create)   to understand the mappings of system's from Canvas to FHIR. 
-
-### Authored Search Param
-
-We support multiple type of searching by date: 
-[block:parameters]
-{
-  "data": {
-    "0-0": "eq2021-09-01",
-    "0-1": "Search for QuestionnaireResponses anytime during this day",
-    "1-0": "ge2021-09-16",
-    "1-1": "Search for QuestionnaireResponses on or after this day",
-    "2-0": "gt2021-09-16",
-    "2-1": "Search for QuestionnaireResponses after this day",
-    "3-0": "le2021-10-01",
-    "3-1": "Search for QuestionnaireResponses on or before this day",
-    "4-0": "lt2021-10-01",
-    "4-1": "Search for QuestionaireResponses before this day"
+  "authored": "2022-03-19T14:54:12.194952+00:00",
+  "author": {
+    "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e"
   },
-  "cols": 2,
-  "rows": 5
+  "item": [
+    {
+      "linkId": "c79da8bd-d20e-4f56-909f-f3dabae7f64f",
+      "text": "This is question #1",
+      "answer": [
+        {
+          "valueCoding": {
+            "system": "http://schemas.training.canvasmedical.com/fhir/systems/internal",
+            "code": "10101-1",
+            "display": "Single select response #1"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "f25af10f-5d26-42a8-90a1-d86c2b363600",
+      "text": "This is question #2",
+      "answer": [
+        {
+          "valueCoding": {
+            "system": "http://schemas.training.canvasmedical.com/fhir/systems/internal",
+            "code": "10102-1",
+            "display": "Multi select response #1"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://schemas.training.canvasmedical.com/fhir/systems/internal",
+            "code": "10102-2",
+            "display": "Multi select response #2"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "24178e3c-c67c-4524-bcb1-522aef068795",
+      "text": "This is question #3",
+      "answer": [
+        {
+          "valueString": "This is a free text response"
+        }
+      ]
+    }
+  ]
 }
-[/block]
-### Creating a Response to a Questionnaire in Canvas
+'
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057544593-Command-Questionnaire) for how to fill out a questionnaire for a patient via the questionnaire command.
+<div id="questionnaire-response-create-response">
+{% tabs questionnaire-response-create-response %}
+{% tab questionnaire-response-create-response 201 %}
+```json
+null
+```
+{% endtab %}
+{% tab questionnaire-response-create-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
