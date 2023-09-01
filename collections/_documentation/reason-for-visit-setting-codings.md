@@ -14,7 +14,7 @@ To add a new structured reason for visit, click ![rfv-button](/assets/images/str
 
 <b>System:</b> This refers to the system that the code below belongs to. Canvas supports using the following existing systems, ICD10, CPT, SNOMED, and LOINC, or you can leverage a custom code by specifying INTERNAL as the system.
 
-<b>Code</b> This should be a unique code used to represent the reason for visit. 
+<b>Code:</b> This should be a unique code used to represent the reason for visit. 
 
 <b>Display:</b> This is what your end user will select when choosing a reason for visit when scheduling appointments, or using the Reason for Visit or Follow Up Commands. 
 

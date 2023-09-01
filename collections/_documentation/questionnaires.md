@@ -17,7 +17,8 @@ Questionnaires are created using a Google Sheet template that was shared with yo
 
 The "use case in charting" field within the template will determine which Command the template is associated with. 
 
-| **Command** | **Use Case** | **Use Cases & What is Different** |
+| Command | Use Case | Use Cases & What is Different |
+| ------- | -------- | ----------------------------- |
 | Questionnaire | QUES | Questionnaires can be used for many things including intake forms, social history questionnaires, screening questionnaires, and general charting templates. |
 | Review of Systems (ROS) | ROS | A toggle to the left of each system will allow you to skip system and hide them from your documentation |
 | Physical Exam (PE) | EXAM | A toggle to the left of each system will allow you to skip system and hide them from your documentation |

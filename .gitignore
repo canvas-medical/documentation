@@ -20,3 +20,9 @@ node_modules/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# System-generated files
+.DS_Store
+desktop.ini
+Thumbs.db
+Zone.Identifier

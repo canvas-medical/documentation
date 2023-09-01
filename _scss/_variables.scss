@@ -43,12 +43,11 @@ $mono-font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "
  * MEASUREMENTS
 **/
 
-// Font sizes calculated using Golden Ratio, per brand style guide
 $font-xs: 10px;
-$font-sm: 16.18px;
-$font-md: 26.17924px;
-$font-lg: 42.35801032px;
-$font-xl: 68.53526069776px;
+$font-sm: 16px;
+$font-md: 24px;
+$font-lg: 32px;
+$font-xl: 40px;
 
 // Breakpoints and containers
 $breakpoint-sm: 576px;
