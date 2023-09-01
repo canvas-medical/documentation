@@ -61,6 +61,11 @@ super user text
 {% endtabs %}
 
 
+### Cards
+
+![Questionnaires](/assets/images/config-ques.png){:width="23%"}&nbsp;&nbsp;&nbsp;&nbsp;![Search Results](/assets/images/guide-search.png){:width="23%"}&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 ## Adding Images
 
 

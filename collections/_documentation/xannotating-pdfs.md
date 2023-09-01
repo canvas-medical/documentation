@@ -1,5 +1,6 @@
 ---
 title: "Annotating PDFs"
+layout: documentation
 ---
 
 Annotations allow users to mark up and comment on PDFs without altering the original authors content. Through our Apryse integration Canvas supports the following editing capabilities:
