@@ -11,7 +11,7 @@ sections:
         attributes:
           - name: id
             description: >-
-              The identifier of the patient
+              The identifier of the appointment
             type: string
             required: true
           - name: resourceType
@@ -122,6 +122,14 @@ sections:
 ---
 <div id="appointment-read-request">
 {% tabs appointment-read-request %}
+{% tab appointment-read-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/Appointment/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
 {% tab appointment-read-request python %}
 ```sh
 import requests
@@ -136,14 +144,6 @@ headers = {
 response = requests.get(url, headers=headers)
 
 print(response.text)
-```
-{% endtab %}
-{% tab appointment-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Appointment/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
 ```
 {% endtab %}
 {% endtabs %}
@@ -231,6 +231,14 @@ curl --request GET \
 
 <div id="appointment-search-request">
 {% tabs appointment-search-request %}
+{% tab appointment-search-request curl %}
+```sh
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/Appointment?patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
 {% tab appointment-search-request python %}
 ```sh
 import requests
@@ -245,14 +253,6 @@ headers = {
 response = requests.get(url, headers=headers)
 
 print(response.text)
-```
-{% endtab %}
-{% tab appointment-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Appointment?patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
 ```
 {% endtab %}
 {% endtabs %}
@@ -419,6 +419,104 @@ curl --request GET \
 
 <div id="appointment-create-request">
 {% tabs appointment-create-request %}
+{% tab appointment-create-request curl %}
+```sh
+curl --request POST \
+     --url https://fumage-example.canvasmedical.com/Appointment \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+  "resourceType": "Appointment",
+  "reasonCode": "[{       \"coding\": [{         \"system\": \"INTERNAL\"         \"code\": \"9903\",         \"display\": \"Urgent Visit\"       }],         \"text\": \"Weekly check-in\"     }]",
+  "description": "Weekly check-in.",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/5350cd20de8a470aa570a852859ac87e"
+      },
+      "status": "accepted"
+    },
+    {
+      "actor": {
+        "reference": "Practitioner/dbf184ad28a1408bbed184fc8fd2b029"
+      },
+      "status": "accepted"
+    }
+  ],
+  "appointmentType": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "448337001",
+        "display": "Telemedicine consultation with patient (procedure)"
+      }
+    ]
+  },
+  "start": "2022-03-20T13:30:00.000Z",
+  "end": "2022-03-20T14:00:00.000Z",
+  "supportingInformation": [
+    {
+      "reference": "Location/1"
+    },
+    {
+      "reference": "#appointment-meeting-endpoint",
+      "type": "Endpoint"
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "Endpoint",
+      "id": "appointment-meeting-endpoint",
+      "status": "active",
+      "connectionType": {
+        "code": "https"
+      },
+      "payloadType": [
+        {
+          "coding": [
+            {
+              "code": "video-call"
+            }
+          ]
+        }
+      ],
+      "address": "https://url-for-video-chat.example.com?meetingi=abc123"
+    }
+  ],
+  "status": "proposed"
+}
+'
+{
+  "resourceType": "Patient",
+  "name": [
+    {
+      "use": "official",
+      "family": "Mark",
+      "given": [
+        "Isabella",
+        "Robel"
+      ],
+      "prefix": "Mrs.",
+      "suffix": "Jr."
+    },
+    {
+      "use": "nickname",
+      "given": [
+        "Izzy"
+      ]
+    },
+    {
+      "use": "maiden",
+      "family": "Smith"
+    }
+  ],
+  "birthDate": "1980-11-13"
+}
+'
+```
+{% endtab %}
 {% tab appointment-create-request python %}
 ```sh
 import requests
@@ -523,104 +621,6 @@ payload = {
 response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
-```
-{% endtab %}
-{% tab appointment-create-request curl %}
-```sh
-curl --request POST \
-     --url https://fumage-example.canvasmedical.com/Appointment \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json' \
-     --header 'content-type: application/json' \
-     --data '
-{
-  "resourceType": "Appointment",
-  "reasonCode": "[{       \"coding\": [{         \"system\": \"INTERNAL\"         \"code\": \"9903\",         \"display\": \"Urgent Visit\"       }],         \"text\": \"Weekly check-in\"     }]",
-  "description": "Weekly check-in.",
-  "participant": [
-    {
-      "actor": {
-        "reference": "Patient/5350cd20de8a470aa570a852859ac87e"
-      },
-      "status": "accepted"
-    },
-    {
-      "actor": {
-        "reference": "Practitioner/dbf184ad28a1408bbed184fc8fd2b029"
-      },
-      "status": "accepted"
-    }
-  ],
-  "appointmentType": {
-    "coding": [
-      {
-        "system": "http://snomed.info/sct",
-        "code": "448337001",
-        "display": "Telemedicine consultation with patient (procedure)"
-      }
-    ]
-  },
-  "start": "2022-03-20T13:30:00.000Z",
-  "end": "2022-03-20T14:00:00.000Z",
-  "supportingInformation": [
-    {
-      "reference": "Location/1"
-    },
-    {
-      "reference": "#appointment-meeting-endpoint",
-      "type": "Endpoint"
-    }
-  ],
-  "contained": [
-    {
-      "resourceType": "Endpoint",
-      "id": "appointment-meeting-endpoint",
-      "status": "active",
-      "connectionType": {
-        "code": "https"
-      },
-      "payloadType": [
-        {
-          "coding": [
-            {
-              "code": "video-call"
-            }
-          ]
-        }
-      ],
-      "address": "https://url-for-video-chat.example.com?meetingi=abc123"
-    }
-  ],
-  "status": "proposed"
-}
-'
-{
-  "resourceType": "Patient",
-  "name": [
-    {
-      "use": "official",
-      "family": "Mark",
-      "given": [
-        "Isabella",
-        "Robel"
-      ],
-      "prefix": "Mrs.",
-      "suffix": "Jr."
-    },
-    {
-      "use": "nickname",
-      "given": [
-        "Izzy"
-      ]
-    },
-    {
-      "use": "maiden",
-      "family": "Smith"
-    }
-  ],
-  "birthDate": "1980-11-13"
-}
-'
 ```
 {% endtab %}
 {% endtabs %}

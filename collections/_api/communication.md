@@ -11,7 +11,7 @@ sections:
         attributes:
           - name: id
             description: >-
-              The identifier of the patient
+              The identifier of the communication
             type: string
             required: true
           - name: resourceType
@@ -54,6 +54,14 @@ sections:
 ---
 <div id="communication-search-request">
 {% tabs communication-search-request %}
+{% tab communication-search-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/Communication<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
 {% tab communication-search-request python %}
 ```sh
 import requests
@@ -68,14 +76,6 @@ headers = {
 response = requests.get(url, headers=headers)
 
 print(response.text)
-```
-{% endtab %}
-{% tab communication-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Communication<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
 ```
 {% endtab %}
 {% endtabs %}
@@ -154,31 +154,6 @@ curl --request GET \
 
 <div id="communication-create-request">
 {% tabs communication-create-request %}
-{% tab communication-create-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Communication"
-
-payload = {
-    "resourceType": "Communication",
-    "sent": "2022-04-29T13:30:00.000Z",
-    "received": "2022-04-29T13:30:00.000Z",
-    "recipient": [{ "reference": "Patient/5350cd20de8a470aa570a852859ac87e" }],
-    "sender": "{             \"reference\": \"Practitioner/5eede137ecfe4124b8b773040e33be14\"         },",
-    "payload": [{ "content": "Upcoming appointment hi" }]
-}
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>",
-    "content-type": "application/json"
-}
-
-response = requests.post(url, json=payload, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
 {% tab communication-create-request curl %}
 ```sh
 curl --request POST \
@@ -204,6 +179,31 @@ curl --request POST \
   ]
 }
 '
+```
+{% endtab %}
+{% tab communication-create-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Communication"
+
+payload = {
+    "resourceType": "Communication",
+    "sent": "2022-04-29T13:30:00.000Z",
+    "received": "2022-04-29T13:30:00.000Z",
+    "recipient": [{ "reference": "Patient/5350cd20de8a470aa570a852859ac87e" }],
+    "sender": "{             \"reference\": \"Practitioner/5eede137ecfe4124b8b773040e33be14\"         },",
+    "payload": [{ "content": "Upcoming appointment hi" }]
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.text)
 ```
 {% endtab %}
 {% endtabs %}
