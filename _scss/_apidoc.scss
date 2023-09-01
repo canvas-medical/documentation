@@ -3,6 +3,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-column-gap: $container-padding;
+    padding: 0 $container-padding; 
   }
 
   &__info {
