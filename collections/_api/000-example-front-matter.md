@@ -9,7 +9,7 @@ sections:
         description: >-
           At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
         attributes:
-          - name: _id
+          - name: id
             description: >-
               The identifier of the patient
             type: string
@@ -94,15 +94,21 @@ sections:
         example_payload: example-payload-code
         endpoints: [read, search, create, update]
         read:
-          responses: [200, 400]
-          example_response: example-payload-code
+          responses: [200, 404]
+          example_request: patient-read-request
+          example_response: patient-read-response
         search:
           responses: [200, 400]
-          example_response: example-search-response
+          example_request: patient-search-request
+          example_response: patient-search-response
         create:
-          example_request: example-create-request
+          responses: [201, 400]
+          example_request: patient-create-request
+          example_response: patient-create-response
         update:
-          example_request: example-update-request
+          responses: [200, 400]
+          example_request: patient-update-request
+          example_response: patient-update-response
 ---
 <div id="example-payload-code">
 {% tabs payload %}
