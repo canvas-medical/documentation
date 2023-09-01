@@ -11,7 +11,7 @@ sections:
         attributes:
           - name: id
             description: >-
-              The identifier of the patient
+              The identifier of the appointment
             type: string
             required: true
           - name: resourceType
