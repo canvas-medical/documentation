@@ -1,7 +1,7 @@
 .apidoc {
   &__gridrow {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 0.5fr 0.5fr;
     grid-column-gap: $container-padding;
     padding: 0 $container-padding; 
   }
