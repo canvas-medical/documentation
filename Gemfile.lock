@@ -3,6 +3,12 @@ GEM
   specs:
     addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
+    algolia_html_extractor (2.6.4)
+      json (~> 2.0)
+      nokogiri (~> 1.10)
+    algoliasearch (1.27.5)
+      httpclient (~> 2.8, >= 2.8.3)
+      json (>= 1.5.1)
     colorator (1.1.0)
     concurrent-ruby (1.2.2)
     css_press (0.3.2)
@@ -15,6 +21,7 @@ GEM
     eventmachine (1.2.7)
     execjs (2.8.1)
     ffi (1.15.5)
+    filesize (0.2.0)
     forwardable-extended (2.6.0)
     html_press (0.8.2)
       htmlentities
@@ -22,6 +29,7 @@ GEM
       multi_js (>= 0.1.0)
     htmlentities (4.3.4)
     http_parser.rb (0.8.0)
+    httpclient (2.8.3)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     jekyll (4.2.1)
@@ -39,6 +47,15 @@ GEM
       rouge (~> 3.0)
       safe_yaml (~> 1.0)
       terminal-table (~> 2.0)
+    jekyll-algolia (1.7.1)
+      algolia_html_extractor (~> 2.6)
+      algoliasearch (~> 1.26)
+      filesize (~> 0.1)
+      jekyll (>= 3.6, < 5.0)
+      json (~> 2.0)
+      nokogiri (~> 1.6)
+      progressbar (~> 1.9)
+      verbal_expressions (~> 0.1.5)
     jekyll-feed (0.17.0)
       jekyll (>= 3.7, < 5.0)
     jekyll-menus (0.6.1)
@@ -67,6 +84,8 @@ GEM
       css_press
     multi_js (0.1.0)
       uglifier (~> 2)
+    nokogiri (1.15.4-x86_64-linux)
+      racc (~> 1.4)
     octopress-hooks (2.6.2)
       jekyll (>= 2.0)
     octopress-minify-html (1.3.1)
@@ -75,7 +94,9 @@ GEM
       octopress-hooks
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
+    progressbar (1.13.0)
     public_suffix (5.0.3)
+    racc (1.7.1)
     rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
@@ -90,13 +111,15 @@ GEM
       execjs (>= 0.3.0)
       json (>= 1.8.0)
     unicode-display_width (1.8.0)
+    verbal_expressions (0.1.5)
     webrick (1.8.1)
 
 PLATFORMS
-  x86_64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
   jekyll (= 4.2.1)
+  jekyll-algolia
   jekyll-feed
   jekyll-menus
   jekyll-seo-tag
@@ -107,4 +130,4 @@ DEPENDENCIES
   webrick
 
 BUNDLED WITH
-   2.3.26
+   2.4.12

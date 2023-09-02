@@ -1,6 +1,8 @@
 // Import css
 import './index.scss';
 // Import js
+import '../_js/apikeys';
+import '../_js/algolia';
 import '../_js/anchorlist';
 import '../_js/attributetoggle';
 import '../_js/filterdate';
