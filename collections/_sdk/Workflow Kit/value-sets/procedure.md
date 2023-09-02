@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:08:25.053Z"
 ---
 <a id="value_set.v2021.procedure"></a>
 
-# procedure
+## procedure
 
 <a id="value_set.v2021.procedure.BmiRatio"></a>
 
-## BmiRatio
+### BmiRatio
 **value_set.v2021.procedure.BmiRatio**
 
 ```python
@@ -28,7 +28,7 @@ class BmiRatio(ValueSet)
 
 <a id="value_set.v2021.procedure.CabgPciProcedure"></a>
 
-## CabgPciProcedure
+### CabgPciProcedure
 **value_set.v2021.procedure.CabgPciProcedure**
 
 ```python
@@ -45,7 +45,7 @@ class CabgPciProcedure(ValueSet)
 
 <a id="value_set.v2021.procedure.CabgSurgeries"></a>
 
-## CabgSurgeries
+### CabgSurgeries
 **value_set.v2021.procedure.CabgSurgeries**
 
 ```python
@@ -62,7 +62,7 @@ class CabgSurgeries(ValueSet)
 
 <a id="value_set.v2021.procedure.CardiacSurgery"></a>
 
-## CardiacSurgery
+### CardiacSurgery
 **value_set.v2021.procedure.CardiacSurgery**
 
 ```python
@@ -79,7 +79,7 @@ class CardiacSurgery(ValueSet)
 
 <a id="value_set.v2021.procedure.CarotidIntervention"></a>
 
-## CarotidIntervention
+### CarotidIntervention
 **value_set.v2021.procedure.CarotidIntervention**
 
 ```python
@@ -96,7 +96,7 @@ class CarotidIntervention(ValueSet)
 
 <a id="value_set.v2021.procedure.CataractSurgery"></a>
 
-## CataractSurgery
+### CataractSurgery
 **value_set.v2021.procedure.CataractSurgery**
 
 ```python
@@ -113,7 +113,7 @@ class CataractSurgery(ValueSet)
 
 <a id="value_set.v2021.procedure.ChemotherapyAdministration"></a>
 
-## ChemotherapyAdministration
+### ChemotherapyAdministration
 **value_set.v2021.procedure.ChemotherapyAdministration**
 
 ```python
@@ -130,7 +130,7 @@ class ChemotherapyAdministration(ValueSet)
 
 <a id="value_set.v2021.procedure.CognitiveAssessment"></a>
 
-## CognitiveAssessment
+### CognitiveAssessment
 **value_set.v2021.procedure.CognitiveAssessment**
 
 ```python
@@ -147,7 +147,7 @@ class CognitiveAssessment(ValueSet)
 
 <a id="value_set.v2021.procedure.CounselingForNutrition"></a>
 
-## CounselingForNutrition
+### CounselingForNutrition
 **value_set.v2021.procedure.CounselingForNutrition**
 
 ```python
@@ -164,7 +164,7 @@ class CounselingForNutrition(ValueSet)
 
 <a id="value_set.v2021.procedure.CounselingForPhysicalActivity"></a>
 
-## CounselingForPhysicalActivity
+### CounselingForPhysicalActivity
 **value_set.v2021.procedure.CounselingForPhysicalActivity**
 
 ```python
@@ -181,7 +181,7 @@ class CounselingForPhysicalActivity(ValueSet)
 
 <a id="value_set.v2021.procedure.CtColonography"></a>
 
-## CtColonography
+### CtColonography
 **value_set.v2021.procedure.CtColonography**
 
 ```python
@@ -198,7 +198,7 @@ class CtColonography(ValueSet)
 
 <a id="value_set.v2021.procedure.DialysisEducation"></a>
 
-## DialysisEducation
+### DialysisEducation
 **value_set.v2021.procedure.DialysisEducation**
 
 ```python
@@ -215,7 +215,7 @@ class DialysisEducation(ValueSet)
 
 <a id="value_set.v2021.procedure.DialysisServices"></a>
 
-## DialysisServices
+### DialysisServices
 **value_set.v2021.procedure.DialysisServices**
 
 ```python
@@ -232,7 +232,7 @@ class DialysisServices(ValueSet)
 
 <a id="value_set.v2021.procedure.DietaryRecommendations"></a>
 
-## DietaryRecommendations
+### DietaryRecommendations
 **value_set.v2021.procedure.DietaryRecommendations**
 
 ```python
@@ -249,7 +249,7 @@ class DietaryRecommendations(ValueSet)
 
 <a id="value_set.v2021.procedure.FollowUpForAboveNormalBmi"></a>
 
-## FollowUpForAboveNormalBmi
+### FollowUpForAboveNormalBmi
 **value_set.v2021.procedure.FollowUpForAboveNormalBmi**
 
 ```python
@@ -266,7 +266,7 @@ class FollowUpForAboveNormalBmi(ValueSet)
 
 <a id="value_set.v2021.procedure.FollowUpForAdolescentDepression"></a>
 
-## FollowUpForAdolescentDepression
+### FollowUpForAdolescentDepression
 **value_set.v2021.procedure.FollowUpForAdolescentDepression**
 
 ```python
@@ -283,7 +283,7 @@ class FollowUpForAdolescentDepression(ValueSet)
 
 <a id="value_set.v2021.procedure.FollowUpForAdultDepression"></a>
 
-## FollowUpForAdultDepression
+### FollowUpForAdultDepression
 **value_set.v2021.procedure.FollowUpForAdultDepression**
 
 ```python
@@ -300,7 +300,7 @@ class FollowUpForAdultDepression(ValueSet)
 
 <a id="value_set.v2021.procedure.FollowUpForBelowNormalBmi"></a>
 
-## FollowUpForBelowNormalBmi
+### FollowUpForBelowNormalBmi
 **value_set.v2021.procedure.FollowUpForBelowNormalBmi**
 
 ```python
@@ -317,7 +317,7 @@ class FollowUpForBelowNormalBmi(ValueSet)
 
 <a id="value_set.v2021.procedure.Hemodialysis"></a>
 
-## Hemodialysis
+### Hemodialysis
 **value_set.v2021.procedure.Hemodialysis**
 
 ```python
@@ -334,7 +334,7 @@ class Hemodialysis(ValueSet)
 
 <a id="value_set.v2021.procedure.HospiceCareAmbulatory"></a>
 
-## HospiceCareAmbulatory
+### HospiceCareAmbulatory
 **value_set.v2021.procedure.HospiceCareAmbulatory**
 
 ```python
@@ -351,7 +351,7 @@ class HospiceCareAmbulatory(ValueSet)
 
 <a id="value_set.v2021.procedure.HospiceCareAmbulatory_1584"></a>
 
-## HospiceCareAmbulatory\_1584
+### HospiceCareAmbulatory\_1584
 **value_set.v2021.procedure.HospiceCareAmbulatory_1584**
 
 ```python
@@ -368,7 +368,7 @@ class HospiceCareAmbulatory_1584(ValueSet)
 
 <a id="value_set.v2021.procedure.HospitalServicesForUrologyCare"></a>
 
-## HospitalServicesForUrologyCare
+### HospitalServicesForUrologyCare
 **value_set.v2021.procedure.HospitalServicesForUrologyCare**
 
 ```python
@@ -385,7 +385,7 @@ class HospitalServicesForUrologyCare(ValueSet)
 
 <a id="value_set.v2021.procedure.InfluenzaVaccination"></a>
 
-## InfluenzaVaccination
+### InfluenzaVaccination
 **value_set.v2021.procedure.InfluenzaVaccination**
 
 ```python
@@ -402,7 +402,7 @@ class InfluenzaVaccination(ValueSet)
 
 <a id="value_set.v2021.procedure.KidneyTransplant"></a>
 
-## KidneyTransplant
+### KidneyTransplant
 **value_set.v2021.procedure.KidneyTransplant**
 
 ```python
@@ -419,7 +419,7 @@ class KidneyTransplant(ValueSet)
 
 <a id="value_set.v2021.procedure.LaboratoryTestsForHypertension"></a>
 
-## LaboratoryTestsForHypertension
+### LaboratoryTestsForHypertension
 **value_set.v2021.procedure.LaboratoryTestsForHypertension**
 
 ```python
@@ -436,7 +436,7 @@ class LaboratoryTestsForHypertension(ValueSet)
 
 <a id="value_set.v2021.procedure.LifestyleRecommendation"></a>
 
-## LifestyleRecommendation
+### LifestyleRecommendation
 **value_set.v2021.procedure.LifestyleRecommendation**
 
 ```python
@@ -453,7 +453,7 @@ class LifestyleRecommendation(ValueSet)
 
 <a id="value_set.v2021.procedure.OtherServicesRelatedToDialysis"></a>
 
-## OtherServicesRelatedToDialysis
+### OtherServicesRelatedToDialysis
 **value_set.v2021.procedure.OtherServicesRelatedToDialysis**
 
 ```python
@@ -470,7 +470,7 @@ class OtherServicesRelatedToDialysis(ValueSet)
 
 <a id="value_set.v2021.procedure.PalliativeOrHospiceCare"></a>
 
-## PalliativeOrHospiceCare
+### PalliativeOrHospiceCare
 **value_set.v2021.procedure.PalliativeOrHospiceCare**
 
 ```python
@@ -487,7 +487,7 @@ class PalliativeOrHospiceCare(ValueSet)
 
 <a id="value_set.v2021.procedure.PeritonealDialysis"></a>
 
-## PeritonealDialysis
+### PeritonealDialysis
 **value_set.v2021.procedure.PeritonealDialysis**
 
 ```python
@@ -504,7 +504,7 @@ class PeritonealDialysis(ValueSet)
 
 <a id="value_set.v2021.procedure.ProstateCancerTreatment"></a>
 
-## ProstateCancerTreatment
+### ProstateCancerTreatment
 **value_set.v2021.procedure.ProstateCancerTreatment**
 
 ```python
@@ -521,7 +521,7 @@ class ProstateCancerTreatment(ValueSet)
 
 <a id="value_set.v2021.procedure.RadiationTreatmentManagement"></a>
 
-## RadiationTreatmentManagement
+### RadiationTreatmentManagement
 **value_set.v2021.procedure.RadiationTreatmentManagement**
 
 ```python
@@ -538,7 +538,7 @@ class RadiationTreatmentManagement(ValueSet)
 
 <a id="value_set.v2021.procedure.RecommendationToIncreasePhysicalActivity"></a>
 
-## RecommendationToIncreasePhysicalActivity
+### RecommendationToIncreasePhysicalActivity
 **value_set.v2021.procedure.RecommendationToIncreasePhysicalActivity**
 
 ```python
@@ -555,7 +555,7 @@ class RecommendationToIncreasePhysicalActivity(ValueSet)
 
 <a id="value_set.v2021.procedure.Referral"></a>
 
-## Referral
+### Referral
 **value_set.v2021.procedure.Referral**
 
 ```python
@@ -572,7 +572,7 @@ class Referral(ValueSet)
 
 <a id="value_set.v2021.procedure.ReferralForAdolescentDepression"></a>
 
-## ReferralForAdolescentDepression
+### ReferralForAdolescentDepression
 **value_set.v2021.procedure.ReferralForAdolescentDepression**
 
 ```python
@@ -589,7 +589,7 @@ class ReferralForAdolescentDepression(ValueSet)
 
 <a id="value_set.v2021.procedure.ReferralForAdultDepression"></a>
 
-## ReferralForAdultDepression
+### ReferralForAdultDepression
 **value_set.v2021.procedure.ReferralForAdultDepression**
 
 ```python
@@ -606,7 +606,7 @@ class ReferralForAdultDepression(ValueSet)
 
 <a id="value_set.v2021.procedure.ReferralOrCounselingForAlcoholConsumption"></a>
 
-## ReferralOrCounselingForAlcoholConsumption
+### ReferralOrCounselingForAlcoholConsumption
 **value_set.v2021.procedure.ReferralOrCounselingForAlcoholConsumption**
 
 ```python
@@ -623,7 +623,7 @@ class ReferralOrCounselingForAlcoholConsumption(ValueSet)
 
 <a id="value_set.v2021.procedure.ReferralToPrimaryCareOrAlternateProvider"></a>
 
-## ReferralToPrimaryCareOrAlternateProvider
+### ReferralToPrimaryCareOrAlternateProvider
 **value_set.v2021.procedure.ReferralToPrimaryCareOrAlternateProvider**
 
 ```python
@@ -640,7 +640,7 @@ class ReferralToPrimaryCareOrAlternateProvider(ValueSet)
 
 <a id="value_set.v2021.procedure.ReferralsWhereWeightAssessmentMayOccur"></a>
 
-## ReferralsWhereWeightAssessmentMayOccur
+### ReferralsWhereWeightAssessmentMayOccur
 **value_set.v2021.procedure.ReferralsWhereWeightAssessmentMayOccur**
 
 ```python
@@ -657,7 +657,7 @@ class ReferralsWhereWeightAssessmentMayOccur(ValueSet)
 
 <a id="value_set.v2021.procedure.SalvageTherapy"></a>
 
-## SalvageTherapy
+### SalvageTherapy
 **value_set.v2021.procedure.SalvageTherapy**
 
 ```python
@@ -674,7 +674,7 @@ class SalvageTherapy(ValueSet)
 
 <a id="value_set.v2021.procedure.TobaccoUseCessationCounseling"></a>
 
-## TobaccoUseCessationCounseling
+### TobaccoUseCessationCounseling
 **value_set.v2021.procedure.TobaccoUseCessationCounseling**
 
 ```python
@@ -691,7 +691,7 @@ class TobaccoUseCessationCounseling(ValueSet)
 
 <a id="value_set.v2021.procedure.WeightReductionRecommended"></a>
 
-## WeightReductionRecommended
+### WeightReductionRecommended
 **value_set.v2021.procedure.WeightReductionRecommended**
 
 ```python

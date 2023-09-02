@@ -1,7 +1,7 @@
 ---
-title: "Create or Update Canvas Resources from a Protocol"
+title: "Create or Update Resources from a Protocol"
 ---
-The Canvas SDK allows the ability to create or update specific resources in Canvas. Instead of posting a network request to your Canvas instance's API endpoint, there's a shortcut where you can ask your protocol to do it for you when it computes! 
+The Workflow Kit allows the ability to create or update specific resources in Canvas. Instead of posting a network request to your Canvas instance's API endpoint, there's a shortcut where you can ask your protocol to do it for you when it computes! 
 
 Within the `compute_results` function you can call the method `self.set_updates([payload])` which accepts a single parameter -  a list of dictionaries that conform to a specific schema, where each dictionary is a resource creation or update. Every time the protocol is computed, these updates will be saved directly to your instance's database. 
 
@@ -17,16 +17,21 @@ To add or remove a patient from a Group in Canvas, we have made two helper funct
     - Creates a message that removes a patient from a patient group if they are currently in the group.
 
 Here is an oversimplified example of how to use these in a protocol:
-[block:code]
-{
-  "codes": [
-    {
-      "code": "from canvas_workflow_kit.internal.integration_messages import (\n    ensure_patient_in_group,\n    ensure_patient_not_in_group\n)\nfrom canvas_workflow_kit.protocol import ClinicalQualityMeasure    \n\nclass XYZPatientGroupUpdate(ClinicalQualityMeasure):\n  \n  patient_key = self.patient.patient['key']\n  # replace with the uuid for your patient group\n  patient_group_uuid = '00000000-0000-0000-0000-000000000000'\n  \n  self.set_updates([ensure_patient_in_group(patient_key, patient_group_uuid)])",
-      "language": "python"
-    }
-  ]
-}
-[/block]
+```python
+from canvas_workflow_kit.internal.integration_messages import (
+    ensure_patient_in_group,
+    ensure_patient_not_in_group
+)
+from canvas_workflow_kit.protocol import ClinicalQualityMeasure    
+
+class XYZPatientGroupUpdate(ClinicalQualityMeasure):
+  
+  patient_key = self.patient.patient['key']
+  # replace with the uuid for your patient group
+  patient_group_uuid = '00000000-0000-0000-0000-000000000000'
+  
+  self.set_updates([ensure_patient_in_group(patient_key, patient_group_uuid)])
+```
 ## Task Create 
 
 To create a Task associated with a patient in a Canvas protocol, we made a helper function called **create_task_payload** and it will take the following arguments:

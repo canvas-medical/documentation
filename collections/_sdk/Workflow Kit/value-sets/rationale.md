@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:08:50.288Z"
 ---
 <a id="value_set.v2021.rationale"></a>
 
-# rationale
+## rationale
 
 <a id="value_set.v2021.rationale.MedicalReason"></a>
 
-## MedicalReason
+### MedicalReason
 **value_set.v2021.rationale.MedicalReason**
 
 ```python
@@ -28,7 +28,7 @@ class MedicalReason(ValueSet)
 
 <a id="value_set.v2021.rationale.PatientDeclined"></a>
 
-## PatientDeclined
+### PatientDeclined
 **value_set.v2021.rationale.PatientDeclined**
 
 ```python
@@ -45,7 +45,7 @@ class PatientDeclined(ValueSet)
 
 <a id="value_set.v2021.rationale.PatientDeclined_1582"></a>
 
-## PatientDeclined\_1582
+### PatientDeclined\_1582
 **value_set.v2021.rationale.PatientDeclined_1582**
 
 ```python
@@ -62,7 +62,7 @@ class PatientDeclined_1582(ValueSet)
 
 <a id="value_set.v2021.rationale.PatientReason"></a>
 
-## PatientReason
+### PatientReason
 **value_set.v2021.rationale.PatientReason**
 
 ```python
@@ -79,7 +79,7 @@ class PatientReason(ValueSet)
 
 <a id="value_set.v2021.rationale.SystemReason"></a>
 
-## SystemReason
+### SystemReason
 **value_set.v2021.rationale.SystemReason**
 
 ```python

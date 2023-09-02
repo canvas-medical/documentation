@@ -364,19 +364,24 @@ guides_ongoing-interaction-modes:
 
 sdk:
  - title: "SDK Overview"
-   url: /sdk
- - title: "Canvas SDK"
-   identifier: sdk_canvas_core      
+   url: /sdk  
  - title: "Workflow Kit"
    identifier: sdk_workflow_kit 
 sdk_workflow_kit:
  - title: "Quickstart" 
    url: /sdk/sdk-quickstart/
- - title: "Necessary Data and Methods" 
- - title: "Interventions" 
-   identifier: sdk_workflow_kit_interventions
+ - title: "Data and Methods" 
+   identifier: sdk_workflow_kit_data_methods
+ - title: "Outputs" 
+   identifier: sdk_workflow_kit_outputs
+ - title: "Canvas CLI Additional Commands" 
+   url: /sdk/canvas-cli
+ - title: "Protocol Logging Tool" 
+   url: /sdk/protocol-logging-tool
+ - title: "Value Sets" 
+   identifier: sdk_workflow_kit_value_sets
 
-sdk_workflow_kit_interventions:
+sdk_workflow_kit_outputs:
  - title: "Recommendation Types"
    url: /sdk/recommendation-types
  - title: "Banner Alerts"
@@ -387,5 +392,55 @@ sdk_workflow_kit_interventions:
    url: /sdk/notification-protocol
  - title: "Making FHIR Requests"
    url: /sdk/making-fhir-requests
+
+sdk_workflow_kit_data_methods:
+ - title: "Change Types"
+   url: /sdk/change-types
+ - title: "Patient Recordsets"
+   url: /sdk/patient-recordsets
+ - title: "Settings/Secret Store"
+   url: /sdk/secret-store
+ - title: "Sandboxing and Allowed Imports"
+   url: /sdk/sandboxing-and-allowed-imports
+ - title: "Field Changes"
+   url: /sdk/field-changes
+
+sdk_workflow_kit_value_sets:
+ - title: "Allergy"
+   url: /sdk/allergy
+ - title: "Assessment"
+   url: /sdk/assessment
+ - title: "Assessment Performed"
+   url: /sdk/assessment-performed
+ - title: "Encounter"
+   url: /sdk/encounter
+ - title: "Encounter Performed"
+   url: /sdk/encounter-performed
+ - title: "Communication"
+   url: /sdk/communication
+ - title: "Device"
+   url: /sdk/device
+ - title: "Diagnosis"
+   url: /sdk/diagnosis
+ - title: "Immunization"
+   url: /sdk/immunization
+ - title: "Lab Test"
+   url: /sdk/lab-test
+ - title: "Medication"
+   url: /sdk/medication
+ - title: "Other"
+   url: /sdk/other
+ - title: "Patient Characteristic"
+   url: /sdk/patient-characteristic
+ - title: "Physican Exam"
+   url: /sdk/physical-exam
+ - title: "Procedure"
+   url: /sdk/procedure
+ - title: "Procedure Performed"
+   url: /sdk/procedure-performed
+ - title: "Rationale"
+   url: /sdk/rationale
+ - title: "Result"
+   url: /sdk/result
 
 

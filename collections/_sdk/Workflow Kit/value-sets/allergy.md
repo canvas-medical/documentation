@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:00:44.585Z"
 ---
 <a id="value_set.v2021.allergy"></a>
 
-# allergy
+## allergy
 
 <a id="value_set.v2021.allergy.EggSubstance"></a>
 
-## EggSubstance
+### EggSubstance
 **value_set.v2021.allergy.EggSubstance**
 
 ```python
