@@ -6,10 +6,11 @@ The Workflow Kit allows the ability to create or update specific resources in Ca
 Within the `compute_results` function you can call the method `self.set_updates([payload])` which accepts a single parameter -  a list of dictionaries that conform to a specific schema, where each dictionary is a resource creation or update. Every time the protocol is computed, these updates will be saved directly to your instance's database. 
 
 These JSON messages can be processed by the Canvas message bus, but the message itself needs to be constructed by calling a helper function.  Currently, these are limited but let us know what data you'd like to create/update via protocols and we can see about adding them!
+<br><br>
 
 ## Patient Group
 
-To add or remove a patient from a Group in Canvas, we have made two helper functions that you can pass to the `set_updates` function. Both groups require the patient's key and the group's UUID. The group UUID can be found using a [Group Search](ref:group-search-intern). 
+To add or remove a patient from a Group in Canvas, we have made two helper functions that you can pass to the `set_updates` function. Both groups require the patient's key and the group's UUID. The group UUID can be found using a [Group Search](/api/group/#search). 
 
 **ensure_patient_in_group(patient_key: str, group_externally_exposable_id: str)**
     - Creates a message to add a patient to a patient group if they are not already in that group.
@@ -32,6 +33,8 @@ class XYZPatientGroupUpdate(ClinicalQualityMeasure):
   
   self.set_updates([ensure_patient_in_group(patient_key, patient_group_uuid)])
 ```
+<br>
+
 ## Task Create 
 
 To create a Task associated with a patient in a Canvas protocol, we made a helper function called **create_task_payload** and it will take the following arguments:
