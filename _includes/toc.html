@@ -2,11 +2,45 @@
   {{ menu }}
   <div class="toc__links">
     {% for item in include.menu %}
-    <ul class="toc__menu" open>
+    <ul class="toc__menu">
       <li class="toc__item">
-        <a href="{{ item.url }}">{{ item.title }}</a>
+        <div>
+          <a href="{{ item.url }}">{{ item.title }}</a>
+          {% if item.children %}<span class="toc__toggle">{% include icons/chevron.svg %}</span>{% endif %}
+        </div>
         {% if item.children %}
-        {% include toc-loop.html %}
+        <ul class="toc__submenu toc__accordion toc__accordion__expanded">
+          {% for item in item.children %}
+          <li class="toc__item">
+            <div>
+              <a href="{{ item.url }}">{{ item.title }}</a>
+              {% if item.children %}<span class="toc__toggle">{% include icons/chevron.svg %}</span>{% endif %}
+            </div>
+            {% if item.children %}
+            <ul class="toc__submenu toc__accordion">
+              {% for item in item.children %}
+              <li class="toc__item">
+                <div>
+                  <a href="{{ item.url }}">{{ item.title }}</a>
+                </div>
+                {% if item.children %}
+                <ul class="toc__submenu">
+                  {% for item in item.children %}
+                  <li class="toc__item">
+                    <div>
+                      <a href="{{ item.url }}">{{ item.title }}</a>
+                    </div>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
         {% endif %}
       </li>
     </ul>

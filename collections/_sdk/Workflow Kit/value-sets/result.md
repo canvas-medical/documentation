@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:09:00.531Z"
 ---
 <a id="value_set.v2021.result"></a>
 
-# result
+## result
 
 <a id="value_set.v2021.result.PositiveFinding"></a>
 
-## PositiveFinding
+### PositiveFinding
 **value_set.v2021.result.PositiveFinding**
 
 ```python
@@ -28,7 +28,7 @@ class PositiveFinding(ValueSet)
 
 <a id="value_set.v2021.result.TobaccoNonUser"></a>
 
-## TobaccoNonUser
+### TobaccoNonUser
 **value_set.v2021.result.TobaccoNonUser**
 
 ```python
@@ -45,7 +45,7 @@ class TobaccoNonUser(ValueSet)
 
 <a id="value_set.v2021.result.VisualAcuity2040OrBetter"></a>
 
-## VisualAcuity2040OrBetter
+### VisualAcuity2040OrBetter
 **value_set.v2021.result.VisualAcuity2040OrBetter**
 
 ```python

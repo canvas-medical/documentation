@@ -1,69 +1,371 @@
 ---
-title: "PaymentNotice"
+title: PaymentNotice
+sections:
+  - type: section
+    blocks:
+      - type: apidoc
+        name: PaymentNotice
+        article: "a"
+        description: >-
+          This resource provides the status of the payment for goods and services rendered, and the request and response resource references.
+        attributes:
+          - name: id
+            description: >-
+              The identifier of the payment notice
+            type: string
+            required: true
+          - name: resourceType
+            type: string
+            required: true
+          - name: status
+            type: string
+            required: true
+          - name: request
+            type: string
+            required: true
+            description: >-
+              The request reference
+          - name: created
+            type: datetime
+            required: true
+            description: >-
+              The date the payment notice was created
+          - name: payment
+            type: string
+            required: true
+          - name: recipient
+            type: string
+            required: true
+          - name: amount
+            type: string
+            required: true
+          - name: paymentStatus
+            type: string
+            required: true
+            description: >-
+              Issued or cleared Status of the payment
+            attributes:
+              - name: coding
+                type: json
+                attributes:
+                  - name: system
+                    type: string
+                  - name: code
+                    type: string
+            search_parameters:
+          - name: request
+            type: string
+            description: The request reference
+        endpoints: [search, create]
+        search:
+          responses: [200, 400]
+          example_request: payment-notice-search-request
+          example_response: payment-notice-search-response
+        create:
+          responses: [201, 400]
+          example_request: payment-notice-create-request
+          example_response: payment-notice-create-response
 ---
+<div id="payment-notice-search-request">
+{% tabs payment-notice-search-request %}
+{% tab payment-notice-search-request python %}
+```sh
+import requests
 
-## PaymentNotice Create
+url = "https://fumage-example.canvasmedical.com/PaymentNotice"
 
-[block:callout]
-{
-  "type": "warning",
-  "title": "Don't overpay!",
-  "body": "Requests that would bring the account balance negative will be rejected.\nExample: If a patient owes $5, we would reject a PaymentNotice with a value >$5."
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
 }
-[/block]
-### Getting the newly-created payment notice ID.
-Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the `Location:` header.
 
-### Finding a created Payment Notice in the Canvas UI
+response = requests.get(url, headers=headers)
 
-A created payment notice can be found in Canvas by going to the patient's chart, and clicking the paper icon in the top right corner. The created payment notice will be displayed under receipts. The "Originator" will be automatically set to Canvas Bot. 
+print(response.text)
+```
+{% endtab %}
+{% tab payment-notice-search-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/PaymentNotice \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-As payment notices are created, they will be applied to charges in chronological order of creation date, from oldest to newest. 
-
-### Attributes that are pulled into Canvas:
-
-### status [required]
-
-Required by the FHIR spec. Canvas only accepts payments with a status of "active".
-[block:code]
+<div id="payment-notice-search-response">
+{% tabs payment-notice-search-response %}
+{% tab payment-notice-search-response 200 %}
+```json
 {
-  "codes": [
+  "resourceType": "Bundle",
+  "id": "bundle-example",
+  "meta": {
+    "lastUpdated": "2014-08-18T01:43:30Z"
+  },
+  "type": "searchset",
+  "total": 3,
+  "link": [
     {
-      "code": "status\": \"active\"",
-      "language": "text"
+      "relation": "self",
+      "url": "https://example.com/base/Task?_count=1"
+    },
+    {
+      "relation": "next",
+      "url": "https://example.com/base/Task?searchId=ff15fd40-ff71-4b48-b366-09c706bed9d0&page=2"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "https://example.com/base/Task/3123",
+      "resource": {
+        "resourceType": "Task",
+        "id": "example1",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: example1</p><p><b>contained</b>: </p><p><b>identifier</b>: 20170201-001 (OFFICIAL)</p><p><b>basedOn</b>: General Wellness Careplan</p><p><b>groupIdentifier</b>: G20170201-001 (OFFICIAL)</p><p><b>status</b>: in-progress</p><p><b>businessStatus</b>: waiting for specimen <span>(Details )</span></p><p><b>intent</b>: order</p><p><b>priority</b>: routine</p><p><b>code</b>: Lipid Panel <span>(Details )</span></p><p><b>description</b>: Create order for getting specimen, Set up inhouse testing,  generate order for any sendouts and submit with specimen</p><p><b>focus</b>: <a>Lipid Panel Request</a></p><p><b>for</b>: <a>Peter James Chalmers</a></p><p><b>encounter</b>: <a>Example In-Patient Encounter</a></p><p><b>executionPeriod</b>: 31/10/2016 8:25:05 AM --&gt; (ongoing)</p><p><b>authoredOn</b>: 31/10/2016 8:25:05 AM</p><p><b>lastModified</b>: 31/10/2016 9:45:05 AM</p><p><b>requester</b>: <a>Dr Adam Careful</a></p><p><b>performerType</b>: Performer <span>(Details : {http://terminology.hl7.org/CodeSystem/task-performer-type code 'performer' = 'performer', given as 'Performer'})</span></p><p><b>owner</b>: <a>Clinical Laboratory @ Acme Hospital</a></p><p><b>reasonCode</b>: The Task.reason should only be included if there is no Task.focus or if it differs from the reason indicated on the focus <span>(Details )</span></p><p><b>note</b>: This is an example to demonstrate using task for actioning a servicerequest and to illustrate how to populate many of the task elements - this is the parent task that will be broken into subtask to grab the specimen and a sendout lab test </p><p><b>relevantHistory</b>: Author's Signature. Generated Summary: id: signature; recorded: 31/10/2016 8:25:05 AM; </p><h3>Restrictions</h3><table><tr><td>-</td><td><b>Repetitions</b></td><td><b>Period</b></td></tr><tr><td>*</td><td>1</td><td>?? --&gt; 02/11/2016 9:45:05 AM</td></tr></table></div>"
+        },
+        "contained": [
+          {
+            "resourceType": "Provenance",
+            "id": "signature",
+            "target": [
+              {
+                "reference": "ServiceRequest/physiotherapy/_history/1"
+              }
+            ],
+            "recorded": "2016-10-31T08:25:05+10:00",
+            "agent": [
+              {
+                "role": [
+                  {
+                    "coding": [
+                      {
+                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                        "code": "AUT"
+                      }
+                    ]
+                  }
+                ],
+                "who": {
+                  "reference": "Practitioner/f202",
+                  "display": "Luigi Maas"
+                }
+              }
+            ],
+            "signature": [
+              {
+                "type": [
+                  {
+                    "system": "urn:iso-astm:E1762-95:2013",
+                    "code": "1.2.840.10065.1.12.1.1",
+                    "display": "Author's Signature"
+                  }
+                ],
+                "when": "2016-10-31T08:25:05+10:00",
+                "who": {
+                  "reference": "Practitioner/example",
+                  "display": "Dr Adam Careful"
+                },
+                "targetFormat": "application/fhir+xml",
+                "sigFormat": "application/signature+xml",
+                "data": "dGhpcyBibG9iIGlzIHNuaXBwZWQ="
+              }
+            ]
+          }
+        ],
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http:/goodhealth.org/identifiers",
+            "value": "20170201-001"
+          }
+        ],
+        "basedOn": [
+          {
+            "display": "General Wellness Careplan"
+          }
+        ],
+        "groupIdentifier": {
+          "use": "official",
+          "system": "http:/goodhealth.org/accession/identifiers",
+          "value": "G20170201-001"
+        },
+        "status": "in-progress",
+        "businessStatus": {
+          "text": "waiting for specimen"
+        },
+        "intent": "order",
+        "priority": "routine",
+        "code": {
+          "text": "Lipid Panel"
+        },
+        "description": "Create order for getting specimen, Set up inhouse testing,  generate order for any sendouts and submit with specimen",
+        "focus": {
+          "reference": "ServiceRequest/lipid",
+          "display": "Lipid Panel Request"
+        },
+        "for": {
+          "reference": "Patient/example",
+          "display": "Peter James Chalmers"
+        },
+        "encounter": {
+          "reference": "Encounter/example",
+          "display": "Example In-Patient Encounter"
+        },
+        "executionPeriod": {
+          "start": "2016-10-31T08:25:05+10:00"
+        },
+        "authoredOn": "2016-10-31T08:25:05+10:00",
+        "lastModified": "2016-10-31T09:45:05+10:00",
+        "requester": {
+          "reference": "Practitioner/example",
+          "display": "Dr Adam Careful"
+        },
+        "performerType": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/task-performer-type",
+                "code": "performer",
+                "display": "Performer"
+              }
+            ],
+            "text": "Performer"
+          }
+        ],
+        "owner": {
+          "reference": "Organization/1832473e-2fe0-452d-abe9-3cdb9879522f",
+          "display": "Clinical Laboratory @ Acme Hospital"
+        },
+        "reasonCode": {
+          "text": "The Task.reason should only be included if there is no Task.focus or if it differs from the reason indicated on the focus"
+        },
+        "note": [
+          {
+            "text": "This is an example to demonstrate using task for actioning a servicerequest and to illustrate how to populate many of the task elements - this is the parent task that will be broken into subtask to grab the specimen and a sendout lab test "
+          }
+        ],
+        "relevantHistory": [
+          {
+            "reference": "#signature",
+            "display": "Author's Signature"
+          }
+        ],
+        "restriction": {
+          "repetitions": 1,
+          "period": {
+            "end": "2016-11-02T09:45:05+10:00"
+          }
+        }
+      },
+      "search": {
+        "mode": "match",
+        "score": 1
+      }
     }
   ]
 }
-[/block]
-### request [required]
-
-Canvas patient resource whose balance the payment will be applied to, formatted like "Patient/5350cd20de8a470aa570a852859ac87e". 
-[block:code]
+```
+{% endtab %}
+{% tab payment-notice-search-response 400 %}
+```json
 {
-  "codes": [
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
     {
-      "code": "\"request\": {\n   \"reference\": \"Patient/5350cd20de8a470aa570a852859ac87e\"\n}",
-      "language": "text"
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
-[/block]
-### amount [required]
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-The value field accepts amount of the payment in US dollars. The currency field is not required. It defaults to "USD" and ignores all other inputs. 
-[block:code]
+<div id="payment-notice-create-request">
+{% tabs payment-notice-create-request %}
+{% tab payment-notice-create-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/PaymentNotice"
+
+payload = {
+    "resourceType": "PaymentNotice",
+    "status": "active",
+    "request": { "reference": "Patient/5350cd20de8a470aa570a852859ac87e" },
+    "amount": {
+        "value": 10,
+        "currency": "USD"
+    }
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% tab payment-notice-create-request curl %}
+```sh
+curl --request POST \
+     --url https://fumage-example.canvasmedical.com/PaymentNotice \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
 {
-  "codes": [
+  "resourceType": "PaymentNotice",
+  "status": "active",
+  "request": {
+    "reference": "Patient/5350cd20de8a470aa570a852859ac87e"
+  },
+  "amount": {
+    "value": 10,
+    "currency": "USD"
+  }
+}
+'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="payment-notice-create-response">
+{% tabs payment-notice-create-response %}
+{% tab payment-notice-create-response 201 %}
+```json
+null
+```
+{% endtab %}
+{% tab payment-notice-create-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
     {
-      "code": "\"amount\": {\n  \"value\": 10.00,\n  \"currency\": \"USD\"\n}",
-      "language": "text"
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
-[/block]
-
-## PaymentNotice Search
-
-### Collecting Patient Payments in Canvas
-
-To learn how to collect a payment, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/1500001122421-Collect-a-payment).
+```
+{% endtab %}
+{% endtabs %}
+</div>

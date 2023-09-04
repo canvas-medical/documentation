@@ -167,7 +167,7 @@ The Populations section shows all active Protocols, a listing of patients that a
 ![Image](https://files.readme.io/eae99f2-canvas_protocols_page.png){:width="60%"}
 
 ![Image](https://files.readme.io/59f60db-protocol_population_tab.png){:width="60%"}
-
+<br><br>
 ## Creating a Protocol
 
 ### File Setup
@@ -204,6 +204,7 @@ Navigate into your newly-created `src` directory, then create a file with a _.py
 (env) $ cd src
 (env) $ touch test_measure.py
 ```
+<br>
 
 ### Setting Up Initial Code
 
@@ -287,105 +288,132 @@ class MyFirstProtocol(ClinicalQualityMeasure):
 
 Let's step through the example above:
 
-1. The `MyProtocol` class is an example of how a custom Protocol can be developed using the SDK. When developing your own classes, they should always inherit from SDK's `ClinicalQualityMeasure` class as shown above. Your own Protocols, for example, may be named something like `HypertensionScreeningProtocol` or `DepressionAssessmentProtocol` depending on what type of Protocol is being developed.
+<ol>
+  <li>The <code>MyProtocol</code> class is an example of how a custom Protocol can be developed using the SDK. When developing your own classes, they should always inherit from SDK's <code>ClinicalQualityMeasure</code> class as shown above. Your own Protocols, for example, may be named something like <code>HypertensionScreeningProtocol</code> or <code>DepressionAssessmentProtocol</code> depending on what type of Protocol is being developed.</li>
+  <li>The <code>ClinicalQualityMeasure</code> Meta class contains the following attributes:
+    <br>
+    <br>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Required</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td><em>string</em></td>
+        <td><strong>true</strong></td>
+        <td>The main Protocol title that will be shown on Patient charts and the Populations tab of the Canvas UI.</td>
+      </tr>
+      <tr>
+        <td><code>description</code></td>
+        <td><em>string</em></td>
+        <td><strong>false</strong></td>
+        <td>A more detailed description of the Protocol. This is displayed as the subheader on the Populations section of the Canvas UI.</td>
+      </tr>
+      <tr>
+        <td><code>version</code></td>
+        <td><em>string</em></td>
+        <td><strong>true</strong></td>
+        <td>A version number of your choice. This is to keep track of subsequent updates to your code for a specific Protocol. Every time a version is updated to your Canvas instance, it must have a unique version number. You may want to use a date (as shown in the example) or choose a versioning method of your own.</td>
+      </tr>
+      <tr>
+        <td><code>information</code></td>
+        <td><em>string</em></td>
+        <td><strong>false</strong></td>
+        <td>This is for the URL that populates in the <em>More Info</em> link for each Protocol listed on the Populations section of the UI. You may choose to populate this with the link to the page of an <a href="https://ecqi.healthit.gov/ep-ec">eCQI</a> Protocol or to another resource of your choice.</td>
+      </tr>
+      <tr>
+        <td><code>identifiers</code></td>
+        <td><em>list[string]</em></td>
+        <td><strong>false</strong></td>
+        <td>This is a list of identifiers associated with the Protocol. These are sometimes populated with eCQI codes (i.e., <em>CMS125v6</em>), but can also be populated with strings of your choice to identify your custom Protocols. In the Canvas UI, these are populated underneath the Protocol title in a patient's chart.</td>
+      </tr>
+      <tr>
+        <td><code>types</code></td>
+        <td><em>list[string]</em></td>
+        <td><strong>false</strong></td>
+        <td>This is a list of shorthand, abbreviated types identified with the Protocol. Some industry standard examples of these are <em>CCP</em>, <em>CQM</em>, and <em>HCC</em>. These are populated in parentheses next to <em>identifiers</em> in the Protocols section of a patient's chart.</td>
+      </tr>
+      <tr>
+        <td><code>compute_on_change_types</code></td>
+        <td><em>list[CHANGE_TYPE]</em></td>
+        <td><strong>false</strong></td>
+        <td>The change types listed here signal the Canvas backend to know when the Protocol criteria should be rerun against patients. For example, if a patient begins a new medication, they may be eligible for a Protocol whereas they may not have been before. In this case, <code>CHANGE_TYPE.MEDICATION</code> would be included in this list. A full list of CHANGE_TYPE choices are available <a href="doc:change-types">here</a>.</td>
+      </tr>
+      <tr>
+        <td><code>references</code></td>
+        <td><em>list[string]</em></td>
+        <td><strong>false</strong></td>
+        <td>A list of references identified with the Protocol. These are listed when the information icon is clicked on the Protocol listing in a patient's chart. URLs that are included in each string are automatically detected and crafted as href links with the display text.</td>
+      </tr>
+    </table>
+  </li>
+  <li>The <code>in_numerator</code> and <code>in_denominator</code> methods, though not filled out in the example above, are methods that can be used to compile patients into different groups. Each group can then be used in conditional logic within <code>compute_results</code>.  We will look more at how these methods can be used a little later in the tutorial.</li>
+  <li>The <code>compute_results</code> method is the main method that is called by the Canvas backend to determine the Protocol status and recommendations for a patient.  You should always return an instance of <code>ProtocolResult</code> in this method. The <code>ProtocolResult</code> class has the following attributes that can be set:
+    <br>
+    <br>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Required</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>status</code></td>
+        <td>_choice_</td>
+        <td><strong>false</strong></td>
+        <td>This represents the status of the Protocol for a patient. The choices can be imported from <code>canvas_workflow_kit.protocol</code> as follows:<br> <br><code>STATUS_DUE</code><br><code>STATUS_PENDING</code><br><code>STATUS_NOT_APPLICABLE</code><br><code>STATUS_SATISFIED</code><br><br>In a patient's chart in the Canvas UI, Protocols with a <code>status</code> of <code>STATUS_DUE</code> will show under the <em>Active</em> status, while <code>STATUS_PENDING</code> will show under <em>Pending</em>. Protocols with a status of <code>STATUS_SATISFIED</code>, meaning the patient has fulfilled all of the requirements, will show under the <em>Inactive</em> status. Protocols with a <code>status</code> of <code>STATUS_NOT_APPLICABLE</code> will not show in a patient's chart.</td>
+      </tr>
+      <tr>
+        <td><code>due_in</code></td>
+        <td><em>integer</em></td>
+        <td><strong>false</strong></td>
+        <td>An integer that represents the number of days for when the patient is due for the Protocol. For example, if patient John is due for a Protocol 2 weeks after becoming eligible, this field would be populated with <em>14</em>. Negative integers are also allowed, and a value of <em>-1</em> can be used for patients that are currently due.</td>
+      </tr>
+      <tr>
+        <td><code>narratives</code></td>
+        <td><em>list[str]</em></td>
+        <td><strong>false</strong></td>
+        <td>A list of text items that will be displayed on a patient's chart within each Protocol. Each item should be thought of as being within the context of a particular patient, which can be accessed through the <code>self.patient</code> attribute. Narrative text can be appended to the <code>narratives</code> list by calling the <code>add_narrative()</code> method as shown in the example above.</td>
+      </tr>
+    </table>
+  </li>
+  <li>Recommended actions that can be taken to resolve a Protocol for a patient are presented in the bottom portion of each Protocol listed on a patient's chart. Recommendations can be added to each instance of <code>ProtocolResult</code> by using the <code>add_recommendation()</code> method. There are <a href="/sdk/recommendation-types">many built-in types of Recommendations available</a>. Let's look at what makes up a standard <code>Recommendation</code> object:
+    <br>
+    <br>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Required</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>key</code></td>
+        <td><em>string</em></td>
+        <td><strong>true</strong></td>
+        <td>A unique identifier for the recommendation.</td>
+      </tr>
+      <tr>
+        <td><code>rank</code></td>
+        <td><em>integer</em></td>
+        <td><strong>false</strong></td>
+        <td>A value to control the sort order of recommendations within a Protocol. For each Protocol listed in the Canvas UI, recommendations with lower rank values will appear at the top.</td>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td><em>string</em></td>
+        <td><strong>true</strong></td>
+        <td>The text to show on a patient's chart to identify and describe the recommendation.</td>
+      </tr>
+    </table>
+  </li>
+</ol>
 
-2. The `ClinicalQualityMeasure` Meta class contains the following attributes:
-
-| Name             |Type  | Required     | Description    |
-| -----------    | ----- | ----------- |  ------------- |
-| `title`      | _string_ | `true`|The main Protocol title that will be shown on Patient charts and the Populations tab of the Canvas UI.|
-| `description`  |_string_   | `false`| A more detailed description of the Protocol. This is displayed as the subheader on the Populations section of the Canvas UI. |
-| `version`   | _string_     | `true`| A version number of your choice. This is to keep track of subsequent updates to your code for a specific Protocol. Every time a version is updated to your Canvas instance, it must have a unique version number. You may want to use a date (as shown in the example) or choose a versioning method of your own. |
-| `information`   | _string_  | `false`| This is for the URL that populates in the _More Info_ link for each Protocol listed on the Populations section of the UI. You may choose to populate this with the link to the page of an [eCQI](https://ecqi.healthit.gov/ep-ec) Protocol or to another resource of your choice.      |
-|  `identifiers` | _list[string]_ |  `false`| This is a list of identifiers associated with the Protocol. These are sometimes populated with eCQI codes (i.e. _CMS125v6_), but can also be populated with strings of your choice to identify your custom Protocols. In the Canvas UI, these are populated underneath the Protocol title in a patient's chart.     |
-| `types`      | _list[string]_     |  `false` | This is a list of shorthand, abbreviated types identified with the Protocol. Some industry standard examples of these are _CCP_, _CQM_ and _HCC_. These are populated in parentheses next to _identifiers_ in the Protocols section of a patient's chart. |
-| `compute_on_change_types` | _list[CHANGE_TYPE]_ | `false`|  The change types listed here signal the Canvas backend to know when the Protocol criteria should be rerun against patients. For example, if a patient begins a new medication, they may be eligible for a Protocol whereas they may not have been before. In this case, `CHANGE_TYPE.MEDICATION` would be included in this list. A full list of CHANGE_TYPE choices are available [here](doc:change-types).     |
-| `references` | _list[string]_ | `false`| A list of references identified with the Protocol. These are listed when the information icon is clicked on the Protocol listing in a patient's chart. URLs that are included in each string are automatically detected and crafted as href links with the display text. |
-
-The following images illustrate where the attributes in the `Meta` class are shown in the Canvas UI:
-
-On the Populations page:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/0630ca7-population_tab_meta_arrows_small.png",
-        "population_tab_meta_arrows_small.png",
-        864,
-        517,
-        "#e8eaed"
-      ]
-    }
-  ]
-}
-[/block]
-In the Patient's Chart:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/e16b1f3-patient_chart_meta_arrows.png",
-        "patient_chart_meta_arrows.png",
-        360,
-        227,
-        "#eeedee"
-      ]
-    }
-  ]
-}
-[/block]
-This is the view when clicking the information icon:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/cbbead6-patient_chart_meta_references.png",
-        "patient_chart_meta_references.png",
-        576,
-        391,
-        "#f0f0f0"
-      ]
-    }
-  ]
-}
-[/block]
-3. The `in_numerator` and `in_denominator` methods, though not filled out in the example above, are methods that can be used to compile patients into different groups. Each group can then be used in conditional logic within `compute_results`.  We will look more at how these methods can be used a little later in the tutorial.
-
-4. The `compute_results` method is the main method that is called by the Canvas backend to determine the Protocol status and recommendations for a patient.  You should always return an instance of `ProtocolResult` in this method. The `ProtocolResult` class has the following attributes that can be set:
-
-| Name           | Type           | Required    | Description |
-| -----------  | ----------- |----------- | -----------  |
-| `status` | _choice_  | `false` | This represents the status of the Protocol for a patient. The choices can be imported from `canvas_workflow_kit.protocol` as follows:<br> <br>`STATUS_DUE`<br>`STATUS_PENDING`<br>`STATUS_NOT_APPLICABLE`<br>`STATUS_SATISFIED`<br><br>In a patient's chart in the Canvas UI, Protocols with a `status` of `STATUS_DUE` will show under the _Active_ status, while `STATUS_PENDING` will show under _Pending_. Protocols with a status of `STATUS_SATISFIED`, meaning the patient has fulfilled all of the requirements, will show under the _Inactive_ status. Protocols with a `status` of `STATUS_NOT_APPLICABLE` will not show in a patient's chart.  |
-| `due_in` | _integer_ | `false` | An integer that represents the number of days for when the patient is due for the Protocol. For example, if patient John is due for a Protocol 2 weeks after becoming eligible, this field would be populated with _14_. Negative integers are also allowed, and a value of _-1_ can be used for patients that are currently due. |
-| `narratives` | _list[str]_ | `false` | A list of text items that will be displayed on a patient's chart within each Protocol. Each item should be thought of as being within the context of a particular patient, which can be accessed through the `self.patient` attribute. Narrative text can be appended to the `narratives` list by calling the `add_narrative()` method as shown in the example above. |
-
-The following image shows where the arguments passed to `ProtocolResult` show up in a Protocol listed on a patient's chart:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/d2e288b-protocol_result_patient_chart.png",
-        "protocol_result_patient_chart.png",
-        432,
-        332,
-        "#f1f1f1"
-      ]
-    }
-  ]
-}
-[/block]
-5. Recommended actions that can be taken to resolve a Protocol for a patient are presented in the bottom portion of each Protocol listed on a patient's chart. Recommendations can be added to each instance of a `ProtocolResult` by using the `add_recommendation()` method. There are [many built-in types of Recommendations available](doc:recommendation-types). Let's look at what makes up a standard `Recommendation` object:
-
-| Name             | Type           |Required          | Description     |
-| -----------    | ----------- | ----------       | ------------    |
-| `key`      | _string_ | `true` | A unique identifier for the recommendation. |
-| `rank` | _integer_ | `false` | A value to control the sort order of recommendations within a Protocol. For each Protocol listed in the Canvas UI, recommendations with lower rank values will appear at the top. |
-| `title` | _string_ | `true` | The text to show on a patient's chart to identify and describe the recommendation. |
-
+<br><br>
 ### Uploading Your Protocol
 
 Canvas instances have a number of [built-in Protocols](https://canvas-medical.zendesk.com/hc/en-us/sections/4404352708115-Population-Management-Protocols). The Protocols that are developed using the SDK, such as our example above, can be uploaded and run on the Canvas backend in the same manner that the built-in Protocols are.
@@ -405,110 +433,49 @@ Upload successful.  Version 2022-02-01v1 set to latest version.
 ```
 
 Next, pull up the chart of any patient. You should see your Measure appear in the Protocols section of that patient's chart:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/b9a7cf0-my_first_protocol_in_chart.png",
-        "my_first_protocol_in_chart.png",
-        504,
-        248,
-        "#f3f3f3"
-      ]
-    }
-  ]
-}
-[/block]
+
+<img src="https://files.readme.io/b9a7cf0-my_first_protocol_in_chart.png" alt="My First Protocol in Chart" width="60%">
+
+<br>
+
 ### Testing Your Protocol Against Patient Data
 
 So far in this tutorial, you have created a basic Protocol, uploaded it to your development Canvas instance, and seen how it appears in the UI. This was a very basic measure used for example purposes. However, much more complex logic can and will be used when developing actual Protocols. For this reason, the SDK includes a command named `test-fixture` in order to test your code against patient data locally.
 
-In the previous section, it was explained how to [fetch patient data](doc:sdk-fetching-and-viewing-patient-data) that is stored locally in _*.json_ files. To test the Protocol that you just created in `test_measure.py`, the following command can be run from within the `src` directory:
+In the previous section, it was explained how to [fetch patient data](sdk/sdk-quickstart/#fetching-patient-data) that is stored locally in _*.json_ files. To test the Protocol that you just created in `test_measure.py`, the following command can be run from within the `src` directory:
 
 ```
 (env) $ canvas-cli test-fixture test_measure.py ../patients
 ```
 
 This command will run the Protocol against each patient in the `/patients/` directory. If there are Protocol recommendations for a patient, those details will be printed to the console. If there are no recommendations for a patient, that will also be printed under the patient's name. Once run, the output in the terminal should look something like this:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/4d63a6e-test_fixture_results_terminal.png",
-        "test_fixture_results_terminal.png",
-        576,
-        154,
-        "#282a29"
-      ]
-    }
-  ]
-}
-[/block]
+
+<img src="https://files.readme.io/4d63a6e-test_fixture_results_terminal.png" alt="Test Fixture Results Terminal" width="60%">
+
+<br>
 
 ## Expanding a Protocol
 
-Building on our [previous example](doc:sdk-create-a-protocol), we will now explore how to create logic to tell if a patient has or has not satisfied the requirements for fulfilling a Protocol. This is important in order to only display Protocol alerts for those that have not been satisfied. Conversely, we also want to display information about the Protocol under the _Inactive_ status if it indeed has been satisfied.
+Building on our [previous example](sdk/sdk-quickstart/#creating-a-protocol), we will now explore how to create logic to tell if a patient has or has not satisfied the requirements for fulfilling a Protocol. This is important in order to only display Protocol alerts for those that have not been satisfied. Conversely, we also want to display information about the Protocol under the _Inactive_ status if it indeed has been satisfied.
 
 To help visualize this, let's say that we want to develop a Protocol for all patients 65 and older to be interviewed in order to screen their risk of falling. Patients who are eligible for this Protocol should be interviewed once a year.
 
 As an example, a new patient, _John Smith_, is over 65 and thus would be due for our Fall Screening Protocol. Here is how the Protocol is displayed in John's chart when he arrives for his first appointment:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/ca476a8-fall_screening_protocol_in_chart.png",
-        "fall_screening_protocol_in_chart.png",
-        504,
-        281,
-        "#f1f1f1"
-      ]
-    }
-  ]
-}
-[/block]
-As recommended, John's physician can then complete the Fall Questionnaire in his chart:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/e4d8fa2-fall_screening_questionnaire.png",
-        "fall_screening_questionnaire.png",
-        720,
-        185,
-        "#f5f5f5"
-      ]
-    }
-  ]
-}
-[/block]
 
-[block:callout]
-{
-  "type": "info",
-  "title": "Questionnaires",
-  "body": "_For more information on creating Questionnaires in Canvas, see [Creating a New Questionnaire](https://canvas-medical.zendesk.com/hc/en-us/articles/4403561447827-Creating-a-New-Questionnaire)._"
-}
-[/block]
+<img src="https://files.readme.io/ca476a8-fall_screening_protocol_in_chart.png" alt="Fall Screening Protocol in Chart" width="60%">
+
+
+As recommended, John's physician can then complete the Fall Questionnaire in his chart:
+
+<img src="https://files.readme.io/e4d8fa2-fall_screening_questionnaire.png" alt="Fall Screening Questionnaire" width="60%">
+
+
+{% include alert.html type="info" content="For more information on creating Questionnaires in Canvas, see [Creating a New Questionnaire](https://canvas-medical.zendesk.com/hc/en-us/articles/4403561447827-Creating-a-New-Questionnaire)." %}
+
 Once the recommended Fall Screening Questionnaire has been completed, the Protocol is considered to have been satisfied. It is now moved to the _Inactive_ tab in John's chart:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/8c9f063-fall_screening_satisfied.png",
-        "fall_screening_satisfied.png",
-        504,
-        342,
-        "#f0f0f0"
-      ]
-    }
-  ]
-}
-[/block]
+
+<img src="https://files.readme.io/8c9f063-fall_screening_satisfied.png" alt="fall_screening_satisfied.png" width="60%">
+<br><br>
 ### The `in_numerator` and `in_denominator` Methods
 
 In the context of our custom Protocol code, we want to be able to tell whether a patient such as John has completed the requirements to satisfy a Protocol, such as the completion of the Fall Screening Questionnaire. This can be done by using the `in_numerator` and `in_denominator` methods. The results of these methods can then be used with logic within `compute_results`.
@@ -541,6 +508,8 @@ The methods above will tell us two things about our patient John:
 1. The `in_denominator` method will tell us if John is an applicable candidate for this Protocol. Since he is in the 65 or older age bracket, this will return `True`.
 2. The `in_numerator` method will tell us if John has completed the Fall Screening Questionnaire within the last year. Since he has, this will also return True.
 
+<br>
+
 ### Incorporating Logic into `compute_results`
 
 We can now use the logic from both of these methods in `compute_results`:
@@ -571,7 +540,7 @@ We can now use the logic from both of these methods in `compute_results`:
 ```
 
 As you can see above, we marked the Status as `STATUS_DUE` for when John had not completed the Questionnaire, as well as a recommendation to do so. After John had completed the Questionnaire, a status of `STATUS_SATISFIED` was set.
-
+<br><br>
 ### A Complete Example
 
 Here is the complete example of the Protocol for the example above:
@@ -654,8 +623,9 @@ class SeniorFallProtocol(ClinicalQualityMeasure):
                 )
         return result
 ```
+<br>
 
 ### Recommendations and Next Steps
 
-You may have noticed that instead of using a generic `Recommendation` in our `add_recommendation` method, we used an `InterviewRecommendation`. The SDK includes a number of recommendation classes, which we you can explore in the [Canvas SDK Recommendation Types doc](doc:recommendationtypes)
+You may have noticed that instead of using a generic `Recommendation` in our `add_recommendation` method, we used an `InterviewRecommendation`. The SDK includes a number of recommendation classes, which you can explore in the [Canvas SDK Recommendation Types doc](/sdk/recommendation-types).
 

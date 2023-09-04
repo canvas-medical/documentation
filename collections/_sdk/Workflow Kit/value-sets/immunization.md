@@ -1,17 +1,13 @@
 ---
 title: "Immunization"
-slug: "immunizations"
-hidden: false
-createdAt: "2021-09-30T16:05:32.262Z"
-updatedAt: "2021-09-30T16:09:53.808Z"
 ---
 <a id="value_set.v2021.immunization"></a>
 
-# immunization
+## immunization
 
 <a id="value_set.v2021.immunization.DtapVaccine"></a>
 
-## DtapVaccine
+### DtapVaccine
 **value_set.v2021.immunization.DtapVaccine**
 
 ```python
@@ -28,7 +24,7 @@ class DtapVaccine(ValueSet)
 
 <a id="value_set.v2021.immunization.HepatitisAVaccine"></a>
 
-## HepatitisAVaccine
+### HepatitisAVaccine
 **value_set.v2021.immunization.HepatitisAVaccine**
 
 ```python
@@ -45,7 +41,7 @@ class HepatitisAVaccine(ValueSet)
 
 <a id="value_set.v2021.immunization.HepatitisBVaccine"></a>
 
-## HepatitisBVaccine
+### HepatitisBVaccine
 **value_set.v2021.immunization.HepatitisBVaccine**
 
 ```python
@@ -62,7 +58,7 @@ class HepatitisBVaccine(ValueSet)
 
 <a id="value_set.v2021.immunization.HibVaccine3DoseSchedule"></a>
 
-## HibVaccine3DoseSchedule
+### HibVaccine3DoseSchedule
 **value_set.v2021.immunization.HibVaccine3DoseSchedule**
 
 ```python
@@ -79,7 +75,7 @@ class HibVaccine3DoseSchedule(ValueSet)
 
 <a id="value_set.v2021.immunization.HibVaccine4DoseSchedule"></a>
 
-## HibVaccine4DoseSchedule
+### HibVaccine4DoseSchedule
 **value_set.v2021.immunization.HibVaccine4DoseSchedule**
 
 ```python
@@ -96,7 +92,7 @@ class HibVaccine4DoseSchedule(ValueSet)
 
 <a id="value_set.v2021.immunization.InactivatedPolioVaccineIpv"></a>
 
-## InactivatedPolioVaccineIpv
+### InactivatedPolioVaccineIpv
 **value_set.v2021.immunization.InactivatedPolioVaccineIpv**
 
 ```python
@@ -113,7 +109,7 @@ class InactivatedPolioVaccineIpv(ValueSet)
 
 <a id="value_set.v2021.immunization.InfluenzaVaccine"></a>
 
-## InfluenzaVaccine
+### InfluenzaVaccine
 **value_set.v2021.immunization.InfluenzaVaccine**
 
 ```python
@@ -130,7 +126,7 @@ class InfluenzaVaccine(ValueSet)
 
 <a id="value_set.v2021.immunization.InfluenzaVaccine_1254"></a>
 
-## InfluenzaVaccine\_1254
+### InfluenzaVaccine\_1254
 **value_set.v2021.immunization.InfluenzaVaccine_1254**
 
 ```python
@@ -147,7 +143,7 @@ class InfluenzaVaccine_1254(ValueSet)
 
 <a id="value_set.v2021.immunization.MeaslesMumpsAndRubellaMmrVaccine"></a>
 
-## MeaslesMumpsAndRubellaMmrVaccine
+### MeaslesMumpsAndRubellaMmrVaccine
 **value_set.v2021.immunization.MeaslesMumpsAndRubellaMmrVaccine**
 
 ```python
@@ -164,7 +160,7 @@ class MeaslesMumpsAndRubellaMmrVaccine(ValueSet)
 
 <a id="value_set.v2021.immunization.PneumococcalConjugateVaccine"></a>
 
-## PneumococcalConjugateVaccine
+### PneumococcalConjugateVaccine
 **value_set.v2021.immunization.PneumococcalConjugateVaccine**
 
 ```python
@@ -181,7 +177,7 @@ class PneumococcalConjugateVaccine(ValueSet)
 
 <a id="value_set.v2021.immunization.PneumococcalVaccine"></a>
 
-## PneumococcalVaccine
+### PneumococcalVaccine
 **value_set.v2021.immunization.PneumococcalVaccine**
 
 ```python
@@ -198,7 +194,7 @@ class PneumococcalVaccine(ValueSet)
 
 <a id="value_set.v2021.immunization.RotavirusVaccine2DoseScheduleAdministered"></a>
 
-## RotavirusVaccine2DoseScheduleAdministered
+### RotavirusVaccine2DoseScheduleAdministered
 **value_set.v2021.immunization.RotavirusVaccine2DoseScheduleAdministered**
 
 ```python
@@ -215,7 +211,7 @@ class RotavirusVaccine2DoseScheduleAdministered(ValueSet)
 
 <a id="value_set.v2021.immunization.RotavirusVaccine3DoseSchedule"></a>
 
-## RotavirusVaccine3DoseSchedule
+### RotavirusVaccine3DoseSchedule
 **value_set.v2021.immunization.RotavirusVaccine3DoseSchedule**
 
 ```python
@@ -232,7 +228,7 @@ class RotavirusVaccine3DoseSchedule(ValueSet)
 
 <a id="value_set.v2021.immunization.RotavirusVaccine3DoseScheduleAdministered"></a>
 
-## RotavirusVaccine3DoseScheduleAdministered
+### RotavirusVaccine3DoseScheduleAdministered
 **value_set.v2021.immunization.RotavirusVaccine3DoseScheduleAdministered**
 
 ```python
@@ -249,7 +245,7 @@ class RotavirusVaccine3DoseScheduleAdministered(ValueSet)
 
 <a id="value_set.v2021.immunization.VaricellaZosterVaccineVzv"></a>
 
-## VaricellaZosterVaccineVzv
+### VaricellaZosterVaccineVzv
 **value_set.v2021.immunization.VaricellaZosterVaccineVzv**
 
 ```python

@@ -1,5 +1,6 @@
 ---
 title: Condition
+layout: api
 sections:
   - type: section
     blocks:

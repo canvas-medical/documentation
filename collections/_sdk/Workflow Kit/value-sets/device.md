@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:04:54.525Z"
 ---
 <a id="value_set.v2021.device"></a>
 
-# device
+## device
 
 <a id="value_set.v2021.device.CardiacPacer"></a>
 
-## CardiacPacer
+### CardiacPacer
 **value_set.v2021.device.CardiacPacer**
 
 ```python
@@ -28,7 +28,7 @@ class CardiacPacer(ValueSet)
 
 <a id="value_set.v2021.device.FrailtyDevice"></a>
 
-## FrailtyDevice
+### FrailtyDevice
 **value_set.v2021.device.FrailtyDevice**
 
 ```python
