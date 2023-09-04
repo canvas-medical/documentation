@@ -1,3 +1,7 @@
+# API keys
+_js/apikeys.js
+_config_apikeys.yml
+
 # Bundler ignore
 .bundle/
 vendor/
@@ -20,6 +24,9 @@ node_modules/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Logs
+*.log
 
 # System-generated files
 .DS_Store

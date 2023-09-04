@@ -65,6 +65,7 @@ feed:
 ### Build settings
 minify_html: false
 plugins:
+  - jekyll-algolia
   - jekyll-feed
   - jekyll-menus
   - jekyll-seo-tag

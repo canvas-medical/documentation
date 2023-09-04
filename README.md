@@ -57,3 +57,10 @@ This will remove the generated folders
 ```sh
 yarn clean:project
 ```
+
+### Update Algolia search index
+
+Run this command to update Algolia's search index:
+```sh
+ALGOLIA_API_KEY='admin_api_key' bundle exec jekyll algolia --config _config.yml,_config_apikeys.yml
+```
