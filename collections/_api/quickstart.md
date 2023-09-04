@@ -1,18 +1,18 @@
 ---
 title: "Quickstart"
-layout: documentation
+layout: apipage
 ---
 ## Authentication
 
-To get you started quickly, the Canvas sandbox APIs authenticate requests using a long-lived Bearer token explained in our [Create a Sandbox Environment Doc](doc:creating-a-sandbox-environment)  
+To get you started quickly, the Canvas sandbox APIs authenticate requests using a long-lived Bearer token explained in our [Create a Sandbox Environment Doc](/guides/sandbox)  
 
-If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](ref:authentication) to get you set up. 
+If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) to get you set up. 
 
 ## Create a patient
 
 Let's start by creating a patient. we've gone ahead and generated some boilerplate Patient info that includes all of the minimum required parameters for a Create a Patient request. 
 
-```curl
+```shell
 curl -i --location 'https://fhir-<sandbox-name>.canvasmedical.com/Patient' \
      --header 'Authorization: Bearer <bearer-token>' \
      --header 'Content-Type: application/json' \
@@ -51,11 +51,8 @@ Navigate to the Canvas UI (sandbox or production instance) and log in using the 
 
 For more detail about making Patient Create requests, check out the API documentation for Patient Create.
 
-> 📘 Patient ID
-> 
-> As part of the request's response, you will see a patient ID within the location: header. Copy the ID value between Patient/ and /\_history - you will need it to create an appointment in the next step.
-> 
-> Also to note that ID will match the ID you will find in your browser when you navigate to the patient's chat: https\://<instance>.canvasmedication.com/patient/<ID>
+{% include alert.html type="info" content="As part of the request's response, you will see a patient ID within the location: header. Copy the ID value between Patient/ and / history - you will need it to create an appointment in the next step.<br><br> Also to note that ID will match the ID you will find in your browser when you navigate to the patient's chat: https://{customer}.canvasmedication.com/patient/{patientID}" %} 
+
 
 ## Create an Appointment
 
@@ -65,7 +62,7 @@ If you are using one of our canvas sandboxes, there will already be a demo staff
 
 Run the following request to find the list of Practitioners in your organization. Again you will need to replace the <sandbox-name> and <bearer-token> with the same values you used to create your patient above. 
 
-```curl
+```shell
 curl --location 'https://fhir-<sandbox-name>.canvasmedical.com/Practitioner' \
 --header 'Content-Type: application/fhir+json' \
 --header 'Authorization: Bearer <bearer-token>u' | jq 
@@ -73,7 +70,7 @@ curl --location 'https://fhir-<sandbox-name>.canvasmedical.com/Practitioner' \
 
 You will then get a response similar to: 
 
-```curl
+```shell
 {
   "resourceType" : "Bundle",
   "type" : "searchset",
@@ -114,7 +111,7 @@ Now we have our Patient ID and Practitioner ID. We're ready to create our first 
 
 Now lets set up the cURL command to create the appointment. Again you will need to replace the <sandbox-name> and <bearer-token>. Then replace <practitioner-id> and <patient-id> with the values copied in the last two requests. This appointment will create a Telehealth Appointment. You might want to update the start and end dates to be today's date for easy find-ability on the calendar view.  
 
-```text
+```shell
 curl -i --location 'https://fhir-<sandbox-name>.canvasmedical.com/Appointment' \
   --header 'Authorization: Bearer kpGhI9j7U6IVq7ScBaxmSogpKmA3bsfu' \
   --header 'Content-Type: application/json' \

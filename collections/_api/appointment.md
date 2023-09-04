@@ -7,7 +7,7 @@ sections:
         name: Appointment
         article: "a"
         description: >-
-         A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more Encounter(s).
+         A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in an [Encounter](/api/encounter). The appointment resource maps to both [patient appointments as well as other events](/documentation/appointment-and-note-types) in Canvas.<br>
         attributes:
           - name: id
             description: >-
@@ -38,7 +38,7 @@ sections:
                 type: string
           - name: status
             description: >-
-              The status of the appointment
+              The status of the appointment. 
             type: string
           - name: appointmentType
             type: string
@@ -100,22 +100,27 @@ sections:
             type: string
           - name: date
             type: string
+            description: Search based on when the appointment is scheduled (UTC). Uses an operand and a date field in the format YYYY-MM-DD. eq, gt, ge, lt, and le are currently supported operands (eq is assumed if no operand is sent) wo date parameters are accepted to allow for date range searches. "/Appointment?date=ge2021-09-16"
           - name: status
             type: string
         endpoints: [read, search, create, update]
         read:
+          description: Get information about an **Appointment**<br><br>**Rescheduled Appointments**<br>References in the `supportingInformation` can give some insight into rescheduled appointments.If you see `Previously Rescheduled Appointment` in `supportingInformation`, it means that the appointment you are currently reading was created by rescheduling the appointment in that Reference. If you see `Rescheduled Replacement Appointment` in the `supportingInformation`, it means that the appointment you are currently reading is now outdated by a new appointment.
           responses: [200, 404]
           example_request: appointment-read-request
           example_response: appointment-read-response
         search:
+          description: Search for an Appointment<br><br>**Pagination**<br>To paginate appointment search results, use the query param _count.<br><br>GET /Appointment?_count=10 will return the first 10 appointments, along with relative links to see the subsequent pages. The pages are specified by a combination of _count and _offset.
           responses: [200, 400]
           example_request: appointment-search-request
           example_response: appointment-search-response
         create:
+          description: Create an **Appointment**
           responses: [201, 400]
           example_request: appointment-create-request
           example_response: appointment-create-response
         update:
+          description: Update an **Appointment**
           responses: [200, 400]
           example_request: appointment-update-request
           example_response: appointment-update-response

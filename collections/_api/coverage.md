@@ -1,239 +1,697 @@
 ---
-title: "Coverage" 
+title: Coverage
+sections:
+  - type: section
+    blocks:
+      - type: apidoc
+        name: Coverage
+        article: "a"
+        description: >-
+          Financial instrument which may be used to reimburse or pay for health care products and services. Includes both insurance and self-payment.
+        attributes:
+          - name: id
+            description: >-
+              The identifier of the coverage
+            type: string
+            required: true
+          - name: resourceType
+            type: string
+            required: true
+          - name: status
+            description: >-
+              The status of the coverage
+            type: string
+            required: true
+          - name: type
+            description: >-
+              Coverage category such as medical or accident
+            type: json
+            attributes:
+              - name: coding
+                type: json
+                attributes:
+                  - name: system
+                    type: string
+                    required: true
+                  - name: code
+                    type: string
+                    required: true
+                  - name: display
+                    type: string
+                    required: true
+          - name: subscriber
+            type: string
+            description: >-
+              The subscriber to the policy
+          - name: subscriberId
+            description: >-
+              ID assigned to the subscriber
+            type: string
+            required: true
+          - name: beneficiary
+            description: >-
+              Plan beneficiary
+            type: string
+          - name: relationship
+            type: string
+            description: >-
+              Beneficiary relationship to the subscriber
+            attributes:
+              - name: coding
+                type: json
+                attributes:
+                  - name: system
+                    type: string
+                    required: true
+                  - name: code
+                    type: string
+                    required: true
+                  - name: display
+                    type: string
+              - name: text
+                type: string
+                required: true
+          - name: period
+            description: >-
+              The effective period of the exception
+            type: json
+            attributes:
+              - name: start
+                type: date
+                required: true
+              - name: end
+                type: date
+                required: true
+          - name: payor
+            type: string
+            description: >-
+              Issuer of the policy
+          - name: class
+            type: string
+            description: >-
+              Additional coverage classifications
+          - name: order
+            type: string
+            description: >-
+              Relative order of the coverage
+        search_parameters:
+          - name: _id
+            type: string
+            description: A Canvas-issued unique identifier
+          - name: patient
+            type: string
+          - name: subscriberID
+            type: string
+        endpoints: [search, create, update]
+        search:
+          responses: [200, 400]
+          example_request: coverage-search-request
+          example_response: coverage-search-response
+        create:
+          responses: [201, 400]
+          example_request: coverage-create-request
+          example_response: coverage-create-response
+        update:
+          responses: [200, 400]
+          example_request: coverage-update-request
+          example_response: coverage-update-response
 ---
-## Coverage Create
+<div id="coverage-search-request">
+{% tabs coverage-search-request %}
+{% tab coverage-search-request python %}
+```sh
+import requests
 
-### Getting the newly-created coverage ID.
-Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the `Location:` header. You will use this for subsequent requests that reference this coverage.
+url = "https://fumage-example.canvasmedical.com/Coverage?subscriberid=12345&_count=10&_offset=0&patient=patient"
 
-### Finding created coverages in the Canvas UI:
-[block:image]
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% tab coverage-search-request curl %}
+```sh
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/Coverage?subscriberid=12345&_count=10&_offset=0&patient=patient' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="coverage-search-response">
+{% tabs coverage-search-response %}
+{% tab coverage-search-response 200 %}
+```json
 {
-  "images": [
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 4,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/Coverage?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Coverage?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Coverage?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Coverage",
+                "id": "171a7243-f568-48cb-8052-3f2990dac1cd",
+                "status": "entered-in-error",
+                "subscriber": {
+                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                    "type": "Patient"
+                },
+                "subscriberId": "NA",
+                "beneficiary": {
+                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                    "type": "Patient"
+                },
+                "relationship": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+                            "code": "self",
+                            "display": "Self"
+                        }
+                    ],
+                    "text": "18"
+                },
+                "period": {
+                    "start": "2022-01-01"
+                },
+                "payor": [
+                    {
+                        "reference": "Organization/9b6709aa-a84e-4070-9a83-7c14dc31a511",
+                        "type": "Organization",
+                        "display": "AL BCBS"
+                    }
+                ],
+                "order": 2
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Coverage",
+                "id": "27f42512-23e6-4c17-8569-80e14792b6f8",
+                "status": "entered-in-error",
+                "subscriber": {
+                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                    "type": "Patient"
+                },
+                "subscriberId": "A1",
+                "beneficiary": {
+                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                    "type": "Patient"
+                },
+                "relationship": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+                            "code": "self",
+                            "display": "Self"
+                        }
+                    ],
+                    "text": "18"
+                },
+                "period": {
+                    "start": "2022-05-31"
+                },
+                "payor": [
+                    {
+                        "reference": "Organization/02211bf5-9ee1-47d1-a1bc-e06bd848e5f3",
+                        "type": "Organization",
+                        "display": "Kevin Carey Insurance, Inc."
+                    }
+                ],
+                "order": 1
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Coverage",
+                "id": "3dd99deb-1e4a-445d-96b3-61f985e28bf9",
+                "status": "entered-in-error",
+                "subscriber": {
+                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                    "type": "Patient"
+                },
+                "subscriberId": "A2",
+                "beneficiary": {
+                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                    "type": "Patient"
+                },
+                "relationship": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+                            "code": "self",
+                            "display": "Self"
+                        }
+                    ],
+                    "text": "18"
+                },
+                "period": {
+                    "start": "2022-05-31"
+                },
+                "payor": [
+                    {
+                        "reference": "Organization/02211bf5-9ee1-47d1-a1bc-e06bd848e5f3",
+                        "type": "Organization",
+                        "display": "Kevin Carey Insurance, Inc."
+                    }
+                ],
+                "order": 1
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Coverage",
+                "id": "d8b83404-e149-4883-ae60-0f389b210f53",
+                "status": "active",
+                "subscriber": {
+                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                    "type": "Patient"
+                },
+                "subscriberId": "84716239",
+                "beneficiary": {
+                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                    "type": "Patient"
+                },
+                "relationship": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+                            "code": "self",
+                            "display": "Self"
+                        }
+                    ],
+                    "text": "18"
+                },
+                "period": {
+                    "start": "2022-01-01"
+                },
+                "payor": [
+                    {
+                        "reference": "Organization/2905dc94-f3f6-4e2f-90a2-1bb286600dc6",
+                        "type": "Organization",
+                        "display": "Tufts Health Plan"
+                    }
+                ],
+                "order": 1
+            }
+        }
+    ]
+}
+```
+{% endtab %}
+{% tab coverage-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
     {
-      "image": [
-        "https://files.readme.io/a055177-Screen_Shot_2022-06-23_at_11.46.31_AM.png",
-        "Screen Shot 2022-06-23 at 11.46.31 AM.png",
-        1686,
-        284,
-        "#f6f6f6"
-      ]
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
-[/block]
-The above screenshot depicts what a coverage will look like in the UI after it has been created:
-- Arrow 1 points to the `order` number. 
-- The title that arrow 2 points to comes from what the `payer.code` is mapped to. 
-- Arrow 3's text comes from `type`. 
-- Arrow 4 points to the `subscriberID`.
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-[block:image]
+<div id="coverage-create-request">
+{% tabs coverage-create-request %}
+{% tab coverage-create-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Coverage"
+
+payload = {
+    "resourceType": "\"Coverage\"",
+    "order": 1,
+    "status": "\"active\"",
+    "type": { "coding": [
+            {
+                "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+                "code": "MILITARY",
+                "display": "military health program"
+            }
+        ] },
+    "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
+    "subscriberId": "\"1234\"",
+    "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
+    "relationship": { "coding": [
+            {
+                "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+                "code": "self"
+            }
+        ] },
+    "period": "{         \"start\": \"2021-06-27\"       	\"end\": \"2023-06-27\"     }",
+    "payor": [
+        {
+            "identifier": {
+                "system": "https://www.claim.md/services/era/",
+                "value": "AMM03"
+            },
+            "display": "Independence Blue Cross Blue Shield"
+        }
+    ],
+    "class": [
+        {
+            "type": { "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+                        "code": "plan"
+                    }
+                ] },
+            "value": "Starfleet HMO"
+        },
+        {
+            "type": { "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+                        "code": "subplan"
+                    }
+                ] },
+            "value": "Stars"
+        },
+        {
+            "type": { "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+                        "code": "group"
+                    }
+                ] },
+            "value": "Captains Only"
+        },
+        {
+            "type": { "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+                        "code": "subgroup"
+                    }
+                ] },
+            "value": "Subgroup 2"
+        }
+    ]
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.text)
+
+```
+{% endtab %}
+{% tab coverage-create-request curl %}
+```sh
+curl --request POST \
+     --url https://fumage-example.canvasmedical.com/Coverage \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
 {
-  "images": [
+  "resourceType": "\"Coverage\"",
+  "order": 1,
+  "status": "\"active\"",
+  "type": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+        "code": "MILITARY",
+        "display": "military health program"
+      }
+    ]
+  },
+  "subscriber": {
+    "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34"
+  },
+  "subscriberId": "\"1234\"",
+  "beneficiary": {
+    "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3"
+  },
+  "relationship": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+        "code": "self"
+      }
+    ]
+  },
+  "period": "{         \"start\": \"2021-06-27\"       \t\"end\": \"2023-06-27\"     }",
+  "payor": [
     {
-      "image": [
-        "https://files.readme.io/225155b-updatecoverage.png",
-        "updatecoverage.png",
-        2152,
-        1588,
-        "#f5f5f5"
-      ]
+      "identifier": {
+        "system": "https://www.claim.md/services/era/",
+        "value": "AMM03"
+      },
+      "display": "Independence Blue Cross Blue Shield"
+    }
+  ],
+  "class": [
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "code": "plan"
+          }
+        ]
+      },
+      "value": "Starfleet HMO"
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "code": "subplan"
+          }
+        ]
+      },
+      "value": "Stars"
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "code": "group"
+          }
+        ]
+      },
+      "value": "Captains Only"
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "code": "subgroup"
+          }
+        ]
+      },
+      "value": "Subgroup 2"
     }
   ]
 }
-[/block]
-The above view can be found by clicking the three dots on the coverage and selecting "View/Update": 
-- Arrow 1 points to the field that is filled by the `payor` attribute. 
-- Arrow 2 points to the `subscriberId`. 
-- Arrow 3 points to a field that is filled if `type.code`= 'group' is included. 
-- Arrow 4 shows where the value associated with `type.code`= 'plan' is displayed. 
-- The `period` parameter's start and end attributes are displayed here as well (see arrows 5 and 6). 
-- Arrow 7 points to the coverage type that is specified via the `type.coding`. In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings. To get to these settings, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers).
-- Finally, arrow 8's selection of patient or other as the subscriber is based on the `relationship` field. If anything other than 'self' is inputted as `relationship.code`, the below screen will show on the Canvas UI within the View/Update Coverage screen:
-[block:image]
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/08a25a2-Screen_Shot_2022-06-23_at_2.57.38_PM.png",
-        "Screen Shot 2022-06-23 at 2.57.38 PM.png",
-        1302,
-        286,
-        "#f9f8f8"
-      ]
-    }
-  ]
-}
-[/block]
-
-This will autofill the subscriber as the patient in the `subscriber` field, and patient relationship to subscriber will be set as whatever was ingested for `relationship.` 
-
-
-### Attributes that are pulled into Canvas:
-
-### order [required]
-
-The order in which coverages should be used when adjudicating claims. It must be a number 1 through 5. If multiple coverages are created with the same order number, the older one will be bumped down in rank, and the new one will take that rank. If this leads to multiple coverages being incremented to 5, the oldest (first to be inputted) of the coverages at this rank will be displayed on the Canvas UI.
+'
 ```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="coverage-create-response">
+{% tabs coverage-create-response %}
+{% tab coverage-create-response 201 %}
+```json
+null
+```
+{% endtab %}
+{% tab coverage-create-response 400 %}
+```json
 {
-  "codes": [
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
     {
-      "code": "\"order\": 1",
-      "language": "text"
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
 ```
-### status [required]
+{% endtab %}
+{% endtabs %}
+</div>
 
-Canvas currently only ingests 'active' and 'entered-in-error' as statuses. If anything else is entered, status will default to active. Status is not displayed on the Canvas UI.
+<div id="coverage-update-request">
+{% tabs coverage-update-request %}
+{% tab coverage-update-request curl %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Coverage/_id"
+
+payload = {
+    "resourceType": "Coverage",
+    "order": 1,
+    "status": "active",
+    "type": { "coding": [
+            {
+                "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+                "code": "MILITARY",
+                "display": "military health program"
+            }
+        ] },
+    "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
+    "subscriberId": "1234",
+    "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
+    "relationship": { "coding": [
+            {
+                "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+                "code": "self"
+            }
+        ] },
+    "period": {
+        "start": "2021-08-27",
+        "end": "2025-08-27"
+    },
+    "payor": [
+        {
+            "identifier": {
+                "system": "https://www.claim.md/services/era/",
+                "value": "AMM03"
+            },
+            "display": "Independence Blue Cross Blue Shield"
+        }
+    ],
+    "class": "\"class\": [        {           \"type\": {               \"coding\": [                    {                       \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",                       \"code\": \"plan\"                    }               ]          },          \"value\": \"Starfleet HMO\"        },        {           \"type\": {               \"coding\": [                    {                       \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",                       \"code\": \"subplan\"                    }               ]          },          \"value\": \"Stars\"        },        {            \"type\": {                \"coding\": [                    {                        \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",                        \"code\": \"group\"                    }                 ]            },           \"value\": \"Captains Only\"         },         {           \"type\": {               \"coding\": [                    {                       \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",                       \"code\": \"subgroup\"                    }               ]          },          \"value\": \"Subgroup 2\"        }   ]"
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.text)
+
 ```
+{% endtab %}
+{% tab coverage-update-request curl %}
+```sh
+curl --request PUT \
+     --url https://fumage-example.canvasmedical.com/Coverage/_id \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
 {
-  "codes": [
+  "resourceType": "Coverage",
+  "order": 1,
+  "status": "active",
+  "type": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+        "code": "MILITARY",
+        "display": "military health program"
+      }
+    ]
+  },
+  "subscriber": {
+    "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34"
+  },
+  "subscriberId": "1234",
+  "beneficiary": {
+    "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3"
+  },
+  "relationship": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+        "code": "self"
+      }
+    ]
+  },
+  "period": {
+    "start": "2021-08-27",
+    "end": "2025-08-27"
+  },
+  "payor": [
     {
-      "code": "\"status\": \"active\"",
-      "language": "text"
+      "identifier": {
+        "system": "https://www.claim.md/services/era/",
+        "value": "AMM03"
+      },
+      "display": "Independence Blue Cross Blue Shield"
+    }
+  ],
+  "class": "\"class\": [        {           \"type\": {               \"coding\": [                    {                       \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",                       \"code\": \"plan\"                    }               ]          },          \"value\": \"Starfleet HMO\"        },        {           \"type\": {               \"coding\": [                    {                       \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",                       \"code\": \"subplan\"                    }               ]          },          \"value\": \"Stars\"        },        {            \"type\": {                \"coding\": [                    {                        \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",                        \"code\": \"group\"                    }                 ]            },           \"value\": \"Captains Only\"         },         {           \"type\": {               \"coding\": [                    {                       \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",                       \"code\": \"subgroup\"                    }               ]          },          \"value\": \"Subgroup 2\"        }   ]"
+}
+'
+
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="coverage-update-response">
+{% tabs coverage-update-response %}
+{% tab coverage-update-response 200 %}
+```json
+null
+```
+{% endtab %}
+{% tab coverage-update-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
 ```
-### type
+{% endtab %}
+{% endtabs %}
+</div>
 
-Coverage code category such as medical or accident using values from http://hl7.org/fhir/ValueSet/coverage-type. The coding object contains the following attributes: 
-
-- The `system` URL must match `http://hl7.org/fhir/ValueSet/coverage-type` exactly or the type will be ignored.
-- `code` is a required string. If an empty string is entered for the code, the entire type field will be ignored by Canvas. 
-- `display` is ignored.
-
-In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings. To get to these settings, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers).
-```
-{
-  "codes": [
-    {
-      "code": "\"type\": {\n        \"coding\": [\n            {\n                \"system\": \"http://hl7.org/fhir/ValueSet/coverage-type\",\n                \"code\": \"MILITARY\",\n                \"display\": \"military health program\"\n            }\n        ]\n }",
-      "language": "text"
-    }
-  ]
-}
-```
-### subscriber [required]
-
-Canvas patient resource for the subscriber of the coverage, formatted like "Patient/5350cd20de8a470aa570a852859ac87e". 
-```
-{
-  "codes": [
-    {
-      "code": "\"subscriber\": {\n      \"reference\": \"Patient/febae9dcb7cf4d88ba27cc552a3f96b34\"\n },",
-      "language": "text"
-    }
-  ]
-}
-```
-### subscriberId
-
-Value assigned by insurer to identify the subscriber.
-```
-{
-  "codes": [
-    {
-      "code": "\"subscriberId\": \"1234\",",
-      "language": "text"
-    }
-  ]
-}
-```
-### beneficiary [required]
-
-Canvas patient resource the coverage should be created for, formatted like "Patient/5350cd20de8a470aa570a852859ac87e". This dictates which patient the coverage is for.
-```
-{
-  "codes": [
-    {
-      "code": "\"beneficiary\": {\n        \"reference\": \"Patient/febae9dcb7cf4d88ba27cc552a3f96b3\"\n},",
-      "language": "text"
-    }
-  ]
-}
-```
-### relationship [required]
-
-The beneficiary's relationship to the subscriber from http://hl7.org/fhir/ValueSet/subscriber-relationship.  If more than one value is sent from the ValueSet, the first one in the list will be used. The system must match "http://hl7.org/fhir/ValueSet/subscriber-relationship" exactly. The choices for the relationship code are: 'child', 'spouse', 'other', 'self' and 'injured'. 
-```
-{
-  "codes": [
-    {
-      "code": "\"relationship\": {\n   \"coding\": [\n       {\n          \"system\": \"http://hl7.org/fhir/ValueSet/subscriber-relationship\",\n          \"code\": \"self\"\n       }\n   ]\n},",
-      "language": "text"
-    }
-  ]
-}
-```
-### period [required]
-
-`period.start` Indicates when the coverage became active for the patient, formatted as YYYY-MM-DD. This is a required field.
-`period.end` Indicates when the coverage was no longer active for the patient, formatted as YYYY-MM-DD. Adding an end date to the period is not required. If it is not entered, it will default to no end date. 
-Coverage dates can be viewed in the Canvas UI by clicking the three dots in the top right corner of the coverage and selecting 'View/Update'. 
-```
-{
-  "codes": [
-    {
-      "code": "\"period\": {\n    \"start\": \"2021-06-27\"\n    \"end\": \"2023-06-27\"\n},",
-      "language": "text"
-    }
-  ]
-}
-```
-### payor [required]
-
-`payor.identifier`: If more than one is sent, the first one in the list will be used.
-         -`value`: The payor id received from a clearinghouse (we use Claim.md).
-         -`system`: should be set to "https://www.claim.md/services/era/"
-`display`: This field is ignored.
-```
-{
-  "codes": [
-    {
-      "code": " \"payor\": [\n    {\n        \"identifier\": {\n            \"system\": \"https://www.claim.md/services/era/\",\n            \"value\": \"AMM03\"\n        },\n        \"display\": \"Independence Blue Cross Blue Shield\"\n    }\n],",
-      "language": "text"
-    }
-  ]
-}
-```
-### class
-
-This list is used to define the plan, subplan, group and subgroup. The example below shows the type attribute for each class. None of these classes are required and can be omitted. The `system` of each coding must match "http://hl7.org/fhir/ValueSet/coverage-class", and the code is one of the four classes. 
-
-The value attribute is a free text field to denote the value for each type.
-
-Subplan and subgroup are stored by Canvas but are not displayed on the Canvas UI.
-```
-{
-  "codes": [
-    {
-      "code": "\"class\": [\n     {\n        \"type\": {\n            \"coding\": [\n                 {\n                    \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",\n                    \"code\": \"plan\"\n                 }\n            ]\n       },\n       \"value\": \"Starfleet HMO\"\n     },\n     {\n        \"type\": {\n            \"coding\": [\n                 {\n                    \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",\n                    \"code\": \"subplan\"\n                 }\n            ]\n       },\n       \"value\": \"Stars\"\n     },\n     {\n         \"type\": {\n             \"coding\": [\n                 {\n                     \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",\n                     \"code\": \"group\"\n                 }\n              ]\n         },\n        \"value\": \"Captains Only\"\n      },\n      {\n        \"type\": {\n            \"coding\": [\n                 {\n                    \"system\": \"http://hl7.org/fhir/ValueSet/coverage-class\",\n                    \"code\": \"subgroup\"\n                 }\n            ]\n       },\n       \"value\": \"Subgroup 2\"\n     }\n],",
-      "language": "text"
-    }
-  ]
-}
-```
-
-## Coverage Search
-### Adding a Coverage in Canvas
-
-See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4408206355603-Patient-Coverages-2-0) to learn how to create or update coverage for a patient.
-
-### Pagination
-
-To paginate coverage search results, use the query param `_count`.
-Example:
-`GET /Coverage?_count=10` will return the first 10 coverages, along with relative links to see the subsequent pages.
-The pages are specified by a combination of `_count` and `_offset`.
-
-
-## Coverage Update
-
-Coverage Update resembles [Coverage Create](ref:coverage-create) with a few exceptions. These exceptions are outlined below: 
-
-- If any attribute that is not required is omitted that is currently set in Canvas's database, that attribute's value will be overwritten to be empty.
-- The `id` field is used to identify the coverage we are updati

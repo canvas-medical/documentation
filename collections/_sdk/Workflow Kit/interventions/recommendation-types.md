@@ -1,16 +1,15 @@
 ---
-title: "Canvas SDK Recommendation Types"
+title: "Recommendation Types"
 
 ---
-## Recommendation Types
 
-We saw in our [last example](doc:sdk-adding-more-functionality-to-a-protocol) that instead of adding an instance of a generic `Recommendation` to be passed to the `add_recommendation` method, we used an instance of the more specific `InterviewRecommendation` class. The Canvas Workflow Kit contains many built-in Recommendation classes that can be used to add different types of recommendations to a Protocol. These are used in order to provide guidance to a course of action for a patient.
+We saw in our [last example](/sdk/sdk-quickstart/#expanding-a-protocol) that instead of adding an instance of a generic `Recommendation` to be passed to the `add_recommendation` method, we used an instance of the more specific `InterviewRecommendation` class. The Canvas Workflow Kit contains many built-in Recommendation classes that can be used to add different types of recommendations to a Protocol. These are used in order to provide guidance to a course of action for a patient.
 
 To get you started using these recommendations, we have written out some example protocol code for you. Please see our [Open Source SDK repo](https://github.com/canvas-medical/open-source-sdk/tree/main/canvas_workflow_helpers/protocols/recommendations).
 <br>
 <br>
 * * *
-### AllergyRecommendation
+## AllergyRecommendation
 
 **Description**: A recommendation specifying that a patient may have an allergy that should be recorded via the [allergy command](https://canvas-medical.zendesk.com/hc/en-us/articles/360056920593-Document-an-Allergy).
 
@@ -65,7 +64,7 @@ When the "Allergy" button is clicked, it will generate an Allergy command:
 <br>
 <br>
 * * *
-### AssessRecommendation
+## AssessRecommendation
 
 **Description**: A recommendation specifying that a patient may need to have an active condition assessed that should be recorded via the [assess condition command](https://canvas-medical.zendesk.com/hc/en-us/articles/360055230394-Assess-a-Patient-Condition).
 
@@ -166,7 +165,7 @@ When the "Assess" button is clicked, it will generate an Assess command:
 <br>
 <br>
 * * *
-### DiagnoseRecommendation
+## DiagnoseRecommendation
 
 **Description**: A recommendation specifying that a patient may require a condition to be diagnosed. A Diagnose Recommendation allows providers the ability to create a [Diagnose Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057089133-Making-a-Diagnosis) with the click of a button directly in a patient's chart.
 
@@ -216,7 +215,7 @@ When the "Diagnose" button is clicked, it will generate a Diagnose command and p
 <br>
 <br>
 * * *
-### FollowUpRecommendation
+## FollowUpRecommendation
 
 **Description**: A recommendation specifying that a patient may require a Follow Up appointment, which can be indicated using the [Follow Up](https://canvas-medical.zendesk.com/hc/en-us/articles/360055261874-Follow-Up-Command) command.
 
@@ -230,7 +229,7 @@ When the "Diagnose" button is clicked, it will generate a Diagnose command and p
 | `patient`   | `Patient` | `true`   | An instance of a `Patient`. This should always be passed as `self.patient`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `title`     | _string_  | `false`  | The text to show on a patient's chart that describes the recommendation. If it is omitted, it will default to "Request follow-up appointment"                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `narrative` | _string_  | `false`  | The text to show on a patient's chart under the title of the recommendation. For this to successfully display, the command `add_narrative(followUp_recommendation.narrative) must be used. If a narrative is not included in the recommendation, but the `add_narrative\` command is used, it will default to "{patient.name} needs a follow-up appointment."                                                                                                                                                                                                                 |
-| `context`   | _dict_    | `false`  | A dictionary that may optionally contain the keys `requested_date`, where the value is a string in the format "YYYY-MM-DD", `reason_for_visit`, where the value is a string, `internal_comment` where the value is a string that will populate the 'scheduling comments' field of the Follow Up command, and `requested_note_type` where the value is a code pertaining to a note type. This note type must be scheduleable. To learn more about configurable note types, see this [article](https://canvas-medical.zendesk.com/hc/en-us/articles/6623684024083-Note-Types-). |
+| `context`   | _dict_    | `false`  | A dictionary that may optionally contain the keys `requested_date`, where the value is a string in the format "YYYY-MM-DD", `reason_for_visit`, where the value is a string, `internal_comment` where the value is a string that will populate the 'scheduling comments' field of the Follow Up command, and `requested_note_type` where the value is a code pertaining to a note type. This note type must be scheduleable. To learn more about configurable note types, see this [article](/documentation/appointment-and-note-types). |
 
 **Example**:
 
@@ -266,7 +265,7 @@ Upon clicking the Follow up button, the `Follow Up` command will be populated:
 <br>
 <br>
 * * *
-### HyperlinkRecommendation
+## HyperlinkRecommendation
 
 **Description**: A recommendation specifying a button and href that opens a link in a new tab.
 
@@ -305,7 +304,7 @@ A recommendation that contains the link will appear in the list of Protocols for
 <br>
 <br>
 * * *
-### ImagingRecommendation
+## ImagingRecommendation
 
 **Description**: A recommendation specifying that a patient may be due for an imaging order. An Imaging Recommendation allows providers the ability to create an [Image command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057918193) with the click of a button directly in a patient's chart.
 
@@ -326,9 +325,9 @@ A recommendation that contains the link will appear in the list of Protocols for
 
 | code system | url                              |
 | :---------- | :------------------------------- |
-| snomed      | <http://snomed.info/sct>         |
-| loinc       | <http://loinc.org>               |
-| cpt         | <http://www.ama-assn.org/go/cpt> |
+| SNOMED      | <http://snomed.info/sct>         |
+| LOINC®       | <http://loinc.org>               |
+| CPT®         | <http://www.ama-assn.org/go/cpt> |
 
 If there are multiple codings in the ValueSet passed into the imaging argument, the coding that was entered first into the database will be used. We strongly recommend you only pass the single coding desired. 
 
@@ -373,7 +372,7 @@ After pressing the _Order_ button, a Note Command to order imaging will be popul
 <br>
 <br>
 * * *
-### ImmunizationRecommendation
+## ImmunizationRecommendation
 
 **Description**: A recommendation specifying that a patient may be due for an immunization. Use this to guide the user to the [immunization command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293-Documenting-an-Immunization).
 
@@ -429,7 +428,7 @@ Upon clicking the _Immunize_ button, the _Immunize_ command will be populated in
 <br>
 <br>
 * * *
-### InstructionRecommendation
+## InstructionRecommendation
 
 **Description**: A recommendation specifying that a provider may need to provide a set of instructions to a patient. An Instruction Recommendation allows providers the ability to create an [Instruct command](https://canvas-medical.zendesk.com/hc/en-us/articles/360055309574) with the click of a button directly in a patient's chart.
 
@@ -483,7 +482,7 @@ Upon clicking the _Instruct_ button, the _Instruct_ command will be populated in
 <br>
 <br>
 * * *
-### InterviewRecommendation
+## InterviewRecommendation
 
 **Description**: A recommendation specifying that a patient may need to complete one or more questionnaires.  
 An Interview Recommendation allows providers the ability to create a [Questionnaire command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057544593-Command-Questionnaire) with the click of a button directly in a patient's chart.
@@ -500,7 +499,7 @@ An Interview Recommendation allows providers the ability to create a [Questionna
 | `title`            | _string_         | `false`  | The text to show on a patient's chart that describes the recommendation.                                                                                                                     |
 | `narrative`        | _string_         | `false`  | The text to show on a patient's chart under the title of the recommendation. For this to successfully display, the command \`add_narrative(interview_recommendation.narrative) must be used. |
 
-\* interview note: for this feature to work as expected, each questionnaire loaded into Canvas should have a unique coding. If two questionnaires share the same coding, the first item found in Canvas will be used. If two questionnaire codings are included in the ValueSet, the first item in the list will be used to autogenerate the interview command. To learn more about importing questionnaires to canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4403561447827-Creating-a-New-Questionnaire). 
+\* interview note: for this feature to work as expected, each questionnaire loaded into Canvas should have a unique coding. If two questionnaires share the same coding, the first item found in Canvas will be used. If two questionnaire codings are included in the ValueSet, the first item in the list will be used to autogenerate the interview command. To learn more about importing questionnaires to Canvas, see [here](/documentation/questionnaires). 
 
 **Example**:
 
@@ -534,7 +533,7 @@ Upon pressing the _Interview_ button, the _Questionnaire_ command will populate 
 <br>
 <br>
 * * *
-### LabRecommendation
+## LabRecommendation
 
 **Description**: A recommendation specifying that a patient may be due for a Lab order. A Lab Recommendation allows providers the ability to create a [Lab Order](https://canvas-medical.zendesk.com/hc/en-us/articles/360056890753) with the click of a button directly in a patient's chart.
 
@@ -604,7 +603,7 @@ Upon pressing the _Order_ button, the _Lab Order_ command will populate the pati
 <br>
 <br>
 * * *
-### PerformRecommendation
+## PerformRecommendation
 
 **Description**: A recommendation specifying that a provider may need to [perform an In-Office Procedure](https://canvas-medical.zendesk.com/hc/en-us/articles/360055626874-Perform-Command-for-In-Office-Procedures) for a patient. A Perform Recommendation allows providers the ability to create an Instruction command with the click of a button directly in a patient's chart.
 
@@ -664,7 +663,7 @@ Upon pressing the _Perform_ button, the _Perform_ command will populate the pati
 <br>
 <br>
 * * *
-### PlanRecommendation
+## PlanRecommendation
 
 **Description**: A recommendation specifying that a provider may need to document a Plan. A Plan Recommendation allows providers the ability to create a [Plan Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057457013) with the click of a button directly in a patient's chart.
 
@@ -711,7 +710,7 @@ Upon pressing the _Plan_ button, the _Plan_ command will populate the patient's 
 <br>
 <br>
 * * *
-### PrescribeRecommendation
+## PrescribeRecommendation
 
 **Description**: A recommendation advising the provider to prescribe a treatment for a patient.
 
@@ -798,7 +797,7 @@ A Prescribe command will appear after clicking the prescribe button:
 <br>
 <br>
 * * *
-### ReferRecommendation
+## ReferRecommendation
 
 **Description**: A recommendation advising a provider to create a referral for a patient. A Refer Recommendation allows providers the ability to create an [Refer Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360055709494) with the click of a button directly in a patient's chart.
 
@@ -869,7 +868,7 @@ A Refer command will appear after clicking the refer button:
 <br>
 <br>
 * * *
-### StructuredAssessmentRecommendation
+## StructuredAssessmentRecommendation
 
 **Description**: A recommendation specifying that one or more Structured Assessments should be completed for a patient.  An Assess Recommendation allows providers the ability to create an [Assess command](https://canvas-medical.zendesk.com/hc/en-us/articles/4415631833875-Structured-Assessment) with the click of a button directly in a patient's chart.
 
@@ -923,7 +922,7 @@ Upon pressing the _Assess_ button, the _Structured Assessment_ command will popu
 <br>
 <br>
 * * *
-### TaskRecommendation
+## TaskRecommendation
 
 **Description**: A recommendation advising the provider to set up a task for another staff member. A provider can use the [Task command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks) to fulfill this recommendation.
 
@@ -970,7 +969,7 @@ Once the task button is selected, it will generate a task command that has been 
 <br>
 <br>
 * * *
-### VitalSignRecommendation
+## VitalSignRecommendation
 
 **Description**: A recommendation specifying a vital sign reading should be taken. This recommendation can be fulfilled with the [Vitals command](https://canvas-medical.zendesk.com/hc/en-us/articles/360056077654-Logging-Vital-Signs).
 

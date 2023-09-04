@@ -45,7 +45,7 @@ The task panel is a great tool to organize work to be done. After your patients 
 <br>
 You will need to configure Teams and Task Labels in Canvas. 
 
- - [Teams]({{site.baseurl}}/documentation/teams/) are intended to group work. You may want to group specialty providers together (i.e. `Dermatology Providers`), or set up teams that support certain times of the day (i.e. `After Hours Support`). 
+ - [Teams]({{site.baseurl}}/documentation/teams/) are intended to group work. You may want to group specialty providers together (e.g. `Dermatology Providers`), or set up teams that support certain times of the day (e.g. `After Hours Support`). 
  - [Task Labels]({{site.baseurl}}/documentation/task-labels/) are meant to help organize tasks and are helpful as filters within the task panel. You may need to indicate that a patient should be treated as priority and a label would be a way to do that.
 
 Once configured, you can assign tasks to both indivduals and/or team, and assign labels using the [FHIR Task Create and Update]({{site.baseurl}}/api/task/) endpoints. 

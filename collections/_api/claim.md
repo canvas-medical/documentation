@@ -6,8 +6,7 @@ sections:
       - type: apidoc
         name: Claim
         article: "a"
-        description: >-
-          A provider issued list of professional services and products which have been provided, or are to be provided, to a patient which is sent to an insurer for reimbursement.
+        description: resource-description 
         attributes:
           - name: integration_type
             type: string
@@ -281,4 +280,11 @@ null
 {% endtab %}
 {% endtabs %}
 </div>
+
+  <div id=resouce-description>
+    A provider issued list of professional services and products which have been provided,
+    or are to be provided, to a patient which is sent to an insurer for reimbursement.
+  </div>
+
+
 

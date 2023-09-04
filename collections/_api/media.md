@@ -1,117 +1,163 @@
 ---
-title: "Media"
+title: Media
+sections:
+  - type: section
+    blocks:
+      - type: apidoc
+        name: Media
+        article: "a"
+        description: >-
+          A photo, video, or audio recording acquired or used in healthcare. The actual content may be inline or provided by direct reference.
+        attributes:
+          - name: integration_type
+            type: string
+            required: true
+          - name: integration_source
+            type: string
+            required: true
+            description: >-
+              The source of integration. This will be hardcoded to `fumage` for this endpoint
+          - name: patient_identifier
+            type: json
+            required: true
+            attributes:
+              - name: identifier_type
+                type: string
+                required: true
+                description: >-
+                  The type of integration. This will be hardcoded to `fumage` for this endpoint
+              - name: identifier
+                type: string
+                required: true
+                description: >-
+                  The identifier for the image
+          - name: integration_payload
+            type: json
+            required: true
+            attributes:
+              - name: status
+                type: string
+                required: true
+              - name: encounter_id
+                type: string
+                required: true
+              - name: media
+                type: json
+                required: true
+                attributes:
+                  - name: content_type
+                    type: string
+                    required: true
+                  - name: content
+                    type: string
+                    required: true
+              - name: originator
+                type: string
+              - name: title
+                type: string
+              - name: narrative
+                type: string
+        endpoints: [create]
+        create:
+          responses: [201, 400]
+          example_request: media-create-request
+          example_response: media-create-response
 ---
+<div id="media-create-request">
+{% tabs media-create-request %}
+{% tab media-create-request python %}
+```sh
+import requests
 
-## Media Create
-A successful FHIR Media create request will insert a [Visual Exam Finding](https://canvas-medical.zendesk.com/hc/en-us/articles/360057916493-Command-Visual-Exam-Finding) into a new or existing note for the patient.
+url = "https://fumage-example.canvasmedical.com/Media"
 
-### Media Attributes:
+payload = {
+    "resourceType": "Media",
+    "status": "completed",
+    "subject": { "reference": "Patient/610066552b0a42c5a0095a047cf1bff1" },
+    "encounter": { "reference": "Encounter/302fca5c-9231-4eca-83e7-c62b6ab93ba7" },
+    "operator": { "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e" },
+    "content": {
+        "contentType": "image/jpeg",
+        "data": "QWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzCg==",
+        "title": "Image title"
+    },
+    "note": [{ "text": "First note" }, { "text": "Second note" }]
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
 
-Canvas accepts a FHIR standard request body, you may refer to [FHIR Media Documentation](https://www.hl7.org/fhir/media.html) to help out in building your Media request. Below is our documentation on how Canvas specifically will use each attribute.
+response = requests.post(url, json=payload, headers=headers)
 
-### resourceType [REQUIRED] 
-
-This is hard coded to be `Media` for this endpoint
-[block:code]
+print(response.text)
+```
+{% endtab %}
+{% tab media-create-request curl %}
+```sh
+curl --request POST \
+     --url https://fumage-example.canvasmedical.com/Media \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
 {
-  "codes": [
+  "resourceType": "Media",
+  "status": "completed",
+  "subject": {
+    "reference": "Patient/610066552b0a42c5a0095a047cf1bff1"
+  },
+  "encounter": {
+    "reference": "Encounter/302fca5c-9231-4eca-83e7-c62b6ab93ba7"
+  },
+  "operator": {
+    "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e"
+  },
+  "content": {
+    "contentType": "image/jpeg",
+    "data": "QWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzCg==",
+    "title": "Image title"
+  },
+  "note": [
     {
-      "code": "\"resourceType\": \"Media\",",
-      "language": "text"
+      "text": "First note"
+    },
+    {
+      "text": "Second note"
     }
   ]
 }
-[/block]
-### status [REQUIRED]
+'
+```
+{% endtab %}
+{% endtabs %}
+</div>
 
-The FHIR media resource requires inclusion of the status attribute, and Canvas currently recognizes `completed` and `entered-in-error` values for status.
-[block:code]
+<div id="media-create-response">
+{% tabs media-create-response %}
+{% tab media-create-response 200 %}
+```json
+null
+```
+{% endtab %}
+{% tab media-create-response 400 %}
+```json
 {
-  "codes": [
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
     {
-      "code": "\"status\": \"completed\",",
-      "language": "text"
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
-[/block]
-### subject [REQUIRED]
-
-The subject attribute contains a reference to the patient that the media is a record of. This is a required value. The provided media content will be inserted into the patient's chart.
-[block:code]
-{
-  "codes": [
-    {
-      "code": "\"subject\": {\n\t\"reference\": \"Patient/610066552b0a42c5a0095a047cf1bff1\"\n},",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-### encounter
-
-The encounter attribute contains a reference to the encounter that is associated with the media. If an encounter is provided, the media will be inserted into the existing note for the encounter. If an encounter is not provided, then a new data import note will be created and the media will be inserted this new note.
-[block:code]
-{
-  "codes": [
-    {
-      "code": "\"encounter\": {\n\t\"reference\": \"Encounter/302fca5c-9231-4eca-83e7-c62b6ab93ba7\"\n},",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-### operator
-
-The operator attribute contains a reference to the practitioner or patient that generated the media. This will shows up in the Canvas UI when you click the command as the Originator in the tooltip that pops up. 
-[block:code]
-{
-  "codes": [
-    {
-      "code": "    \"operator\": {\n        \"reference\": \"Practitioner/610066552b0a42c5a0095a047cf1bff1\"\n    },",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-
-[block:code]
-{
-  "codes": [
-    {
-      "code": "  \"operator\": {\n        \"reference\": \"Patient/610066552b0a42c5a0095a047cf1bff1\"\n    },",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-### content [REQUIRED]
-
-The content attribute is a JSON object that contains metadata about the content and the content itself. This is a required value. The content object contains three attributes:
-
-- contentType [REQUIRED]: One of these supported MIME content types: `image/heic`, `image/jpeg`, `image/png`
-- content [REQUIRED] : Base64 string of the media content
-- title: An optional title of the content file
-[block:code]
-{
-  "codes": [
-    {
-      "code": "\"content\": {\n  \"contentType\": \"image/jpeg\",\n  \"data\": \"QWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzCg==\",\n  \"title\": \"Image title\"\n},",
-      "language": "text"
-    }
-  ]
-}
-[/block]
-### note
-
-The note attribute is a JSON array of JSON objects, each of which contains a `text` attribute that contains the text of a comment that will be attached to the inserted media on the UI.
-[block:code]
-{
-  "codes": [
-    {
-      "code": "\"note\": [\n        {\n            \"text\": \"First note\"\n        },\n        {\n            \"text\": \"Second note\"\n        }\n]",
-      "language": "text"
-    }
-  ]
-}
-[/block]
+```
+{% endtab %}
+{% endtabs %}
+</div>

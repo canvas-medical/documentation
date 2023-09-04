@@ -4,10 +4,11 @@ layout: documentation
 ---
 
 Staff represent Canvas users. By creating a new staff profile, a user will be automatically generated. 
-
+<br>
+<br>
 ## Adding a New Staff Member
 
-To add a new staff member, click ![add-staff](/assets/images/add-staff.png){:width="14%"} in the top right corner and then complete the following form. 
+To add a new staff member, click ![add-staff](/assets/images/add-staff.png){:width="9%"} in the top right corner and then complete the following form. 
 
 <b>Role:</b> Select the desired role for the new staff member being added. These roles are configurable. They typically align with credentials as they are appended to a clinician's name in certain views and print templates. They also drive whether a staff member has their own schedule on the calendar. 
 
@@ -38,8 +39,8 @@ This section is utilized to store provider specific numbers, including states li
 
 To add a new license, start by clicking "Add another Staff License" Then complete the following fields: 
 
-Issuing authority long name | The full name of the issuing authority, i.e. Drug Enforcement Agency |
-Issuing authority short name | The initials of the issuing authority, i.e. DEA |
+Issuing authority long name | The full name of the issuing authority, e.g. Drug Enforcement Agency |
+Issuing authority short name | The initials of the issuing authority, e.g. DEA |
 Issuing authority url | Copy and paste the issuing authority's url/web address
 License or certification identifier | Enter in the license number |
 Issuance date | Enter in the issued date |

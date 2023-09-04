@@ -1,10 +1,271 @@
 ---
-title: "Device"
+title: Device
+sections:
+  - type: section
+    blocks:
+      - type: apidoc
+        name: Device
+        article: "a"
+        description: >-
+          Implantable devices
+        attributes:
+          - name: id
+            type: string
+            description: A Canvas-issued unique identifier
+            required: true
+          - name: resourceType
+            type: string
+            required: true
+          - name: udiCarrier
+            type: string
+            attributes:
+              - name: deviceIdentifier
+                type: string
+              - name: carrierHRF
+                type: string
+          - name: status
+            type: string 
+          - name: distinctIdentifier
+            type: string
+          - name: manufacturer
+            type: string 
+          - name: manufactureDate
+            type: date
+          - name: expirationDate
+            type: date
+          - name: lotNumber
+            type: string
+          - name: serialNumber
+            type: string
+          - name: modelNumber
+            type: string
+          - name: type
+            type: json
+            attributes:
+              - name: coding
+                type: json
+                attributes:
+                  - name: system
+                    type: string
+                  - name: code
+                    type: string
+                  - name: display
+                    type: string
+          - name: patient
+            type: string
+            description: >-
+              The patient
+            required: true
+        search_parameters:
+          - name: id
+            type: string
+            description: A Canvas-issued unique identifier
+          - name: patient
+            type: string
+            description: >-
+              The patient
+        endpoints: [read, search]
+        read:
+          responses: [200, 404]
+          example_response: device-read-response
+          example_request: device-read-request
+        search:
+          responses: [200, 400]
+          example_response: device-search-response
+          example_request: device-search-request
+
 ---
+<div id="device-read-request">
+{% tabs device-read-request %}
+{% tab device-read-request python %}
+```sh
+import requests
 
-## Device Read
+url = "https://fumage-example.canvasmedical.com/Device/<id>"
 
-## Device Search
-### Creating Devices for a Patient
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
 
-To learn how to create a device resource for a patient, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4413855312147-Implantable-Device-List). It currently does not display on the Canvas UI, however it will be stored within the Canvas database and can be accessed via Device Read/Search. In order to generate the `type` attribute, a device code must be created and linked to the device via the admin settings on Canvas.
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% tab device-read-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/Device/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'z
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="device-read-response">
+{% tabs device-read-response %}
+{% tab device-read-response 200 %}
+```json
+{
+    "resourceType": "Device",
+    "id": "105c679e-02e3-46ca-85c5-d8a158a42839",
+    "udiCarrier": [
+        {
+            "deviceIdentifier": "08717648200274",
+            "carrierHRF": "=/08717648200274=,000025=A99971312345600=>014032=}013032&,1000000000000XYZ123"
+        }
+    ],
+    "status": "active",
+    "distinctIdentifier": "A99971312345600",
+    "manufactureDate": "2021-02-15",
+    "expirationDate": "2021-09-15",
+    "lotNumber": "234234",
+    "serialNumber": "13213123123123",
+    "type": {
+        "coding": [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "2478003",
+                "display": "Ocular prosthesis"
+            }
+        ]
+    },
+    "patient": {
+        "reference": "Patient/ff6fd298ab8d4b5a819197f43c936c7c",
+        "type": "Patient",
+        "display": "Giant Cube"
+    }
+}
+```
+{% endtab %}
+{% tab device-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Resource not found"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="device-search-request">
+{% tabs device-search-request %}
+{% tab device-search-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/DeviceSearch"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% tab device-search-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/Device \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="device-search-response">
+{% tabs device-search-response %}
+{% tab device-search-response 200 %}
+```json
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/Device?_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Device?_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Device?_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Device",
+                "id": "105c679e-02e3-46ca-85c5-d8a158a42839",
+                "udiCarrier": [
+                    {
+                        "deviceIdentifier": "08717648200274",
+                        "carrierHRF": "=/08717648200274=,000025=A99971312345600=>014032=}013032&,1000000000000XYZ123"
+                    }
+                ],
+                "status": "active",
+                "distinctIdentifier": "A99971312345600",
+                "manufactureDate": "2021-02-15",
+                "expirationDate": "2021-09-15",
+                "lotNumber": "234234",
+                "serialNumber": "13213123123123",
+                "type": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "2478003",
+                            "display": "Ocular prosthesis"
+                        }
+                    ]
+                },
+                "patient": {
+                    "reference": "Patient/ff6fd298ab8d4b5a819197f43c936c7c",
+                    "type": "Patient",
+                    "display": "Giant Cube"
+                }
+            }
+        }
+    ]
+}
+```
+{% endtab %}
+{% tab device-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+

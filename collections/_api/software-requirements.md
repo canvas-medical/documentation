@@ -1,23 +1,15 @@
 ---
 title: "Software Requirements"
-layout: documentation
+layout: apipage
 ---
-[block:api-header]
-{
-  "title": "Mandatory Software Components"
-}
-[/block]
-In order to access the FHIR API, a REST client such as Postman, or a high-level language (Java, Python, etc) that can be used to make HTTP requests, is needed. 
+### Mandatory Software Components
 
-[block:api-header]
-{
-  "title": "Mandatory software configuration"
-}
-[/block]
-In order to use the API, an application needs to be created in home-app as described in ["Customer Authentication".](https://docs.canvasmedical.com/reference/authentication)
-[block:api-header]
-{
-  "title": "All technical requirements and attributes necessary for registration"
-}
-[/block]
-See above ("Mandatory software configuration").
+In order to access the FHIR API, a REST client such as Postman, or a high-level language (Java, Python, etc) that can be used to make HTTP requests, is needed.
+
+### Mandatory Software Configuration
+
+In order to use the API, an application needs to be created in home-app as described in ["Customer Authentication".](api/customer-authentication)
+
+### All Technical Requirements and Attributes Necessary for Registration
+
+See above ("Mandatory Software Configuration").

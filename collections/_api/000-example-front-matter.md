@@ -1,5 +1,5 @@
 ---
-title: FHIR Patient 
+title: Patient 
 sections:
   - type: section
     blocks:
@@ -95,20 +95,14 @@ sections:
         endpoints: [read, search, create, update]
         read:
           responses: [200, 404]
-          example_request: patient-read-request
-          example_response: patient-read-response
+          example_response: example-payload-code
         search:
           responses: [200, 400]
-          example_request: patient-search-request
-          example_response: patient-search-response
+          example_response: example-search-response
         create:
-          responses: [201, 400]
-          example_request: patient-create-request
-          example_response: patient-create-response
+          example_request: example-create-request
         update:
-          responses: [200, 400]
-          example_request: patient-update-request
-          example_response: patient-update-response
+          example_request: example-update-request
 ---
 <div id="example-payload-code">
 {% tabs payload %}
@@ -125,7 +119,7 @@ some data here
 {% tab read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fhir-example.canvasmedical.com/Patient/_id \
+     --url https://fumage-example.canvasmedical.com/Patient/_id \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -138,7 +132,7 @@ curl --request GET \
 {% tab search-request curl %}
 ```sh
 curl --request GET \
-     --url https://fhir-example.canvasmedical.com/Patient \
+     --url https://fumage-example.canvasmedical.com/Patient \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -170,7 +164,7 @@ curl --request GET \
 {% tab create-request curl %}
 ```sh
 curl --request POST \
-     --url https://fhir-example.canvasmedical.com/Patient \
+     --url https://fumage-example.canvasmedical.com/Patient \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -231,7 +225,7 @@ curl --request POST \
 {% tab update-request curl %}
 ```sh
 curl --request PUT \
-     --url https://fhir-example.canvasmedical.com/Patient/_id \
+     --url https://fumage-example.canvasmedical.com/Patient/_id \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -241,11 +235,11 @@ curl --request PUT \
   "id": "c9491183c38b4fe793db70c60046db3f",
   "extension": [
     {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+      "url": "http://hl7.org/fumage/us/core/StructureDefinition/us-core-birthsex",
       "valueCode": "M"
     },
     {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+      "url": "http://hl7.org/fumage/us/core/StructureDefinition/us-core-ethnicity",
       "extension": [
         {
           "url": "text",
@@ -254,7 +248,7 @@ curl --request PUT \
       ]
     },
     {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+      "url": "http://hl7.org/fumage/us/core/StructureDefinition/us-core-race",
       "extension": [
         {
           "valueCoding": {
@@ -266,7 +260,7 @@ curl --request PUT \
       ]
     },
     {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
+      "url": "http://schemas.canvasmedical.com/fumage/extensions/preferred-pharmacy",
       "extension": [
         {
           "url": "ncpdp-id",
@@ -278,15 +272,15 @@ curl --request PUT \
       ]
     },
     {
-      "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+      "url": "http://hl7.org/fumage/StructureDefinition/tz-code",
       "valueCode": "America/New_York"
     },
     {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+      "url": "http://schemas.canvasmedical.com/fumage/extensions/clinical-note",
       "valueString": "I am a clinical caption from a Create message"
     },
     {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+      "url": "http://schemas.canvasmedical.com/fumage/extensions/administrative-note",
       "valueString": "I am an administrative caption from a Create message"
     }
   ],

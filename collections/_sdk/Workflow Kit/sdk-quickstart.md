@@ -167,7 +167,7 @@ The Populations section shows all active Protocols, a listing of patients that a
 ![Image](https://files.readme.io/eae99f2-canvas_protocols_page.png){:width="60%"}
 
 ![Image](https://files.readme.io/59f60db-protocol_population_tab.png){:width="60%"}
-
+<br><br>
 ## Creating a Protocol
 
 ### File Setup
@@ -328,7 +328,7 @@ Let's step through the example above:
         <td><code>identifiers</code></td>
         <td><em>list[string]</em></td>
         <td><strong>false</strong></td>
-        <td>This is a list of identifiers associated with the Protocol. These are sometimes populated with eCQI codes (i.e., <em>CMS125v6</em>), but can also be populated with strings of your choice to identify your custom Protocols. In the Canvas UI, these are populated underneath the Protocol title in a patient's chart.</td>
+        <td>This is a list of identifiers associated with the Protocol. These are sometimes populated with eCQI codes (e.g., <em>CMS125v6</em>), but can also be populated with strings of your choice to identify your custom Protocols. In the Canvas UI, these are populated underneath the Protocol title in a patient's chart.</td>
       </tr>
       <tr>
         <td><code>types</code></td>
@@ -381,7 +381,7 @@ Let's step through the example above:
       </tr>
     </table>
   </li>
-  <li>Recommended actions that can be taken to resolve a Protocol for a patient are presented in the bottom portion of each Protocol listed on a patient's chart. Recommendations can be added to each instance of <code>ProtocolResult</code> by using the <code>add_recommendation()</code> method. There are <a href="doc:recommendation-types">many built-in types of Recommendations available</a>. Let's look at what makes up a standard <code>Recommendation</code> object:
+  <li>Recommended actions that can be taken to resolve a Protocol for a patient are presented in the bottom portion of each Protocol listed on a patient's chart. Recommendations can be added to each instance of <code>ProtocolResult</code> by using the <code>add_recommendation()</code> method. There are <a href="/sdk/recommendation-types">many built-in types of Recommendations available</a>. Let's look at what makes up a standard <code>Recommendation</code> object:
     <br>
     <br>
     <table>
@@ -413,7 +413,7 @@ Let's step through the example above:
   </li>
 </ol>
 
-
+<br><br>
 ### Uploading Your Protocol
 
 Canvas instances have a number of [built-in Protocols](https://canvas-medical.zendesk.com/hc/en-us/sections/4404352708115-Population-Management-Protocols). The Protocols that are developed using the SDK, such as our example above, can be uploaded and run on the Canvas backend in the same manner that the built-in Protocols are.
@@ -436,12 +436,13 @@ Next, pull up the chart of any patient. You should see your Measure appear in th
 
 <img src="https://files.readme.io/b9a7cf0-my_first_protocol_in_chart.png" alt="My First Protocol in Chart" width="60%">
 
+<br>
 
 ### Testing Your Protocol Against Patient Data
 
 So far in this tutorial, you have created a basic Protocol, uploaded it to your development Canvas instance, and seen how it appears in the UI. This was a very basic measure used for example purposes. However, much more complex logic can and will be used when developing actual Protocols. For this reason, the SDK includes a command named `test-fixture` in order to test your code against patient data locally.
 
-In the previous section, it was explained how to [fetch patient data](doc:sdk-fetching-and-viewing-patient-data) that is stored locally in _*.json_ files. To test the Protocol that you just created in `test_measure.py`, the following command can be run from within the `src` directory:
+In the previous section, it was explained how to [fetch patient data](sdk/sdk-quickstart/#fetching-patient-data) that is stored locally in _*.json_ files. To test the Protocol that you just created in `test_measure.py`, the following command can be run from within the `src` directory:
 
 ```
 (env) $ canvas-cli test-fixture test_measure.py ../patients
@@ -451,10 +452,11 @@ This command will run the Protocol against each patient in the `/patients/` dire
 
 <img src="https://files.readme.io/4d63a6e-test_fixture_results_terminal.png" alt="Test Fixture Results Terminal" width="60%">
 
+<br>
 
 ## Expanding a Protocol
 
-Building on our [previous example](doc:sdk-create-a-protocol), we will now explore how to create logic to tell if a patient has or has not satisfied the requirements for fulfilling a Protocol. This is important in order to only display Protocol alerts for those that have not been satisfied. Conversely, we also want to display information about the Protocol under the _Inactive_ status if it indeed has been satisfied.
+Building on our [previous example](sdk/sdk-quickstart/#creating-a-protocol), we will now explore how to create logic to tell if a patient has or has not satisfied the requirements for fulfilling a Protocol. This is important in order to only display Protocol alerts for those that have not been satisfied. Conversely, we also want to display information about the Protocol under the _Inactive_ status if it indeed has been satisfied.
 
 To help visualize this, let's say that we want to develop a Protocol for all patients 65 and older to be interviewed in order to screen their risk of falling. Patients who are eligible for this Protocol should be interviewed once a year.
 
@@ -473,7 +475,7 @@ As recommended, John's physician can then complete the Fall Questionnaire in his
 Once the recommended Fall Screening Questionnaire has been completed, the Protocol is considered to have been satisfied. It is now moved to the _Inactive_ tab in John's chart:
 
 <img src="https://files.readme.io/8c9f063-fall_screening_satisfied.png" alt="fall_screening_satisfied.png" width="60%">
-
+<br><br>
 ### The `in_numerator` and `in_denominator` Methods
 
 In the context of our custom Protocol code, we want to be able to tell whether a patient such as John has completed the requirements to satisfy a Protocol, such as the completion of the Fall Screening Questionnaire. This can be done by using the `in_numerator` and `in_denominator` methods. The results of these methods can then be used with logic within `compute_results`.
@@ -506,6 +508,8 @@ The methods above will tell us two things about our patient John:
 1. The `in_denominator` method will tell us if John is an applicable candidate for this Protocol. Since he is in the 65 or older age bracket, this will return `True`.
 2. The `in_numerator` method will tell us if John has completed the Fall Screening Questionnaire within the last year. Since he has, this will also return True.
 
+<br>
+
 ### Incorporating Logic into `compute_results`
 
 We can now use the logic from both of these methods in `compute_results`:
@@ -536,7 +540,7 @@ We can now use the logic from both of these methods in `compute_results`:
 ```
 
 As you can see above, we marked the Status as `STATUS_DUE` for when John had not completed the Questionnaire, as well as a recommendation to do so. After John had completed the Questionnaire, a status of `STATUS_SATISFIED` was set.
-
+<br><br>
 ### A Complete Example
 
 Here is the complete example of the Protocol for the example above:
@@ -619,8 +623,9 @@ class SeniorFallProtocol(ClinicalQualityMeasure):
                 )
         return result
 ```
+<br>
 
 ### Recommendations and Next Steps
 
-You may have noticed that instead of using a generic `Recommendation` in our `add_recommendation` method, we used an `InterviewRecommendation`. The SDK includes a number of recommendation classes, which we you can explore in the [Canvas SDK Recommendation Types doc](doc:recommendationtypes)
+You may have noticed that instead of using a generic `Recommendation` in our `add_recommendation` method, we used an `InterviewRecommendation`. The SDK includes a number of recommendation classes, which you can explore in the [Canvas SDK Recommendation Types doc](/sdk/recommendation-types).
 
