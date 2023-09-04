@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:03:40.534Z"
 ---
 <a id="value_set.v2021.encounter_performed"></a>
 
-# encounter\_performed
+## encounter\_performed
 
 <a id="value_set.v2021.encounter_performed.AcuteInpatient"></a>
 
-## AcuteInpatient
+### AcuteInpatient
 **value_set.v2021.encounter_performed.AcuteInpatient**
 
 ```python
@@ -28,7 +28,7 @@ class AcuteInpatient(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.CareServicesInLongTermResidentialFacility"></a>
 
-## CareServicesInLongTermResidentialFacility
+### CareServicesInLongTermResidentialFacility
 **value_set.v2021.encounter_performed.CareServicesInLongTermResidentialFacility**
 
 ```python
@@ -45,7 +45,7 @@ class CareServicesInLongTermResidentialFacility(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.ClinicalOralEvaluation"></a>
 
-## ClinicalOralEvaluation
+### ClinicalOralEvaluation
 **value_set.v2021.encounter_performed.ClinicalOralEvaluation**
 
 ```python
@@ -62,7 +62,7 @@ class ClinicalOralEvaluation(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.ContactOrOfficeVisit"></a>
 
-## ContactOrOfficeVisit
+### ContactOrOfficeVisit
 **value_set.v2021.encounter_performed.ContactOrOfficeVisit**
 
 ```python
@@ -79,7 +79,7 @@ class ContactOrOfficeVisit(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.DetoxificationVisit"></a>
 
-## DetoxificationVisit
+### DetoxificationVisit
 **value_set.v2021.encounter_performed.DetoxificationVisit**
 
 ```python
@@ -96,7 +96,7 @@ class DetoxificationVisit(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.DischargeServicesHospitalInpatient"></a>
 
-## DischargeServicesHospitalInpatient
+### DischargeServicesHospitalInpatient
 **value_set.v2021.encounter_performed.DischargeServicesHospitalInpatient**
 
 ```python
@@ -113,7 +113,7 @@ class DischargeServicesHospitalInpatient(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.DischargeServicesHospitalInpatientSameDayDischarge"></a>
 
-## DischargeServicesHospitalInpatientSameDayDischarge
+### DischargeServicesHospitalInpatientSameDayDischarge
 **value_set.v2021.encounter_performed.DischargeServicesHospitalInpatientSameDayDischarge**
 
 ```python
@@ -130,7 +130,7 @@ class DischargeServicesHospitalInpatientSameDayDischarge(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.DischargeServicesNursingFacility"></a>
 
-## DischargeServicesNursingFacility
+### DischargeServicesNursingFacility
 **value_set.v2021.encounter_performed.DischargeServicesNursingFacility**
 
 ```python
@@ -147,7 +147,7 @@ class DischargeServicesNursingFacility(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.DischargeServicesNursingFacility_1065"></a>
 
-## DischargeServicesNursingFacility\_1065
+### DischargeServicesNursingFacility\_1065
 **value_set.v2021.encounter_performed.DischargeServicesNursingFacility_1065**
 
 ```python
@@ -164,7 +164,7 @@ class DischargeServicesNursingFacility_1065(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.Ed"></a>
 
-## Ed
+### Ed
 **value_set.v2021.encounter_performed.Ed**
 
 ```python
@@ -181,7 +181,7 @@ class Ed(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.EmergencyDepartmentVisit"></a>
 
-## EmergencyDepartmentVisit
+### EmergencyDepartmentVisit
 **value_set.v2021.encounter_performed.EmergencyDepartmentVisit**
 
 ```python
@@ -198,7 +198,7 @@ class EmergencyDepartmentVisit(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.FrailtyEncounter"></a>
 
-## FrailtyEncounter
+### FrailtyEncounter
 **value_set.v2021.encounter_performed.FrailtyEncounter**
 
 ```python
@@ -215,7 +215,7 @@ class FrailtyEncounter(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.HomeHealthcareServices"></a>
 
-## HomeHealthcareServices
+### HomeHealthcareServices
 **value_set.v2021.encounter_performed.HomeHealthcareServices**
 
 ```python
@@ -232,7 +232,7 @@ class HomeHealthcareServices(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.HospitalInpatientVisitInitial"></a>
 
-## HospitalInpatientVisitInitial
+### HospitalInpatientVisitInitial
 **value_set.v2021.encounter_performed.HospitalInpatientVisitInitial**
 
 ```python
@@ -249,7 +249,7 @@ class HospitalInpatientVisitInitial(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.HospitalObservationCareInitial"></a>
 
-## HospitalObservationCareInitial
+### HospitalObservationCareInitial
 **value_set.v2021.encounter_performed.HospitalObservationCareInitial**
 
 ```python
@@ -266,7 +266,7 @@ class HospitalObservationCareInitial(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.MedicalDisabilityExam"></a>
 
-## MedicalDisabilityExam
+### MedicalDisabilityExam
 **value_set.v2021.encounter_performed.MedicalDisabilityExam**
 
 ```python
@@ -283,7 +283,7 @@ class MedicalDisabilityExam(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.NonacuteInpatient"></a>
 
-## NonacuteInpatient
+### NonacuteInpatient
 **value_set.v2021.encounter_performed.NonacuteInpatient**
 
 ```python
@@ -300,7 +300,7 @@ class NonacuteInpatient(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.NursingFacilityVisit"></a>
 
-## NursingFacilityVisit
+### NursingFacilityVisit
 **value_set.v2021.encounter_performed.NursingFacilityVisit**
 
 ```python
@@ -317,7 +317,7 @@ class NursingFacilityVisit(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.Observation"></a>
 
-## Observation
+### Observation
 **value_set.v2021.encounter_performed.Observation**
 
 ```python
@@ -334,7 +334,7 @@ class Observation(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.OfficeVisit"></a>
 
-## OfficeVisit
+### OfficeVisit
 **value_set.v2021.encounter_performed.OfficeVisit**
 
 ```python
@@ -351,7 +351,7 @@ class OfficeVisit(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.Outpatient"></a>
 
-## Outpatient
+### Outpatient
 **value_set.v2021.encounter_performed.Outpatient**
 
 ```python
@@ -368,7 +368,7 @@ class Outpatient(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.OutpatientConsultation"></a>
 
-## OutpatientConsultation
+### OutpatientConsultation
 **value_set.v2021.encounter_performed.OutpatientConsultation**
 
 ```python
@@ -385,7 +385,7 @@ class OutpatientConsultation(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.PreventiveCareEstablishedOfficeVisit0To17"></a>
 
-## PreventiveCareEstablishedOfficeVisit0To17
+### PreventiveCareEstablishedOfficeVisit0To17
 **value_set.v2021.encounter_performed.PreventiveCareEstablishedOfficeVisit0To17**
 
 ```python
@@ -402,7 +402,7 @@ class PreventiveCareEstablishedOfficeVisit0To17(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.PreventiveCareServicesEstablishedOfficeVisit18AndUp"></a>
 
-## PreventiveCareServicesEstablishedOfficeVisit18AndUp
+### PreventiveCareServicesEstablishedOfficeVisit18AndUp
 **value_set.v2021.encounter_performed.PreventiveCareServicesEstablishedOfficeVisit18AndUp**
 
 ```python
@@ -419,7 +419,7 @@ class PreventiveCareServicesEstablishedOfficeVisit18AndUp(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.PreventiveCareServicesGroupCounseling"></a>
 
-## PreventiveCareServicesGroupCounseling
+### PreventiveCareServicesGroupCounseling
 **value_set.v2021.encounter_performed.PreventiveCareServicesGroupCounseling**
 
 ```python
@@ -436,7 +436,7 @@ class PreventiveCareServicesGroupCounseling(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.PreventiveCareServicesIndividualCounseling"></a>
 
-## PreventiveCareServicesIndividualCounseling
+### PreventiveCareServicesIndividualCounseling
 **value_set.v2021.encounter_performed.PreventiveCareServicesIndividualCounseling**
 
 ```python
@@ -453,7 +453,7 @@ class PreventiveCareServicesIndividualCounseling(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.PreventiveCareServicesInitialOfficeVisit0To17"></a>
 
-## PreventiveCareServicesInitialOfficeVisit0To17
+### PreventiveCareServicesInitialOfficeVisit0To17
 **value_set.v2021.encounter_performed.PreventiveCareServicesInitialOfficeVisit0To17**
 
 ```python
@@ -470,7 +470,7 @@ class PreventiveCareServicesInitialOfficeVisit0To17(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.PreventiveCareServicesInitialOfficeVisit18AndUp"></a>
 
-## PreventiveCareServicesInitialOfficeVisit18AndUp
+### PreventiveCareServicesInitialOfficeVisit18AndUp
 **value_set.v2021.encounter_performed.PreventiveCareServicesInitialOfficeVisit18AndUp**
 
 ```python
@@ -487,7 +487,7 @@ class PreventiveCareServicesInitialOfficeVisit18AndUp(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.PreventiveCareServicesOther"></a>
 
-## PreventiveCareServicesOther
+### PreventiveCareServicesOther
 **value_set.v2021.encounter_performed.PreventiveCareServicesOther**
 
 ```python
@@ -504,7 +504,7 @@ class PreventiveCareServicesOther(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.PsychotherapyAndPharmacologicManagement"></a>
 
-## PsychotherapyAndPharmacologicManagement
+### PsychotherapyAndPharmacologicManagement
 **value_set.v2021.encounter_performed.PsychotherapyAndPharmacologicManagement**
 
 ```python
@@ -521,7 +521,7 @@ class PsychotherapyAndPharmacologicManagement(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.TelehealthServices"></a>
 
-## TelehealthServices
+### TelehealthServices
 **value_set.v2021.encounter_performed.TelehealthServices**
 
 ```python
@@ -538,7 +538,7 @@ class TelehealthServices(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.TelephoneEvaluation"></a>
 
-## TelephoneEvaluation
+### TelephoneEvaluation
 **value_set.v2021.encounter_performed.TelephoneEvaluation**
 
 ```python
@@ -555,7 +555,7 @@ class TelephoneEvaluation(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.TelephoneManagement"></a>
 
-## TelephoneManagement
+### TelephoneManagement
 **value_set.v2021.encounter_performed.TelephoneManagement**
 
 ```python
@@ -572,7 +572,7 @@ class TelephoneManagement(ValueSet)
 
 <a id="value_set.v2021.encounter_performed.TelephoneVisits"></a>
 
-## TelephoneVisits
+### TelephoneVisits
 **value_set.v2021.encounter_performed.TelephoneVisits**
 
 ```python

@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:04:39.950Z"
 ---
 <a id="value_set.v2021.communication"></a>
 
-# communication
+## communication
 
 <a id="value_set.v2021.communication.ConsultantReport"></a>
 
-## ConsultantReport
+### ConsultantReport
 **value_set.v2021.communication.ConsultantReport**
 
 ```python
@@ -28,7 +28,7 @@ class ConsultantReport(ValueSet)
 
 <a id="value_set.v2021.communication.InfluenzaVaccinationDeclined"></a>
 
-## InfluenzaVaccinationDeclined
+### InfluenzaVaccinationDeclined
 **value_set.v2021.communication.InfluenzaVaccinationDeclined**
 
 ```python
@@ -45,7 +45,7 @@ class InfluenzaVaccinationDeclined(ValueSet)
 
 <a id="value_set.v2021.communication.LevelOfSeverityOfRetinopathyFindings"></a>
 
-## LevelOfSeverityOfRetinopathyFindings
+### LevelOfSeverityOfRetinopathyFindings
 **value_set.v2021.communication.LevelOfSeverityOfRetinopathyFindings**
 
 ```python
@@ -62,7 +62,7 @@ class LevelOfSeverityOfRetinopathyFindings(ValueSet)
 
 <a id="value_set.v2021.communication.MacularEdemaFindingsPresent"></a>
 
-## MacularEdemaFindingsPresent
+### MacularEdemaFindingsPresent
 **value_set.v2021.communication.MacularEdemaFindingsPresent**
 
 ```python
@@ -79,7 +79,7 @@ class MacularEdemaFindingsPresent(ValueSet)
 
 <a id="value_set.v2021.communication.PatientReasonForAceInhibitorOrArbDecline"></a>
 
-## PatientReasonForAceInhibitorOrArbDecline
+### PatientReasonForAceInhibitorOrArbDecline
 **value_set.v2021.communication.PatientReasonForAceInhibitorOrArbDecline**
 
 ```python
@@ -96,7 +96,7 @@ class PatientReasonForAceInhibitorOrArbDecline(ValueSet)
 
 <a id="value_set.v2021.communication.PreviousReceiptOfInfluenzaVaccine"></a>
 
-## PreviousReceiptOfInfluenzaVaccine
+### PreviousReceiptOfInfluenzaVaccine
 **value_set.v2021.communication.PreviousReceiptOfInfluenzaVaccine**
 
 ```python

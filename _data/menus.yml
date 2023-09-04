@@ -7,6 +7,24 @@ main:
     url: /guides/
     
 api:
+ - title: "Getting Started with the Canvas FHIR API"
+   url: /api/
+ - title: "Software Requirements"
+   url: /api/software-requirements/
+ - title: "Quickstart"
+   url: /api/quickstart/
+ - title: "Customer Authentication"
+   url: /api/customer-authentication/
+ - title: "Conditional Requests"
+   url: /api/conditional-requests/
+ - title: "Errors"
+   url: /api/errors/
+ - title: "Service Base URLs"
+   url: /api/service-base-urls/
+ - title: "FHIR API"
+   identifier: api_fhir
+
+api_fhir:
  - title: "AllergyIntolerance"
    url: /api/allergyintolerance/
    identifier: api_allergyintolerance
@@ -19,6 +37,9 @@ api:
  - title: "CareTeam"
    url: /api/careteam/
    identifier: api_careteam
+ - title: "Claim"
+   url: /api/claim/
+   identifier: api_claim
  - title: "Communication"
    url: /api/communication/
    identifier: api_communication
@@ -109,94 +130,100 @@ api:
  - title: "Task"
    url: /api/task/
    identifier: api_task
+
 api_allergyintolerance:
  - title: "AllergyIntolerance Read"
-   url: /api/allergyintolerance/#allergyinterolerance-read
+   url: /api/allergyintolerance/#read
  - title: "AllergyInterolerance Search"
-   url: /api/allergyintolerance/#allergyinterolerance-search
+   url: /api/allergyintolerance/#search
 api_appointment:
  - title: "Appointment Create"
-   url: /api/appointment/#appointment-create
+   url: /api/appointment/#create
  - title: "Appointment Read"
-   url: /api/appointment/#apointment-read
+   url: /api/appointment/#read
  - title: "Appointment Search"
-   url: /api/appointment/#appointment-search
+   url: /api/appointment/#search
  - title: "Appointment Update"
-   url: /api/appointment/#appointment-update
+   url: /api/appointment/#update
 api_careplan:
  - title: "CarePlan Read"
-   url: /api/careplan/#careplan-read
+   url: /api/careplan/#read
  - title: "CarePlan Search"
-   url: /api/careplan/#careplan-create
+   url: /api/careplan/#search
 api_careteam:
  - title: "CareTeam Read"
-   url: /api/careteam/#careteam-read
+   url: /api/careteam/#read
  - title: "CareTeam Search"
-   url: /api/careteam/#careteam-create
+   url: /api/careteam/#search
  - title: "CareTeam Update"
-   url: /api/careteam/#careteam-update
+   url: /api/careteam/#update
+api_claim:
+ - title: "Claim Create"
+   url: /api/claim/#create
 api_communication:
+ - title: "Communication Search"
+   url: /api/communication/#search
  - title: "Communication Create"
-   url: /api/communication/#communication-create
- - title: "Communication Update"
-   url: /api/communication/#communication-update
+   url: /api/communication/#create
 api_condition:
+ - title: "Condition Create"
+   url: /api/condition/#create
  - title: "Condition Read"
-   url: /api/condition/#condition-read
+   url: /api/condition/#read
  - title: "Condition Search"
-   url: /api/condition/#condition-search
+   url: /api/condition/#search
 api_consent:
  - title: "Consent Create"
-   url: /api/consent/#consent-create
+   url: /api/consent/#create
  - title: "Consent Read"
-   url: /api/consent/#consent-read
+   url: /api/consent/#read
  - title: "Consent Search"
-   url: /api/consent/#consent-search
+   url: /api/consent/#search
 api_coverage:
  - title: "Coverage Create"
-   url: /api/coverage/#coverage-create
+   url: /api/coverage/#create
  - title: "Coverage Search"
-   url: /api/coverage/#coverage-search
+   url: /api/coverage/#search
  - title: "Coverage Update"
-   url: /api/coverage/#coverage-update
+   url: /api/coverage/#update
 api_coverageeligibilityrequest:
  - title: "Coverage Eligibility Request Create"
-   url: /api/coverageeligibilityrequest/#coverageeligibilityrequest-create
+   url: /api/coverageeligibilityrequest/#create
 api_coverageeligibilityresponse:
  - title: "Coverage Eligibility Response Search"
-   url: /api/coverageeligibilityresponse/#coverageeligibilityresponse-search
+   url: /api/coverageeligibilityresponse/#search
 api_device:
  - title: "Device Read"
-   url: /api/device/#device-read
+   url: /api/device/#read
  - title: "Device Search"
-   url: /api/device/#device-search
+   url: /api/device/#search
 api_diagnosticreport:
  - title: "DiagnosticReport Read"
-   url: /api/diagnosticreport/#diagnosticreport-read
+   url: /api/diagnosticreport/#read
  - title: "DiagnosticReport Search"
-   url: /api/diagnosticreport/#diagnosticreport-search
+   url: /api/diagnosticreport/#search
 api_documentreference:
  - title: "DocumentReference Read"
-   url: /api/documentreference/#documentreference-read
+   url: /api/documentreference/#read
  - title: "DocumentReference Search"
-   url: /api/documentreference/#documentreference-search
+   url: /api/documentreference/#search
 api_encounter:
  - title: "Encounter Read"
-   url: /api/encounter/#encounter-read
+   url: /api/encounter/#read
  - title: "Encounter Search"
-   url: /api/encounter/#encounter-search   
+   url: /api/encounter/#search   
 api_goal:
  - title: "Goal Create"
-   url: /api/goal/#goal-create
+   url: /api/goal/#create
  - title: "Goal Read"
-   url: /api/goal/#goal-read
+   url: /api/goal/#read
  - title: "Goal Search"
-   url: /api/goal/#goal-search
+   url: /api/goal/#search
  - title: "Goal Update"
-   url: /api/goal/#goal-update
+   url: /api/goal/#update
 api_group:
  - title: "Group Read"
-   url: /api/group/#group-read
+   url: /api/group/#read
  - title: "Group Search"
    url: /api/group/#group-search 
  - title: "Group Create"
@@ -205,101 +232,104 @@ api_group:
    url: /api/group/#group-update 
 api_immunization:
  - title: "Immunization Read"
-   url: /api/immunization/#immunization-read
+   url: /api/immunization/#read
  - title: "Immunization Search"
-   url: /api/immunization/#immunization-search 
+   url: /api/immunization/#search 
 api_location:
  - title: "Location Read"
-   url: /api/location/#location-read
+   url: /api/location/#read
  - title: "Location Search"
-   url: /api/location/#location-search
+   url: /api/location/#search
 api_media:
  - title: "Media Create"
-   url: /api/media/#media-create 
+   url: /api/media/#create 
 api_medication:
  - title: "Medication Read"
-   url: /api/medication/#medication-read
+   url: /api/medication/#read
 api_medicationrequest:
  - title: "MedicationRequest Read"
-   url: /api/medicationrequest/#medicationrequest-read
+   url: /api/medicationrequest/#read
  - title: "MedicationRequest Search"
-   url: /api/medicationrequest/#medicationrequest-search
+   url: /api/medicationrequest/#search
 api_medicationstatement:
  - title: "MedicationStatement Search"
-   url: /api/medicationstatement/#medicationstatement-search
+   url: /api/medicationstatement/#search
 api_observation:
  - title: "Observation Create"
-   url: /api/observation/#observation-create
+   url: /api/observation/#create
  - title: "Observation Read"
-   url: /api/observation/#observation-read
+   url: /api/observation/#read
  - title: "Observation Search"
-   url: /api/observation/#observation-search
+   url: /api/observation/#search
 api_organization:
  - title: "Organization Search"
-   url: /api/organization/#organization-search
+   url: /api/organization/#search
 api_patient:
  - title: "Patient Create"
-   url: /api/patient/#patient-create
+   url: /api/patient/#create
  - title: "Patient Read"
-   url: /api/patient/#patient-read
+   url: /api/patient/#read
  - title: "Patient Search"
-   url: /api/patient/#patient-search
+   url: /api/patient/#search
  - title: "Patient Update"
-   url: /api/patient/#patient-update
+   url: /api/patient/#update
 api_paymentnotice:
  - title: "PaymentNotice Create"
-   url: /api/paymentnotice/#paymentnotice-create
+   url: /api/paymentnotice/#create
  - title: "PaymentNotice Search"
-   url: /api/paymentnotice/#paymentnotice-search
+   url: /api/paymentnotice/#search
 api_practitioner:
  - title: "Practitioner Read"
-   url: /api/practitioner/#practitioner-read
+   url: /api/practitioner/#read
  - title: "Practitioner Search"
-   url: /api/practitioner/#practitioner-search
+   url: /api/practitioner/#search
 api_procedure:
  - title: "Procedure Read"
-   url: /api/procedure/#procedure-read
+   url: /api/procedure/#read
  - title: "Procedure Search"
-   url: /api/procedure/#procedure-search
+   url: /api/procedure/#search
 api_provenance:
  - title: "Provenance Read"
-   url: /api/provenance/#provenance-read
+   url: /api/provenance/#read
  - title: "Provenance Search"
-   url: /api/provenance/#provenance-search
+   url: /api/provenance/#search
 api_questionnaire:
  - title: "Questionnaire Read"
-   url: /api/questionnaire/#questionnaire-read
+   url: /api/questionnaire/#read
  - title: "Questionnaire Search"
-   url: /api/questionnaire/#questionnaire-search
+   url: /api/questionnaire/#search
 api_questionnaireresponse:
  - title: "QuestionnaireResponse Create"
-   url: /api/questionnaireresponse/#questionnaireresponse-create
+   url: /api/questionnaireresponse/#create
  - title: "QuestionnaireResponse Read"
-   url: /api/questionnaireresponse/#questionnaireresponse-read
+   url: /api/questionnaireresponse/#read
  - title: "QuestionnaireResponse Search"
-   url: /api/questionnaireresponse/#questionnaireresponse-search
+   url: /api/questionnaireresponse/#search
 api_schedule:
  - title: "Schedule Search"
-   url: /api/schedule/#schedule-search
+   url: /api/schedule/#search
 api_slot:
  - title: "Slot Search"
-   url: /api/slot/#slot-search
+   url: /api/slot/#search
 api_task:
  - title: "Task Search"
-   url: /api/task/#task-search
+   url: /api/task/#search
  - title: "Task Create"
-   url: /api/task/#task-create
+   url: /api/task/#create
  - title: "Task Update"
-   url: /api/task/#task-update
+   url: /api/task/#update
+
 documentation:
- - title: "Transition"
+ - title: "Click here to learn about our transition plan for our knowledge center"
    url: /documentation/transition
    identifier: documentation_transition
+
 guides:
  - title: "Elements of Care Modeling"
    identifier: guides_elements
  - title: "Care Models"
    identifier: guides_care-models
+
 guides_elements:
  - title: "Diagnostic Range & Inputs"
    identifier: guides_diagnostic-range
@@ -315,6 +345,7 @@ guides_elements:
    identifier: guides_content-and-automation
  - title: "Healthcare Pricing & Payments"
    identifier: guides_healthcare-pricing
+
 guides_care-models:
  - title: "Behavioral Health"
    url: /guides/bh/
@@ -362,19 +393,26 @@ guides_ongoing-interaction-modes:
 
 sdk:
  - title: "SDK Overview"
-   url: /sdk
- - title: "Canvas SDK"
-   identifier: sdk_canvas_core      
+   url: /sdk  
  - title: "Workflow Kit"
    identifier: sdk_workflow_kit 
+
 sdk_workflow_kit:
  - title: "Quickstart" 
    url: /sdk/sdk-quickstart/
- - title: "Necessary Data and Methods" 
- - title: "Interventions" 
-   identifier: sdk_workflow_kit_interventions
+ - title: "Data and Methods" 
+   identifier: sdk_workflow_kit_data_methods
+ - title: "Outputs" 
+   identifier: sdk_workflow_kit_outputs
+ - title: "Canvas CLI Additional Commands" 
+   url: /sdk/canvas-cli
+ - title: "Protocol Logging Tool" 
+   url: /sdk/protocol-logging-tool
+ - title: "Value Sets" 
+   identifier: sdk_workflow_kit_value_sets
+   url: /sdk/value-sets
 
-sdk_workflow_kit_interventions:
+sdk_workflow_kit_outputs:
  - title: "Recommendation Types"
    url: /sdk/recommendation-types
  - title: "Banner Alerts"
@@ -385,5 +423,55 @@ sdk_workflow_kit_interventions:
    url: /sdk/notification-protocol
  - title: "Making FHIR Requests"
    url: /sdk/making-fhir-requests
+
+sdk_workflow_kit_data_methods:
+ - title: "Change Types"
+   url: /sdk/change-types
+ - title: "Patient Recordsets"
+   url: /sdk/patient-recordsets
+ - title: "Settings/Secret Store"
+   url: /sdk/secret-store
+ - title: "Sandboxing and Allowed Imports"
+   url: /sdk/sandboxing-and-allowed-imports
+ - title: "Field Changes"
+   url: /sdk/field-changes
+
+sdk_workflow_kit_value_sets:
+ - title: "Allergy"
+   url: /sdk/allergy
+ - title: "Assessment"
+   url: /sdk/assessment
+ - title: "Assessment Performed"
+   url: /sdk/assessment-performed
+ - title: "Encounter"
+   url: /sdk/encounter
+ - title: "Encounter Performed"
+   url: /sdk/encounter-performed
+ - title: "Communication"
+   url: /sdk/communication
+ - title: "Device"
+   url: /sdk/device
+ - title: "Diagnosis"
+   url: /sdk/diagnosis
+ - title: "Immunization"
+   url: /sdk/immunization
+ - title: "Lab Test"
+   url: /sdk/lab-test
+ - title: "Medication"
+   url: /sdk/medication
+ - title: "Other"
+   url: /sdk/other
+ - title: "Patient Characteristic"
+   url: /sdk/patient-characteristic
+ - title: "Physican Exam"
+   url: /sdk/physical-exam
+ - title: "Procedure"
+   url: /sdk/procedure
+ - title: "Procedure Performed"
+   url: /sdk/procedure-performed
+ - title: "Rationale"
+   url: /sdk/rationale
+ - title: "Result"
+   url: /sdk/result
 
 
