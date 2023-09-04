@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:06:43.174Z"
 ---
 <a id="value_set.v2021.other"></a>
 
-# other
+## other
 
 <a id="value_set.v2021.other.ModerateOrSevere"></a>
 
-## ModerateOrSevere
+### ModerateOrSevere
 **value_set.v2021.other.ModerateOrSevere**
 
 ```python
@@ -28,7 +28,7 @@ class ModerateOrSevere(ValueSet)
 
 <a id="value_set.v2021.other.Payer"></a>
 
-## Payer
+### Payer
 **value_set.v2021.other.Payer**
 
 ```python

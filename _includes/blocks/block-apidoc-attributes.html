@@ -1,0 +1,36 @@
+{% for attribute in block.attributes %}
+<div class="apidoc__object">
+    <div class="apidoc__object__name">
+        {{ attribute.name }}
+    </div>
+    <div class="apidoc__object__type">
+        {{ attribute.type }} {% if attribute.required %}<span class="apidoc__object__required">required</span>{% endif
+        %}
+    </div>
+    {% if attribute.description %}
+    <div class="apidoc__object__description">
+        {{ attribute.description }}
+    </div>
+    {% endif %}
+    {% if attribute.attributes %}
+    <div class="apidoc__object__children">
+        <div class="apidoc__object__children__toggle">Click to view child attributes</div>
+        <div class="apidoc__object__children__panel">
+            {% for attribute in attribute.attributes %}
+            <div class="apidoc__object">
+                <div class="apidoc__object__name">
+                    {{ attribute.name }}
+                </div>
+                <div class="apidoc__object__type">
+                    {{ attribute.type }}
+                </div>
+                <div class="apidoc__object__description">
+                    {{ attribute.description }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}

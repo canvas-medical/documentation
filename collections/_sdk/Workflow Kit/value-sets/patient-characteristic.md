@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:07:07.439Z"
 ---
 <a id="value_set.v2021.patient_characteristic"></a>
 
-# patient\_characteristic
+## patient\_characteristic
 
 <a id="value_set.v2021.patient_characteristic.Ethnicity"></a>
 
-## Ethnicity
+### Ethnicity
 **value_set.v2021.patient_characteristic.Ethnicity**
 
 ```python
@@ -28,7 +28,7 @@ class Ethnicity(ValueSet)
 
 <a id="value_set.v2021.patient_characteristic.Female"></a>
 
-## Female
+### Female
 **value_set.v2021.patient_characteristic.Female**
 
 ```python
@@ -45,7 +45,7 @@ class Female(ValueSet)
 
 <a id="value_set.v2021.patient_characteristic.FrailtySymptom"></a>
 
-## FrailtySymptom
+### FrailtySymptom
 **value_set.v2021.patient_characteristic.FrailtySymptom**
 
 ```python
@@ -62,7 +62,7 @@ class FrailtySymptom(ValueSet)
 
 <a id="value_set.v2021.patient_characteristic.Male"></a>
 
-## Male
+### Male
 **value_set.v2021.patient_characteristic.Male**
 
 ```python
@@ -79,7 +79,7 @@ class Male(ValueSet)
 
 <a id="value_set.v2021.patient_characteristic.MorbidObesity"></a>
 
-## MorbidObesity
+### MorbidObesity
 **value_set.v2021.patient_characteristic.MorbidObesity**
 
 ```python
@@ -96,7 +96,7 @@ class MorbidObesity(ValueSet)
 
 <a id="value_set.v2021.patient_characteristic.OncAdministrativeSex"></a>
 
-## OncAdministrativeSex
+### OncAdministrativeSex
 **value_set.v2021.patient_characteristic.OncAdministrativeSex**
 
 ```python
@@ -113,7 +113,7 @@ class OncAdministrativeSex(ValueSet)
 
 <a id="value_set.v2021.patient_characteristic.Race"></a>
 
-## Race
+### Race
 **value_set.v2021.patient_characteristic.Race**
 
 ```python
@@ -130,7 +130,7 @@ class Race(ValueSet)
 
 <a id="value_set.v2021.patient_characteristic.TobaccoUser"></a>
 
-## TobaccoUser
+### TobaccoUser
 **value_set.v2021.patient_characteristic.TobaccoUser**
 
 ```python
@@ -147,7 +147,7 @@ class TobaccoUser(ValueSet)
 
 <a id="value_set.v2021.patient_characteristic.White"></a>
 
-## White
+### White
 **value_set.v2021.patient_characteristic.White**
 
 ```python

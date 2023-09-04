@@ -68,9 +68,25 @@ h6 {
 
 table {
   width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  th {
+    background-color: $lightgrey;
+    font-weight: 600;
+  }
   th, td {
+    text-align: left;
+    vertical-align: top;
     min-width: 5vw;
-    padding: 0.25em;
+    padding: 0.5em;
     margin: 0.25em;
+    border-bottom: 1px solid rgba($black,0.5);
+    border-right: 1px solid rgba($black, 0.5);
+  }
+  th:last-of-type, td:last-of-type {
+    border-right: 0px;
+  }
+  tr:last-of-type > td {
+    border-bottom: 0px;
   }
 }
