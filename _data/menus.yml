@@ -15,10 +15,16 @@ api:
    url: /api/quickstart/
  - title: "Customer Authentication"
    url: /api/customer-authentication/
+ - title: "Conditional Requests"
+   url: /api/conditional-requests/
  - title: "Errors"
    url: /api/errors/
  - title: "Service Base URLs"
    url: /api/service-base-urls/
+ - title: "FHIR API"
+   identifier: api_fhir
+
+api_fhir:
  - title: "AllergyIntolerance"
    url: /api/allergyintolerance/
    identifier: api_allergyintolerance
@@ -310,7 +316,7 @@ api_task:
    url: /api/task/#update
 
 documentation:
- - title: "Transition"
+ - title: "Click here to learn about our transition plan for our knowledge center"
    url: /documentation/transition
    identifier: documentation_transition
 

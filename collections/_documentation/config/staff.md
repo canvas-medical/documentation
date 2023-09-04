@@ -4,10 +4,11 @@ layout: documentation
 ---
 
 Staff represent Canvas users. By creating a new staff profile, a user will be automatically generated. 
-
+<br>
+<br>
 ## Adding a New Staff Member
 
-To add a new staff member, click ![add-staff](/assets/images/add-staff.png){:width="14%"} in the top right corner and then complete the following form. 
+To add a new staff member, click ![add-staff](/assets/images/add-staff.png){:width="9%"} in the top right corner and then complete the following form. 
 
 <b>Role:</b> Select the desired role for the new staff member being added. These roles are configurable. They typically align with credentials as they are appended to a clinician's name in certain views and print templates. They also drive whether a staff member has their own schedule on the calendar. 
 

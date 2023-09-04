@@ -30,7 +30,7 @@ In this guide, you will learn how to do the following:
 
 Once you have determined your appropriate staffing model and hired a team, you can set up Roles, Teams, and Care Teams to ensure everyone can collaborate effectively. 
 <br>
-- [Roles](/documentation/roles/) : are configurable in Canvas and can drive a default permission set though Canvas managed [Auth Groups](/documentation/permissions/#model-permissions). <br>
+- [Roles](/documentation/roles/) : are configurable in Canvas and can drive a default permission set through Canvas managed [auth groups](/documentation/permissions/#model-permissions). <br>
 - [Teams](/documentation/teams/) are used to group work. By assigning responsibilities to teams, you can drive how automated tasks in Canvas are assigned. For instance, you may want all delegated referrals to go to a care coordination team.<br>
 - [Care Team Roles](/documentation/care-team-roles/) are used to define the role an individual plays in a patient’s care. Once created you can assign staff to patients with a Care Team role. <br>
 

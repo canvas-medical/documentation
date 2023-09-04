@@ -1,6 +1,6 @@
 ---
 slug: /
-title: "API Quickstart"
+title: "Getting Started With the Canvas FHIR API "
 layout: apipage
 ---
 

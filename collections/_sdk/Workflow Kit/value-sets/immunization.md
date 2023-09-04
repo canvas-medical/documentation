@@ -1,9 +1,5 @@
 ---
 title: "Immunization"
-slug: "immunizations"
-hidden: false
-createdAt: "2021-09-30T16:05:32.262Z"
-updatedAt: "2021-09-30T16:09:53.808Z"
 ---
 <a id="value_set.v2021.immunization"></a>
 
