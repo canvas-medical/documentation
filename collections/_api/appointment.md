@@ -7,7 +7,7 @@ sections:
         name: Appointment
         article: "a"
         description: >-
-         A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more Encounter(s).
+         A booking of a **healthcare event** among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more Encounter(s).
         attributes:
           - name: id
             description: >-
@@ -104,18 +104,22 @@ sections:
             type: string
         endpoints: [read, search, create, update]
         read:
+          description: Get information about an **Apointment**
           responses: [200, 404]
           example_request: appointment-read-request
           example_response: appointment-read-response
         search:
+          description: Search for an **Apointment**
           responses: [200, 400]
           example_request: appointment-search-request
           example_response: appointment-search-response
         create:
+          description: Create an **Apointment**
           responses: [201, 400]
           example_request: appointment-create-request
           example_response: appointment-create-response
         update:
+          description: Update an **Apointment**
           responses: [200, 400]
           example_request: appointment-update-request
           example_response: appointment-update-response
