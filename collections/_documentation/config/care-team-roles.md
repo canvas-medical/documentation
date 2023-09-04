@@ -13,7 +13,7 @@ Navigate to Care Team Roles in your admin settings. New instances are created wi
 
 ## Adding Care Team Roles
 
-To add a new role, click ![care-team-role-button](/assets/images/care-team-role-button.png){:width="10%"} in the top right and then complete the following form:
+To add a new role, click ![care-team-role-button](/assets/images/add-care-team-role.png){:width="10%"} in the top right and then complete the following form:
 
 <b>System:</b> This refers to the system that the code below belongs to. Canvas supports using the following existing systems, ICD10, CPT, SNOMED, and LOINC, or you can leverage a custom code by specifying INTERNAL as the system.
 

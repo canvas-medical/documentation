@@ -7,6 +7,24 @@ main:
     url: /guides/
     
 api:
+ - title: "Getting Started with the Canvas FHIR API"
+   url: /api/
+ - title: "Software Requirements"
+   url: /api/software-requirements/
+ - title: "Quickstart"
+   url: /api/quickstart/
+ - title: "Customer Authentication"
+   url: /api/customer-authentication/
+ - title: "Conditional Requests"
+   url: /api/conditional-requests/
+ - title: "Errors"
+   url: /api/errors/
+ - title: "Service Base URLs"
+   url: /api/service-base-urls/
+ - title: "FHIR API"
+   identifier: api_fhir
+
+api_fhir:
  - title: "AllergyIntolerance"
    url: /api/allergyintolerance/
    identifier: api_allergyintolerance
@@ -112,6 +130,7 @@ api:
  - title: "Task"
    url: /api/task/
    identifier: api_task
+
 api_allergyintolerance:
  - title: "AllergyIntolerance Read"
    url: /api/allergyintolerance/#read
@@ -147,6 +166,8 @@ api_communication:
  - title: "Communication Create"
    url: /api/communication/#create
 api_condition:
+ - title: "Condition Create"
+   url: /api/condition/#create
  - title: "Condition Read"
    url: /api/condition/#read
  - title: "Condition Search"
@@ -293,15 +314,18 @@ api_task:
    url: /api/task/#create
  - title: "Task Update"
    url: /api/task/#update
+
 documentation:
- - title: "Transition"
+ - title: "Click here to learn about our transition plan for our knowledge center"
    url: /documentation/transition
    identifier: documentation_transition
+
 guides:
  - title: "Elements of Care Modeling"
    identifier: guides_elements
  - title: "Care Models"
    identifier: guides_care-models
+
 guides_elements:
  - title: "Diagnostic Range & Inputs"
    identifier: guides_diagnostic-range
@@ -317,6 +341,7 @@ guides_elements:
    identifier: guides_content-and-automation
  - title: "Healthcare Pricing & Payments"
    identifier: guides_healthcare-pricing
+
 guides_care-models:
  - title: "Behavioral Health"
    url: /guides/bh/
@@ -367,6 +392,7 @@ sdk:
    url: /sdk  
  - title: "Workflow Kit"
    identifier: sdk_workflow_kit 
+
 sdk_workflow_kit:
  - title: "Quickstart" 
    url: /sdk/sdk-quickstart/
@@ -380,6 +406,7 @@ sdk_workflow_kit:
    url: /sdk/protocol-logging-tool
  - title: "Value Sets" 
    identifier: sdk_workflow_kit_value_sets
+   url: /sdk/value-sets
 
 sdk_workflow_kit_outputs:
  - title: "Recommendation Types"
