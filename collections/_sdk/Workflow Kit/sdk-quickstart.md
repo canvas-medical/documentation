@@ -328,7 +328,7 @@ Let's step through the example above:
         <td><code>identifiers</code></td>
         <td><em>list[string]</em></td>
         <td><strong>false</strong></td>
-        <td>This is a list of identifiers associated with the Protocol. These are sometimes populated with eCQI codes (i.e., <em>CMS125v6</em>), but can also be populated with strings of your choice to identify your custom Protocols. In the Canvas UI, these are populated underneath the Protocol title in a patient's chart.</td>
+        <td>This is a list of identifiers associated with the Protocol. These are sometimes populated with eCQI codes (e.g., <em>CMS125v6</em>), but can also be populated with strings of your choice to identify your custom Protocols. In the Canvas UI, these are populated underneath the Protocol title in a patient's chart.</td>
       </tr>
       <tr>
         <td><code>types</code></td>

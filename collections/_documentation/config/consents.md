@@ -24,7 +24,7 @@ To add a new patient consent, click ![role-button](/assets/images/add-patient-co
 
 <b>User selected:</b> You can inactivate an older version of a consent, or one that is no longer necesssary, by unchecking this box.
 
-<b>Expiration rule:</b> You can set a default rule for expiration based on your consent policies. The options are in one year (+365 days from the date of the consent), end of year, (the last day of calendar year, i.e. 12/31/20XX), or never. This date can be overwritten during registration.
+<b>Expiration rule:</b> You can set a default rule for expiration based on your consent policies. The options are in one year (+365 days from the date of the consent), end of year, (the last day of calendar year, e.g. 12/31/20XX), or never. This date can be overwritten during registration.
 
 <b>Is mandatory:</b> Mandatory consents will be present on the patient profile with a red warning. Non mandatory consents will be available in a pick list after a user selects `add consent`.
 
@@ -47,6 +47,6 @@ To add a new Patient Consent Rejection Coding, click the ![role-button](/assets/
 
 <b>System:</b> You can leverage an established system, like [LOINC](https://loinc.org/71801-5) or set this to INTERNAL if you wish to create your own unique codes. 
 
-<b>Display:</b> Enter text you'd like displayed as a reason for rejection in a dropdown (i.e. Declined)
+<b>Display:</b> Enter text you'd like displayed as a reason for rejection in a dropdown (e.g. Declined)
 
 ![Protocol framework](/assets/images/reject-consent.png){:width="60%"}

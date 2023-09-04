@@ -39,8 +39,8 @@ This section is utilized to store provider specific numbers, including states li
 
 To add a new license, start by clicking "Add another Staff License" Then complete the following fields: 
 
-Issuing authority long name | The full name of the issuing authority, i.e. Drug Enforcement Agency |
-Issuing authority short name | The initials of the issuing authority, i.e. DEA |
+Issuing authority long name | The full name of the issuing authority, e.g. Drug Enforcement Agency |
+Issuing authority short name | The initials of the issuing authority, e.g. DEA |
 Issuing authority url | Copy and paste the issuing authority's url/web address
 License or certification identifier | Enter in the license number |
 Issuance date | Enter in the issued date |

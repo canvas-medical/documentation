@@ -171,7 +171,11 @@ api_condition:
  - title: "Condition Read"
    url: /api/condition/#read
  - title: "Condition Search"
-   url: /api/condition/#search
+   url: /api/condition/#condition-search
+ - title: "Condition Create"
+   url: /api/condition/#condition-create
+ - title: "Condition Update"
+   url: /api/condition/#condition-update
 api_consent:
  - title: "Consent Create"
    url: /api/consent/#create
@@ -225,7 +229,11 @@ api_group:
  - title: "Group Read"
    url: /api/group/#read
  - title: "Group Search"
-   url: /api/group/#search 
+   url: /api/group/#group-search 
+ - title: "Group Create"
+   url: /api/group/#group-create
+ - title: "Group Update"
+   url: /api/group/#group-update 
 api_immunization:
  - title: "Immunization Read"
    url: /api/immunization/#read
