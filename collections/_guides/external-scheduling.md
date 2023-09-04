@@ -1,6 +1,12 @@
 ---
 title: "External Scheduling"
-
+guide_for: 
+- /api/appointment/
+- /api/schedule
+- /api/slot
+- /documentation/reason-for-visit-setting-codings/
+- /documentation/provider-availability/
+- /documentation/appointment-and-note-types/
 ---
 
 Maximizing scheduling efficiency is necessary to grow and support high volumes of patients. Allowing patients to self schedule offers the potential of creating a better experience, while also saving your care team time. However, it is not as easy as it seems. Patients cannot just have free reign on your calendars. To make it work, the complexities of scheduling needs to be built into the workflow. You may want to build the logic into your own scheduling experience, or leverage a third party partner when first launching. Either way, Canvas’s FHIR API and Workflow Kit enable external systems to completely takeover or supplement scheduling in Canvas. 

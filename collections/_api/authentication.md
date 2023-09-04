@@ -184,6 +184,6 @@ If you're using the Authorization Code Flow, you need to pass scopes as part of 
 
 These scopes follow the [Clinical Scope Syntax](https://www.hl7.org/fhir/smart-app-launch/scopes-and-launch-context.html#clinical-scope-syntax) set by HL7. 
 
-Since Canvas currently works on a User level (i.e., the logged in user isn't a Patient), the most relevant scopes can be found [here](https://www.hl7.org/fhir/smart-app-launch/scopes-and-launch-context.html#user-level-scopes).
+Since Canvas currently works on a User level (e.g., the logged in user isn't a Patient), the most relevant scopes can be found [here](https://www.hl7.org/fhir/smart-app-launch/scopes-and-launch-context.html#user-level-scopes).
 
 In short, they have the form: `user/resourceType.(read|write|*)`.  where `resourceType` can be one of the supported resources (e.g., `Patient, Practitioner, etc) or a wildcard `*`.

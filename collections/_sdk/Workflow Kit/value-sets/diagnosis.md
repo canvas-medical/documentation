@@ -3078,7 +3078,7 @@ class Uveitis(ValueSet)
 class VaricellaZoster(ValueSet)
 ```
 
-**Clinical Focus:** This value set contains concepts that represent varicella zoster (i.e., chickenpox and shingles) infections.
+**Clinical Focus:** This value set contains concepts that represent varicella zoster (e.g., chickenpox and shingles) infections.
 
 **Data Element Scope:** This value set may use the Quality Data Model (QDM) category related to Diagnosis.
 
