@@ -7,7 +7,7 @@
                 {% endif %}
                 {% if block.description %}
                 <div class="apidoc__info__description">
-                    {{ block.description }}
+                    {{ block.description | markdownify }}
                 </div>
                 {% endif %}
             </div>
@@ -75,8 +75,7 @@
                 <span class="apidoc__info__method apidoc__info__method__{{ method }}">{{ method }}</span>
                 <div class="apidoc__info__url">/{{ block.name }}{{ url }}</div>
                 <h4 class="apidoc__info__summary">{{ block.name }} {{ endpoint }}</h4>
-                <div class="apidoc__info__description">{{ description }} {{ block.article }} {{ block.name }}
-                </div>
+                <div class="apidoc__info__description">{{ block[endpoint].description | markdownify }}</div>
             </div>
         </div>
         <div class="apidoc__gridcol">
