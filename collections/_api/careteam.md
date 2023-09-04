@@ -1,75 +1,442 @@
 ---
-title: "CareTeam"
+title: CareTeam
+sections:
+  - type: section
+    blocks:
+      - type: apidoc
+        name: CareTeam
+        article: "a"
+        description: >-
+         The Care Team includes all the people and organizations who plan to participate in the coordination and delivery of care for a patient.
+        attributes:
+          - name: id
+            description: >-
+              The identifier of the care team
+            type: string
+            required: true
+          - name: resourceType
+            type: string
+            required: true
+          - name: status
+            type: string
+          - name: name
+            type: string
+          - name: subject
+            type: string
+          - name: participant
+            type: array
+            attributes:
+              - name: role
+                type: array
+                attributes:
+                  - name: coding
+                    type: array
+                    attributes:
+                      - name: system
+                        type: string
+                      - name: code
+                        type: string
+                      - name: display
+                        type: string
+              - name: member
+                type: string
+        search_parameters:
+          - name: _id
+            type: string
+            description: A Canvas-issued unique identifier
+          - name: patient
+            type: string
+          - name: practitioner
+            type: string
+          - name: status
+            type: string
+        endpoints: [read, search, update]
+        read:
+          responses: [200, 404]
+          example_request: care-team-read-request
+          example_response: care-team-read-response
+        search:
+          responses: [200, 400]
+          example_request: care-team-search-request
+          example_response: care-team-search-response
+        update:
+          responses: [200, 400]
+          example_request: care-team-update-request
+          example_response: care-team-update-response
 ---
-## CareTeam Read
+<div id="care-team-read-request">
+{% tabs care-team-read-request %}
+{% tab care-team-read-request python %}
+```sh
+import requests
 
-## CareTeam Search
+url = "https://fumage-example.canvasmedical.com/CareTeam/<id>"
 
-### Creating a Care Team for a Patient in Canvas
-
-See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams) to see how to add practitioners to a patient's care team. 
-[block:api-header]
-{
-  "title": "Supported Participant Types"
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
 }
-[/block]
-While the FHIR spec allows for multiple "person" types to be participants in a Care Team, Canvas only supports Staff members (FHIR Practitioner Types) to be participants in a Care Team. Thus, when searching by participant, we only support Practitioner references. 
 
-To figure out how to set up Care Teams, see our [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams)
+response = requests.get(url, headers=headers)
 
-
-## CareTeam Update
-
-The CareTeam update endpoint acts as an upsert, so there is no provided *create* endpoint. If all fields are omitted from the body it will mark any current Care Team Memberships for the current patient as inactive and they will no longer display on the UI or be returned in a Read/Search. 
-
-### CareTeam Body Attributes
-
-### resourceType [required]
-
-This will be hard coded to `CareTeam`
+print(response.text)
 ```
+{% endtab %}
+{% tab care-team-read-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/CareTeam/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="care-team-read-response">
+{% tabs care-team-read-response %}
+{% tab care-team-read-response 200 %}
+```json
 {
-  "codes": [
+    "resourceType": "CareTeam",
+    "id": "8ab7cc3c86f54723ba267baf1f906ec7",
+    "status": "active",
+    "name": "Care Team for Testing, Regression",
+    "subject": {
+        "reference": "Patient/8ab7cc3c86f54723ba267baf1f906ec7",
+        "type": "Patient",
+        "display": "Testing, Regression"
+    },
+    "participant": [
+        {
+            "role": [
+                {
+                    "coding": [
+                        {
+                            "system": "INTERNAL",
+                            "code": "123",
+                            "display": "BFF"
+                        }
+                    ]
+                }
+            ],
+            "member": {
+                "reference": "Practitioner/0f0d694324914fb2ad5a1c03428a43ec",
+                "type": "Practitioner",
+                "display": "Cecilia Orta DO"
+            }
+        }
+    ]
+}
+```
+{% endtab %}
+{% tab care-team-read-response 404 %}
+```json
+{
+    "resourceType": "OperationOutcome",
+    "issue": [
+        {
+            "severity": "error",
+            "code": "not-found",
+            "details": {
+                "text": "Unknown CareTeam resource '7d1ce256fcd7408193b0459650937a07'"
+            }
+        }
+    ]
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="care-team-search-request">
+{% tabs care-team-search-request %}
+{% tab care-team-search-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/CareTeam?patient=Patient%<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% tab care-team-search-request curl %}
+```sh
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/CareTeam?patient=Patient%<id>' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="care-team-search-response">
+{% tabs care-team-search-response %}
+{% tab care-team-search-response 200 %}
+```json
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/CareTeam?id=8ab7cc3c86f54723ba267baf1f906ec7&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/CareTeam?id=8ab7cc3c86f54723ba267baf1f906ec7&_count=10&_offset=0"
+        },
+        {
+            "relation": "next",
+            "url": "/CareTeam?id=8ab7cc3c86f54723ba267baf1f906ec7&_count=10&_offset=10"
+        },
+        {
+            "relation": "last",
+            "url": "/CareTeam?id=8ab7cc3c86f54723ba267baf1f906ec7&_count=10&_offset=1210"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "CareTeam",
+                "id": "8ab7cc3c86f54723ba267baf1f906ec7",
+                "status": "active",
+                "name": "Care Team for Testing, Regression",
+                "subject": {
+                    "reference": "Patient/8ab7cc3c86f54723ba267baf1f906ec7",
+                    "type": "Patient",
+                    "display": "Testing, Regression"
+                },
+                "participant": [
+                    {
+                        "role": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "INTERNAL",
+                                        "code": "123",
+                                        "display": "BFF"
+                                    }
+                                ]
+                            }
+                        ],
+                        "member": {
+                            "reference": "Practitioner/0f0d694324914fb2ad5a1c03428a43ec",
+                            "type": "Practitioner",
+                            "display": "Cecilia Orta DO"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "CareTeam",
+                "id": "999f6fd203d24e26ba95b77ffa7827b6",
+                "status": "active",
+                "name": "Care Team for Koepp, Sandrine E. (Montana)",
+                "subject": {
+                    "reference": "Patient/999f6fd203d24e26ba95b77ffa7827b6",
+                    "type": "Patient",
+                    "display": "Koepp, Sandrine E. (Montana)"
+                },
+                "participant": [
+                    {
+                        "role": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "http://snomed.info/sct",
+                                        "code": "17561000",
+                                        "display": "Cardiologist"
+                                    }
+                                ]
+                            }
+                        ],
+                        "member": {
+                            "reference": "Practitioner/c2ff4546548e46ab8959af887b563eab",
+                            "type": "Practitioner",
+                            "display": "Saharsh Patel"
+                        }
+                    },
+                    {
+                        "role": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "http://snomed.info/sct",
+                                        "code": "453231000124104",
+                                        "display": "Primary care provider"
+                                    }
+                                ]
+                            }
+                        ],
+                        "member": {
+                            "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e",
+                            "type": "Practitioner",
+                            "display": "Michael Zimmerman DO"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+{% endtab %}
+{% tab care-team-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
     {
-      "code": "\"resourceType\": \"CareTeam\",",
-      "language": "text"
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
 ```
-### subject
+{% endtab %}
+{% endtabs %}
+</div>
 
-Patients can only have one CareTeam, so the CareTeam identifier is the FHIR ID of the patient. Due to this you do not have to specify the `subject` in the body of the request as it is derived from the endpoint _id passed. 
+
+<div id="care-team-update-request">
+{% tabs care-team-update-request %}
+{% tab care-team-update-request python %}
+```sh
+import requests
+
+url = "https://fhir-example.canvasmedical.com/CareTeam/<id>"
+
+payload = {
+    "resourceType": "CareTeam",
+    "participant": [
+        {
+            "role": [{ "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "17561000",
+                            "display": "Cardiologist"
+                        }
+                    ] }],
+            "member": { "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e" }
+        },
+        {
+            "role": [{ "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "453231000124104",
+                            "display": "Primary care provider"
+                        }
+                    ] }],
+            "member": { "reference": "Practitioner/2a6cfdb145c8469b9d935fe91f6b0172" }
+        }
+    ],
+    "subject": { "reference": "Patient/3e72c07b5aac4dc5929948f82c9afdfd" }
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.text)
 ```
+{% endtab %}
+{% tab care-team-update-request curl %}
+```sh
+curl --request PUT \
+     --url https://fhir-example.canvasmedical.com/CareTeam/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
 {
-  "codes": [
+  "resourceType": "CareTeam",
+  "participant": [
     {
-      "code": "\"subject\": {\n    \"reference\": \"Patient/3e72c07b5aac4dc5929948f82c9afdfd\"\n},",
-      "language": "text"
+      "role": [
+        {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "17561000",
+              "display": "Cardiologist"
+            }
+          ]
+        }
+      ],
+      "member": {
+        "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e"
+      }
+    },
+    {
+      "role": [
+        {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "453231000124104",
+              "display": "Primary care provider"
+            }
+          ]
+        }
+      ],
+      "member": {
+        "reference": "Practitioner/2a6cfdb145c8469b9d935fe91f6b0172"
+      }
+    }
+  ],
+  "subject": {
+    "reference": "Patient/3e72c07b5aac4dc5929948f82c9afdfd"
+  }
+}
+'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="care-team-update-response">
+{% tabs care-team-update-response %}
+{% tab care-team-update-response 200 %}
+```json
+null
+```
+{% endtab %}
+{% tab care-team-update-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
 ```
-### participant
+{% endtab %}
+{% endtabs %}
+</div>
 
-Calls to this endpoint expect the full CareTeam to be listed. Any missing CareTeam member will be marked as inactive from the CareTeam and will no longer show up as a member on the Canvas UI. If no participant attribute is added, all existing members of the care team will be marked as inactive and they will no longer display on the UI or be returned in a Read/Search. 
-
-For each participant object you can specify the role and the member. Currently we only support *one role per practitioner* and *one type of role per patient*. We accept the following syntax below where you can specify one role coding (system, code, display) per member. This information should come from the Admin setup of Care Team Roles using this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams).
-```
-{
-  "codes": [
-    {
-      "code": "\"participant\": [\n        {\n            \"role\": [\n                {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://snomed.info/sct\",\n                            \"code\": \"17561000\",\n                            \"display\": \"Cardiologist\"\n                        }\n                    ]\n                }\n            ],\n            \"member\": {\n                \"reference\": \"Practitioner/3640cd20de8a470aa570a852859ac87e\"\n            }\n        }\n]",
-      "language": "text"
-    }
-  ]
-}
-```
-
-[block:callout]
-{
-  "type": "info",
-  "body": "Due to a legacy design detail with the CareTeam implementation, there is a specific condition under which inclusion of this header will not produce expected results. In the case where all members of a CareTeam are removed through the Canvas user interface (i.e. not through the FHIR API), the last modified date for the CareTeam will be equal to the last modified date of the patient record until another member is added to the CareTeam.\n\nMore information about the If-Unmodified-Since header can be found in the [Conditional Requests](https://docs.canvasmedical.com/reference/conditional-requests) documentation.",
-  "title": "If-Unmodified-Since Header"
-}
-[/block]

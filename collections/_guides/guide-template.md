@@ -1,6 +1,7 @@
 ---
 title: "Template"
 guide_for: 
+ - /api/000-example-front-matter/
 ---
 
 BLURB
@@ -58,6 +59,11 @@ developer text
 super user text
 {% endtab %}
 {% endtabs %}
+
+
+### Cards
+
+![Questionnaires](/assets/images/config-ques.png){:width="23%"}&nbsp;&nbsp;&nbsp;&nbsp;![Search Results](/assets/images/guide-search.png){:width="23%"}&nbsp;&nbsp;&nbsp;&nbsp;
 
 
 ## Adding Images

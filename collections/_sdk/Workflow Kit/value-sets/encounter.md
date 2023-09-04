@@ -7,11 +7,11 @@ updatedAt: "2021-09-30T16:03:23.759Z"
 ---
 <a id="value_set.v2021.encounter"></a>
 
-# encounter
+## encounter
 
 <a id="value_set.v2021.encounter.AlcoholAndDrugDependenceTreatment"></a>
 
-## AlcoholAndDrugDependenceTreatment
+### AlcoholAndDrugDependenceTreatment
 **value_set.v2021.encounter.AlcoholAndDrugDependenceTreatment**
 
 ```python
@@ -28,7 +28,7 @@ class AlcoholAndDrugDependenceTreatment(ValueSet)
 
 <a id="value_set.v2021.encounter.Ambulatory"></a>
 
-## Ambulatory
+### Ambulatory
 **value_set.v2021.encounter.Ambulatory**
 
 ```python
@@ -45,7 +45,7 @@ class Ambulatory(ValueSet)
 
 <a id="value_set.v2021.encounter.AnnualWellnessVisit"></a>
 
-## AnnualWellnessVisit
+### AnnualWellnessVisit
 **value_set.v2021.encounter.AnnualWellnessVisit**
 
 ```python
@@ -62,7 +62,7 @@ class AnnualWellnessVisit(ValueSet)
 
 <a id="value_set.v2021.encounter.AudiologyVisit"></a>
 
-## AudiologyVisit
+### AudiologyVisit
 **value_set.v2021.encounter.AudiologyVisit**
 
 ```python
@@ -79,7 +79,7 @@ class AudiologyVisit(ValueSet)
 
 <a id="value_set.v2021.encounter.BehavioralHealthFollowUpVisit"></a>
 
-## BehavioralHealthFollowUpVisit
+### BehavioralHealthFollowUpVisit
 **value_set.v2021.encounter.BehavioralHealthFollowUpVisit**
 
 ```python
@@ -96,7 +96,7 @@ class BehavioralHealthFollowUpVisit(ValueSet)
 
 <a id="value_set.v2021.encounter.BehavioralneuropsychAssessment"></a>
 
-## BehavioralneuropsychAssessment
+### BehavioralneuropsychAssessment
 **value_set.v2021.encounter.BehavioralneuropsychAssessment**
 
 ```python
@@ -113,7 +113,7 @@ class BehavioralneuropsychAssessment(ValueSet)
 
 <a id="value_set.v2021.encounter.EncounterInfluenza"></a>
 
-## EncounterInfluenza
+### EncounterInfluenza
 **value_set.v2021.encounter.EncounterInfluenza**
 
 ```python
@@ -130,7 +130,7 @@ class EncounterInfluenza(ValueSet)
 
 <a id="value_set.v2021.encounter.EncounterInpatient"></a>
 
-## EncounterInpatient
+### EncounterInpatient
 **value_set.v2021.encounter.EncounterInpatient**
 
 ```python
@@ -147,7 +147,7 @@ class EncounterInpatient(ValueSet)
 
 <a id="value_set.v2021.encounter.EncounterToDocumentMedications"></a>
 
-## EncounterToDocumentMedications
+### EncounterToDocumentMedications
 **value_set.v2021.encounter.EncounterToDocumentMedications**
 
 ```python
@@ -164,7 +164,7 @@ class EncounterToDocumentMedications(ValueSet)
 
 <a id="value_set.v2021.encounter.EncounterToEvaluateBmi"></a>
 
-## EncounterToEvaluateBmi
+### EncounterToEvaluateBmi
 **value_set.v2021.encounter.EncounterToEvaluateBmi**
 
 ```python
@@ -181,7 +181,7 @@ class EncounterToEvaluateBmi(ValueSet)
 
 <a id="value_set.v2021.encounter.EncounterToScreenForBloodPressure"></a>
 
-## EncounterToScreenForBloodPressure
+### EncounterToScreenForBloodPressure
 **value_set.v2021.encounter.EncounterToScreenForBloodPressure**
 
 ```python
@@ -198,7 +198,7 @@ class EncounterToScreenForBloodPressure(ValueSet)
 
 <a id="value_set.v2021.encounter.EncounterToScreenForDepression"></a>
 
-## EncounterToScreenForDepression
+### EncounterToScreenForDepression
 **value_set.v2021.encounter.EncounterToScreenForDepression**
 
 ```python
@@ -215,7 +215,7 @@ class EncounterToScreenForDepression(ValueSet)
 
 <a id="value_set.v2021.encounter.EsrdMonthlyOutpatientServices"></a>
 
-## EsrdMonthlyOutpatientServices
+### EsrdMonthlyOutpatientServices
 **value_set.v2021.encounter.EsrdMonthlyOutpatientServices**
 
 ```python
@@ -232,7 +232,7 @@ class EsrdMonthlyOutpatientServices(ValueSet)
 
 <a id="value_set.v2021.encounter.FollowUpWithin4Weeks"></a>
 
-## FollowUpWithin4Weeks
+### FollowUpWithin4Weeks
 **value_set.v2021.encounter.FollowUpWithin4Weeks**
 
 ```python
@@ -249,7 +249,7 @@ class FollowUpWithin4Weeks(ValueSet)
 
 <a id="value_set.v2021.encounter.FollowUpWithinOneYear"></a>
 
-## FollowUpWithinOneYear
+### FollowUpWithinOneYear
 **value_set.v2021.encounter.FollowUpWithinOneYear**
 
 ```python
@@ -266,7 +266,7 @@ class FollowUpWithinOneYear(ValueSet)
 
 <a id="value_set.v2021.encounter.GroupPsychotherapy"></a>
 
-## GroupPsychotherapy
+### GroupPsychotherapy
 **value_set.v2021.encounter.GroupPsychotherapy**
 
 ```python
@@ -283,7 +283,7 @@ class GroupPsychotherapy(ValueSet)
 
 <a id="value_set.v2021.encounter.OccupationalTherapyEvaluation"></a>
 
-## OccupationalTherapyEvaluation
+### OccupationalTherapyEvaluation
 **value_set.v2021.encounter.OccupationalTherapyEvaluation**
 
 ```python
@@ -300,7 +300,7 @@ class OccupationalTherapyEvaluation(ValueSet)
 
 <a id="value_set.v2021.encounter.OphthalmologicServices"></a>
 
-## OphthalmologicServices
+### OphthalmologicServices
 **value_set.v2021.encounter.OphthalmologicServices**
 
 ```python
@@ -317,7 +317,7 @@ class OphthalmologicServices(ValueSet)
 
 <a id="value_set.v2021.encounter.OphthalmologicalServices"></a>
 
-## OphthalmologicalServices
+### OphthalmologicalServices
 **value_set.v2021.encounter.OphthalmologicalServices**
 
 ```python
@@ -334,7 +334,7 @@ class OphthalmologicalServices(ValueSet)
 
 <a id="value_set.v2021.encounter.OutpatientEncountersForPreventiveCare"></a>
 
-## OutpatientEncountersForPreventiveCare
+### OutpatientEncountersForPreventiveCare
 **value_set.v2021.encounter.OutpatientEncountersForPreventiveCare**
 
 ```python
@@ -351,7 +351,7 @@ class OutpatientEncountersForPreventiveCare(ValueSet)
 
 <a id="value_set.v2021.encounter.PalliativeCareEncounter"></a>
 
-## PalliativeCareEncounter
+### PalliativeCareEncounter
 **value_set.v2021.encounter.PalliativeCareEncounter**
 
 ```python
@@ -368,7 +368,7 @@ class PalliativeCareEncounter(ValueSet)
 
 <a id="value_set.v2021.encounter.PatientProviderInteraction"></a>
 
-## PatientProviderInteraction
+### PatientProviderInteraction
 **value_set.v2021.encounter.PatientProviderInteraction**
 
 ```python
@@ -385,7 +385,7 @@ class PatientProviderInteraction(ValueSet)
 
 <a id="value_set.v2021.encounter.PhysicalTherapyEvaluation"></a>
 
-## PhysicalTherapyEvaluation
+### PhysicalTherapyEvaluation
 **value_set.v2021.encounter.PhysicalTherapyEvaluation**
 
 ```python
@@ -402,7 +402,7 @@ class PhysicalTherapyEvaluation(ValueSet)
 
 <a id="value_set.v2021.encounter.PsychVisitDiagnosticEvaluation"></a>
 
-## PsychVisitDiagnosticEvaluation
+### PsychVisitDiagnosticEvaluation
 **value_set.v2021.encounter.PsychVisitDiagnosticEvaluation**
 
 ```python
@@ -419,7 +419,7 @@ class PsychVisitDiagnosticEvaluation(ValueSet)
 
 <a id="value_set.v2021.encounter.PsychVisitFamilyPsychotherapy"></a>
 
-## PsychVisitFamilyPsychotherapy
+### PsychVisitFamilyPsychotherapy
 **value_set.v2021.encounter.PsychVisitFamilyPsychotherapy**
 
 ```python
@@ -436,7 +436,7 @@ class PsychVisitFamilyPsychotherapy(ValueSet)
 
 <a id="value_set.v2021.encounter.PsychVisitPsychotherapy"></a>
 
-## PsychVisitPsychotherapy
+### PsychVisitPsychotherapy
 **value_set.v2021.encounter.PsychVisitPsychotherapy**
 
 ```python
@@ -453,7 +453,7 @@ class PsychVisitPsychotherapy(ValueSet)
 
 <a id="value_set.v2021.encounter.Psychoanalysis"></a>
 
-## Psychoanalysis
+### Psychoanalysis
 **value_set.v2021.encounter.Psychoanalysis**
 
 ```python
@@ -470,7 +470,7 @@ class Psychoanalysis(ValueSet)
 
 <a id="value_set.v2021.encounter.SpeechAndHearingEvaluation"></a>
 
-## SpeechAndHearingEvaluation
+### SpeechAndHearingEvaluation
 **value_set.v2021.encounter.SpeechAndHearingEvaluation**
 
 ```python

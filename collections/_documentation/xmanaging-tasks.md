@@ -1,5 +1,6 @@
 ---
 title: "Managing Tasks"
+layout: documentation
 ---
 
 ## Introduction to the Task Management Panel

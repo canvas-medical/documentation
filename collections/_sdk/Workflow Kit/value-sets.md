@@ -6,7 +6,7 @@ hidden: false
 createdAt: "2021-09-22T22:18:36.624Z"
 updatedAt: "2022-02-21T22:41:16.354Z"
 ---
-# v2021
+## v2021
 
 Value sets are bundled lists of codes (RXNORM, SNOMED, ICD...) that represent abstract concepts. These concepts can represent anything such as conditions, immunizations, patient attributes, and procedures.
 Rather than working in multiple code systems with unwieldy lists of identifiers, value sets

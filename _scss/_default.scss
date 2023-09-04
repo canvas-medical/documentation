@@ -1,5 +1,6 @@
 body {
   font-family: $primary-font-family;
+  font-size: $font-sm;
   color: $text-color;
 }
 
@@ -46,30 +47,46 @@ h4 {
   font-size: $font-md;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 h5 {
   display: block;
-  font-size: $font-sm;
+  font-size: $font-md;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 h6 {
   display: block;
-  font-size: $font-xs;
+  font-size: $font-md;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 table {
   width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  th {
+    background-color: $lightgrey;
+    font-weight: 600;
+  }
   th, td {
+    text-align: left;
+    vertical-align: top;
     min-width: 5vw;
-    padding: 0.25em;
+    padding: 0.5em;
     margin: 0.25em;
+    border-bottom: 1px solid rgba($black,0.5);
+    border-right: 1px solid rgba($black, 0.5);
+  }
+  th:last-of-type, td:last-of-type {
+    border-right: 0px;
+  }
+  tr:last-of-type > td {
+    border-bottom: 0px;
   }
 }

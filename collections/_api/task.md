@@ -1,209 +1,463 @@
 ---
-title: "Task"
+title: Task
+sections:
+  - type: section
+    blocks:
+      - type: apidoc
+        name: Task
+        article: "a"
+        description: >-
+          A task to be performed.
+        attributes:
+          - name: id
+            description: >-
+              The identifier of the task
+            type: string
+            required: true
+          - name: resourceType
+            type: string
+            required: true
+          - name: status
+            type: string
+            required: true
+          - name: description
+            type: string
+            required: true
+          - name: for
+            type: string
+            required: true
+          - name: authoredOn
+            type: datetime
+            required: true
+          - name: requester
+            type: string
+            required: true
+          - name: owner
+            type: string
+            required: true
+          - name: intent
+            type: string
+            required: true
+          - name: restriction
+            type: json
+            required: true
+            attributes:
+              - name: period
+                type: json
+                required: true
+                attributes:
+                  - name: end
+                    type: datetime
+                    required: true
+          - name: note
+            type: json
+            required: true
+            attributes:
+              - name: text
+                type: string
+                required: true
+              - name: authorReference
+                type: string
+                required: true
+              - name: time
+                type: datetime
+                required: true
+          - name: input
+            type: string
+            required: true
+        search_parameters:
+          - name: _id
+            type: string
+            description: A Canvas-issued unique identifier
+          - name: label
+            type: string
+            description: A human-readable label for the task
+          - name: owner
+            type: string
+            description: The owner of the task
+          - name: description
+            type: string
+            description: A description of the task
+          - name: patient
+            type: string
+            description: The patient associated with the task
+          - name: requester
+            type: string
+            description: The requester of the task
+        endpoints: [search, create, update]
+        search:
+          responses: [200, 400]
+          example_request: task-search-request
+          example_response: task-search-response
+        create:
+          responses: [201, 400]
+          example_request: task-create-request
+          example_response: task-create-response
+        update:
+          responses: [200, 400]
+          example_request: task-update-request
+          example_response: task-update-response
 ---
-## Task Search
+<div id="task-search-request">
+{% tabs task-search-request %}
+{% tab task-search-request python %}
+```sh
+import requests
 
-### Status Mapping
+url = "https://fumage-example.canvasmedical.com/Task?_id=<id>"
 
-Since Canvas only supports 3 statuses, the mapping back to FHIR is as follows:
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
 
-    "h-0" | "Canvas Status",
-    "h-1" | "FHIR Status",
-    "0-0" | "open",
-    "0-1" | "requested",
-    "1-0" | "completed",
-    "1-1" | "completed",
-    "2-0" | "closed",
-    "2-1" | "cancelled"
+response = requests.get(url, headers=headers)
 
-### Creating Tasks in Canvas
-
-To learn how to create and manage tasks in Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks).
-
-## Task Create
-
-### Getting the newly-created task's ID.
-Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the `Location:` header.
-
-### Attributes that are pulled into Canvas:
-
-Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). Open tasks will also display in th [Task Panel ](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List) 
-
-### status [REQUIRED]
-
-The current status of the task. The mapping from FHIR statuses to Canvas Task statuses is as follows:
-
-    "h-0" | "FHIR Task Status",
-    "h-1" |  "Canvas Mapping",
-    "0-0" | "draft\nrequested\naccepted\nready\nin-progress\non-hold",
-    "1-0" |  "rejected\ncancelled\nfailed\nentered-in-error",
-    "2-0" | "completed",
-    "0-1" | "open",
-    "1-1" | "closed",
-    "2-1" | "completed"
-
-[/block]
-These statuses are filterable on the canvas UI in the [patient chart](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). By default we only show open tasks. Only open tasks will show on the [Task Panel ](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List) 
+print(response.text)
 ```
+{% endtab %}
+{% tab task-search-request curl %}
+```sh
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/Task?_id=<id>' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="task-search-response">
+{% tabs task-search-response %}
+{% tab task-search-response 200 %}
+```json
 {
-  "codes": [
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/Task?_id=3ff6b4a0-e172-490c-b8cd-45bedf156bd8&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Task?_id=3ff6b4a0-e172-490c-b8cd-45bedf156bd8&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Task?_id=3ff6b4a0-e172-490c-b8cd-45bedf156bd8&_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Task",
+                "id": "3ff6b4a0-e172-490c-b8cd-45bedf156bd8",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/task-permalink",
+                        "valueString": "https://training.canvasmedical.com/permalinks/v1/VGFzazoxMTY6MzU0OQ=="
+                    }
+                ],
+                "status": "requested",
+                "intent": "unknown",
+                "description": "call bob (juan test)  <patient:26566:4675f8a6f65944c7b0e2b8abf8e196ea|Juan Zapata (Sebastian)>",
+                "for": {
+                    "reference": "Patient/4675f8a6f65944c7b0e2b8abf8e196ea",
+                    "type": "Patient"
+                },
+                "authoredOn": "2023-08-31T14:31:42.363988+00:00",
+                "requester": {
+                    "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                    "type": "Practitioner"
+                },
+                "owner": {
+                    "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                    "type": "Practitioner"
+                }
+            }
+        }
+    ]
+}
+```
+{% endtab %}
+{% tab task-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
     {
-      "code": "\"status\": \"requested\",",
-      "language": "text"
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
 ```
-### requester [REQUIRED]
+{% endtab %}
+{% endtabs %}
+</div>
 
- The user who requested the task. This must be a practitioner reference.
+<div id="task-create-request">
+{% tabs task-create-request %}
+{% tab task-create-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Task"
+
+payload = {
+    "resourceType": "Task",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+            "valueReference": {
+                "reference": "Group/9bf1d726-8c04-4aed-8b0e-e066f4d54b13",
+                "display": "All Responsibilities"
+            }
+        }
+    ],
+    "status": "requested",
+    "requester": { "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14" },
+    "description": "Ask patient for new insurance information.",
+    "for": { "reference": "Patient/5350cd20de8a470aa570a852859ac87e" },
+    "owner": { "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e" },
+    "authoredOn": "2022-03-20T14:00:00.000Z",
+    "restriction": { "period": { "end": "2022-08-01T04:00:00+00:00" } },
+    "note": [
+        {
+            "text": "Please be sure to scan them in at their next visit.",
+            "time": "2022-03-20T14:00:00.000Z",
+            "authorReference": { "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14" }
+        }
+    ],
+    "input": [
+        {
+            "type": { "text": "label" },
+            "valueString": "Urgent"
+        }
+    ]
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.text)
 ```
+{% endtab %}
+{% tab task-create-request curl %}
+```sh
+curl --request POST \
+     --url https://fumage-example.canvasmedical.com/Task \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
 {
-  "codes": [
+  "resourceType": "Task",
+  "extension": [
     {
-      "code": "\"requester\": {\n\t\"reference\": \"Practitioner/5eede137ecfe4124b8b773040e33be14\"\n},",
-      "language": "text"
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+      "valueReference": {
+        "reference": "Group/9bf1d726-8c04-4aed-8b0e-e066f4d54b13",
+        "display": "All Responsibilities"
+      }
+    }
+  ],
+  "status": "requested",
+  "requester": {
+    "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14"
+  },
+  "description": "Ask patient for new insurance information.",
+  "for": {
+    "reference": "Patient/5350cd20de8a470aa570a852859ac87e"
+  },
+  "owner": {
+    "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e"
+  },
+  "authoredOn": "2022-03-20T14:00:00.000Z",
+  "restriction": {
+    "period": {
+      "end": "2022-08-01T04:00:00+00:00"
+    }
+  },
+  "note": [
+    {
+      "text": "Please be sure to scan them in at their next visit.",
+      "time": "2022-03-20T14:00:00.000Z",
+      "authorReference": {
+        "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14"
+      }
+    }
+  ],
+  "input": [
+    {
+      "type": {
+        "text": "label"
+      },
+      "valueString": "Urgent"
+    }
+  ]
+}
+'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="task-create-response">
+{% tabs task-create-response %}
+{% tab task-create-response 201 %}
+```json
+null
+```
+{% endtab %}
+{% tab task-create-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
 ```
-### for [REQUIRED]
+{% endtab %}
+{% endtabs %}
+</div>
 
- The patient reference for whom the task is being done.
+<div id="task-update-request">
+{% tabs task-update-request %}
+{% tab task-update-request python %}
+```sh
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Task/_id"
+
+payload = {
+    "resourceType": "Task",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+            "valueReference": {
+                "reference": "Group/9bf1d726-8c04-4aed-8b0e-e066f4d54b13",
+                "display": "All Responsibilities"
+            }
+        }
+    ],
+    "for": { "reference": "Patient/5350cd20de8a470aa570a852859ac87e" },
+    "status": "requested",
+    "requester": { "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14" },
+    "description": "Ask patient for new insurance information.",
+    "owner": { "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e" },
+    "authoredOn": "2022-03-20T14:00:00.000Z",
+    "restriction": "{         \"period\": {             \"end\": \"2022-08-01T04:00:00+00:00\"         }     }",
+    "note": "[         {             \"text\": \"Please be sure to scan them in at their next visit.\",             \"time\": \"2022-03-20T14:00:00.000Z\"             \"authorReference\": {               \"reference\": \"Practitioner/5eede137ecfe4124b8b773040e33be14\"             }         }     ]",
+    "input": [
+        {
+            "type": { "text": "label" },
+            "valueString": "Urgent"
+        }
+    ]
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.text)
 ```
+{% endtab %}
+{% tab task-update-request curl %}
+```sh
+curl --request PUT \
+     --url https://fumage-example.canvasmedical.com/Task/_id \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
 {
-  "codes": [
+  "resourceType": "Task",
+  "extension": [
     {
-      "code": "\"for\": {\n\t\"reference\": \"Patient/5350cd20de8a470aa570a852859ac87e\"\n},",
-      "language": "text"
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+      "valueReference": {
+        "reference": "Group/9bf1d726-8c04-4aed-8b0e-e066f4d54b13",
+        "display": "All Responsibilities"
+      }
+    }
+  ],
+  "for": {
+    "reference": "Patient/5350cd20de8a470aa570a852859ac87e"
+  },
+  "status": "requested",
+  "requester": {
+    "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14"
+  },
+  "description": "Ask patient for new insurance information.",
+  "owner": {
+    "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e"
+  },
+  "authoredOn": "2022-03-20T14:00:00.000Z",
+  "restriction": "{         \"period\": {             \"end\": \"2022-08-01T04:00:00+00:00\"         }     }",
+  "note": "[         {             \"text\": \"Please be sure to scan them in at their next visit.\",             \"time\": \"2022-03-20T14:00:00.000Z\"             \"authorReference\": {               \"reference\": \"Practitioner/5eede137ecfe4124b8b773040e33be14\"             }         }     ]",
+  "input": [
+    {
+      "type": {
+        "text": "label"
+      },
+      "valueString": "Urgent"
+    }
+  ]
+}
+'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="task-update-response">
+{% tabs task-update-response %}
+{% tab task-update-response 200 %}
+```json
+null
+```
+{% endtab %}
+{% tab task-update-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
     }
   ]
 }
 ```
-###  Description
-
- The title for the task. If no description is given, the Canvas UI will not display any title for the task.
-```
-{
-  "codes": [
-    {
-      "code": "\"description\": \"Ask patient for new insurance information.\",",
-      "language": "text"
-    }
-  ]
-}
-```
-### owner 
-
- The user that should handle the task. Must be a practitioner reference.
-```
-{
-  "codes": [
-    {
-      "code": "\"owner\": {\n\t\"reference\": \"Practitioner/3640cd20de8a470aa570a852859ac87e\"\n},",
-      "language": "text"
-    }
-  ]
-}
-```
-### authoredOn
-
-This is the timestamp the Task was created on. If omitted from the message, it will default to the current timestamp at time of ingestion
-```
-{
-  "codes": [
-    {
-      "code": "\"authoredOn\": \"2022-03-20T14:00:00.000Z\",",
-      "language": "text"
-    }
-  ]
-}
-```
-### restriction 
-[block:callout]
-{
-  "type": "info",
-  "title": "DEPRECATED `due` attribute",
-  "body": "The `due` attribute will be deprecated on July 26th, 2022 in favor of Task.restriction.period.end. Please work to utilize the new attribute. We will communicate when we plan to remove the the `due` attribute all together."
-}
-[/block]
-This object can be used to specify the due date timestamp of the Task. The due date is taken from the `restriction.period.end` attribute
-```
-{
-  "codes": [
-    {
-      "code": "\"restriction\": {\n  \"period\": {\n  \t\"end\": \"2022-08-01T04:00:00+00:00\"\n  }\n}",
-      "language": "text"
-    }
-  ]
-}
-```
-### note 
-
-A comment thread about the task. For each note you can specify the:
-
-1.  comment's text [REQUIRED]
-2. timestamp the comment was left (If omitted it will default to current timestamp at data ingestion)
-3  reference to the practitioner that left the specific comment. [REQUIRED]
-```
-{
-  "codes": [
-    {
-      "code": "\"note\": [\n  {\n    \"text\": \"Please be sure to scan them in at their next visit.\",\n    \"time\": \"2022-03-20T14:00:00.000Z\",\n    \"authorReference\": {\n    \t\"reference\": \"Practitioner/5eede137ecfe4124b8b773040e33be14\"\n    }\n  }\n]",
-      "language": "text"
-    }
-  ]
-}
-```
-### extension (task-group)
-
-The team that the task is assigned to.  This optional field requires a reference to the team from the Group endpoint. In the Canvas UI, this will display under the field "team" in the task card.
-```
-{
-  "codes": [
-    {
-      "code": "\"extension\": [\n  {\n    \"url\": \"http://schemas.canvasmedical.com/fhir/extensions/task-group\",\n    \"valueReference\": {\n      \"reference\": \"Group/9bf1d726-8c04-4aed-8b0e-e066f4d54b13\"\n    }\n  }\n],",
-      "language": "text"
-    }
-  ]
-}
-```
-### input
-
-Adds labels to the task in the Canvas UI. If the label doesn't exist in Canvas already, it will be created.
-
-{
-  "images": [
-    {
-      "image": [
-        "https://files.readme.io/c7b907e-Screen_Shot_2022-05-17_at_10.50.12_AM.png",
-        "Screen Shot 2022-05-17 at 10.50.12 AM.png",
-        613,
-        247,
-        "#f8f8f9"
-      ],
-      "caption": ""
-    }
-  ]
-}
-
-```
-{
-  "codes": [
-    {
-      "code": "\"input\": [\n  {\n    \"type\": {\n      \"text\": \"label\"\n    },\n    \"valueString\": \"Urgent\"\n  }\n]  ",
-      "language": "text"
-    }
-  ]
-}
-```
-
-## Task Update
-
-**Note**
-This endpoint is identical to the [Task Create](ref:task-create) endpoint with the exception of passing the Task id as a path parameter. 
+{% endtab %}
+{% endtabs %}
+</div>
 
 
-- Any note comments included in the Update message body will not be checked if they already exist in Canvas. Canvas will always assume each Note is an addition to the Task Comments.
-- Omitting the `group extension` and `authoredOn` in an update body does not delete the contents of that field. They remain set to the last value they were assigned. 
-- Omitting the `description`, `owner`, `restriction` and `input` attributes will delete the contents of the field in the Canvas database. In order to have a Task keep the values in these fields after an update, they must be included.
