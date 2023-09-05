@@ -4,11 +4,9 @@ title: "Guides"
 layout: "guidelandingpage"
 ---
 
-
-<span style="font-size: 40px; font-family: Helvetica-light, sans-serif;">Guides</span>
+<b><span style="color:#22698C; font-size: 40px">Guides</span></b>
 <br>
-<br>
-<span style="color:#0D2C4C; font-size: 18px">Leverage our guides to foster clinician developer collaboration and implement workflows using a combination of the API, SDK, and out-of-the-box functionality. The majority of the guides require both configuration by superusers, as well as custom development. We encourage you to pair together to explore what is possible and use them to iterate on your care model. </span>
+<span style="color:#0D2C4C; font-size: 20px">Leverage our guides to foster clinician developer collaboration and implement workflows using a combination of the API, SDK, and out-of-the-box functionality. The majority of the guides require both configuration by superusers, as well as custom development. We encourage you to pair together to explore what is possible and use them to iterate on your care model. </span>
 <br>
 <br>
 
