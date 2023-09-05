@@ -3,7 +3,7 @@ title: "External Scheduling"
 guide_for: 
 - /api/appointment/
 - /api/schedule
-- /api/slot
+- /api/slot/
 - /documentation/reason-for-visit-setting-codings/
 - /documentation/provider-availability/
 - /documentation/appointment-and-note-types/

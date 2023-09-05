@@ -8,7 +8,7 @@ In order to access the FHIR API, a REST client such as Postman, or a high-level 
 
 ### Mandatory Software Configuration
 
-In order to use the API, an application needs to be created in home-app as described in ["Customer Authentication".](api/customer-authentication)
+In order to use the API, an application needs to be created in home-app as described in ["Customer Authentication".](/api/customer-authentication)
 
 ### All Technical Requirements and Attributes Necessary for Registration
 

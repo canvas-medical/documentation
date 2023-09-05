@@ -99,6 +99,7 @@ sections:
           example_response: condition-search-response
         create:
           responses: [201, 401, 403]
+          description: This endpoint does not prevent duplicates in the record. **We recommend doing a search prior to adding a new condition** to confirm whether it already exists in the record. <br><br>When adding a condition through the API, `clinicalStatus` will determine how it is added to Canvas. Active will appear as a diagnose command, while resolved will show as a past medical history command.
           example_request: condition-create-request
           example_response: condition-create-response
         update:

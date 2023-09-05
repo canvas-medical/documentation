@@ -3,7 +3,7 @@ title: "Asynchronous Care"
 guide_for: 
 ---
 
-Async care can happen in various ways, and while it’s not a new model of care delivery, it has become increasingly popular in recent years, especially since the start of the Covid-19 pandemic. The guide below outlines how you can surface patient completed questionnaires for review by your care team. It also offers suggestions on how you can leverage the structured data collected to surface recommendations based on your care model.
+Async care can happen in various ways, and while it’s not a new model of care delivery, it has become increasingly popular in recent years, especially since the start of the Covid-19 pandemic. The guide below outlines how you can surface patient completed questionnaires for review by your care team. It also offers suggestions on how you can leverage the structured data collected to provide your clinicians with recommendations based on your care model.
 <br> 
 
 * * *
@@ -37,13 +37,13 @@ Canvas does not offer a patient experience for completing Questionnaires. You wi
 
 ### 2. Write tasks to create a worklist in Canvas
 
-The task panel is a great tool to organize work to be done. After your patients complete your online intake forms, you can leverage Tasks in Canvas to alert your team that they are ready for review.
+The task panel is a great tool to organize work to be done. After your patients completed your online intake forms, you can leverage tasks in Canvas to alert your team that they are ready for review.
 
 {:refdef: style="text-align: center;"}
 ![Protocol framework](/assets/images/work-queue.png){:width="95%"}
 {: refdef}
 <br>
-You will need to configure Teams and Task Labels in Canvas. 
+You will need to configure teams and task labels in Canvas. 
 
  - [Teams]({{site.baseurl}}/documentation/teams/) are intended to group work. You may want to group specialty providers together (e.g. `Dermatology Providers`), or set up teams that support certain times of the day (e.g. `After Hours Support`). 
  - [Task Labels]({{site.baseurl}}/documentation/task-labels/) are meant to help organize tasks and are helpful as filters within the task panel. You may need to indicate that a patient should be treated as priority and a label would be a way to do that.
@@ -51,7 +51,7 @@ You will need to configure Teams and Task Labels in Canvas.
 Once configured, you can assign tasks to both indivduals and/or team, and assign labels using the [FHIR Task Create and Update]({{site.baseurl}}/api/task/) endpoints. 
 
 - If assigning to an individual, add a practitiioner reference in the owner attribute. 
-- Teams are mapped to the FHIR Group resource. Assign the Task to a Team using the Task group extension. Use the [FHIR Group Search]({{site.baseurl}}/api/group/) to find the necessary group ID. 
+- Teams are mapped to the FHIR Group resource. Assign the task to a Team using the Task group extension. Use the [FHIR Group Search]({{site.baseurl}}/api/group/) to find the necessary group ID. 
 - Labels do not have to exist in your admin settings in order to be added through the API, however, the custom colors will only show if they have been assigned in admin. 
 
 After the tasks have been created in Canvas, use the filters to create your worklists. You can bookmark the filtered views to save them. The page default will show tasks assigned to `Me or my teams`. The tasks assigned to your teams only show if they are not also assigned to an individual (unclaimed). If a new task comes in, your clinicians can assign it to themselves to claim it, removing it from the view of others.

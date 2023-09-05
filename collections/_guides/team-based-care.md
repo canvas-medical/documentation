@@ -32,9 +32,9 @@ Once you have determined your appropriate staffing model and hired a team, you c
 <br>
 - [Roles](/documentation/roles/) : are configurable in Canvas and can drive a default permission set through Canvas managed [auth groups](/documentation/permissions/#model-permissions). <br>
 - [Teams](/documentation/teams/) are used to group work. By assigning responsibilities to teams, you can drive how automated tasks in Canvas are assigned. For instance, you may want all delegated referrals to go to a care coordination team.<br>
-- [Care Team Roles](/documentation/care-team-roles/) are used to define the role an individual plays in a patient’s care. Once created you can assign staff to patients with a Care Team role. <br>
+- [Care Team Roles](/documentation/care-team-roles/) are used to define the role an individual plays in a patient’s care. Once created you can assign staff to patients with a care team role. <br>
 
-Teams and Care Teams are available via the FHIR API and can be leveraged in Protocols. Make sure to coordinate across teams to ensure they are set up with the appropriate code systems to be leveraged in your custom workflows.
+Teams and care teams are available via the FHIR API and can be leveraged in protocols. Make sure to coordinate across teams to ensure they are set up with the appropriate code systems to be leveraged in your custom workflows.
 
 Teams in Canvas map to the [FHIR Group](/api/group/) resource. You can do a FHIR Group Search to determine the Group ID associated with each team. The GroupID is most commonly leveraged when assigning ownership of tasks. 
 
@@ -45,20 +45,22 @@ Our [FHIR CareTeam](/api/careteam/) resource allows you to read a patients care 
 * * *
 ### 2. Grant appropriate access levels
 
-The minimum necessary rule requires that covered entities make reasonable efforts to limit access to protected health information to those in the workforce that need access based on their roles. Canvas allows you to limit access to established [Patient Groups](/documentation/patient-groups/), ensuring that appropriate privacy restrictions are in place. Once the Patient Groups are defined in your admin settings, you can partner with your engineering team to leverage Protocols to programmatically add patients to the groups based on any patient attribute that is available to the Workflow Kit. 
+The minimum necessary rule requires that covered entities make reasonable efforts to limit access to protected health information to those in the workforce that need access based on their roles.
+
+Permissions that control what a user can do in Canvas are assigned through [roles](/permissions/#default-permissions-based-on-role). 
+
+Canvas also allows you to limit access to subsets of the population using established [patient groups](/documentation/patient-groups/). Once the patient groups are defined in your admin settings, you can partner with your engineering team to leverage protocols to programmatically add patients to the groups based on any patient attribute that is available to the Workflow Kit. 
 
 {% include alert.html type="info" content="If you want to know what type of information is available to the Workflow Kit, replace ‘patient’ in the patient chart URL with ‘api/PatientProtocolInput'" %}
 <br>
-If you cannot use one of the existing data points within a patient's profile, writing identifiers using the [FHIR Patient Create](/api/patient/) endpoint may be a good option. Using this attribute allows you to leverage external data (like payer program enrollments) to define your groups.
-
-To add or remove a patient from a Group in Canvas, we have made two helper functions that you can pass to the `set_updates` function. Both groups require the patient's key and the group's UUID. The group UUID can be found using a [Group Search](/api/group/#search). 
+To add or remove a patient from a group in Canvas, we have made two helper functions that you can pass to the `set_updates` function. Both groups require the patient's key and the group's UUID. The group UUID can be found using a [Group Search](/api/group/#search). 
 
 **ensure_patient_in_group(patient_key: str, group_externally_exposable_id: str)**
     - Creates a message to add a patient to a patient group if they are not already in that group.
 **ensure_patient_not_in_group(patient_key: str, group_externally_exposable_id: str)**
     - Creates a message that removes a patient from a patient group if they are currently in the group.
 
-The Protocol below groups patients based on having a consent on file.
+The protocol below groups patients based on having a consent on file.
 
 ```python
 # type: ignores
@@ -146,7 +148,7 @@ class PatientGrouping(ClinicalQualityMeasure):
         return result
 ```
 
-
+If you cannot use one of the existing data points within a patient's profile, writing identifiers using the [FHIR Patient Create](/api/patient/) endpoint may be a good option. Using this attribute allows you to leverage external data (like payer program enrollments) to define your groups.
 
 
  
@@ -157,14 +159,14 @@ class PatientGrouping(ClinicalQualityMeasure):
 * * *
 ### 3. Routing work to the right team or individual
 
-You’ll need to determine how you’ll leverage your care team, what types of tasks should be delegated, and to whom they should be assigned. Configuring [Teams](/documentation/teams/) allows you to assign the Canvas automated tasks to a team; however, the way we’ve grouped responsibilities may not be granular enough for you. You can use Protocols to re-route tasks based on their titles. Given a known task title, you can reassign to an individual or team, and also add labels. 
+You’ll need to determine how you’ll leverage your care team, what types of tasks should be delegated, and to whom they should be assigned. Configuring [teams](/documentation/teams/) allows you to assign the Canvas automated tasks to a team; however, the way we’ve grouped responsibilities may not be granular enough for you. You can use Protocols to re-route tasks based on their titles. Given a known task title, you can reassign to an individual or team, and also add labels. 
 
 Use the following framework to determine how our automated tasks can be rerouted to create efficiencies. <br><br>
 When <b>X</b> occurs: When a task is created <br>
-Under <b>Y</b> conditions: `targeted_task_title ` = tbd <br>
+Under <b>Y</b> conditions: `targeted_task_title ` = Y <br>
 I want <b>Z</b> to happen: Assign to `group_name` or `pracitioner` and add `label(s)` <br>
 
-The example below looks for the task name referral_task_title = "Refer patient to Psychiatry (TBD)", updates the team assignment, and adds a label. 
+The example below looks for the task name referral_task_title = "Refer patient to Psychiatry (TBD)", updates the team assignment, and adds an `internal referral` label. 
 
 ``` python
 import requests

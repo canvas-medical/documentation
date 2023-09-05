@@ -50,3 +50,7 @@ To add a new Patient Consent Rejection Coding, click the ![role-button](/assets/
 <b>Display:</b> Enter text you'd like displayed as a reason for rejection in a dropdown (e.g. Declined)
 
 ![Protocol framework](/assets/images/reject-consent.png){:width="60%"}
+<br>
+<br>
+### Updating a Patient Cosent Rejection Coding
+To edit a patient consent rejection coding, click into an existing rejection coding and make changes as needed. You can also take a bulk action to delete rejection codings by checking the boxes next to each and using delete in the action drop-down. 
