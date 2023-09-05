@@ -1,0 +1,3 @@
+algolia:
+  application_id: 'D4QF30HEJZ'
+  index_name: 'docs_canvasmedical'

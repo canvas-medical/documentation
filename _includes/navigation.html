@@ -5,8 +5,7 @@
         alt="{{ site.title | escape }}">
         <span>Documentation</span>
     </a>
-    <div class="navigation__search">
-      <input placeholder="Search" />
+    <div id="algolia-search" class="navigation__search">
     </div>
   </div>
   <div class="navigation__container__inner navigation__container__site">
@@ -20,3 +19,5 @@
     </div>
   </div>
 </nav>
+
+{% include search-container.html %}
