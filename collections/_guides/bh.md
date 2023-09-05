@@ -7,11 +7,11 @@ There are many challenges in the delivery of mental health care in the United St
 
 Payment is a large driver of the workforce shortage. A recent Government Accountability Office (GAO) report revealed that mental health organizations cited inadequate reimbursement rates for services as one of the main reasons individuals cannot access mental health care, even when they have insurance. In other words, there is not much of an incentive for providers to take insurance if they aren’t guaranteed adequate payment.
 
-Experts do agree that single most promising new development in treatment capacity expansion is telehealth. The relaxed restrictions during COVID caused a dramatic shift. With outcomes being comparable, both patients and providers find it essential. Continued access via telehealth along with alternative payments provide some hope that new behavioral health care models can make difference. As such, the behavioral health space is prime for disruption. 
+Experts do agree that single most promising new development in treatment capacity expansion is telehealth. The relaxed restrictions during COVID caused a dramatic shift. With outcomes being comparable, both patients and providers find it essential. Continued access via telehealth along with alternative payments provide some hope that new behavioral health care models can make difference. 
 <br>
 <br>
 ## Launching your Behavioral Health Care Model: Questions to Ask
-To be successful and drive value, you’ll need to differentiate on your care model. You’ll likely start by asking the questions outlined below. Once you’ve settled on a direction for each, we’ve outlined recommended next steps to get started. <br> <br> 
+The behavioral health space is prime for disruption. To be successful and drive value, you’ll need to differentiate on your care model. You’ll likely start by asking the questions outlined below. Once you’ve settled on a direction for each, we’ve outlined recommended next steps to get started. <br> <br> 
 
 ### Diagnostic Range and Inputs
 **What problem and/or population are we addressing?**
