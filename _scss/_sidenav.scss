@@ -23,12 +23,14 @@
     }
   }
 
-  &__collapsed {
-    width: 1rem;
-    overflow: hidden;
+  @media (max-width: $breakpoint-lg) {
+    &__collapsed {
+      width: 1rem;
+      overflow: hidden;
 
-    nav {
-      visibility: hidden;
+      nav {
+        visibility: hidden;
+      }
     }
   }
 }
