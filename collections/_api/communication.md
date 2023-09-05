@@ -7,7 +7,7 @@ sections:
         name: Communication
         article: "a"
         description: >-
-          An occurrence of information being transmitted; e.g. an alert that was sent to a responsible provider, a public health agency that was notified about a reportable condition.
+          An occurrence of information being transmitted; e.g. an alert that was sent to a responsible provider, a public health agency that was notified about a reportable condition.<br><br> The communication resource maps to messages in Canvas. Click [here](https://canvas-medical.zendesk.com/hc/en-us/articles/1500001593221-Patient-Message-Inbox-) to learn more. 
         attributes:
           - name: id
             description: >-
@@ -44,10 +44,13 @@ sections:
             type: string
         endpoints: [search, create]
         search:
+          description: Communication search will only return messages between a practitioner and patient, not between two practitioners.<br><br>**Additional HTML formatting**<br> With the release of Advanced Letter Templates, Messages are now saved in the database in HTML format. Customers using the Communication endpoint for their own patient applications will need to take this into account either by embedding the html directly using a library like Interweave or extracting the text. **Messages sent before this update (10/26/2022 @ 17:00 PST) will remain in plain text format.**
           responses: [200, 400]
           example_request: communication-search-request
           example_response: communication-search-response
         create:
+          description: Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the Location header.<br><br>Messages created through this endpoint will be added to the patient's timeline based on the created date. <br><br>If the sender of the message is a `Practitioner`, the message will be displayed as a draft in the timeline, drafter by Canvas Bot. There is no way to mark it as sent via the API today. <br><br>If the sender of the message is a patient, the message will show in the recipient's message inbox for review, as well as on the timeline. 
+
           responses: [201, 400]
           example_request: communication-create-request
           example_response: communication-create-response

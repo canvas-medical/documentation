@@ -1,7 +1,7 @@
 ---
 slug: /
 title: "Guides"
-layout: "landingpage"
+layout: "guidelandingpage"
 ---
 
 

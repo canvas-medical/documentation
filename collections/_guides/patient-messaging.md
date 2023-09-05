@@ -1,6 +1,10 @@
 ---
 title: "Patient Messaging"
 guide_for:
+- /api/communication/
+- /api/practitioner/
+- /api/questionnaireresponse
+- /documentation/contact-categories
 ---
 
 Staying in touch with your patients in between visits is often essential. Checking in with them needs to be frictionless for your clinicians.
@@ -10,19 +14,19 @@ Staying in touch with your patients in between visits is often essential. Checki
 * * *
 ## What you'll learn
 In this guide, you will learn how to do the following:
-- Sending messages to patients
-- Writing patient messages to Canvas
+- Send messages to patients
+- Write patient messages to Canvas
 - Use Questionnaires to check in
 <br>
 <br>
 
 * * *
 
-### Sending messages to patients
+### Send messages to patients
 
 
 
-The messaging workflow in Canvas allows clinicians to generate an outbound message using free text or templates. Use the notification protocol below to know when a message has been created. The protocol below uses a FHIR call to then read all of the attributes of the message created in Canvas so that you can deliver to your patients and/or authorized contacts, as needed.
+The messaging workflow in Canvas allows clinicians to generate an outbound message using free text or templates. Use the notification protocol below to know when a message has been created. The protocol below uses a FHIR call to read all of the attributes of the message created in Canvas so that you can deliver it to your patients and/or their [authorized contacts](documentation/contact-categoried).
 ``` python
 import json
 from canvas_workflow_kit.constants import CHANGE_TYPE
@@ -106,11 +110,15 @@ class MessageNotification(ClinicalQualityMeasure):
 
 * * *
 
-### Writing patient Messages to Canvas
+### Write patient messages to Canvas
 
-Patient responses can be written to Canvas using the FHIR Communication create endpoint. They can be assigned to a user through the recipient attribute using a practitioner ID. All users in Canvas have a practitioner ID, not just clinicians. By default the FHIR Practitioner Search endpoint will return clinician's that can be scheduled, however, you can include the includes non-schedulable practitioners query param to return all staff members.
+Patient responses can be written to Canvas using the [FHIR Communication create endpoint](api/communication/#create). They can be assigned to a user through the `recipient` attribute using a practitioner ID. They will appear in the messages inbox in Canvas. 
+<br><br> All users in Canvas have a practitioner ID, not just clinicians. By default the [FHIR Practitioner Search](api/practitioner/#search) endpoint will return clinician's that can be scheduled, however, you can include the `includes non-schedulable practitioners` query param to return all staff members.
 <br><br>
 * * *
 
-### Use Questionnaires to check in
-You may also want to use a simpler questionnaire to capture data points such as mood, anxiety level, or side effects on a more frequent basis. If you collect this data through your patient-facing application, the FHIR Questionnaire Response create endpoint would allow you to write it to Canvas in a structured way that can be leveraged in reporting or used in Protocols.
+### Use questionnaires to check in
+You may also want to use a simpler questionnaire to capture data points such as mood, anxiety level, or side effects on a more frequent basis. If you collect this data through your patient-facing application, the [FHIR QuestionnaireResponse create](api/questionnaireresponse/#create) endpoint would allow you to write it to Canvas in a structured way that can be leveraged in reporting or used in protocols.
+{:refdef: style="text-align: center;"}
+![symptom-tracker](/assets/images/symptom-tracker.png){:width="40%"}
+{: refdef}
