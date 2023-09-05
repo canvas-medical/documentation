@@ -179,4 +179,9 @@
             {% capture jekyll_toc %}<{{ listModifier }}{{ rootAttributes }}>{{ nodes | shift | join: '>' }}>{% endcapture %}
         {% endif %}
     {% endif %}
-{% endcapture %}{% assign tocWorkspace = '' %}{{ deprecation_warnings }}{{ jekyll_toc -}}
+{% endcapture %}{% assign tocWorkspace = '' %}
+{% if jekyll_toc.size > 1 %}
+<h5>{{ site.data.globals.panels.anchorlist }}</h5>
+{{ deprecation_warnings }}
+{{ jekyll_toc -}}
+{% endif %}
