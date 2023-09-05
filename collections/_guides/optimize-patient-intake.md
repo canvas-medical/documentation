@@ -5,6 +5,9 @@ guide_for:
 - /api/coverage/
 - /api/consent/
 - /api/encounter/
+- /documentation/consents/
+- /sdk/banner-alerts/
+- /documentation/questionnaires/
 ---
 
 Patient intake is how care delivery organizations ensure they have everything they need from a patient before an encounter. Historically, this typically consists of manual processes to gather and verify important information including demographics, billing and insurance, medical histories, and consents; however, it can and <b>should</b> be so much more than that. Current data continues to support the idea that traditional patient intake is a consumer pain point. Canvas's extensibility enables you to differentiate your care model by leveraging external data to create operational efficiencies and better the patient experience.
@@ -37,7 +40,7 @@ Whether you are sourcing patients from your direct-to-consumer site, getting pat
 
 The `identifier` attribute on the patient profile can be used to store data points that are not currently represented in Canvas's data model. You can add multiple values, including internal identifiers, program information, or status within a measurement group. 
 
-Although identifiers added through the API do not display in the Canvas UI by default, you can insert a banner alert protocol like the one below, to surface the information to your end users. You can update both `alertplacement` and `alertintent` in the code below as needed, see [here]({{site.baseurl}}/sdk/banner-alerts/), for more information on possible configurations for the banner alerts.
+Although identifiers added through the API do not display in the Canvas UI by default, you can insert a banner alert protocol like the one below, to surface the information to your end users. You can update both `alertplacement` and `alertintent` in the code below as needed, see [here](/sdk/banner-alerts/), for more information on possible configurations for the banner alerts.
 
 ``` python
 from canvas_workflow_kit.protocol import (

@@ -24,9 +24,9 @@ Check out our documentation [here](https://canvas-medical.github.io/canvas-core/
 <br>
 ## Which should I use?
 
-We are working to build the existing functionality into the new structure. If you have a new workflow you would like to support, we would love to hear about it and determine if plugins are the right choice. It will be some time before plugin can support the tradition clinical quality measure structure. Continue to leverage protocols for creating clinical recommendations based on patient data. 
+We are working to build the existing functionality into the new structure. If you have a new workflow you would like to support, we would love to hear about it and determine if plugins are the right choice. It will be some time before plugins can support the tradition clinical quality measure structure. You should continue to leverage protocols for creating clinical recommendations based on patient data. 
 
-Part of the work will be to determine how to migrate all existing protocols to the new strucure. More to come when that is ready. 
+Part of our project will be to determine how to migrate all of your existing protocols to the new strucure. More to come when ready. 
 
 
 
