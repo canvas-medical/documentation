@@ -12,16 +12,19 @@
                 {% endif %}
             </div>
             <div class="apidoc__guides">
+                {% for guide in site.guides %}
+                {% for item in guide.guide_for %}
+                {% if item == page.url %}
+                {% capture related_guides %}<li><a href="{{ guide.url }}">{{ guide.title }}</a></li>{% endcapture %}
+                {% endif %}
+                {% endfor %}
+                {% endfor %}
+                {% if related_guides.size > 1 %}
                 <div><strong>Related guides:</strong></div>
                 <ul>
-                    {% for guide in site.guides %}
-                    {% for item in guide.guide_for %}
-                    {% if item == page.url %}
-                    <li><a href="{{ guide.url }}">{{ guide.title }}</a></li>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
+                    {{ related_guides }}
                 </ul>
+                {% endif %}
             </div>
         </div>
         <div class="apidoc__gridcol">
