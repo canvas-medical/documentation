@@ -146,12 +146,3 @@ class ZiprasidoneRx(ClinicalQualityMeasure):
 
         return result
 ```
-
-
-
-<br><br>
-* * *
-### 2. Track Performance and Outcomes
-An essential aspect of preventing medical errors and improving patient safety is using data effectively to understand, track and communicate performance on patient safety metrics. 
-<br><br>
-You can leverage your read-only replica to report on outcomes and iterate on your Care Model.  

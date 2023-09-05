@@ -31,3 +31,11 @@ You can then apply [discounts](/documentation/discounts) for cash pay patients.
 * * *
 ### 2. Use your documentation to add charges
 
+The perform command pulls from your fee schedule. You can control what shows here by adding new codes or removing procedures that are not relevant to your care model.  We recommend creating [automations](/documentation/automations) to tie specific procedure codes to your documentation. 
+
+You can also use a structured assessment. A structured assessment is a type of [questionnaire](documentation/questionnaires) that allows you to link ICD-10 and CPT codes to the responses. You can use these to build templates that document and charge for the services provided. 
+
+{% include alert.html type="warning" content="Using a structured assessment to add a diagnosis may add duplicate conditions to the condition list if already present without a warning. We recommend continuing to use the assess command for already diagnosed conditions."  %}
+
+![structured assessment](/assets/images/sa.gif){:width="100%"}
+

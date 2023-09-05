@@ -352,24 +352,8 @@ guides_elements:
 
 guides_care-models:
  - title: "Behavioral Health"
-   url: /guides/bh/
-   identifier: guides_templates_bh
-
-guides_templates_bh:
- - title: "Customize Search Results"
-   url: /guides/customize-search-results/ 
- - title: "Build a Safety Framework"
-   url: /guides/build-a-safety-framework/  
- - title: "Team Based Care"
-   url: /guides/team-based-care/
- - title: "Optimize Patient Intake"
-   url: /guides/optimize-patient-intake/
- - title: "External Scheduling"
-   url: /guides/external-scheduling/
- - title: "Asynchronous Care"
-   url: /guides/asynchronous-care/
- - title: "Patient Messaging"
-   url: /guides/patient-messaging/
+   url: /guides/bh
+   identifier: guides_care-models-bh
 
 guides_diagnostic-range:
  - title: "Customize Search Results"
@@ -398,6 +382,10 @@ guides_ongoing-interaction-modes:
 guides_healthcare-pricing:
  - title: "Capture Charges"
    url: /guides/capture-charges/
+
+guides_care-models-bh:
+ - title: "Configuration Guide"
+   url: /guides/bh-configuration/
 
 sdk:
  - title: "SDK Overview"

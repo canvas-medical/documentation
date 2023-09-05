@@ -2,10 +2,22 @@
 title: "Behavioral Health Configuration"
 ---
 
+There are a lot of choices that need to be made when first configuring Canvas to support your behavioral health care model. We've provided some suggestions to get you started. 
+
 ## Roles
+Learn more about [roles](/documentation/roles)
+
+<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0wqzt1SphmEIgk85fPfu-gg3pNhqtHfz3ZKBe9byUjNVOd_tz048iXDHoRydUNIYDLJgypMi6JHpQ/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false" width="99%" height="400px"></iframe>
+
 ## Care Team Roles
+Learn more about [care team roles](/documentation/care-team-roles)
+
+<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0wqzt1SphmEIgk85fPfu-gg3pNhqtHfz3ZKBe9byUjNVOd_tz048iXDHoRydUNIYDLJgypMi6JHpQ/pubhtml?gid=110727215&amp;single=true&amp;widget=true&amp;headers=false" width="99%" height="400px"></iframe>
+
 ## Appointment and Note Types
-## Reason for Visit Setting Codings
+Learn more about [appointment and note types](/documentation/appointment-and-note-types)
+
+<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0wqzt1SphmEIgk85fPfu-gg3pNhqtHfz3ZKBe9byUjNVOd_tz048iXDHoRydUNIYDLJgypMi6JHpQ/pubhtml?gid=204258352&amp;single=true&amp;widget=true&amp;headers=false" width="99%" height="400px"></iframe>
 
 ## Questionnaires
 

@@ -17,7 +17,7 @@ Async care can happen in various ways, and while it’s not a new model of care 
 ## What you'll learn
 In this guide, you will learn how to address asynchronous patient requests by completing the following steps
 1. Write patient collected data using Questionnaires
-2. Write tasks to create a worklist in Canvas
+2. Write tasks to create a work list in Canvas
 3. Surface recommendations based on Questionnaire responses
 <br>
 <br>
@@ -42,7 +42,7 @@ Canvas does not offer a patient experience for completing Questionnaires. You wi
 * * *
 
 
-### 2. Write tasks to create a worklist in Canvas
+### 2. Write tasks to create a work list in Canvas
 
 The task panel is a great tool to organize work to be done. After your patients completed your online intake forms, you can leverage tasks in Canvas to alert your team that they are ready for review.
 
@@ -55,13 +55,13 @@ You will need to configure teams and task labels in Canvas.
  - [Teams](/documentation/teams/) are intended to group work. You may want to group specialty providers together (e.g. `Dermatology Providers`), or set up teams that support certain times of the day (e.g. `After Hours Support`). 
  - [Task Labels](/documentation/task-labels/) are meant to help organize tasks and are helpful as filters within the task panel. You may need to indicate that a patient should be treated as priority and a label would be a way to do that.
 
-Once configured, you can assign tasks to both indivduals and/or team, and assign labels using the [FHIR Task Create and Update](/api/task/) endpoints. 
+Once configured, you can assign tasks to both individuals and/or team, and assign labels using the [FHIR Task Create and Update](/api/task/) endpoints. 
 
-- If assigning to an individual, add a practitiioner reference in the owner attribute. 
+- If assigning to an individual, add a practitioner reference in the owner attribute. 
 - Teams are mapped to the FHIR Group resource. Assign the task to a Team using the Task group extension. Use the [FHIR Group Search](/api/group/) to find the necessary group ID. 
 - Labels do not have to exist in your admin settings in order to be added through the API, however, the custom colors will only show if they have been assigned in admin. 
 
-After the tasks have been created in Canvas, use the filters to create your worklists. You can bookmark the filtered views to save them. The page default will show tasks assigned to `Me or my teams`. The tasks assigned to your teams only show if they are not also assigned to an individual (unclaimed). If a new task comes in, your clinicians can assign it to themselves to claim it, removing it from the view of others.
+After the tasks have been created in Canvas, use the filters to create your work lists. You can bookmark the filtered views to save them. The page default will show tasks assigned to `Me or my teams`. The tasks assigned to your teams only show if they are not also assigned to an individual (unclaimed). If a new task comes in, your clinicians can assign it to themselves to claim it, removing it from the view of others.
 
 
 <br>
@@ -76,7 +76,7 @@ Use the framework below to define how your questionnaire responses should drive 
 ![Protocol framework](/assets/images/protocol-framework.png){:width="60%"}
 {: refdef}
 
-An example of this would be building a Protocol that surfaces relevant oral contraceptive options after a patient submits a form indicating their preference for skipping their cycles. The Protocol can include prefilled commands as suggestions, making it easy for the clinican to follow care guidelines and quickly add orders or documentation to their note. 
+An example of this would be building a Protocol that surfaces relevant oral contraceptive options after a patient submits a form indicating their preference for skipping their cycles. The Protocol can include prefilled commands as suggestions, making it easy for the clinician to follow care guidelines and quickly add orders or documentation to their note. 
 
 {:refdef: style="text-align: center;"}
 ![Protocol framework](/assets/images/bc-recommendation.png){:width="100%"}
@@ -276,7 +276,7 @@ class DiagnosticAssessment(ClinicalQualityMeasure):
         return result
 ```
 <br>
-Use the following information to add this Quesionnaire to your environment using the Questionnaire Loader in the settings menu:<br><br>
+Use the following information to add this Questionnaire to your environment using the Questionnaire Loader in the settings menu:<br><br>
 <b> Google Sheet ID or URL:</b> https://docs.google.com/spreadsheets/d/1T58Bor8vHLs5KT3V23qvG8Yx7jvS1QbTlnatCh92pF8/edit#gid=0<br>
 <b> Google Sheet tab name:</b> QUES-DAT<br>
 
