@@ -395,6 +395,10 @@ guides_ongoing-interaction-modes:
  - title: "Patient Messaging"
    url: /guides/patient-messaging/
 
+guides_healthcare-pricing:
+ - title: "Capture Charges"
+   url: /guides/capture-charges/
+
 sdk:
  - title: "SDK Overview"
    url: /sdk  

@@ -70,7 +70,7 @@ layout: "guidelandingpage"
             </td>
             <td>
                 <strong style="font-size: 16px; color: #22698C;">Pricing & Payments</strong>
-               <p>Check back soon</p>
+               <p><a href="/guides/capture-charges">Capture Charges</a></p>
             </td>
             <td>
             </td>
