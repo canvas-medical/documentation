@@ -166,16 +166,14 @@ api_communication:
  - title: "Communication Create"
    url: /api/communication/#create
 api_condition:
- - title: "Condition Create"
-   url: /api/condition/#create
  - title: "Condition Read"
    url: /api/condition/#read
  - title: "Condition Search"
-   url: /api/condition/#condition-search
+   url: /api/condition/#search
  - title: "Condition Create"
-   url: /api/condition/#condition-create
+   url: /api/condition/#create
  - title: "Condition Update"
-   url: /api/condition/#condition-update
+   url: /api/condition/#update
 api_consent:
  - title: "Consent Create"
    url: /api/consent/#create

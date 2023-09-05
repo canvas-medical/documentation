@@ -31,7 +31,7 @@ sections:
           - name: status
             type: string
             description: >-
-              planned | in-progress | finished | cancelled
+              status 
           - name: class
             type: json
             description: >-
