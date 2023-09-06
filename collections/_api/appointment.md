@@ -41,6 +41,8 @@ sections:
               The status of the appointment. 
             type: string
           - name: appointmentType
+            description: >-
+              Canvas supports a variety of **appointment types**. <br><br>Learn how to configure [apppointment and note types](/documentation/appointment-and-note-types/)
             type: string
             attributes:
               - name: coding
