@@ -7,11 +7,8 @@
         {{ attribute.type }} {% if attribute.required %}<span class="apidoc__object__required">required</span>{% endif
         %}
     </div>
-    {% if attribute.description %}
-    <div class="apidoc__object__description">
-        {{ attribute.description | markdownify }}
-    </div>
-    {% endif %}
+    {{ include.context}}
+    {% include blocks/block-apidoc-attributes-context.html context=include.context %}
     {% if attribute.attributes %}
     <div class="apidoc__object__children">
         <div class="apidoc__object__children__toggle">Click to view child attributes</div>
@@ -24,9 +21,7 @@
                 <div class="apidoc__object__type">
                     {{ attribute.type }}
                 </div>
-                <div class="apidoc__object__description">
-                    {{ attribute.description | markdownify }}
-                </div>
+                {% include blocks/block-apidoc-attributes-context.html context=include.context %}
             </div>
             {% endfor %}
         </div>

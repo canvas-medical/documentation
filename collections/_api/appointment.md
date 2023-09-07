@@ -14,6 +14,17 @@ sections:
               The identifier of the appointment
             type: string
             required: true
+          - name: example-variable-descriptions
+            type: string
+            description: "overview or fallback description"
+            create_description: "just the create description"
+            update_description: "just the update description"
+            attributes:
+              - name: example-sub-variable-descriptions
+                type: string
+                description: "child overview or fallback description"
+                create_description: "child create description"
+                update_description: "child update description"
           - name: resourceType
             description: >-
               The type of resource
