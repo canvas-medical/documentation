@@ -141,10 +141,10 @@ api_appointment:
    url: /api/appointment/#create
  - title: "Appointment Read"
    url: /api/appointment/#read
- - title: "Appointment Search"
-   url: /api/appointment/#search
  - title: "Appointment Update"
    url: /api/appointment/#update
+ - title: "Appointment Search"
+   url: /api/appointment/#search
 api_careplan:
  - title: "CarePlan Read"
    url: /api/careplan/#read
