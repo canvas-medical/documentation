@@ -7,7 +7,7 @@ sections:
         name: QuestionnaireResponse
         article: "a"
         description: >-
-          A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.
+           [FHIR:](https://fhir-ru.github.io/questionnaireresponse.html) A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.<br><br> Questionnaires in Canvas are used to capture structured data. They are fully customizable and support many use cases. Learn how to configure questionnaires in your instance [here](/documentation/questionnaires). Once loaded to Canvas, you will need the Questionnaire ID to interact with this resource. You can leverage our Questionnaire Search to do so.<br><br>When building your questionnaires, make sure to follow our best practices around codes and code systems. The tool to load your questionnaires now has validation to ensure unique pairings where necessary. 
         attributes:
           - name: id
             description: >-
@@ -16,25 +16,47 @@ sections:
             required: true
           - name: resourceType
             type: string
+            description:
+                This should be hardcoded to QuestionnaireResponse
             required: true
           - name: questionnaire
             type: string
             required: true
+            description:
+                Canvas questionnaire resource that the responses are for, formatted like "Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129".
+            create_description:
+                Canvas questionnaire resource that the responses are for, formatted like "Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129". You can obtain this id by using our [Questionnaire Search](/api/questionnaire/#search)
           - name: status
             type: string
             required: true
+            create_description: Canvas only acknowledges a ‘completed’ status. All QuestionnaireResponse messages should contain status ‘completed’.
           - name: subject
             type: string
             required: true
+            description: The subject of the questions. Supports a patient reference. 
+          - name: encounter
+            type: string
+            description: Encounter created as part of.
+            Create_description: Adding an encounter reference will import the QuestionnaireResponse into an existing note. Without one, a Data Import note will be added to the timeline in a locked state 
           - name: authored
             type: string
             required: true
+            description: The UTC datetime string for when the questionnaire responses were provided, iso8601 format. 
+            create_description: The UTC datetime string for when the questionnaire responses were provided, iso8601 format. If omitted from the body, the current timestamp at data ingestion will be used
           - name: author
             type: string
             required: true
+            description:
+                A reference to the person that filled out the questionnaire.
+            create_description:
+                Canvas notes are intended to be multi-author. You can reference either the patient or practitioner. The audit tooltip on the command will display the author as the patient or staff member. If not included, the built in automation user, "Canvas Bot" will be used instead. ## Is this acurate if required is true ## 
           - name: item
             type: string
             required: true
+            description: >-
+                A list of one or more questions and how they were answered. Each item object in the list should contain:<br><br>**`linkId`:** [Required] A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload.<br>**`text`:** Human readable text of the question. Not stored but can be helpful to include for troubleshooting.<br> **`answer`:** [Required] A list of one or more answers to this question. Canvas supports three question types: Free text, Single Response, and Multi Response.<br><br> **Free text** answers (Questionnaire item type = "text") will contain a single object containing a valueString field with the response text.<br><br> For **single** & **multiselect** answers (Questionnaire item `type` = "choice" and `repeats` is "false for single and "true" for multi), the list will have one or more objects containing:<br><br>**`code`:** [required] Value that can uniquely identify this answer within the associated <br>**`display`:** [required] Text of answer that was selected<br>**`system`:** [required] Coding system where the `code` comes from. Currently we only support specific system's in Canvas through our FHIR endpoints. Here is the mapping of system uri in FHIR to systems in Canvas:<br><br>**SNOMED:** http://snomed.info/sct<br>**LOINC:** http://loinc.org<br>**Canvas:** http://canvasmedical.com<br>**CPT:** http://www.ama-assn.org/go/cpt<br>**ICD-10:** http://hl7.org/fhir/sid/icd-10<br>**Internal:** http://schemas.[instance_name].canvasmedical.com/fhir/systems/internal<br><br>
+            create_description: >-
+                A list of one or more questions and how they were answered. If a question is omitted it will be left unanswered in Canvas. However, if it is a questionnaire tied to a scoring function, Canvas requires all questions to be answered in order to accurately score the questionnaire. <br> <br> Perform a [QuestionnaireSearch](/api/Questionnaire/#search) in order to know each question's attributes to fill in below. Each item object in the list should contain:<br><br>**`linkId`:** [Required] A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload.<br>**`text`:** Human readable text of the question. Not stored but can be helpful to include for troubleshooting.<br> **`answer`:** [Required] A list of one or more answers to this question. Canvas supports three question types: Free text, Single Response, and Multi Response.<br><br> **Free text** answers (Questionnaire item type = "text") will contain a single object containing a valueString field with the response text.<br><br> For **single** & **multiselect** answers (Questionnaire item `type` = "choice" and `repeats` is "false for single and "true" for multi), the list will have one or more objects containing:<br><br>**`code`:** [required] Value that can uniquely identify this answer within the associated <br>**`display`:** [required] Text of answer that was selected<br>**`system`:** [required] Coding system where the `code` comes from. Currently we only support specific system's in Canvas through our FHIR endpoints. Here is the mapping of system uri in FHIR to systems in Canvas:<br><br>**SNOMED:** http://snomed.info/sct<br>**LOINC:** http://loinc.org<br>**Canvas:** http://canvasmedical.com<br>**CPT:** http://www.ama-assn.org/go/cpt<br>**ICD-10:** http://hl7.org/fhir/sid/icd-10<br>**Internal:** http://schemas.[instance_name].canvasmedical.com/fhir/systems/internal<br><br><b>⚠ Validation</b><br><br> The system in the ValueCoding answer needs to match the system that the question specified in the Questionnaire Search Response. If it does not you will see the message: `Question expects answer of code system {system} but {coding['code_system']} was given`<br><br>If a code is passed that does not exist for that question in Canvas, you will see the following message: `Question received an invalid response option code: {coding['code']}` <br><br> For single or free text questions, if the length of answer is greater than one, you will see the message `Question of type {_type} is expecting at most one answer` <br><br> For free text questions, the answer object needs to include ValueString or you will see this message: `Question of type TXT expects a valueString answer`<br><br> For single or multi select questions, the answer object(s) need to include ValueCoding or you will see: `Question of type {_type} expects a valueCoding answer`
           - name: extension
             type: array
             required: true
@@ -44,25 +66,33 @@ sections:
             description: A Canvas-issued unique identifier
           - name: authored
             type: string
+            description: An operand and a date field in the format YYYY-MM-DD. eq, gt, ge, lt, and le are currently supported operands. Can be sent more than once to search within a range. example - "/QuestionnaireResponse?authored=ge2021-09-16&authored=le2021-10-01"
           - name: patient
             type: string
             description: The patient that is the subject of the questionnaire response
           - name: questionnaire
             type: string
             description: The questionnaire that was used to generate the questionnaire response
-        endpoints: [read, search, create]
+        endpoints: [create, read, search]
         read:
           responses: [200, 404]
           example_request: questionnaire-response-read-request
           example_response: questionnaire-response-read-response
         search:
           responses: [200, 400]
+          description: >-
+            <b> Authored Search Param </b> <br><br> We support ways to search by date:<br><br>Search for QuestionnaireResponses anytime during this day: **eq2021-09-01**  <br>Search for QuestionnaireResponses on or after this day: **ge2021-09-16**<br>Search for QuestionnaireResponses after this day: **gt2021-09-16**<br>Search for QuestionnaireResponses on or before this day: **le2021-10-01** <br>Search for QuestionaireResponses before this day: **lt2021-10-01**<br><br>
+
+
           example_request: questionnaire-response-search-request
           example_response: questionnaire-response-search-response
         create:
+          description: >-
+          Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the `Location: header`. You will use this for subsequent requests that reference this questionnaire response.
           responses: [201, 400]
           example_request: questionnaire-response-create-request
           example_response: questionnaire-response-create-response
+          
 ---
 <div id="questionnaire-response-read-request">
 {% tabs questionnaire-response-read-request %}
