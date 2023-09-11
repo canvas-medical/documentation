@@ -38,9 +38,11 @@
     &__wrapper {
       margin-left: auto;
       margin-right: auto;
-      display: grid;
-      grid-template-columns: minmax(2fr, 800px) minmax(1fr, 250px);
-      grid-column-gap: $container-padding;
+      @media (min-width: $breakpoint-xl) {
+        display: grid;
+        grid-template-columns: minmax(600px, 800px) 250px;
+        grid-column-gap: $container-padding;
+      }
     }
 
     &__content {
