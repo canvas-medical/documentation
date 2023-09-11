@@ -25,6 +25,9 @@ api:
    identifier: api_fhir
 
 api_fhir:
+ - title: "Allergen"
+   url: /api/allergen/
+   identifier: api_allergen
  - title: "AllergyIntolerance"
    url: /api/allergyintolerance/
    identifier: api_allergyintolerance
@@ -131,6 +134,11 @@ api_fhir:
    url: /api/task/
    identifier: api_task
 
+api_allergen:
+ - title: "Allergen Read"
+   url: /api/allergen/#read
+ - title: "Allergen Search"
+   url: /api/allergen/#search
 api_allergyintolerance:
  - title: "AllergyIntolerance Read"
    url: /api/allergyintolerance/#read
