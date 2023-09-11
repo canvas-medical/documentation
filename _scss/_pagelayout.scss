@@ -110,16 +110,19 @@
       border-bottom: 1px solid $border-color;
     }
     &__title {
-      font-size: $font-md;
+      font-size: 1.2rem;
+      @media (min-width: $breakpoint-lg) {
+        font-size: 1.6rem;
+      }
     }
     &__meta {
-      font-size: $font-xs;
+      font-size: 0.75rem;
     }
     &__excerpt {
-      font-size: $font-sm;
+      font-size: 1rem;
     }
     &__link {
-      font-size: $font-xs;
+      font-size: 0.75rem;
       text-decoration: underline;
     }
   }
