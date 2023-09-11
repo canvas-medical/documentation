@@ -92,8 +92,8 @@
     margin-bottom: 1rem;
     padding: 0.5em;
     display: flex;
-    flex-direction: column;
-    gap: 0.25em;
+    flex-wrap: wrap;
+    gap: 0.5em;
 
     header {
       display: flex;
@@ -118,12 +118,16 @@
       font-family: $mono-font-family;
     }
 
-    &___description {
-      margin-bottom: 0;
+    &__description {
+      margin: 0;
+      flex-basis: 100%;
+      > p:first-of-type {
+        margin-top: 0;
+      }
     }
 
     &__children {
-      // margin: 2rem;
+      flex-basis: 100%;
       margin: 0.5rem;
       border: 0px solid $lightgrey;
       border-radius: 0.6rem;

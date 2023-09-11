@@ -2,7 +2,7 @@
 {%- for guide_url in item.guide_for -%}
 {%- if guide_url == page.url -%}
 {% capture guide_links %}
-<a href="{{ item.url }}">{{ item.title }}</a><br />
+{% if item.url %}<a href="{{ item.url }}">{{ item.title }}</a>{% else %}<strong>{{ item.title }}</strong>{% endif %}<br />
 {% endcapture %}
 {%- endif -%}
 {%- endfor -%}
