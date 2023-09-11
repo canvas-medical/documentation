@@ -127,7 +127,7 @@
     }
 
     &__children {
-      // margin: 2rem;
+      flex-basis: 100%;
       margin: 0.5rem;
       border: 0px solid $lightgrey;
       border-radius: 0.6rem;
