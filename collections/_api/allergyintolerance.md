@@ -5,113 +5,372 @@ sections:
     blocks:
       - type: apidoc
         name: AllergyIntolerance
-        article: "a"
+        article: "an"
         description: >-
-          Get information about a particular AllergyIntolerance record
+          Risk of harmful or undesirable, physiological response which is unique to an individual and associated with exposure to a substance.
+
+          http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html
         attributes:
           - name: id
             description: >-
-              The identifier of the allergyintolerance
+              The identifier of the AllergyIntolerance
             type: string
-            required: true
           - name: resourceType
             description: >-
               The type of resource
             type: string
-            required: true
           - name: clinicalStatus
             description: >-
               The clinical status of the allergy or intolerance
-            type: string
-            attributes:
-              - name: coding
-                type: json
-                attributes:
-                  - name: system
-                    type: string
-                  - name: code
-                    type: string
-                  - name: display
-                    type: string
-              - name: text
-                type: string
+            type: json
           - name: verificationStatus
-            type: string
-            attributes:
-              - name: coding
-                type: json
-                attributes:
-                  - name: system
-                    type: string
-                  - name: code
-                    type: string
-                  - name: display
-                    type: string
-              - name: text
-                type: string
+            description: >-
+              Assertion about certainty associated with the propensity, or potential risk, of a reaction to the identified substance (including pharmaceutical product)
+            type: json
           - name: type
+            description: >-
+              Identification of the underlying physiological mechanism for the reaction risk.
             type: string
           - name: code
-            type: string
-            attributes:
-              - name: coding
-                type: string
-              - name: text
-                type: string
+            description: >-
+              Code for an allergy or intolerance statement
+            type: json
           - name: patient
             description: >-
-              Who the sensitivity is for
-            type: string
-            required: true
+              The patient who has the allergy or intolerance
+            type: json
           - name: encounter
             description: >-
               The encounter when the allergy or intolerance was asserted
-            type: string
+            type: json
           - name: onsetDateTime
-            type: datetime
+            description: >-
+              Estimated or actual date when allergy or intolerance was identified
+            type: date
           - name: recordedDate
+            description: >-
+              The recordedDate represents when this particular AllergyIntolerance record was created in the system, which is often a system-generated date
             type: datetime
           - name: recorder
-            type: string
+            description: >-
+              Individual who recorded the record and takes responsibility for its content
+            type: json
           - name: lastOccurrence
-            type: datetime
+            description: >-
+              Represents the date and/or time of the last known occurrence of a reaction event
+            type: date
           - name: note
-            type: string
+            description: >-
+              Additional narrative about the propensity for the Adverse Reaction, not captured in other fields
+            type: json
           - name: reaction
-            type: string
-            attributes:
-            - name: manifestation
-              type: string
-              attributes:
-               - name: coding
-                 type: json
-                 attributes:
-                 - name: system
-                   type: string
-                 - name: code
-                   type: string
-                 - name: display
-                   type: string
-               - name: text
-                 type: string
-            - name: severity
-              type: string
+            description: >-
+              Details about each adverse reaction event linked to exposure to the identified substance
+            type: json
         search_parameters:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier
           - name: patient
             type: string
-        endpoints: [read, search]
+            description: The patient who has the allergy or intolerance
+        endpoints: [create, read, update, search]
+        create:
+          description:
+          responses: [201, 400, 401, 403, 405, 422]
+          example_request: allergyintolerance-create-request
+          example_response: allergyintolerance-create-response
         read:
+          description:
           responses: [200, 404]
-          example_response: allergyintolerance-read-response
           example_request: allergyintolerance-read-request
+          example_response: allergyintolerance-read-response
+        update:
+          description:
+          responses: [200, 400, 401, 403, 405, 422]
+          example_request: allergyintolerance-update-request
+          example_response: allergyintolerance-update-response
         search:
+          description:
           responses: [200, 400]
-          example_response: allergyintolerance-search-response
           example_request: allergyintolerance-search-request
+          example_response: allergyintolerance-search-response
 ---
+
+<div id="allergyintolerance-create-request">
+{% tabs allergyintolerance-create-request %}
+
+{% tab allergyintolerance-create-request curl %}
+```shell
+curl --request POST \
+     --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+    "resourceType": "AllergyIntolerance",
+    "clinicalStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+                "code": "active",
+                "display": "Active"
+            }
+        ],
+        "text": "Active"
+    },
+    "verificationStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+                "code": "confirmed",
+                "display": "Confirmed"
+            }
+        ],
+        "text": "Confirmed"
+    },
+    "type": "allergy",
+    "code": {
+        "coding": [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "2-15588",
+                "display": "Allergy Medicine"
+            }
+        ],
+        "text": "Allergy Medicine"
+    },
+    "patient": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "encounter": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "onsetDateTime": "2023-06-15",
+    "recorder": {
+        "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+    },
+    "lastOccurrence": "2023-06-17",
+    "note": [
+        {
+            "text": "AllergyIntolerance note"
+        }
+    ],
+    "reaction": [
+        {
+            "manifestation": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+                            "code": "unknown",
+                            "display": "Unknown"
+                        }
+                    ],
+                    "text": "Unknown"
+                }
+            ],
+            "severity": "moderate"
+        }
+    ]
+}'
+```
+{% endtab %}
+
+{% tab allergyintolerance-create-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/AllergyIntolerance"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+payload = {
+    "resourceType": "AllergyIntolerance",
+    "clinicalStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+                "code": "active",
+                "display": "Active"
+            }
+        ],
+        "text": "Active"
+    },
+    "verificationStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+                "code": "confirmed",
+                "display": "Confirmed"
+            }
+        ],
+        "text": "Confirmed"
+    },
+    "type": "allergy",
+    "code": {
+        "coding": [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "2-15588",
+                "display": "Allergy Medicine"
+            }
+        ],
+        "text": "Allergy Medicine"
+    },
+    "patient": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "encounter": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "onsetDateTime": "2023-06-15",
+    "recorder": {
+        "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+    },
+    "lastOccurrence": "2023-06-17",
+    "note": [
+        {
+            "text": "AllergyIntolerance note"
+        }
+    ],
+    "reaction": [
+        {
+            "manifestation": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+                            "code": "unknown",
+                            "display": "Unknown"
+                        }
+                    ],
+                    "text": "Unknown"
+                }
+            ],
+            "severity": "moderate"
+        }
+    ]
+}
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="allergyintolerance-create-response">
+{% tabs allergyintolerance-create-response %}
+{% tab allergyintolerance-create-response 201 %}
+```json
+null
+```
+{% endtab %}
+{% tab allergyintolerance-create-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-create-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-create-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-create-response 405 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-supported",
+      "details": {
+        "text": "Operation is not supported"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-create-response 412 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "conflict",
+      "details": {
+        "text": "Resource updated since If-Unmodified-Since date"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-create-response 422 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "business-rule",
+      "details": {
+        "text": "Unprocessable entity"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
 <div id="allergyintolerance-read-request">
 {% tabs allergyintolerance-read-request %}
 {% tab allergyintolerance-read-request python %}
@@ -208,13 +467,286 @@ curl --request GET \
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Resource not found"
+        "text": "Unknown Patient resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="allergyintolerance-update-request">
+{% tabs allergyintolerance-update-request %}
+
+{% tab allergyintolerance-update-request curl %}
+```shell
+curl --request PUT \
+     --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+    "resourceType": "AllergyIntolerance",
+    "clinicalStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+                "code": "active",
+                "display": "Active"
+            }
+        ],
+        "text": "Active"
+    },
+    "verificationStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+                "code": "entered-in-error",
+                "display": "Entered in Error"
+            }
+        ],
+        "text": "Confirmed"
+    },
+    "type": "allergy",
+    "code": {
+        "coding": [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "2-15588",
+                "display": "Allergy Medicine"
+            }
+        ],
+        "text": "Allergy Medicine"
+    },
+    "patient": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "encounter": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "onsetDateTime": "2023-06-15",
+    "recorder": {
+        "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+    },
+    "lastOccurrence": "2023-06-17",
+    "note": [
+        {
+            "text": "AllergyIntolerance note"
+        }
+    ],
+    "reaction": [
+        {
+            "manifestation": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+                            "code": "unknown",
+                            "display": "Unknown"
+                        }
+                    ],
+                    "text": "Unknown"
+                }
+            ],
+            "severity": "moderate"
+        }
+    ]
+}'
+```
+{% endtab %}
+
+{% tab allergyintolerance-update-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/AllergyIntolerance"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+payload = {
+    "resourceType": "AllergyIntolerance",
+    "clinicalStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+                "code": "active",
+                "display": "Active"
+            }
+        ],
+        "text": "Active"
+    },
+    "verificationStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+                "code": "entered-in-error",
+                "display": "Entered in Error"
+            }
+        ],
+        "text": "Confirmed"
+    },
+    "type": "allergy",
+    "code": {
+        "coding": [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "2-15588",
+                "display": "Allergy Medicine"
+            }
+        ],
+        "text": "Allergy Medicine"
+    },
+    "patient": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "encounter": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "onsetDateTime": "2023-06-15",
+    "recorder": {
+        "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+    },
+    "lastOccurrence": "2023-06-17",
+    "note": [
+        {
+            "text": "AllergyIntolerance note"
+        }
+    ],
+    "reaction": [
+        {
+            "manifestation": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+                            "code": "unknown",
+                            "display": "Unknown"
+                        }
+                    ],
+                    "text": "Unknown"
+                }
+            ],
+            "severity": "moderate"
+        }
+    ]
+}
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="allergyintolerance-update-response">
+{% tabs allergyintolerance-update-response %}
+{% tab allergyintolerance-update-response 200 %}
+```json
+null
+```
+{% endtab %}
+{% tab allergyintolerance-update-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-update-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-update-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-update-response 405 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-supported",
+      "details": {
+        "text": "Operation is not supported"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-update-response 412 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "conflict",
+      "details": {
+        "text": "Resource updated since If-Unmodified-Since date"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab allergyintolerance-update-response 422 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "business-rule",
+      "details": {
+        "text": "Unprocessable entity"
       }
     }
   ]
@@ -343,7 +875,6 @@ curl --request GET \
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
@@ -358,5 +889,3 @@ curl --request GET \
 {% endtab %}
 {% endtabs %}
 </div>
-
-
