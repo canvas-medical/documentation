@@ -24,7 +24,7 @@
         403 Forbidden
     </div>
     <div class="apidoc__object__description">
-        The requested resource was not found.
+        The request requires user authorization.
     </div>
 </div>
 {% endif %}
@@ -44,7 +44,7 @@
         405 Method Not Allowed
     </div>
     <div class="apidoc__object__description">
-        The requested resource was not found.
+        The request performs an operation that is either not supported or allowed.
     </div>
 </div>
 {% endif %}
@@ -54,7 +54,7 @@
         412 Precondition Failed
     </div>
     <div class="apidoc__object__description">
-        The requested resource was not found.
+        The request depends on a precondition that has not been met.
     </div>
 </div>
 {% endif %}
@@ -64,7 +64,7 @@
         422 Unprocessable Entity
     </div>
     <div class="apidoc__object__description">
-        The requested resource was not found.
+        The request cannot be processed due to semantic issues or conflicts with the database state.
     </div>
 </div>
 {% endif %}
