@@ -68,3 +68,13 @@
     </div>
 </div>
 {% endif %}
+{% if response == 500 %}
+<div class="apidoc__object">
+    <div class="apidoc__object__name">
+        500 Internal Server Error
+    </div>
+    <div class="apidoc__object__description">
+        The server encountered an unexpected condition that prevented it from fulfilling the request.
+    </div>
+</div>
+{% endif %}
