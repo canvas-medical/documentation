@@ -7,7 +7,8 @@ sections:
         name: PaymentNotice
         article: "a"
         description: >-
-          Records of payments made towards a patient's balance.
+          Records of payments made towards a patient's balance.<br><br>
+          [https://hl7.org/fhir/R4/paymentnotice.html](https://hl7.org/fhir/R4/paymentnotice.html)
         attributes:
           - name: id
             description: >-
