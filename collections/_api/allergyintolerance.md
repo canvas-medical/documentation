@@ -740,7 +740,7 @@ null
 ```
     {% endtab %}
 
-    {% tab allergyintolerance-read-response 404 %}
+    {% tab allergyintolerance-update-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
