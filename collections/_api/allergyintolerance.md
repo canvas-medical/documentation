@@ -515,7 +515,7 @@ print(response.text)
     {% tab allergyintolerance-update-request curl %}
 ```shell
 curl --request PUT \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
+     --url https://fumage-example.canvasmedical.com/AllergyIntolerance/b8dfa97bdcdf4754bcd8197ca78ef0f0 \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -594,7 +594,7 @@ curl --request PUT \
 ```python
 import requests
 
-url = "https://fumage-example.canvasmedical.com/AllergyIntolerance"
+url = "https://fumage-example.canvasmedical.com/AllergyIntolerance/b8dfa97bdcdf4754bcd8197ca78ef0f0"
 
 headers = {
     "accept": "application/json",
