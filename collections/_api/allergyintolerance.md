@@ -82,7 +82,7 @@ sections:
           example_response: allergyintolerance-read-response
         update:
           description:
-          responses: [200, 400, 401, 403, 405, 422]
+          responses: [200, 400, 401, 403, 404, 405, 422]
           example_request: allergyintolerance-update-request
           example_response: allergyintolerance-update-response
         search:
@@ -733,6 +733,23 @@ null
       "code": "forbidden",
       "details": {
         "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab allergyintolerance-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown Patient resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
       }
     }
   ]
