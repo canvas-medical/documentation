@@ -419,7 +419,6 @@ print(response.text)
 ```json
 {
     "resourceType": "AllergyIntolerance",
-    "id": "5882be6e-9f7a-4fed-8d78-bf6eb00025e8",
     "clinicalStatus": {
         "coding": [
             {
@@ -427,34 +426,44 @@ print(response.text)
                 "code": "active",
                 "display": "Active"
             }
-        ]
+        ],
+        "text": "Active"
     },
     "verificationStatus": {
         "coding": [
             {
                 "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
-                "code": "unconfirmed",
-                "display": "Unconfirmed"
+                "code": "confirmed",
+                "display": "Confirmed"
             }
-        ]
+        ],
+        "text": "Confirmed"
     },
+    "type": "allergy",
     "code": {
         "coding": [
             {
                 "system": "http://www.fdbhealth.com/",
-                "code": "476",
-                "display": "Penicillins"
+                "code": "2-15588",
+                "display": "Allergy Medicine"
             }
-        ]
+        ],
+        "text": "Allergy Medicine"
     },
     "patient": {
-        "reference": "Patient/a29eaebb284143ba97c76b01fdb46964",
-        "type": "Patient"
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
     },
-    "onsetDateTime": "1950-01-01",
+    "encounter": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "onsetDateTime": "2023-06-15",
+    "recorder": {
+        "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+    },
+    "lastOccurrence": "2023-06-17",
     "note": [
         {
-            "text": "Hives"
+            "text": "AllergyIntolerance note"
         }
     ],
     "reaction": [
@@ -467,7 +476,8 @@ print(response.text)
                             "code": "unknown",
                             "display": "Unknown"
                         }
-                    ]
+                    ],
+                    "text": "Unknown"
                 }
             ],
             "severity": "moderate"
@@ -829,73 +839,99 @@ print(response.text)
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link": [
+    "link":
+    [
         {
             "relation": "self",
-            "url": "/AllergyIntolerance?patient=Patient%2Fa29eaebb284143ba97c76b01fdb46964&_count=10&_offset=0"
+            "url": "/AllergyIntolerance?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/AllergyIntolerance?patient=Patient%2Fa29eaebb284143ba97c76b01fdb46964&_count=10&_offset=0"
+            "url": "/AllergyIntolerance?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/AllergyIntolerance?patient=Patient%2Fa29eaebb284143ba97c76b01fdb46964&_count=10&_offset=0"
+            "url": "/AllergyIntolerance?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry": [
+    "entry":
+    [
         {
-            "resource": {
+            "resource":
+            {
                 "resourceType": "AllergyIntolerance",
-                "id": "5882be6e-9f7a-4fed-8d78-bf6eb00025e8",
-                "clinicalStatus": {
-                    "coding": [
+                "clinicalStatus":
+                {
+                    "coding":
+                    [
                         {
                             "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
                             "code": "active",
                             "display": "Active"
                         }
-                    ]
+                    ],
+                    "text": "Active"
                 },
-                "verificationStatus": {
-                    "coding": [
+                "verificationStatus":
+                {
+                    "coding":
+                    [
                         {
                             "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
-                            "code": "unconfirmed",
-                            "display": "Unconfirmed"
+                            "code": "confirmed",
+                            "display": "Confirmed"
                         }
-                    ]
+                    ],
+                    "text": "Confirmed"
                 },
-                "code": {
-                    "coding": [
+                "type": "allergy",
+                "code":
+                {
+                    "coding":
+                    [
                         {
                             "system": "http://www.fdbhealth.com/",
-                            "code": "476",
-                            "display": "Penicillins"
+                            "code": "2-15588",
+                            "display": "Allergy Medicine"
                         }
-                    ]
+                    ],
+                    "text": "Allergy Medicine"
                 },
-                "patient": {
-                    "reference": "Patient/a29eaebb284143ba97c76b01fdb46964",
-                    "type": "Patient"
+                "patient":
+                {
+                    "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
                 },
-                "onsetDateTime": "1950-01-01",
-                "note": [
+                "encounter":
+                {
+                    "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+                },
+                "onsetDateTime": "2023-06-15",
+                "recorder":
+                {
+                    "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+                },
+                "lastOccurrence": "2023-06-17",
+                "note":
+                [
                     {
-                        "text": "Hives"
+                        "text": "AllergyIntolerance note"
                     }
                 ],
-                "reaction": [
+                "reaction":
+                [
                     {
-                        "manifestation": [
+                        "manifestation":
+                        [
                             {
-                                "coding": [
+                                "coding":
+                                [
                                     {
                                         "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
                                         "code": "unknown",
                                         "display": "Unknown"
                                     }
-                                ]
+                                ],
+                                "text": "Unknown"
                             }
                         ],
                         "severity": "moderate"
