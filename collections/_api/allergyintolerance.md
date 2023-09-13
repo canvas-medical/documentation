@@ -7,17 +7,12 @@ sections:
         name: AllergyIntolerance
         article: "an"
         description: >-
-          Risk of harmful or undesirable, physiological response which is unique to an individual and associated with exposure to a substance.
-
-          http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html
+          Risk of harmful or undesirable, physiological response which is unique to an individual and associated with exposure to a substance.<br><br>
+          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html)
         attributes:
           - name: id
             description: >-
               The identifier of the AllergyIntolerance
-            type: string
-          - name: resourceType
-            description: >-
-              The type of resource
             type: string
           - name: clinicalStatus
             description: >-
@@ -98,9 +93,10 @@ sections:
 ---
 
 <div id="allergyintolerance-create-request">
-{% tabs allergyintolerance-create-request %}
 
-{% tab allergyintolerance-create-request curl %}
+  {% tabs allergyintolerance-create-request %}
+
+    {% tab allergyintolerance-create-request curl %}
 ```shell
 curl --request POST \
      --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
@@ -176,9 +172,9 @@ curl --request POST \
     ]
 }'
 ```
-{% endtab %}
+    {% endtab %}
 
-{% tab allergyintolerance-create-request python %}
+    {% tab allergyintolerance-create-request python %}
 ```python
 import requests
 
@@ -261,18 +257,21 @@ response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="allergyintolerance-create-response">
-{% tabs allergyintolerance-create-response %}
-{% tab allergyintolerance-create-response 201 %}
+  {% tabs allergyintolerance-create-response %}
+    {% tab allergyintolerance-create-response 201 %}
 ```json
 null
 ```
-{% endtab %}
-{% tab allergyintolerance-create-response 400 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-create-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -287,8 +286,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-create-response 401 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-create-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -303,8 +303,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-create-response 403 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-create-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -319,8 +320,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-create-response 405 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-create-response 405 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -335,8 +337,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-create-response 412 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-create-response 412 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -351,8 +354,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-create-response 422 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-create-response 422 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -367,14 +371,27 @@ null
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="allergyintolerance-read-request">
-{% tabs allergyintolerance-read-request %}
-{% tab allergyintolerance-read-request python %}
-```sh
+
+  {% tabs allergyintolerance-read-request %}
+
+    {% tab allergyintolerance-read-request curl %}
+```shell
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>\
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+    {% endtab %}
+
+    {% tab allergyintolerance-read-request python %}
+```python
 import requests
 
 url = "https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>"
@@ -388,21 +405,17 @@ response = requests.get(url, headers=headers)
 
 print(response.text)
 ```
-{% endtab %}
-{% tab allergyintolerance-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="allergyintolerance-read-response">
-{% tabs allergyintolerance-read-response %}
-{% tab allergyintolerance-read-response 200 %}
+
+  {% tabs allergyintolerance-read-response %}
+
+    {% tab allergyintolerance-read-response 200 %}
 ```json
 {
     "resourceType": "AllergyIntolerance",
@@ -462,8 +475,9 @@ curl --request GET \
     ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-read-response 404 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -478,14 +492,17 @@ curl --request GET \
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="allergyintolerance-update-request">
-{% tabs allergyintolerance-update-request %}
 
-{% tab allergyintolerance-update-request curl %}
+  {% tabs allergyintolerance-update-request %}
+
+    {% tab allergyintolerance-update-request curl %}
 ```shell
 curl --request PUT \
      --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
@@ -561,9 +578,9 @@ curl --request PUT \
     ]
 }'
 ```
-{% endtab %}
+    {% endtab %}
 
-{% tab allergyintolerance-update-request python %}
+    {% tab allergyintolerance-update-request python %}
 ```python
 import requests
 
@@ -646,18 +663,23 @@ response = requests.put(url, json=payload, headers=headers)
 
 print(response.text)
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="allergyintolerance-update-response">
-{% tabs allergyintolerance-update-response %}
-{% tab allergyintolerance-update-response 200 %}
+
+  {% tabs allergyintolerance-update-response %}
+
+    {% tab allergyintolerance-update-response 200 %}
 ```json
 null
 ```
-{% endtab %}
-{% tab allergyintolerance-update-response 400 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-update-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -672,8 +694,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-update-response 401 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-update-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -688,8 +711,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-update-response 403 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-update-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -704,8 +728,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-update-response 405 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-update-response 405 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -720,8 +745,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-update-response 412 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-update-response 412 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -736,8 +762,9 @@ null
   ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-update-response 422 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-update-response 422 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -752,14 +779,27 @@ null
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="allergyintolerance-search-request">
-{% tabs allergyintolerance-search-request %}
-{% tab allergyintolerance-search-request python %}
+
+  {% tabs allergyintolerance-search-request %}
+
+    {% tab allergyintolerance-search-request curl %}
 ```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+    {% endtab %}
+
+    {% tab allergyintolerance-search-request python %}
+```python
 import requests
 
 url = "https://fumage-example.canvasmedical.com/AllergyIntolerance?patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a"
@@ -773,21 +813,17 @@ response = requests.get(url, headers=headers)
 
 print(response.text)
 ```
-{% endtab %}
-{% tab allergyintolerance-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="allergyintolerance-search-response">
-{% tabs allergyintolerance-search-response %}
-{% tab allergyintolerance-search-response 200 %}
+
+  {% tabs allergyintolerance-search-response %}
+
+    {% tab allergyintolerance-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -870,8 +906,9 @@ curl --request GET \
     ]
 }
 ```
-{% endtab %}
-{% tab allergyintolerance-search-response 400 %}
+    {% endtab %}
+
+    {% tab allergyintolerance-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -886,6 +923,8 @@ curl --request GET \
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
