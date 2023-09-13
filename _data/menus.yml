@@ -140,8 +140,12 @@ api_allergen:
  - title: "Allergen Search"
    url: /api/allergen/#search
 api_allergyintolerance:
+ - title: "AllergyIntolerance Create"
+   url: /api/allergyintolerance/#create
  - title: "AllergyIntolerance Read"
    url: /api/allergyintolerance/#read
+ - title: "AllergyIntolerance Update"
+   url: /api/allergyintolerance/#update
  - title: "AllergyInterolerance Search"
    url: /api/allergyintolerance/#search
 api_appointment:
