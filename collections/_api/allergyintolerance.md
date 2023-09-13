@@ -16,19 +16,19 @@ sections:
             type: string
           - name: clinicalStatus
             description: >-
-              The clinical status of the allergy or intolerance
+              The clinical status of the allergy or intolerance<br><br>Supported codes for create interactions are: **active**, **inactive**
             type: json
           - name: verificationStatus
             description: >-
-              Assertion about certainty associated with the propensity, or potential risk, of a reaction to the identified substance (including pharmaceutical product)
+              Assertion about certainty associated with the propensity, or potential risk, of a reaction to the identified substance (including pharmaceutical product)<br><br>Supported codes for create interactions are: **confirmed**, **entered-in-error**
             type: json
           - name: type
             description: >-
-              Identification of the underlying physiological mechanism for the reaction risk.
+              Identification of the underlying physiological mechanism for the reaction risk<br><br>Supported codes for create interactions are: **allergy**, **intolerance**
             type: string
           - name: code
             description: >-
-              Code for an allergy or intolerance statement
+              Code for an allergy or intolerance statement<br><br>Supported codings for create interactions are obtained from the Allergen search endpoint.
             type: json
           - name: patient
             description: >-
@@ -60,33 +60,33 @@ sections:
             type: json
           - name: reaction
             description: >-
-              Details about each adverse reaction event linked to exposure to the identified substance
+              Details about each adverse reaction event linked to exposure to the identified substance<br><br>Supported severity codes for create interactions are: **mild**, **moderate**, **severe**
             type: json
         search_parameters:
           - name: _id
             type: string
-            description: A Canvas-issued unique identifier
+            description: The identifier of the AllergyIntolerance
           - name: patient
             type: string
             description: The patient who has the allergy or intolerance
         endpoints: [create, read, update, search]
         create:
-          description:
+          description: Create an AllergyIntolerance resource.<br><br>Exactly one FDB coding is required in the `code` field. FDB codings can be obtained from the search endpoint for the (Allergen resource, which is a custom Canvas FHIR resource.<br><br>If `encounter` is provided, the AllergyIntolerance will be added to existing encounter (note). If it is not provided, a new data import note will be created.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: allergyintolerance-create-request
           example_response: allergyintolerance-create-response
         read:
-          description:
+          description: Read an AllergyIntolerance resource.
           responses: [200, 404]
           example_request: allergyintolerance-read-request
           example_response: allergyintolerance-read-response
         update:
-          description:
+          description: Update an AllergyIntolerance resource.<br><br>The only type of AllergyIntolerance update interaction that is supported by Canvas is to mark an existing AllergyIntolerance as **entered-in-error**. No changes to other fields will be processed.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: allergyintolerance-update-request
           example_response: allergyintolerance-update-response
         search:
-          description:
+          description: Search for AllergyIntolerance resources.
           responses: [200, 400]
           example_request: allergyintolerance-search-request
           example_response: allergyintolerance-search-response
