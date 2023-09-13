@@ -36,3 +36,7 @@ Zone.Identifier
 
 # JetBrains
 .idea/
+
+# Vim
+*.swp
+*.swo
