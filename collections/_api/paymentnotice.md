@@ -7,58 +7,81 @@ sections:
         name: PaymentNotice
         article: "a"
         description: >-
-          This resource provides the status of the payment for goods and services rendered, and the request and response resource references.
+          Records of payments made towards a patient's balance.
         attributes:
           - name: id
             description: >-
               The identifier of the payment notice
             type: string
             required: true
-          - name: resourceType
-            type: string
-            required: true
           - name: status
             type: string
             required: true
+            description: >-
+              Required by the FHIR spec. Canvas only supports payments with a status of **active**.
           - name: request
-            type: string
+            type: json
             required: true
             description: >-
-              The request reference
+              A reference to the patient whose balance this payment is being applied to.
+            attributes:
+                - name: reference
+                  type: string
+                  required: true
           - name: created
             type: datetime
             required: true
             description: >-
-              The date the payment notice was created
+              Required by the FHIR spec. We recommend sending the current datetime on create; however, the value returned by the search interaction will be the creation timestamp of the actual database record.
           - name: payment
-            type: string
-            required: true
-          - name: recipient
-            type: string
-            required: true
-          - name: amount
-            type: string
-            required: true
-          - name: paymentStatus
-            type: string
+            type: json
             required: true
             description: >-
-              Issued or cleared Status of the payment
+              The `payment` field is required by FHIR, but is not used by Canvas. Canvas recommends sending an empty JSON object.
+          - name: recipient
+            type: json
+            required: true
+            description: >-
+              The `recipient` field is required by FHIR, but is not used by Canvas. Canvas recommends sending an empty JSON object.
+          - name: amount
+            type: json
+            required: true
+            description: >-
+              The payment amount.
+            attributes:
+                - name: value
+                  type: decimal
+                  description: >-
+                    The amount of USD to apply to the patient's balance.
+                - name: currency
+                  type: code
+                  description: >-
+                    Only **USD** is supported, and **USD** will be used regardless of what is provided.
+          - name: paymentStatus
+            type: json
+            required: false
+            description: >-
+              Status of the payment
             attributes:
               - name: coding
-                type: json
+                type: array
+                description: >-
+                  In search responses, there will be a single coding of **paid**.
                 attributes:
                   - name: system
                     type: string
                   - name: code
                     type: string
-            search_parameters:
+                    description: >-
+                      In search responses, the code of **paid** will be noted.
+        search_parameters:
           - name: request
             type: string
-            description: The request reference
+            required: true
+            description: A reference to the patient whose balance the payment was applied to.
         endpoints: [search, create]
         search:
-          responses: [200, 400]
+          responses: [200, 500]
           example_request: payment-notice-search-request
           example_response: payment-notice-search-response
         create:
@@ -69,10 +92,10 @@ sections:
 <div id="payment-notice-search-request">
 {% tabs payment-notice-search-request %}
 {% tab payment-notice-search-request python %}
-```sh
+```python
 import requests
 
-url = "https://fumage-example.canvasmedical.com/PaymentNotice"
+url = "https://fumage-example.canvasmedical.com/PaymentNotice?request=Patient/<patient_id>"
 
 headers = {
     "accept": "application/json",
@@ -87,7 +110,7 @@ print(response.text)
 {% tab payment-notice-search-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/PaymentNotice \
+     --url https://fumage-example.canvasmedical.com/PaymentNotice?request=Patient/<patient_id> \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -100,190 +123,101 @@ curl --request GET \
 {% tab payment-notice-search-response 200 %}
 ```json
 {
-  "resourceType": "Bundle",
-  "id": "bundle-example",
-  "meta": {
-    "lastUpdated": "2014-08-18T01:43:30Z"
-  },
-  "type": "searchset",
-  "total": 3,
-  "link": [
-    {
-      "relation": "self",
-      "url": "https://example.com/base/Task?_count=1"
-    },
-    {
-      "relation": "next",
-      "url": "https://example.com/base/Task?searchId=ff15fd40-ff71-4b48-b366-09c706bed9d0&page=2"
-    }
-  ],
-  "entry": [
-    {
-      "fullUrl": "https://example.com/base/Task/3123",
-      "resource": {
-        "resourceType": "Task",
-        "id": "example1",
-        "text": {
-          "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: example1</p><p><b>contained</b>: </p><p><b>identifier</b>: 20170201-001 (OFFICIAL)</p><p><b>basedOn</b>: General Wellness Careplan</p><p><b>groupIdentifier</b>: G20170201-001 (OFFICIAL)</p><p><b>status</b>: in-progress</p><p><b>businessStatus</b>: waiting for specimen <span>(Details )</span></p><p><b>intent</b>: order</p><p><b>priority</b>: routine</p><p><b>code</b>: Lipid Panel <span>(Details )</span></p><p><b>description</b>: Create order for getting specimen, Set up inhouse testing,  generate order for any sendouts and submit with specimen</p><p><b>focus</b>: <a>Lipid Panel Request</a></p><p><b>for</b>: <a>Peter James Chalmers</a></p><p><b>encounter</b>: <a>Example In-Patient Encounter</a></p><p><b>executionPeriod</b>: 31/10/2016 8:25:05 AM --&gt; (ongoing)</p><p><b>authoredOn</b>: 31/10/2016 8:25:05 AM</p><p><b>lastModified</b>: 31/10/2016 9:45:05 AM</p><p><b>requester</b>: <a>Dr Adam Careful</a></p><p><b>performerType</b>: Performer <span>(Details : {http://terminology.hl7.org/CodeSystem/task-performer-type code 'performer' = 'performer', given as 'Performer'})</span></p><p><b>owner</b>: <a>Clinical Laboratory @ Acme Hospital</a></p><p><b>reasonCode</b>: The Task.reason should only be included if there is no Task.focus or if it differs from the reason indicated on the focus <span>(Details )</span></p><p><b>note</b>: This is an example to demonstrate using task for actioning a servicerequest and to illustrate how to populate many of the task elements - this is the parent task that will be broken into subtask to grab the specimen and a sendout lab test </p><p><b>relevantHistory</b>: Author's Signature. Generated Summary: id: signature; recorded: 31/10/2016 8:25:05 AM; </p><h3>Restrictions</h3><table><tr><td>-</td><td><b>Repetitions</b></td><td><b>Period</b></td></tr><tr><td>*</td><td>1</td><td>?? --&gt; 02/11/2016 9:45:05 AM</td></tr></table></div>"
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 2,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/PaymentNotice?request=Patient%2Fbc4ec998a49745b488f552bebddf7261&_count=10&_offset=0"
         },
-        "contained": [
-          {
-            "resourceType": "Provenance",
-            "id": "signature",
-            "target": [
-              {
-                "reference": "ServiceRequest/physiotherapy/_history/1"
-              }
-            ],
-            "recorded": "2016-10-31T08:25:05+10:00",
-            "agent": [
-              {
-                "role": [
-                  {
-                    "coding": [
-                      {
-                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-                        "code": "AUT"
-                      }
-                    ]
-                  }
-                ],
-                "who": {
-                  "reference": "Practitioner/f202",
-                  "display": "Luigi Maas"
-                }
-              }
-            ],
-            "signature": [
-              {
-                "type": [
-                  {
-                    "system": "urn:iso-astm:E1762-95:2013",
-                    "code": "1.2.840.10065.1.12.1.1",
-                    "display": "Author's Signature"
-                  }
-                ],
-                "when": "2016-10-31T08:25:05+10:00",
-                "who": {
-                  "reference": "Practitioner/example",
-                  "display": "Dr Adam Careful"
-                },
-                "targetFormat": "application/fhir+xml",
-                "sigFormat": "application/signature+xml",
-                "data": "dGhpcyBibG9iIGlzIHNuaXBwZWQ="
-              }
-            ]
-          }
-        ],
-        "identifier": [
-          {
-            "use": "official",
-            "system": "http:/goodhealth.org/identifiers",
-            "value": "20170201-001"
-          }
-        ],
-        "basedOn": [
-          {
-            "display": "General Wellness Careplan"
-          }
-        ],
-        "groupIdentifier": {
-          "use": "official",
-          "system": "http:/goodhealth.org/accession/identifiers",
-          "value": "G20170201-001"
+        {
+            "relation": "first",
+            "url": "/PaymentNotice?request=Patient%2Fbc4ec998a49745b488f552bebddf7261&_count=10&_offset=0"
         },
-        "status": "in-progress",
-        "businessStatus": {
-          "text": "waiting for specimen"
-        },
-        "intent": "order",
-        "priority": "routine",
-        "code": {
-          "text": "Lipid Panel"
-        },
-        "description": "Create order for getting specimen, Set up inhouse testing,  generate order for any sendouts and submit with specimen",
-        "focus": {
-          "reference": "ServiceRequest/lipid",
-          "display": "Lipid Panel Request"
-        },
-        "for": {
-          "reference": "Patient/example",
-          "display": "Peter James Chalmers"
-        },
-        "encounter": {
-          "reference": "Encounter/example",
-          "display": "Example In-Patient Encounter"
-        },
-        "executionPeriod": {
-          "start": "2016-10-31T08:25:05+10:00"
-        },
-        "authoredOn": "2016-10-31T08:25:05+10:00",
-        "lastModified": "2016-10-31T09:45:05+10:00",
-        "requester": {
-          "reference": "Practitioner/example",
-          "display": "Dr Adam Careful"
-        },
-        "performerType": [
-          {
-            "coding": [
-              {
-                "system": "http://terminology.hl7.org/CodeSystem/task-performer-type",
-                "code": "performer",
-                "display": "Performer"
-              }
-            ],
-            "text": "Performer"
-          }
-        ],
-        "owner": {
-          "reference": "Organization/1832473e-2fe0-452d-abe9-3cdb9879522f",
-          "display": "Clinical Laboratory @ Acme Hospital"
-        },
-        "reasonCode": {
-          "text": "The Task.reason should only be included if there is no Task.focus or if it differs from the reason indicated on the focus"
-        },
-        "note": [
-          {
-            "text": "This is an example to demonstrate using task for actioning a servicerequest and to illustrate how to populate many of the task elements - this is the parent task that will be broken into subtask to grab the specimen and a sendout lab test "
-          }
-        ],
-        "relevantHistory": [
-          {
-            "reference": "#signature",
-            "display": "Author's Signature"
-          }
-        ],
-        "restriction": {
-          "repetitions": 1,
-          "period": {
-            "end": "2016-11-02T09:45:05+10:00"
-          }
+        {
+            "relation": "last",
+            "url": "/PaymentNotice?request=Patient%2Fbc4ec998a49745b488f552bebddf7261&_count=10&_offset=0"
         }
-      },
-      "search": {
-        "mode": "match",
-        "score": 1
-      }
-    }
-  ]
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "PaymentNotice",
+                "id": "777094d2-664c-49b9-8926-b17a1b3fff8d",
+                "status": "active",
+                "request": {
+                    "reference": "Patient/bc4ec998a49745b488f552bebddf7261",
+                    "type": "Patient"
+                },
+                "created": "2023-09-13T01:10:49.515238+00:00",
+                "payment": {
+                    "display": "Unused"
+                },
+                "recipient": {
+                    "display": "Unused"
+                },
+                "amount": {
+                    "value": 10.0,
+                    "currency": "USD"
+                },
+                "paymentStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/paymentstatus",
+                            "code": "paid"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "PaymentNotice",
+                "id": "3a2f4045-0591-460c-9bee-592ae7e8eef7",
+                "status": "active",
+                "request": {
+                    "reference": "Patient/bc4ec998a49745b488f552bebddf7261",
+                    "type": "Patient"
+                },
+                "created": "2023-09-13T01:11:22.767640+00:00",
+                "payment": {
+                    "display": "Unused"
+                },
+                "recipient": {
+                    "display": "Unused"
+                },
+                "amount": {
+                    "value": 10.0,
+                    "currency": "USD"
+                },
+                "paymentStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/paymentstatus",
+                            "code": "paid"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
 }
 ```
 {% endtab %}
-{% tab payment-notice-search-response 400 %}
+{% tab payment-notice-search-response 500 %}
 ```json
 {
-  "resourceType": "OperationOutcome",
-  "id": "101",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
+    "resourceType": "OperationOutcome",
+    "issue": [
+        {
+            "severity": "error",
+            "code": "exception",
+            "details": {
+                "text": "1 validation error for PaymentNotice\nrequest\n  field required (type=value_error)"
+            }
+        }
+    ]
 }
 ```
 {% endtab %}
@@ -301,12 +235,18 @@ url = "https://fumage-example.canvasmedical.com/PaymentNotice"
 payload = {
     "resourceType": "PaymentNotice",
     "status": "active",
-    "request": { "reference": "Patient/5350cd20de8a470aa570a852859ac87e" },
+    "request": {
+      "reference": "Patient/bc4ec998a49745b488f552bebddf7261"
+    },
+    "payment": {},
+    "recipient": {},
+    "created": "2023-09-12",
     "amount": {
-        "value": 10,
-        "currency": "USD"
+      "value": 10.00,
+      "currency": "USD"
     }
 }
+
 headers = {
     "accept": "application/json",
     "Authorization": "Bearer <token>",
@@ -327,15 +267,18 @@ curl --request POST \
      --header 'content-type: application/json' \
      --data '
 {
-  "resourceType": "PaymentNotice",
-  "status": "active",
-  "request": {
-    "reference": "Patient/5350cd20de8a470aa570a852859ac87e"
-  },
-  "amount": {
-    "value": 10,
-    "currency": "USD"
-  }
+    "resourceType": "PaymentNotice",
+    "status": "active",
+    "request": {
+      "reference": "Patient/bc4ec998a49745b488f552bebddf7261"
+    },
+    "payment": {},
+    "recipient": {},
+    "created": "2023-09-12",
+    "amount": {
+      "value": 10.00,
+      "currency": "USD"
+    }
 }
 '
 ```
@@ -353,17 +296,23 @@ null
 {% tab payment-notice-create-response 400 %}
 ```json
 {
-  "resourceType": "OperationOutcome",
-  "id": "101",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
+    "resourceType": "OperationOutcome",
+    "issue": [
+        {
+            "severity": "error",
+            "code": "required",
+            "details": {
+                "text": "body -> __root__ -> created — field required (type=value_error.missing)"
+            }
+        },
+        {
+            "severity": "error",
+            "code": "required",
+            "details": {
+                "text": "body -> __root__ -> status — field required (type=value_error.missing)"
+            }
+        }
+    ]
 }
 ```
 {% endtab %}
