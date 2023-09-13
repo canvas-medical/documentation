@@ -819,7 +819,7 @@ null
     {% tab allergyintolerance-search-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
+     --url https://fumage-example.canvasmedical.com/AllergyIntolerance?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0 \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -829,7 +829,7 @@ curl --request GET \
 ```python
 import requests
 
-url = "https://fumage-example.canvasmedical.com/AllergyIntolerance?patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a"
+url = "https://fumage-example.canvasmedical.com/AllergyIntolerance?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0"
 
 headers = {
     "accept": "application/json",
