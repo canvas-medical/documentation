@@ -82,7 +82,7 @@ sections:
           example_response: allergyintolerance-read-response
         update:
           description:
-          responses: [200, 400, 401, 403, 404, 405, 422]
+          responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: allergyintolerance-update-request
           example_response: allergyintolerance-update-response
         search:
@@ -515,7 +515,7 @@ print(response.text)
     {% tab allergyintolerance-update-request curl %}
 ```shell
 curl --request PUT \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance/b8dfa97bdcdf4754bcd8197ca78ef0f0 \
+     --url https://fumage-example.canvasmedical.com/AllergyIntolerance/<id> \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -594,7 +594,7 @@ curl --request PUT \
 ```python
 import requests
 
-url = "https://fumage-example.canvasmedical.com/AllergyIntolerance/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+url = "https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>"
 
 headers = {
     "accept": "application/json",
