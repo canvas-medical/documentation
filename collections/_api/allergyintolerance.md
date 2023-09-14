@@ -530,7 +530,7 @@ print(response.text)
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown Patient resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown AllergyIntolerance resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
       }
     }
   ]
@@ -783,7 +783,7 @@ null
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown Patient resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown AllergyIntolerance resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
       }
     }
   ]
