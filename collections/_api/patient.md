@@ -270,10 +270,10 @@ sections:
             description: First Name
           - name: email
             type: string
+            description: Patient email address
           - name: nickname
             type: string
             description: Preferred or alternate name
-            description: Patient email address
           - name: phone
             type: string
             description: Patient phone number, expected to be 10 digits
@@ -283,9 +283,6 @@ sections:
           - name: _count
             type: string
             description: Triggers pagination. This number is used to determine how many results to return at a time
-          - name: _offset
-            type: string
-            description: The result to start after in the result set when <code>_count</code> is included for pagination. Will be ignored if <code>_count</code> is not included. A 0 offset is assumed if this parameter is not included but <code>_count</code> is included.
           - name: _has:CareTeam:participant:member
             type: boolean
             description: Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. <code>_has:CareTeam:participant:member=Practitioner/{practitioner_id}</code>
@@ -316,7 +313,7 @@ sections:
           example_request: patient-search-request
           example_response: patient-search-response
           description: >-
-            <b>Pagination</b><br><br>To paginate patient search results, use the query param _count.<br><br><code>GET /Patient?_count=10</code> will return the first 10 patients, along with relative links to see the subsequent pages. The pages are specified by a combination of <code>_count</code> and <code>_offset</code>.
+            <b>Pagination</b><br><br>To paginate patient search results, use the query param _count.<br><br><code>GET /Patient?_count=10</code> will return the first 10 patients, along with relative links to see the subsequent pages.
 ---
 
 
