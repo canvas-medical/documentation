@@ -43,209 +43,280 @@ sections:
         endpoints: [read, search]
         read:
           description: Read a CarePlan resource.
-          responses: [200, 404]
-          example_request: care-plan-read-request
-          example_response: care-plan-read-response
+          responses: [200, 401, 403, 404]
+          example_request: careplan-read-request
+          example_response: careplan-read-response
         search:
           description: Search for CarePlan resources.
-          responses: [200, 400]
-          example_request: care-plan-search-request
-          example_response: care-plan-search-response
+          responses: [200, 400, 401, 403]
+          example_request: careplan-search-request
+          example_response: careplan-search-response
 ---
-<div id="care-plan-read-request">
-  {% tabs care-plan-read-request %}
-    {% tab care-plan-read-request curl %}
-    ```shell
-    curl --request GET \
-         --url https://fumage-example.canvasmedical.com/CarePlan/<id> \
-         --header 'Authorization: Bearer <token>' \
-         --header 'accept: application/json'
-    ```
+<div id="careplan-read-request">
+  {% tabs careplan-read-request %}
+  
+    {% tab careplan-read-request curl %}
+```shell
+curl --request GET \
+      --url https://fumage-example.canvasmedical.com/CarePlan/<id> \
+      --header 'Authorization: Bearer <token>' \
+      --header 'accept: application/json'
+```
     {% endtab %}
-    {% tab care-plan-read-request python %}
-    ```python
-    import requests
-    
-    url = "https://fumage-example.canvasmedical.com/CarePlan/<id>"
-    
-    headers = {
-        "accept": "application/json",
-        "Authorization": "Bearer <token>"
-    }
-    
-    response = requests.get(url, headers=headers)
-    
-    print(response.text)
-    ```
+
+    {% tab careplan-read-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/CarePlan/<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
     {% endtab %}
   
   {% endtabs %}
 </div>
 
-<div id="care-plan-read-response">
-  {% tabs care-plan-read-response %}
-    {% tab care-plan-read-response 200 %}
-      ```json
-      {
-          "resourceType": "CarePlan",
-          "id": "b4190e86-1a63-4010-85fe-5c42b607d2f9",
-          "text": {
-              "status": "generated",
-              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">CarePlan</div><table class=\"hapiPropertyTable\"><tbody><tr><td>Coding</td><td>{'system': 'http://snomed.info/sct', 'code': '734163000', 'display': 'Care plan'}</td></tr><tr><td>For Patient Name</td><td><span>Cube, Rubik N. (Nick Name)</span></td></tr></tbody></table></div>"
-          },
-          "status": "active",
-          "intent": "plan",
-          "category": [
-              {
-                  "coding": [
-                      {
-                          "system": "http://hl7.org/fhir/us/core/CodeSystem/careplan-category",
-                          "code": "assess-plan"
-                      }
-                  ]
-              },
-              {
-                  "coding": [
-                      {
-                          "system": "http://snomed.info/sct",
-                          "code": "734163000",
-                          "display": "Care plan"
-                      }
-                  ]
-              }
-          ],
-          "subject": {
-              "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-              "type": "Patient"
-          }
+<div id="careplan-read-response">
+  {% tabs careplan-read-response %}
+
+    {% tab careplan-read-response 200 %}
+```json
+{
+    "resourceType": "CarePlan",
+    "id": "b4190e86-1a63-4010-85fe-5c42b607d2f9",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">CarePlan</div><table class=\"hapiPropertyTable\"><tbody><tr><td>Coding</td><td>{'system': 'http://snomed.info/sct', 'code': '734163000', 'display': 'Care plan'}</td></tr><tr><td>For Patient Name</td><td><span>Cube, Rubik N. (Nick Name)</span></td></tr></tbody></table></div>"
+    },
+    "status": "active",
+    "intent": "plan",
+    "category": [
+        {
+            "coding": [
+                {
+                    "system": "http://hl7.org/fhir/us/core/CodeSystem/careplan-category",
+                    "code": "assess-plan"
+                }
+            ]
+        },
+        {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "734163000",
+                    "display": "Care plan"
+                }
+            ]
+        }
+    ],
+    "subject": {
+        "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+        "type": "Patient"
+    }
+}
+``` 
+    {% endtab %}
+    {% tab careplan-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
       }
-      ``` 
+    }
+  ]
+}
+```
     {% endtab %}
-    {% tab care-plan-read-response 404 %}
-      ```json
-      {
-          "resourceType": "OperationOutcome",
-          "issue": [
-              {
-                  "severity": "error",
-                  "code": "not-found",
-                  "details": {
-                      "text": "Unknown CarePlan resource '7d1ce256fcd7408193b0459650937a07'"
-                  }
-              }
-          ]
+
+    {% tab careplan-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
       }
-      ```
+    }
+  ]
+}
+```
     {% endtab %}
-  {% endtabs %}
-</div>
 
-<div id="care-plan-search-request">
-  {% tabs care-plan-search-request %}
-    {% tab care-plan-search-request python %}
-      ```python
-      import requests
-
-      url = "https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan"
-
-      headers = {
-          "accept": "application/json",
-          "Authorization": "Bearer <token>"
-      }
-
-      response = requests.get(url, headers=headers)
-
-      print(response.text)
-      ```
-    {% endtab %}
-    {% tab care-plan-search-request curl %}
-      ```sh
-      curl --request GET \
-          --url 'https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan' \
-          --header 'Authorization: Bearer <token>' \
-          --header 'accept: application/json'
-      ```
-    {% endtab %}
-  {% endtabs %}
-</div>
-
-<div id="care-plan-search-response">
-  {% tabs care-plan-search-response %}
-    {% tab care-plan-search-response 200 %}
-      ```json
-      {
-          "resourceType": "Bundle",
-          "type": "searchset",
-          "total": 1,
-          "link": [
-              {
-                  "relation": "self",
-                  "url": "/CarePlan?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
-              },
-              {
-                  "relation": "first",
-                  "url": "/CarePlan?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
-              },
-              {
-                  "relation": "last",
-                  "url": "/CarePlan?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
-              }
-          ],
-          "entry": [
-              {
-                  "resource": {
-                      "resourceType": "CarePlan",
-                      "id": "b4190e86-1a63-4010-85fe-5c42b607d2f9",
-                      "text": {
-                          "status": "generated",
-                          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">CarePlan</div><table class=\"hapiPropertyTable\"><tbody><tr><td>Coding</td><td>{'system': 'http://snomed.info/sct', 'code': '734163000', 'display': 'Care plan'}</td></tr><tr><td>For Patient Name</td><td><span>Cube, Rubik N. (Nick Name)</span></td></tr></tbody></table></div>"
-                      },
-                      "status": "active",
-                      "intent": "plan",
-                      "category": [
-                          {
-                              "coding": [
-                                  {
-                                      "system": "http://hl7.org/fhir/us/core/CodeSystem/careplan-category",
-                                      "code": "assess-plan"
-                                  }
-                              ]
-                          },
-                          {
-                              "coding": [
-                                  {
-                                      "system": "http://snomed.info/sct",
-                                      "code": "734163000",
-                                      "display": "Care plan"
-                                  }
-                              ]
-                          }
-                      ],
-                      "subject": {
-                          "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                          "type": "Patient"
-                      }
-                  }
-              }
-          ]
-      }
-      ```
-    {% endtab %}
-    {% tab care-plan-search-response 400 %}
-      ```json
-      {
-        "resourceType": "OperationOutcome",
-        "issue": [
-          {
+    {% tab careplan-read-response 404 %}
+```json
+{
+    "resourceType": "OperationOutcome",
+    "issue": [
+        {
             "severity": "error",
-            "code": "invalid",
+            "code": "not-found",
             "details": {
-              "text": "Bad request"
+                "text": "Unknown CarePlan resource '7d1ce256fcd7408193b0459650937a07'"
             }
-          }
-        ]
+        }
+    ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+</div>
+
+<div id="careplan-search-request">
+  {% tabs careplan-search-request %}
+    {% tab careplan-search-request curl %}
+```shell
+curl --request GET \
+    --url 'https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan' \
+    --header 'Authorization: Bearer <token>' \
+    --header 'accept: application/json'
+```
+    {% endtab %}
+    {% tab careplan-search-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+    {% endtab %}
+  {% endtabs %}
+</div>
+
+<div id="careplan-search-response">
+  {% tabs careplan-search-response %}
+    {% tab careplan-search-response 200 %}
+```json
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/CarePlan?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/CarePlan?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/CarePlan?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "CarePlan",
+                "id": "b4190e86-1a63-4010-85fe-5c42b607d2f9",
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">CarePlan</div><table class=\"hapiPropertyTable\"><tbody><tr><td>Coding</td><td>{'system': 'http://snomed.info/sct', 'code': '734163000', 'display': 'Care plan'}</td></tr><tr><td>For Patient Name</td><td><span>Cube, Rubik N. (Nick Name)</span></td></tr></tbody></table></div>"
+                },
+                "status": "active",
+                "intent": "plan",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/careplan-category",
+                                "code": "assess-plan"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "734163000",
+                                "display": "Care plan"
+                            }
+                        ]
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                    "type": "Patient"
+                }
+            }
+        }
+    ]
+}
+```
+    {% endtab %}
+    {% tab careplan-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
       }
-      ```
+    }
+  ]
+}
+```
+    {% endtab %}
+    {% tab careplan-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab careplan-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
     {% endtab %}
   {% endtabs %}
 </div>
