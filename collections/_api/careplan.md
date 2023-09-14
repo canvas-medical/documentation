@@ -7,64 +7,65 @@ sections:
         name: CarePlan
         article: "a"
         description: >-
-          Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions.
+          Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions.<br><br>
+          [https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careplan.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careplan.html)
         attributes:
           - name: id
             description: >-
-              The identifier of the care plan
+              The identifier of the CarePlan
             type: string
-            required: true
-          - name: resourceType
-            type: string
-            required: true
-          - name: text
-            type: json
-            required: true
-            attributes:
-              - name: status
-                type: string
-              - name: div
-                type: string
           - name: status
+            description: >-
+              Indicates whether the plan is currently being acted upon, represents future intentions or is now a historical record.
             type: string
           - name: intent
+            description: >-
+              Indicates the level of authority/intentionality associated with the care plan and where the care plan fits into the workflow chain.
             type: string
           - name: category
-            type: array
-            attributes:
-              - name: coding
-                type: array
-                attributes:
-                  - name: system
-                    type: string
-                  - name: code
-                    type: string
-                  - name: display
-                    type: string
+            description: >-
+              Type of plan.
+            type: json
           - name: subject
-            type: string
+            description: >-
+              Who care plan is for.
+            type: json
         search_parameters:
           - name: _id
             type: string
-            description: A Canvas-issued unique identifier
+            description: The unique Canvas identifier of the CarePlan
           - name: category
             type: string
+            description: A category code in the format `system|code`
           - name: patient
             type: string
+            description: FHIR resource for a patient
         endpoints: [read, search]
         read:
-          responses: [200, 404]
-          example_request: care-plan-read-request
-          example_response: care-plan-read-response
+          description: Read a CarePlan resource.
+          responses: [200, 401, 403, 404]
+          example_request: careplan-read-request
+          example_response: careplan-read-response
         search:
-          responses: [200, 400]
-          example_request: care-plan-search-request
-          example_response: care-plan-search-response
+          description: Search for CarePlan resources.
+          responses: [200, 400, 401, 403]
+          example_request: careplan-search-request
+          example_response: careplan-search-response
 ---
-<div id="care-plan-read-request">
-{% tabs care-plan-read-request %}
-{% tab care-plan-read-request python %}
-```sh
+<div id="careplan-read-request">
+  {% tabs careplan-read-request %}
+  
+    {% tab careplan-read-request curl %}
+```shell
+curl --request GET \
+      --url https://fumage-example.canvasmedical.com/CarePlan/<id> \
+      --header 'Authorization: Bearer <token>' \
+      --header 'accept: application/json'
+```
+    {% endtab %}
+
+    {% tab careplan-read-request python %}
+```python
 import requests
 
 url = "https://fumage-example.canvasmedical.com/CarePlan/<id>"
@@ -78,21 +79,15 @@ response = requests.get(url, headers=headers)
 
 print(response.text)
 ```
-{% endtab %}
-{% tab care-plan-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/CarePlan/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+  
+  {% endtabs %}
 </div>
 
-<div id="care-plan-read-response">
-{% tabs care-plan-read-response %}
-{% tab care-plan-read-response 200 %}
+<div id="careplan-read-response">
+  {% tabs careplan-read-response %}
+
+    {% tab careplan-read-response 200 %}
 ```json
 {
     "resourceType": "CarePlan",
@@ -127,9 +122,43 @@ curl --request GET \
         "type": "Patient"
     }
 }
+``` 
+    {% endtab %}
+    {% tab careplan-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
 ```
-{% endtab %}
-{% tab care-plan-read-response 404 %}
+    {% endtab %}
+
+    {% tab careplan-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab careplan-read-response 404 %}
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -144,14 +173,23 @@ curl --request GET \
     ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
 </div>
 
-<div id="care-plan-search-request">
-{% tabs care-plan-search-request %}
-{% tab care-plan-search-request python %}
-```sh
+<div id="careplan-search-request">
+  {% tabs careplan-search-request %}
+    {% tab careplan-search-request curl %}
+```shell
+curl --request GET \
+    --url 'https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan' \
+    --header 'Authorization: Bearer <token>' \
+    --header 'accept: application/json'
+```
+    {% endtab %}
+    {% tab careplan-search-request python %}
+```python
 import requests
 
 url = "https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan"
@@ -165,21 +203,13 @@ response = requests.get(url, headers=headers)
 
 print(response.text)
 ```
-{% endtab %}
-{% tab care-plan-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+  {% endtabs %}
 </div>
 
-<div id="care-plan-search-response">
-{% tabs care-plan-search-response %}
-{% tab care-plan-search-response 200 %}
+<div id="careplan-search-response">
+  {% tabs careplan-search-response %}
+    {% tab careplan-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -238,12 +268,11 @@ curl --request GET \
     ]
 }
 ```
-{% endtab %}
-{% tab care-plan-search-response 400 %}
+    {% endtab %}
+    {% tab careplan-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
@@ -255,7 +284,39 @@ curl --request GET \
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
-</div>
+    {% endtab %}
+    {% tab careplan-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
 
+    {% tab careplan-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+  {% endtabs %}
+</div>
