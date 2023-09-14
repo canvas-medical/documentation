@@ -33,6 +33,20 @@
     transition: max-height 0.1s ease-in-out;
     &__expanded {
       max-height: 1000px;
+      overflow-y: scroll;
+      &::-webkit-scrollbar {
+        width: 5px;
+        height: 8px;
+        background-color: #aaa;
+        /* or add it to the track */
+        border-radius: 8px;
+      }
+    
+      /* Add a thumb */
+      &::-webkit-scrollbar-thumb {
+        background: #000;
+        border-radius: 6px;
+      }
     }
   }
 
