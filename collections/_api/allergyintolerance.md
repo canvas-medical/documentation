@@ -87,7 +87,7 @@ sections:
           example_response: allergyintolerance-update-response
         search:
           description: Search for AllergyIntolerance resources.
-          responses: [200, 400]
+          responses: [200, 400, 401, 403]
           example_request: allergyintolerance-search-request
           example_response: allergyintolerance-search-response
 ---
@@ -1005,6 +1005,40 @@ print(response.text)
       "code": "invalid",
       "details": {
         "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab allergyintolerance-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab allergyintolerance-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
       }
     }
   ]
