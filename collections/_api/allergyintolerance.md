@@ -77,7 +77,7 @@ sections:
           example_response: allergyintolerance-create-response
         read:
           description: Read an AllergyIntolerance resource.
-          responses: [200, 404]
+          responses: [200, 401, 403, 404]
           example_request: allergyintolerance-read-request
           example_response: allergyintolerance-read-response
         update:
@@ -483,6 +483,40 @@ print(response.text)
             "severity": "moderate"
         }
     ]
+}
+```
+    {% endtab %}
+
+    {% tab allergyintolerance-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab allergyintolerance-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
 }
 ```
     {% endtab %}
