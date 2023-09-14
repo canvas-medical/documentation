@@ -78,15 +78,14 @@ sections:
         search_parameters:
           - name: request
             type: string
-            required: true
             description: A reference to the patient whose balance the payment was applied to.
         endpoints: [search, create]
         search:
-          responses: [200, 500]
+          responses: [200, 401, 403]
           example_request: payment-notice-search-request
           example_response: payment-notice-search-response
         create:
-          responses: [201, 400]
+          responses: [201, 400, 401, 403]
           example_request: payment-notice-create-request
           example_response: payment-notice-create-response
 ---
@@ -206,19 +205,35 @@ curl --request GET \
 }
 ```
 {% endtab %}
-{% tab payment-notice-search-response 500 %}
+{% tab payment-notice-search-response 401 %}
 ```json
 {
-    "resourceType": "OperationOutcome",
-    "issue": [
-        {
-            "severity": "error",
-            "code": "exception",
-            "details": {
-                "text": "1 validation error for PaymentNotice\nrequest\n  field required (type=value_error)"
-            }
-        }
-    ]
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab payment-notice-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
 }
 ```
 {% endtab %}
@@ -314,6 +329,38 @@ null
             }
         }
     ]
+}
+```
+{% endtab %}
+{% tab payment-notice-create-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab payment-notice-create-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
 }
 ```
 {% endtab %}
