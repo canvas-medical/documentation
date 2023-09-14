@@ -57,11 +57,11 @@ sections:
           - name: note
             description: >-
               Additional narrative about the propensity for the Adverse Reaction, not captured in other fields
-            type: json
+            type: array[json]
           - name: reaction
             description: >-
               Details about each adverse reaction event linked to exposure to the identified substance<br><br>Supported severity codes for create interactions are: **mild**, **moderate**, **severe**
-            type: json
+            type: array[json]
         search_parameters:
           - name: _id
             type: string
