@@ -44,9 +44,6 @@ sections:
           - name: _id
             type: string
             description: The unique Canvas identifier of the Communication
-          - name: patient
-            type: string
-            description: FHIR resource for a patient
           - name: recipient
             type: string
             description: FHIR resource for the recipient, either a Patient or Practitioner
