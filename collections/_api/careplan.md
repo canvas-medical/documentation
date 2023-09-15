@@ -58,7 +58,7 @@ sections:
     {% tab careplan-read-request curl %}
 ```shell
 curl --request GET \
-      --url https://fumage-example.canvasmedical.com/CarePlan/<id> \
+      --url 'https://fumage-example.canvasmedical.com/CarePlan/<id>' \
       --header 'Authorization: Bearer <token>' \
       --header 'accept: application/json'
 ```
