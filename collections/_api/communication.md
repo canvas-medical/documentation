@@ -34,7 +34,7 @@ sections:
             type: string
             required: true
             description: >-
-              Message sender<br><br>Supported resources for create interactions: **Patient**, **Practitioner**
+              Message sender<br><br>Supported reference types for create interactions: **Patient**, **Practitioner**
           - name: payload
             type: array[json]
             description: >-
