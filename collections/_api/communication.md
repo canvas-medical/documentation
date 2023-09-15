@@ -29,7 +29,7 @@ sections:
             type: json
             required: true
             description: >-
-              Message recipient<br><br>Supported resources for create interactions: **Patient**, **Practitioner**
+              Message recipient<br><br>Supported reference types for create interactions: **Patient**, **Practitioner**
           - name: sender
             type: string
             required: true
