@@ -7,7 +7,8 @@ sections:
         name: DiagnosticReport
         article: "a"
         description: >-
-          The findings and interpretation of diagnostic tests performed on patients, groups of patients, devices, and locations, and/or specimens derived from these. The report includes clinical context such as requesting and provider information, and some mix of atomic results, images, textual and coded interpretations, and formatted representation of diagnostic reports. [https://hl7.org/fhir/R4/diagnosticreport.html](https://hl7.org/fhir/R4/diagnosticreport.html)
+          The findings and interpretation of diagnostic tests performed on patients, groups of patients, devices, and locations, and/or specimens derived from these. The report includes clinical context such as requesting and provider information, and some mix of atomic results, images, textual and coded interpretations, and formatted representation of diagnostic reports. [https://hl7.org/fhir/R4/diagnosticreport.html](https://hl7.org/fhir/R4/diagnosticreport.html)<br><br>
+          This endpoint implements the US Core DiagnosticReport Profile for Report. The following USCDI data elements are retrievable from this endpoint:<br><br>Clinical Notes:<br>- Imaging Narrative<br>- Laboratory Report Narrative<br>- Pathology Report Narrative<br>- Procedure Note<br><br>Laboratory:<br>- Tests<br>- Values/Results
         attributes:
           - name: id
             type: string
