@@ -28,39 +28,39 @@ sections:
             type: string
           - name: code
             description: >-
-              Code for an allergy or intolerance statement<br><br>Supported codings for create interactions are obtained from the Allergen search endpoint.
+              Code that identifies the allergy or intolerance<br><br>Supported codings for create interactions are obtained from the Allergen search endpoint.
             type: json
           - name: patient
             description: >-
-              The patient who has the allergy or intolerance
+              Who the sensitivity is for
             type: json
           - name: encounter
             description: >-
-              The encounter when the allergy or intolerance was asserted
+              Encounter when the allergy or intolerance was asserted
             type: json
           - name: onsetDateTime
             description: >-
-              Estimated or actual date when allergy or intolerance was identified
+              When allergy or intolerance was identified
             type: date
           - name: recordedDate
             description: >-
-              The recordedDate represents when this particular AllergyIntolerance record was created in the system, which is often a system-generated date
+              Date first version of the resource instance was recorded
             type: datetime
           - name: recorder
             description: >-
-              Individual who recorded the record and takes responsibility for its content
+              Who recorded the sensitivity
             type: json
           - name: lastOccurrence
             description: >-
-              Represents the date and/or time of the last known occurrence of a reaction event
+              Date of last known occurrence of a reaction
             type: date
           - name: note
             description: >-
-              Additional narrative about the propensity for the Adverse Reaction, not captured in other fields
+              Additional text not captured in other fields
             type: array[json]
           - name: reaction
             description: >-
-              Details about each adverse reaction event linked to exposure to the identified substance<br><br>Supported severity codes for create interactions are: **mild**, **moderate**, **severe**
+              Adverse Reaction Events linked to exposure to substance<br><br>Supported severity codes for create interactions are: **mild**, **moderate**, **severe**
             type: array[json]
         search_parameters:
           - name: _id
@@ -68,7 +68,7 @@ sections:
             description: The identifier of the AllergyIntolerance
           - name: patient
             type: string
-            description: The patient who has the allergy or intolerance
+            description: Who the sensitivity is for
         endpoints: [create, read, update, search]
         create:
           description: Create an AllergyIntolerance resource.<br><br>Exactly one FDB coding is required in the `code` field. FDB codings can be obtained from the search endpoint for the (Allergen resource, which is a custom Canvas FHIR resource.<br><br>If `encounter` is provided, the AllergyIntolerance will be added to existing encounter (note). If it is not provided, a new data import note will be created.
