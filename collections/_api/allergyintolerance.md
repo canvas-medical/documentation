@@ -64,11 +64,11 @@ sections:
             type: array[json]
         search_parameters:
           - name: _id
-            type: string
             description: The identifier of the AllergyIntolerance
-          - name: patient
             type: string
+          - name: patient
             description: Who the sensitivity is for
+            type: string
         endpoints: [create, read, update, search]
         create:
           description: Create an AllergyIntolerance resource.<br><br>Exactly one FDB coding is required in the `code` field. FDB codings can be obtained from the search endpoint for the (Allergen resource, which is a custom Canvas FHIR resource.<br><br>If `encounter` is provided, the AllergyIntolerance will be added to existing encounter (note). If it is not provided, a new data import note will be created.

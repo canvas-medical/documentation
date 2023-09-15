@@ -35,17 +35,17 @@ sections:
             type: array[json]
         search_parameters:
           - name: _id
-            type: string
             description: The identifier of the CareTeam
+            type: string
           - name: participant
-            type: string
             description: Who is involved
+            type: string
           - name: patient
-            type: string
             description: Who care team is for	
-          - name: status
             type: string
+          - name: status
             description: The current state of the care team	
+            type: string
         endpoints: [read, update, search]
         read:
           description: Read a CareTeam resource.

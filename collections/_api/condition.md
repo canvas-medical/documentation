@@ -53,11 +53,11 @@ sections:
             type: array[json]
         search_parameters:
           - name: _id
-            type: string
             description: The identifier of the Condition
-          - name: patient
             type: string
+          - name: patient
             description: Who has the condition
+            type: string
         endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
