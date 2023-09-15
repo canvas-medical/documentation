@@ -165,27 +165,27 @@ api_careplan:
 api_careteam:
  - title: "CareTeam Read"
    url: /api/careteam/#read
- - title: "CareTeam Search"
-   url: /api/careteam/#search
  - title: "CareTeam Update"
    url: /api/careteam/#update
+ - title: "CareTeam Search"
+   url: /api/careteam/#search
 api_claim:
  - title: "Claim Create"
    url: /api/claim/#create
 api_communication:
- - title: "Communication Search"
-   url: /api/communication/#search
  - title: "Communication Create"
    url: /api/communication/#create
+ - title: "Communication Search"
+   url: /api/communication/#search
 api_condition:
- - title: "Condition Read"
-   url: /api/condition/#read
- - title: "Condition Search"
-   url: /api/condition/#search
  - title: "Condition Create"
    url: /api/condition/#create
+ - title: "Condition Read"
+   url: /api/condition/#read
  - title: "Condition Update"
    url: /api/condition/#update
+ - title: "Condition Search"
+   url: /api/condition/#search
 api_consent:
  - title: "Consent Create"
    url: /api/consent/#create
@@ -196,15 +196,15 @@ api_consent:
 api_coverage:
  - title: "Coverage Create"
    url: /api/coverage/#create
- - title: "Coverage Search"
-   url: /api/coverage/#search
  - title: "Coverage Update"
    url: /api/coverage/#update
+ - title: "Coverage Search"
+   url: /api/coverage/#search
 api_coverageeligibilityrequest:
- - title: "Coverage Eligibility Request Create"
+ - title: "CoverageEligibilityRequest Create"
    url: /api/coverageeligibilityrequest/#create
 api_coverageeligibilityresponse:
- - title: "Coverage Eligibility Response Search"
+ - title: "CoverageEligibilityResponse Search"
    url: /api/coverageeligibilityresponse/#search
 api_device:
  - title: "Device Read"
@@ -231,19 +231,19 @@ api_goal:
    url: /api/goal/#create
  - title: "Goal Read"
    url: /api/goal/#read
- - title: "Goal Search"
-   url: /api/goal/#search
  - title: "Goal Update"
    url: /api/goal/#update
+ - title: "Goal Search"
+   url: /api/goal/#search
 api_group:
- - title: "Group Read"
-   url: /api/group/#read
- - title: "Group Search"
-   url: /api/group/#group-search 
  - title: "Group Create"
    url: /api/group/#group-create
+ - title: "Group Read"
+   url: /api/group/#read
  - title: "Group Update"
-   url: /api/group/#group-update 
+   url: /api/group/#group-update
+ - title: "Group Search"
+   url: /api/group/#group-search 
 api_immunization:
  - title: "Immunization Read"
    url: /api/immunization/#read
@@ -283,10 +283,10 @@ api_patient:
    url: /api/patient/#create
  - title: "Patient Read"
    url: /api/patient/#read
- - title: "Patient Search"
-   url: /api/patient/#search
  - title: "Patient Update"
    url: /api/patient/#update
+ - title: "Patient Search"
+   url: /api/patient/#search
 api_paymentnotice:
  - title: "PaymentNotice Create"
    url: /api/paymentnotice/#create
@@ -326,12 +326,12 @@ api_slot:
  - title: "Slot Search"
    url: /api/slot/#search
 api_task:
- - title: "Task Search"
-   url: /api/task/#search
  - title: "Task Create"
    url: /api/task/#create
  - title: "Task Update"
    url: /api/task/#update
+ - title: "Task Search"
+   url: /api/task/#search
 
 documentation:
  - title: "Click here to learn about our transition plan for our knowledge center"
