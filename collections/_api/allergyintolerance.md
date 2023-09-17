@@ -378,37 +378,7 @@ null
 </div>
 
 <div id="allergyintolerance-read-request">
-
-  {% tabs allergyintolerance-read-request %}
-
-    {% tab allergyintolerance-read-request curl %}
-```shell
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{%  include read_request.html resource_type="AllergyIntolerance" %}
 </div>
 
 <div id="allergyintolerance-read-response">
