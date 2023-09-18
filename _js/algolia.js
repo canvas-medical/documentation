@@ -14,8 +14,7 @@ window.addEventListener('load', () => {
         return;
       }
       searchResults.style.display = helper.state.query ? 'grid ' : 'none';
-      // overlay.style.display = helper.state.query ? 'block' : 'none';
-      
+
       helper.search();
     },
   });
@@ -71,15 +70,4 @@ window.addEventListener('load', () => {
   search.addWidgets([refinementWidget]);
 
   search.start();
-
-//   window.addEventListener('mouseup',function(event){
-//     var pol = document.getElementById('search_container');
-    
-//     if(event.target != pol && event.target.parentNode != pol){
-//       pol.style.display = 'none';   
-//       overlay.style.display = 'none';
-//     }       
-
-   
-// });
 });
