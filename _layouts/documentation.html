@@ -2,11 +2,9 @@
 layout: default
 ---
 <div class="pagelayout pagelayout__centerdocs">
-  <div class="sidenav">
-    <div class="sidenav__toggle">
-      {% include icons/horizontal-toggle.svg %}
-    </div>
-    {% include toc.html menu=site.menus %}
+  <div class="sidenav sidenavtoc">
+    
+    {% include toc.html menu=site.menus.documentation %}
   </div>
   <div class="pagelayout__centerdocs__wrapper">
     <div class="pagelayout__centerdocs__content">
