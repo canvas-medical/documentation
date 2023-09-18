@@ -39,16 +39,6 @@ $system-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxyg
 $primary-font-family: 'Helvetica', $system-font-family;
 $mono-font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-/** 
- * MEASUREMENTS
-**/
-
-$font-xs: 10px;
-$font-sm: 16px;
-$font-md: 24px;
-$font-lg: 32px;
-$font-xl: 40px;
-
 // Breakpoints and containers
 $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
