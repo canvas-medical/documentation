@@ -34,9 +34,6 @@ sections:
               Canvas only allows practitioners to be members of a patient CareTeam. A practitioner can only have one role on a CareTeam, and only one practitioner can have a given role on a CareTeam.
             type: array[json]
         search_parameters:
-          - name: _id
-            description: The identifier of the CareTeam
-            type: string
           - name: participant
             description: Who is involved
             type: string
