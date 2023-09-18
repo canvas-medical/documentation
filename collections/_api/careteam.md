@@ -11,7 +11,7 @@ sections:
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careteam.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careteam.html)<br><br>
           All patients in Canvas have a CareTeam by default. The identifier for the CareTeam resource for a patient is the same as the patient identifier.
           <br><br>
-          See our Zendesk [article](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams) for information about setting up Care Teams in Canvas.
+          See our Zendesk [article](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams) for information about setting up Care Teams and Care Team Roles in Canvas.
         attributes:
           - name: id
             description: >-
@@ -34,11 +34,9 @@ sections:
               Canvas only allows practitioners to be members of a patient CareTeam. A practitioner can only have one role on a CareTeam, and only one practitioner can have a given role on a CareTeam.
             type: array[json]
         search_parameters:
-          - name: _id
-            description: The identifier of the CareTeam
-            type: string
           - name: participant
-            description: Who is involved
+            description: >-
+              Who is involved<br><br>Supported reference types: **Practitioner**
             type: string
           - name: patient
             description: Who care team is for	
