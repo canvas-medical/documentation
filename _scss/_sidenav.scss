@@ -1,10 +1,17 @@
 .sidenav {
-  max-height: var(--body-height);
+  // max-height: var(--body-height);
+  max-height: calc(70vh - 60px);
   overflow-y: auto;
   border-right: 1px solid $babyblue;
   padding-left: $container-padding;
   padding-right: $container-padding;
   position: relative;
+  @media (max-width: $breakpoint-md) {
+    max-height: max-content;
+    height: max-content;
+    grid-area: result;
+
+  }
 
   &__toggle {
     @media (min-width: $breakpoint-lg) {
