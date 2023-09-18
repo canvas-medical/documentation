@@ -35,7 +35,8 @@ sections:
             type: array[json]
         search_parameters:
           - name: participant
-            description: Who is involved
+            description: >-
+              Who is involved<br><br>Supported reference types: **Practitioner**
             type: string
           - name: patient
             description: Who care team is for	
