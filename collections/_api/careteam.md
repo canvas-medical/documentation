@@ -70,38 +70,7 @@ sections:
 ---
 
 <div id="careteam-read-request">
-
-  {% tabs careteam-read-request %}
-
-    {% tab careteam-read-request curl %}
-```shell
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/CareTeam/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab careteam-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/CareTeam/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
-
+{% include read_request.html resource_type="CareTeam" %}
 </div>
 
 <div id="careteam-read-response">

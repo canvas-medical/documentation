@@ -1,0 +1,29 @@
+{% tabs careplan-read-request %}
+  
+    {% tab careplan-read-request curl %}
+```shell
+curl --request GET \
+      --url 'https://fumage-example.canvasmedical.com/{{ include.resource_type }}/<id>' \
+      --header 'Authorization: Bearer <token>' \
+      --header 'accept: application/json'
+```
+    {% endtab %}
+
+    {% tab careplan-read-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/{{ include.resource_type }}/<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+    {% endtab %}
+  
+  {% endtabs %}

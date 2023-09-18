@@ -253,37 +253,7 @@ print(response.text)
 </div>
 
 <div id="condition-read-request">
-
-  {% tabs condition-read-request %}
-
-    {% tab condition-read-request curl %}
-```shell
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Condition/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab condition-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Condition/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include read_request.html resource_type="Condition" %}
 </div>
 
 <div id="condition-read-response">
