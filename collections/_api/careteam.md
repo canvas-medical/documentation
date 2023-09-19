@@ -342,37 +342,7 @@ print(response.text)
 </div>
 
 <div id="careteam-search-request">
-
-  {% tabs careteam-search-request %}
-
-    {% tab careteam-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/CareTeam?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0 \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab careteam-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/CareTeam?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include search-request.html resource_type="AllergyIntolerance" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="careteam-search-response">

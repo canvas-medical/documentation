@@ -366,37 +366,7 @@ print(response.text)
 </div>
 
 <div id="group-search-request">
-
-  {% tabs group-search-request %}
-
-    {% tab group-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Group?type=person \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab group-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Group?type=person"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include search-request.html resource_type="Group" search_string="type=person" %}
 </div>
 
 <div id="group-search-response">
