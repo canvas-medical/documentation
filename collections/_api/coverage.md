@@ -84,11 +84,15 @@ sections:
           - name: subscriberID
             type: string
             description: Find all coverages with a specific subscriberID
-        endpoints: [search, create, update]
+        endpoints: [create, read, search, update]
         create:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: coverage-create-request
           example_response: coverage-create-response
+        read:
+          response: [200, 401, 403, 404]
+          example_request: coverage-read-request
+          example_response: coverage-read-response
         update:
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: coverage-update-request
@@ -308,6 +312,164 @@ print(response.text)
 
 <div id="coverage-create-response">
 {% include create_response.html %}
+</div>
+
+<div id="coverage-read-request">
+{% include read_request.html resource_type="Coverage" %}
+</div>
+
+<div id="coverage-read-response">
+{% tabs coverage-read-response %}
+
+    {% tab coverage-read-response 200 %}
+```json
+{
+  "resourceType": "Coverage",
+  "id": "a7c6af04-a22f-47bf-9cc8-d41158b2ad62",
+  "status": "active",
+  "type": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+        "code": "MILITARY",
+        "display": "Military health program"
+      }
+    ]
+  },
+  "subscriber": {
+    "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
+    "type": "Patient"
+  },
+  "subscriberId": "12345",
+  "beneficiary": {
+    "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
+    "type": "Patient"
+  },
+  "relationship": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+        "code": "self",
+        "display": "Self"
+      }
+    ],
+    "text": "18"
+  },
+  "period": {
+    "start": "2023-09-19"
+  },
+  "payor": [
+    {
+      "reference": "Organization/c152eeb7-f204-4e28-acb5-c7e85390b17e",
+      "type": "Organization",
+      "display": " Custody Medical Services Program"
+    }
+  ],
+  "class": [
+      {
+        "type": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+              "code": "plan"
+            }
+          ]
+        },
+        "value": "Starfleet HMO"
+      },
+      {
+        "type": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+              "code": "subplan"
+            }
+          ]
+        },
+        "value": "Stars"
+      },
+      {
+        "type": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+              "code": "group"
+            }
+          ]
+        },
+        "value": "Captains Only"
+      },
+      {
+        "type": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+              "code": "subgroup"
+            }
+          ]
+        },
+        "value": "Subgroup 2"
+      }
+  ],
+  "order": 1
+}
+```
+    {% endtab %}
+
+    {% tab coverage-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab coverage-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab coverage-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown coverage resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>
 </div>
 
 <div id="coverage-update-request">
