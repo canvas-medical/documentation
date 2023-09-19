@@ -72,13 +72,12 @@ sections:
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Resource not found"
+        "text": "Unknown Allergen resource 'a04b44ec-c7df-4808-9043-e9c4b1d352a9'"
       }
     }
   ]
@@ -159,4 +158,3 @@ sections:
 {% endtab %}
 {% endtabs %}
 </div>
-

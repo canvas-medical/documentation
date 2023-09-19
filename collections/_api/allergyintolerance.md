@@ -391,7 +391,7 @@ print(response.text)
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown AllergyIntolerance resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown AllergyIntolerance resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
       }
     }
   ]
