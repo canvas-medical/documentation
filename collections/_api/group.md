@@ -27,7 +27,9 @@ sections:
             description: Number of members
             type: integer
           - name: characteristic
-            description: Identifies traits whose presence or absence is shared by members of the group
+            description: >-
+              Identifies traits whose presence or absence is shared by members of the group<br><br>
+              The `text` attribute on the `valueCodeableConcept` for each `characteristic` represents responsibilities held by the Group. Supported values are:<br><br>**COLLECT_SPECIMENS_FROM_PATIENT**<br>**COMMUNICATE_DIAGNOSTIC_RESULTS_TO_PATIENT**<br>**COORDINATE_REFERRALS_FOR_PATIENT**<br>**PROCESS_REFILL_REQUESTS**<br>**PROCESS_CHANGE_REQUESTS**<br>**SCHEDULE_LAB_VISITS_FOR_PATIENT**<br>**POPULATION_HEALTH_CAMPAIGN_OUTREACH**<br>**COLLECT_PATIENT_PAYMENTS**<br>**COMPLETE_OPEN_LAB_ORDERS**<br>**REVIEW_ERA_POSTING_EXCEPTIONS**<br>**REVIEW_COVERAGES**
             type: array[json]
           - name: member
             description: Who or what is in group
@@ -41,7 +43,9 @@ sections:
             type: string
         endpoints: [create, read, update, search]
         create:
-          description: Create a Group resource.
+          description: >-
+            Create a Group resource.<br><br>
+            Note: The Canvas implementation of Group create/update assigns responsibilities to Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: group-create-request
           example_response: group-create-response
@@ -51,7 +55,9 @@ sections:
           example_request: group-read-request
           example_response: group-read-response
         update:
-          description: Update a Group resource.
+          description: >-
+            Update a Group resource.<br><br>
+            Note: The Canvas implementation of Group create/update assigns responsibilities to Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: group-update-request
           example_response: group-update-response
