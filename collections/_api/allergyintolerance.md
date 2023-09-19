@@ -264,151 +264,11 @@ print(response.text)
 </div>
 
 <div id="allergyintolerance-create-response">
-  {% tabs allergyintolerance-create-response %}
-    {% tab allergyintolerance-create-response 201 %}
-```json
-null
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 401 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "unknown",
-      "details": {
-        "text": "Authentication failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 403 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 405 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-supported",
-      "details": {
-        "text": "Operation is not supported"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 412 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "conflict",
-      "details": {
-        "text": "Resource updated since If-Unmodified-Since date"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 422 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "business-rule",
-      "details": {
-        "text": "Unprocessable entity"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include create-response.html %}
 </div>
 
 <div id="allergyintolerance-read-request">
-
-  {% tabs allergyintolerance-read-request %}
-
-    {% tab allergyintolerance-read-request curl %}
-```shell
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{%  include read-request.html resource_type="AllergyIntolerance" %}
 </div>
 
 <div id="allergyintolerance-read-response">
@@ -419,6 +279,7 @@ print(response.text)
 ```json
 {
     "resourceType": "AllergyIntolerance",
+    "id": "3340c331-d446-4700-9c23-7959bd393f26",
     "clinicalStatus": {
         "coding": [
             {
@@ -714,136 +575,7 @@ print(response.text)
 </div>
 
 <div id="allergyintolerance-update-response">
-
-  {% tabs allergyintolerance-update-response %}
-
-    {% tab allergyintolerance-update-response 200 %}
-```json
-null
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 401 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "unknown",
-      "details": {
-        "text": "Authentication failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 403 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 404 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-found",
-      "details": {
-        "text": "Unknown AllergyIntolerance resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 405 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-supported",
-      "details": {
-        "text": "Operation is not supported"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 412 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "conflict",
-      "details": {
-        "text": "Resource updated since If-Unmodified-Since date"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 422 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "business-rule",
-      "details": {
-        "text": "Unprocessable entity"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include update-response.html resource_type="AllergyIntolerance" %}
 </div>
 
 <div id="allergyintolerance-search-request">
@@ -911,6 +643,7 @@ print(response.text)
             "resource":
             {
                 "resourceType": "AllergyIntolerance",
+                "id": "3340c331-d446-4700-9c23-7959bd393f26",
                 "clinicalStatus":
                 {
                     "coding":

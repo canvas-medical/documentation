@@ -13,19 +13,26 @@
       align-items: center;
     }
     &__global {
-      padding-top: 12px;
-      padding-bottom: 30px;
+      padding: 12px;
+      @media (min-width: $breakpoint-sm) {
+        padding-bottom: 30px;
+      }
       background-color: $panel-color;
       overflow: hidden;
       white-space: nowrap;
       .navigation__menu__item:hover {
         color: $navyblue;
       }
+      @media (max-width: $breakpoint-sm) {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+      }
     }
     &__site {
       background-color: $panel-color;
       border-bottom: 1px solid $babyblue;
-      @media (max-width: $breakpoint-lg) {
+      @media (max-width: $breakpoint-sm) {
         flex-direction: column;
         padding-bottom: 14px;
         align-items: center;
@@ -57,8 +64,14 @@
   
   &__menu {
     display: flex;
-    gap: 1em;
-    margin-left: -0.375rem;
+    flex-direction: column;
+    width: 100%;
+    @media (min-width: $breakpoint-sm) {
+      width: auto;
+      gap: 1em;
+      margin-left: -0.375rem;
+      flex-direction: row;
+    }
     &__item {
       font-size: 0.875rem;
       padding: 0.375rem;
@@ -72,7 +85,13 @@
   }
 
   &__alt {
-    margin-left: auto;
+    display: flex;
+    width: 100%;
+    @media (min-width: $breakpoint-sm) {
+      width: auto;
+      gap: 1em;
+      margin-left: auto;
+    }
   }
 
   &__search { 
@@ -93,6 +112,47 @@
       }
       &:focus-visible {
         outline-color: $border-color;
+      }
+    }
+  }
+  &__toggle {
+    display: none;
+  }
+  @media (max-width: $breakpoint-sm) {
+    &__toggle {
+      position: absolute;
+      font-size: 1.5rem;
+      top: 0.75rem;
+      left: 1rem;
+      display: block;
+      cursor: pointer;
+      &__expanded {
+        .navigation__toggle__open {
+          display: block;
+        }
+        .navigation__toggle__close {
+          display: none;
+        }
+      }
+      &__collapsed {
+        .navigation__toggle__open {
+          display: none;
+        }
+        .navigation__toggle__close {
+          display: block;
+        }
+      }
+    }
+    &__wrapper {
+      display: none;
+      &__expanded {
+        display: block;
+      }
+    }
+    &__menu__item {
+      border-bottom: 0px;
+      &:hover {
+        text-decoration: none;
       }
     }
   }

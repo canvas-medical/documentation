@@ -69,37 +69,7 @@ sections:
 ---
 
 <div id="device-read-request">
-
-  {% tabs device-read-request %}
-
-    {% tab device-read-request curl %}
-```shell
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Device/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab device-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Device/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include read-request.html resource_type="Device" %}
 </div>
 
 <div id="device-read-response">

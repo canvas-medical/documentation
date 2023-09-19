@@ -196,6 +196,8 @@ api_consent:
 api_coverage:
  - title: "Coverage Create"
    url: /api/coverage/#create
+ - title: "Coverage Read"
+   url: /api/coverage/#read
  - title: "Coverage Update"
    url: /api/coverage/#update
  - title: "Coverage Search"

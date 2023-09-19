@@ -13,8 +13,12 @@
   }
 
   &__toggle {
-    @media (min-width: $breakpoint-lg) {
-      display: none;
+    display: none;    
+    @media (max-width: $breakpoint-sm) {
+      display: block;
+      position: absolute;
+      left: 5vw;
+      top: 60px;
     }
 
     position: sticky;
@@ -28,13 +32,48 @@
       fill: $navyblue;
     }
   }
+ 
+  @media (max-width: $breakpoint-sm) {
+    &.sidenavtoc{
+      min-width: 0px;
+      border-right: 0px solid $babyblue;
+      width: calc(100vw - 28px);
+    }
+    &__collapsed {
+      width: 0rem !important ;
+      overflow: hidden;
+      padding: 0px;
 
-  &__collapsed {
-    width: 1rem;
-    overflow: hidden;
 
-    nav {
-      visibility: hidden;
+      nav {
+        visibility: hidden;
+      }
     }
   }
+}
+.navsidetogle{visibility: hidden;}
+
+@media (max-width: $breakpoint-sm) {
+.navsidetogle{
+  // display:block;
+  // visibility: visible;
+  .sidenav__toggle__open {
+    display: none;
+  }
+  .sidenav__toggle__close {
+    display: block;
+  }
+  &.open{    
+      .sidenav__toggle__open {
+        display: block;
+      }
+      .sidenav__toggle__close {
+        display: none;
+      }
+    
+  }
+}
+}
+.overflowhiddenX{
+  overflow-x: hidden;
 }

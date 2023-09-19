@@ -40,33 +40,9 @@ sections:
           example_response: allergen-search-response
           example_request: allergen-search-request
 ---
+
 <div id="allergen-read-request">
-{% tabs allergen-read-request %}
-{% tab allergen-read-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Allergen/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab allergen-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Allergen/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{%  include read-request.html resource_type="Allergen" %}
 </div>
 
 <div id="allergen-read-response">
