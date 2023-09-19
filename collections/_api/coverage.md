@@ -90,7 +90,7 @@ sections:
           example_request: coverage-create-request
           example_response: coverage-create-response
         read:
-          response: [200, 401, 403, 404]
+          responses: [200, 401, 403, 404]
           example_request: coverage-read-request
           example_response: coverage-read-response
         update:
@@ -319,7 +319,7 @@ print(response.text)
 </div>
 
 <div id="coverage-read-response">
-{% tabs coverage-read-response %}
+  {% tabs coverage-read-response %}
 
     {% tab coverage-read-response 200 %}
 ```json
@@ -469,7 +469,6 @@ print(response.text)
 
   {% endtabs %}
 
-</div>
 </div>
 
 <div id="coverage-update-request">

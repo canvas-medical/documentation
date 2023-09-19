@@ -1,6 +1,6 @@
-{% tabs careplan-read-request %}
+{% tabs read-request %}
   
-    {% tab careplan-read-request curl %}
+    {% tab read-request curl %}
 ```shell
 curl --request GET \
       --url 'https://fumage-example.canvasmedical.com/{{ include.resource_type }}/<id>' \
@@ -9,7 +9,7 @@ curl --request GET \
 ```
     {% endtab %}
 
-    {% tab careplan-read-request python %}
+    {% tab read-request python %}
 ```python
 import requests
 
