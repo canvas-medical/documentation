@@ -76,7 +76,7 @@ curl --request POST \
      --data '
 {
     "resourceType": "Group",
-    "type": "person",
+    "type": "practitioner",
     "actual": true,
     "name": "A Test Team",
     "characteristic":
@@ -121,7 +121,7 @@ headers = {
 
 payload = {
     "resourceType": "Group",
-    "type": "person",
+    "type": "practitioner",
     "actual": True,
     "name": "A Test Team",
     "characteristic":
@@ -176,7 +176,7 @@ print(response.text)
 {
     "resourceType": "Group",
     "id": "3340c331-d446-4700-9c23-7959bd393f26",
-    "type": "person",
+    "type": "practitioner",
     "actual": true,
     "name": "A Test Team",
     "characteristic":
@@ -277,7 +277,7 @@ curl --request PUT \
 {
     "resourceType": "Group",
     "id": "3340c331-d446-4700-9c23-7959bd393f26",
-    "type": "person",
+    "type": "practitioner",
     "actual": true,
     "name": "A Test Team",
     "characteristic":
@@ -323,7 +323,7 @@ headers = {
 payload = {
     "resourceType": "Group",
     "id": "3340c331-d446-4700-9c23-7959bd393f26",
-    "type": "person",
+    "type": "practitioner",
     "actual": True,
     "name": "A Test Team",
     "characteristic":
@@ -366,7 +366,7 @@ print(response.text)
 </div>
 
 <div id="group-search-request">
-{% include search-request.html resource_type="Group" search_string="type=person" %}
+{% include search-request.html resource_type="Group" search_string="type=practitioner" %}
 </div>
 
 <div id="group-search-response">
@@ -383,15 +383,15 @@ print(response.text)
     [
         {
             "relation": "self",
-            "url": "/Group?type=person&_count=10&_offset=0"
+            "url": "/Group?type=practitioner&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Group?type=person&_count=10&_offset=0"
+            "url": "/Group?type=practitioner&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Group?type=person&_count=10&_offset=0"
+            "url": "/Group?type=practitioner&_count=10&_offset=0"
         }
     ],
     "entry":
@@ -401,7 +401,7 @@ print(response.text)
             {
                 "resourceType": "Group",
                 "id": "3340c331-d446-4700-9c23-7959bd393f26",
-                "type": "person",
+                "type": "practitioner",
                 "actual": true,
                 "name": "A Test Team",
                 "characteristic":
