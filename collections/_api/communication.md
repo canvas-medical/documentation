@@ -9,7 +9,8 @@ sections:
         description: >-
           An occurrence of information being transmitted; e.g. a message that was sent to a responsible provider<br><br>
           [https://hl7.org/fhir/R4/communication.html](https://hl7.org/fhir/R4/communication.html)<br><br>
-          The Communication resource maps to messages in Canvas. Click [here](https://canvas-medical.zendesk.com/hc/en-us/articles/1500001593221-Patient-Message-Inbox-) to learn more. 
+          The Communication resource maps to messages in Canvas. Click [here](https://canvas-medical.zendesk.com/hc/en-us/articles/1500001593221-Patient-Message-Inbox-) to learn more.<br><br>
+          **Additional HTML formatting**<br> With the release of Advanced Letter Templates, Messages are now saved in the database in HTML format. Customers using the Communication endpoint for their own patient applications will need to take this into account either by embedding the html directly using a library like Interweave or extracting the text. **Messages sent before this update (10/26/2022 @ 17:00 PST) will remain in plain text format.**<br><br>
         attributes:
           - name: id
             type: string
@@ -26,12 +27,12 @@ sections:
             type: datetime
             description: When received<br><br>**ISO 8601 format**
           - name: recipient
-            type: json
+            type: array[json]
             required: true
             description: >-
-              Message recipient<br><br>Supported reference types for create interactions: **Patient**, **Practitioner**
+              Message recipient<br><br>Supported reference types for create interactions: a single **Patient** or **Practitioner**
           - name: sender
-            type: string
+            type: json
             required: true
             description: >-
               Message sender<br><br>Supported reference types for create interactions: **Patient**, **Practitioner**
@@ -45,11 +46,11 @@ sections:
             type: string
             description: The unique Canvas identifier of the Communication
           - name: recipient
-            type: string
+            type: array[json]
             description: FHIR resource for the recipient, either a Patient or Practitioner
           - name: sender
             type: string
-          - description: FHIR resource for the sender, either a Patient or Practitioner
+            description: FHIR resource for the sender, either a Patient or Practitioner
         endpoints: [create, search]
         create:
           description: >-
@@ -63,7 +64,6 @@ sections:
         search:
           description: >-
             Communication search will only return messages between a practitioner and patient, not between two practitioners.<br><br>
-            **Additional HTML formatting**<br> With the release of Advanced Letter Templates, Messages are now saved in the database in HTML format. Customers using the Communication endpoint for their own patient applications will need to take this into account either by embedding the html directly using a library like Interweave or extracting the text. **Messages sent before this update (10/26/2022 @ 17:00 PST) will remain in plain text format.**
           responses: [200, 400, 401, 403]
           example_request: communication-search-request
           example_response: communication-search-response
