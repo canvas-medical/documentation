@@ -28,19 +28,19 @@ sections:
             type: array[json]
           - name: subject
             description: >-
-              The patient associated with the document
+              Who/what is the subject of the document
             type: json
           - name: identifier
             type: array[json]
-            description: A business identifier for the document
+            description: Other identifiers for the document
             type: string
           - name: date
             description: >-
-              The date the document was created
+              When this document reference was created
             type: date
           - name: author
             description: >-
-              The author of the document
+              Who and/or what authored the document
             type: array[json]
           - name: custodian
             description: >-
@@ -49,11 +49,11 @@ sections:
           - name: content
             type: array[json]
             description: >-
-              The attachment and format of the document
+              Document referenced
           - name: context
             type: json
             description: >-
-              Clinical context of the document associated with an Encounter
+              Clinical context of document
         search_parameters:
           - name: _id
             type: string
@@ -67,7 +67,7 @@ sections:
           - name: category
             type: string
             description: >-
-              The category of the document
+              Categorization of document
           - name: status
             type: string
             description: The status of the document reference
@@ -76,7 +76,7 @@ sections:
             description: The date the document was created
           - name: type
             type: string
-            description: The type of the document reference
+            description: Kind of document (LOINC if possible)
         endpoints: [read, search]
         read:
           responses: [200, 401, 403, 404]
