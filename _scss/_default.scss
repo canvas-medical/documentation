@@ -1,6 +1,6 @@
 body {
   font-family: $primary-font-family;
-  font-size: $font-sm;
+  font-size: 16px;
   color: $text-color;
 }
 
@@ -20,7 +20,10 @@ a {
 h1 {
   display: block;
   // font-family: "Financier Display"
-  font-size: $font-xl;
+  font-size: 2rem;
+  @media (min-width: $breakpoint-lg) {
+    font-size: 2.5rem;
+  }
   margin-top: 1rem;
   margin-bottom: 1rem;
   font-weight: 400;
@@ -28,7 +31,10 @@ h1 {
 
 h2 {
   display: block;
-  font-size: $font-lg;
+  font-size: 1.6rem;
+  @media (min-width: $breakpoint-lg) {
+    font-size: 2rem;
+  }
   margin-top: 1rem;
   margin-bottom: 1rem;
   font-weight: 400;
@@ -36,7 +42,10 @@ h2 {
 
 h3 {
   display: block;
-  font-size: $font-md;
+  font-size: 1.2rem;
+  @media (min-width: $breakpoint-lg) {
+    font-size: 1.6rem;
+  }
   margin-top: 1rem;
   margin-bottom: 1rem;
   font-weight: 400;
@@ -44,7 +53,10 @@ h3 {
 
 h4 {
   display: block;
-  font-size: $font-md;
+  font-size: 1.2rem;
+  @media (min-width: $breakpoint-lg) {
+    font-size: 1.6rem;
+  }
   margin-top: 1rem;
   margin-bottom: 1rem;
   font-weight: 400;
@@ -52,7 +64,10 @@ h4 {
 
 h5 {
   display: block;
-  font-size: $font-md;
+  font-size: 1.2rem;
+  @media (min-width: $breakpoint-lg) {
+    font-size: 1.6rem;
+  }
   margin-top: 1rem;
   margin-bottom: 1rem;
   font-weight: 400;
@@ -60,7 +75,10 @@ h5 {
 
 h6 {
   display: block;
-  font-size: $font-md;
+  font-size: 1.2rem;
+  @media (min-width: $breakpoint-lg) {
+    font-size: 1.6rem;
+  }
   margin-top: 1rem;
   margin-bottom: 1rem;
   font-weight: 400;

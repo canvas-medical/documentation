@@ -1,4 +1,5 @@
 .tab {
+  max-width: 70vw;
   display: flex;
   flex-wrap: wrap;
   margin-left: -20px;
@@ -37,6 +38,7 @@
 }
 
 .tab-content {
+  max-width: 70vw;
   padding: 0;
 }
 
