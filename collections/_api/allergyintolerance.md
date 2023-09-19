@@ -28,47 +28,47 @@ sections:
             type: string
           - name: code
             description: >-
-              Code for an allergy or intolerance statement<br><br>Supported codings for create interactions are obtained from the Allergen search endpoint.
+              Code that identifies the allergy or intolerance<br><br>Supported codings for create interactions are obtained from the Allergen search endpoint.
             type: json
           - name: patient
             description: >-
-              The patient who has the allergy or intolerance
+              Who the sensitivity is for
             type: json
           - name: encounter
             description: >-
-              The encounter when the allergy or intolerance was asserted
+              Encounter when the allergy or intolerance was asserted
             type: json
           - name: onsetDateTime
             description: >-
-              Estimated or actual date when allergy or intolerance was identified
+              When allergy or intolerance was identified
             type: date
           - name: recordedDate
             description: >-
-              The recordedDate represents when this particular AllergyIntolerance record was created in the system, which is often a system-generated date
+              Date first version of the resource instance was recorded
             type: datetime
           - name: recorder
             description: >-
-              Individual who recorded the record and takes responsibility for its content
+              Who recorded the sensitivity
             type: json
           - name: lastOccurrence
             description: >-
-              Represents the date and/or time of the last known occurrence of a reaction event
+              Date of last known occurrence of a reaction
             type: date
           - name: note
             description: >-
-              Additional narrative about the propensity for the Adverse Reaction, not captured in other fields
+              Additional text not captured in other fields
             type: array[json]
           - name: reaction
             description: >-
-              Details about each adverse reaction event linked to exposure to the identified substance<br><br>Supported severity codes for create interactions are: **mild**, **moderate**, **severe**
+              Adverse Reaction Events linked to exposure to substance<br><br>Supported severity codes for create interactions are: **mild**, **moderate**, **severe**
             type: array[json]
         search_parameters:
           - name: _id
-            type: string
             description: The identifier of the AllergyIntolerance
-          - name: patient
             type: string
-            description: The patient who has the allergy or intolerance
+          - name: patient
+            description: Who the sensitivity is for
+            type: string
         endpoints: [create, read, update, search]
         create:
           description: Create an AllergyIntolerance resource.<br><br>Exactly one FDB coding is required in the `code` field. FDB codings can be obtained from the search endpoint for the (Allergen resource, which is a custom Canvas FHIR resource.<br><br>If `encounter` is provided, the AllergyIntolerance will be added to existing encounter (note). If it is not provided, a new data import note will be created.
@@ -264,151 +264,11 @@ print(response.text)
 </div>
 
 <div id="allergyintolerance-create-response">
-  {% tabs allergyintolerance-create-response %}
-    {% tab allergyintolerance-create-response 201 %}
-```json
-null
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 401 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "unknown",
-      "details": {
-        "text": "Authentication failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 403 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 405 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-supported",
-      "details": {
-        "text": "Operation is not supported"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 412 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "conflict",
-      "details": {
-        "text": "Resource updated since If-Unmodified-Since date"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-create-response 422 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "business-rule",
-      "details": {
-        "text": "Unprocessable entity"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include create-response.html %}
 </div>
 
 <div id="allergyintolerance-read-request">
-
-  {% tabs allergyintolerance-read-request %}
-
-    {% tab allergyintolerance-read-request curl %}
-```shell
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{%  include read-request.html resource_type="AllergyIntolerance" %}
 </div>
 
 <div id="allergyintolerance-read-response">
@@ -419,6 +279,7 @@ print(response.text)
 ```json
 {
     "resourceType": "AllergyIntolerance",
+    "id": "3340c331-d446-4700-9c23-7959bd393f26",
     "clinicalStatus": {
         "coding": [
             {
@@ -714,170 +575,11 @@ print(response.text)
 </div>
 
 <div id="allergyintolerance-update-response">
-
-  {% tabs allergyintolerance-update-response %}
-
-    {% tab allergyintolerance-update-response 200 %}
-```json
-null
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 401 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "unknown",
-      "details": {
-        "text": "Authentication failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 403 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 404 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-found",
-      "details": {
-        "text": "Unknown AllergyIntolerance resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 405 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-supported",
-      "details": {
-        "text": "Operation is not supported"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 412 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "conflict",
-      "details": {
-        "text": "Resource updated since If-Unmodified-Since date"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-update-response 422 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "business-rule",
-      "details": {
-        "text": "Unprocessable entity"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include update-response.html resource_type="AllergyIntolerance" %}
 </div>
 
 <div id="allergyintolerance-search-request">
-
-  {% tabs allergyintolerance-search-request %}
-
-    {% tab allergyintolerance-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0 \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab allergyintolerance-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/AllergyIntolerance?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include search-request.html resource_type="AllergyIntolerance" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="allergyintolerance-search-response">
@@ -911,6 +613,7 @@ print(response.text)
             "resource":
             {
                 "resourceType": "AllergyIntolerance",
+                "id": "3340c331-d446-4700-9c23-7959bd393f26",
                 "clinicalStatus":
                 {
                     "coding":

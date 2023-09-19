@@ -86,7 +86,7 @@ sections:
     {% tab claim-create-request curl %}
 ```shell
 curl --request POST \
-    --url https://fumage-example.canvasmedical.com/Claim \
+    --url 'https://fumage-example.canvasmedical.com/Claim' \
     --header 'Authorization: Bearer <token>' \
     --header 'accept: application/json' \
     --header 'content-type: application/json' \
@@ -103,15 +103,26 @@ curl --request POST \
     ]
   },
   "use": "claim",
-  "patient": "Patient/865058f6654149bd921264d91519af9e",
+  "patient": {
+    "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
+    "type": "Patient"
+  },
   "created": "2021-08-16",
   "provider": {
     "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
-    "type": "http://canvasmedical.com"
+    "type": "Practitioner"
+  },
+  "priority": {
+    "coding": [
+      {
+        "code": "normal",
+        "system": "http://hl7.org/fhir/ValueSet/process-priority"
+      }
+    ]
   },
   "supportingInfo": [
     {
-      "sequence": 0,
+      "sequence": 1,
       "category": {
         "coding": [
           {
@@ -143,7 +154,7 @@ curl --request POST \
       "sequence": 1,
       "focal": true,
       "coverage": {
-        "reference": "Coverage/7afeaa26-48e1-43c2-b414-fd8aa9780af1"
+        "reference": "Coverage/02d4f77a-ebaf-47d5-b162-6313244aed5f"
       }
     }
   ],
@@ -207,15 +218,26 @@ payload = {
     ]
   },
   "use": "claim",
-  "patient": "Patient/865058f6654149bd921264d91519af9e",
+  "patient": {
+    "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
+    "type": "Patient"
+  },
   "created": "2021-08-16",
   "provider": {
     "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
-    "type": "http://canvasmedical.com"
+    "type": "Practitioner"
+  },
+  "priority": {
+    "coding": [
+      {
+        "code": "normal",
+        "system": "http://hl7.org/fhir/ValueSet/process-priority"
+      }
+    ]
   },
   "supportingInfo": [
     {
-      "sequence": 0,
+      "sequence": 1,
       "category": {
         "coding": [
           {
@@ -245,9 +267,9 @@ payload = {
   "insurance": [
     {
       "sequence": 1,
-      "focal": true,
+      "focal": True,
       "coverage": {
-        "reference": "Coverage/7afeaa26-48e1-43c2-b414-fd8aa9780af1"
+        "reference": "Coverage/02d4f77a-ebaf-47d5-b162-6313244aed5f"
       }
     }
   ],
@@ -294,107 +316,5 @@ print(response.text)
 </div>
 
 <div id="claim-create-response">
-  {% tabs claim-create-response %}
-    {% tab claim-create-response 201 %}
-```json
-null
-```
-    {% endtab %}
-    {% tab claim-create-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab claim-create-response 401 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "unknown",
-      "details": {
-        "text": "Authentication failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab claim-create-response 403 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab claim-create-response 405 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-supported",
-      "details": {
-        "text": "Operation is not supported"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab claim-create-response 412 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "conflict",
-      "details": {
-        "text": "Resource updated since If-Unmodified-Since date"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab claim-create-response 422 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "business-rule",
-      "details": {
-        "text": "Unprocessable entity"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-  {% endtabs %}
+{% include create-response.html %}
 </div>
