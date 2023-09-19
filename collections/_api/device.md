@@ -69,7 +69,7 @@ sections:
 ---
 
 <div id="device-read-request">
-{% include read_request.html resource_type="Device" %}
+{% include read-request.html resource_type="Device" %}
 </div>
 
 <div id="device-read-response">

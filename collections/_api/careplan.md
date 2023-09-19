@@ -53,7 +53,7 @@ sections:
           example_response: careplan-search-response
 ---
 <div id="careplan-read-request">
-{% include read_request.html resource_type="CarePlan" %}  
+{% include read-request.html resource_type="CarePlan" %}  
 </div>
 
 <div id="careplan-read-response">
