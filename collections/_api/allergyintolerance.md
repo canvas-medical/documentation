@@ -279,6 +279,7 @@ print(response.text)
 ```json
 {
     "resourceType": "AllergyIntolerance",
+    "id": "3340c331-d446-4700-9c23-7959bd393f26",
     "clinicalStatus": {
         "coding": [
             {
@@ -642,6 +643,7 @@ print(response.text)
             "resource":
             {
                 "resourceType": "AllergyIntolerance",
+                "id": "3340c331-d446-4700-9c23-7959bd393f26",
                 "clinicalStatus":
                 {
                     "coding":
