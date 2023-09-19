@@ -68,7 +68,7 @@ sections:
 ---
 
 <div id="careteam-read-request">
-{% include read_request.html resource_type="CareTeam" %}
+{% include read-request.html resource_type="CareTeam" %}
 </div>
 
 <div id="careteam-read-response">
@@ -338,7 +338,7 @@ print(response.text)
 </div>
 
 <div id="careteam-update-response">
-{% include update_response.html resource_type="CareTeam" %}
+{% include update-response.html resource_type="CareTeam" %}
 </div>
 
 <div id="careteam-search-request">

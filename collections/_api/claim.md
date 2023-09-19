@@ -316,5 +316,5 @@ print(response.text)
 </div>
 
 <div id="claim-create-response">
-{% include create_response.html %}
+{% include create-response.html %}
 </div>

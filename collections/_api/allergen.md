@@ -42,7 +42,7 @@ sections:
 ---
 
 <div id="allergen-read-request">
-{%  include read_request.html resource_type="Allergen" %}
+{%  include read-request.html resource_type="Allergen" %}
 </div>
 
 <div id="allergen-read-response">

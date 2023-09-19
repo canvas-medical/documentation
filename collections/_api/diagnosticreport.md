@@ -76,7 +76,7 @@ sections:
 ---
 
 <div id="diagnostic-report-read-request">
-{% include read_request.html resource_type="DiagnosticReport" %}
+{% include read-request.html resource_type="DiagnosticReport" %}
 </div>
 
 <div id="diagnostic-report-read-response">

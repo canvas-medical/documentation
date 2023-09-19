@@ -81,7 +81,7 @@ sections:
           - name: patient
             type: string
             description: Patient resource the Coverage is for
-          - name: subscriberID
+          - name: subscriberid
             type: string
             description: Find all coverages with a specific subscriberID
         endpoints: [create, read, search, update]
@@ -311,11 +311,11 @@ print(response.text)
 </div>
 
 <div id="coverage-create-response">
-{% include create_response.html %}
+{% include create-response.html %}
 </div>
 
 <div id="coverage-read-request">
-{% include read_request.html resource_type="Coverage" %}
+{% include read-request.html resource_type="Coverage" %}
 </div>
 
 <div id="coverage-read-response">
@@ -681,11 +681,11 @@ print(response.text)
 </div>
 
 <div id="coverage-update-response">
-{% include update_response.html resource_type="Coverage" %}
+{% include update-response.html resource_type="Coverage" %}
 </div>
 
 <div id="coverage-search-request">
-{% include search_request.html resource_type="Coverage" search_string="subscriberid=12345&patient=Patient/b3084f7e884e4af2b7e23b1dca494abd" %}
+{% include search-request.html resource_type="Coverage" search_string="subscriberid=12345&patient=Patient/b3084f7e884e4af2b7e23b1dca494abd" %}
 </div>
 
 <div id="coverage-search-response">

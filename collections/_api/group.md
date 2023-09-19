@@ -160,11 +160,11 @@ print(response.text)
 </div>
 
 <div id="group-create-response">
-{% include create_response.html %}
+{% include create-response.html %}
 </div>
 
 <div id="group-read-request">
-{%  include read_request.html resource_type="Group" %}
+{%  include read-request.html resource_type="Group" %}
 </div>
 
 <div id="group-read-response">
@@ -362,7 +362,7 @@ print(response.text)
 </div>
 
 <div id="group-update-response">
-{% include update_response.html resource_type="Group" %}
+{% include update-response.html resource_type="Group" %}
 </div>
 
 <div id="group-search-request">

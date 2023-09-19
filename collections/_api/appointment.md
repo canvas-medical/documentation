@@ -736,7 +736,7 @@ print(response.text)
 </div>
 
 <div id="appointment-create-response">
-{% include create_response.html %}
+{% include create-response.html %}
 </div>
 
 <div id="appointment-update-request">
@@ -936,5 +936,5 @@ print(response.text)
 </div>
 
 <div id="appointment-update-response">
-{% include update_response.html resource_type="Appointment" %}
+{% include update-response.html resource_type="Appointment" %}
 </div>

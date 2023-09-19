@@ -249,11 +249,11 @@ print(response.text)
 </div>
 
 <div id="condition-create-response">
-{% include create_response.html %}
+{% include create-response.html %}
 </div>
 
 <div id="condition-read-request">
-{% include read_request.html resource_type="Condition" %}
+{% include read-request.html resource_type="Condition" %}
 </div>
 
 <div id="condition-read-response">
@@ -583,7 +583,7 @@ print(response.text)
 </div>
 
 <div id="condition-update-response">
-{% include update_response.html resource_type="Condition" %}
+{% include update-response.html resource_type="Condition" %}
 </div>
 
 <div id="condition-search-request">

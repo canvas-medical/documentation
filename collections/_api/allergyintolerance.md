@@ -264,11 +264,11 @@ print(response.text)
 </div>
 
 <div id="allergyintolerance-create-response">
-{% include create_response.html %}
+{% include create-response.html %}
 </div>
 
 <div id="allergyintolerance-read-request">
-{%  include read_request.html resource_type="AllergyIntolerance" %}
+{%  include read-request.html resource_type="AllergyIntolerance" %}
 </div>
 
 <div id="allergyintolerance-read-response">
@@ -575,7 +575,7 @@ print(response.text)
 </div>
 
 <div id="allergyintolerance-update-response">
-{% include update_response.html resource_type="AllergyIntolerance" %}
+{% include update-response.html resource_type="AllergyIntolerance" %}
 </div>
 
 <div id="allergyintolerance-search-request">
