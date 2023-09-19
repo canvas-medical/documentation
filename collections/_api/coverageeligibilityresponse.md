@@ -430,7 +430,7 @@ sections:
 }
 ```
     {% endtab %}
-    {% tab communication-search-response 400 %}
+    {% tab coverageeligibilityresponse-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -447,7 +447,7 @@ sections:
 }
 ```
     {% endtab %}
-    {% tab communication-search-response 401 %}
+    {% tab coverageeligibilityresponse-search-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -463,7 +463,7 @@ sections:
 }
 ```
     {% endtab %}
-    {% tab communication-search-response 403 %}
+    {% tab coverageeligibilityresponse-search-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",
