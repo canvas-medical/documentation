@@ -1,0 +1,26 @@
+{% tabs search-request %}
+  {% tab search-request curl %}
+```shell
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/{{ include.resource_type }}' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+  {% endtab %}
+  {% tab search-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/{{ include.resource_type }}"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+  {% endtab %}
+{% endtabs %}
