@@ -2,6 +2,7 @@ import { algoliaId, algoliaIndex, algoliaSearchKey } from './apikeys';
 
 window.addEventListener('load', () => {
   const searchClient = algoliasearch(algoliaId, algoliaSearchKey);
+  const inputclear = document.querySelector('.ais-SearchBox-input');
 
   const search = instantsearch({
     indexName: algoliaIndex,
@@ -9,10 +10,11 @@ window.addEventListener('load', () => {
 
     searchFunction(helper) {
       const searchResults = document.getElementById('search_container');
-      if (helper.state.query === '' && searchResults.style.display === 'none') {
+      if (helper.state.query === '' && searchResults.style.display === 'none' && overlay.style.display === 'none') {
         return;
       }
       searchResults.style.display = helper.state.query ? 'grid ' : 'none';
+
       helper.search();
     },
   });
@@ -42,8 +44,10 @@ window.addEventListener('load', () => {
           return html`
             <div class="post-item">            
             ${components.Highlight({ attribute: 'name', hit })}
-              <strong><a class="post-link" href="${hit.url}">${hit.title}</a></strong>
+              <a class="post-link" href="${hit.url}">${hit.title}
               <div class="post-snippet"><p>${hit.content}</p></div>
+              </a>
+              
             </div>
 
               
