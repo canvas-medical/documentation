@@ -1,8 +1,9 @@
 name: Update Algolia
 
-push:
-  branches:
-    - 'main'
+on:
+  push:
+    branches:
+      - 'main'
 
 jobs:
   update-algolia:
