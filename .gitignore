@@ -1,6 +1,5 @@
 # API keys
 _js/apikeys.js
-_config_apikeys.yml
 
 # Bundler ignore
 .bundle/
