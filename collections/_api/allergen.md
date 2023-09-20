@@ -24,12 +24,12 @@ sections:
               Code that identifies the allergen
             type: json
         search_parameters:
-          - name: code
-            type: string
-            description: Code that identifies the allergen
           - name: _text
-            type: string
             description: Search on the narrative of the Allergen
+            type: string
+          - name: code
+            description: Code that identifies the allergen
+            type: string
         endpoints: [read, search]
         read:
           responses: [200, 404]

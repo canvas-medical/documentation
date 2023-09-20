@@ -7,112 +7,249 @@ sections:
         name: Medication
         article: "a"
         description: >-
-         This resource is primarily used for the identification and definition of a medication for the purposes of prescribing, dispensing, and administering a medication as well as for making statements about medication use.
+         This resource is primarily used for the identification and definition of a medication for the purposes of prescribing, dispensing, and administering a medication as well as for making statements about medication use.<br><br>
+         [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medication.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medication.html)
         attributes:
           - name: id
-            description: >-
-              The identifier of the medication
+            description: The identifier of the Medication
             type: string
-            required: true
-          - name: resourceType
-            description: >-
-              The type of resource
+          - name: code
+            description: Codes that identify this medication
+            type: json
+        endpoints: [read, search]
+        search_parameters:
+          - name: _text
+            description: Search on the narrative of the Medication
             type: string
-            required: true
           - name: code
             description: >-
-              A code that identifies the medication
+              Returns medications for a specific code<br><br>
+              Only codes in the RxNorm code system can be searched with the `code` search parameter.
             type: string
-            attributes:
-              - name: coding
-                description: >-
-                  A code that identifies the medication
-                type: array
-                attributes:
-                  - name: system
-                    description: >-
-                      The system that defines the code
-                    type: string
-                  - name: code
-                    description: >-
-                      The code that identifies the medication
-                    type: string
-                  - name: display
-                    description: >-
-                      The display name of the medication
-                    type: string
-              - name: text
-                description: >-
-                  The display name of the medication
-                type: string
-        endpoints: [read]
         read:
-          responses: [200, 400]
-          example_response: medication-read-response
+          description: Read a Medication resource.
+          responses: [200, 401, 403, 404]
           example_request: medication-read-request
-
+          example_response: medication-read-response
+        search:
+          description: >-
+            Search for Medication resources.<br><br>
+            Currently a search for a given RxNorm code will return both branded and generic medications regardless of whether the RxNorm code being searched is branded or generic. For example, a search for the RxNorm code that represents the branded version of metformin will return a search bundle that contains at least two Medication resources -- one for the branded version and one for the generic version.
+          responses: [200, 400, 401, 403]
+          example_request: medication-search-request
+          example_response: medication-search-response
 ---
+
 <div id="medication-read-request">
-{% tabs medication-read-request %}
-{% tab medication-read-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Medication/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab medication-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Medication/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{%  include read-request.html resource_type="Medication" %}
 </div>
 
 <div id="medication-read-response">
-{% tabs medication-read-response %}
-{% tab medication-read-response 200 %}
+
+  {% tabs medication-read-response %}
+
+    {% tab medication-read-response 200 %}
 ```json
 {
     "resourceType": "Medication",
-    "id": "fdb-297274",
-    "code": {
-        "coding": [
+    "id": "fdb-449732",
+    "code":
+    {
+        "coding":
+        [
             {
-                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                "code": "541892",
-                "display": "Adderall 10 mg tablet"
+                "system": "http://www.fdbhealth.com/",
+                "code": "449732",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
             },
             {
                 "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                "code": "541894",
-                "display": "Adderall 10 mg tablet"
+                "code": "1092189",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            },
+            {
+                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                "code": "1092378",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
             }
         ],
-        "text": "Adderall 10 mg tablet"
+        "text": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
     }
 }
 ```
-{% endtab %}
-{% tab medication-read-response 404 %}
+    {% endtab %}
+
+    {% tab medication-read-response 401 %}
 ```json
 {
-    "detail": "Not Found"
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+    {% tab medication-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab medication-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown Medication resource 'fdb-399234'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
+<div id="medication-search-request">
+{% include search-request.html resource_type="Medication" search_string="code=http://www.nlm.nih.gov/research/umls/rxnorm|1092189&_text=tylenol" %}
+</div>
+
+<div id="medication-search-response">
+
+  {% tabs medication-search-response %}
+
+    {% tab medication-search-response 200 %}
+```json
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link":
+    [
+        {
+            "relation": "self",
+            "url": "/Medication?code=http://www.nlm.nih.gov/research/umls/rxnorm|1092189&_text=tylenol&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Medication?code=http://www.nlm.nih.gov/research/umls/rxnorm|1092189&_text=tylenol&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Medication?code=http://www.nlm.nih.gov/research/umls/rxnorm|1092189&_text=tylenol&_count=10&_offset=0"
+        }
+    ],
+    "entry":
+    [
+        {
+            "resource":
+            {
+                "resourceType": "Medication",
+                "id": "fdb-449732",
+                "code":
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://www.fdbhealth.com/",
+                            "code": "449732",
+                            "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+                        },
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "1092189",
+                            "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+                        },
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "1092378",
+                            "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+                        }
+                    ],
+                    "text": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+                }
+            }
+        }
+    ]
+}
+```
+    {% endtab %}
+
+    {% tab medication-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab medication-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab medication-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>
