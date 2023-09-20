@@ -96,7 +96,7 @@ sections:
 <div id="encounter-read-request">
 {% tabs encounter-read-request %}
 {% tab encounter-read-request python %}
-```sh
+```python
 import requests
 
 url = "https://fumage-example.canvasmedical.com/Encounter/<id>"
@@ -282,7 +282,7 @@ curl --request GET \
 <div id="encounter-search-request">
 {% tabs encounter-search-request %}
 {% tab encounter-search-request python %}
-```sh
+```python
 import requests
 
 url = "https://fhir-example.canvasmedical.com/Encounter?patient=Patient/8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15"
