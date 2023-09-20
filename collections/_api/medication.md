@@ -34,7 +34,7 @@ sections:
         search:
           description: >-
             Search for Medication resources.<br><br>
-            Currently a search for a given RxNorm code will return both branded and generic medications regardless of whether the RxNorm code being searched is branded or generic. For example, a search for the RxNorm code that represents the branded version of metformin will return a search bundle that contains at least two Medication resources -- one for the branded version and one for the generic version.
+            Currently a search for an RxNorm code will return both branded and generic medications associated with the RxNorm code regardless of whether the RxNorm code is branded or generic. For example, a search for the RxNorm code that represents the branded version of metformin will return a search bundle that contains at least two Medication resources -- one for the branded version and one for the generic version.
           responses: [200, 400, 401, 403]
           example_request: medication-search-request
           example_response: medication-search-response
