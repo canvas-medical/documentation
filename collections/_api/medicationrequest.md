@@ -37,9 +37,6 @@ sections:
           - name: requester
             description: Who/What requested the Request
             type: json
-          - name: performer
-            description: Intended performer of administration
-            type: json
           - name: reasonCode
             description: Reason or indication for ordering or not ordering the medication
             type: array[json]
