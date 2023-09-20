@@ -229,12 +229,8 @@ api_encounter:
  - title: "Encounter Search"
    url: /api/encounter/#search   
 api_goal:
- - title: "Goal Create"
-   url: /api/goal/#create
  - title: "Goal Read"
    url: /api/goal/#read
- - title: "Goal Update"
-   url: /api/goal/#update
  - title: "Goal Search"
    url: /api/goal/#search
 api_group:
