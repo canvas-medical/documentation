@@ -7,230 +7,374 @@ sections:
         name: MedicationStatement
         article: "a"
         description: >-
-         A record of a medication that is being consumed by a patient. A MedicationStatement may indicate that the patient may be taking the medication now or has taken the medication in the past or will be taking the medication in the future. The source of this information can be the patient, significant other (such as a family member or spouse), or a clinician. A common scenario where this information is captured is during the history taking process during a patient visit or stay. The medication information may come from sources such as the patient's memory, from a prescription bottle, or from a list of medications the patient, clinician or other party maintains.
+         A record of a medication that is being consumed by a patient. A MedicationStatement may indicate that the patient may be taking the medication now or has taken the medication in the past or will be taking the medication in the future. The source of this information can be the patient, significant other (such as a family member or spouse), or a clinician. A common scenario where this information is captured is during the history taking process during a patient visit or stay. The medication information may come from sources such as the patient's memory, from a prescription bottle, or from a list of medications the patient, clinician or other party maintains.<br><br>
+          [https://hl7.org/fhir/R4/medicationstatement.html](https://hl7.org/fhir/R4/medicationstatement.html)<br><br>
+          MedicationStatement resources can be created in several ways. Canvas [Prescribe](https://canvas-medical.zendesk.com/hc/en-us/articles/360063523313-Prescribing-a-Medication) commands create [MedicationRequest](http://localhost:3000/api/medicationrequest/) resources, but these `Prescribe` commands are also represented as MedicationStatement resources. MedicationStatement resources that were created with a `Prescribe` command will contain a reference to the related MedicationRequest resource in the `derivedFrom` attribute.<br><br>
+          MedicationStatement resources can also be created with the `Medication Statement` command. See our Zendesk [article](https://canvas-medical.zendesk.com/hc/en-us/articles/1500004007942-Documenting-a-Historical-Medication) for more information.
         attributes:
           - name: id
-            description: >-
-              The identifier of the medication statement
+            description: The identifier of the MedicationStatement
             type: string
-            required: true
-          - name: resourceType
-            type: string
-            required: true
           - name: status
             description: >-
-              active | entered-in-error | intended | stopped | unknown
+              A code representing the patient or other source's judgment about the state of the medication used that this statement is about<br><br>Supported codes for create interactions are: **active**, **entered-in-error**, **stopped**
             type: string
           - name: medicationCodeableConcept
-            type: string
-          - name: medicationReference
-            type: string
+            description: What medication was taken
+            type: json
           - name: subject
+            description: Who is/was taking the medication
+            type: json
+          - name: context
             description: >-
-              Who is/was taking the medication
-            type: string
+              Encounter / Episode associated with MedicationStatement<br><br>
+              The `context` attribute is accepted by create and update interactions, but is not returned by read or search interactions.
+            type: json
           - name: effectivePeriod
-            description: >-
-              The date/time or interval when the medication is/was/will be taken
-            type: string
+            description: The interval when the medication is/was/will be taken
+            type: json
           - name: dateAsserted
-            description: >-
-              The date and time the medication statement was asserted
-            type: date
+            description: When the statement was asserted
+            type: datetime
           - name: derivedFrom
-            description: >-
-              Additional supporting information
-            type: date
+            description: Additional supporting information
+            type: array[json]
           - name: dosage
             description: >-
-              Details of how medication is/was taken or should be taken
-            type: string
+              Details of how medication is/was taken or should be taken<br><br>
+              The `text` attribute for the Dosage object contains the SIG.
+            type: array[json]
         search_parameters:
           - name: _id
+            description: The identifier of the MedicationStatement
             type: string
-            description: A Canvas-issued unique identifier
           - name: patient
-            description: >-
-              The patient who is consuming the medication
+            description: Returns statements for a specific patient
             type: string
-        endpoints: [search]
+        endpoints: [create, read, update, search]
+        create:
+          description: Create a MedicationStatement resource.<br><br>If `context` is provided, the MedicationStatement will be added to the existing encounter (note). If it is not provided, a new data import note will be created.<br><br>Create requests support either `medicationReference` or `medicationCodeableConcept` in the request body; Canvas recommends using `medicationReference`. Medication identifiers for `medicationReference` can be obtained from the [Medication search endpoint](/api/medication/#search).
+          responses: [201, 400, 401, 403, 405, 422]
+          example_request: medicationstatement-create-request
+          example_response: medicationstatement-create-response
+        read:
+          description: Read an MedicationStatement resource.<br><br>Read responses will always contain a `medicationCodeableConcept` regardless of what was used to create the MedicationStatement.
+          responses: [200, 401, 403, 404]
+          example_request: medicationstatement-read-request
+          example_response: medicationstatement-read-response
+        update:
+          description: Update an MedicationStatement resource.<br><br>The only type of MedicationStatement update interaction that is supported by Canvas is to mark an existing MedicationStatement as **entered-in-error**. No changes to other fields will be processed.
+          responses: [200, 400, 401, 403, 404, 405, 412, 422]
+          example_request: medicationstatement-update-request
+          example_response: medicationstatement-update-response
         search:
-          responses: [200, 400]
-          example_response: medication-statement-search-response
-          example_request: medication-statement-search-request
+          description: Search for MedicationStatement resources.<br><br>Search bundle entries will always contain values for `medicationCodeableConcept` regardless of what was used to create the MedicationStatement.
+          responses: [200, 400, 401, 403]
+          example_request: medicationstatement-search-request
+          example_response: medicationstatement-search-response
 ---
-<div id="medication-statement-search-request">
-{% tabs medication-statement-search-request %}
-{% tab medication-statement-search-request python %}
-```sh
+
+<div id="medicationstatement-create-request">
+
+  {% tabs medicationstatement-create-request %}
+
+    {% tab medicationstatement-create-request curl %}
+```shell
+curl --request POST \
+     --url https://fumage-example.canvasmedical.com/MedicationStatement \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+    "resourceType": "MedicationStatement",
+    "status": "active",
+    "medicationReference": {
+        "reference": "Medication/fdb-449732",
+        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    },
+    "subject": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "context": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "effectivePeriod": {
+        "start": "2023-06-15T15:00:00-04:00",
+        "end": "2023-06-25T15:00:00-04:00"
+    },
+    "dosage": [
+        {
+            "text": "1-2 tablets once daily at bedtime as needed for restless legs"
+        }
+    ]
+}'
+```
+    {% endtab %}
+
+    {% tab medicationstatement-create-request python %}
+```python
 import requests
 
-url = "https://fumage-example.canvasmedical.com/Medication/?patient=Patient/<patient_id>"
+url = "https://fumage-example.canvasmedical.com/MedicationStatement"
 
 headers = {
     "accept": "application/json",
-    "Authorization": "Bearer <token>"
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
 }
 
-response = requests.get(url, headers=headers)
+payload = {
+    "resourceType": "MedicationStatement",
+    "status": "active",
+    "medicationReference": {
+        "reference": "Medication/fdb-449732",
+        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    },
+    "subject": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "context": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "effectivePeriod": {
+        "start": "2023-06-15T15:00:00-04:00",
+        "end": "2023-06-25T15:00:00-04:00"
+    },
+    "dosage": [
+        {
+            "text": "1-2 tablets once daily at bedtime as needed for restless legs"
+        }
+    ]
+}
+response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
 ```
-{% endtab %}
-{% tab medication-statement-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/MedicationStatement/?patient=Patient/<patient_id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
-<div id="medication-statement-search-response">
-{% tabs medication-statement-search-response %}
-{% tab medication-statement-search-response 200 %}
+<div id="medicationstatement-create-response">
+{% include create-response.html %}
+</div>
+
+<div id="medicationstatement-read-request">
+{%  include read-request.html resource_type="MedicationStatement" %}
+</div>
+
+<div id="medicationstatement-read-response">
+
+  {% tabs medicationstatement-read-response %}
+
+    {% tab medicationstatement-read-response 200 %}
+```json
+{
+    "resourceType": "MedicationStatement",
+    "status": "active",
+    "medicationReference": {
+        "reference": "Medication/fdb-449732",
+        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    },
+    "subject": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "context": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "effectivePeriod": {
+        "start": "2023-06-15T15:00:00-04:00",
+        "end": "2023-06-25T15:00:00-04:00"
+    },
+    "dosage": [
+        {
+            "text": "1-2 tablets once daily at bedtime as needed for restless legs"
+        }
+    ]
+}
+```
+    {% endtab %}
+
+    {% tab medicationstatement-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab medicationstatement-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab medicationstatement-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown MedicationStatement resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>
+
+<div id="medicationstatement-update-request">
+
+  {% tabs medicationstatement-update-request %}
+
+    {% tab medicationstatement-update-request curl %}
+```shell
+curl --request PUT \
+     --url https://fumage-example.canvasmedical.com/MedicationStatement/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+    "resourceType": "MedicationStatement",
+    "status": "entered-in-error",
+    "medicationReference": {
+        "reference": "Medication/fdb-449732",
+        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    },
+    "subject": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "context": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "effectivePeriod": {
+        "start": "2023-06-15T15:00:00-04:00",
+        "end": "2023-06-25T15:00:00-04:00"
+    },
+    "dosage": [
+        {
+            "text": "1-2 tablets once daily at bedtime as needed for restless legs"
+        }
+    ]
+}'
+```
+    {% endtab %}
+
+    {% tab medicationstatement-update-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/MedicationStatement/<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+payload = {}
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.text)
+```
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>
+
+<div id="medicationstatement-update-response">
+{% include update-response.html resource_type="MedicationStatement" %}
+</div>
+
+<div id="medicationstatement-search-request">
+{% include search-request.html resource_type="MedicationStatement" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+</div>
+
+<div id="medicationstatement-search-response">
+
+  {% tabs medicationstatement-search-response %}
+
+    {% tab medicationstatement-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
     "type": "searchset",
-    "total": 5,
-    "link": [
+    "total": 1,
+    "link":
+    [
         {
             "relation": "self",
-            "url": "/MedicationStatement?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/MedicationStatement?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/MedicationStatement?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/MedicationStatement?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/MedicationStatement?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/MedicationStatement?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry": [
+    "entry":
+    [
         {
-            "resource": {
-                "resourceType": "MedicationStatement",
-                "status": "stopped",
-                "medicationReference": {
-                    "reference": "Medication/fdb-297274",
-                    "type": "Medication",
-                    "display": "Adderall 10 mg tablet"
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "effectivePeriod": {
-                    "start": "2022-04-04T05:26:34.711718+00:00",
-                    "end": "2022-12-06T17:14:42.751120+00:00"
-                },
-                "dateAsserted": "2022-04-04T05:28:08.521828+00:00",
-                "dosage": [
-                    {
-                        "text": "take as directed"
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "MedicationStatement",
-                "status": "entered-in-error",
-                "medicationReference": {
-                    "reference": "Medication/fdb-587530",
-                    "type": "Medication",
-                    "display": "Metamucil 3.4 gram/5.4 gram oral powder"
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "dateAsserted": "2022-07-20T14:35:01.648218+00:00"
-            }
-        },
-        {
-            "resource": {
+            "resource":
+            {
                 "resourceType": "MedicationStatement",
                 "status": "active",
-                "medicationReference": {
-                    "reference": "Medication/fdb-177730",
-                    "type": "Medication",
-                    "display": "sumatriptan 100 mg tablet"
+                "medicationReference":
+                {
+                    "reference": "Medication/fdb-449732",
+                    "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
                 },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
+                "subject":
+                {
+                    "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
                 },
-                "effectivePeriod": {
-                    "start": "2022-11-22T16:17:38.553742+00:00"
+                "context":
+                {
+                    "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
                 },
-                "dateAsserted": "2022-11-22T16:18:09.314648+00:00",
-                "derivedFrom": [
+                "effectivePeriod":
+                {
+                    "start": "2023-06-15T15:00:00-04:00",
+                    "end": "2023-06-25T15:00:00-04:00"
+                },
+                "dosage":
+                [
                     {
-                        "reference": "MedicationRequest/9723dfa3-cf8e-4d6d-800f-4479c5b29927",
-                        "type": "MedicationRequest"
-                    },
-                    {
-                        "reference": "MedicationRequest/c9f8949d-81f5-4d04-a743-ed7d185cc22b",
-                        "type": "MedicationRequest"
-                    }
-                ],
-                "dosage": [
-                    {
-                        "text": "twice daily"
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "MedicationStatement",
-                "status": "active",
-                "medicationReference": {
-                    "reference": "Medication/fdb-275877",
-                    "type": "Medication",
-                    "display": "ibuprofen 600 mg tablet"
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "effectivePeriod": {
-                    "start": "2022-12-05T16:30:42+00:00"
-                },
-                "dateAsserted": "2022-12-06T17:07:22.630013+00:00",
-                "dosage": [
-                    {
-                        "text": "once daily"
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "MedicationStatement",
-                "status": "stopped",
-                "medicationReference": {
-                    "reference": "Medication/fdb-270143",
-                    "type": "Medication",
-                    "display": "furosemide 20 mg tablet"
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "effectivePeriod": {
-                    "start": "2022-12-06T17:11:36.839849+00:00",
-                    "end": "2022-12-06T17:12:49.492753+00:00"
-                },
-                "dateAsserted": "2022-12-06T17:12:09.892765+00:00",
-                "dosage": [
-                    {
-                        "text": "once daily"
+                        "text": "1-2 tablets once daily at bedtime as needed for restless legs"
                     }
                 ]
             }
@@ -238,12 +382,12 @@ curl --request GET \
     ]
 }
 ```
-{% endtab %}
-{% tab medication-statement-search-response 400 %}
+    {% endtab %}
+
+    {% tab medicationstatement-search-response 400 %}
 ```json
 {
-    "resourceType": "OperationOutcome",
-  "id": "101",
+  "resourceType": "OperationOutcome",
   "issue": [
     {
       "severity": "error",
@@ -255,7 +399,42 @@ curl --request GET \
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
-</div>
+    {% endtab %}
 
+    {% tab medicationstatement-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab medicationstatement-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>

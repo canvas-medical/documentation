@@ -71,7 +71,7 @@ sections:
             type: string
         endpoints: [create, read, update, search]
         create:
-          description: Create an AllergyIntolerance resource.<br><br>Exactly one FDB coding is required in the `code` field. FDB codings can be obtained from the search endpoint for the (Allergen resource, which is a custom Canvas FHIR resource.<br><br>If `encounter` is provided, the AllergyIntolerance will be added to existing encounter (note). If it is not provided, a new data import note will be created.
+          description: Create an AllergyIntolerance resource.<br><br>Exactly one FDB coding is required in the `code` field. FDB codings can be obtained from the search endpoint for the (Allergen resource, which is a custom Canvas FHIR resource.<br><br>If `encounter` is provided, the AllergyIntolerance will be added to the existing encounter (note). If it is not provided, a new data import note will be created.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: allergyintolerance-create-request
           example_response: allergyintolerance-create-response
