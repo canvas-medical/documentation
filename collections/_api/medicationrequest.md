@@ -7,420 +7,359 @@ sections:
         name: MedicationRequest
         article: "a"
         description: >-
-         An order or request for both supply of the medication and the instructions for administration of the medication to a patient. The resource is called "MedicationRequest" rather than "MedicationPrescription" or "MedicationOrder" to generalize the use across inpatient and outpatient settings, including care plans, etc., and to harmonize with workflow patterns.
+          An order or request for both supply of the medication and the instructions for administration of the medication to a patient. The resource is called "MedicationRequest" rather than "MedicationPrescription" or "MedicationOrder" to generalize the use across inpatient and outpatient settings, including care plans, etc., and to harmonize with workflow patterns.<br><br>
+          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html)<br><br>
+          FHIR MedicationRequests maps to the [Prescribe](https://canvas-medical.zendesk.com/hc/en-us/articles/360063523313-Prescribing-a-Medication) and [Refill](https://canvas-medical.zendesk.com/hc/en-us/articles/360057482354-Refill-Medications) commands in Canvas. Any adjustments made with the [Adjust Prescription](https://canvas-medical.zendesk.com/hc/en-us/articles/360061706154-Adjust-an-Existing-Medication) command will appear in MedicationRequest API responses.
         attributes:
           - name: id
-            description: >-
-              The identifier of the medication request
+            description: The identifier of the MedicationRequest
             type: string
-            required: true
-          - name: resourceType
-            type: string
-            required: true
           - name: status
+            description: A code specifying the current state of the order. Generally, this will be active or completed state
+            type: string
+          - name: intent
+            description: Whether the request is a proposal, plan, or an original order
+            type: string
+          - name: reportedBoolean
+            description: Indicates if this record was captured as a secondary 'reported' record rather than as an original primary source-of-truth record
+            type: boolean
+          - name: medicationCodeableConcept
+            description: Identifies the medication being requested. This is simply an attribute carrying a code that identifies the medication from a known list of medications.
+            type: json
+          - name: subject
+            description: Who or group medication request is for
+            type: json
+          - name: encounter
+            description: Encounter created as part of encounter/admission/stay
+            type: json
+          - name: authoredOn
+            description: When request was initially authored
+            type: datetime
+          - name: requester
+            description: Who/What requested the Request
+            type: json
+          - name: performer [deprecated]
             description: >-
-              The status of the medication request
+              Intended performer of administration<br><br>
+              This attribute is deprecated and will be removed in a future release. It currently (and incorrectly) contains information about the dispenser of the medication. Canvas recommends disregarding this attribute. Information about the dispenser can be obtained from the `performer` attribute under `dispenseRequest`.
+            type: json
+          - name: reasonCode
+            description: Reason or indication for ordering or not ordering the medication
+            type: array[json]
+          - name: note
+            description: Information about the prescription
+            type: array[json]
+          - name: dosageInstruction
+            description: How the medication should be taken
+            type: array[json]
+          - name: dispenseRequest
+            description: Medication supply authorization
+            type: json
+          - name: substitution
+            description: Any restrictions on medication substitution
+            type: json
+        search_parameters:
+          - name: _id
+            description: The identifier of the MedicationRequest
             type: string
           - name: intent
             description: >-
-              The intent of the medication request (e.g. isFiller, order, etc.)
+              Returns prescriptions with different intents<br><br>Supported codes for search interactions: **order**, **filler-order**
             type: string
-          - name: reportedBoolean
-            type: boolean
-          - name: medicationCodeableConcept
-            description: >-
-              Medication to be taken
-            type: string
-          - name: medicationReference
-            description: >-
-              Medication to be taken
-            type: string
-          - name: subject
-            description: >-
-              The patient who is the subject of the medication request
-            type: string
-          - name: encounter
-            description: >-
-              The encounter associated with the medication request
-            type: string
-          - name: authoredOn
-            description: >-
-              The date and time the medication request was authored
-            type: date
-          - name: requester
-            description: >-
-              The practitioner who authored the medication request
-            type: string
-          - name: performer
-            description: >-
-              The practitioner who will perform the medication request
-            type: string
-          - name: reasonCode
-            description: >-
-              The reason for the medication request
-            type: string
-            attributes:
-              - name: coding
-                type: string
-                attributes:
-                  - name: system
-                    type: string
-                  - name: code
-                    type: string
-                  - name: display
-                    type: string
-          - name: note
-            description: >-
-              Additional notes about the medication request
-            type: string
-          - name: dosageInstruction
-            description: >-
-              Details of how medication is/was taken or should be taken
-            type: string
-            attributes:
-              - name: text
-                type: string
-              - name: doseAndRate
-                type: string
-                attributes:
-                  - name: doseQuantity
-                    type: string
-                    attributes:
-                      - name: value
-                        type: number
-                      - name: unit
-                        type: string
-          - name: dispenseRequest
-            description: >-
-              Medication supply authorization
-            type: string
-            attributes:
-              - name: numberOfRepeatsAllowed
-                type: number
-              - name: quantity
-                type: string
-                attributes:
-                  - name: value
-                    type: number
-              - name: expectedSupplyDuration
-                type: string
-                attributes:
-                  - name: value
-                    type: number
-                  - name: unit
-                    type: string
-          - name: substitution
-            description: >-
-              Whether substitution is allowed or not
-            type: string
-        search_parameters:
-          - name: _id
-            type: string
-            description: A Canvas-issued unique identifier
           - name: patient
+            description: Returns prescriptions for a specific patient	
+            type: string
+          - name: status
             description: >-
-              The patient who is the subject of the medication request
+              Status of the prescription<br><br>Supported codes for search interactions: **active**, **cancelled**, **entered-in-error**, **stopped** 
             type: string
         endpoints: [read, search]
         read:
-          responses: [200, 400]
-          example_response: medication-request-read-response
-          example_request: medication-request-read-request
+          description: Read a MedicationRequest resource.
+          responses: [200, 401, 403, 404]
+          example_request: medicationrequest-read-request
+          example_response: medicationrequest-read-response
         search:
-          responses: [200, 400]
-          example_response: medication-request-search-response
-          example_request: medication-request-search-request
+          description: Search for MedicationRequest resources.
+          responses: [200, 400, 401, 403]
+          example_request: medicationrequest-search-request
+          example_response: medicationrequest-search-response
 ---
-<div id="medication-request-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
-```sh
-import requests
 
-url = "https://fumage-example.canvasmedical.com/MedicationRequest/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/MedicationRequest/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+<div id="medicationrequest-read-request">
+{%  include read-request.html resource_type="MedicationRequest" %}
 </div>
 
-<div id="medication-request-read-response">
-{% tabs read-response %}
-{% tab read-response 200 %}
+<div id="medicationrequest-read-response">
+
+  {% tabs medicationrequest-read-response %}
+
+    {% tab medicationrequest-read-response 200 %}
 ```json
 {
     "resourceType": "MedicationRequest",
-    "id": "c9f8949d-81f5-4d04-a743-ed7d185cc22b",
+    "id": "3423a69c-618d-4cbe-861a-54c60f48744e",
     "status": "active",
     "intent": "order",
     "reportedBoolean": false,
-    "medicationReference": {
-        "reference": "Medication/fdb-177730",
-        "type": "Medication",
-        "display": "sumatriptan 100 mg tablet"
+    "medicationCodeableConcept":
+    {
+        "coding":
+        [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "244899",
+                "display": "lisinopril 10 mg tablet"
+            },
+            {
+                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                "code": "314076",
+                "display": "lisinopril 10 mg tablet"
+            }
+        ]
     },
-    "subject": {
-        "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+    "subject":
+    {
+        "reference": "Patient/6cb2a409334943c2b48f1686dc739f11",
         "type": "Patient"
     },
-    "authoredOn": "2022-11-22T16:17:38.553742+00:00",
-    "requester": {
-        "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+    "encounter":
+    {
+        "reference": "Encounter/bdadce18-098b-40dc-8bdd-ef8481bd999a",
+        "type": "Encounter"
+    },
+    "authoredOn": "2023-09-21T18:19:36.106449+00:00",
+    "requester":
+    {
+        "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
         "type": "Practitioner"
     },
-    "performer": {
-        "display": "Name: |NCPDP ID: |Address: |Phone: |Fax: "
-    },
-    "reasonCode": [
+    "reasonCode":
+    [
         {
-            "coding": [
+            "coding":
+            [
                 {
                     "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                    "code": "R519",
-                    "display": "Headache, unspecified"
+                    "code": "I10",
+                    "display": "Essential (primary) hypertension"
                 }
             ]
         }
     ],
-    "dosageInstruction": [
+    "dosageInstruction":
+    [
         {
-            "text": "once daily",
-            "doseAndRate": [
+            "text": "take 1 daily",
+            "doseAndRate":
+            [
                 {
-                    "doseQuantity": {
+                    "doseQuantity":
+                    {
                         "unit": "Tablet"
                     }
                 }
             ]
         }
     ],
-    "dispenseRequest": {
-        "numberOfRepeatsAllowed": 0,
-        "quantity": {
-            "value": 1.0
+    "dispenseRequest":
+    {
+        "numberOfRepeatsAllowed": 3,
+        "quantity":
+        {
+            "value": 30.0
         },
-        "expectedSupplyDuration": {
-            "value": 1,
+        "expectedSupplyDuration":
+        {
+            "value": 30,
             "unit": "days"
+        },
+        "performer":
+        {
+            "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
         }
     },
-    "substitution": {
+    "substitution":
+    {
         "allowedBoolean": true
     }
 }
 ```
-{% endtab %}
-{% tab read-response 404 %}
+    {% endtab %}
+
+    {% tab medicationrequest-read-response 401 %}
 ```json
 {
-    "resourceType": "OperationOutcome",
-    "issue": [
-        {
-            "severity": "error",
-            "code": "not-found",
-            "details": {
-                "text": "Unknown MedicationRequest resource '7d1ce256fcd7408193b0459650937a07'"
-            }
-        }
-    ]
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
 }
 ```
-{% endtab %}
-{% endtabs %}
-</div>
+    {% endtab %}
 
-<div id="medication-request-search-request">
-{% tabs search-request %}
-{% tab read-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Medication/?patient=Patient/<patient_id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
+    {% tab medicationrequest-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
 }
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
 ```
-{% endtab %}
-{% tab search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/MedicationRequest/?patient=Patient/<patient_id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
+    {% endtab %}
+
+    {% tab medicationrequest-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown MedicationRequest resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+      }
+    }
+  ]
+}
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
-<div id="medication-request-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+<div id="medicationrequest-search-request">
+{% include search-request.html resource_type="AllergyIntolerance" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+</div>
+
+<div id="medicationrequest-search-response">
+
+  {% tabs medicationrequest-search-response %}
+
+    {% tab medicationrequest-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
     "type": "searchset",
-    "total": 2,
-    "link": [
+    "total": 1,
+    "link":
+    [
         {
             "relation": "self",
-            "url": "/MedicationRequest?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/MedicationRequest?patient=Patient%2F6cb2a409334943c2b48f1686dc739f11&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/MedicationRequest?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/MedicationRequest?patient=Patient%2F6cb2a409334943c2b48f1686dc739f11&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/MedicationRequest?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/MedicationRequest?patient=Patient%2F6cb2a409334943c2b48f1686dc739f11&_count=10&_offset=0"
         }
     ],
-    "entry": [
+    "entry":
+    [
         {
-            "resource": {
+            "resource":
+            {
                 "resourceType": "MedicationRequest",
-                "id": "c9f8949d-81f5-4d04-a743-ed7d185cc22b",
+                "id": "3423a69c-618d-4cbe-861a-54c60f48744e",
                 "status": "active",
                 "intent": "order",
                 "reportedBoolean": false,
-                "medicationReference": {
-                    "reference": "Medication/fdb-177730",
-                    "type": "Medication",
-                    "display": "sumatriptan 100 mg tablet"
+                "medicationCodeableConcept":
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://www.fdbhealth.com/",
+                            "code": "244899",
+                            "display": "lisinopril 10 mg tablet"
+                        },
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "314076",
+                            "display": "lisinopril 10 mg tablet"
+                        }
+                    ]
                 },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                "subject":
+                {
+                    "reference": "Patient/6cb2a409334943c2b48f1686dc739f11",
                     "type": "Patient"
                 },
-                "authoredOn": "2022-11-22T16:17:38.553742+00:00",
-                "requester": {
-                    "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
-                    "type": "Practitioner"
-                },
-                "performer": {
-                    "display": "Name: |NCPDP ID: |Address: |Phone: |Fax: "
-                },
-                "reasonCode": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                                "code": "R519",
-                                "display": "Headache, unspecified"
-                            }
-                        ]
-                    }
-                ],
-                "dosageInstruction": [
-                    {
-                        "text": "once daily",
-                        "doseAndRate": [
-                            {
-                                "doseQuantity": {
-                                    "unit": "Tablet"
-                                }
-                            }
-                        ]
-                    }
-                ],
-                "dispenseRequest": {
-                    "numberOfRepeatsAllowed": 0,
-                    "quantity": {
-                        "value": 1.0
-                    },
-                    "expectedSupplyDuration": {
-                        "value": 1,
-                        "unit": "days"
-                    }
-                },
-                "substitution": {
-                    "allowedBoolean": true
-                }
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "MedicationRequest",
-                "id": "9723dfa3-cf8e-4d6d-800f-4479c5b29927",
-                "status": "active",
-                "intent": "order",
-                "reportedBoolean": false,
-                "medicationReference": {
-                    "reference": "Medication/fdb-177730",
-                    "type": "Medication",
-                    "display": "sumatriptan 100 mg tablet"
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "encounter": {
-                    "reference": "Encounter/5dd9213b-4b0e-46d2-a476-53d65d8d31af",
+                "encounter":
+                {
+                    "reference": "Encounter/bdadce18-098b-40dc-8bdd-ef8481bd999a",
                     "type": "Encounter"
                 },
-                "authoredOn": "2022-12-06T17:14:52.173419+00:00",
-                "requester": {
-                    "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                "authoredOn": "2023-09-21T18:19:36.106449+00:00",
+                "requester":
+                {
+                    "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
                     "type": "Practitioner"
                 },
-                "performer": {
-                    "display": "Name: |NCPDP ID: |Address: |Phone: |Fax: "
-                },
-                "reasonCode": [
+                "reasonCode":
+                [
                     {
-                        "coding": [
+                        "coding":
+                        [
                             {
                                 "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                                "code": "R519",
-                                "display": "Headache, unspecified"
+                                "code": "I10",
+                                "display": "Essential (primary) hypertension"
                             }
                         ]
                     }
                 ],
-                "dosageInstruction": [
+                "dosageInstruction":
+                [
                     {
-                        "text": "twice daily",
-                        "doseAndRate": [
+                        "text": "take 1 daily",
+                        "doseAndRate":
+                        [
                             {
-                                "doseQuantity": {
+                                "doseQuantity":
+                                {
                                     "unit": "Tablet"
                                 }
                             }
                         ]
                     }
                 ],
-                "dispenseRequest": {
-                    "numberOfRepeatsAllowed": 0,
-                    "quantity": {
-                        "value": 1.0
+                "dispenseRequest":
+                {
+                    "numberOfRepeatsAllowed": 3,
+                    "quantity":
+                    {
+                        "value": 30.0
                     },
-                    "expectedSupplyDuration": {
-                        "value": 1,
+                    "expectedSupplyDuration":
+                    {
+                        "value": 30,
                         "unit": "days"
+                    },
+                    "performer":
+                    {
+                        "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
                     }
                 },
-                "substitution": {
+                "substitution":
+                {
                     "allowedBoolean": true
                 }
             }
@@ -428,12 +367,12 @@ curl --request GET \
     ]
 }
 ```
-{% endtab %}
-{% tab search-response 400 %}
+    {% endtab %}
+
+    {% tab medicationrequest-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
@@ -445,7 +384,42 @@ curl --request GET \
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
-</div>
+    {% endtab %}
 
+    {% tab medicationrequest-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab medicationrequest-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>

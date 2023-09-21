@@ -146,7 +146,7 @@ api_allergyintolerance:
    url: /api/allergyintolerance/#read
  - title: "AllergyIntolerance Update"
    url: /api/allergyintolerance/#update
- - title: "AllergyInterolerance Search"
+ - title: "AllergyIntolerance Search"
    url: /api/allergyintolerance/#search
 api_appointment:
  - title: "Appointment Create"
@@ -258,12 +258,20 @@ api_media:
 api_medication:
  - title: "Medication Read"
    url: /api/medication/#read
+ - title: "Medication Search"
+   url: /api/medication/#search
 api_medicationrequest:
  - title: "MedicationRequest Read"
    url: /api/medicationrequest/#read
  - title: "MedicationRequest Search"
    url: /api/medicationrequest/#search
 api_medicationstatement:
+ - title: "MedicationStatement Create"
+   url: /api/medicationstatement/#create
+ - title: "MedicationStatement Read"
+   url: /api/medicationstatement/#read
+ - title: "MedicationStatement Update"
+   url: /api/medicationstatement/#update
  - title: "MedicationStatement Search"
    url: /api/medicationstatement/#search
 api_observation:
