@@ -28,7 +28,7 @@ sections:
           - name: context
             description: >-
               Encounter / Episode associated with MedicationStatement<br><br>
-              The `context` attribute is accepted by create interactions, but is not returned by read or search interactions.
+              The `context` attribute is accepted by create and update interactions, but is not returned by read or search interactions.
             type: json
           - name: effectivePeriod
             description: The interval when the medication is/was/will be taken
