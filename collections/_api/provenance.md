@@ -7,360 +7,259 @@ sections:
         name: Provenance
         article: "a"
         description: >-
-         Provenance of a resource is a record that describes entities and processes involved in producing and delivering or otherwise influencing that resource. Provenance provides a critical foundation for assessing authenticity, enabling trust, and allowing reproducibility. Provenance assertions are a form of contextual metadata and can themselves become important records with their own provenance. Provenance statement indicates clinical significance in terms of confidence in authenticity, reliability, and trustworthiness, integrity, and stage in lifecycle (e.g. Document Completion - has the artifact been legally authenticated), all of which may impact security, privacy, and trust policies.
+          Provenance of a resource is a record that describes entities and processes involved in producing and delivering or otherwise influencing that resource. Provenance provides a critical foundation for assessing authenticity, enabling trust, and allowing reproducibility. Provenance assertions are a form of contextual metadata and can themselves become important records with their own provenance. Provenance statement indicates clinical significance in terms of confidence in authenticity, reliability, and trustworthiness, integrity, and stage in lifecycle (e.g. Document Completion - has the artifact been legally authenticated), all of which may impact security, privacy, and trust policies.<br><br>
+          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-provenance.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-provenance.html)
         attributes:
           - name: id
-            description: >-
-              The identifier of the provenance
-            type: string
-            required: true
-          - name: resourceType
-            description: >-
-              The type of resource
-            type: string
-            required: true
-          - name: recorded
-            description: >-
-              When the activity occurred
+            description: The identifier of the Provenance
             type: string
           - name: target
-            description: >-
-              The target resource that was created
-            type: array
-          - name: location
-            description: >-
-              Where the activity occurred, if relevant
-            type: string
-            attributes:
-              - name: extension
-                type: array
-                attributes:
-                  - name: url
-                    type: string
-                  - name: valueCode
-                    type: string
+            description: Target Reference(s)
+            type: array[json]
+          - name: recorded
+            description: When the activity was recorded / updated
+            type: datetime
           - name: activity
-            description: >-
-              The activity that occurred
-            type: string
-            attributes:
-              - name: coding
-                type: array
-                attributes:
-                  - name: system
-                    type: string
-                  - name: code
-                    type: string
+            description: Activity that occurred
+            type: json
           - name: agent
-            description: >-
-              The agent that created the provenance
-            type: array
-            attributes:
-              - name: type
-                type: json
-                attributes:
-                  - name: coding
-                    type: array
-                    attributes:
-                      - name: system
-                        type: string
-                      - name: code
-                        type: string
-                      - name: display
-                        type: string
-              - name: who
-                type: string
-              - name: onBehalfOf
-                type: string
+            description: Actor involved
+            type: array[json]
         search_parameters:
           - name: _id
+            description: The identifier of the Provenance
             type: string
-            description: A Canvas-issued unique identifier
-          - name: patient
-            type: string
-            description: The patient associated with the provenance
-          - name: target
-            type: string
-            description: The target resource that was created
           - name: agent
+            description: Who participated
             type: string
-            description: The agent that created the provenance
+          - name: patient
+            description: Where the activity involved patient data
+            type: string
+          - name: target
+            description: Target Reference(s)
+            type: string
         endpoints: [read, search]
         read:
-          responses: [200, 400]
-          example_response: provenance-read-response
+          description: Read a Provenance resource.
+          responses: [200, 401, 403, 404]
           example_request: provenance-read-request
+          example_response: provenance-read-response
         search:
-          responses: [200, 400]
-          example_response: provenance-search-response
+          description: Search for Provenance resources.
+          responses: [200, 400, 401, 403]
           example_request: provenance-search-request
+          example_response: provenance-search-response
 ---
+
 <div id="provenance-read-request">
-{% tabs provenance-read-request %}
-{% tab provenance-read-request python %}
-```sh
-import requests
-
-url = "https://fhir-example.canvasmedical.com/Provenance/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab provenance-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Provenance/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{%  include read-request.html resource_type="Provenance" %}
 </div>
 
 <div id="provenance-read-response">
-{% tabs provenance-read-response %}
-{% tab provenance-read-response 200 %}
+
+  {% tabs provenance-read-response %}
+
+    {% tab provenance-read-response 200 %}
 ```json
 {
     "resourceType": "Provenance",
-    "id": "1df85d92-05ae-4965-bed3-9f2d6418e53b",
-    "target": [
+    "id": "db1631ed-bcd3-4e43-84a1-7e507e8aa44c",
+    "target":
+    [
         {
-            "reference": "Observation/1267a082-f12e-4c84-b715-5839e2cec392",
-            "type": "Observation"
+            "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
+            "type": "Patient"
         }
     ],
-    "recorded": "2022-01-10T03:46:59.312603+00:00",
-    "location": {
-        "extension": [
-            {
-                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
-                "valueCode": "unsupported"
-            }
-        ]
-    },
-    "activity": {
-        "coding": [
+    "recorded": "2023-09-18T14:42:14.981528+00:00",
+    "activity":
+    {
+        "coding":
+        [
             {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
                 "code": "CREATE"
             }
         ]
     },
-    "agent": [
+    "agent":
+    [
         {
-            "who": {
-                "display": "Not available"
+            "type":
+            {
+                "coding":
+                [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/provenance-participant-type",
+                        "code": "composer",
+                        "display": "Composer"
+                    }
+                ]
             },
-            "onBehalfOf": {
-                "display": "Not available"
+            "who":
+            {
+                "reference": "Organization/00000000-0000-0000-0002-000000000000",
+                "type": "Organization",
+                "display": "Canvas Medical"
+            },
+            "onBehalfOf":
+            {
+                "reference": "Organization/00000000-0000-0000-0002-000000000000",
+                "type": "Organization"
             }
         }
     ]
 }
 ```
-{% endtab %}
-{% tab provenance-read-response 404 %}
+    {% endtab %}
+
+    {% tab provenance-read-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
-      "code": "not-found",
+      "code": "unknown",
       "details": {
-        "text": "Resource not found"
+        "text": "Authentication failed"
       }
     }
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+    {% tab provenance-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab provenance-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown Provenance resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="provenance-search-request">
-{% tabs provenance-search-request %}
-{% tab provenance-search-request python %}
-```sh
-import requests
-
-url = "https://fhir-example.canvasmedical.com/Provenance/"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab provenance-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Provenance \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include search-request.html resource_type="Provenance" search_string="target=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="provenance-search-response">
-{% tabs provenance-search-response %}
-{% tab provenance-search-response 200 %}
+
+  {% tabs provenance-search-response %}
+
+    {% tab provenance-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
     "type": "searchset",
-    "total": 2,
-    "link": [
+    "total": 1,
+    "link":
+    [
         {
             "relation": "self",
-            "url": "/Provenance?_count=10&_offset=0"
+            "url": "/Provenance?target=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Provenance?_count=10&_offset=0"
+            "url": "/Provenance?target=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
+        {
+            "relation": "last",
+            "url": "/Provenance?target=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+        }
     ],
-    "entry": [
+    "entry":
+    [
         {
-            "resource": {
+            "resource":
+            {
                 "resourceType": "Provenance",
-                "id": "e2c6ff9b-6a04-4a73-81e2-5fa4bc605a15",
-                "target": [
+                "id": "db1631ed-bcd3-4e43-84a1-7e507e8aa44c",
+                "target":
+                [
                     {
-                        "reference": "Observation/eb38c5f7-09fd-4cc1-8e7b-73b0bc87dd0b",
-                        "type": "Observation"
+                        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
+                        "type": "Patient"
                     }
                 ],
-                "recorded": "2022-01-10T03:46:59.036676+00:00",
-                "location": {
-                    "extension": [
-                        {
-                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
-                            "valueCode": "unsupported"
-                        }
-                    ]
-                },
-                "activity": {
-                    "coding": [
+                "recorded": "2023-09-18T14:42:14.981528+00:00",
+                "activity":
+                {
+                    "coding":
+                    [
                         {
                             "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
                             "code": "CREATE"
                         }
                     ]
                 },
-                "agent": [
+                "agent":
+                [
                     {
-                        "who": {
-                            "display": "Not available"
+                        "type":
+                        {
+                            "coding":
+                            [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/provenance-participant-type",
+                                    "code": "composer",
+                                    "display": "Composer"
+                                }
+                            ]
                         },
-                        "onBehalfOf": {
-                            "display": "Not available"
+                        "who":
+                        {
+                            "reference": "Organization/00000000-0000-0000-0002-000000000000",
+                            "type": "Organization",
+                            "display": "Canvas Medical"
+                        },
+                        "onBehalfOf":
+                        {
+                            "reference": "Organization/00000000-0000-0000-0002-000000000000",
+                            "type": "Organization"
                         }
                     }
                 ]
             }
-        },
-        {
-            "resource": {
-                "resourceType": "Provenance",
-                "id": "596bffc9-fda6-4503-8e08-9bdf4045a31f",
-                "target": [
-                    {
-                        "reference": "Observation/c903ee1c-a3b1-424a-b3bc-469354316e34",
-                        "type": "Observation"
-                    }
-                ],
-                "recorded": "2022-01-10T03:46:59.083833+00:00",
-                "location": {
-                    "extension": [
-                        {
-                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
-                            "valueCode": "unsupported"
-                        }
-                    ]
-                },
-                "activity": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
-                            "code": "CREATE"
-                        }
-                    ]
-                },
-                "agent": [
-                    {
-                        "who": {
-                            "display": "Not available"
-                        },
-                        "onBehalfOf": {
-                            "display": "Not available"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Provenance",
-                "id": "023ae5a7-8949-4422-a39b-8118f0d51a39",
-                "target": [
-                    {
-                        "reference": "Observation/1cb9be26-f43b-4556-ac97-564a6b7f5654",
-                        "type": "Observation"
-                    }
-                ],
-                "recorded": "2022-01-10T03:46:59.291160+00:00",
-                "location": {
-                    "extension": [
-                        {
-                            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
-                            "valueCode": "unsupported"
-                        }
-                    ]
-                },
-                "activity": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
-                            "code": "CREATE"
-                        }
-                    ]
-                },
-                "agent": [
-                    {
-                        "who": {
-                            "display": "Not available"
-                        },
-                        "onBehalfOf": {
-                            "display": "Not available"
-                        }
-                    }
-                ]
-            }
-        },
+        }
     ]
 }
 ```
-{% endtab %}
-{% tab provenance-search-response 400 %}
+    {% endtab %}
+
+    {% tab provenance-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
@@ -372,7 +271,42 @@ curl --request GET \
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
-</div>
+    {% endtab %}
 
+    {% tab provenance-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab provenance-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>
