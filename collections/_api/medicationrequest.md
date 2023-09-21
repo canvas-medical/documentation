@@ -8,7 +8,8 @@ sections:
         article: "a"
         description: >-
           An order or request for both supply of the medication and the instructions for administration of the medication to a patient. The resource is called "MedicationRequest" rather than "MedicationPrescription" or "MedicationOrder" to generalize the use across inpatient and outpatient settings, including care plans, etc., and to harmonize with workflow patterns.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html)
+          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html)<br><br>
+          FHIR MedicationRequests maps to the [Prescribe](https://canvas-medical.zendesk.com/hc/en-us/articles/360063523313-Prescribing-a-Medication) and [Refill](https://canvas-medical.zendesk.com/hc/en-us/articles/360057482354-Refill-Medications) commands in Canvas. Any adjustments made with the [Adjust Prescription](https://canvas-medical.zendesk.com/hc/en-us/articles/360061706154-Adjust-an-Existing-Medication) command will appear in MedicationRequest API responses.
         attributes:
           - name: id
             description: The identifier of the MedicationRequest
@@ -40,7 +41,7 @@ sections:
           - name: performer [deprecated]
             description: >-
               Intended performer of administration<br><br>
-              This attribute is deprecated and will be removed in a future release. It currently (and incorrectly) contains information about the dispenser of the medication.
+              This attribute is deprecated and will be removed in a future release. It currently (and incorrectly) contains information about the dispenser of the medication. Canvas recommends disregarding this attribute. Information about the dispenser can be obtained from the `performer` attribute under `dispenseRequest`.
             type: json
           - name: reasonCode
             description: Reason or indication for ordering or not ordering the medication
@@ -62,13 +63,15 @@ sections:
             description: The identifier of the MedicationRequest
             type: string
           - name: intent
-            description: Returns prescriptions with different intents	
+            description: >-
+              Returns prescriptions with different intents<br><br>Supported codes for search interactions: **order**, **filler-order**
             type: string
           - name: patient
             description: Returns prescriptions for a specific patient	
             type: string
           - name: status
-            description: Status of the prescription
+            description: >-
+              Status of the prescription<br><br>Supported codes for search interactions: **active**, **cancelled**, **entered-in-error**, **stopped** 
             type: string
         endpoints: [read, search]
         read:
@@ -93,6 +96,94 @@ sections:
 
     {% tab medicationrequest-read-response 200 %}
 ```json
+{
+    "resourceType": "MedicationRequest",
+    "id": "3423a69c-618d-4cbe-861a-54c60f48744e",
+    "status": "active",
+    "intent": "order",
+    "reportedBoolean": false,
+    "medicationCodeableConcept":
+    {
+        "coding":
+        [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "244899",
+                "display": "lisinopril 10 mg tablet"
+            },
+            {
+                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                "code": "314076",
+                "display": "lisinopril 10 mg tablet"
+            }
+        ]
+    },
+    "subject":
+    {
+        "reference": "Patient/6cb2a409334943c2b48f1686dc739f11",
+        "type": "Patient"
+    },
+    "encounter":
+    {
+        "reference": "Encounter/bdadce18-098b-40dc-8bdd-ef8481bd999a",
+        "type": "Encounter"
+    },
+    "authoredOn": "2023-09-21T18:19:36.106449+00:00",
+    "requester":
+    {
+        "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
+        "type": "Practitioner"
+    },
+    "reasonCode":
+    [
+        {
+            "coding":
+            [
+                {
+                    "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                    "code": "I10",
+                    "display": "Essential (primary) hypertension"
+                }
+            ]
+        }
+    ],
+    "dosageInstruction":
+    [
+        {
+            "text": "take 1 daily",
+            "doseAndRate":
+            [
+                {
+                    "doseQuantity":
+                    {
+                        "unit": "Tablet"
+                    }
+                }
+            ]
+        }
+    ],
+    "dispenseRequest":
+    {
+        "numberOfRepeatsAllowed": 3,
+        "quantity":
+        {
+            "value": 30.0
+        },
+        "expectedSupplyDuration":
+        {
+            "value": 30,
+            "unit": "days"
+        },
+        "performer":
+        {
+            "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
+        }
+    },
+    "substitution":
+    {
+        "allowedBoolean": true
+    }
+}
 ```
     {% endtab %}
 
@@ -169,21 +260,109 @@ sections:
     [
         {
             "relation": "self",
-            "url": "/MedicationRequest?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+            "url": "/MedicationRequest?patient=Patient%2F6cb2a409334943c2b48f1686dc739f11&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/MedicationRequest?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+            "url": "/MedicationRequest?patient=Patient%2F6cb2a409334943c2b48f1686dc739f11&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/MedicationRequest?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+            "url": "/MedicationRequest?patient=Patient%2F6cb2a409334943c2b48f1686dc739f11&_count=10&_offset=0"
         }
     ],
     "entry":
     [
         {
-            "resource": {}
+            "resource":
+            {
+                "resourceType": "MedicationRequest",
+                "id": "3423a69c-618d-4cbe-861a-54c60f48744e",
+                "status": "active",
+                "intent": "order",
+                "reportedBoolean": false,
+                "medicationCodeableConcept":
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://www.fdbhealth.com/",
+                            "code": "244899",
+                            "display": "lisinopril 10 mg tablet"
+                        },
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "314076",
+                            "display": "lisinopril 10 mg tablet"
+                        }
+                    ]
+                },
+                "subject":
+                {
+                    "reference": "Patient/6cb2a409334943c2b48f1686dc739f11",
+                    "type": "Patient"
+                },
+                "encounter":
+                {
+                    "reference": "Encounter/bdadce18-098b-40dc-8bdd-ef8481bd999a",
+                    "type": "Encounter"
+                },
+                "authoredOn": "2023-09-21T18:19:36.106449+00:00",
+                "requester":
+                {
+                    "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
+                    "type": "Practitioner"
+                },
+                "reasonCode":
+                [
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I10",
+                                "display": "Essential (primary) hypertension"
+                            }
+                        ]
+                    }
+                ],
+                "dosageInstruction":
+                [
+                    {
+                        "text": "take 1 daily",
+                        "doseAndRate":
+                        [
+                            {
+                                "doseQuantity":
+                                {
+                                    "unit": "Tablet"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "dispenseRequest":
+                {
+                    "numberOfRepeatsAllowed": 3,
+                    "quantity":
+                    {
+                        "value": 30.0
+                    },
+                    "expectedSupplyDuration":
+                    {
+                        "value": 30,
+                        "unit": "days"
+                    },
+                    "performer":
+                    {
+                        "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
+                    }
+                },
+                "substitution":
+                {
+                    "allowedBoolean": true
+                }
+            }
         }
     ]
 }
