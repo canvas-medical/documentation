@@ -7,126 +7,58 @@ sections:
         name: Encounter
         article: "a"
         description: >-
-         An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.
+         An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.<br><br>[https://hl7.org/fhir/R4/encounter.html](https://hl7.org/fhir/R4/encounter.html)<br><br><b>Encounter creation in Canvas</b><br><br>An encounter is associated with some of our notes in Canvas. For our default base notes, an encounter will be created with these note types:<br><br>Lab visit<br>Phone visit<br>Telehealth visit<br>Office visit<br>Home Visit<br>In-patient Visit<br><br>Appointment Notes, once checked in, that are for the above visit types will be converted to an encounter.<br><br>See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360056430014-Appointments) for how to schedule an appointment.<br><br>With our [Configurable Note Types Feature](https://canvas-medical.zendesk.com/hc/en-us/articles/6623684024083) all custom note types will be associated with an encounter by default.
         attributes:
           - name: id
             description: >-
               The identifier of the encounter
             type: string
-            required: true
-          - name: resourceType
-            type: string
-            required: true
           - name: identifier
-            type: string
+            type: array[json]
             description: >-
               Identifier(s) by which this encounter is known
-            attributes:
-             - name: id
-               type: string
-             - name: system
-               type: string
-             - name: value
-               type: string
           - name: status
             type: string
             description: >-
-              status 
+              The status of the encounter. Supported statuses are **planned** **cancelled**, **finished** and **in-progress**.
           - name: class
             type: json
             description: >-
               Classification of patient encounter
-            attributes:
-             - name: system
-               type: string
-             - name: code
-               type: string
-             - name: display
-               type: string
           - name: type
-            type: json
+            type: array[json]
             description: >-
               Specific type of encounter
-            attributes:
-             - name: coding
-               type: string
-               attributes:
-                 - name: system
-                   type: string
-                 - name: code
-                   type: string
-                 - name: display
-                   type: string
           - name: subject
-            type: string
+            type: json
             description: >-
               The patient or group present at the encounter
           - name: participant
-            type: json
+            type: array[json]
             description: >-
               List of participants involved in the encounter
-            attributes:
-              - name: type
-                type: string
-                attributes:
-                  - name: coding
-                    type: string
-                    attributes:
-                      - name: system
-                        type: string
-                      - name: code
-                        type: string
-                      - name: display
-                        type: string
-              - name: period
-                type: json
-                attributes:
-                  - name: start
-                    type: datetime
-                  - name: end
-                    type: datetime
-              - name: individual
-                type: string
           - name: appointment
-            type: string
+            type: array[json]
             description: >-
               The appointment that scheduled this encounter
           - name: period
             type: json
             description: >-
               The start and end time of the encounter
-            attributes:
-              - name: start
-                type: datetime
-              - name: end
-                type: datetime
           - name: reasonCode
-            type: string
+            type: array[json]
             description: >-
               Coded reason the encounter takes place
           - name: reasonReference
-            type: string
+            type: array[json]
             description: >-
               Reason the encounter takes place (reference)
           - name: hospitalization
             type: json
             description: >-
               Details about the admission to a healthcare service
-            attributes:
-              - name: dischargeDisposition
-                type: json
-                attributes:
-                 - name: coding
-                   type: string
-                   attributes:
-                    - name: system
-                      type: string
-                    - name: code
-                      type: string
-                    - name: display
-                      type: string
           - name: location
-            type: string
+            type: array[json]
             description: >-
               List of locations where the patient has been during the encounter
         search_parameters:
@@ -146,23 +78,25 @@ sections:
             description: >-
               Encounter subject
           - name: date
-            type: array
+            type: string
             description: >-
-              The date the encounter was created
+              The start time of the encounter
         endpoints: [read, search]
         read:
-          responses: [200, 404]
+          responses: [200, 401, 403, 404]
           example_response: encounter-read-response
           example_request: encounter-read-request
+          description: Read an Encounter resource
         search:
-          responses: [200, 400]
+          responses: [200, 400, 401, 403]
           example_response: encounter-search-response
           example_request: encounter-search-request
+          description: Search for Encounter resources
 ---
 <div id="encounter-read-request">
 {% tabs encounter-read-request %}
 {% tab encounter-read-request python %}
-```sh
+```python
 import requests
 
 url = "https://fumage-example.canvasmedical.com/Encounter/<id>"
@@ -180,7 +114,7 @@ print(response.text)
 {% tab encounter-read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Encounter/<id> \
+     --url 'https://fumage-example.canvasmedical.com/Encounter/<id>' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -191,175 +125,6 @@ curl --request GET \
 <div id="encounter-read-response">
 {% tabs encounter-read-response %}
 {% tab encounter-read-response 200 %}
-```json
-{
-    "resourceType": "Bundle",
-    "type": "searchset",
-    "total": 1,
-    "link": [
-        {
-            "relation": "self",
-            "url": "/Encounter?_count=10&_offset=0"
-        },
-        {
-            "relation": "first",
-            "url": "/Encounter?_count=10&_offset=0"
-        },
-        {
-            "relation": "next",
-            "url": "/Encounter?_count=10&_offset=10"
-        },
-        {
-            "relation": "last",
-            "url": "/Encounter?_count=10&_offset=3090"
-        }
-    ],
-    "entry": [
-        {
-            "resource": {
-                "resourceType": "Encounter",
-                "id": "ac4bff6e-a32d-49c4-884d-dad2ea7230b7",
-                "identifier": [
-                    {
-                        "id": "ac4bff6e-a32d-49c4-884d-dad2ea7230b7",
-                        "system": "http://canvasmedical.com",
-                        "value": "ac4bff6e-a32d-49c4-884d-dad2ea7230b7"
-                    }
-                ],
-                "status": "finished",
-                "class": {
-                    "system": "https://www.hl7.org/fhir/v3/ActEncounterCode/vs.html"
-                },
-                "type": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://snomed.info/sct",
-                                "code": "308335008",
-                                "display": "Office Visit"
-                            }
-                        ]
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/c645ed9c31b1430f82e5e371eb1657cb",
-                    "type": "Patient"
-                },
-                "participant": [
-                    {
-                        "type": [
-                            {
-                                "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-                                        "code": "PART",
-                                        "display": "Participation"
-                                    }
-                                ]
-                            }
-                        ],
-                        "period": {
-                            "start": "2021-06-15T20:56:01.419149+00:00"
-                        },
-                        "individual": {
-                            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
-                            "type": "Practitioner",
-                            "display": "Canvas Support MD"
-                        }
-                    }
-                ],
-                "period": {
-                    "start": "2021-06-15T20:56:01.419149+00:00"
-                },
-                "reasonCode": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://snomed.info/sct",
-                                "code": "308335008",
-                                "display": "Patient encounter procedure (procedure)"
-                            }
-                        ]
-                    }
-                ],
-                "hospitalization": {
-                    "dischargeDisposition": {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/discharge-disposition",
-                                "code": "oth",
-                                "display": "Other"
-                            }
-                        ]
-                    }
-                },
-                "location": [
-                    {
-                        "location": {
-                            "reference": "Location/50ea08f9-f4a5-4315-90e3-10d38922daa8",
-                            "type": "Location"
-              }
-                    }
-                ]
-            }
-        }
-    ]
-}
-
-
-```
-{% endtab %}
-{% tab encounter-read-response 404 %}
-```json
-{
-    "resourceType": "OperationOutcome",
-    "issue": [
-        {
-            "severity": "error",
-            "code": "not-found",
-            "details": {
-                "text": "Unknown Encounter resource '7d1ce256fcd7408193b0459650937a07'"
-            }
-        }
-    ]
-}
-```
-{% endtab %}
-{% endtabs %}
-</div>
-
-<div id="encounter-search-request">
-{% tabs encounter-search-request %}
-{% tab encounter-search-request python %}
-```sh
-import requests
-
-url = "https://fhir-example.canvasmedical.com/Encounter"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab encounter-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Encounter \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
-</div>
-
-<div id="encounter-search-response">
-{% tabs encounter-search-response %}
-{% tab encounter-search-response 200 %}
 ```json
 {
     "resourceType": "Encounter",
@@ -427,6 +192,20 @@ curl --request GET \
             ]
         }
     ],
+    "reasonReference": [
+        {
+            "reference": "Condition/b06982fa-9bcb-4695-a2f4-09cfdb21f03d",
+            "type": "Condition"
+        },
+        {
+            "reference": "Condition/e3df5e12-8ea4-46f8-922e-89a229945ef4",
+            "type": "Condition"
+        },
+        {
+            "reference": "Condition/266eae2b-4983-42b7-94ca-1397f80a7968",
+            "type": "Condition"
+        }
+    ],
     "hospitalization": {
         "dischargeDisposition": {
             "coding": [
@@ -449,17 +228,252 @@ curl --request GET \
 }
 ```
 {% endtab %}
+{% tab encounter-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab encounter-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab encounter-read-response 404 %}
+```json
+{
+    "resourceType": "OperationOutcome",
+    "issue": [
+        {
+            "severity": "error",
+            "code": "not-found",
+            "details": {
+                "text": "Unknown Encounter resource '7d1ce256fcd7408193b0459650937a07'"
+            }
+        }
+    ]
+}
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="encounter-search-request">
+{% tabs encounter-search-request %}
+{% tab encounter-search-request python %}
+```python
+import requests
+
+url = "https://fhir-example.canvasmedical.com/Encounter?patient=Patient/8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+{% tab encounter-search-request curl %}
+```sh
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/Encounter?patient=Patient/8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+{% endtab %}
+{% endtabs %}
+</div>
+
+<div id="encounter-search-response">
+{% tabs encounter-search-response %}
+{% tab encounter-search-response 200 %}
+```json
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/Encounter?patient=Patient%2F8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Encounter?patient=Patient%2F8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Encounter?patient=Patient%2F8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15&_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Encounter",
+                "id": "06e0ee68-59f8-4899-b906-1298a36870ab",
+                "identifier": [
+                    {
+                        "id": "06e0ee68-59f8-4899-b906-1298a36870ab",
+                        "system": "http://canvasmedical.com",
+                        "value": "06e0ee68-59f8-4899-b906-1298a36870ab"
+                    }
+                ],
+                "status": "finished",
+                "class": {
+                    "system": "https://www.hl7.org/fhir/v3/ActEncounterCode/vs.html"
+                },
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "308335008",
+                                "display": "Office Visit"
+                            }
+                        ]
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/8f19219e36054ea89c4d98c9b258c2f1",
+                    "type": "Patient"
+                },
+                "participant": [
+                    {
+                        "type": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                        "code": "PART",
+                                        "display": "Participation"
+                                    }
+                                ]
+                            }
+                        ],
+                        "period": {
+                            "start": "2023-09-20T18:41:54.885110+00:00",
+                            "end": "2023-09-20T18:57:47.490741+00:00"
+                        },
+                        "individual": {
+                            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                            "type": "Practitioner",
+                            "display": "Larry Weed"
+                        }
+                    }
+                ],
+                "period": {
+                    "start": "2023-09-20T18:41:54.885110+00:00",
+                    "end": "2023-09-20T18:57:47.490741+00:00"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "308335008",
+                                "display": "Patient encounter procedure (procedure)"
+                            }
+                        ]
+                    }
+                ],
+                "reasonReference": [
+                    {
+                        "reference": "Condition/82e02680-c37d-4705-876d-b845d85efc20",
+                        "type": "Condition"
+                    }
+                ],
+                "hospitalization": {
+                    "dischargeDisposition": {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/discharge-disposition",
+                                "code": "oth",
+                                "display": "Other"
+                            }
+                        ]
+                    }
+                },
+                "location": [
+                    {
+                        "location": {
+                            "reference": "Location/e332ff73-7fa4-4432-abe9-2adc43b1bb2c",
+                            "type": "Location"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+{% endtab %}
 {% tab encounter-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
       "code": "invalid",
       "details": {
         "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+    {% tab encounter-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+{% tab encounter-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
       }
     }
   ]
