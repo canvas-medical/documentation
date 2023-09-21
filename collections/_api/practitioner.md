@@ -7,60 +7,45 @@ sections:
         name: Practitioner
         article: "a"
         description: >-
-         A person who is directly or indirectly involved in the provisioning of healthcare.
+         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/R4/practitioner.html](https://hl7.org/fhir/R4/practitioner.html)<br><br>To create a new staff member in Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360058232193-Add-a-new-staff-member).
         attributes:
           - name: id
             description: >-
               The identifier of the practitioner
             type: string
-            required: true
-          - name: resourceType
-            type: string
-            required: true
           - name: identifier
-            type: json
-            required: true
+            type: array[json]
+            description: An identifier for the person as this agent
           - name: name
-            type: json
-            required: true
-            attributes:
-             - name: use
-               type: string
-             - name: text
-               type: string
-             - name: family
-               type: string
-             - name: given
-               type: string
-             - name: prefix
-               type: string
-             - name: suffix
-               type: string
+            type: array[json]
+            description: The name(s) associated with the practitioner
         search_parameters:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier
           - name: name
             type: string
-            description: Look up practitioner by name. Partial search is supported. If the practitioner you are looking for is inactive, you still need to use the include-non-scheduleable-practitioners = True
+            description: A search that may match any of the string fields in the name, including family, given, prefix, suffix, and/or text. Partial search is supported. If the practitioner you are looking for is inactive, you will still need to pass <i>include-non-scheduleable-practitioners=True</i>.
           - name: include-non-scheduleable-practitioners
             type: boolean
-            description: By default we only display scheduleable staff, marking this as True will return all active staff
+            description: By default, only scheduleable staff are displayed. Passing this parameter as True will return all active staff.
         endpoints: [read, search]
         read:
-          responses: [200, 404]
+          responses: [200, 401, 403, 404]
           example_request: practitioner-read-request
           example_response: practitioner-read-response
+          description: Read a Practitioner resource
         search:
-          responses: [200, 400]
+          responses: [200, 400, 401, 403]
           example_request: practitioner-search-request
           example_response: practitioner-search-response
+          description: Search for Practitioner resources
 ---
 
 <div id="practitioner-read-request">
-{% tabs read-request %}
-{% tab read-request python %}
-```sh
+{% tabs practitioner-read-request %}
+{% tab practitioner-read-request python %}
+```python
 import requests
 
 url = "https://fumage-example.canvasmedical.com/Practitioner/<id>"
@@ -75,10 +60,10 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 {% endtab %}
-{% tab read-request curl %}
+{% tab practitioner-read-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Practitioner/<id> \
+     --url 'https://fumage-example.canvasmedical.com/Practitioner/<id>' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -112,7 +97,38 @@ curl --request GET \
 }
 ```
 {% endtab %}
-
+{% tab practitioner-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab practitioner-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
 {% tab practitioner-read-response 404 %}
 ```json
 {
@@ -136,10 +152,10 @@ curl --request GET \
 <div id="practitioner-search-request">
 {% tabs practitioner-search-request %}
 {% tab practitioner-search-request python %}
-```sh
+```python
 import requests
 
-url = "https://fumage-example.canvasmedical.com/Practitioner"
+url = "https://fumage-example.canvasmedical.com/Practitioner?name=Magee"
 
 headers = {
     "accept": "application/json",
@@ -155,7 +171,7 @@ print(response.text)
 {% tab practitioner-search-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Practitioner \
+     --url 'https://fumage-example.canvasmedical.com/Practitioner?name=Magee' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -167,108 +183,42 @@ curl --request GET \
 {% tabs practitioner-search-response %}
 {% tab practitioner-search-response 200 %}
 ```json
-  {
+{
     "resourceType": "Bundle",
     "type": "searchset",
-    "total": 4,
+    "total": 1,
     "link": [
         {
             "relation": "self",
-            "url": "/Practitioner?_count=10&_offset=0"
+            "url": "/Practitioner?name=Magee&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Practitioner?_count=10&_offset=0"
+            "url": "/Practitioner?name=Magee&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Practitioner?_count=10&_offset=0"
+            "url": "/Practitioner?name=Magee&_count=10&_offset=0"
         }
     ],
     "entry": [
         {
             "resource": {
                 "resourceType": "Practitioner",
-                "id": "e766816672f34a5b866771c773e38f3c",
+                "id": "3640cd20de8a470aa570a852859ac87e",
                 "identifier": [
                     {
                         "system": "http://hl7.org/fhir/sid/us-npi",
-                        "value": "3554694505"
+                        "value": "2967110133"
                     }
                 ],
                 "name": [
                     {
                         "use": "usual",
-                        "text": "Youta Priti MD",
-                        "family": "Priti",
+                        "text": "Steven Magee MD",
+                        "family": "Magee",
                         "given": [
-                            "Youta"
-                        ]
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Practitioner",
-                "id": "3a182f42885645e0bc3d608e7c02aad8",
-                "identifier": [
-                    {
-                        "system": "http://hl7.org/fhir/sid/us-npi",
-                        "value": "123456789"
-                    }
-                ],
-                "name": [
-                    {
-                        "use": "usual",
-                        "text": "Nikhil Krishnan MD",
-                        "family": "Krishnan",
-                        "given": [
-                            "Nikhil"
-                        ]
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Practitioner",
-                "id": "77bd177f81b14c9f943e1e30ed3dd989",
-                "identifier": [
-                    {
-                        "system": "http://hl7.org/fhir/sid/us-npi",
-                        "value": "123456789"
-                    }
-                ],
-                "name": [
-                    {
-                        "use": "usual",
-                        "text": "Breanna Heller LMFT",
-                        "family": "Heller",
-                        "given": [
-                            "Breanna"
-                        ]
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Practitioner",
-                "id": "f65c2bed0d8643cc808e25d5cfcf5070",
-                "identifier": [
-                    {
-                        "system": "http://hl7.org/fhir/sid/us-npi",
-                        "value": "1366978173"
-                    }
-                ],
-                "name": [
-                    {
-                        "use": "usual",
-                        "text": "Patrick van Nieuwenhuizen MD",
-                        "family": "van Nieuwenhuizen",
-                        "given": [
-                            "Patrick"
+                            "Steven"
                         ]
                     }
                 ]
@@ -282,7 +232,6 @@ curl --request GET \
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
@@ -295,6 +244,37 @@ curl --request GET \
 }
 ```
 {% endtab %}
+{% tab practitioner-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab practitioner-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
 {% endtabs %}
 </div>
-
