@@ -282,6 +282,8 @@ api_observation:
  - title: "Observation Search"
    url: /api/observation/#search
 api_organization:
+ - title: "Organization Read"
+   url: /api/organization/#read
  - title: "Organization Search"
    url: /api/organization/#search
 api_patient:
