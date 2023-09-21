@@ -7,8 +7,10 @@ sections:
         name: PaymentNotice
         article: "a"
         description: >-
-          Records of payments made towards a patient's balance.<br><br>
-          [https://hl7.org/fhir/R4/paymentnotice.html](https://hl7.org/fhir/R4/paymentnotice.html)
+          This resource provides the status of the payment for goods and services rendered, and the request and response resource references.<br><br>
+          [https://hl7.org/fhir/R4/paymentnotice.html](https://hl7.org/fhir/R4/paymentnotice.html)<br><br>
+          In Canvas, FHIR PaymentNotice records payments made toward a patient's balance.<br><br>
+          See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/1500001122421-Collect-a-payment) for information about how to collect payments.
         attributes:
           - name: id
             description: >-
@@ -81,7 +83,12 @@ sections:
             description: A reference to the patient whose balance the payment was applied to.
         endpoints: [create, search]
         create:
-          description: Create a PaymentNotice resource.
+          description: >-
+            Create a PaymentNotice resource.<br><br>
+            This endpoint can be used to note a payment that has been collected from a patient and deduct the amount from their balance.<br><br>
+            **Don't overpay!** Requests that would bring the account balance negative will be rejected. Example: If a patient owes $5, Canvas would reject a PaymentNotice with a value that is greater than $5.<br><br>
+            A created payment notice can be found in Canvas by going to the patient's chart, and clicking the paper icon in the top right corner. The created payment notice will be displayed under receipts. The "Originator" will be automatically set to Canvas Bot.<br><br>
+            As payment notices are created, they will be applied to charges in chronological order of creation date, from oldest to newest.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: paymentnotice-create-request
           example_response: paymentnotice-create-response
