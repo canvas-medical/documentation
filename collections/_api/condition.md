@@ -65,7 +65,7 @@ sections:
             Create a Condition resource.<br><br>
             This endpoint does not prevent duplicates in the record. **Canvas recommends performing a search prior to adding a new condition** to confirm whether the condition has already been created for the patient.<br><br>
             If `clinicalStatus` is **active**, the Condition will be added as a `Diagnose` command. If it is not **active**, the Condition will be added as a `Past Medical History` command.<br><br>
-            If `encounter` is provided, the Condition will be added to existing encounter (note). If it is not provided, a new data import note will be created.
+            If `encounter` is provided, the Condition will be added to the existing encounter (note). If it is not provided, a new data import note will be created.
           example_request: condition-create-request
           example_response: condition-create-response
         read:
