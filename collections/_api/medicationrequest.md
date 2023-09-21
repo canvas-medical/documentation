@@ -37,6 +37,11 @@ sections:
           - name: requester
             description: Who/What requested the Request
             type: json
+          - name: performer [deprecated]
+            description: >-
+              Intended performer of administration<br><br>
+              This attribute is deprecated and will be removed in a future release. It currently (and incorrectly) contains information about the dispenser of the medication.
+            type: json
           - name: reasonCode
             description: Reason or indication for ordering or not ordering the medication
             type: array[json]
