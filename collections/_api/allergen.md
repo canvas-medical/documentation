@@ -7,21 +7,13 @@ sections:
         name: Allergen
         article: "an"
         description: >-
-          Get information about a particular Allergen record
+          A substance that, upon exposure to an individual, may cause a harmful or undesirable physiological response.
         attributes:
           - name: id
-            description: >-
-              The identifier of the Allergen
+            description: The identifier of the Allergen
             type: string
-            required: true
-          - name: resourceType
-            description: >-
-              The type of resource
-            type: string
-            required: true
           - name: code
-            description: >-
-              Code that identifies the allergen
+            description: Code that identifies the allergen
             type: json
         search_parameters:
           - name: _text
@@ -32,13 +24,15 @@ sections:
             type: string
         endpoints: [read, search]
         read:
-          responses: [200, 404]
-          example_response: allergen-read-response
+          description: Read an Allergen resource.
+          responses: [200, 401, 403, 404]
           example_request: allergen-read-request
+          example_response: allergen-read-response
         search:
-          responses: [200, 400]
-          example_response: allergen-search-response
+          description: Search for Allergyen resources.
+          responses: [200, 400, 401, 403]
           example_request: allergen-search-request
+          example_response: allergen-search-response
 ---
 
 <div id="allergen-read-request">
@@ -46,8 +40,10 @@ sections:
 </div>
 
 <div id="allergen-read-response">
-{% tabs allergen-read-response %}
-{% tab allergen-read-response 200 %}
+
+  {% tabs allergen-read-response %}
+
+    {% tab allergen-read-response 200 %}
 ```json
 {
     "resourceType": "Allergen",
@@ -67,8 +63,43 @@ sections:
     }
 }
 ```
-{% endtab %}
-{% tab allergen-read-response 404 %}
+    {% endtab %}
+
+    {% tab allergen-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab allergen-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab allergen-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -77,14 +108,16 @@ sections:
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown Allergen resource 'a04b44ec-c7df-4808-9043-e9c4b1d352a9'"
+        "text": "Unknown Allergen resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
       }
     }
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="allergen-search-request">
@@ -92,8 +125,10 @@ sections:
 </div>
 
 <div id="allergen-search-response">
-{% tabs allergen-search-response %}
-{% tab allergen-search-response 200 %}
+
+  {% tabs allergen-search-response %}
+
+    {% tab allergen-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -138,12 +173,12 @@ sections:
     ]
 }
 ```
-{% endtab %}
-{% tab allergen-search-response 400 %}
+    {% endtab %}
+
+    {% tab allergen-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
@@ -155,6 +190,42 @@ sections:
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+    {% tab allergen-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab allergen-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
