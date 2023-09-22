@@ -9,7 +9,7 @@ sections:
         description: >-
           Represents a defined collection of entities that may be discussed or acted upon collectively but which are not expected to act collectively, and are not formally or legally recognized; i.e. a collection of entities that isn't an Organization.<br><br>
           [https://hl7.org/fhir/R4/group.html](https://hl7.org/fhir/R4/group.html)<br><br>
-          In Canvas a Team is mapped to the FHIR Group resource. See our Zendesk [article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams) for information about creating teams in Canvas.
+          In Canvas a Team is mapped to the FHIR Group resource. See our [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams) for information about creating teams in Canvas.
         attributes:
           - name: id
             description: The identifier of the Group
