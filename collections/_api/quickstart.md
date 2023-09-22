@@ -13,7 +13,7 @@ If you have a Canvas Production instance, you will need to request a token and r
 Let's start by creating a patient. we've gone ahead and generated some boilerplate Patient info that includes all of the minimum required parameters for a Create a Patient request. 
 
 ```shell
-curl -i --location 'https://fhir-<sandbox-name>.canvasmedical.com/Patient' \
+curl -i --location 'https://fumage-<sandbox-name>.canvasmedical.com/Patient' \
      --header 'Authorization: Bearer <bearer-token>' \
      --header 'Content-Type: application/json' \
      --data '{
@@ -63,7 +63,7 @@ If you are using one of our canvas sandboxes, there will already be a demo staff
 Run the following request to find the list of Practitioners in your organization. Again you will need to replace the <sandbox-name> and <bearer-token> with the same values you used to create your patient above. 
 
 ```shell
-curl --location 'https://fhir-<sandbox-name>.canvasmedical.com/Practitioner' \
+curl --location 'https://fumage-<sandbox-name>.canvasmedical.com/Practitioner' \
 --header 'Content-Type: application/fhir+json' \
 --header 'Authorization: Bearer <bearer-token>u' | jq 
 ```
@@ -112,7 +112,7 @@ Now we have our Patient ID and Practitioner ID. We're ready to create our first 
 Now lets set up the cURL command to create the appointment. Again you will need to replace the <sandbox-name> and <bearer-token>. Then replace <practitioner-id> and <patient-id> with the values copied in the last two requests. This appointment will create a Telehealth Appointment. You might want to update the start and end dates to be today's date for easy find-ability on the calendar view.  
 
 ```shell
-curl -i --location 'https://fhir-<sandbox-name>.canvasmedical.com/Appointment' \
+curl -i --location 'https://fumage-<sandbox-name>.canvasmedical.com/Appointment' \
   --header 'Authorization: Bearer kpGhI9j7U6IVq7ScBaxmSogpKmA3bsfu' \
   --header 'Content-Type: application/json' \
   --data '{

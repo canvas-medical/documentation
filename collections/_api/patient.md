@@ -959,7 +959,7 @@ null
 {% tab patient-update-request python %}
 ```sh
 curl --request PUT \
-     --url https://fhir-example.canvasmedical.com/Patient/_id \
+     --url https://fumage-example.canvasmedical.com/Patient/_id \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

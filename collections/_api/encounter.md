@@ -285,7 +285,7 @@ curl --request GET \
 ```python
 import requests
 
-url = "https://fhir-example.canvasmedical.com/Encounter?patient=Patient/8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15"
+url = "https://fumage-example.canvasmedical.com/Encounter?patient=Patient/8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15"
 
 headers = {
     "accept": "application/json",

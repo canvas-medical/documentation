@@ -7,7 +7,7 @@ sections:
         name: QuestionnaireResponse
         article: "a"
         description: >-
-           [FHIR:](https://fhir-ru.github.io/questionnaireresponse.html) A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.<br><br> Questionnaires in Canvas are used to capture structured data. They are fully customizable and support many use cases. Learn how to configure questionnaires in your instance [here](/documentation/questionnaires). Once loaded to Canvas, you will need the Questionnaire ID to interact with this resource. You can leverage our Questionnaire Search to do so.<br><br>When building your questionnaires, make sure to follow our best practices around codes and code systems. The tool to load your questionnaires now has validation to ensure unique pairings where necessary. 
+           [FHIR:](https://hl7.org/fhir/R4/questionnaireresponse.html) A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.<br><br> Questionnaires in Canvas are used to capture structured data. They are fully customizable and support many use cases. Learn how to configure questionnaires in your instance [here](/documentation/questionnaires). Once loaded to Canvas, you will need the Questionnaire ID to interact with this resource. You can leverage our Questionnaire Search to do so.<br><br>When building your questionnaires, make sure to follow our best practices around codes and code systems. The tool to load your questionnaires now has validation to ensure unique pairings where necessary. 
         attributes:
           - name: id
             description: >-
@@ -495,7 +495,7 @@ curl --request GET \
 ```sh
 import requests
 
-url = "https://fhir-example.canvasmedical.com/QuestionnaireResponse"
+url = "https://fumage-example.canvasmedical.com/QuestionnaireResponse"
 
 payload = {
     "resourceType": "QuestionnaireResponse",
@@ -547,7 +547,7 @@ print(response.text)
 {% tab questionnaire-response-create-request curl %}
 ```sh
 curl --request POST \
-     --url https://fhir-example.canvasmedical.com/QuestionnaireResponse \
+     --url https://fumage-example.canvasmedical.com/QuestionnaireResponse \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
