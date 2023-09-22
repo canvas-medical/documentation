@@ -9,7 +9,18 @@ sections:
         description: >-
           A structured set of questions intended to guide the collection of answers from end-users. Questionnaires provide detailed control over order, presentation, phraseology and grouping to allow coherent, consistent data collection.<br><br>
           [https://hl7.org/fhir/R4/questionnaire.html](https://hl7.org/fhir/R4/questionnaire.html)<br><br>
-          See our [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4403561447827-Creating-a-New-Questionnaire) for information about how to create and upload a questionnaire in Canvas.
+          See our [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4403561447827-Creating-a-New-Questionnaire) for information about how to create and upload a questionnaire in Canvas.<br><br>
+          **Understanding Canvas Questionnaires**<br><br>
+          *Codings*<br><br>
+          All questionnaires must have coding, and all response options within a question on a questionnaire must have codings.<br><br>
+          *Question Types*<br><br>
+          Canvas supports 3 different type of questions:<br><br>
+          1. Multi select responses allowed questions are denoted with<br><br>
+          `"type": "choice", "repeats": true`<br><br>
+          2. Single select response questions are denoted with<br><br>
+          `"type": "choice", "repeats": false`<br><br>
+          3. Free text responses questions are denoted with<br><br>
+          `"type": "text", "repeats": false`<br><br>
         attributes:
           - name: id
             description: The identifier of the Questionnaire
@@ -34,13 +45,17 @@ sections:
             description: The identifier of the Questionnaire
             type: string
           - name: code
-            description: A code that corresponds to one of its items in the questionnaire
+            description: >-
+              A code that corresponds to one of its items in the questionnaire<br><br>
+              A Questionnaire search of the form `/Questionnaire?code=456789` will return Questionnaire resources uploaded to Canvas that have a question with the code **456789**. Questions can be reused in multiple questionnaires, but any given question code should only appear once within a particular questionnaire.
             type: string
           - name: name
             description: Computationally friendly name of the questionnaire
             type: string
           - name: questionnaire-code
-            description: The questionnaire the answers are provided for
+            description: >-
+              The questionnaire the answers are provided for<br><br>
+              A Questionnaire search of of the form `/Questionnaire?questionnaire-code=711013002` will return Questionnaire resources uploaded to Canvas that have the code **711013002**.
             type: string
           - name: status
             description: The current status of the questionnaire
