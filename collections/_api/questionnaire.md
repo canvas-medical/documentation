@@ -15,12 +15,13 @@ sections:
           All questionnaires must have coding, and all response options within a question on a questionnaire must have codings.<br><br>
           *Question Types*<br><br>
           Canvas supports 3 different type of questions:<br><br>
-          1. Multi select responses allowed questions are denoted with<br><br>
+          1. Multi select responses allowed questions are denoted with:<br><br>
           `"type": "choice", "repeats": true`<br><br>
-          2. Single select response questions are denoted with<br><br>
+          2. Single select response questions are denoted with:<br><br>
           `"type": "choice", "repeats": false`<br><br>
-          3. Free text responses questions are denoted with<br><br>
+          3. Free text responses questions are denoted with:<br><br>
           `"type": "text", "repeats": false`<br><br>
+          Questions can be reused in multiple questionnaires, but any given question code should only appear once within a particular questionnaire.
         attributes:
           - name: id
             description: The identifier of the Questionnaire
@@ -47,7 +48,7 @@ sections:
           - name: code
             description: >-
               A code that corresponds to one of its items in the questionnaire<br><br>
-              A Questionnaire search of the form `/Questionnaire?code=456789` will return Questionnaire resources uploaded to Canvas that have a question with the code **456789**. Questions can be reused in multiple questionnaires, but any given question code should only appear once within a particular questionnaire.
+              A Questionnaire search of the form `/Questionnaire?code=456789` will return Questionnaire resources uploaded to Canvas that have a question with the code **456789**.
             type: string
           - name: name
             description: Computationally friendly name of the questionnaire
