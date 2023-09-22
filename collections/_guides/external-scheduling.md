@@ -101,7 +101,7 @@ class AppointmentNotification(ClinicalQualityMeasure):
     def get_fhir_appointment(self, appointment_id):
         """ Given a Task ID we can perform a FHIR Task Search Request"""
         response = requests.get(
-            (f"https://fhir-{self.instance_name}.canvasmedical.com/"
+            (f"https://fumage-{self.instance_name}.canvasmedical.com/"
              f"Appointment/{appointment_id}"),
             headers={
                 'Authorization': f'Bearer {self.get_fhir_api_token()}',
