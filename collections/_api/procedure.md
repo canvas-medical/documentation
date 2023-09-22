@@ -28,11 +28,11 @@ sections:
             type: datetime
         search_parameters:
           - name: _id
-            type: string
             description: The identifier of the Procedure
-          - name: patient
             type: string
+          - name: patient
             description: Who the procedure was performed on
+            type: string
         endpoints: [read, search]
         read:
           description: Read an Procedure resource.
