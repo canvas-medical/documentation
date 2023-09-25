@@ -26,7 +26,7 @@ sections:
             type: array[json]
             required: true
             description: The identifier list defines additional identifiers you may want to store for a patient.
-            create_description: The identifier list defines additional identifiers you may want to store for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system. 
+            create_description: The identifier list defines additional identifiers you may want to store for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system.
             update_description: The identifier list defines additional identifiers you may want to store for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system. If an <code>identifier</code> already exists in the Canvas database and is not included in the Update message, it will be deleted if and only if the period.end date is in the future.
             attributes:
               - name: use
@@ -50,7 +50,7 @@ sections:
           - name: telecom
             type: array[json]
             required: false
-            description: Telecom is an optional list of objects where you can provide the child  attributes listed below. 
+            description: Telecom is an optional list of objects where you can provide the child  attributes listed below.
             create_description: >-
                 Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently we do store the other systems in our database, we just do not display them.
             update_description:
@@ -85,14 +85,14 @@ sections:
             required: false
             description: The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. FHIR allows male, female, other, and unknown.
             create_description: >-
-                The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently we are tied to the FHIR values allowed: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field. 
+                The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently we are tied to the FHIR values allowed: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
             update_description: >-
-                The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently we are tied to the FHIR values allowed: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field. 
+                The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently we are tied to the FHIR values allowed: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
           - name: birthDate
             type: date
             required: true
             description: >-
-                The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. 
+                The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD.
             create_description: >-
                  The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
             update_description: >-
@@ -100,7 +100,7 @@ sections:
           - name: deceasedBoolean
             type: boolean
             required: false
-            description: This is an optional boolean that defaults to false. This variable is not displayed in the Canvas UI but is stored by Canvas. 
+            description: This is an optional boolean that defaults to false. This variable is not displayed in the Canvas UI but is stored by Canvas.
             ##is this still true?
           - name: address
             type: array[json]
@@ -190,7 +190,7 @@ sections:
                       - name: display
                         type: string
                   - name: text
-                    type: string            
+                    type: string
           - name: extension - birthsex
             type: code
             required: true
@@ -198,9 +198,9 @@ sections:
                 We identify this extension with the url equal to http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex. Supported Values: M for Male, F for Female, O for Other, and UNK for Unknown
           - name: extension - ethnicity
             type: codeable concept
-            create_description: 
+            create_description:
                 The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each ethnicity needed from the ValueSet.
-            update_description: 
+            update_description:
                 The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each ethnicity needed from the ValueSet.
           - name: exenstion - race
             type: codeable concept
@@ -210,10 +210,10 @@ sections:
           - name: extension - timezone
             type: code
             description:
-                The timezone a patient lives in. 
+                The timezone a patient lives in.
             create_description:
                 An optional extension Canvas accepts is to specify the timezone a Patient lives in. The extension must have the url equal to "http://hl7.org/fhir/StructureDefinition/tz-code". Then the valueCode field can be anything defined here. You can see examples here. If the URL does not match exactly, a timezone will not be set. If the URL matches exactly but a valid timezone is not given, the database will save what is passed in; however, the UI will display the current user's timezone.
-            update_description: 
+            update_description:
                An optional extension Canvas accepts is to specify the timezone a Patient lives in. The extension must have the url equal to "http://hl7.org/fhir/StructureDefinition/tz-code". Then the valueCode field can be anything defined here. You can see examples here. If the URL does not match exactly, a timezone will not be set. If the URL matches exactly but a valid timezone is not given, the database will save what is passed in; however, the UI will display the current user's timezone.
           - name: extenstion - clinical note
             type: string
@@ -226,7 +226,7 @@ sections:
             create_description: This note displays under the patient's name in the administrative profile. The `url` must equal "http://schemas.canvasmedical.com/fhir/extensions/administrative-note", while the `valueString` is a free text field.
           - name: extension - preferred pharmacy
             type: codeable concept
-            description: A patient can have multiple preferred pharmacies added to their profile. 
+            description: A patient can have multiple preferred pharmacies added to their profile.
             create_description: >-
                 The url must match http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy. The extension list of objects where each object needs: url that must match ncpdp-id valueIdentifier object that contains the system that must equal "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber". Then you can specify the appropriate value of the pharmacy, which is a 7 digit NDPDP ID. Here are a few callouts on workflow for the value attribute: <br><br>**1.** If a valid 7 digit NCPDP id value is specified, then the patient's preferred pharmacy will be updated accordingly with the pharmacy's name, phone, fax and address.<br>**2.** If there is any other value given that is not a 7 digit number, you will see an error that they message did not adhere to the Patient Schema.<br>**3.** If a 7 digit number is passed, but it is not a valid NCPDP id and does not correlate to a pharmacy in Canvas, the patient's preferred pharmacy will be blank.<br>**4.** If this extension is not specified in the request body, any current preferred pharmacy set for the patient will remain.
             update_description: >-
@@ -235,12 +235,12 @@ sections:
           - name: _id
             type: string
             description: >-
-                A Canvas-issued unique identifier known as the patient key. This can be found in the url of the patient's chart. 
+                A Canvas-issued unique identifier known as the patient key. This can be found in the url of the patient's chart.
           - name: identifier
             type: string
             description: >-
                 The Canvas-issued MRN or a saved identifier from an external system. <br><br><b>Examples:</b><br><br>
-                <code>/Patient?identifier=abc123</code> will return patients with an identifier of “abc123” issued by any system, including Canvas-issued MRNs<br><br> 
+                <code>/Patient?identifier=abc123</code> will return patients with an identifier of “abc123” issued by any system, including Canvas-issued MRNs<br><br>
                 <code>/Patient?identifier=foo|abc123</code> will return patients with an identifier of “abc123" issued by the system named “foo” <br><br>
                 <code>/Patient?identifier=http://canvasmedical.com|012345</code> will return the patient with the Canvas-issued MRN of “012345"<br><br>
                 <code>/Patient?identifier=foo|</code> will return all patients with an identifier issued by the system named “foo”<br><br>
@@ -363,7 +363,7 @@ print(response.text)
 {% endtabs %}
 </div>
 
-div id="patient-create-response">
+<div id="patient-create-response">
 {% include create-response.html %}
 </div>
 
