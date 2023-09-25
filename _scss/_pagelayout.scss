@@ -141,4 +141,15 @@
     }
   }
 
+  &__landingpage {
+    &__container {
+      width: 100%;
+
+      &__inner {
+        max-height: var(--body-height);
+        overflow-y: auto;
+      }
+    }
+  }
+
 }
