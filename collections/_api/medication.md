@@ -13,6 +13,9 @@ sections:
           - name: id
             description: The identifier of the Medication
             type: string
+          - name: text
+            description: Text summary of the Medication, for human interpretation
+            type: json
           - name: code
             description: Codes that identify this medication
             type: json
@@ -55,10 +58,12 @@ sections:
 {
     "resourceType": "Medication",
     "id": "fdb-449732",
-    "code":
-    {
-        "coding":
-        [
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Tylenol PM Extra Strength 25 mg-500 mg tablet</div>"
+    },
+    "code": {
+        "coding": [
             {
                 "system": "http://www.fdbhealth.com/",
                 "code": "449732",
@@ -150,8 +155,7 @@ sections:
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/Medication?code=http://www.nlm.nih.gov/research/umls/rxnorm|1092189&_text=tylenol&_count=10&_offset=0"
@@ -165,17 +169,17 @@ sections:
             "url": "/Medication?code=http://www.nlm.nih.gov/research/umls/rxnorm|1092189&_text=tylenol&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "Medication",
                 "id": "fdb-449732",
-                "code":
-                {
-                    "coding":
-                    [
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Tylenol PM Extra Strength 25 mg-500 mg tablet</div>"
+                },
+                "code": {
+                    "coding": [
                         {
                             "system": "http://www.fdbhealth.com/",
                             "code": "449732",

@@ -263,103 +263,77 @@ print(response.text)
     {% tab condition-read-response 200 %}
 ```json
 {
-    "resourceType": "Bundle",
-    "type": "searchset",
-    "total": 1,
-    "link":
+    "resourceType": "Condition",
+    "id": "3340c331-d446-4700-9c23-7959bd393f26",
+    "clinicalStatus":
+    {
+        "coding":
+        [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                "code": "resolved",
+                "display": "Resolved"
+            }
+        ],
+        "text": "Resolved"
+    },
+    "verificationStatus":
+    {
+        "coding":
+        [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                "code": "confirmed",
+                "display": "Confirmed"
+            }
+        ],
+        "text": "Confirmed"
+    },
+    "category":
     [
         {
-            "relation": "self",
-            "url": "/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
-        },
-        {
-            "relation": "first",
-            "url": "/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
-        },
-        {
-            "relation": "last",
-            "url": "/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+            "coding":
+            [
+                {
+                    "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                    "code": "encounter-diagnosis",
+                    "display": "Encounter Diagnosis"
+                }
+            ],
+            "text": "Encounter Diagnosis"
         }
     ],
-    "entry":
+    "code":
+    {
+        "coding":
+        [
+            {
+                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                "code": "V97.21XS",
+                "display": "Parachutist entangled in object, sequela"
+            }
+        ],
+        "text": "Parachutist entangled in object, sequela"
+    },
+    "subject":
+    {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "encounter":
+    {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "onsetDateTime": "2023-06-15",
+    "abatementDateTime": "2023-06-17",
+    "recordedDate": "2023-06-18T15:00:00-04:00",
+    "recorder":
+    {
+        "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+    },
+    "note":
     [
         {
-            "resource":
-            {
-                "resourceType": "Condition",
-                "id": "3340c331-d446-4700-9c23-7959bd393f26",
-                "clinicalStatus":
-                {
-                    "coding":
-                    [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
-                            "code": "resolved",
-                            "display": "Resolved"
-                        }
-                    ],
-                    "text": "Resolved"
-                },
-                "verificationStatus":
-                {
-                    "coding":
-                    [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
-                            "code": "confirmed",
-                            "display": "Confirmed"
-                        }
-                    ],
-                    "text": "Confirmed"
-                },
-                "category":
-                [
-                    {
-                        "coding":
-                        [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                                "code": "encounter-diagnosis",
-                                "display": "Encounter Diagnosis"
-                            }
-                        ],
-                        "text": "Encounter Diagnosis"
-                    }
-                ],
-                "code":
-                {
-                    "coding":
-                    [
-                        {
-                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                            "code": "V97.21XS",
-                            "display": "Parachutist entangled in object, sequela"
-                        }
-                    ],
-                    "text": "Parachutist entangled in object, sequela"
-                },
-                "subject":
-                {
-                    "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
-                },
-                "encounter":
-                {
-                    "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
-                },
-                "onsetDateTime": "2023-06-15",
-                "abatementDateTime": "2023-06-17",
-                "recordedDate": "2023-06-18T15:00:00-04:00",
-                "recorder":
-                {
-                    "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
-                },
-                "note":
-                [
-                    {
-                        "text": "Condition note"
-                    }
-                ]
-            }
+            "text": "Condition note"
         }
     ]
 }
@@ -597,6 +571,9 @@ print(response.text)
     {% tab condition-search-response 200 %}
 ```json
 {
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
     "link":
     [
         {
@@ -617,22 +594,41 @@ print(response.text)
         {
             "resource":
             {
-                "recordedDate": "2023-06-18T15:00:00-04:00",
-                "note":
-                [
-                    {
-                        "text": "Condition note"
-                    }
-                ],
+                "resourceType": "Condition",
+                "id": "3340c331-d446-4700-9c23-7959bd393f26",
+                "clinicalStatus":
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "resolved",
+                            "display": "Resolved"
+                        }
+                    ],
+                    "text": "Resolved"
+                },
+                "verificationStatus":
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed"
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
                 "category":
                 [
                     {
                         "coding":
                         [
                             {
-                                "display": "Encounter Diagnosis",
                                 "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                                "code": "encounter-diagnosis"
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
                             }
                         ],
                         "text": "Encounter Diagnosis"
@@ -643,25 +639,16 @@ print(response.text)
                     "coding":
                     [
                         {
-                            "display": "Parachutist entangled in object, sequela",
                             "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                            "code": "V97.21XS"
+                            "code": "V97.21XS",
+                            "display": "Parachutist entangled in object, sequela"
                         }
                     ],
                     "text": "Parachutist entangled in object, sequela"
                 },
-                "id": "00a6a9f1-ffdb-4cf8-8e11-f2d6459dec3f",
-                "clinicalStatus":
+                "subject":
                 {
-                    "coding":
-                    [
-                        {
-                            "display": "Resolved",
-                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
-                            "code": "resolved"
-                        }
-                    ],
-                    "text": "Resolved"
+                    "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
                 },
                 "encounter":
                 {
@@ -669,33 +656,20 @@ print(response.text)
                 },
                 "onsetDateTime": "2023-06-15",
                 "abatementDateTime": "2023-06-17",
-                "verificationStatus":
-                {
-                    "coding":
-                    [
-                        {
-                            "display": "Confirmed",
-                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
-                            "code": "confirmed"
-                        }
-                    ],
-                    "text": "Confirmed"
-                },
-                "subject":
-                {
-                    "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
-                },
-                "resourceType": "Condition",
+                "recordedDate": "2023-06-18T15:00:00-04:00",
                 "recorder":
                 {
                     "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
-                }
+                },
+                "note":
+                [
+                    {
+                        "text": "Condition note"
+                    }
+                ]
             }
         }
-    ],
-    "resourceType": "Bundle",
-    "total": 1,
-    "type": "searchset"
+    ]
 }
 ```
     {% endtab %}

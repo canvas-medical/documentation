@@ -54,7 +54,6 @@ sections:
         endpoints: [create, search]
         create:
           description: >-
-            Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the Location header.<br><br>
             Messages created through this endpoint will be added to the patient's timeline based on the created date.<br><br>
             If the sender of the message is a `Practitioner`, the message will be displayed as a draft in the timeline, drafter by Canvas Bot. There is no way to mark it as sent via the API today.<br><br>
             If the sender of the message is a patient, the message will show in the recipient's message inbox for review, as well as on the timeline. 

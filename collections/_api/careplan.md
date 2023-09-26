@@ -14,6 +14,9 @@ sections:
             description: >-
               The identifier of the CarePlan
             type: string
+          - name: text
+            description: Text summary of the CarePlan, for human interpretation
+            type: json
           - name: status
             description: >-
               Indicates whether the plan is currently being acted upon, represents future intentions or is now a historical record.
