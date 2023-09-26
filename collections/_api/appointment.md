@@ -7,13 +7,37 @@ sections:
         name: Appointment
         article: "a"
         description: >-
-           [FHIR](https://hl7.org/fhir/R4/appointment.html): A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more [Encounters](/api/encounter). <br><br> The appointment resource maps to both [patient appointments](https://canvas-medical.zendesk.com/hc/en-us/articles/360056430014-Appointments) as well as [other events](https://canvas-medical.zendesk.com/hc/en-us/articles/15704289792659-Scheduling-Other-Events-) in Canvas. Instructions for configuring appointment and note types can be found [here](/documentation/appointment-and-note-types).
+          A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more Encounter(s).<br><br>
+          [https://hl7.org/fhir/R4/appointment.html](https://hl7.org/fhir/R4/appointment.html<br><br>)<br><br>
+          This may result in one or more [Encounters](/api/encounter).<br><br>
+          The appointment resource maps to both [patient appointments](https://canvas-medical.zendesk.com/hc/en-us/articles/360056430014-Appointments) as well as [other events](https://canvas-medical.zendesk.com/hc/en-us/articles/15704289792659-Scheduling-Other-Events-) in Canvas. Instructions for configuring appointment and note types can be found [here](/documentation/appointment-and-note-types).
         attributes:
           - name: id
             type: string
             required: true
             description: >-
               The identifier of the appointment
+          - name: contained
+            type: array[json]
+            description: >-
+              Used to store links for telehealth appointments. Requires a reference to "#appointment-meeting-endpoint" in the SupportingInformation attribute.
+            create_description:
+             <b>Custom Meeting Links for Virtual Appointments:</b> You can specify a telehealth meeting link using a SupportingInformation `reference` of "#appointment-meeting-endpoint" with a `type` of "Endpoint".  You would need to specify the `address` url of the meeting link in a contained object along with the `resourceType` = `Endpoint` and the `id` = `appointment-meeting-endpoint`. All other fields are automatically populated by Canvas and are not required.
+            update_description:
+              <b>Custom Meeting Links for Virtual Appointments:</b> You can specify a telehealth meeting link using a SupportingInformation `reference` of "#appointment-meeting-endpoint" with a `type` of "Endpoint".  You would need to specify the `address` url of the meeting link in a contained object along with the `resourceType` = `Endpoint` and the `id` = `appointment-meeting-endpoint`. All other fields are automatically populated by Canvas and are not required.
+            attributes:
+              - name: resourceType
+                type: string
+              - name: id
+                type: string
+              - name: status
+                type: string
+              - name: connectionType
+                type: json
+              - name: payloadType
+                type: array[json]
+              - name: address
+                type: string
           - name: status
             type: string
             description: >-
@@ -65,27 +89,6 @@ sections:
             type: string
             description: >-
               Shown on a subject line in a meeting request, or appointment list. Note: This field is being deprecated in favor of `reasonCode`. The text in `reasonCode` and this description attribute will always match.
-          - name: contained
-            type: array[json]
-            description: >-
-              Used to store links for telehealth appointments. Requires a reference to "#appointment-meeting-endpoint" in the SupportingInformation attribute.
-            create_description:
-             <b>Custom Meeting Links for Virtual Appointments:</b> You can specify a telehealth meeting link using a SupportingInformation `reference` of "#appointment-meeting-endpoint" with a `type` of "Endpoint".  You would need to specify the `address` url of the meeting link in a contained object along with the `resourceType` = `Endpoint` and the `id` = `appointment-meeting-endpoint`. All other fields are automatically populated by Canvas and are not required.
-            update_description:
-              <b>Custom Meeting Links for Virtual Appointments:</b> You can specify a telehealth meeting link using a SupportingInformation `reference` of "#appointment-meeting-endpoint" with a `type` of "Endpoint".  You would need to specify the `address` url of the meeting link in a contained object along with the `resourceType` = `Endpoint` and the `id` = `appointment-meeting-endpoint`. All other fields are automatically populated by Canvas and are not required.
-            attributes:
-              - name: resourceType
-                type: string
-              - name: id
-                type: string
-              - name: status
-                type: string
-              - name: connectionType
-                type: json
-              - name: payloadType
-                type: array[json]
-              - name: address
-                type: string
           - name: supportingInformation
             type: array[json]
             description: >-
@@ -141,14 +144,9 @@ sections:
           - name: status
             type: string
             description: The status of the appointment
-          - name: _count
-            type: string
-            description: Triggers pagination. This number is used to determine how many results to return at a time.
           - name: _sort
             type: string
             description: Triggers sorting of the results by a specific criteria. Accepted values are date, patient and practitioner. Use -date, -patient, -practitioner to sort in descending order
-
-
         endpoints: [create, read, update, search]
         read:
           description: Read an Appointment
@@ -156,7 +154,7 @@ sections:
           example_request: appointment-read-request
           example_response: appointment-read-response
         search:
-          description: Search for an Appointment<br><br>**Pagination**<br>To paginate appointment search results, use the query param _count.<br><br>`GET /Appointment?_count=10` will return the first 10 appointments, along with relative links to see the subsequent pages.
+          description: Search for an Appointment
           responses: [200, 400, 401, 403]
           example_request: appointment-search-request
           example_response: appointment-search-response
@@ -166,7 +164,7 @@ sections:
           example_request: appointment-create-request
           example_response: appointment-create-response
         update:
-          description: Update an **Appointment** This is almost identical to the [Appointment Create]/(api/appointment/#create. The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as co are currently set in the Canvas database.
+          description: Update an **Appointment** This is almost identical to the [Appointment Create]/(api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as co are currently set in the Canvas database.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: appointment-update-request
           example_response: appointment-update-response

@@ -7,7 +7,8 @@ sections:
         name: Encounter
         article: "a"
         description: >-
-         An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.<br><br>[https://hl7.org/fhir/R4/encounter.html](https://hl7.org/fhir/R4/encounter.html)<br><br><b>Encounter creation in Canvas</b><br><br>An encounter is associated with some of our notes in Canvas. For our default base notes, an encounter will be created with these note types:<br><br>Lab visit<br>Phone visit<br>Telehealth visit<br>Office visit<br>Home Visit<br>In-patient Visit<br><br>Appointment Notes, once checked in, that are for the above visit types will be converted to an encounter.<br><br>See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360056430014-Appointments) for how to schedule an appointment.<br><br>With our [Configurable Note Types Feature](https://canvas-medical.zendesk.com/hc/en-us/articles/6623684024083) all custom note types will be associated with an encounter by default.
+          An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.<br><br>[https://hl7.org/fhir/R4/encounter.html](https://hl7.org/fhir/R4/encounter.html)<br><br><b>Encounter creation in Canvas</b><br><br>An encounter is associated with some of our notes in Canvas. For our default base notes, an encounter will be created with these note types:<br><br>Lab visit<br>Phone visit<br>Telehealth visit<br>Office visit<br>Home Visit<br>In-patient Visit<br><br>Appointment Notes, once checked in, that are for the above visit types will be converted to an encounter.<br><br>See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360056430014-Appointments) for how to schedule an appointment.<br><br>With our [Configurable Note Types Feature](https://canvas-medical.zendesk.com/hc/en-us/articles/6623684024083) all custom note types will be associated with an encounter by default.<br><br>
+          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-encounter.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-encounter.html)
         attributes:
           - name: id
             description: >-
@@ -20,7 +21,7 @@ sections:
           - name: status
             type: string
             description: >-
-              The status of the encounter. Supported statuses are **planned** **cancelled**, **finished** and **in-progress**.
+              The status of the encounter. Supported statuses are: **planned**, **cancelled**, **finished**, **in-progress**
           - name: class
             type: json
             description: >-

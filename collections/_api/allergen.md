@@ -12,6 +12,9 @@ sections:
           - name: id
             description: The identifier of the Allergen
             type: string
+          - name: text
+            description: Text summary of the Allergen, for human interpretation
+            type: json
           - name: code
             description: Code that identifies the allergen
             type: json
