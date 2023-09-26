@@ -37,19 +37,20 @@ sections:
             required: true
             description: >-
               Creation date, required by the FHIR schema, but unused by Canvas.<br><br>
-              Current date is fine here.
+              Canvas recommends sending the current datetime in ISO 8601 format.
           - name: insurer
             type: json
             required: true
             description: >-
               Coverage issuer, required by the FHIR schema but unused by Canvas.<br><br>
-              Sending **"insurer": {}** is fine.
+              Canvas recommends setting `insurer` to `{}`.
         endpoints: [create]
         create:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: coverageeligibilityrequest-create-request
           example_response: coverageeligibilityrequest-create-response
 ---
+
 <div id="coverageeligibilityrequest-create-request">
   {% tabs coverageeligibilityrequest-create-request %}
     {% tab coverageeligibilityrequest-create-request curl %}
@@ -61,25 +62,28 @@ curl --request POST \
      --header 'content-type: application/json' \
      --data '
 {
-  "status": "active",
-  "purpose": [
-    "benefits"
-  ],
-  "patient": {
-    "reference": "Patient/9713f5a3c8464a2587912e80bc2dd938"
-  },
-  "created": "2021-08-27",
-  "insurer": {},
-  "insurance": [
+    "resourceType": "CoverageEligibilityRequest",
+    "status": "active",
+    "purpose":
+    [
+        "benefits"
+    ],
+    "patient":
     {
-      "focal": true,
-      "coverage": {
-        "reference": "Coverage/743aa331-2f85-420b-ab10-8a6b7bb6a1cf"
-      }
-    }
-  ],
-  "created": "2023-09-19",
-  "insurer": {},
+        "reference": "Patient/9713f5a3c8464a2587912e80bc2dd938"
+    },
+    "created": "2023-09-19",
+    "insurer": {},
+    "insurance":
+    [
+        {
+            "focal": true,
+            "coverage":
+            {
+                "reference": "Coverage/743aa331-2f85-420b-ab10-8a6b7bb6a1cf"
+            }
+        }
+    ]
 }
 '
 ```
@@ -92,16 +96,27 @@ import requests
 url = "https://fumage-example.canvasmedical.com/CoverageEligibilityRequest"
 
 payload = {
+    "resourceType": "CoverageEligibilityRequest",
     "status": "active",
-    "purpose": ["benefits"],
-    "patient": { "reference": "Patient/9713f5a3c8464a2587912e80bc2dd938" },
-    "created": "2021-08-27",
+    "purpose":
+    [
+        "benefits"
+    ],
+    "patient":
+    {
+        "reference": "Patient/9713f5a3c8464a2587912e80bc2dd938"
+    },
+    "created": "2023-09-19",
     "insurer": {},
-    "insurance": [
-      {
-        "focal": True,
-        "coverage": { "reference": "Coverage/743aa331-2f85-420b-ab10-8a6b7bb6a1cf" }
-      }
+    "insurance":
+    [
+        {
+            "focal": true,
+            "coverage":
+            {
+                "reference": "Coverage/743aa331-2f85-420b-ab10-8a6b7bb6a1cf"
+            }
+        }
     ]
 }
 headers = {
