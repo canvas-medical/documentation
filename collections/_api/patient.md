@@ -7,30 +7,34 @@ sections:
         name: Patient
         article: "a"
         description: >-
-           Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br> Canvas supports a few specific FHIR extensions. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.<br><br>[http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html)
+           Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br> Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.<br><br>[http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html)
         attributes:
           - name: id
             type: string
             description: Unique Canvas identifier for this resource
           - name: text
             type: json
-            description: A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human.
+            description: A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource.
           - name: extension
             type: array[json]
-            description: Reference the **extension** fields below to see the possible extensions contained in this resource.
+            description: Reference the **extension-\*** fields below to see the possible extensions contained in this resource.
           - name: identifier
             type: array[json]
-            description: The identifier list defines additional identifiers you may want to store for a patient.
-            create_description: The identifier list defines additional identifiers you may want to store for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system.
-            update_description: The identifier list defines additional identifiers you may want to store for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system. If an <code>identifier</code> already exists in the Canvas database and is not included in the Update message, it will be deleted if and only if the period.end date is in the future.
+            description: The identifier list defines additional identifiers that are able to be stored for a patient.
+            create_description: The identifier list defines additional identifiers that are able to be stored for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system.
+            update_description: The identifier list defines additional identifiers that are able to be stored for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system. If an <code>identifier</code> already exists in the Canvas database and is not included in the Update message, it will be deleted if and only if the period.end date is in the future.
             attributes:
               - name: use
-                description: This could be usual, official, temp, secondary, old, (This will default to usual if omitted).
+                type: string
+                description: Supported values are **usual**, **official**, **temp**, **secondary** and **old**. If omittted, the default value is **usual**.
               - name: system
-                description: Free text field to help you identify what this value represents.
+                type: string
+                description: Free text field to identify what this value represents.
               - name: value
-                description: Free text to store the patient's identifier.
+                type: string
+                description: Free text field to store the patient's identifier.
               - name: period
+                type: date
                 description: This is used to specify the start and end dates (format YYYY-MM-DD). If period is omitted it will default to <code>start</code> = 1970-01-01 and <code>end</code> = 2100-12-31. There is currently no validation if the end date is before the start date.
           - name: active
             type: boolean
@@ -39,7 +43,7 @@ sections:
             type: array[json]
             required: true
             description: >-
-                The identifier of the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with use=official will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. If you look at the example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` attribute will be displayed on the Canvas UI but it will not be editable through the UI. <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use = maiden` or use= old. These will not show up on the Canvas UI but will be stored by Canvas (and will be returned via a read request).<br><br> In the Canvas UI, each patient will be displayed with first last suffix (nickname). You will be able to search for a patient by any of these attributes defined here: first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will currently be ignored in Canvas.
+                The identifier of the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` attribute will be displayed on the Canvas UI but it will not be editable through the UI. <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.<br><br> In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will be ignored.
           - name: telecom
             type: array[json]
             required: false
@@ -54,7 +58,7 @@ sections:
               - name: extension
                 type: array
                 description: >-
-                    This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that we have the Patient's consent to send text messages or emails to this number. We identify this extension with the <code>url</code> equal to ["http://schemas.canvasmedical.com/fhir/extensions/has-consent"](http://schemas.canvasmedical.com/fhir/extensions/has-consent) and then you can specify a boolean for the <code>valueBoolean</code> attribute. <b>Note: This will not send the verification email or text as our UI does. It will bypass this step and mark the contact as verified.</b>
+                    This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that we have the patient's consent to send text messages or emails to this number. This extension is identified with the <code>url</code> [http://schemas.canvasmedical.com/fhir/extensions/has-consent](http://schemas.canvasmedical.com/fhir/extensions/has-consent). A boolean value can be specified in the <code>valueBoolean</code> attribute. <b>Note: This will not send a verification email or text as is the Canvas UI does. It will bypass this step and mark the contact as verified.</b>
                 attributes:
                   - name: url
                     type: string
@@ -62,26 +66,22 @@ sections:
                     type: boolean
               - name: system
                 type: string
-                description: This can be phone, fax, email, pager, url, sms, or other (This will default to other if you try to pass anything else).
+                description: Supported values are **phone**, **fax**, **email**, **pager**, **url**, **sms**, and **other**. If omitted, the default value is **other**.
               - name: value
                 type: string
                 required: true
-                description: Free text string of the actual value for this contact point
+                description: Free text string of the value for this contact point
               - name: use
                 type: string
-                description: This can be home, work, temp, old, mobile (default is home)
+                description: Supported values are  **home**, **work**, **temp**, **old** and **mobile**. If omitted, the default value is **home**.
               - name: rank
                 type: integer
-                description: This is an integer to specified the preferred order of contact points per system (default is 1)
+                description: An integer representing the preferred order of contact points per system. The default value is 1.
           - name: gender
             type: string
             required: true
             description: >-
-              A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are:<br><br>
-              - male<br>
-              - female<br>
-              - other<br>
-              - unknown<br><br>
+              A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **male**, **female**, **other** and **unknown**.<br><br>
               [https://hl7.org/fhir/R4/valueset-administrative-gender.html](https://hl7.org/fhir/R4/valueset-administrative-gender.html)
             create_description: >-
                 The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently we are tied to the FHIR values allowed: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
@@ -109,22 +109,22 @@ sections:
                 type: string
               - name: use
                 type: string
-                description: choices allowed are home, work, temp, old (default is home).
+                description: Supported values are **home**, **work**, **temp** and **old**. If omitted, the default value is **home**.
               - name: type
                 type: string
-                description:  choices allowed are both, physical, postal (default is both)
+                description: Supported values are **both**, **physical** and **postal**. If omitted, the default value is **both**.
               - name: line
                 type: string
-                description:  List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be the address line 2.
+                description:  List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
               - name: city
                 type: string
                 description: String representing the city of the address.
               - name: state
                 type: string
-                description: This should be the 2 letter abbreviation for the state of the address.
+                description: 2 letter state abbreviation of the address.
               - name: postalCode
                 type: string
-                description: This should be the 5 digit postal code of the address.
+                description: The 5 digit postal code of the address.
               - name: country
                 type: string
               - name: period
@@ -296,15 +296,12 @@ sections:
           - name: active
             type: boolean
             description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false) patients.
-          - name: _count
-            type: string
-            description: Triggers pagination. This number is used to determine how many results to return at a time.
           - name: _has:CareTeam:participant:member
             type: boolean
             description: Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. <code>_has:CareTeam:participant:member=Practitioner/{practitioner_id}</code>
           - name: _sort
             type: string
-            description: Triggers sorting of the results by a specific criteria. Accepted values are id, birthdate, family, given. Use -id, -birthdate, -family, -given to sort in descending order.
+            description: Triggers sorting of the results by a specific criteria. Accepted values are **id**, **birthdate**, **family** and **given**. Use **-id**, **-birthdate**, **-family** and **-given** to sort in descending order.
         endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
@@ -321,20 +318,20 @@ sections:
           example_request: patient-update-request
           example_response: patient-update-response
           description: >-
-            This is the exact same schema that is used in the Patient Create. Please refer to that documentation for Patient Update. The only difference is addition of the id field used to identify the patient we are updating. <br><br> <b>How we handle updates/deletions to the identifier, telecom, address, and contact fields:</b><br><br> Patient Search/Read will include an <code>id</code>  value for these fields.<br><br>If the <code>id</code>  field is included in the iteration, then we will attempt to match to an existing value for that field.<br><br> If the <code>id</code> field is <b>not</b> included in the iteration, then we will attempt to create a new entry in the database for that field.<br><br> If a <code>telecom</code>, <code>address</code>, or 'contact' iteration returned via Search/Read is <b>not</b> included in the Update message, then it will be deleted.<br><br><b>Other Fields</b><br><br>If a field is required according to Patient Create, it is also required in the update. If the field is not required and is not added to the update request, the saved data will not be changed.
+            <b>How updates/deletions to the identifier, telecom, address, and contact fields are handled:</b><br><br> Patient Search/Read will include an <code>id</code>  value for these fields.<br><br>If the <code>id</code>  field is included in the iteration, then we will attempt to match to an existing value for that field.<br><br> If the <code>id</code> field is <b>not</b> included in the iteration, then we will attempt to create a new entry in the database for that field.<br><br> If a <code>telecom</code>, <code>address</code>, or <code>contact</code> iteration returned via Search/Read is <b>not</b> included in the Update message, then it will be deleted.<br><br><b>Other Fields</b><br><br>If a field is required according to Patient Create, it is also required in the update. If the field is not required and is not added to the update request, the saved data will not be changed.
         search:
           responses: [200, 400, 401, 403]
           example_request: patient-search-request
           example_response: patient-search-response
           description: >-
-            <b>Pagination</b><br><br>To paginate patient search results, use the query param _count.<br><br><code>GET /Patient?_count=10</code> will return the first 10 patients, along with relative links to see the subsequent pages.
+            Search for patient resources.
 ---
 <div id="patient-create-request">
 {% tabs patient-create-request %}
 {% tab patient-create-request curl %}
 ```sh
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/Patient \
+     --url 'https://fumage-example.canvasmedical.com/Patient' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -358,6 +355,19 @@ curl --request POST \
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
+        }
+    ],
+    "address": [
+        {
+            "use": "home",
+            "type": "both",
+            "text": "1234 Main St., Los Angeles, CA 94107",
+            "line": [
+                "1234 Main St."
+            ],
+            "city": "Los Angeles",
+            "state": "CA",
+            "postalCode": "94107"
         }
     ]
 }
@@ -397,6 +407,19 @@ payload = {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
         }
+    ],
+    "address": [
+        {
+            "use": "home",
+            "type": "both",
+            "text": "1234 Main St., Los Angeles, CA 94107",
+            "line": [
+                "1234 Main St."
+            ],
+            "city": "Los Angeles",
+            "state": "CA",
+            "postalCode": "94107"
+        }
     ]
 }
 
@@ -423,20 +446,24 @@ print(response.text)
 ```json
 {
     "resourceType": "Patient",
-    "id": "a1197fa9e65b4a5195af15e0234f61c2",
-    "text": {
+    "id": "57db0d48fd834be4a2ad068c553e6fbb",
+    "text":
+    {
         "status": "generated",
-        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Rubik<b>Cube</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>739588251</td></tr><tr><td>Date of birth</td><td><span>1949-11-13</span></td></tr></tbody></table></div>"
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Mark<b>Williams</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>644854429</td></tr><tr><td>Date of birth</td><td><span>1980-11-13</span></td></tr></tbody></table></div>"
     },
-    "extension": [
+    "extension":
+    [
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "M"
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
-            "valueCodeableConcept": {
-                "coding": [
+            "valueCodeableConcept":
+            {
+                "coding":
+                [
                     {
                         "system": "http://snomed.info/sct",
                         "code": "446151000124109",
@@ -447,19 +474,39 @@ print(response.text)
             }
         },
         {
-            "extension": [
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2131-1",
+                        "display": "Other Race"
+                    }
+                },
                 {
                     "url": "text",
-                    "valueString": "UNK"
+                    "valueString": "Other Race"
                 }
             ],
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
         },
         {
-            "extension": [
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2186-5",
+                        "display": "Not Hispanic or Latino"
+                    }
+                },
                 {
                     "url": "text",
-                    "valueString": "UNK"
+                    "valueString": "Not Hispanic or Latino"
                 }
             ],
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
@@ -470,17 +517,19 @@ print(response.text)
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
-            "valueString": "Preferred Lab: Labcorp"
+            "valueString": "I am a clinical caption from a Create message"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
-            "valueString": "GI Specialist - Nora Jones MD\nPCP - Robin Williams MD\nNeurologist - Joe Brooks MD"
+            "valueString": "I am an administrative caption from a Create message"
         },
         {
-            "extension": [
+            "extension":
+            [
                 {
                     "url": "ncpdp-id",
-                    "valueIdentifier": {
+                    "valueIdentifier":
+                    {
                         "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber",
                         "value": "1123152"
                     }
@@ -497,11 +546,14 @@ print(response.text)
             "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
         }
     ],
-    "identifier": [
+    "identifier":
+    [
         {
             "use": "usual",
-            "type": {
-                "coding": [
+            "type":
+            {
+                "coding":
+                [
                     {
                         "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
                         "code": "MR"
@@ -509,184 +561,75 @@ print(response.text)
                 ]
             },
             "system": "http://canvasmedical.com",
-            "value": "739588251",
-            "assigner": {
+            "value": "644854429",
+            "assigner":
+            {
                 "display": "Canvas Medical"
-            }
-        },
-        {
-            "id": "cf62c385-a222-428b-ac86-8fab970d6218",
-            "use": "usual",
-            "system": "HealthCo",
-            "value": "s07960990",
-            "period": {
-                "start": "1970-01-01",
-                "end": "2100-12-31"
             }
         }
     ],
     "active": true,
-    "name": [
+    "name":
+    [
         {
             "use": "official",
-            "family": "Cube",
-            "given": [
-                "Rubik",
-                "NEW NAME"
+            "family": "Williams",
+            "given":
+            [
+                "Mark",
+                "John"
             ],
-            "period": {
+            "period":
+            {
                 "start": "0001-01-01T00:00:00+00:00",
                 "end": "9999-12-31T23:59:59.999999+00:00"
             }
         },
         {
             "use": "nickname",
-            "given": [
-                "Nick Name"
+            "given":
+            [
+                "Marko"
             ],
-            "period": {
+            "period":
+            {
                 "start": "0001-01-01T00:00:00+00:00",
                 "end": "9999-12-31T23:59:59.999999+00:00"
             }
         }
     ],
-    "telecom": [
-        {
-            "id": "a0859714-adb7-4a60-8832-41995c04039a",
-            "extension": [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
-                    "valueBoolean": false
-                }
-            ],
-            "system": "phone",
-            "value": "0000000000",
-            "use": "mobile",
-            "rank": 1
-        },
-        {
-            "id": "051444e4-4f80-4866-b00c-151a38b095a6",
-            "extension": [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
-                    "valueBoolean": false
-                }
-            ],
-            "system": "email",
-            "value": "i.k.bahar@example.com",
-            "use": "work",
-            "rank": 1
-        }
-    ],
     "gender": "male",
-    "birthDate": "1949-11-13",
+    "birthDate": "1980-11-13",
     "deceasedBoolean": false,
-    "address": [
+    "address":
+    [
         {
-            "id": "6c54eb4a-8c54-4965-a729-ab9f3223b63d",
+            "id": "322caf77-2609-4257-b3dc-faa437e877c4",
             "use": "home",
             "type": "both",
-            "line": [
-                "4247 Murry Street"
+            "line":
+            [
+                "789 Front St."
             ],
-            "city": "Chesapeake",
-            "state": "VA",
-            "postalCode": "23322",
-            "country": "United States"
+            "city": "Denver",
+            "state": "CO",
+            "postalCode": "80014",
+            "country": "us"
         }
     ],
-    "photo": [
+    "photo":
+    [
         {
-            "url": "https://d3hn0m4rbsz438.cloudfront.net/avatar1.png"
+            "url": "https://canvas-client-media.s3.amazonaws.com/local/patient-avatars/20230926_195900_57db0d48fd834be4a2ad068c553e6fbb.unknown_image?AWSAccessKeyId=AKIAQB7SIDR7IJXXMF47&Signature=%2BIg4FlLrYym31y6vTgit%2FXC49pE%3D&Expires=1695769441"
         }
     ],
-    "contact": [
+    "communication":
+    [
         {
-            "id": "91a597d0-65a8-443b-8330-feab2e64ffee",
-            "extension": [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": true
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": true
-                }
-            ],
-            "relationship": [
-                {
-                    "text": "Spouse"
-                }
-            ],
-            "name": {
-                "text": "Test Spouse"
-            },
-            "telecom": [
-                {
-                    "system": "email",
-                    "value": "test@me.com"
-                }
-            ]
-        },
-        {
-            "id": "81676d04-4b5b-4b34-87a7-7333a74fd82e",
-            "extension": [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": false
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": true
-                }
-            ],
-            "relationship": [
-                {
-                    "text": "Mom"
-                }
-            ],
-            "name": {
-                "text": "Test Mom"
-            },
-            "telecom": [
-                {
-                    "system": "phone",
-                    "value": "7177327068"
-                }
-            ]
-        },
-        {
-            "id": "e5cecb0f-3fb3-4a16-94d7-6cb51c4fec45",
-            "extension": [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": false
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": false
-                }
-            ],
-            "relationship": [
-                {
-                    "text": "Father"
-                }
-            ],
-            "name": {
-                "text": "Test Email"
-            },
-            "telecom": [
-                {
-                    "system": "email",
-                    "value": "test.email@email.test"
-                }
-            ]
-        }
-    ],
-    "communication": [
-        {
-            "language": {
-                "coding": [
+            "language":
+            {
+                "coding":
+                [
                     {
                         "system": "urn:ietf:bcp:47",
                         "code": "en",
@@ -715,9 +658,8 @@ print(response.text)
   ]
 }
 ```
-    {% endtab %}
-
-    {% tab patient-read-response 403 %}
+{% endtab %}
+{% tab patient-read-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -732,9 +674,8 @@ print(response.text)
   ]
 }
 ```
-    {% endtab %}
-
-    {% tab patient-read-response 404 %}
+{% endtab %}
+{% tab patient-read-response 404 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -749,7 +690,7 @@ print(response.text)
   ]
 }
 ```
-    {% endtab %}
+{% endtab %}
 {% endtabs %}
 </div>
 
@@ -837,6 +778,19 @@ curl --request PUT \
   ],
   "birthDate": "1980-11-13",
   "gender": "male",
+  "address": [
+      {
+          "use": "home",
+          "type": "both",
+          "text": "1234 Main St., Los Angeles, CA 94107",
+          "line": [
+              "1234 Main St."
+          ],
+          "city": "Los Angeles",
+          "state": "CA",
+          "postalCode": "94107"
+      }
+  ],
   "photo": [
     {
       "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
@@ -932,6 +886,19 @@ payload = {
   ],
   "birthDate": "1980-11-13",
   "gender": "male",
+  "address": [
+      {
+          "use": "home",
+          "type": "both",
+          "text": "1234 Main St., Los Angeles, CA 94107",
+          "line": [
+              "1234 Main St."
+          ],
+          "city": "Los Angeles",
+          "state": "CA",
+          "postalCode": "94107"
+      }
+  ],
   "photo": [
     {
       "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
@@ -953,7 +920,7 @@ print(response.text)
 </div>
 
 <div id="patient-search-request">
-{% include search-request.html resource_type="Patient" search_string="_id=797e5f30447545a4823fe1c8ebcd0ba6" %}
+{% include search-request.html resource_type="Patient" search_string="family=Williams&gender=male" %}
 </div>
 
 <div id="patient-search-response">
@@ -964,91 +931,135 @@ print(response.text)
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link": [
+    "link":
+    [
         {
             "relation": "self",
-            "url": "/Patient?_id=797e5f30447545a4823fe1c8ebcd0ba6&_count=10&_offset=0"
+            "url": "/Patient?family=Williams&gender=male&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Patient?_id=797e5f30447545a4823fe1c8ebcd0ba6&_count=10&_offset=0"
-        },
-        {
-            "relation": "next",
-            "url": "/Patient?_id=797e5f30447545a4823fe1c8ebcd0ba6&_count=10&_offset=10"
+            "url": "/Patient?family=Williams&gender=male&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Patient?_id=797e5f30447545a4823fe1c8ebcd0ba6&_count=10&_offset=31780"
+            "url": "/Patient?family=Williams&gender=male&_count=10&_offset=0"
         }
     ],
-    "entry": [
+    "entry":
+    [
         {
-            "resource": {
+            "resource":
+            {
                 "resourceType": "Patient",
-                "id": "797e5f30447545a4823fe1c8ebcd0ba6",
-                "text": {
+                "id": "57db0d48fd834be4a2ad068c553e6fbb",
+                "text":
+                {
                     "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Americus 😸️<b>Ohri</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>411604721</td></tr><tr><td>Date of birth</td><td><span>1984-09-24</span></td></tr></tbody></table></div>"
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Mark<b>Williams</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>644854429</td></tr><tr><td>Date of birth</td><td><span>1980-11-13</span></td></tr></tbody></table></div>"
                 },
-                "extension": [
+                "extension":
+                [
                     {
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                        "valueCode": "F"
+                        "valueCode": "M"
                     },
                     {
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
-                        "valueCodeableConcept": {
-                            "coding": [
+                        "valueCodeableConcept":
+                        {
+                            "coding":
+                            [
                                 {
                                     "system": "http://snomed.info/sct",
-                                    "code": "446141000124107",
-                                    "display": "Identifies as female gender (finding)"
+                                    "code": "446151000124109",
+                                    "display": "Identifies as male gender (finding)"
                                 }
                             ],
-                            "text": "Identifies as female gender (finding)"
+                            "text": "Identifies as male gender (finding)"
                         }
                     },
                     {
-                        "extension": [
+                        "extension":
+                        [
+                            {
+                                "url": "ombCategory",
+                                "valueCoding":
+                                {
+                                    "system": "urn:oid:2.16.840.1.113883.6.238",
+                                    "code": "2131-1",
+                                    "display": "Other Race"
+                                }
+                            },
                             {
                                 "url": "text",
-                                "valueString": "UNK"
+                                "valueString": "Other Race"
                             }
                         ],
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
                     },
                     {
-                        "extension": [
+                        "extension":
+                        [
+                            {
+                                "url": "ombCategory",
+                                "valueCoding":
+                                {
+                                    "system": "urn:oid:2.16.840.1.113883.6.238",
+                                    "code": "2186-5",
+                                    "display": "Not Hispanic or Latino"
+                                }
+                            },
                             {
                                 "url": "text",
-                                "valueString": "UNK"
+                                "valueString": "Not Hispanic or Latino"
                             }
                         ],
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
                     },
                     {
-                        "extension": [
+                        "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+                        "valueCode": "America/New_York"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+                        "valueString": "I am a clinical caption from a Create message"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+                        "valueString": "I am an administrative caption from a Create message"
+                    },
+                    {
+                        "extension":
+                        [
                             {
                                 "url": "ncpdp-id",
-                                "valueIdentifier": {
+                                "valueIdentifier":
+                                {
                                     "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber",
-                                    "value": "9911557"
+                                    "value": "1123152"
                                 }
                             },
                             {
+                                "url": "specialty_type",
+                                "valueString": "Retail"
+                            },
+                            {
                                 "url": "default",
-                                "valueBoolean": true
+                                "valueBoolean": false
                             }
                         ],
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
                     }
                 ],
-                "identifier": [
+                "identifier":
+                [
                     {
                         "use": "usual",
-                        "type": {
-                            "coding": [
+                        "type":
+                        {
+                            "coding":
+                            [
                                 {
                                     "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
                                     "code": "MR"
@@ -1056,62 +1067,69 @@ print(response.text)
                             ]
                         },
                         "system": "http://canvasmedical.com",
-                        "value": "411604721",
-                        "assigner": {
+                        "value": "644854429",
+                        "assigner":
+                        {
                             "display": "Canvas Medical"
                         }
                     }
                 ],
                 "active": true,
-                "name": [
+                "name":
+                [
                     {
                         "use": "official",
-                        "family": "Ohri",
-                        "given": [
-                            "Americus 😸️"
+                        "family": "Williams",
+                        "given":
+                        [
+                            "Mark",
+                            "John"
                         ],
-                        "period": {
+                        "period":
+                        {
+                            "start": "0001-01-01T00:00:00+00:00",
+                            "end": "9999-12-31T23:59:59.999999+00:00"
+                        }
+                    },
+                    {
+                        "use": "nickname",
+                        "given":
+                        [
+                            "Marko"
+                        ],
+                        "period":
+                        {
                             "start": "0001-01-01T00:00:00+00:00",
                             "end": "9999-12-31T23:59:59.999999+00:00"
                         }
                     }
                 ],
-                "telecom": [
-                    {
-                        "id": "5a86b61d-dd3b-46ea-94d6-12008f97d38f",
-                        "extension": [
-                            {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
-                                "valueBoolean": false
-                            }
-                        ],
-                        "system": "email",
-                        "value": "test.patient+Americus 😸️.Ohri@canvasmedical.com",
-                        "use": "home",
-                        "rank": 2
-                    }
-                ],
-                "gender": "female",
-                "birthDate": "1984-09-24",
+                "gender": "male",
+                "birthDate": "1980-11-13",
                 "deceasedBoolean": false,
-                "address": [
+                "address":
+                [
                     {
-                        "id": "a6a85bff-520f-49d9-a957-4931a1ce67d0",
+                        "id": "322caf77-2609-4257-b3dc-faa437e877c4",
                         "use": "home",
                         "type": "both",
-                        "line": [
-                            "1013 Calvan Ave",
-                            "Apt 16"
+                        "line":
+                        [
+                            "789 Front St."
                         ],
-                        "city": "Corte Madera",
-                        "state": "CA",
-                        "postalCode": "94965"
+                        "city": "Denver",
+                        "state": "CO",
+                        "postalCode": "80014",
+                        "country": "us"
                     }
                 ],
-                "communication": [
+                "communication":
+                [
                     {
-                        "language": {
-                            "coding": [
+                        "language":
+                        {
+                            "coding":
+                            [
                                 {
                                     "system": "urn:ietf:bcp:47",
                                     "code": "en",
@@ -1143,9 +1161,8 @@ print(response.text)
   ]
 }
 ```
-    {% endtab %}
-
-    {% tab patient-search-response 401 %}
+{% endtab %}
+{% tab patient-search-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1160,9 +1177,8 @@ print(response.text)
   ]
 }
 ```
-    {% endtab %}
-
-    {% tab patient-search-response 403 %}
+{% endtab %}
+{% tab patient-search-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1177,6 +1193,6 @@ print(response.text)
   ]
 }
 ```
-    {% endtab %}
+{% endtab %}
 {% endtabs %}
 </div>
