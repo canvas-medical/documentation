@@ -7,21 +7,17 @@ sections:
         name: Patient
         article: "a"
         description: >-
-           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html): Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br> Canvas supports a few specific FHIR extensions. For us to identify which extension maps to specific fields in Canvas, we use the url field as an exact string match.
+           Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br> Canvas supports a few specific FHIR extensions. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.<br><br>[http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html)
         attributes:
           - name: id
             type: string
             description: Unique Canvas identifier for this resource
           - name: text
             type: json
+            description: A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human.
           - name: extension
             type: array[json]
-            required: true
-            attributes:
-              - name: status
-                type: string
-              - name: div
-                type: string
+            description: Reference the **extension** fields below to see the possible extensions contained in this resource.
           - name: identifier
             type: array[json]
             required: true
@@ -37,20 +33,18 @@ sections:
                 description: Free text to store the patient's identifier.
               - name: period
                 description: This is used to specify the start and end dates (format YYYY-MM-DD). If period is omitted it will default to <code>start</code> = 1970-01-01 and <code>end</code> = 2100-12-31. There is currently no validation if the end date is before the start date.
-
           - name: active
             type: boolean
-            required: false
-            description: The active attribute is a boolean to specify if the patient is active in your healthcare system. If this value is not set, Canvas will default this to true.
+            description: A boolean to specify if the patient is active in the healthcare system. If this value is not set, Canvas will default this to true.
           - name: name
             type: array[json]
             required: true
             description: >-
-                The identifier of the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with use=official will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. If you look at the example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` attribute will be displayed on the Canvas UI but it will not be editable through the UI. <br><br> The example also demonstrates that Canvas ingests a Nick Name (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use = maiden` or use= old. These will not show up on the Canvas UI but will be stored by Canvas (and will be returned via a read request).<br><br> In the Canvas UI, each patient will be displayed with first last suffix (nick name). You will be able to search for a patient by any of these attributes defined here: first, middle, last, suffix or nick name.<br><br>If there are any other objects defined in the name list they will currently be ignored in Canvas.
+                The identifier of the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with use=official will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. If you look at the example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` attribute will be displayed on the Canvas UI but it will not be editable through the UI. <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use = maiden` or use= old. These will not show up on the Canvas UI but will be stored by Canvas (and will be returned via a read request).<br><br> In the Canvas UI, each patient will be displayed with first last suffix (nickname). You will be able to search for a patient by any of these attributes defined here: first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will currently be ignored in Canvas.
           - name: telecom
             type: array[json]
             required: false
-            description: Telecom is an optional list of objects where you can provide the child  attributes listed below.
+            description: Contact details for the individual.
             create_description: >-
                 Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently we do store the other systems in our database, we just do not display them.
             update_description:
@@ -83,7 +77,13 @@ sections:
           - name: gender
             type: string
             required: false
-            description: The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. FHIR allows male, female, other, and unknown.
+            description: >-
+              A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are:<br><br>
+              - male<br>
+              - female<br>
+              - other<br>
+              - unknown<br><br>
+              [https://hl7.org/fhir/R4/valueset-administrative-gender.html](https://hl7.org/fhir/R4/valueset-administrative-gender.html)
             create_description: >-
                 The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently we are tied to the FHIR values allowed: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
             update_description: >-
@@ -92,7 +92,7 @@ sections:
             type: date
             required: true
             description: >-
-                The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD.
+              The date of birth for the individual, formatted as YYYY-MM-DD.
             create_description: >-
                  The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
             update_description: >-
@@ -100,11 +100,11 @@ sections:
           - name: deceasedBoolean
             type: boolean
             required: false
-            description: This is an optional boolean that defaults to false. This variable is not displayed in the Canvas UI but is stored by Canvas.
-            ##is this still true?
+            description: Indicates if the individual is deceased or not.
           - name: address
             type: array[json]
             required: false
+            description: Address(es) for the individual.
             attributes:
               - name: id
                 type: string
@@ -137,18 +137,18 @@ sections:
                     type: date
           - name: photo
             type: json
-            required: false
-            description: The photo attribute is where you can define a base64binary string representing the image you want to upload for the patient avatar on the Canvas UI. The example below binary represents a rubber duck.
+            description: Image of the patient. Data should be passed as a base64-encoded string. This image shows on the patient avatar in the Canvas UI.
             attributes:
               - name: url
                 type: string
           - name: contact
             type: array[json]
             required: false
-            description: The contact attribute is a list of contact objects. They specify a contact party for the patient (friend, parent, emergency contact). The will display on the Patient Registration page.
+            description: A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient Registration page in the Canvas UI.
             attributes:
               - name: id
                 type: string
+                description: A Canvas identifier for the contact.
               - name: name
                 type: json
                 required: true
@@ -171,66 +171,91 @@ sections:
                   - name: value
                     type: string
               - name: extension
-                ##todo add Cody's work
+                type: array[json]
+                description: >-
+                  An extension that includes the following values:<br><br>
+                  - Emergency Contact<br>
+                  - Authorized for Release of Information
           - name: communication
             type: array[json]
-            required: false
+            description: A language which may be used to communicate with the patient about his or her health.
             update_description: <code>communication.language</code> is an object that contains a coding and a text description. Currently, Canvas only supports the language being set to English. If no language is added, it will default to English. Currently, it cannot be updated.
             attributes:
               - name: language
                 type: json
-                attributes:
-                  - name: coding
-                    type: json
-                    attributes:
-                      - name: system
-                        type: string
-                      - name: code
-                        type: string
-                      - name: display
-                        type: string
-                  - name: text
-                    type: string
+                description: The language which can be used to communicate with the patient about his or her health. [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (Preferred but limited to [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html)).
           - name: extension - birthsex
-            type: code
+            type: json
             required: true
             description: >-
-                We identify this extension with the url equal to http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex. Supported Values: M for Male, F for Female, O for Other, and UNK for Unknown
-          - name: extension - ethnicity
+                A code classifying the person’s sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC). This extension aligns with the C-CDA Birth Sex Observation (LOINC 76689-9). After version 6.0.0, this extension is no longer a USCDI Requirement. Supported Values are:<br><br>
+                - M - Male<br>
+                - F - Female<br>
+                - O - Other<br>
+                - UNK - Unknown<br><br>
+                [http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex)
+          - name: extension - genderIdentity
+            type: json
+            description: >-
+              This extension represents an individual’s sense of being a man, woman, boy, girl, nonbinary, or something else, ascertained by asking them what that identity is. Systems requiring multiple gender identities and associated dates SHOULD use the FHIR R5 [http://hl7.org/fhir/extensions/StructureDefinition-individual-genderIdentity.html](genderIdentity) extension. When future versions of US Core are based on FHIR R5, the FHIR R5 extension will supersede this extension.<br><br>The following value codes are supported:<br><br>
+              - 446151000124109 - Identifies as Male<br>
+              - 446141000124107 - Identifies as Female<br>
+              - 407377005 - Female-to-Male (FTM)/Transgender Male/Trans Man<br>
+              - 407376001 - Male-to-Female (MTF)/Transgender Female/Trans Woman<br>
+              - 446131000124102 - Genderqueer, neither exclusively male nor female<br>
+              - OTH - Additional gender category or other, please specify<br>
+              - ASKU - Choose not to disclose
+          - name: extension - sexual-orientation
+            type: json
+            description: >-
+              Sexual orientation of the patient. The following value codes are supported:<br><br>
+              - 20430005 - Straight or heterosexual<br>
+              - 38628009 - Lesbian, gay or homosexual<br>
+              - 42035005 - Bisexual<br>
+              - OTH - Something else, please describe<br>
+              - UNK - Don't Know<br>
+              - ASKU - Choose not to disclose
+          - name: extension - race
             type: codeable concept
+            description: An extension to specify the races of a patient. This is defined using the Us Core Race extension [http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](http://hl7.org/fhir/us/core/StructureDefinition/us-core-race)
+            create_description: The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each race needed from the ValueSet.
+            update_description: The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each race needed from the ValueSet.
+          - name: extension - ethnicity
+            type: json
+            description: >-
+              An extension to specify the ethnicities of a patient - [http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity)
             create_description:
                 The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each ethnicity needed from the ValueSet.
             update_description:
                 The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each ethnicity needed from the ValueSet.
-          - name: exenstion - race
-            type: codeable concept
-            description: This is defined using the Us Core Race extension.
-            create_description: The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each race needed from the ValueSet.
-            update_description: The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each race needed from the ValueSet.
           - name: extension - timezone
-            type: code
+            type: json
             description:
                 The timezone a patient lives in.
             create_description:
                 An optional extension Canvas accepts is to specify the timezone a Patient lives in. The extension must have the url equal to "http://hl7.org/fhir/StructureDefinition/tz-code". Then the valueCode field can be anything defined here. You can see examples here. If the URL does not match exactly, a timezone will not be set. If the URL matches exactly but a valid timezone is not given, the database will save what is passed in; however, the UI will display the current user's timezone.
             update_description:
                An optional extension Canvas accepts is to specify the timezone a Patient lives in. The extension must have the url equal to "http://hl7.org/fhir/StructureDefinition/tz-code". Then the valueCode field can be anything defined here. You can see examples here. If the URL does not match exactly, a timezone will not be set. If the URL matches exactly but a valid timezone is not given, the database will save what is passed in; however, the UI will display the current user's timezone.
-          - name: extenstion - clinical note
-            type: string
+          - name: extension - clinical-note
+            type: json
             description: This note displays under the patient's name in the clinical chart.
             create_description: This note displays under the patient's name in the clinical chart. The `url` must equal "http://schemas.canvasmedical.com/fhir/extensions/clinical-note", while the `valueString` is a free text field.
             update_description: This note displays under the patient's name in the clinical chart. The `url` must equal "http://schemas.canvasmedical.com/fhir/extensions/clinical-note", while the `valueString` is a free text field.
-          - name: extension - administrative note
-            type: string
+          - name: extension - administrative-note
+            type: json
             description: This note displays under the patient's name in the administrative profile.
             create_description: This note displays under the patient's name in the administrative profile. The `url` must equal "http://schemas.canvasmedical.com/fhir/extensions/administrative-note", while the `valueString` is a free text field.
-          - name: extension - preferred pharmacy
-            type: codeable concept
+          - name: extension - preferred-pharmacy
+            type: json
             description: A patient can have multiple preferred pharmacies added to their profile.
             create_description: >-
                 The url must match http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy. The extension list of objects where each object needs: url that must match ncpdp-id valueIdentifier object that contains the system that must equal "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber". Then you can specify the appropriate value of the pharmacy, which is a 7 digit NDPDP ID. Here are a few callouts on workflow for the value attribute: <br><br>**1.** If a valid 7 digit NCPDP id value is specified, then the patient's preferred pharmacy will be updated accordingly with the pharmacy's name, phone, fax and address.<br>**2.** If there is any other value given that is not a 7 digit number, you will see an error that they message did not adhere to the Patient Schema.<br>**3.** If a 7 digit number is passed, but it is not a valid NCPDP id and does not correlate to a pharmacy in Canvas, the patient's preferred pharmacy will be blank.<br>**4.** If this extension is not specified in the request body, any current preferred pharmacy set for the patient will remain.
             update_description: >-
                 The url must match http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy. The extension list of objects where each object needs: url that must match ncpdp-id valueIdentifier object that contains the system that must equal "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber". Then you can specify the appropriate value of the pharmacy, which is a 7 digit NDPDP ID. Here are a few callouts on workflow for the value attribute: <br><br>**1.** If a valid 7 digit NCPDP id value is specified, then the patient's preferred pharmacy will be updated accordingly with the pharmacy's name, phone, fax and address.<br>**2.** If there is any other value given that is not a 7 digit number, you will see an error that they message did not adhere to the Patient Schema.<br>**3.** If a 7 digit number is passed, but it is not a valid NCPDP id and does not correlate to a pharmacy in Canvas, the patient's preferred pharmacy will be blank.<br>**4.** If this extension is not specified in the request body, any current preferred pharmacy set for the patient will remain.
+          - name: extension - business-line
+            type: json
+            description: >-
+                The business line that the patient belongs to.
         search_parameters:
           - name: _id
             type: string
