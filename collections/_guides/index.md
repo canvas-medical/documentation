@@ -8,9 +8,9 @@ layout: "landingpage"
     <div class="cardSectionInnerContainer">
         <div class="cardTitleContainer">
             <img class="cardTitleIcon" src="{{ "/assets/images/guides.svg" | relative_url }}">
-            <h1 class="cardSectionH1" style="font-family: Georgia, serif;">&nbsp;Guides</h1>
+            <h1 class="cardSectionH1">&nbsp;Guides</h1>
         </div>
-        <div class="cardSectionParagraph">
+        <div class="cardSectionParagraphGuides">
             <span>Leverage our guides to foster clinician developer collaboration and implement workflows using a combination of the API, SDK, and out-of-the-box functionality. The majority of the guides require both configuration by superusers, as well as custom development. We encourage you to pair together to explore what is possible and use them to iterate on your care model. </span>
         </div>
         <div class="cardWrapper topPaddingSm">

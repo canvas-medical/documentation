@@ -1,12 +1,12 @@
 .cardSectionFullWidthContainer {
-  padding: 120px 20px;
+  padding: 20px 120px 20px;
   display: flex;
   justify-content: center;
   color: #0d2c4c;
 }
 
 .cardSectionBackground {
-  background: linear-gradient(175deg, rgba(240, 248, 250, 1) 60%, rgba(255, 255, 255, 1) 60%);
+  background: linear-gradient(175deg, rgba(255, 255, 255, 1) 60%, rgba(238, 233, 210, 1) 60%);
 }
 
 .cardSectionInnerContainer {
@@ -15,7 +15,12 @@
 }
 
 .cardSectionParagraph {
-  font-size: 20px;
+  font-size: 18px;
+}
+
+.cardSectionParagraphGuides {
+  font-size: 14px;
+  width:65%;
 }
 
 .cardSectionParagraphSpacer {
@@ -27,8 +32,8 @@
 }
 
 .cardSectionH1 {
-  font-family: Financierdisplay, sans-serif;
-  font-size: 52px;
+  font-family: Georgia, serif;
+  font-size: 45px;
   font-weight: 400;
   line-height: 1.2em;
   display: inline-block;
@@ -83,7 +88,7 @@
 
 .cardContainer a {
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
   color: #4c9dd9;
   line-height: 1.2em;
 }
@@ -100,7 +105,7 @@
 .cardBody p,
 .cardBody span {
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.2em;
   padding-bottom: 1em;
 }
