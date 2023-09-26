@@ -34,7 +34,7 @@ sections:
           - name: patient
             type: json
             required: true
-            description: The Patient resource to whom this consent applies
+            description: Who the consent applies to
           - name: dateTime
             type: datetime
             required: true
@@ -58,11 +58,10 @@ sections:
               A `period.end` with a past date will mark the consent as Expired in the UI.
         search_parameters:
           - name: period
-            type: array[string]
+            type: string
             description: >-
               The date the consent was signed<br><br>
-              Expects an array of date strings, prefaced with one of eq, lt, le, gt, ge.<br><br>
-              For example, ["gt2023-09-01", "lt2023-09-09"] or ["eq2023-01-01"]
+              Expects date strings, prefaced with one of eq, lt, le, gt, ge.<br><br>
           - name: patient
             type: string
             description: FHIR resource for a patient
@@ -472,7 +471,7 @@ print(response.text)
     {
       "relation": "self",
       "url": "/Consent?_count=2&_offset=0"
-    },
+    },  
     {
       "relation": "first",
       "url": "/Consent?_count=2&_offset=0"
