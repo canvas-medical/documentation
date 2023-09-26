@@ -55,6 +55,9 @@
         &:hover {
             text-decoration: none;
         }
+        @media (max-width: $breakpoint-md) {
+            margin-right: 0px;
+        }
     }
     &__menu {
         display: flex;
