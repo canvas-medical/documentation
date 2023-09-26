@@ -14,85 +14,103 @@ layout: "landingpage"
             <span>Leverage our guides to foster clinician developer collaboration and implement workflows using a combination of the API, SDK, and out-of-the-box functionality. The majority of the guides require both configuration by superusers, as well as custom development. We encourage you to pair together to explore what is possible and use them to iterate on your care model. </span>
         </div>
         <div class="cardWrapper topPaddingSm">
+        <a href="/guides/optimize-patient-intake">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
-                    <span>Optimize Patient Intake</span>
+                    <span font color = navy >Optimize Patient Intake</span>
                 </div>
                 <div class="cardBody">
-                    <a href="/guides/optimize-patient-intake">Ensure your providers have the information they need for their visit<br><br></a>
+                    Ensure your providers have the information they need for their visit
                 </div>
             </div>
+        </a>
+        <a href="/guides/external-scheduling">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
                     <span>External Scheduling</span>
                 </div>
                 <div class="cardBody">
-                    <a href="/guides/external-scheduling"> Enable external systems to takeover or supplement scheduling in Canvas</a><br/>
+                 Enable external systems to takeover or supplement scheduling in Canvas
                 </div>
             </div>
+        </a>
+        <a href="guides/asynchronous-care">
                         <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
                     <span>Asynchronous Care</span>
                 </div>
                 <div class="cardBody">
-                    <a href="/guides/asynchronous-care/">Extend access to patients by providing care at any time, from anywhere</a><br/>
+                    Extend access to patients by providing care at any time, from anywhere
                 </div>
             </div>
+        </a>
+        <a href="guides/patient-messaging">
                         <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
                     <span>Patient Messaging</span>
                 </div>
                 <div class="cardBody">
-                    <a href="/guides/patient-messaging/">Customize the patient messaging experience to support your care model</a><br><br/>
+                    Customize the patient messaging experience to support your care model
                 </div>
             </div>
+        </a>
+        <a href="guides/customize-search-results">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
                     <span>Customize Search Results</span>
                 </div>
                 <div class="cardBody">
-                    <a href="/guides/customize-search-results">Add your own  logic to surface the right options with the appropriate context</a>
+                   Add your own  logic to surface the right options with the appropriate context
                 </div>
             </div>
+        </a>
+        <a href="guides/build-a-safety-framework">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
                     <span>Build a Safety Framework</span>
                 </div>
                 <div class="cardBody">
-                    <a href="/guides/build-a-safety-framework">Leverage data to build safer workflows and care pathways</a>
+                    Leverage data to build safer workflows and care pathways
                 </div>
             </div>
+        </a>
+        <a href="guides/team-based-care">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
                     <span>Team Based Care</span>
                 </div>
                 <div class="cardBody">
-                    <a href="/guides/team-based-care">Support efficient, multi-disciplinary team-based delivery</a>
+                    Support efficient, multi-disciplinary team-based delivery
                 </div>
             </div>
+        </a>
+        <a href="guides/capture-charges">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
                     <span>Capture Charges</span>
                 </div>
                 <div class="cardBody">
-                    <a href="/guides/capture-charges">Set charges and capture them through documentation<br></a>
+                    Set charges and capture them through documentation
                 </div>
             </div>
+        </a>
+        <a href="guides/bh">
             <div class="cardContainer">
-                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}"><img src="/assets/images/template-pill.png" style="width: 24%;">
                 <div class="cardHeading">
-                    <span>Behavioral Health <img src="/assets/images/template-pill.png" style="width: 20%;"></span>
+                    <span>Behavioral Health </span>
                 </div>
                 <div class="cardBody">
-                <a href="/guides/bh">Implement these workflows tailored to your Behavioral Health Care Model <br></a>
+                Implement these workflows tailored to your behavioral health care model 
             </div>
-    </div>
+            </div>
+        </a>
 </div>

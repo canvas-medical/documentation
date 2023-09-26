@@ -7,268 +7,92 @@ sections:
         name: Consent
         article: "a"
         description: >-
-          A record of a healthcare consumer’s choices, which permits or denies identified recipient(s) or recipient role(s) to perform one or more actions within a given policy context, for specific purposes and periods of time.
+          A record of a healthcare consumer’s choices, which permits or denies identified recipient(s) or recipient role(s) to perform one or more actions within a given policy context, for specific purposes and periods of time.<br><br>
+          [https://hl7.org/fhir/R4/consent.html](https://hl7.org/fhir/R4/consent.html)
         attributes:
           - name: id
+            type: string
             description: >-
-              The identifier of the consent
-            type: string
-            required: true
-          - name: resourceType
-            type: string
-            required: true
+              The identifier of the Consent
           - name: status
             type: string
             required: true
+            description: >-
+              Indicates the current state of this consent<br><br>
+              Supported codes for create interactions are: **active**, **inactive**, and **rejected**
           - name: scope
-            type: string
-            required: true
-          - name: category
             type: json
-            attributes:
-              - name: coding
-                type: string
-                attributes:
-                  - name: system
-                    type: string
-                  - name: code
-                    type: string
-                  - name: display
-                    type: string
-          - name: patient
-            type: string
             required: true
+            description: >-
+              Type of consent being presented: e.g. ADR, Privacy, Treatment, Research.<br><br>
+              For create interactions, this field is required by FHIR but ignored by Canvas, so {} is an accepted value.
+          - name: category
+            type: array[json]
+            required: true
+            description: >-
+              A classification of the type of consents found in the statement.
+          - name: patient
+            type: json
+            required: true
+            description: Who the consent applies to
           - name: dateTime
             type: datetime
             required: true
+            description: >-
+              When this Consent was issued / created / indexed<br><br>
+              For create interactions, this value will be ignored.<br><br>
+              For read/search interactions, this value will be the Consent's create datetime.
           - name: sourceAttachment
             type: json
-            attributes:
-              - name: url
-                type: string
+            required: true
+            description: >-
+              The source on which this consent statement is based.<br><br>
+              For create interactions, `sourceAttachment.title`, `sourceAttachment.content_type`, and `sourceAttachment.data` are required.<br><br>
+              For read/search interactions, we return the `sourceAttachment.url`.
           - name: provision
             type: json
-            attributes:
-              - name: period
-                type: json
-                attributes:
-                  - name: start
-                    type: datetime™
-                  - name: end
-                    type: datetime
+            description: >-
+              Constraints to the base Consent<br><br>
+              Canvas uses `period.start` and `period.end` to define the start and end dates of the consent.<br><br>
+              For create interactions, `period.start` is required with a **YYYY-MM-DD** format.<br><br>
+              A `period.end` with a past date will mark the consent as Expired in the UI.
         search_parameters:
           - name: period
-            type: array
-            description: The date the consent was signed
+            type: string
+            description: >-
+              The date the consent was signed<br><br>
+              Expects date strings, prefaced with one of eq, lt, le, gt, ge.<br><br>
           - name: patient
             type: string
-            description: The patient the consent is for
-        endpoints: [read, search, create]
+            description: FHIR resource for a patient
+        endpoints: [create, read, search]
+        create:
+          description: >-
+            ###### Updating existing PatientConsent objects
+
+            A PatientConsent is uniquely distinguished by its patient and ConsentCoding<br><br>
+            
+            This Create endpoint also acts as an update endpoint. If the patient already has an existing Patient Consent with the same ConsentCoding, the endpoint updates that consent in place and the id returned in the response will not be changed.<br><br>
+
+            Setting up the type of Consents allowed in your instance must be completed before using this endpoint.  See the related guide above for details.
+          responses: [201, 400, 401, 403, 405, 422]
+          example_request: consent-create-request
+          example_response: consent-create-response
         read:
-          responses: [200, 404]
+          description: Read a Consent resource
+          responses: [200, 401, 403, 404]
           example_request: consent-read-request
           example_response: consent-read-response
         search:
-          responses: [200, 400]
+          description: Search for Consent resources
+          responses: [200, 400, 401, 403]
           example_request: consent-search-request
           example_response: consent-search-response
-        create:
-          responses: [201, 400]
-          example_request: consent-create-request
-          example_response: consent-create-response
+        
 ---
-<div id="consent-read-request">
-{% tabs consent-read-request %}
-{% tab consent-read-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Consent/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab consent-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Consent/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
-</div>
-
-<div id="consent-read-response">
-{% tabs consent-read-response %}
-{% tab consent-read-response 200 %}
-```json
-{
-    "resourceType": "Consent",
-    "id": "a9d3c0d9-e87a-4737-b909-ac81ee62f9a0",
-    "status": "inactive",
-    "scope": {
-        "text": "Unknown"
-    },
-    "category": [
-        {
-            "coding": [
-                {
-                    "system": "internal",
-                    "display": "Restraints"
-                }
-            ]
-        }
-    ],
-    "patient": {
-        "reference": "Patient/2c4b29a411b043bfb1c34c8c3683c7ca",
-        "type": "Patient"
-    },
-    "dateTime": "2022-04-13T14:43:32.317476+00:00",
-    "sourceAttachment": {
-        "url": "https://canvas-client-media.s3.amazonaws.com/training/20220330_211811_60.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=h68Xavx0JLoA7zUhBA4bnSeVCvQ%3D&Expires=1693416882"
-    },
-    "provision": {
-        "period": {
-            "start": "2022-04-13",
-            "end": "2022-12-31"
-        }
-    }
-}
-```
-{% endtab %}
-{% tab consent-read-response 404 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "id": "101",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-{% endtab %}
-{% endtabs %}
-</div>
-
-<div id="consent-search-request">
-{% tabs consent-search-request %}
-{% tab consent-search-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab consent-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
-</div>
-
-<div id="consent-search-response">
-{% tabs consent-search-response %}
-{% tab consent-search-response 200 %}
-```json
-200 {
-  ...
-}
-```
-{% endtab %}
-{% tab consent-search-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "id": "101",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-{% endtab %}
-{% endtabs %}
-</div>
-
 <div id="consent-create-request">
-{% tabs consent-create-request %}
-{% tab consent-create-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Consent"
-
-payload = {
-    "resourceType": "Consent",
-    "status": "active",
-    "scope": { "coding": [
-            {
-                "system": "http://terminology.hl7.org/CodeSystem/consentscope",
-                "code": "patient-privacy"
-            }
-        ] },
-    "category": [{ "coding": [
-                {
-                    "system": "ConsentCoding_System_ConfigureInAdmin",
-                    "code": "ConsentCoding_Code_ConfigureInAdmin",
-                    "display": "ConsentCoding_Display_ConfigureInAdmin"
-                }
-            ] }],
-    "patient": { "reference": "Patient/5350cd20de8a470aa570a852859ac87e" },
-    "sourceAttachment": {
-        "contentType": "application/pdf",
-        "data": "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1znv7kzJafWfxqCWEKhtvk+umQoai78n9M4nV37ft5d0YgplbmRzdHJlYW0KZW5kb2JqCgo5IDAgb2JqCjw8L1R5cGUvRm9udC9TdWJ0eXBlL1RydWVUeXBlL0Jhc2VGb250L0JBQUFBQStMaWJlcmF0aW9uU2VyaWYKL0ZpcnN0Q2hhciAwCi9MYXN0Q2hhciA0Ci9XaWR0aHNbNzc3IDYxMCA0NDMgMzg5IDI3NyBdCi9Gb250RGVzY3JpcHRvciA3IDAgUgovVG9Vbmljb2RlIDggMCBSCj4+CmVuZG9iagoKMTAgMCBvYmoKPDwvRjEgOSAwIFIKPj4KZW5kb2JqCgoxMSAwIG9iago8PC9Gb250IDEwIDAgUgovUHJvY1NldFsvUERGL1RleHRdCj4+CmVuZG9iagoKMSAwIG9iago8PC9UeXBlL1BhZ2UvUGFyZW50IDQgMCBSL1Jlc291cmNlcyAxMSAwIFIvTWVkaWFCb3hbMCAwIDYxMiA3OTJdL0dyb3VwPDwvUy9UcmFuc3BhcmVuY3kvQ1MvRGV2aWNlUkdCL0kgdHJ1ZT4+L0NvbnRlbnRzIDIgMCBSPj4KZW5kb2JqCgo0IDAgb2JqCjw8L1R5cGUvUGFnZXMKL1Jlc291cmNlcyAxMSAwIFIKL01lZGlhQm94WyAwIDAgNjEyIDc5MiBdCi9LaWRzWyAxIDAgUiBdCi9Db3VudCAxPj4KZW5kb2JqCgoxMiAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgNCAwIFIKL09wZW5BY3Rpb25bMSAwIFIgL1hZWiBudWxsIG51bGwgMF0KL0xhbmcoZW4tVVMpCj4+CmVuZG9iagoKMTMgMCBvYmoKPDwvQ3JlYXRvcjxGRUZGMDA1NzAwNzIwMDY5MDA3NDAwNjUwMDcyPgovUHJvZHVjZXI8RkVGRjAwNEMwMDY5MDA2MjAwNzIwMDY1MDA0RjAwNjYwMDY2MDA2OTAwNjMwMDY1MDAyMDAwMzcwMDJFMDAzMj4KL0NyZWF0aW9uRGF0ZShEOjIwMjIwNTIzMDczODM3LTA3JzAwJyk+PgplbmRvYmoKCnhyZWYKMCAxNAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDU3MTUgMDAwMDAgbiAKMDAwMDAwMDAxOSAwMDAwMCBuIAowMDAwMDAwMTk2IDAwMDAwIG4gCjAwMDAwMDU4NTggMDAwMDAgbiAKMDAwMDAwMDIxNiAwMDAwMCBuIAowMDAwMDA0OTI4IDAwMDAwIG4gCjAwMDAwMDQ5NDkgMDAwMDAgbiAKMDAwMDAwNTE0NCAwMDAwMCBuIAowMDAwMDA1NDUzIDAwMDAwIG4gCjAwMDAwMDU2MjggMDAwMDAgbiAKMDAwMDAwNTY2MCAwMDAwMCBuIAowMDAwMDA1OTU3IDAwMDAwIG4gCjAwMDAwMDYwNTQgMDAwMDAgbiAKdHJhaWxlcgo8PC9TaXplIDE0L1Jvb3QgMTIgMCBSCi9JbmZvIDEzIDAgUgovSUQgWyA8ODREQjY2QjEwREU5OTRGNzA1ODlCQTNCRjUzODE4RDg+Cjw4NERCNjZCMTBERTk5NEY3MDU4OUJBM0JGNTM4MThEOD4gXQovRG9jQ2hlY2tzdW0gLzg3MTVEQTJGQzEyOEM2RUY4NzlFREY4RUZGMjRBQTc0Cj4+CnN0YXJ0eHJlZgo2MjI5CiUlRU9GCg==",
-        "title": "UploadTest.pdf"
-    },
-    "provision": { "period": {
-            "start": "2022-05-15",
-            "end": "2022-10-10"
-        } }
-}
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>",
-    "content-type": "application/json"
-}
-
-response = requests.post(url, json=payload, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab consent-create-request curl %}
+  {% tabs consent-create-request %}
+    {% tab consent-create-request curl %}
 ```sh
 curl --request POST \
      --url https://fumage-example.canvasmedical.com/Consent \
@@ -315,22 +139,78 @@ curl --request POST \
 }
 '
 ```
+    {% endtab %}
+
+    {% tab consent-create-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Consent"
+
+payload = {
+  "resourceType": "Consent",
+  "status": "active",
+  "scope": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/consentscope",
+          "code": "patient-privacy"
+        }
+    ] 
+  },
+  "category": [
+    { 
+      "coding": [
+        {
+          "system": "ConsentCoding_System_ConfigureInAdmin",
+          "code": "ConsentCoding_Code_ConfigureInAdmin",
+          "display": "ConsentCoding_Display_ConfigureInAdmin"
+        }
+      ] 
+    }
+  ],
+  "patient": {
+      "reference": "Patient/5350cd20de8a470aa570a852859ac87e",
+      "type": "Patient"
+  },
+  "sourceAttachment": {
+      "contentType": "application/pdf",
+      "data": "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1znv7kzJafWfxqCWEKhtvk+umQoai78n9M4nV37ft5d0YgplbmRzdHJlYW0KZW5kb2JqCgo5IDAgb2JqCjw8L1R5cGUvRm9udC9TdWJ0eXBlL1RydWVUeXBlL0Jhc2VGb250L0JBQUFBQStMaWJlcmF0aW9uU2VyaWYKL0ZpcnN0Q2hhciAwCi9MYXN0Q2hhciA0Ci9XaWR0aHNbNzc3IDYxMCA0NDMgMzg5IDI3NyBdCi9Gb250RGVzY3JpcHRvciA3IDAgUgovVG9Vbmljb2RlIDggMCBSCj4+CmVuZG9iagoKMTAgMCBvYmoKPDwvRjEgOSAwIFIKPj4KZW5kb2JqCgoxMSAwIG9iago8PC9Gb250IDEwIDAgUgovUHJvY1NldFsvUERGL1RleHRdCj4+CmVuZG9iagoKMSAwIG9iago8PC9UeXBlL1BhZ2UvUGFyZW50IDQgMCBSL1Jlc291cmNlcyAxMSAwIFIvTWVkaWFCb3hbMCAwIDYxMiA3OTJdL0dyb3VwPDwvUy9UcmFuc3BhcmVuY3kvQ1MvRGV2aWNlUkdCL0kgdHJ1ZT4+L0NvbnRlbnRzIDIgMCBSPj4KZW5kb2JqCgo0IDAgb2JqCjw8L1R5cGUvUGFnZXMKL1Jlc291cmNlcyAxMSAwIFIKL01lZGlhQm94WyAwIDAgNjEyIDc5MiBdCi9LaWRzWyAxIDAgUiBdCi9Db3VudCAxPj4KZW5kb2JqCgoxMiAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgNCAwIFIKL09wZW5BY3Rpb25bMSAwIFIgL1hZWiBudWxsIG51bGwgMF0KL0xhbmcoZW4tVVMpCj4+CmVuZG9iagoKMTMgMCBvYmoKPDwvQ3JlYXRvcjxGRUZGMDA1NzAwNzIwMDY5MDA3NDAwNjUwMDcyPgovUHJvZHVjZXI8RkVGRjAwNEMwMDY5MDA2MjAwNzIwMDY1MDA0RjAwNjYwMDY2MDA2OTAwNjMwMDY1MDAyMDAwMzcwMDJFMDAzMj4KL0NyZWF0aW9uRGF0ZShEOjIwMjIwNTIzMDczODM3LTA3JzAwJyk+PgplbmRvYmoKCnhyZWYKMCAxNAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDU3MTUgMDAwMDAgbiAKMDAwMDAwMDAxOSAwMDAwMCBuIAowMDAwMDAwMTk2IDAwMDAwIG4gCjAwMDAwMDU4NTggMDAwMDAgbiAKMDAwMDAwMDIxNiAwMDAwMCBuIAowMDAwMDA0OTI4IDAwMDAwIG4gCjAwMDAwMDQ5NDkgMDAwMDAgbiAKMDAwMDAwNTE0NCAwMDAwMCBuIAowMDAwMDA1NDUzIDAwMDAwIG4gCjAwMDAwMDU2MjggMDAwMDAgbiAKMDAwMDAwNTY2MCAwMDAwMCBuIAowMDAwMDA1OTU3IDAwMDAwIG4gCjAwMDAwMDYwNTQgMDAwMDAgbiAKdHJhaWxlcgo8PC9TaXplIDE0L1Jvb3QgMTIgMCBSCi9JbmZvIDEzIDAgUgovSUQgWyA8ODREQjY2QjEwREU5OTRGNzA1ODlCQTNCRjUzODE4RDg+Cjw4NERCNjZCMTBERTk5NEY3MDU4OUJBM0JGNTM4MThEOD4gXQovRG9jQ2hlY2tzdW0gLzg3MTVEQTJGQzEyOEM2RUY4NzlFREY4RUZGMjRBQTc0Cj4+CnN0YXJ0eHJlZgo2MjI5CiUlRU9GCg==",
+      "title": "UploadTest.pdf"
+  },
+  "provision": { 
+      "period": {
+          "start": "2022-05-15",
+          "end": "2022-10-10"
+      } 
+  }
+}
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.text)
+```
 {% endtab %}
+
 {% endtabs %}
 </div>
 
 <div id="consent-create-response">
-{% tabs consent-create-response %}
-{% tab consent-create-response 201 %}
+  {% tabs consent-create-response %}
+    {% tab consent-create-response 201 %}
 ```json
 null
 ```
-{% endtab %}
-{% tab consent-create-response 400 %}
+    {% endtab %}
+    {% tab consent-create-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
@@ -342,8 +222,390 @@ null
   ]
 }
 ```
-{% endtab %}
+    {% endtab %}
+    {% tab consent-create-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+    {% tab consent-create-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+    {% tab consent-create-response 405 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-supported",
+      "details": {
+        "text": "Operation is not supported"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+    {% tab consent-create-response 412 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "conflict",
+      "details": {
+        "text": "Resource updated since If-Unmodified-Since date"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+    {% tab consent-create-response 422 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "business-rule",
+      "details": {
+        "text": "Unprocessable entity"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+  {% endtabs %}
+</div>
+
+<div id="consent-read-request">
+  {% tabs consent-read-request %}
+
+    {% tab consent-read-request curl %}
+```sh
+curl --request GET \
+     --url https://fumage-example.canvasmedical.com/Consent/<id> \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+    {% endtab %}
+
+    {% tab consent-read-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Consent/<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+    {% endtab %}
+  
 {% endtabs %}
 </div>
+
+<div id="consent-read-response">
+  {% tabs consent-read-response %}
+    {% tab consent-read-response 200 %}
+```json
+{
+  "resourceType": "Consent",
+  "id": "a9d3c0d9-e87a-4737-b909-ac81ee62f9a0",
+  "status": "inactive",
+  "scope": {
+      "text": "Unknown"
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "internal",
+          "display": "Restraints"
+        }
+      ]
+    }
+  ],
+  "patient": {
+      "reference": "Patient/2c4b29a411b043bfb1c34c8c3683c7ca",
+      "type": "Patient"
+  },
+  "dateTime": "2022-04-13T14:43:32.317476+00:00",
+  "sourceAttachment": {
+      "url": "https://canvas-client-media.s3.amazonaws.com/training/20220330_211811_60.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=h68Xavx0JLoA7zUhBA4bnSeVCvQ%3D&Expires=1693416882"
+  },
+  "provision": {
+      "period": {
+          "start": "2022-04-13",
+          "end": "2022-12-31"
+      }
+  }
+}
+```
+    {% endtab %}
+    {% tab consent-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab consent-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab consent-read-response 404 %}
+```json
+{
+    "resourceType": "OperationOutcome",
+    "issue": [
+        {
+            "severity": "error",
+            "code": "not-found",
+            "details": {
+                "text": "Unknown Consent resource '7d1ce256fcd7408193b0459650937a07'"
+            }
+        }
+    ]
+}
+```
+    {% endtab %}
+{% endtabs %}
+</div>
+
+<div id="consent-search-request">
+  {% tabs consent-search-request %}
+    {% tab consent-search-request curl %}
+```sh
+curl --request GET \
+     --url 'https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json'
+```
+    {% endtab %}
+    {% tab consent-search-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+    {% endtab %}
+
+  {% endtabs %}
+</div>
+
+<div id="consent-search-response">
+  {% tabs consent-search-response %}
+    {% tab consent-search-response 200 %}
+```json
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 486,
+  "link": [
+    {
+      "relation": "self",
+      "url": "/Consent?_count=2&_offset=0"
+    },  
+    {
+      "relation": "first",
+      "url": "/Consent?_count=2&_offset=0"
+    },
+    {
+      "relation": "next",
+      "url": "/Consent?_count=2&_offset=2"
+    },
+    {
+      "relation": "last",
+      "url": "/Consent?_count=2&_offset=484"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+          "resourceType": "Consent",
+          "id": "a9d3c0d9-e87a-4737-b909-ac81ee62f9a0",
+          "status": "inactive",
+          "scope": {
+              "text": "Unknown"
+          },
+          "category": [
+            {
+              "coding": [
+                  {
+                    "system": "internal",
+                    "display": "Restraints"
+                  }
+              ]
+            }
+          ],
+          "patient": {
+              "reference": "Patient/2c4b29a411b043bfb1c34c8c3683c7ca",
+              "type": "Patient"
+          },
+          "dateTime": "2022-04-13T14:43:32.317476+00:00",
+          "sourceAttachment": {
+              "url": "https://canvas-client-media.s3.amazonaws.com/training/20220330_211811_60.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=2xQC7mNbJ36CzRkC%2FmlqynHDW%2FU%3D&Expires=1694808853"
+          },
+          "provision": {
+              "period": {
+                  "start": "2022-04-13",
+                  "end": "2022-12-31"
+              }
+          }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Consent",
+        "id": "38a78199-e05f-4967-a203-aa6a1fc1b6da",
+        "status": "active",
+        "scope": {
+            "text": "Unknown"
+        },
+        "category": [
+            {
+              "coding": [
+                {
+                  "system": "internal",
+                  "display": "Photo"
+                }
+              ]
+            }
+        ],
+        "patient": {
+            "reference": "Patient/2c4b29a411b043bfb1c34c8c3683c7ca",
+            "type": "Patient"
+        },
+        "dateTime": "2022-04-13T14:45:12.460858+00:00",
+        "provision": {
+            "period": {
+                "start": "2022-04-11"
+            }
+        }
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+    {% tab consent-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+    {% tab consent-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab consent-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+  {% endtabs %}
+</div>
+
+
 
 

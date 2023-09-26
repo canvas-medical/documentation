@@ -20,8 +20,7 @@ permalink: "/"
                     <span>User Docs</span>
                 </div>
                 <div class="cardBody">
-                    <p>Continue using our <a href="https://canvas-medical.zendesk.com/hc/en-us">knowledge center</a> while we migrate the remaining content.</p>
-                    <p>New features and articles referenced in Guides will also be available on this new site.</p>
+                    <p>Continue using our <a href="https://canvas-medical.zendesk.com/hc/en-us">knowledge center</a> while we migrate the remaining content.<br><br>New features and articles referenced in Guides will also be available on this new site.</p>
                 </div>
             </div>
             <div class="cardContainer">

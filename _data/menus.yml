@@ -5,8 +5,14 @@ main:
     url: /sdk/ 
   - title: Guides
     url: /guides/
+
+api: 
+ - title: "Canvas FHIR"
+   identifier: api_canvas_fhir
+ - title: "Resources"
+   identifier: api_resources  
     
-api:
+api_canvas_fhir:
  - title: "Getting Started with the Canvas FHIR API"
    url: /api/
  - title: "Software Requirements"
@@ -21,10 +27,9 @@ api:
    url: /api/errors/
  - title: "Service Base URLs"
    url: /api/service-base-urls/
- - title: "FHIR API"
-   identifier: api_fhir
 
-api_fhir:
+
+api_resources:
  - title: "Allergen"
    url: /api/allergen/
    identifier: api_allergen
@@ -407,9 +412,13 @@ guides_care-models-bh:
 
 sdk:
  - title: "SDK Overview"
-   url: /sdk  
+   identifier: sdk_overview
  - title: "Workflow Kit"
    identifier: sdk_workflow_kit 
+
+sdk_overview:
+ - title: "Introduction"
+   url: sdk/   
 
 sdk_workflow_kit:
  - title: "Quickstart" 
