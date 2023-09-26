@@ -278,6 +278,7 @@ sections:
             description: The patient's birthdate
           - name: gender
             type: string
+            description: The gender of the patient. Supported values are **male**, **female**, **other** and **unknown**.
           - name: family
             type: string
             description: Last name
@@ -292,19 +293,19 @@ sections:
             description: Preferred or alternate name
           - name: phone
             type: string
-            description: Patient phone number, expected to be 10 digits
+            description: Patient phone number. Expected to be 10 digits.
           - name: active
             type: boolean
-            description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false)
+            description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false) patients.
           - name: _count
             type: string
-            description: Triggers pagination. This number is used to determine how many results to return at a time
+            description: Triggers pagination. This number is used to determine how many results to return at a time.
           - name: _has:CareTeam:participant:member
             type: boolean
             description: Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. <code>_has:CareTeam:participant:member=Practitioner/{practitioner_id}</code>
           - name: _sort
             type: string
-            description: Triggers sorting of the results by a specific criteria. Accepted values are id, birthdate, family, given. Use -id, -birthdate, -family, -given to sort in descending order
+            description: Triggers sorting of the results by a specific criteria. Accepted values are id, birthdate, family, given. Use -id, -birthdate, -family, -given to sort in descending order.
         endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
