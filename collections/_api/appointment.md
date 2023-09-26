@@ -94,7 +94,7 @@ sections:
             description: >-
               Additional information to support the appointment. **References** are used to capture information about **rescheduled appointments** and the **location** of the appointment.<br><br>**Rescheduled Appointments**<br>If you see `Previously Rescheduled Appointment` in `supportingInformation`, it means that the appointment you are currently reading was created by rescheduling the appointment in that Reference. If you see `Rescheduled Replacement Appointment` in the `supportingInformation`, it means that the appointment you are currently reading is now outdated by a new appointment.
             create_description:
-              You can use a Location reference within the `SupportingInformation` attribute to specify the Location of the appointment,. To get the location id, use the [Schedule Search](api/schedule/#search) endpoint. This will give you a `resource.id` like `Location.1-Staff.c2ff4546548e46ab8959af887b563eab`. The Location ID is the value displayed after the period. If your instance only has one practice location, the ID will always be 1.
+              You can use a Location reference within the `SupportingInformation` attribute to specify the Location of the appointment,. To get the location id, use the [Schedule Search](/api/schedule/#search) endpoint. This will give you a `resource.id` like `Location.1-Staff.c2ff4546548e46ab8959af887b563eab`. The Location ID is the value displayed after the period. If your instance only has one practice location, the ID will always be 1.
             attributes:
               - name: reference
                 type: string
@@ -114,7 +114,7 @@ sections:
             description: >-
                Participants involved in appointment. Must include at least one entry for a practitioner. An optional 2nd entry may be used for the patient.<br><br>  The `actor.reference`:  `Practitioner/<practitioner_id>` maps to the rendering provider in Canvas.
             create_description:
-              This list object requires one entry for a practitioner. An optional 2nd entry may be supplied for the patient.<br><br>   • The first entry has the `actor.reference` specify `Practitioner/<practitioner_id>` for the provider. This id can be found through a [Practitioner Search](api/practitioner/#search). If `<practitioner_id>` is left blank, the practitioner will be set to Canvas Bot by default. <br>   • The second entry has the `actor.reference` specify `Patient/<patient_id>` for the patient this appointment is for. This id can be found through a [Patient Search](api/patient/#search). <br><br>Per FHIR,  status is required, but it is not used by Canvas. Canvas recommends sending “active"
+              This list object requires one entry for a practitioner. An optional 2nd entry may be supplied for the patient.<br><br>   • The first entry has the `actor.reference` specify `Practitioner/<practitioner_id>` for the provider. This id can be found through a [Practitioner Search](/api/practitioner/#search). If `<practitioner_id>` is left blank, the practitioner will be set to Canvas Bot by default. <br>   • The second entry has the `actor.reference` specify `Patient/<patient_id>` for the patient this appointment is for. This id can be found through a [Patient Search](/api/patient/#search). <br><br>Per FHIR,  status is required, but it is not used by Canvas. Canvas recommends sending “active"
             type: array[json]
             attributes:
               - name: actor
@@ -164,7 +164,7 @@ sections:
           example_request: appointment-create-request
           example_response: appointment-create-response
         update:
-          description: Update an **Appointment** This is almost identical to the [Appointment Create]/(api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as co are currently set in the Canvas database.
+          description: Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as co are currently set in the Canvas database.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: appointment-update-request
           example_response: appointment-update-response
