@@ -69,37 +69,7 @@ sections:
 ---
 
 <div id="device-read-request">
-
-  {% tabs device-read-request %}
-
-    {% tab device-read-request curl %}
-```shell
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Device/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab device-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Device/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include read-request.html resource_type="Device" %}
 </div>
 
 <div id="device-read-response">
@@ -189,7 +159,7 @@ print(response.text)
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown Device resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown Device resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
       }
     }
   ]
@@ -202,37 +172,7 @@ print(response.text)
 </div>
 
 <div id="device-search-request">
-
-  {% tabs device-search-request %}
-
-    {% tab device-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Device/?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0 \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab device-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Device/?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include search-request.html resource_type="Device" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="device-search-response">

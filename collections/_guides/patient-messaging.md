@@ -68,7 +68,7 @@ class MessageNotification(ClinicalQualityMeasure):
 
     def get_fhir_communication(self, message_id):
         """ Given a Communication ID we can perform a FHIR Communication Search Request"""
-        request = (f"https://fhir-{self.instance_name}.canvasmedical.com/"
+        request = (f"https://fumage-{self.instance_name}.canvasmedical.com/"
              f"Communication?_id={message_id}")
         response = requests.get(
             request,

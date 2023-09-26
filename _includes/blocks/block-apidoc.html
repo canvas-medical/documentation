@@ -163,7 +163,7 @@
                     {{ parameter.type }}
                 </div>
                 <div class="apidoc__object__description">
-                    {{ parameter.description }}
+                    {{ parameter.description | markdownify }}
                 </div>
             </div>
             {% endfor %}

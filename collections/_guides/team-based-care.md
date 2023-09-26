@@ -233,7 +233,7 @@ class BehvaioralReferralTaskUpdate(ClinicalQualityMeasure):
 
         response = requests.get(
             (
-                f"https://fhir-{self.settings.INSTANCE_NAME}.canvasmedical.com/"
+                f"https://fumage-{self.settings.INSTANCE_NAME}.canvasmedical.com/"
                 f"Task?identifier={self.task_id}"
             ),
             headers={
@@ -259,7 +259,7 @@ class BehvaioralReferralTaskUpdate(ClinicalQualityMeasure):
 
         response = requests.put(
             (
-                f"https://fhir-{self.settings.INSTANCE_NAME}.canvasmedical.com/"
+                f"https://fumage-{self.settings.INSTANCE_NAME}.canvasmedical.com/"
                 f"Task/{self.task_id}"
             ),
             json=task,

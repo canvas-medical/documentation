@@ -7,71 +7,43 @@ sections:
         name: Allergen
         article: "an"
         description: >-
-          Get information about a particular Allergen record
+          A substance that, upon exposure to an individual, may cause a harmful or undesirable physiological response.
         attributes:
           - name: id
-            description: >-
-              The identifier of the Allergen
+            description: The identifier of the Allergen
             type: string
-            required: true
-          - name: resourceType
-            description: >-
-              The type of resource
-            type: string
-            required: true
           - name: code
-            description: >-
-              Code that identifies the allergen
+            description: Code that identifies the allergen
             type: json
         search_parameters:
-          - name: code
-            type: string
-            description: Code that identifies the allergen
           - name: _text
-            type: string
             description: Search on the narrative of the Allergen
+            type: string
+          - name: code
+            description: Code that identifies the allergen
+            type: string
         endpoints: [read, search]
         read:
-          responses: [200, 404]
-          example_response: allergen-read-response
+          description: Read an Allergen resource.
+          responses: [200, 401, 403, 404]
           example_request: allergen-read-request
+          example_response: allergen-read-response
         search:
-          responses: [200, 400]
-          example_response: allergen-search-response
+          description: Search for Allergyen resources.
+          responses: [200, 400, 401, 403]
           example_request: allergen-search-request
+          example_response: allergen-search-response
 ---
+
 <div id="allergen-read-request">
-{% tabs allergen-read-request %}
-{% tab allergen-read-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Allergen/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab allergen-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Allergen/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{%  include read-request.html resource_type="Allergen" %}
 </div>
 
 <div id="allergen-read-response">
-{% tabs allergen-read-response %}
-{% tab allergen-read-response 200 %}
+
+  {% tabs allergen-read-response %}
+
+    {% tab allergen-read-response 200 %}
 ```json
 {
     "resourceType": "Allergen",
@@ -91,59 +63,72 @@ curl --request GET \
     }
 }
 ```
-{% endtab %}
-{% tab allergen-read-response 404 %}
+    {% endtab %}
+
+    {% tab allergen-read-response 401 %}
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
-      "code": "not-found",
+      "code": "unknown",
       "details": {
-        "text": "Resource not found"
+        "text": "Authentication failed"
       }
     }
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+    {% tab allergen-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab allergen-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown Allergen resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="allergen-search-request">
-{% tabs allergen-search-request %}
-{% tab allergen-search-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Allergen?code=http://www.nlm.nih.gov/research/umls/rxnorm|6979"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab allergen-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Allergen?code=http://www.nlm.nih.gov/research/umls/rxnorm|6979 \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include search-request.html resource_type="Allergen" search_string="code=http://www.nlm.nih.gov/research/umls/rxnorm|6979" %}
 </div>
 
 <div id="allergen-search-response">
-{% tabs allergen-search-response %}
-{% tab allergen-search-response 200 %}
+
+  {% tabs allergen-search-response %}
+
+    {% tab allergen-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
@@ -188,12 +173,12 @@ curl --request GET \
     ]
 }
 ```
-{% endtab %}
-{% tab allergen-search-response 400 %}
+    {% endtab %}
+
+    {% tab allergen-search-response 400 %}
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
@@ -205,8 +190,42 @@ curl --request GET \
   ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+    {% tab allergen-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab allergen-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
-
-

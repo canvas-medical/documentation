@@ -1,0 +1,168 @@
+.cardSectionFullWidthContainer {
+  padding: 20px 120px 20px;
+  display: flex;
+  justify-content: center;
+  color: #0d2c4c;
+}
+
+.cardSectionBackground {
+  background: linear-gradient(175deg, rgba(255, 255, 255, 1) 60%, rgba(238, 233, 210, 1) 60%);
+}
+
+.cardSectionInnerContainer {
+  width: 1080px;
+  max-width: 100%;
+}
+
+.cardSectionParagraph {
+  font-size: 18px;
+}
+
+.cardSectionParagraphGuides {
+  font-size: 14px;
+  width:65%;
+}
+
+.cardSectionParagraphSpacer {
+  margin-top: 80px;
+}
+
+.cardTitleContainer {
+  width: 40%;
+}
+
+.cardSectionH1 {
+  font-family: Georgia, serif;
+  font-size: 45px;
+  font-weight: 400;
+  line-height: 1.2em;
+  display: inline-block;
+}
+
+.cardSectionH2 {
+  font-family: Financierdisplay, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2em;
+}
+
+.topPaddingSm {
+  padding-top: 5px;
+}
+
+.cardWrapper {
+  padding-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.cardContainer {
+  width: 309px;
+  padding: 20px 20px 60px 20px;
+  box-shadow: 0px 0px 1px 2px #e5eaec;
+  background-color: white;
+  border-radius: 3px;
+}
+
+.cardTitleIcon {
+  display: inline-block;
+  height: 48px;
+  width: auto;
+}
+
+.cardIcon {
+  height: 28px;
+  width: auto;
+  margin-left: -3px;
+}
+
+.cardHeading {
+  font-family: Financierdisplay, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2em;
+  margin-top: 5px;
+}
+
+.cardContainer a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #4c9dd9;
+  line-height: 1.2em;
+}
+
+.cardContainer a:hover {
+  color: #4c9dd9C0;
+}
+
+.cardBody {
+  margin-top: 12px;
+  line-height: 1.6em;
+}
+
+.cardBody p,
+.cardBody span {
+  text-decoration: none;
+  font-size: 16px;
+  line-height: 1.2em;
+  padding-bottom: 1em;
+}
+
+.anchorContainer {
+  padding-top: 8px;
+}
+
+@media only screen and (max-width: 768px) {
+  .cardSectionFullWidthContainer {
+    padding: 60px 20px;
+  }
+
+  .cardTitleContainer {
+    width: 100%;
+  }
+
+  .cardSectionH1 {
+    font-size: 32px;
+  }
+
+  .cardSectionH2 {
+    font-size: 20px;
+  }
+
+  .cardSectionParagraph {
+    font-size: 18px;
+    margin-top: 40px;
+  }
+
+  .cardWrapper {
+    flex-direction: column;
+  }
+
+  .cardContainer {
+    padding: 20px 20px 40px 20px;
+    width: unset;
+    max-width: 100%;
+  }
+
+  .cardIcon {
+    height: 24px;
+    width: auto;
+  }
+
+  .cardHeading {
+    font-size: 20px;
+  }
+
+  .cardBody p,
+  .cardBody span {
+    font-size: 17px;
+    line-height: 1.2em;
+  }
+
+  .cardContainer a {
+    font-size: 17px;
+    line-height: 1.2em;
+  }
+}

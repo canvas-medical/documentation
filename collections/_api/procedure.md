@@ -4,362 +4,250 @@ sections:
   - type: section
     blocks:
       - type: apidoc
-        name: procedure
+        name: Procedure
         article: "a"
         description: >-
-         An action that is or was performed on or for a patient. This can be a physical intervention like an operation, or less invasive like long term services, counseling, or hypnotherapy.
-         Date Filtering
-         We support the following date search modifiers:
-          - `ge` Example: `"?date=ge2021-01-01"`
-            - Greater than or equal to the date.
-          - `gt` Example: `"?date=gt2021-01-01"`
-            - Strictly greater than the date.
-          - `le` Example: `"?date=le2021-01-01"`
-            - Less than or equal to the date.
-          - `lt` Example: `"?date=lt2021-01-01"`
-            - Strictly less than the date.
-          - `eq` Example: `"?date=eq2021-01-01"`
-            - Strictly equal to the date.
-          For more details, see https://hl7.org/fhir/search.html#prefix
+          An action that is or was performed on or for a patient. This can be a physical intervention like an operation, or less invasive like long term services, counseling, or hypnotherapy.<br><br>
+          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-procedure.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-procedure.html)<br><br>
+          See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360055626874-Perform-Command-for-In-Office-Procedures) for information on creating procedures with the `Perform` command.
         attributes:
           - name: id
-            description: >-
-              The identifier of the procedure
+            description: The identifier of the Procedure
             type: string
-            required: true
           - name: status
-            description: >-
-              A code specifying the state of the procedure.
+            description: A code specifying the state of the procedure
             type: string
           - name: code
-            description: >-
-              A code that identifies the procedure.
-            type: string
-            attributes:
-             - name: coding
-               type: array
-               attributes:
-                 - name: system
-                   type: string
-                 - name: code
-                   type: string
-                 - name: display
-                   type: string
+            description: Identification of the procedure
+            type: json
           - name: subject
-            description: >-
-              The patient who is the focus of this procedure
-            type: string
+            description: Who the procedure was performed on
+            type: json
           - name: performedDateTime
-            description: >-
-              The date and time the procedure was performed
-            type: date
+            description: When the procedure was performed
+            type: datetime
         search_parameters:
           - name: _id
+            description: The identifier of the Procedure
             type: string
-            description: A Canvas-issued unique identifier
           - name: patient
+            description: Who the procedure was performed on
             type: string
-            description: The patient who is the focus of this procedure
         endpoints: [read, search]
         read:
-          responses: [200, 400, 404]
-          example_response: procedure-read-response
+          description: Read an Procedure resource.
+          responses: [200, 401, 403, 404]
           example_request: procedure-read-request
+          example_response: procedure-read-response
         search:
-          responses: [200, 400]
-          example_response: procedure-search-response
+          description: Search for Procedure resources.
+          responses: [200, 400, 401, 403]
           example_request: procedure-search-request
+          example_response: procedure-search-response
 ---
+
 <div id="procedure-read-request">
-{% tabs procedure-read-request %}
-{% tab procedure-read-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Procedure/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab procedure-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/procedure/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{%  include read-request.html resource_type="Procedure" %}
 </div>
 
 <div id="procedure-read-response">
-{% tabs procedure-read-response %}
-{% tab procedure-read-response 200 %}
+
+  {% tabs procedure-read-response %}
+
+    {% tab procedure-read-response 200 %}
 ```json
 {
     "resourceType": "Procedure",
-    "id": "9789e57b-a645-4a7a-b0d5-284749bd6fb0",
+    "id": "2dd9a3bc-a3bb-472b-aaef-c57be394de39",
     "status": "unknown",
-    "code": {
-        "coding": [
+    "code":
+    {
+        "coding":
+        [
             {
                 "system": "http://www.ama-assn.org/go/cpt",
-                "code": "20600",
-                "display": "joint injection small"
+                "code": "23066",
+                "display": "Biopsy soft tissue shoulder deep"
             }
         ]
     },
-    "subject": {
-        "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+    "subject":
+    {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
         "type": "Patient"
     },
-    "performedDateTime": "2022-06-02T18:15:04.332367+00:00"
+    "performedDateTime": "2023-09-20T21:18:54.263690+00:00"
 }
 ```
-{% endtab %}
-{% tab procedure-read-response 404 %}
+    {% endtab %}
+
+    {% tab procedure-read-response 401 %}
 ```json
 {
-    "resourceType": "OperationOutcome",
-    "issue": [
-        {
-            "severity": "error",
-            "code": "not-found",
-            "details": {
-                "text": "Unknown Procedure resource '7d1ce256fcd7408193b0459650937a07'"
-            }
-        }
-    ]
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+    {% tab procedure-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab procedure-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown Procedure resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="procedure-search-request">
-{% tabs procedure-search-request %}
-{% tab procedure-search-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Procedure?patient=Patient/<patient_id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab procedure-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Procedure?patient=Patient/<patient_id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include search-request.html resource_type="Procedure" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="procedure-search-response">
-{% tabs procedure-search-response %}
-{% tab procedure-search-response 200 %}
+
+  {% tabs procedure-search-response %}
+
+    {% tab procedure-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",
     "type": "searchset",
-    "total": 7,
-    "link": [
+    "total": 1,
+    "link":
+    [
         {
             "relation": "self",
-            "url": "/Procedure?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/Procedure?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Procedure?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/Procedure?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Procedure?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/Procedure?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry": [
+    "entry":
+    [
         {
-            "resource": {
+            "resource":
+            {
                 "resourceType": "Procedure",
-                "id": "9789e57b-a645-4a7a-b0d5-284749bd6fb0",
+                "id": "2dd9a3bc-a3bb-472b-aaef-c57be394de39",
                 "status": "unknown",
-                "code": {
-                    "coding": [
+                "code":
+                {
+                    "coding":
+                    [
                         {
                             "system": "http://www.ama-assn.org/go/cpt",
-                            "code": "20600",
-                            "display": "joint injection small"
+                            "code": "23066",
+                            "display": "Biopsy soft tissue shoulder deep"
                         }
                     ]
                 },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
+                "subject":
+                {
+                    "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
                     "type": "Patient"
                 },
-                "performedDateTime": "2022-06-02T18:15:04.332367+00:00"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Procedure",
-                "id": "abf44ce9-a71e-4fc4-8ac7-5b4cf9663b05",
-                "status": "unknown",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://www.ama-assn.org/go/cpt",
-                            "code": "99213",
-                            "display": "Level 3 outpatient visit for evaluation and management of established patient with problem of low to moderate severity, including expanded history and medical decision making of low complexity - typical time with patient and/or family 15 minutes"
-                        }
-                    ]
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "performedDateTime": "2022-05-26T19:00:00+00:00"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Procedure",
-                "id": "41ae8ee6-1967-4ec5-ab96-46b14c7c7e6d",
-                "status": "unknown",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://www.ama-assn.org/go/cpt",
-                            "code": "99213",
-                            "display": "Level 3 outpatient visit for evaluation and management of established patient with problem of low to moderate severity, including expanded history and medical decision making of low complexity - typical time with patient and/or family 15 minutes"
-                        }
-                    ]
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "performedDateTime": "2022-05-12T17:25:19.752069+00:00"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Procedure",
-                "id": "25a213a0-75f7-49bb-96f1-84a6945cd6af",
-                "status": "unknown",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://www.ama-assn.org/go/cpt",
-                            "code": "36299",
-                            "display": "Unlisted procedure vascular injection"
-                        }
-                    ]
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "performedDateTime": "2022-07-08T15:26:17.380076+00:00"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Procedure",
-                "id": "e669ed9a-86d2-4a23-8e20-119bd3fae177",
-                "status": "unknown",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://www.ama-assn.org/go/cpt",
-                            "code": "99213",
-                            "display": "Level 3 - Established Patient - MAT"
-                        }
-                    ]
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "performedDateTime": "2022-08-29T19:05:09.226366+00:00"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Procedure",
-                "id": "feff5126-1679-4a93-ad46-fcd95569d74e",
-                "status": "unknown",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "unstructured",
-                            "display": "99453"
-                        }
-                    ]
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "performedDateTime": "2022-12-06T17:49:05.481491+00:00"
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Procedure",
-                "id": "8ab210e7-de5c-4343-8e70-5a2268e08d94",
-                "status": "unknown",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://www.ama-assn.org/go/cpt",
-                            "code": "99490",
-                            "display": "CHRON CARE MANAGEMENT SRVC 20 MIN PER MONTH"
-                        }
-                    ]
-                },
-                "subject": {
-                    "reference": "Patient/a1197fa9e65b4a5195af15e0234f61c2",
-                    "type": "Patient"
-                },
-                "performedDateTime": "2022-12-06T17:49:45.081073+00:00"
+                "performedDateTime": "2023-09-20T21:18:54.263690+00:00"
             }
         }
     ]
 }
 ```
-{% endtab %}
-{% tab procedure-search-response 400 %}
+    {% endtab %}
+
+    {% tab procedure-search-response 400 %}
 ```json
 {
-    "resourceType": "OperationOutcome",
-    "issue": [
-        {
-            "severity": "error",
-            "code": "invalid",
-            "details": {
-                "text": "patient must contain a resource identifier"
-            }
-        }
-    ]
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
 }
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+    {% tab procedure-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab procedure-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>

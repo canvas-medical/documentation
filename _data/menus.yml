@@ -146,7 +146,7 @@ api_allergyintolerance:
    url: /api/allergyintolerance/#read
  - title: "AllergyIntolerance Update"
    url: /api/allergyintolerance/#update
- - title: "AllergyInterolerance Search"
+ - title: "AllergyIntolerance Search"
    url: /api/allergyintolerance/#search
 api_appointment:
  - title: "Appointment Create"
@@ -196,6 +196,8 @@ api_consent:
 api_coverage:
  - title: "Coverage Create"
    url: /api/coverage/#create
+ - title: "Coverage Read"
+   url: /api/coverage/#read
  - title: "Coverage Update"
    url: /api/coverage/#update
  - title: "Coverage Search"
@@ -227,12 +229,8 @@ api_encounter:
  - title: "Encounter Search"
    url: /api/encounter/#search   
 api_goal:
- - title: "Goal Create"
-   url: /api/goal/#create
  - title: "Goal Read"
    url: /api/goal/#read
- - title: "Goal Update"
-   url: /api/goal/#update
  - title: "Goal Search"
    url: /api/goal/#search
 api_group:
@@ -260,12 +258,20 @@ api_media:
 api_medication:
  - title: "Medication Read"
    url: /api/medication/#read
+ - title: "Medication Search"
+   url: /api/medication/#search
 api_medicationrequest:
  - title: "MedicationRequest Read"
    url: /api/medicationrequest/#read
  - title: "MedicationRequest Search"
    url: /api/medicationrequest/#search
 api_medicationstatement:
+ - title: "MedicationStatement Create"
+   url: /api/medicationstatement/#create
+ - title: "MedicationStatement Read"
+   url: /api/medicationstatement/#read
+ - title: "MedicationStatement Update"
+   url: /api/medicationstatement/#update
  - title: "MedicationStatement Search"
    url: /api/medicationstatement/#search
 api_observation:
@@ -276,6 +282,8 @@ api_observation:
  - title: "Observation Search"
    url: /api/observation/#search
 api_organization:
+ - title: "Organization Read"
+   url: /api/organization/#read
  - title: "Organization Search"
    url: /api/organization/#search
 api_patient:

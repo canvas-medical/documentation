@@ -7,46 +7,35 @@ sections:
         name: Schedule
         article: "a"
         description: >-
-         Used to group Slot resources together for practitioner/location combinations
+          A container for slots of time that may be available for booking appointments<br><br>[http://hl7.org/fhir/R4/schedule.html](http://hl7.org/fhir/R4/schedule.html)<br><br>Schedules don’t exist as a stored resource within Canvas. Staff can have separate availabilities at each practice location associated with the organization record. The schedule **id** here is important when searching for bookable time slots for appointments.
         attributes:
           - name: id
             description: >-
               The identifier of the schedule
             type: string
-            required: true
-          - name: resourceType
-            type: string
-            required: true
           - name: text
             type: json
-            attributes:
-              - name: status
-                type: string
-                description: >-
-                  The status of the narrative
-              - name: div
-                type: string
-                description: >-
-                  The actual narrative content
+            description: Descriptive and status information about the schedule
           - name: actor
-            type: json
+            type: array[json]
             description: >-
-              The practitioner or location that this schedule is associated with
+              Resource(s) (practitioner or location) that availability information is being provided for
           - name: comment
             type: string
             description: >-
-              Comment about the schedule containing the provider's name and location 
+              Comments on availability
         endpoints: [search]
         search:
-          responses: [200, 400]
+          responses: [200, 400, 401, 403]
           example_request: schedule-search-request
           example_response: schedule-search-response
+          description: Returns a list of location/practitioner combinations that is necessary for identifying open slots when booking appointments. This endpoint does not include any parameters.
 ---
 
 <div id="schedule-search-request">
 {% tabs schedule-search-request %}
 {% tab schedule-search-request python %}
-```sh
+```python
 import requests
 
 url = "https://fumage-example.canvasmedical.com/Schedule"
@@ -65,7 +54,7 @@ print(response.text)
 {% tab schedule-search-request curl %}
 ```sh
 curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Schedule \
+     --url 'https://fumage-example.canvasmedical.com/Schedule' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json'
 ```
@@ -79,7 +68,7 @@ curl --request GET \
 ```json
   {
     "resourceType": "Bundle",
-    "type": "schedule-searchset",
+    "type": "searchset",
     "total": 8,
     "entry": [
         {
@@ -209,7 +198,6 @@ curl --request GET \
 ```json
 {
   "resourceType": "OperationOutcome",
-  "id": "101",
   "issue": [
     {
       "severity": "error",
@@ -222,6 +210,37 @@ curl --request GET \
 }
 ```
 {% endtab %}
+{% tab schedule-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+{% tab schedule-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
 {% endtabs %}
 </div>
-

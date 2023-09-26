@@ -65,7 +65,7 @@ sections:
             Create a Condition resource.<br><br>
             This endpoint does not prevent duplicates in the record. **Canvas recommends performing a search prior to adding a new condition** to confirm whether the condition has already been created for the patient.<br><br>
             If `clinicalStatus` is **active**, the Condition will be added as a `Diagnose` command. If it is not **active**, the Condition will be added as a `Past Medical History` command.<br><br>
-            If `encounter` is provided, the Condition will be added to existing encounter (note). If it is not provided, a new data import note will be created.
+            If `encounter` is provided, the Condition will be added to the existing encounter (note). If it is not provided, a new data import note will be created.
           example_request: condition-create-request
           example_response: condition-create-response
         read:
@@ -249,151 +249,11 @@ print(response.text)
 </div>
 
 <div id="condition-create-response">
-  {% tabs condition-create-response %}
-    {% tab condition-create-response 201 %}
-```json
-null
-```
-    {% endtab %}
-
-    {% tab condition-create-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-create-response 401 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "unknown",
-      "details": {
-        "text": "Authentication failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-create-response 403 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-create-response 405 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-supported",
-      "details": {
-        "text": "Operation is not supported"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-create-response 412 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "conflict",
-      "details": {
-        "text": "Resource updated since If-Unmodified-Since date"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-create-response 422 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "business-rule",
-      "details": {
-        "text": "Unprocessable entity"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include create-response.html %}
 </div>
 
 <div id="condition-read-request">
-
-  {% tabs condition-read-request %}
-
-    {% tab condition-read-request curl %}
-```shell
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Condition/<id>\
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab condition-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Condition/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include read-request.html resource_type="Condition" %}
 </div>
 
 <div id="condition-read-response">
@@ -403,64 +263,103 @@ print(response.text)
     {% tab condition-read-response 200 %}
 ```json
 {
-    "resourceType": "Condition",
-    "clinicalStatus": {
-        "coding": [
-            {
-                "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
-                "code": "resolved",
-                "display": "Resolved"
-            }
-        ],
-        "text": "Resolved"
-    },
-    "verificationStatus": {
-        "coding": [
-            {
-                "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
-                "code": "confirmed",
-                "display": "Confirmed"
-            }
-        ],
-        "text": "Confirmed"
-    },
-    "category": [
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link":
+    [
         {
-            "coding": [
-                {
-                    "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
-                }
-            ],
-            "text": "Encounter Diagnosis"
+            "relation": "self",
+            "url": "/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "code": {
-        "coding": [
-            {
-                "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                "code": "V97.21XS",
-                "display": "Parachutist entangled in object, sequela"
-            }
-        ],
-        "text": "Parachutist entangled in object, sequela"
-    },
-    "subject": {
-        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
-    },
-    "encounter": {
-        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
-    },
-    "onsetDateTime": "2023-06-15",
-    "abatementDateTime": "2023-06-17",
-    "recordedDate": "2023-06-18T15:00:00-04:00",
-    "recorder": {
-        "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
-    },
-    "note": [
+    "entry":
+    [
         {
-            "text": "Condition note"
+            "resource":
+            {
+                "resourceType": "Condition",
+                "id": "3340c331-d446-4700-9c23-7959bd393f26",
+                "clinicalStatus":
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "resolved",
+                            "display": "Resolved"
+                        }
+                    ],
+                    "text": "Resolved"
+                },
+                "verificationStatus":
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed"
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
+                "category":
+                [
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ],
+                        "text": "Encounter Diagnosis"
+                    }
+                ],
+                "code":
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "V97.21XS",
+                            "display": "Parachutist entangled in object, sequela"
+                        }
+                    ],
+                    "text": "Parachutist entangled in object, sequela"
+                },
+                "subject":
+                {
+                    "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+                },
+                "encounter":
+                {
+                    "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+                },
+                "onsetDateTime": "2023-06-15",
+                "abatementDateTime": "2023-06-17",
+                "recordedDate": "2023-06-18T15:00:00-04:00",
+                "recorder":
+                {
+                    "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+                },
+                "note":
+                [
+                    {
+                        "text": "Condition note"
+                    }
+                ]
+            }
         }
     ]
 }
@@ -510,7 +409,7 @@ print(response.text)
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown Condition resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown Condition resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
       }
     }
   ]
@@ -684,170 +583,11 @@ print(response.text)
 </div>
 
 <div id="condition-update-response">
-
-  {% tabs condition-update-response %}
-
-    {% tab condition-update-response 200 %}
-```json
-null
-```
-    {% endtab %}
-
-    {% tab condition-update-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-update-response 401 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "unknown",
-      "details": {
-        "text": "Authentication failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-update-response 403 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-update-response 404 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-found",
-      "details": {
-        "text": "Unknown Condition resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-update-response 405 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-supported",
-      "details": {
-        "text": "Operation is not supported"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-update-response 412 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "conflict",
-      "details": {
-        "text": "Resource updated since If-Unmodified-Since date"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-    {% tab condition-update-response 422 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "business-rule",
-      "details": {
-        "text": "Unprocessable entity"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include update-response.html resource_type="Condition" %}
 </div>
 
 <div id="condition-search-request">
-
-  {% tabs condition-search-request %}
-
-    {% tab condition-search-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0 \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab condition-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
-
+{% include search-request.html resource_type="Condition" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="condition-search-response">

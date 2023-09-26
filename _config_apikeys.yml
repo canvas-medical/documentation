@@ -1,3 +1,4 @@
 algolia:
   application_id: 'D4QF30HEJZ'
   index_name: 'docs_canvasmedical'
+  max_record_size: 100000

@@ -13,11 +13,14 @@
   }
 
   &__meta {
-    font-size: $font-xs;
+    font-size: 0.75rem;
   }
 
   &__title {
-    font-size: $font-xl;
+    font-size: 2rem;
+    @media (min-width: $breakpoint-lg) {
+      font-size: 2.5rem;
+    }
   }
 
   &__heading {

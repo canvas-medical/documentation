@@ -76,32 +76,7 @@ sections:
 ---
 
 <div id="diagnostic-report-read-request">
-{% tabs diagnostic-report-read-request %}
-{% tab diagnostic-report-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/DiagnosticReport/<id>"
-
-headers = {
-  "accept": "application/json",
-  "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab diagnostic-report-read-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/DiagnosticReport/<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include read-request.html resource_type="DiagnosticReport" %}
 </div>
 
 <div id="diagnostic-report-read-response">
