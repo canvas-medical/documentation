@@ -253,7 +253,7 @@
   gap: 10px;
 
   li {
-    box-shadow: 0 0 2px #94a3b8;
+    box-shadow: 0 0 0px #94a3b8;
     border-radius: 0.5rem;
     padding: 10px;
 
@@ -284,13 +284,13 @@
     }
 
     &:hover {
-      background: $mediumblue;
+      background: $lightgrey;
 
       a {
-        color: #fff;
+        color: #5A5A5A;
 
         p {
-          color: $white;
+          color: #5A5A5A;
         }
       }
     }
