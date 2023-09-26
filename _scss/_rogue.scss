@@ -57,6 +57,13 @@ $font-family-monospace: 'Ubuntu Mono', 'SFMono-Regular', 'Menlo', 'Monaco', 'Con
 
 .highlighter-rouge {
     max-height: 66.7vh;
+    @media (max-width: $breakpoint-md) {
+        max-width: 87vw;
+    }
+    @media (min-width: $breakpoint-md) and (max-width: $breakpoint-xl) {
+        max-width: 60vw;
+    }
+
     overflow-y: scroll;
     .lineno {
         text-align: left;
