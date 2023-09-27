@@ -19,12 +19,12 @@
     }
     > .anchorlist__item .anchorlist__item a {
       padding-left: $container-padding + $container-padding + $container-padding;
-      margin-bottom: 10px; /* Add space between line items */
+      margin-top: 10px; /* Add space between line items */
     }
   }
   &__item {
     line-height: 1.25;
-    font-size: 1.2rem;
+    font-size: 0.875rem;
 
     &__active {
       border-left: 2px solid $babyblue;

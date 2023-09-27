@@ -70,7 +70,8 @@
     }
 
     &__item {
-        line-height: 2;
+        line-height: 1.25;
+        margin-top: 10px;
 
         &__active {
             font-weight: bolder;
