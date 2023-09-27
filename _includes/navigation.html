@@ -26,7 +26,8 @@
     <div class="navigation__container__inner navigation__container__site navigation__wrapper">
         <div class="navigation__menu">
             {% for item in site.menus.main %}
-            <a class="navigation__menu__item{% if page.url == '/' %}{% if item.url == '/' %} navigation__menu__item__active{% endif %}{% elsif item.url contains page.url %} navigation__menu__item__active{% endif %}" href="{{ item.url }}">{{ item.title }}</a>            {% endfor %}
+            <a class="navigation__menu__item{% assign url_path = item.url | split: "/" %}{% assign page_path = page.url | split: "/" %}{% if url_path[1] == page_path[1] %} navigation__menu__item__active{% endif %}" href="{{ item.url }}">{{ item.title }}</a>
+            {% endfor %}
         </div>
         <div class="navigation__alt">
             <a class="navigation__menu__item" href="https://www.canvasmedical.com/" target="_blank">Canvas Medical Website</a>
