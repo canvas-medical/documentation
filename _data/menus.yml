@@ -23,6 +23,8 @@ api_canvas_fhir:
    url: /api/customer-authentication/
  - title: "Conditional Requests"
    url: /api/conditional-requests/
+ - title: "Pagination"
+   url: /api/pagination
  - title: "Errors"
    url: /api/errors/
  - title: "Service Base URLs"
