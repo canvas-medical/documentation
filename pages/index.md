@@ -15,38 +15,46 @@ permalink: "/"
         </div>
         <div class="cardWrapper topPaddingSm">
             <div class="cardContainer">
-                <img class="cardIcon" src="{{ "/assets/images/file.svg" | relative_url }}">
                 <div class="cardHeading">
-                    <span>User Docs</span>
+                     <img class="cardIcon" src="{{ "/assets/images/file.svg" | relative_url }}"><span>&nbsp;&nbsp;User Docs</span>
                 </div>
                 <div class="cardBody">
-                    <p>Continue using our <a href="https://canvas-medical.zendesk.com/hc/en-us">knowledge center</a> while we migrate the remaining content.<br><br>New features and articles referenced in Guides will also be available on this new site.</p>
+                    <span>Learn more about the migration of our knowledge center</span>
+                    <div class="anchorContainer">
+                    <a href="/documentation">Transition Overview</a><br>
+                    <a href="https://canvas-medical.zendesk.com/hc/en-us">Knowledge Center ⍈</a><br>
+                    <a href="https://canvas-medical.zendesk.com/hc/en-us/sections/360010471754-Release-Documents">Release Notes ⍈</a> 
+                    </div>
                 </div>
             </div>
             <div class="cardContainer">
-                <img class="cardIcon" src="{{ "/assets/images/developers.svg" | relative_url }}">
                 <div class="cardHeading">
-                    <span>For Developers</span>
+                    <img class="cardIcon" src="{{ "/assets/images/developers.svg" | relative_url }}"><span>&nbsp;&nbsp;For Developers</span>
                 </div>
                 <div class="cardBody">
+                     <span>
+                        Customize the clinical experience with our SDK, and extend it with our API
+                    </span>
+                     <div class="anchorContainer">
                     <a href="/api/quickstart">API Quickstart</a><br/>
-                    <a href="/sdk/sdk-quickstart/">SDK: Workflow Kit Quickstart</a>
+                    <a href="/sdk/sdk-quickstart/">SDK: Workflow Kit Quickstart</a><br/>
+                    <a href="v1docs.canvasmedical.com/">V1 Docs ⍈</a>
+                    </div>
                 </div>
             </div>
             <div class="cardContainer">
-                <img class="cardIcon" src="{{ "/assets/images/guides.svg" | relative_url }}">
                 <div class="cardHeading">
-                    <span>Guides</span>
+                    <img class="cardIcon" src="{{ "/assets/images/guides.svg" | relative_url }}"><span>&nbsp;&nbsp;Guides</span>
                 </div>
                 <div class="cardBody">
                     <span>
-                        Checkout our newest guides:
+                        Implement workflows leveraging our newest guides
                     </span>
                     <div class="anchorContainer">
                         <a href="/guides/team-based-care">Team Based Care</a><br/>
                         <a href="/guides/optimize-patient-intake">Optimize Patient Intake</a><br/>
                         <a href="/guides/external-scheduling">External Scheduling</a><br/>
-                        <a href="/guides/asynchronous-care">Asynchronous Care</a><br/>
+                        <a href="/guides">... and more</a><br/>
                     </div>
                 </div>
             </div>

@@ -7,6 +7,7 @@
     > .anchorlist__item > a {
       padding-left: $container-padding;
       margin-bottom: 10px; /* Add space between line items */
+      color: $text-color;
     }
   }
   &__submenu {
@@ -15,11 +16,12 @@
 
     > .anchorlist__item > a {
       padding-left: $container-padding + $container-padding;
-      margin-bottom: 12px; /* Add space between line items */
+      margin-bottom: 10px; /* Add space between line items */
+      color: $text-color;
     }
     > .anchorlist__item .anchorlist__item a {
       padding-left: $container-padding + $container-padding + $container-padding;
-      margin-top: 10px; /* Add space between line items */
+      margin-bottom: 10px; /* Add space between line items */
     }
   }
   &__item {
@@ -28,7 +30,7 @@
 
     &__active {
       border-left: 2px solid $babyblue;
-      color: $active-color;
+      color: $blue !important; /* Set the active link color to baby blue with !important */
     }
     > a {
       display: inline-block;

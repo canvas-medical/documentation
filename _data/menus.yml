@@ -352,10 +352,10 @@ documentation:
    identifier: documentation_transition
 
 guides:
- - title: "Elements of Care Modeling"
+ - title: "Explore how our guides can support the elements of care modeling"
    identifier: guides_elements
- - title: "Care Models"
-   identifier: guides_care-models
+ - title: "Templates"
+   identifier: guides_templates
 
 guides_elements:
  - title: "Diagnostic Range & Inputs"
@@ -368,12 +368,10 @@ guides_elements:
    identifier: guides_patient-sourcing
  - title: "Ongoing Interaction Modes & Utilization Policies"
    identifier: guides_ongoing-interaction-modes
- - title: "Content & Automation"
-   identifier: guides_content-and-automation
  - title: "Healthcare Pricing & Payments"
    identifier: guides_healthcare-pricing
 
-guides_care-models:
+guides_templates:
  - title: "Behavioral Health"
    url: /guides/bh
    identifier: guides_care-models-bh
