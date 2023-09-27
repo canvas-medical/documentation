@@ -1,6 +1,6 @@
 ---
 slug: /
-title: "Getting Started With the Canvas FHIR API "
+title: "Introduction "
 layout: apilandingpage
 ---
 

@@ -13,7 +13,7 @@ api:
    identifier: api_resources  
     
 api_canvas_fhir:
- - title: "Getting Started with the Canvas FHIR API"
+ - title: "Introduction"
    url: /api/
  - title: "Software Requirements"
    url: /api/software-requirements/
@@ -354,57 +354,33 @@ documentation:
    identifier: documentation_transition
 
 guides:
- - title: "Explore how our guides can support the elements of care modeling"
-   identifier: guides_elements
+ - title: "Guides"
+   identifier: guides_list
  - title: "Templates"
    identifier: guides_templates
 
-guides_elements:
- - title: "Diagnostic Range & Inputs"
-   identifier: guides_diagnostic-range
- - title: "Scope of Interventions & Safety Framework"
-   identifier: guides_scope-of-interventions
- - title: "Care Team Composition & Sourcing"
-   identifier: guides_care-team-composition
- - title: "Patient Sourcing & Intake"
-   identifier: guides_patient-sourcing
- - title: "Ongoing Interaction Modes & Utilization Policies"
-   identifier: guides_ongoing-interaction-modes
- - title: "Healthcare Pricing & Payments"
-   identifier: guides_healthcare-pricing
+guides_list:
+ - title: "Asynchronous Care"
+   url: /guides/asynchronous-care/  
+ - title: "Build a Safety Framework"
+   url: /guides/build-a-safety-framework/ 
+ - title: "Capture Charges"
+   url: /guides/capture-charges/ 
+ - title: "Customize Search Results"
+   url: /guides/customize-search-results/
+ - title: "External Scheduling"
+   url: /guides/external-scheduling/
+ - title: "Optimize Patient Intake"
+   url: /guides/optimize-patient-intake/
+ - title: "Patient Messaging"
+   url: /guides/patient-messaging/
+ - title: "Team Based Care"
+   url: /guides/team-based-care/ 
 
 guides_templates:
  - title: "Behavioral Health"
    url: /guides/bh
    identifier: guides_care-models-bh
-
-guides_diagnostic-range:
- - title: "Customize Search Results"
-   url: /guides/customize-search-results/ 
-
-guides_scope-of-interventions:
- - title: "Build a Safety Framework"
-   url: /guides/build-a-safety-framework/  
-
-guides_care-team-composition:
- - title: "Team Based Care"
-   url: /guides/team-based-care/
-
-guides_patient-sourcing:
- - title: "Optimize Patient Intake"
-   url: /guides/optimize-patient-intake/
-
-guides_ongoing-interaction-modes:
- - title: "External Scheduling"
-   url: /guides/external-scheduling/
- - title: "Asynchronous Care"
-   url: /guides/asynchronous-care/
- - title: "Patient Messaging"
-   url: /guides/patient-messaging/
-
-guides_healthcare-pricing:
- - title: "Capture Charges"
-   url: /guides/capture-charges/
 
 guides_care-models-bh:
  - title: "Configuration Guide"
@@ -423,33 +399,6 @@ sdk_overview:
 sdk_workflow_kit:
  - title: "Quickstart" 
    url: /sdk/sdk-quickstart/
- - title: "Data and Methods" 
-   identifier: sdk_workflow_kit_data_methods
- - title: "Outputs" 
-   identifier: sdk_workflow_kit_outputs
- - title: "Canvas CLI Additional Commands" 
-   url: /sdk/canvas-cli
- - title: "Protocol Logging Tool" 
-   url: /sdk/protocol-logging-tool
- - title: "Value Sets" 
-   identifier: sdk_workflow_kit_value_sets
-   url: /sdk/value-sets
- - title: "Managing Protocols in Settings" 
-   url: /sdk/managing-protocols-in-settings
-   
-sdk_workflow_kit_outputs:
- - title: "Recommendation Types"
-   url: /sdk/recommendation-types
- - title: "Banner Alerts"
-   url: /sdk/banner-alerts
- - title: "Create/Update Canvas Resources"
-   url: /sdk/create-update-canvas-resources
- - title: "Notification Protocol"
-   url: /sdk/notification-protocol
- - title: "Making FHIR Requests"
-   url: /sdk/making-fhir-requests
-
-sdk_workflow_kit_data_methods:
  - title: "Change Types"
    url: /sdk/change-types
  - title: "Patient Recordsets"
@@ -460,6 +409,25 @@ sdk_workflow_kit_data_methods:
    url: /sdk/sandboxing-and-allowed-imports
  - title: "Field Changes"
    url: /sdk/field-changes
+ - title: "Recommendation Types"
+   url: /sdk/recommendation-types
+ - title: "Banner Alerts"
+   url: /sdk/banner-alerts
+ - title: "Create/Update Canvas Resources"
+   url: /sdk/create-update-canvas-resources
+ - title: "Notification Protocol"
+   url: /sdk/notification-protocol
+ - title: "Making FHIR Requests"
+   url: /sdk/making-fhir-requests
+ - title: "Canvas CLI Additional Commands" 
+   url: /sdk/canvas-cli
+ - title: "Protocol Logging Tool" 
+   url: /sdk/protocol-logging-tool
+ - title: "Value Sets" 
+   identifier: sdk_workflow_kit_value_sets
+   url: /sdk/value-sets
+ - title: "Managing Protocols in Settings" 
+   url: /sdk/managing-protocols-in-settings
 
 sdk_workflow_kit_value_sets:
  - title: "Allergy"
