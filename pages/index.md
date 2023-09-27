@@ -8,7 +8,7 @@ permalink: "/"
     <div class="cardSectionInnerContainer">
         <div class="cardTitleContainer">
             <h1 class="cardSectionH1" style="font-family: Georgia, serif;"><br>Documentation</h1>
-            <h2 class="cardSectionH2 topPaddingSm">Giving super powers to care teams through software.</h2>
+            <h2 class="cardSectionH2 topPaddingSm">Guidance for wherever you are on your care modeling journey</h2>
         </div>
         <div class="cardSectionParagraph cardSectionParagraphSpacer">
             <span>Explore our articles, guides, and examples to build and integrate with the Canvas platform.</span>

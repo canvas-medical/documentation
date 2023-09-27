@@ -1,6 +1,5 @@
 ---
 title: "Managing Protocols in Settings"
-slug: "sdk-viewing-a-protocol-in-the-canvas-ui-settings"
 hidden: false
 createdAt: "2022-02-14T18:06:44.854Z"
 updatedAt: "2022-02-18T20:32:50.391Z"
