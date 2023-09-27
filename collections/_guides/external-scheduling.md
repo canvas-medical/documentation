@@ -27,9 +27,9 @@ In this guide, you will learn how to do the following:
 
 Before you can build external scheduling workflows, you will need to configure Canvas's advanced scheduling capabilities as follows.<br><br>
 [Availability:](/documentation/provider-availability/) Provider Availability in Canvas is managed through an integration with Google Calendar. This allows you to set availability using recurring events that are easy to update as needed. Updates made in gCal will reflect within Canvas in minutes. You can set availability at the location level or leave the location empty to have it be set for the clinician across all locations. <br><br>
-[Note Types:](/documentation/appointment-and-note-types/) The differentiated care models of our customers often include all types of patient interactions, including in-person visits, telehealth, and asynchronous encounters. You can configure your note types to fit your offering by creating completely custom note types and codes, or, you can use an established system such as [LOINC®](https://loinc.org/LG41826-5) codes.<br><br>
-[Appointment Types:](/documentation/appointment-and-note-types/) Creating Custom Appointment Types allows your team to schedule Other Events that block time but do not generate Notes within the Timeline. They can be associated with a specific patient (but do not require one) and can be used to account for meetings, travel time, or co-visits during which multiple clinicians need to be included, but only one note needs to be generated. <br><br>
-[Structured Reason for Visit:](/documentation/reason-for-visit-setting-codings/) Structured Reason for Visit is a setting that can be enabled in Canvas. In doing so you can define a set of reasons and then associate one or more possible durations with each. This can help ensure your team follows set scheduling guidelines. Alternatively, the unstructured option allows the scheduler to free text the reason and choose the duration from any of the configured options. 
+[Note Types:](/documentation/appointment-and-note-types/) The differentiated care models of our customers often include all types of patient interactions, including in-person visits, telehealth, and asynchronous encounters. You can configure your note types to fit your offering by creating completely custom note types and codes, or leveraging [SNOMED](https://www.snomed.org/).<br><br>
+[Appointment Types:](/documentation/appointment-and-note-types/) Creating custom appointment types allows your team to schedule Other Events that block time but do not generate Notes within the Timeline. They can be associated with a specific patient (but do not require one) and can be used to account for meetings, travel time, or co-visits during which multiple clinicians need to be included, but only one note needs to be generated. <br><br>
+[Structured Reason for Visit:](/documentation/reason-for-visit-setting-codings/) Structured reason for visit is a setting that can be enabled in Canvas. In doing so you can define a set of reasons and then associate one or more possible durations with each. This can help ensure your team follows set scheduling guidelines. Alternatively, the unstructured option allows the scheduler to free text the reason and choose the duration from any of the configured options. 
 
 <br>
 * * *
@@ -39,9 +39,9 @@ Before you can build external scheduling workflows, you will need to configure C
 If you are managing provider provider availability in Canvas you will need to leverage the following two endpoints to surface available time slots:
 
 [FHIR Schedule Search:]({{site.baseurl}}/api/schedule/) The schedule ID returned in the response payload is important when searching for bookable time slots for appointments. The schedule ID allows you to find the staff member's availability at a specific location.<br><br>
-[FHIR Slot Search:]({{site.baseurl}}/api/slot/) You'll need to define the logic using your front end or a scheduling partner to determine which schedules to search, using the query params to return availability for clinicians that match based on, specialty and/or state licensure. <br>
+[FHIR Slot Search:]({{site.baseurl}}/api/slot/) You'll need to define the logic using your front end or a scheduling partner to determine which schedules to search, using the query params to return availability for clinicians that match based on specialty and/or state licensure. <br>
 
-Then, after determining the date and time, you can book the appointment: <br>
+Then, after determining the, provider, location, date, and time, you can book the appointment: <br>
 
 [FHIR Appointment Create:]({{site.baseurl}}/api/appointment/) You can write both patient appointments or events to Canvas. For appointments, you have the option to create [Structured Reason for Visits]({{site.baseurl}}/documentation/reason-for-visit-setting-codings/). If configured, the codings can be utilized in the FHIR request payload in the `reasonCode` attribute.
 

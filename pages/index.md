@@ -7,7 +7,7 @@ permalink: "/"
 <div class="cardSectionFullWidthContainer cardSectionBackground">
     <div class="cardSectionInnerContainer">
         <div class="cardTitleContainer">
-            <h1 class="cardSectionH1" style="font-family: Georgia, serif;"><br>Canvas Docs</h1>
+            <h1 class="cardSectionH1" style="font-family: Georgia, serif;"><br>Documentation</h1>
             <h2 class="cardSectionH2 topPaddingSm">Giving super powers to care teams through software.</h2>
         </div>
         <div class="cardSectionParagraph cardSectionParagraphSpacer">

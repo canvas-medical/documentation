@@ -432,7 +432,9 @@ sdk_workflow_kit:
  - title: "Value Sets" 
    identifier: sdk_workflow_kit_value_sets
    url: /sdk/value-sets
-
+ - title: "Managing Protocols in Settings" 
+   url: /sdk/managing-protocols-in-settings
+   
 sdk_workflow_kit_outputs:
  - title: "Recommendation Types"
    url: /sdk/recommendation-types

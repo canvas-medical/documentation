@@ -17,7 +17,7 @@ In this guide, you will learn how to do the following:
 
 ### 1. Configure your fee schedule and discounts
 
-You can set charges by configuring your[fee schedule](/documentation/fee-schedule) in admin. Determining what to charge is ultimately up to you but here are a few methods that might be helpful.
+You can set charges by configuring your [fee schedule](/documentation/fee-schedule) in admin. Determining what to charge is ultimately up to you but here are a few methods that might be helpful.
 * set charges based on costs of services
 * set charges based on your contracted rates
 * set charges based on a set percentage of medicare. 

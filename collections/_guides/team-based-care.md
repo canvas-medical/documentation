@@ -47,7 +47,7 @@ Our [FHIR CareTeam](/api/careteam/) resource allows you to read a patients care 
 
 The minimum necessary rule requires that covered entities make reasonable efforts to limit access to protected health information to those in the workforce that need access based on their roles.
 
-Permissions that control what a user can do in Canvas are assigned through [roles](/permissions/#default-permissions-based-on-role). 
+Permissions that control what a user can do in Canvas are assigned through [roles](/documentation/permissions/#default-permissions-based-on-role). 
 
 Canvas also allows you to limit access to subsets of the population using established [patient groups](/documentation/patient-groups/). Once the patient groups are defined in your admin settings, you can partner with your engineering team to leverage protocols to programmatically add patients to the groups based on any patient attribute that is available to the Workflow Kit. 
 

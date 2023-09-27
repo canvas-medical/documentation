@@ -5,12 +5,12 @@ layout: sdklandingpage
 ---
 
 
-## The Canvas Workflow Kit
+## Current State: The Canvas Workflow Kit
 
 The Canvas Workflow Kit was built to support clinical quality measures. It is extremely powerful in that regard, but effective care modeling requires much more control and customization than it allows. We have extended it to create additional interventions, beyond the original recommendations, but the triggers are still limited to patient changes. 
 <br>
 <br>
-## The Canvas SDK
+## Future State: The Canvas SDK
 
 It was evident in partnering with our customers in their care modeling journeys that a true SDK was needed to unlock critical use cases. There are many advantages to the new architecture, including but not limited to:
 
