@@ -15,7 +15,7 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 | 403 - Forbidden            | Token bearer is forbidden from performing the operation.               |
 | 404 - Not Found            | The requested resource doesn't exist.                                  |
 | 422 - Unprocessable Entity | There operation cannot be completed because of an error in the request body; details are provided in the returned OperationOutcome |
-| 5xx - Server Error         | Something went wrong on Canvas's end.                                  |
+| 5XX - Server Error         | Something went wrong on Canvas's end.                                  |
 
 
 
@@ -82,6 +82,23 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
       "code": "business-rule",
       "details": {
         "text": "This appointment time is no longer available."
+      }
+    }
+  ]
+}
+```
+
+**5XX**
+
+```
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "excepetion",
+      "details": {
+        "text": "Internal server error"
       }
     }
   ]
