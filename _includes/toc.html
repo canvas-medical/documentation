@@ -5,8 +5,6 @@
         <ul class="toc__menu">
             <li class="toc__item">
                 <div>
-                    {% if item.children %}<span class="toc__toggle__expanded">{% include icons/chevron.svg
-                        %}</span>{% endif %}
                     {% if item.url %}<a href="{{ item.url }}"{% assign this_url = item.url | split: '#' %}{% if this_url[0] == page.url %} class="toc__active"{% endif %}>{{ item.title }}</a>{% else %}<strong>{{ item.title
                         }}</strong>{% endif %}
                 </div>
