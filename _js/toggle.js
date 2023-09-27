@@ -41,12 +41,19 @@ const toggleSearch = () => {
     searchbutton.addEventListener('click', () => {
       searchPanel.classList.toggle('toogle_searchmain');
       overlay.classList.toggle('search-overlay__toggle');
-      if (overlay) {
-        overlay.addEventListener('click', () => {
-          searchPanel.classList.remove('toogle_searchmain');
-          overlay.classList.remove('search-overlay__toggle');
-        });
+
+      const searchInput = document.querySelector('.ais-SearchBox-input');
+
+      if (searchInput) {
+        searchInput.focus();
       }
+    });
+  }
+
+  if (overlay) {
+    overlay.addEventListener('click', () => {
+      searchPanel.classList.remove('toogle_searchmain');
+      overlay.classList.remove('search-overlay__toggle');
     });
   }
 };
