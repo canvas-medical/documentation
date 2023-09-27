@@ -54,8 +54,7 @@ sections:
     "id": "a04b44ec-c7df-4808-9043-e9c4b1d352a9",
     "status": "active",
     "name": "Canvas Medical",
-    "alias":
-    [
+    "alias": [
         "Canvas Medical HQ"
     ],
     "description": "Canvas Medical, San Francisco, CA"
@@ -132,8 +131,7 @@ sections:
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/Location?_count=10&_offset=0"
@@ -147,17 +145,14 @@ sections:
             "url": "/Location?_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "Location",
                 "id": "a04b44ec-c7df-4808-9043-e9c4b1d352a9",
                 "status": "active",
                 "name": "Canvas Medical",
-                "alias":
-                [
+                "alias": [
                     "Canvas Medical HQ"
                 ],
                 "description": "Canvas Medical, San Francisco, CA"

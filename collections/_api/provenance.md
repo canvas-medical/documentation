@@ -64,31 +64,25 @@ sections:
 {
     "resourceType": "Provenance",
     "id": "db1631ed-bcd3-4e43-84a1-7e507e8aa44c",
-    "target":
-    [
+    "target": [
         {
             "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
             "type": "Patient"
         }
     ],
     "recorded": "2023-09-18T14:42:14.981528+00:00",
-    "activity":
-    {
-        "coding":
-        [
+    "activity": {
+        "coding": [
             {
                 "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
                 "code": "CREATE"
             }
         ]
     },
-    "agent":
-    [
+    "agent": [
         {
-            "type":
-            {
-                "coding":
-                [
+            "type": {
+                "coding": [
                     {
                         "system": "http://terminology.hl7.org/CodeSystem/provenance-participant-type",
                         "code": "composer",
@@ -96,14 +90,12 @@ sections:
                     }
                 ]
             },
-            "who":
-            {
+            "who": {
                 "reference": "Organization/00000000-0000-0000-0002-000000000000",
                 "type": "Organization",
                 "display": "Canvas Medical"
             },
-            "onBehalfOf":
-            {
+            "onBehalfOf": {
                 "reference": "Organization/00000000-0000-0000-0002-000000000000",
                 "type": "Organization"
             }
@@ -182,8 +174,7 @@ sections:
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/Provenance?target=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
@@ -197,38 +188,30 @@ sections:
             "url": "/Provenance?target=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "Provenance",
                 "id": "db1631ed-bcd3-4e43-84a1-7e507e8aa44c",
-                "target":
-                [
+                "target": [
                     {
                         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
                         "type": "Patient"
                     }
                 ],
                 "recorded": "2023-09-18T14:42:14.981528+00:00",
-                "activity":
-                {
-                    "coding":
-                    [
+                "activity": {
+                    "coding": [
                         {
                             "system": "http://terminology.hl7.org/CodeSystem/v3-DataOperation",
                             "code": "CREATE"
                         }
                     ]
                 },
-                "agent":
-                [
+                "agent": [
                     {
-                        "type":
-                        {
-                            "coding":
-                            [
+                        "type": {
+                            "coding": [
                                 {
                                     "system": "http://terminology.hl7.org/CodeSystem/provenance-participant-type",
                                     "code": "composer",
@@ -236,14 +219,12 @@ sections:
                                 }
                             ]
                         },
-                        "who":
-                        {
+                        "who": {
                             "reference": "Organization/00000000-0000-0000-0002-000000000000",
                             "type": "Organization",
                             "display": "Canvas Medical"
                         },
-                        "onBehalfOf":
-                        {
+                        "onBehalfOf": {
                             "reference": "Organization/00000000-0000-0000-0002-000000000000",
                             "type": "Organization"
                         }

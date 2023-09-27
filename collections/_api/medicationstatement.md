@@ -302,7 +302,29 @@ headers = {
     "content-type": "application/json"
 }
 
-payload = {}
+payload = {
+    "resourceType": "MedicationStatement",
+    "status": "entered-in-error",
+    "medicationReference": {
+        "reference": "Medication/fdb-449732",
+        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    },
+    "subject": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
+    },
+    "context": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "effectivePeriod": {
+        "start": "2023-06-15T15:00:00-04:00",
+        "end": "2023-06-25T15:00:00-04:00"
+    },
+    "dosage": [
+        {
+            "text": "1-2 tablets once daily at bedtime as needed for restless legs"
+        }
+    ]
+}
 response = requests.put(url, json=payload, headers=headers)
 
 print(response.text)
@@ -331,8 +353,7 @@ print(response.text)
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/MedicationStatement?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
@@ -346,33 +367,26 @@ print(response.text)
             "url": "/MedicationStatement?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "MedicationStatement",
                 "status": "active",
-                "medicationReference":
-                {
+                "medicationReference": {
                     "reference": "Medication/fdb-449732",
                     "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
                 },
-                "subject":
-                {
+                "subject": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
                 },
-                "context":
-                {
+                "context": {
                     "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
                 },
-                "effectivePeriod":
-                {
+                "effectivePeriod": {
                     "start": "2023-06-15T15:00:00-04:00",
                     "end": "2023-06-25T15:00:00-04:00"
                 },
-                "dosage":
-                [
+                "dosage": [
                     {
                         "text": "1-2 tablets once daily at bedtime as needed for restless legs"
                     }

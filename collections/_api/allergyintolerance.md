@@ -592,8 +592,7 @@ print(response.text)
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/AllergyIntolerance?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
@@ -607,17 +606,13 @@ print(response.text)
             "url": "/AllergyIntolerance?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "AllergyIntolerance",
                 "id": "3340c331-d446-4700-9c23-7959bd393f26",
-                "clinicalStatus":
-                {
-                    "coding":
-                    [
+                "clinicalStatus": {
+                    "coding": [
                         {
                             "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
                             "code": "active",
@@ -626,10 +621,8 @@ print(response.text)
                     ],
                     "text": "Active"
                 },
-                "verificationStatus":
-                {
-                    "coding":
-                    [
+                "verificationStatus": {
+                    "coding": [
                         {
                             "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
                             "code": "confirmed",
@@ -639,10 +632,8 @@ print(response.text)
                     "text": "Confirmed"
                 },
                 "type": "allergy",
-                "code":
-                {
-                    "coding":
-                    [
+                "code": {
+                    "coding": [
                         {
                             "system": "http://www.fdbhealth.com/",
                             "code": "2-15588",
@@ -651,34 +642,27 @@ print(response.text)
                     ],
                     "text": "Allergy Medicine"
                 },
-                "patient":
-                {
+                "patient": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
                 },
-                "encounter":
-                {
+                "encounter": {
                     "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
                 },
                 "onsetDateTime": "2023-06-15",
-                "recorder":
-                {
+                "recorder": {
                     "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
                 },
                 "lastOccurrence": "2023-06-17",
-                "note":
-                [
+                "note": [
                     {
                         "text": "AllergyIntolerance note"
                     }
                 ],
-                "reaction":
-                [
+                "reaction": [
                     {
-                        "manifestation":
-                        [
+                        "manifestation": [
                             {
-                                "coding":
-                                [
+                                "coding": [
                                     {
                                         "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
                                         "code": "unknown",

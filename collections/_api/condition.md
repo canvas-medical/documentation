@@ -574,8 +574,7 @@ print(response.text)
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
@@ -589,17 +588,13 @@ print(response.text)
             "url": "/Condition?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "Condition",
                 "id": "3340c331-d446-4700-9c23-7959bd393f26",
-                "clinicalStatus":
-                {
-                    "coding":
-                    [
+                "clinicalStatus": {
+                    "coding": [
                         {
                             "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
                             "code": "resolved",
@@ -608,10 +603,8 @@ print(response.text)
                     ],
                     "text": "Resolved"
                 },
-                "verificationStatus":
-                {
-                    "coding":
-                    [
+                "verificationStatus": {
+                    "coding": [
                         {
                             "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
                             "code": "confirmed",
@@ -620,11 +613,9 @@ print(response.text)
                     ],
                     "text": "Confirmed"
                 },
-                "category":
-                [
+                "category": [
                     {
-                        "coding":
-                        [
+                        "coding": [
                             {
                                 "system": "http://terminology.hl7.org/CodeSystem/condition-category",
                                 "code": "encounter-diagnosis",
@@ -634,10 +625,8 @@ print(response.text)
                         "text": "Encounter Diagnosis"
                     }
                 ],
-                "code":
-                {
-                    "coding":
-                    [
+                "code": {
+                    "coding": [
                         {
                             "system": "http://hl7.org/fhir/sid/icd-10-cm",
                             "code": "V97.21XS",
@@ -646,23 +635,19 @@ print(response.text)
                     ],
                     "text": "Parachutist entangled in object, sequela"
                 },
-                "subject":
-                {
+                "subject": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
                 },
-                "encounter":
-                {
+                "encounter": {
                     "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
                 },
                 "onsetDateTime": "2023-06-15",
                 "abatementDateTime": "2023-06-17",
                 "recordedDate": "2023-06-18T15:00:00-04:00",
-                "recorder":
-                {
+                "recorder": {
                     "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
                 },
-                "note":
-                [
+                "note": [
                     {
                         "text": "Condition note"
                     }

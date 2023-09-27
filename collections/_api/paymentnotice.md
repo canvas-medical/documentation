@@ -115,17 +115,16 @@ curl --request POST \
     "resourceType": "PaymentNotice",
     "status": "active",
     "request": {
-      "reference": "Patient/bc4ec998a49745b488f552bebddf7261"
+        "reference": "Patient/bc4ec998a49745b488f552bebddf7261"
     },
     "created": "2023-09-12",
     "payment": {},
     "recipient": {},
     "amount": {
-      "value": 10.00,
-      "currency": "USD"
+        "value": 10.00,
+        "currency": "USD"
     }
-}
-'
+}'
 ```
     {% endtab %}
 
@@ -135,27 +134,26 @@ import requests
 
 url = "https://fumage-example.canvasmedical.com/PaymentNotice"
 
-payload = {
-    "resourceType": "PaymentNotice",
-    "status": "active",
-    "request": {
-      "reference": "Patient/bc4ec998a49745b488f552bebddf7261"
-    },
-    "created": "2023-09-12",
-    "payment": {},
-    "recipient": {},
-    "amount": {
-      "value": 10.00,
-      "currency": "USD"
-    }
-}
-
 headers = {
     "accept": "application/json",
     "Authorization": "Bearer <token>",
     "content-type": "application/json"
 }
 
+payload = {
+    "resourceType": "PaymentNotice",
+    "status": "active",
+    "request": {
+        "reference": "Patient/bc4ec998a49745b488f552bebddf7261"
+    },
+    "created": "2023-09-12",
+    "payment": {},
+    "recipient": {},
+    "amount": {
+        "value": 10.00,
+        "currency": "USD"
+    }
+}
 response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
@@ -184,8 +182,7 @@ print(response.text)
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/PaymentNotice?request=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
@@ -199,8 +196,7 @@ print(response.text)
             "url": "/PaymentNotice?request=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
             "resource": {
                 "resourceType": "PaymentNotice",

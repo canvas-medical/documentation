@@ -102,10 +102,8 @@ sections:
     "status": "active",
     "intent": "order",
     "reportedBoolean": false,
-    "medicationCodeableConcept":
-    {
-        "coding":
-        [
+    "medicationCodeableConcept": {
+        "coding": [
             {
                 "system": "http://www.fdbhealth.com/",
                 "code": "244899",
@@ -118,27 +116,22 @@ sections:
             }
         ]
     },
-    "subject":
-    {
+    "subject": {
         "reference": "Patient/6cb2a409334943c2b48f1686dc739f11",
         "type": "Patient"
     },
-    "encounter":
-    {
+    "encounter": {
         "reference": "Encounter/bdadce18-098b-40dc-8bdd-ef8481bd999a",
         "type": "Encounter"
     },
     "authoredOn": "2023-09-21T18:19:36.106449+00:00",
-    "requester":
-    {
+    "requester": {
         "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
         "type": "Practitioner"
     },
-    "reasonCode":
-    [
+    "reasonCode": [
         {
-            "coding":
-            [
+            "coding": [
                 {
                     "system": "http://hl7.org/fhir/sid/icd-10-cm",
                     "code": "I10",
@@ -147,40 +140,32 @@ sections:
             ]
         }
     ],
-    "dosageInstruction":
-    [
+    "dosageInstruction": [
         {
             "text": "take 1 daily",
-            "doseAndRate":
-            [
+            "doseAndRate": [
                 {
-                    "doseQuantity":
-                    {
+                    "doseQuantity": {
                         "unit": "Tablet"
                     }
                 }
             ]
         }
     ],
-    "dispenseRequest":
-    {
+    "dispenseRequest": {
         "numberOfRepeatsAllowed": 3,
-        "quantity":
-        {
+        "quantity": {
             "value": 30.0
         },
-        "expectedSupplyDuration":
-        {
+        "expectedSupplyDuration": {
             "value": 30,
             "unit": "days"
         },
-        "performer":
-        {
+        "performer": {
             "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
         }
     },
-    "substitution":
-    {
+    "substitution": {
         "allowedBoolean": true
     }
 }
@@ -256,8 +241,7 @@ sections:
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/MedicationRequest?patient=Patient%2F6cb2a409334943c2b48f1686dc739f11&_count=10&_offset=0"
@@ -271,20 +255,16 @@ sections:
             "url": "/MedicationRequest?patient=Patient%2F6cb2a409334943c2b48f1686dc739f11&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "MedicationRequest",
                 "id": "3423a69c-618d-4cbe-861a-54c60f48744e",
                 "status": "active",
                 "intent": "order",
                 "reportedBoolean": false,
-                "medicationCodeableConcept":
-                {
-                    "coding":
-                    [
+                "medicationCodeableConcept": {
+                    "coding": [
                         {
                             "system": "http://www.fdbhealth.com/",
                             "code": "244899",
@@ -297,27 +277,22 @@ sections:
                         }
                     ]
                 },
-                "subject":
-                {
+                "subject": {
                     "reference": "Patient/6cb2a409334943c2b48f1686dc739f11",
                     "type": "Patient"
                 },
-                "encounter":
-                {
+                "encounter": {
                     "reference": "Encounter/bdadce18-098b-40dc-8bdd-ef8481bd999a",
                     "type": "Encounter"
                 },
                 "authoredOn": "2023-09-21T18:19:36.106449+00:00",
-                "requester":
-                {
+                "requester": {
                     "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
                     "type": "Practitioner"
                 },
-                "reasonCode":
-                [
+                "reasonCode": [
                     {
-                        "coding":
-                        [
+                        "coding": [
                             {
                                 "system": "http://hl7.org/fhir/sid/icd-10-cm",
                                 "code": "I10",
@@ -326,40 +301,32 @@ sections:
                         ]
                     }
                 ],
-                "dosageInstruction":
-                [
+                "dosageInstruction": [
                     {
                         "text": "take 1 daily",
-                        "doseAndRate":
-                        [
+                        "doseAndRate": [
                             {
-                                "doseQuantity":
-                                {
+                                "doseQuantity": {
                                     "unit": "Tablet"
                                 }
                             }
                         ]
                     }
                 ],
-                "dispenseRequest":
-                {
+                "dispenseRequest": {
                     "numberOfRepeatsAllowed": 3,
-                    "quantity":
-                    {
+                    "quantity": {
                         "value": 30.0
                     },
-                    "expectedSupplyDuration":
-                    {
+                    "expectedSupplyDuration": {
                         "value": 30,
                         "unit": "days"
                     },
-                    "performer":
-                    {
+                    "performer": {
                         "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
                     }
                 },
-                "substitution":
-                {
+                "substitution": {
                     "allowedBoolean": true
                 }
             }

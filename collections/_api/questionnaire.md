@@ -90,19 +90,16 @@ sections:
     "name": "Exercise",
     "status": "active",
     "description": "No Description Provided",
-    "code":
-    [
+    "code": [
         {
             "system": "http://snomed.info/sct",
             "code": "404684003"
         }
     ],
-    "item":
-    [
+    "item": [
         {
             "linkId": "d82e29db-0cac-4b97-a5aa-9e81749686e2",
-            "code":
-            [
+            "code": [
                 {
                     "system": "http://snomed.info/sct",
                     "code": "228448000"
@@ -111,19 +108,16 @@ sections:
             "text": "Do you exercise on a regular basis?",
             "type": "choice",
             "repeats": false,
-            "answerOption":
-            [
+            "answerOption": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "LA33-6",
                         "display": "Yes"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "LA32-8",
                         "display": "No"
@@ -133,8 +127,7 @@ sections:
         },
         {
             "linkId": "f2419de1-a208-4a3f-9d55-ba9bd5ed4ec2",
-            "code":
-            [
+            "code": [
                 {
                     "system": "http://snomed.info/sct",
                     "code": "228449008"
@@ -143,67 +136,58 @@ sections:
             "text": "In an average week, how many days do you exercise?",
             "type": "choice",
             "repeats": false,
-            "answerOption":
-            [
+            "answerOption": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "228449008-0",
                         "display": "0"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "38112003",
                         "display": "1"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "19338005",
                         "display": "2"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "79605009",
                         "display": "3"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "9362000",
                         "display": "4"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "34001005",
                         "display": "5"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "68244004",
                         "display": "6"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "65607009",
                         "display": "7"
@@ -213,8 +197,7 @@ sections:
         },
         {
             "linkId": "93137723-295f-4b28-9f97-fb58825b2cda",
-            "code":
-            [
+            "code": [
                 {
                     "system": "http://snomed.info/sct",
                     "code": "255257008"
@@ -223,35 +206,30 @@ sections:
             "text": "On the days when you exercised, for how long did you exercise?",
             "type": "choice",
             "repeats": false,
-            "answerOption":
-            [
+            "answerOption": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "QUES_FINACIAL_STRESS_CODE_Q3_A1",
                         "display": "10-20 min"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "QUES_FINACIAL_STRESS_CODE_Q3_A2",
                         "display": "20-40 min"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "QUES_FINACIAL_STRESS_CODE_Q3_A3",
                         "display": "40-60 min"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "QUES_FINACIAL_STRESS_CODE_Q3_A4",
                         "display": "> 1 hr"
@@ -261,8 +239,7 @@ sections:
         },
         {
             "linkId": "7eb053cd-cb2d-435f-8f55-f154645b55c4",
-            "code":
-            [
+            "code": [
                 {
                     "system": "http://snomed.info/sct",
                     "code": "QUES_FINACIAL_STRESS_CODE_Q4"
@@ -271,11 +248,9 @@ sections:
             "text": "What type of exercise do you do?",
             "type": "text",
             "repeats": false,
-            "answerOption":
-            [
+            "answerOption": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "QUES_FINACIAL_STRESS_CODE_Q4_A1",
                         "display": "What type of exercise do you do?"
@@ -357,8 +332,7 @@ sections:
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/Questionnaire?name=exercise&_count=10&_offset=0"
@@ -372,29 +346,24 @@ sections:
             "url": "/Questionnaire?name=exercise&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "Questionnaire",
                 "id": "47a408d7-9f1d-4cfd-97c7-aa810df9ed39",
                 "name": "Exercise",
                 "status": "active",
                 "description": "No Description Provided",
-                "code":
-                [
+                "code": [
                     {
                         "system": "http://snomed.info/sct",
                         "code": "404684003"
                     }
                 ],
-                "item":
-                [
+                "item": [
                     {
                         "linkId": "d82e29db-0cac-4b97-a5aa-9e81749686e2",
-                        "code":
-                        [
+                        "code": [
                             {
                                 "system": "http://snomed.info/sct",
                                 "code": "228448000"
@@ -403,19 +372,16 @@ sections:
                         "text": "Do you exercise on a regular basis?",
                         "type": "choice",
                         "repeats": false,
-                        "answerOption":
-                        [
+                        "answerOption": [
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "LA33-6",
                                     "display": "Yes"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "LA32-8",
                                     "display": "No"
@@ -425,8 +391,7 @@ sections:
                     },
                     {
                         "linkId": "f2419de1-a208-4a3f-9d55-ba9bd5ed4ec2",
-                        "code":
-                        [
+                        "code": [
                             {
                                 "system": "http://snomed.info/sct",
                                 "code": "228449008"
@@ -435,67 +400,58 @@ sections:
                         "text": "In an average week, how many days do you exercise?",
                         "type": "choice",
                         "repeats": false,
-                        "answerOption":
-                        [
+                        "answerOption": [
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "228449008-0",
                                     "display": "0"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "38112003",
                                     "display": "1"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "19338005",
                                     "display": "2"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "79605009",
                                     "display": "3"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "9362000",
                                     "display": "4"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "34001005",
                                     "display": "5"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "68244004",
                                     "display": "6"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "65607009",
                                     "display": "7"
@@ -505,8 +461,7 @@ sections:
                     },
                     {
                         "linkId": "93137723-295f-4b28-9f97-fb58825b2cda",
-                        "code":
-                        [
+                        "code": [
                             {
                                 "system": "http://snomed.info/sct",
                                 "code": "255257008"
@@ -515,35 +470,30 @@ sections:
                         "text": "On the days when you exercised, for how long did you exercise?",
                         "type": "choice",
                         "repeats": false,
-                        "answerOption":
-                        [
+                        "answerOption": [
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "QUES_FINACIAL_STRESS_CODE_Q3_A1",
                                     "display": "10-20 min"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "QUES_FINACIAL_STRESS_CODE_Q3_A2",
                                     "display": "20-40 min"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "QUES_FINACIAL_STRESS_CODE_Q3_A3",
                                     "display": "40-60 min"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "QUES_FINACIAL_STRESS_CODE_Q3_A4",
                                     "display": "> 1 hr"
@@ -553,8 +503,7 @@ sections:
                     },
                     {
                         "linkId": "7eb053cd-cb2d-435f-8f55-f154645b55c4",
-                        "code":
-                        [
+                        "code": [
                             {
                                 "system": "http://snomed.info/sct",
                                 "code": "QUES_FINACIAL_STRESS_CODE_Q4"
@@ -563,11 +512,9 @@ sections:
                         "text": "What type of exercise do you do?",
                         "type": "text",
                         "repeats": false,
-                        "answerOption":
-                        [
+                        "answerOption": [
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "QUES_FINACIAL_STRESS_CODE_Q4_A1",
                                     "display": "What type of exercise do you do?"
