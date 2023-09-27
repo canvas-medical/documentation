@@ -25,13 +25,6 @@ sections:
             required: true
             description: >-
               Canvas patient resource whom the eligibility request is for
-          - name: insurance
-            type: array[json]
-            required: true
-            description: >-
-              Canvas Coverage resource identifying the insurance to check eligibility against<br><br>
-              Supported values: a single iteration containing a **Coverage** resource.<br><br>
-              **focal** is not required - all requests are processed as **true**
           - name: created
             type: date
             required: true
@@ -44,6 +37,13 @@ sections:
             description: >-
               Coverage issuer, required by the FHIR schema but unused by Canvas.<br><br>
               Canvas recommends setting `insurer` to `{}`.
+          - name: insurance
+            type: array[json]
+            required: true
+            description: >-
+              Canvas Coverage resource identifying the insurance to check eligibility against<br><br>
+              Supported values: a single iteration containing a **Coverage** resource.<br><br>
+              **focal** is not required - all requests are processed as **true**
         endpoints: [create]
         create:
           responses: [201, 400, 401, 403, 405, 422]

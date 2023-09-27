@@ -47,10 +47,12 @@ sections:
             description: The unique Canvas identifier of the Communication
           - name: recipient
             type: array[json]
-            description: FHIR resource for the recipient, either a Patient or Practitioner
+            description: >-
+              Message recipient<br><br>Supported: **Patient**, **Practitioner**
           - name: sender
             type: string
-            description: FHIR resource for the sender, either a Patient or Practitioner
+            description: >-
+              Message sender<br><br>Supported: **Patient**, **Practitioner**
         endpoints: [create, search]
         create:
           description: >-

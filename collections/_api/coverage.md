@@ -80,10 +80,10 @@ sections:
             description: The Canvas resource identifier of the Coverage
           - name: patient
             type: string
-            description: Patient resource the Coverage is for
+            description: Retrieve coverages for a patient
           - name: subscriberid
             type: string
-            description: Find all coverages with a specific subscriberID
+            description: Retrieve all coverages with a specific subscriberID
         endpoints: [create, read, search, update]
         create:
           responses: [201, 400, 401, 403, 405, 422]

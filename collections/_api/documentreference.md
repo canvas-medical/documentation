@@ -16,6 +16,10 @@ sections:
               The identifier of the document reference
             type: string
             required: true
+          - name: identifier
+            type: array[json]
+            description: Other identifiers for the document
+            type: string
           - name: status
             description: >-
               The status of the document reference. Supported values are: **current**, **superseded** and **entered-in-error**.
@@ -32,10 +36,6 @@ sections:
             description: >-
               Who/what is the subject of the document
             type: json
-          - name: identifier
-            type: array[json]
-            description: Other identifiers for the document
-            type: string
           - name: date
             description: >-
               When this document reference was created
@@ -60,22 +60,22 @@ sections:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier
-          - name: patient
-            type: string
-            description: The patient associated with the document
-          - name: subject
-            description: The patient associated with the document. Can be used interchangeably with the patient parameter.
-            type: string
           - name: category
             type: string
             description: >-
               Categorization of document
-          - name: status
-            type: string
-            description: The status of the document reference
           - name: date
             type: date
             description: The date the document was created
+          - name: patient
+            type: string
+            description: The patient associated with the document
+          - name: status
+            type: string
+            description: The status of the document reference
+          - name: subject
+            description: The patient associated with the document. Can be used interchangeably with the patient parameter.
+            type: string
           - name: type
             type: string
             description: Kind of document (LOINC if possible)

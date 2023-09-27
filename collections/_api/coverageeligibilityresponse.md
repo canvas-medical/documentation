@@ -45,8 +45,8 @@ sections:
         search_parameters:
           - name: request
             type: string
-            description: >-
-              **Required**: Canvas id returned from the response of the CoverageEligibilityRequest Create 
+            description: The EligibilityRequest reference
+            required: true
         endpoints: [search]
         search:
           responses: [200, 400, 401, 403]

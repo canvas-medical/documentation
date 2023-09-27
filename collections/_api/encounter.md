@@ -70,6 +70,10 @@ sections:
             type: string
             description: >-
               The appointment that scheduled this encounter
+          - name: date
+            type: string
+            description: >-
+              The start time of the encounter
           - name: patient
             type: string
             description: >-
@@ -78,10 +82,6 @@ sections:
             type: string
             description: >-
               Encounter subject
-          - name: date
-            type: string
-            description: >-
-              The start time of the encounter
         endpoints: [read, search]
         read:
           responses: [200, 401, 403, 404]
