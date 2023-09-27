@@ -8,10 +8,7 @@ permalink: "/"
     <div class="cardSectionInnerContainer">
         <div class="cardTitleContainer">
             <h1 class="cardSectionH1" style="font-family: Georgia, serif;"><br>Documentation</h1>
-            <h2 class="cardSectionH2 topPaddingSm">Guidance for wherever you are on your care modeling journey</h2>
-        </div>
-        <div class="cardSectionParagraph cardSectionParagraphSpacer">
-            <span>Explore our articles, guides, and examples to build and integrate with the Canvas platform.</span>
+            <h2 class="cardSectionH2 topPaddingSm">Explore our articles, guides, and examples to build and integrate with the Canvas platform.</h2>
         </div>
         <div class="cardWrapper topPaddingSm">
             <div class="cardContainer">
@@ -22,8 +19,8 @@ permalink: "/"
                     <span>Learn more about the migration of our knowledge center</span>
                     <div class="anchorContainer">
                     <a href="/documentation">Transition Overview</a><br>
-                    <a href="https://canvas-medical.zendesk.com/hc/en-us">Knowledge Center ⍈</a><br>
-                    <a href="https://canvas-medical.zendesk.com/hc/en-us/sections/360010471754-Release-Documents">Release Notes ⍈</a> 
+                    <a href="https://canvas-medical.zendesk.com/hc/en-us">Knowledge Center ↗</a><br>
+                    <a href="https://canvas-medical.zendesk.com/hc/en-us/sections/360010471754-Release-Documents">Release Notes ↗</a> 
                     </div>
                 </div>
             </div>
@@ -38,7 +35,7 @@ permalink: "/"
                      <div class="anchorContainer">
                     <a href="/api/quickstart">API Quickstart</a><br/>
                     <a href="/sdk/sdk-quickstart/">SDK: Workflow Kit Quickstart</a><br/>
-                    <a href="v1docs.canvasmedical.com/">V1 Docs ⍈</a>
+                    <a href="v1docs.canvasmedical.com/">V1 Docs ↗</a>
                     </div>
                 </div>
             </div>
