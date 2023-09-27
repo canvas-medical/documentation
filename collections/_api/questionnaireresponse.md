@@ -141,32 +141,26 @@ curl --request POST \
     "id": "e76e44b4-4e68-4f72-b1c3-1de528a3bb2a",
     "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "completed",
-    "subject":
-    {
+    "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
         "type": "Patient"
     },
-    "encounter":
-    {
+    "encounter": {
         "reference": "Encounter/ffa0bd44-997f-4ad4-8782-1a6c0ef01f1c",
         "type": "Encounter"
     },
     "authored": "2022-12-19T18:11:20.914260+00:00",
-    "author":
-    {
+    "author": {
         "reference": "Practitioner/9cdb7a92d6614dcfa7948f2143a9f8e8",
         "type": "Practitioner"
     },
-    "item":
-    [
+    "item": [
         {
             "linkId": "e2e5ddc3-a0ec-4a1b-9c53-bf2e2e990fe1",
             "text": "Tobacco status",
-            "answer":
-            [
+            "answer": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "8517006",
                         "display": "Former user"
@@ -177,19 +171,16 @@ curl --request POST \
         {
             "linkId": "d210dc3a-3427-4f58-8707-3f38393a8416",
             "text": "Tobacco type",
-            "answer":
-            [
+            "answer": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "722496004",
                         "display": "Cigarettes"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "722498003",
                         "display": "eCigarette"
@@ -200,8 +191,7 @@ curl --request POST \
         {
             "linkId": "a656c6c8-ecea-403f-a430-f80899f26914",
             "text": "Tobacco comment",
-            "answer":
-            [
+            "answer": [
                 {
                     "valueString": "Yep"
                 }
@@ -227,41 +217,28 @@ headers = {
 payload = {
     "resourceType": "QuestionnaireResponse",
     "id": "e76e44b4-4e68-4f72-b1c3-1de528a3bb2a",
-    "extension":
-    [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
-            "valueString": "https://example.canvasmedical.com/permalinks/v1/YWJjZGVmZ2hpamtsbW5vcHFycwo"
-        }
-    ],
     "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "completed",
-    "subject":
-    {
+    "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
         "type": "Patient"
     },
-    "encounter":
-    {
+    "encounter": {
         "reference": "Encounter/ffa0bd44-997f-4ad4-8782-1a6c0ef01f1c",
         "type": "Encounter"
     },
     "authored": "2022-12-19T18:11:20.914260+00:00",
-    "author":
-    {
+    "author": {
         "reference": "Practitioner/9cdb7a92d6614dcfa7948f2143a9f8e8",
         "type": "Practitioner"
     },
-    "item":
-    [
+    "item": [
         {
             "linkId": "e2e5ddc3-a0ec-4a1b-9c53-bf2e2e990fe1",
             "text": "Tobacco status",
-            "answer":
-            [
+            "answer": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "8517006",
                         "display": "Former user"
@@ -272,19 +249,16 @@ payload = {
         {
             "linkId": "d210dc3a-3427-4f58-8707-3f38393a8416",
             "text": "Tobacco type",
-            "answer":
-            [
+            "answer": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "722496004",
                         "display": "Cigarettes"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "722498003",
                         "display": "eCigarette"
@@ -295,8 +269,7 @@ payload = {
         {
             "linkId": "a656c6c8-ecea-403f-a430-f80899f26914",
             "text": "Tobacco comment",
-            "answer":
-            [
+            "answer": [
                 {
                     "valueString": "Yep"
                 }
@@ -331,8 +304,7 @@ print(response.text)
 {
     "resourceType": "QuestionnaireResponse",
     "id": "e76e44b4-4e68-4f72-b1c3-1de528a3bb2a",
-    "extension":
-    [
+    "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
             "valueString": "https://example.canvasmedical.com/permalinks/v1/YWJjZGVmZ2hpamtsbW5vcHFycwo"
@@ -340,32 +312,26 @@ print(response.text)
     ],
     "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "completed",
-    "subject":
-    {
+    "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
         "type": "Patient"
     },
-    "encounter":
-    {
+    "encounter": {
         "reference": "Encounter/ffa0bd44-997f-4ad4-8782-1a6c0ef01f1c",
         "type": "Encounter"
     },
     "authored": "2022-12-19T18:11:20.914260+00:00",
-    "author":
-    {
+    "author": {
         "reference": "Practitioner/9cdb7a92d6614dcfa7948f2143a9f8e8",
         "type": "Practitioner"
     },
-    "item":
-    [
+    "item": [
         {
             "linkId": "e2e5ddc3-a0ec-4a1b-9c53-bf2e2e990fe1",
             "text": "Tobacco status",
-            "answer":
-            [
+            "answer": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "8517006",
                         "display": "Former user"
@@ -376,19 +342,16 @@ print(response.text)
         {
             "linkId": "d210dc3a-3427-4f58-8707-3f38393a8416",
             "text": "Tobacco type",
-            "answer":
-            [
+            "answer": [
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "722496004",
                         "display": "Cigarettes"
                     }
                 },
                 {
-                    "valueCoding":
-                    {
+                    "valueCoding": {
                         "system": "http://snomed.info/sct",
                         "code": "722498003",
                         "display": "eCigarette"
@@ -399,8 +362,7 @@ print(response.text)
         {
             "linkId": "a656c6c8-ecea-403f-a430-f80899f26914",
             "text": "Tobacco comment",
-            "answer":
-            [
+            "answer": [
                 {
                     "valueString": "Yep"
                 }
@@ -480,8 +442,7 @@ print(response.text)
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/QuestionnaireResponse?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
@@ -495,15 +456,12 @@ print(response.text)
             "url": "/QuestionnaireResponse?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "QuestionnaireResponse",
                 "id": "e76e44b4-4e68-4f72-b1c3-1de528a3bb2a",
-                "extension":
-                [
+                "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
                         "valueString": "https://example.canvasmedical.com/permalinks/v1/YWJjZGVmZ2hpamtsbW5vcHFycwo"
@@ -511,32 +469,26 @@ print(response.text)
                 ],
                 "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
                 "status": "completed",
-                "subject":
-                {
+                "subject": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
                     "type": "Patient"
                 },
-                "encounter":
-                {
+                "encounter": {
                     "reference": "Encounter/ffa0bd44-997f-4ad4-8782-1a6c0ef01f1c",
                     "type": "Encounter"
                 },
                 "authored": "2022-12-19T18:11:20.914260+00:00",
-                "author":
-                {
+                "author": {
                     "reference": "Practitioner/9cdb7a92d6614dcfa7948f2143a9f8e8",
                     "type": "Practitioner"
                 },
-                "item":
-                [
+                "item": [
                     {
                         "linkId": "e2e5ddc3-a0ec-4a1b-9c53-bf2e2e990fe1",
                         "text": "Tobacco status",
-                        "answer":
-                        [
+                        "answer": [
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "8517006",
                                     "display": "Former user"
@@ -547,19 +499,16 @@ print(response.text)
                     {
                         "linkId": "d210dc3a-3427-4f58-8707-3f38393a8416",
                         "text": "Tobacco type",
-                        "answer":
-                        [
+                        "answer": [
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "722496004",
                                     "display": "Cigarettes"
                                 }
                             },
                             {
-                                "valueCoding":
-                                {
+                                "valueCoding": {
                                     "system": "http://snomed.info/sct",
                                     "code": "722498003",
                                     "display": "eCigarette"
@@ -570,8 +519,7 @@ print(response.text)
                     {
                         "linkId": "a656c6c8-ecea-403f-a430-f80899f26914",
                         "text": "Tobacco comment",
-                        "answer":
-                        [
+                        "answer": [
                             {
                                 "valueString": "Yep"
                             }

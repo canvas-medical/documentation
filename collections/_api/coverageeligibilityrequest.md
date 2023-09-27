@@ -64,28 +64,23 @@ curl --request POST \
 {
     "resourceType": "CoverageEligibilityRequest",
     "status": "active",
-    "purpose":
-    [
+    "purpose": [
         "benefits"
     ],
-    "patient":
-    {
+    "patient": {
         "reference": "Patient/9713f5a3c8464a2587912e80bc2dd938"
     },
     "created": "2023-09-19",
     "insurer": {},
-    "insurance":
-    [
+    "insurance": [
         {
             "focal": true,
-            "coverage":
-            {
+            "coverage": {
                 "reference": "Coverage/743aa331-2f85-420b-ab10-8a6b7bb6a1cf"
             }
         }
     ]
-}
-'
+}'
 ```
     {% endtab %}
 
@@ -98,22 +93,18 @@ url = "https://fumage-example.canvasmedical.com/CoverageEligibilityRequest"
 payload = {
     "resourceType": "CoverageEligibilityRequest",
     "status": "active",
-    "purpose":
-    [
+    "purpose": [
         "benefits"
     ],
-    "patient":
-    {
+    "patient": {
         "reference": "Patient/9713f5a3c8464a2587912e80bc2dd938"
     },
     "created": "2023-09-19",
     "insurer": {},
-    "insurance":
-    [
+    "insurance": [
         {
-            "focal": true,
-            "coverage":
-            {
+            "focal": True,
+            "coverage": {
                 "reference": "Coverage/743aa331-2f85-420b-ab10-8a6b7bb6a1cf"
             }
         }

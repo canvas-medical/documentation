@@ -64,8 +64,7 @@ sections:
 {
     "resourceType": "Organization",
     "id": "bcf685dd-f71e-49da-b471-1ee322a8d9f4",
-    "identifier":
-    [
+    "identifier": [
         {
             "system": "http://hl7.org.fhir/sid/us-npi",
             "value": "1144221847"
@@ -73,8 +72,7 @@ sections:
     ],
     "active": true,
     "name": "Acme Labs",
-    "telecom":
-    [
+    "telecom": [
         {
             "system": "fax",
             "value": "5558675310",
@@ -91,13 +89,11 @@ sections:
             "use": "work"
         }
     ],
-    "address":
-    [
+    "address": [
         {
             "use": "work",
             "type": "both",
-            "line":
-            [
+            "line": [
                 "3300 Washtenaw Avenue, Suite 227"
             ],
             "city": "Amherst",
@@ -179,8 +175,7 @@ sections:
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/Organization?name=acme&_count=10&_offset=0"
@@ -194,15 +189,12 @@ sections:
             "url": "/Organization?name=acme&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "Organization",
                 "id": "bcf685dd-f71e-49da-b471-1ee322a8d9f4",
-                "identifier":
-                [
+                "identifier": [
                     {
                         "system": "http://hl7.org.fhir/sid/us-npi",
                         "value": "1144221847"
@@ -210,8 +202,7 @@ sections:
                 ],
                 "active": true,
                 "name": "Acme Labs",
-                "telecom":
-                [
+                "telecom": [
                     {
                         "system": "fax",
                         "value": "5558675310",
@@ -228,13 +219,11 @@ sections:
                         "use": "work"
                     }
                 ],
-                "address":
-                [
+                "address": [
                     {
                         "use": "work",
                         "type": "both",
-                        "line":
-                        [
+                        "line": [
                             "3300 Washtenaw Avenue, Suite 227"
                         ],
                         "city": "Amherst",

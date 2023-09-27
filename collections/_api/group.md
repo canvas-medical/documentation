@@ -85,25 +85,20 @@ curl --request POST \
     "type": "practitioner",
     "actual": true,
     "name": "A Test Team",
-    "characteristic":
-    [
+    "characteristic": [
         {
-            "exclude": false,
-            "code":
-            {
+            "code": {
                 "text": "responsibility"
             },
-            "valueCodeableConcept":
-            {
+            "valueCodeableConcept": {
                 "text": "COLLECT_SPECIMENS_FROM_PATIENT"
-            }
+            },
+            "exclude": false
         }
     ],
-    "member":
-    [
+    "member": [
         {
-            "entity":
-            {
+            "entity": {
                 "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39",
                 "type": "Practitioner"
             }
@@ -130,25 +125,20 @@ payload = {
     "type": "practitioner",
     "actual": True,
     "name": "A Test Team",
-    "characteristic":
-    [
+    "characteristic": [
         {
-            "exclude": False,
-            "code":
-            {
+            "code": {
                 "text": "responsibility"
             },
-            "valueCodeableConcept":
-            {
+            "valueCodeableConcept": {
                 "text": "COLLECT_SPECIMENS_FROM_PATIENT"
-            }
+            },
+            "exclude": False
         }
     ],
-    "member":
-    [
+    "member": [
         {
-            "entity":
-            {
+            "entity": {
                 "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39",
                 "type": "Practitioner"
             }
@@ -185,25 +175,20 @@ print(response.text)
     "type": "practitioner",
     "actual": true,
     "name": "A Test Team",
-    "characteristic":
-    [
+    "characteristic": [
         {
-            "exclude": false,
-            "code":
-            {
+            "code": {
                 "text": "responsibility"
             },
-            "valueCodeableConcept":
-            {
+            "valueCodeableConcept": {
                 "text": "COLLECT_SPECIMENS_FROM_PATIENT"
-            }
+            },
+            "exclude": false
         }
     ],
-    "member":
-    [
+    "member": [
         {
-            "entity":
-            {
+            "entity": {
                 "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39",
                 "type": "Practitioner"
             }
@@ -286,25 +271,20 @@ curl --request PUT \
     "type": "practitioner",
     "actual": true,
     "name": "A Test Team",
-    "characteristic":
-    [
+    "characteristic": [
         {
-            "exclude": false,
-            "code":
-            {
+            "code": {
                 "text": "responsibility"
             },
-            "valueCodeableConcept":
-            {
+            "valueCodeableConcept": {
                 "text": "COLLECT_SPECIMENS_FROM_PATIENT"
-            }
+            },
+            "exclude": false
         }
     ],
-    "member":
-    [
+    "member": [
         {
-            "entity":
-            {
+            "entity": {
                 "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39",
                 "type": "Practitioner"
             }
@@ -332,25 +312,20 @@ payload = {
     "type": "practitioner",
     "actual": True,
     "name": "A Test Team",
-    "characteristic":
-    [
+    "characteristic": [
         {
-            "exclude": False,
-            "code":
-            {
+            "code": {
                 "text": "responsibility"
             },
-            "valueCodeableConcept":
-            {
+            "valueCodeableConcept": {
                 "text": "COLLECT_SPECIMENS_FROM_PATIENT"
-            }
+            },
+            "exclude": False
         }
     ],
-    "member":
-    [
+    "member": [
         {
-            "entity":
-            {
+            "entity": {
                 "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39",
                 "type": "Practitioner"
             }
@@ -385,8 +360,7 @@ print(response.text)
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/Group?type=practitioner&_count=10&_offset=0"
@@ -400,35 +374,28 @@ print(response.text)
             "url": "/Group?type=practitioner&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "Group",
                 "id": "3340c331-d446-4700-9c23-7959bd393f26",
                 "type": "practitioner",
                 "actual": true,
                 "name": "A Test Team",
-                "characteristic":
-                [
+                "characteristic": [
                     {
-                        "exclude": false,
-                        "code":
-                        {
+                        "code": {
                             "text": "responsibility"
                         },
-                        "valueCodeableConcept":
-                        {
+                        "valueCodeableConcept": {
                             "text": "COLLECT_SPECIMENS_FROM_PATIENT"
-                        }
+                        },
+                        "exclude": false
                     }
                 ],
-                "member":
-                [
+                "member": [
                     {
-                        "entity":
-                        {
+                        "entity": {
                             "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39",
                             "type": "Practitioner"
                         }

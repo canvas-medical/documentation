@@ -60,10 +60,8 @@ sections:
     "resourceType": "Procedure",
     "id": "2dd9a3bc-a3bb-472b-aaef-c57be394de39",
     "status": "unknown",
-    "code":
-    {
-        "coding":
-        [
+    "code": {
+        "coding": [
             {
                 "system": "http://www.ama-assn.org/go/cpt",
                 "code": "23066",
@@ -71,8 +69,7 @@ sections:
             }
         ]
     },
-    "subject":
-    {
+    "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
         "type": "Patient"
     },
@@ -150,8 +147,7 @@ sections:
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/Procedure?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
@@ -165,18 +161,14 @@ sections:
             "url": "/Procedure?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "Procedure",
                 "id": "2dd9a3bc-a3bb-472b-aaef-c57be394de39",
                 "status": "unknown",
-                "code":
-                {
-                    "coding":
-                    [
+                "code": {
+                    "coding": [
                         {
                             "system": "http://www.ama-assn.org/go/cpt",
                             "code": "23066",
@@ -184,8 +176,7 @@ sections:
                         }
                     ]
                 },
-                "subject":
-                {
+                "subject": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
                     "type": "Patient"
                 },

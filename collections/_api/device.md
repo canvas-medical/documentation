@@ -185,8 +185,7 @@ sections:
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/Device/?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
@@ -200,15 +199,12 @@ sections:
             "url": "/Device/?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "Device",
                 "id": "c6bf6efc-1fe1-4221-9821-e60acb53becc",
-                "udiCarrier":
-                [
+                "udiCarrier": [
                     {
                         "deviceIdentifier": "08717648200274",
                         "carrierHRF": "=/08717648200274=,000025=A99971312345600=>014032=}013032&,1000000000000XYZ123"
@@ -222,10 +218,8 @@ sections:
                 "lotNumber": "234234",
                 "serialNumber": "13213123123123",
                 "modelNumber": "1.0",
-                "type":
-                {
-                    "coding":
-                    [
+                "type": {
+                    "coding": [
                         {
                             "system": "http://snomed.info/sct",
                             "code": "2478003",
@@ -233,8 +227,7 @@ sections:
                         }
                     ]
                 },
-                "patient":
-                {
+                "patient": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
                     "type": "Patient"
                 }

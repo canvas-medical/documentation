@@ -82,20 +82,16 @@ sections:
     "id": "8ab7cc3c86f54723ba267baf1f906ec7",
     "status": "active",
     "name": "Care Team for Amy V. Shaw",
-    "subject":
-    {
+    "subject": {
         "reference": "Patient/example",
         "type": "Patient",
         "display": "Amy V. Shaw"
     },
-    "participant":
-    [
+    "participant": [
         {
-            "role":
-            [
+            "role": [
                 {
-                    "coding":
-                    [
+                    "coding": [
                         {
                             "system": "http://snomed.info/sct",
                             "code": "17561000",
@@ -104,18 +100,15 @@ sections:
                     ]
                 }
             ],
-            "member":
-            {
+            "member": {
                 "reference": "Practitioner/c2ff4546548e46ab8959af887b563eab",
                 "display": "Ronald Bone, MD"
             }
         },
         {
-            "role":
-            [
+            "role": [
                 {
-                    "coding":
-                    [
+                    "coding": [
                         {
                             "system": "http://snomed.info/sct",
                             "code": "453231000124104",
@@ -124,8 +117,7 @@ sections:
                     ]
                 }
             ],
-            "member":
-            {
+            "member": {
                 "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e",
                 "display": "Kathy Fielding, MD"
             }
@@ -207,20 +199,16 @@ curl --request PUT \
     "id": "8ab7cc3c86f54723ba267baf1f906ec7",
     "status": "active",
     "name": "Care Team for Amy V. Shaw",
-    "subject":
-    {
+    "subject": {
         "reference": "Patient/8ab7cc3c86f54723ba267baf1f906ec7",
         "type": "Patient",
         "display": "Amy V. Shaw"
     },
-    "participant":
-    [
+    "participant": [
         {
-            "role":
-            [
+            "role": [
                 {
-                    "coding":
-                    [
+                    "coding": [
                         {
                             "system": "http://snomed.info/sct",
                             "code": "17561000",
@@ -229,18 +217,15 @@ curl --request PUT \
                     ]
                 }
             ],
-            "member":
-            {
+            "member": {
                 "reference": "Practitioner/c2ff4546548e46ab8959af887b563eab",
                 "display": "Ronald Bone, MD"
             }
         },
         {
-            "role":
-            [
+            "role": [
                 {
-                    "coding":
-                    [
+                    "coding": [
                         {
                             "system": "http://snomed.info/sct",
                             "code": "453231000124104",
@@ -249,8 +234,7 @@ curl --request PUT \
                     ]
                 }
             ],
-            "member":
-            {
+            "member": {
                 "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e",
                 "display": "Kathy Fielding, MD"
             }
@@ -277,20 +261,16 @@ payload = {
     "id": "8ab7cc3c86f54723ba267baf1f906ec7",
     "status": "active",
     "name": "Care Team for Amy V. Shaw",
-    "subject":
-    {
+    "subject": {
         "reference": "Patient/8ab7cc3c86f54723ba267baf1f906ec7",
         "type": "Patient",
         "display": "Amy V. Shaw"
     },
-    "participant":
-    [
+    "participant": [
         {
-            "role":
-            [
+            "role": [
                 {
-                    "coding":
-                    [
+                    "coding": [
                         {
                             "system": "http://snomed.info/sct",
                             "code": "17561000",
@@ -299,18 +279,15 @@ payload = {
                     ]
                 }
             ],
-            "member":
-            {
+            "member": {
                 "reference": "Practitioner/c2ff4546548e46ab8959af887b563eab",
                 "display": "Ronald Bone, MD"
             }
         },
         {
-            "role":
-            [
+            "role": [
                 {
-                    "coding":
-                    [
+                    "coding": [
                         {
                             "system": "http://snomed.info/sct",
                             "code": "453231000124104",
@@ -319,8 +296,7 @@ payload = {
                     ]
                 }
             ],
-            "member":
-            {
+            "member": {
                 "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e",
                 "display": "Kathy Fielding, MD"
             }
@@ -355,8 +331,7 @@ print(response.text)
     "resourceType": "Bundle",
     "type": "searchset",
     "total": 1,
-    "link":
-    [
+    "link": [
         {
             "relation": "self",
             "url": "/CareTeam?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
@@ -370,29 +345,23 @@ print(response.text)
             "url": "/CareTeam?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
-    "entry":
-    [
+    "entry": [
         {
-            "resource":
-            {
+            "resource": {
                 "resourceType": "CareTeam",
                 "id": "8ab7cc3c86f54723ba267baf1f906ec7",
                 "status": "active",
                 "name": "Care Team for Amy V. Shaw",
-                "subject":
-                {
+                "subject": {
                     "reference": "Patient/example",
                     "type": "Patient",
                     "display": "Amy V. Shaw"
                 },
-                "participant":
-                [
+                "participant": [
                     {
-                        "role":
-                        [
+                        "role": [
                             {
-                                "coding":
-                                [
+                                "coding": [
                                     {
                                         "system": "http://snomed.info/sct",
                                         "code": "17561000",
@@ -401,18 +370,15 @@ print(response.text)
                                 ]
                             }
                         ],
-                        "member":
-                        {
+                        "member": {
                             "reference": "Practitioner/c2ff4546548e46ab8959af887b563eab",
                             "display": "Ronald Bone, MD"
                         }
                     },
                     {
-                        "role":
-                        [
+                        "role": [
                             {
-                                "coding":
-                                [
+                                "coding": [
                                     {
                                         "system": "http://snomed.info/sct",
                                         "code": "453231000124104",
@@ -421,8 +387,7 @@ print(response.text)
                                 ]
                             }
                         ],
-                        "member":
-                        {
+                        "member": {
                             "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e",
                             "display": "Kathy Fielding, MD"
                         }
