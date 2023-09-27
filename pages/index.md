@@ -35,7 +35,7 @@ permalink: "/"
                      <div class="anchorContainer">
                     <a href="/api/quickstart">API Quickstart</a><br/>
                     <a href="/sdk/sdk-quickstart/">SDK: Workflow Kit Quickstart</a><br/>
-                    <a href="v1docs.canvasmedical.com/">V1 Docs ↗</a>
+                    <a href="https://v1docs.canvasmedical.com/docs/">V1 Docs ↗</a>
                     </div>
                 </div>
             </div>
