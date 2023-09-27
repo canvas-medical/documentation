@@ -1,4 +1,4 @@
-/**
+/** 
  * COLOR PALLETE
 **/
 
@@ -8,7 +8,7 @@ $cream: rgb(238, 233, 217);
 $babyblue: rgb(152, 210, 220);
 $navyblue: rgb(8, 43, 72);
 
-// Brand Secondary Colors
+// Brand Secondary Colors 
 $softgold: rgb(244, 161, 85);
 $sienna: rgb(230, 122, 81);
 $crimson: rgb(106, 45, 31);
@@ -31,7 +31,7 @@ $accent-color: $babyblue;
 $border-color: rgba($navyblue,0.2);
 $panel-color: rgba($babyblue,0.3);
 
-/**
+/** 
  * TYPOGRAPHY
 **/
 
@@ -51,12 +51,12 @@ $container-padding: 14px;
 :root {
     @media (max-width: calc( $breakpoint-lg - 1px ) ) {
             --header-height: 97px;
-            --footer-height: 32px;
+            --footer-height: 0px;
             --body-height: calc(var(--viewport-height) - (var(--header-height) + var(--footer-height) + 2px));
     }
     @media (min-width: $breakpoint-lg) {
         --header-height: 107px;
-        --footer-height: 32px;
+        --footer-height: 0px;
         --body-height: calc( var(--viewport-height) - ( var(--header-height) + var(--footer-height) + 2px ) );
     }
 }
