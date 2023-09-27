@@ -70,6 +70,9 @@
         </div>
     </div>
     {% if block.endpoints %}
+    {% assign min = 10001 %}
+    {% assign max = 99999 %}
+    {% assign diff = max | minus: min %}
     {% for endpoint in block.endpoints %}
     {% include blocks/block-apidoc-endpoints.html %}
     <div class="apidoc__gridrow">
@@ -103,7 +106,7 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.read.example_request %}
-            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
             <div id="request-{{ randomId }}"></div>
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
@@ -132,7 +135,7 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.read.example_response %}
-            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
             <div id="response-{{ randomId }}"></div>
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
@@ -170,7 +173,7 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.search.example_request %}
-            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
             <div id="request-{{ randomId }}"></div>
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
@@ -199,7 +202,7 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.search.example_response %}
-            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
             <div id="response-{{ randomId }}"></div>
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
@@ -226,7 +229,7 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.create.example_request %}
-            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
             <div id="request-{{ randomId }}"></div>
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
@@ -255,7 +258,7 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.create.example_response %}
-            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
             <div id="response-{{ randomId }}"></div>
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
@@ -282,7 +285,7 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.update.example_request %}
-            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
             <div id="request-{{ randomId }}"></div>
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
@@ -311,7 +314,7 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.update.example_response %}
-            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
+            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
             <div id="response-{{ randomId }}"></div>
             <script>
                 window.addEventListener('DOMContentLoaded', () => {
