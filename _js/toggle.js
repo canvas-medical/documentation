@@ -37,24 +37,38 @@ const toggleSearch = () => {
   const searchPanel = document.querySelector('.searchmain');
   const overlay = document.getElementById('search-overlay');
 
+  function showSearch() {
+    searchPanel.classList.toggle('toogle_searchmain');
+    overlay.classList.toggle('search-overlay__toggle');
+
+    const searchInput = document.querySelector('.ais-SearchBox-input');
+
+    if (searchInput) {
+      searchInput.focus();
+    }
+  }
+
+  function hideSearch() {
+    searchPanel.classList.remove('toogle_searchmain');
+    overlay.classList.remove('search-overlay__toggle');
+  }
+
   if (searchbutton) {
-    searchbutton.addEventListener('click', () => {
-      searchPanel.classList.toggle('toogle_searchmain');
-      overlay.classList.toggle('search-overlay__toggle');
+    searchbutton.addEventListener('click', showSearch);
 
-      const searchInput = document.querySelector('.ais-SearchBox-input');
-
-      if (searchInput) {
-        searchInput.focus();
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/') {
+        e.preventDefault();
+        showSearch();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        hideSearch();
       }
     });
   }
 
   if (overlay) {
-    overlay.addEventListener('click', () => {
-      searchPanel.classList.remove('toogle_searchmain');
-      overlay.classList.remove('search-overlay__toggle');
-    });
+    overlay.addEventListener('click', hideSearch);
   }
 };
 toggleSearch();
