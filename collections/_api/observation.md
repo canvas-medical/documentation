@@ -102,27 +102,27 @@ sections:
           - name: _id
             type: string
             description: The Canvas resource id for the Observation
-          - name: patient
-            type: string
-            description: A Canvas Patient resource
-          - name: code
-            type: string
-            description: A coding for an observation
           - name: category
             type: string
-            description: >-
-              Classification of the type of observation<br><br>
-          - name: derived-from
+            description: Classification of the type of observation
+          - name: code
             type: string
-            description: >-
-              Resource id for another resource that the observation originally came from
+            description: The code of the observation type
           - name: date
             type: array
             description: >-
-              Search based on when the observation occurred (UTC).  
+              Obtained date/time (UTC).  
               <li>Uses an operand and a date field in the format YYYY-MM-DD.</li>
               <li>eq, gt, ge, lt, and le are supported operands (eq is assumed if no operand is sent).</li>
               <li><b>Example</b>:  "/Observation?date=ge2021-09-16"</li>
+          - name: derived-from
+            type: string
+            description: >-
+              Related measurements the observation is made from<br><br>
+              Supported: **QuestionnaireResponse**
+          - name: patient
+            type: string
+            description: A Canvas Patient resource
         endpoints: [create, read, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]

@@ -22,6 +22,14 @@ sections:
             type: datetime
             description: Date/Time that the slot is to conclude
         search_parameters:
+          - name: duration
+            type: integer
+            description: >-
+              If included, the request will search for available appointment slots with the given duration value in minutes. If not provided, a duration of 20 minutes will be used.
+          - name: end
+            type: date
+            description: >-
+              If included, the request will search for available appointment slots up until this date. If not included, a week will be used as default (7 days from the start date).
           - name: schedule
             type: string
             description: The Schedule Resource that we are seeking a slot within. The [Schedule](/api/schedule) resource can be used to retrieve a list of Schedule ids.
@@ -30,14 +38,6 @@ sections:
             type: date
             description: >-
               If included, the request will search for available appointment slots on or after this date. If not included, the current UTC date will be used.
-          - name: end
-            type: date
-            description: >-
-              If included, the request will search for available appointment slots up until this date. If not included, a week will be used as default (7 days from the start date).
-          - name: duration
-            type: integer
-            description: >-
-              If included, the request will search for available appointment slots with the given duration value in minutes. If not provided, a duration of 20 minutes will be used.
         endpoints: [search]
         search:
           responses: [200, 400, 401, 403]

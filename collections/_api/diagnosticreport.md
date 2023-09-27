@@ -14,44 +14,40 @@ sections:
             type: string
             description: A Canvas-issued unique identifier
             required: true
+          - name: status
+            type: string
+            description: DiagnosticReportStatus [https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html](https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html)
           - name: category
             type: array[json]
             description: Service category [https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html](https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html)
           - name: code
             type: json
             description: Name/Code for this diagnostic report
-          - name: effectiveDateTime
-            type: datetime | date
-            description: Clinically relevant date/time for report
+          - name: subject
+            type: json
+            description: The subject of the report - usually, but not always, the patient
           - name: encounter
             type: json
             description: Health care event when test ordered
+          - name: effectiveDateTime
+            type: datetime | date
+            description: Clinically relevant date/time for report
           - name: issued
             type: datetime
             description: 	DateTime this version was made
           - name: performer
             type: array[json]
             description: Responsible Diagnostic Service
-          - name: presentedForm
-            type: array[json]
-            description: Entire report as issued
           - name: result
             type: array[json]
             description: Observations
-          - name: status
-            type: string
-            description: DiagnosticReportStatus [https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html](https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html)
-          - name: subject
-            type: json
-            description: The subject of the report - usually, but not always, the patient
-
+          - name: presentedForm
+            type: array[json]
+            description: Entire report as issued
         search_parameters:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier
-          - name: patient
-            type: string
-            description: The patient associated with the report
           - name: category
             type: string
             description: The DiagnosticReport category. Filters by the code value under category.coding.
@@ -61,7 +57,9 @@ sections:
           - name: date
             type: date
             description: Filter by date
-
+          - name: patient
+            type: string
+            description: The patient associated with the report
         endpoints: [read, search]
         read:
           description: Read a DiagnosticReport resource

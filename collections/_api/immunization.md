@@ -45,8 +45,7 @@ sections:
             type: string
             description: A Canvas-issued unique identifier
           - name: patient
-            description: >-
-              The patient who received the immunization
+            description: The patient for the vaccination record
             type: string
         endpoints: [read, search]
         read:

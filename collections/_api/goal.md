@@ -57,7 +57,7 @@ sections:
             description: A Canvas-issued unique identifier
           - name: patient
             type: string
-            description: A Canvas Patient resource
+            description: Who this goal is intended for
         endpoints: [read, search]
         read:
           responses: [200, 401, 403, 404]

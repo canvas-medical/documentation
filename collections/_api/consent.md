@@ -48,7 +48,7 @@ sections:
             description: >-
               The source on which this consent statement is based.<br><br>
               For create interactions, `sourceAttachment.title`, `sourceAttachment.content_type`, and `sourceAttachment.data` are required.<br><br>
-              For read/search interactions, we return the `sourceAttachment.url`.
+              For read/search interactions, Canvas returns the `sourceAttachment.url`.
           - name: provision
             type: json
             description: >-
@@ -57,14 +57,14 @@ sections:
               For create interactions, `period.start` is required with a **YYYY-MM-DD** format.<br><br>
               A `period.end` with a past date will mark the consent as Expired in the UI.
         search_parameters:
+          - name: patient
+            type: string
+            description: Who the consent applies to
           - name: period
             type: string
             description: >-
-              The date the consent was signed<br><br>
+              Timeframe for this rule<br><br>
               Expects date strings, prefaced with one of eq, lt, le, gt, ge.<br><br>
-          - name: patient
-            type: string
-            description: FHIR resource for a patient
         endpoints: [create, read, search]
         create:
           description: >-

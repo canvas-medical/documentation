@@ -253,13 +253,36 @@ sections:
                 The url must match http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy. The extension list of objects where each object needs: url that must match ncpdp-id valueIdentifier object that contains the system that must equal "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber". Then you can specify the appropriate value of the pharmacy, which is a 7 digit NDPDP ID. Here are a few callouts on workflow for the value attribute: <br><br>**1.** If a valid 7 digit NCPDP id value is specified, then the patient's preferred pharmacy will be updated accordingly with the pharmacy's name, phone, fax and address.<br>**2.** If there is any other value given that is not a 7 digit number, you will see an error that they message did not adhere to the Patient Schema.<br>**3.** If a 7 digit number is passed, but it is not a valid NCPDP id and does not correlate to a pharmacy in Canvas, the patient's preferred pharmacy will be blank.<br>**4.** If this extension is not specified in the request body, any current preferred pharmacy set for the patient will remain.
           - name: extension - business-line
             type: json
-            description: >-
-                The business line that the patient belongs to.
+            description: The business line that the patient belongs to.
         search_parameters:
+          - name: _has:CareTeam:participant:member
+            type: boolean
+            description: >-
+              Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. <code>_has:CareTeam:participant:member=Practitioner/{practitioner_id}</code>
           - name: _id
             type: string
-            description: >-
-                A Canvas-issued unique identifier known as the patient key. This can be found in the url of the patient's chart.
+            description: A Canvas-issued unique identifier known as the patient key. This can be found in the url of the patient's chart.
+          - name: _sort
+            type: string
+            description: Triggers sorting of the results by a specific criteria. Accepted values are **id**, **birthdate**, **family** and **given**. Use **-id**, **-birthdate**, **-family** and **-given** to sort in descending order.
+          - name: active
+            type: boolean
+            description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false) patients.
+          - name: birthdate
+            type: date
+            description: The patient's birthdate
+          - name: email
+            type: string
+            description: Patient email address
+          - name: family
+            type: string
+            description: Last name
+          - name: gender
+            type: string
+            description: The gender of the patient. Supported values are **male**, **female**, **other** and **unknown**.
+          - name: given
+            type: string
+            description: First Name
           - name: identifier
             type: string
             description: >-
@@ -272,36 +295,12 @@ sections:
           - name: name
             type: string
             description: Part of a first or last name
-          - name: birthdate
-            type: date
-            description: The patient's birthdate
-          - name: gender
-            type: string
-            description: The gender of the patient. Supported values are **male**, **female**, **other** and **unknown**.
-          - name: family
-            type: string
-            description: Last name
-          - name: given
-            type: string
-            description: First Name
-          - name: email
-            type: string
-            description: Patient email address
           - name: nickname
             type: string
             description: Preferred or alternate name
           - name: phone
             type: string
             description: Patient phone number. Expected to be 10 digits.
-          - name: active
-            type: boolean
-            description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false) patients.
-          - name: _has:CareTeam:participant:member
-            type: boolean
-            description: Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. <code>_has:CareTeam:participant:member=Practitioner/{practitioner_id}</code>
-          - name: _sort
-            type: string
-            description: Triggers sorting of the results by a specific criteria. Accepted values are **id**, **birthdate**, **family** and **given**. Use **-id**, **-birthdate**, **-family** and **-given** to sort in descending order.
         endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
