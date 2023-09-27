@@ -159,7 +159,7 @@ sections:
       {
         "resource": {
             "resourceType": "Allergen",
-            "id": "6-2754",
+            "id": "fdb-6-2754",
             "text": {
                 "status": "generated",
                 "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>minocycline HCl</p><p>6979</p>\"</div>"
