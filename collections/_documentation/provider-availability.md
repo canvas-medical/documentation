@@ -16,7 +16,7 @@ You will use calendars to both create availability as well as block it. [Adding 
 
 ![new-gcal](/assets/images/new-gcal.png){:width="80%"}
 
-{% include alert.html type="danger" content="When creating calendars, make sure to use the same time zone that was used when configuring your instance when creating the calendars in gCal" %}
+{% include alert.html type="danger" content="When creating calendars in gCal, make sure to use the same time zone that was used when configuring your instance" %}
 <br>
 ### Calendars used to create availability
 

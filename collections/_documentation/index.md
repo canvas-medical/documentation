@@ -3,14 +3,18 @@ slug: /
 title: "Application Documentation"
 ---
 
-Example content
 
-## Alert Samples
 
-{% include alert.html type="success" content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque feugiat turpis id sollicitudin egestas. Etiam eu vestibulum magna, at gravida tellus. Sed rutrum est nec molestie bibendum." %}
+![Under Construction](/assets/images/under-construction.png){:width="100%"}
 
-{% include alert.html type="info" content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque feugiat turpis id sollicitudin egestas. Etiam eu vestibulum magna, at gravida tellus. Sed rutrum est nec molestie bibendum." %}
+## Transition plan
 
-{% include alert.html type="warning" content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque feugiat turpis id sollicitudin egestas. Etiam eu vestibulum magna, at gravida tellus. Sed rutrum est nec molestie bibendum." %}
+If you have questions about the functionality within the application, continue to reference our knowledge center, as it will have the most comprehensive search results until further notice. 
 
-{% include alert.html type="danger" content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque feugiat turpis id sollicitudin egestas. Etiam eu vestibulum magna, at gravida tellus. Sed rutrum est nec molestie bibendum." %}
+We are working to revamp and migrate all of our existing articles by the end of the year. This will include updating and organizing our existing content so that the answers to your questions are easier to find. 🗂️
+
+All new functionality will be added both here and the existing site as we release it. We are migrating the rest as fast as we can, prioritizing articles used in the guides so that any articles linked within this site are also hosted here. You will the new and updated versions of these articles when searching, designated with the "documentation" tag. 
+
+## We want to hear from you
+
+We'd love to get your feedback on the new site. Please share what was working well and what improvements you would like to see using this form. 

@@ -36,7 +36,7 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
-        <a href="guides/asynchronous-care">
+        <a href="/guides/asynchronous-care">
                         <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
@@ -47,7 +47,7 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
-        <a href="guides/patient-messaging">
+        <a href="/guides/patient-messaging">
                         <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
@@ -58,7 +58,7 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
-        <a href="guides/customize-search-results">
+        <a href="/guides/customize-search-results">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
@@ -69,7 +69,7 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
-        <a href="guides/build-a-safety-framework">
+        <a href="/guides/build-a-safety-framework">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
@@ -80,7 +80,7 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
-        <a href="guides/team-based-care">
+        <a href="/guides/team-based-care">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
@@ -91,7 +91,7 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
-        <a href="guides/capture-charges">
+        <a href="/guides/capture-charges">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
@@ -102,7 +102,7 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
-        <a href="guides/bh">
+        <a href="/guides/bh">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}"><img src="/assets/images/template-pill.png" style="width: 24%;">
                 <div class="cardHeading">

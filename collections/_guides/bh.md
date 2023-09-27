@@ -3,11 +3,9 @@ title: "Care Model: Behavioral Health"
 guide_for:
 ---
 
-There are many challenges in the delivery of mental health care in the United States and despite recent government initiatives, experts have found that the system is deteriorating faster than it's improving. More adults are seeking mental health care; however, there's a glaring shortage of providers, with over 75% of U.S. counties lacking prescribers.
+There are many challenges in the delivery of mental health care in the United States and despite recent government initiatives, experts have found that the system is deteriorating faster than it's improving. More adults are seeking mental health care; however, there's a glaring shortage of providers, with over 75% of U.S. counties lacking prescriber. This is largely due to disincentives in how we reimburse for behavioral health services.
 
-Payment is a large driver of the workforce shortage. A recent Government Accountability Office (GAO) report revealed that mental health organizations cited inadequate reimbursement rates for services as one of the main reasons individuals cannot access mental health care, even when they have insurance. In other words, there is not much of an incentive for providers to take insurance if they aren’t guaranteed adequate payment.
-
-Experts do agree that single most promising new development in treatment capacity expansion is telehealth. The relaxed restrictions during COVID caused a dramatic shift. With outcomes being comparable, both patients and providers find it essential. Continued access via telehealth along with alternative payments provide some hope that new behavioral health care models can make difference. 
+Many agree that the single most promising new development in treatment capacity expansion is telehealth. The relaxed restrictions during the COVID-19 pandemic caused a dramatic shift. With outcomes being comparable, both patients and providers find it essential. Continued access via telehealth along with alternative payments provide some hope that new behavioral health care models can make difference. 
 <br>
 <br>
 ## Launching your Behavioral Health Care Model: Questions to Ask
@@ -61,7 +59,7 @@ Dropout from mental healthcare before the provider recommends is far too common.
 In the context of care modeling, content falls into two buckets: patient-facing content and care team-facing content. Once the content is defined, building in automation in the form of templates, macros, and guidance is crucial to effectively scale. To support your behavioral health clinicians in delivering high quality care, you can: <br>
 
 👉 Create [automations](/documentation/automations) to accelerate the documentation of common behavioral health visits<br>
-<br><br>
+<br>
 ### Pricing and Payments
 **How will we get paid?** 
 <br>

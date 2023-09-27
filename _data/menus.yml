@@ -348,7 +348,7 @@ api_task:
 
 documentation:
  - title: "Click here to learn about our transition plan for our knowledge center"
-   url: /documentation/transition
+   url: /documentation/
    identifier: documentation_transition
 
 guides:
@@ -418,7 +418,7 @@ sdk:
 
 sdk_overview:
  - title: "Introduction"
-   url: sdk/   
+   url: /sdk/   
 
 sdk_workflow_kit:
  - title: "Quickstart" 
