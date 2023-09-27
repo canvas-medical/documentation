@@ -1,79 +1,79 @@
 .sidenav {
-  max-height: calc(70vh - 60px);
-  overflow-y: auto;
-  border-right: 1px solid $babyblue;
-  padding-left: $container-padding;
-  padding-right: $container-padding;
-  position: relative;
-  @media (max-width: $breakpoint-md) {
-    max-height: max-content;
-    height: max-content;
-    grid-area: result;
-
-  }
-
-  &__toggle {
-    display: none;    
-    @media (max-width: $breakpoint-sm) {
-      display: block;
-      position: absolute;
-      left: 5vw;
-      top: 60px;
+    max-height: var(--body-height);
+    overflow-y: auto;
+    border-right: 1px solid $babyblue;
+    padding-left: $container-padding;
+    padding-right: $container-padding;
+    position: relative;
+    @media (max-width: $breakpoint-md) {
+        height: max-content;
+        max-height: var(--viewport-height);
+        padding: 0px 20px 20px 20px;
+        box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.1);
+        &__collapsed {
+            display: none;
+        }
     }
-
-    position: sticky;
-    top: 0.5rem;
-    margin-left: auto;
-    cursor: pointer;
-    width: 1rem;
-    height: 1rem;
-
-    svg {
-      fill: $navyblue;
-    }
-  }
- 
-  @media (max-width: $breakpoint-sm) {
-    &.sidenavtoc{
-      min-width: 0px;
-      border-right: 0px solid $babyblue;
-      width: calc(100vw - 28px);
-    }
-    &__collapsed {
-      width: 0rem !important ;
-      overflow: hidden;
-      padding: 0px;
-
-
-      nav {
-        visibility: hidden;
-      }
-    }
-  }
-}
-.navsidetogle{visibility: hidden;}
-
-@media (max-width: $breakpoint-sm) {
-.navsidetogle{
-  // display:block;
-  // visibility: visible;
-  .sidenav__toggle__open {
-    display: none;
-  }
-  .sidenav__toggle__close {
-    display: block;
-  }
-  &.open{    
-      .sidenav__toggle__open {
-        display: block;
-      }
-      .sidenav__toggle__close {
+    &__toggle {
         display: none;
-      }
-    
-  }
+        @media (max-width: $breakpoint-md) {
+            display: block;
+            position: absolute;
+            left: 5vw;
+            top: 60px;
+        }
+        position: sticky;
+        top: 0.5rem;
+        margin-left: auto;
+        cursor: pointer;
+        width: 1rem;
+        height: 1rem;
+        svg {
+            fill: $navyblue;
+        }
+        &__collapsed {
+            width: 0rem !important;
+            overflow: hidden;
+            padding: 0px;
+            nav {
+                visibility: hidden;
+            }
+        }
+    }
+    @media (max-width: $breakpoint-md) {
+        &.sidenavtoc {
+            min-width: 0px;
+            border-right: 0px solid $babyblue;
+            width: calc(100vw - 28px);
+        }
+    }
 }
+
+.navsidetogle {
+    visibility: hidden;
 }
-.overflowhiddenX{
-  overflow-x: hidden;
+
+@media (max-width: $breakpoint-md) {
+    .navsidetogle {
+        // display:block;
+        // visibility: visible;
+        .sidenav__toggle__open {
+            display: none;
+        }
+        .sidenav__toggle__close {
+            display: block;
+        }
+        &.open {
+            .sidenav__toggle__open {
+                display: block;
+            }
+            .sidenav__toggle__close {
+                display: none;
+            }
+        }
+    }
+}
+
+.overflowhiddenX {
+    overflow-x: hidden;
 }

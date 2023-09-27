@@ -1,27 +1,23 @@
 // button styles, see style guide
-
-.btn{
-    &__search{
-        background: $mediumblue;
-        font-size: 1rem;
-        padding: 8px 16px;
-        color: $white;
+.btn {
+    &__search {
+        background: $white;
+        font-size: 0.9rem;
+        padding: 8px 80px 8px 20px;
+        color: $text-color;
         border-radius: 6px;
         border: 0px;
         display: flex;
+        justify-content: center;
         align-items: center;
-        gap: 5px;
+        gap: 16px;
         cursor: pointer;
         @media (max-width: $breakpoint-md) {
-        padding: 8px 11px;
-    
+            padding: 8px 40px 8px 20px;
         }
-            svg{
-            fill: $white;
-    
-            }
-        &:hover{
-        background: $blue;
+        svg {
+            fill: $text-color;
+            width: 14px;
         }
-    } 
+    }
 }
