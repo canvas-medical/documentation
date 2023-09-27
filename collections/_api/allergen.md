@@ -49,21 +49,25 @@ sections:
     {% tab allergen-read-response 200 %}
 ```json
 {
-    "resourceType": "Allergen",
-    "id": "fdb-6-2754",
-    "code": {
-        "coding": [
-            {
-                "system": "http://www.fdbhealth.com/",
-                "code": "6-2754",
-                "display": "minocycline HCl"
-            },
-            {
-                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                "code": "6979"
-            }
-        ]
-    }
+  "resourceType": "Allergen",
+  "id": "fdb-6-2754",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>minocycline HCl</p><p>6979</p>\"</div>"
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://www.fdbhealth.com/",
+        "code": "6-2754",
+        "display": "minocycline HCl"
+      },
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "code": "6979"
+      }
+    ]
+  }
 }
 ```
     {% endtab %}
@@ -140,39 +144,41 @@ sections:
     "link": [
         {
             "relation": "self",
-            "url": "/Allergen?code=http://www.nlm.nih.gov/research/umls/rxnorm|6979&_count=10&_offset=0"
+            "url": "/Allergen?code=http%3A%2F%2Fwww.nlm.nih.gov%2Fresearch%2Fumls%2Frxnorm%7C6979&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Allergen?code=http://www.nlm.nih.gov/research/umls/rxnorm|6979&_count=10&_offset=0"
+            "url": "/Allergen?code=http%3A%2F%2Fwww.nlm.nih.gov%2Fresearch%2Fumls%2Frxnorm%7C6979&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Allergen?code=http://www.nlm.nih.gov/research/umls/rxnorm|6979&_count=10&_offset=0"
+            "url": "/Allergen?code=http%3A%2F%2Fwww.nlm.nih.gov%2Fresearch%2Fumls%2Frxnorm%7C6979&_count=10&_offset=0"
         }
     ],
     "entry": [
-        {
-            "resource": {
+      {
+        "resource": {
+            "resourceType": "Allergen",
+            "id": "6-2754",
+            "text": {
+                "status": "generated",
+                "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>minocycline HCl</p><p>6979</p>\"</div>"
+            },
+            "code": {
+              "coding": [
                 {
-                    "resourceType": "Allergen",
-                    "id": "fdb-6-2754",
-                    "code": {
-                        "coding": [
-                            {
-                                "system": "http://www.fdbhealth.com/",
-                                "code": "6-2754",
-                                "display": "minocycline HCl"
-                            },
-                            {
-                                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                                "code": "6979"
-                            }
-                        ]
-                    }
-                }    
+                  "system": "http://www.fdbhealth.com/",
+                  "code": "6-2754",
+                  "display": "minocycline HCl"
+                },
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "6979"
+                }
+              ]
             }
         }
+      }
     ]
 }
 ```

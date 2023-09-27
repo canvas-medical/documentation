@@ -25,6 +25,10 @@ sections:
             description: >- # TODO - enter status mapping table from README. Having rendering issues with the table
               The current status of the task. Supported values are **requested**, **cancelled** and **completed**.
             required: true
+          - name: intent
+            type: string
+            required: true
+            description: Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
           - name: description
             type: string
             required: true
@@ -42,13 +46,6 @@ sections:
           - name: owner
             type: json
             description: Responsible individual. This must be a [Practitioner](/api/practitioner) reference.
-          - name: intent
-            type: string
-            required: true
-            description: Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
-          - name: restriction
-            type: json
-            description: Constraints on fulfillment tasks. In Canvas, this field is used to represent the due date for a task.
           - name: note
             type: array[json]
             description: >-
@@ -56,6 +53,9 @@ sections:
               - The comment's text<br>
               - Timestamp the comment was left. If omitted, this will default to current timestamp at data ingestion.<br>
               - Reference to the practitioner that left the specific comment<br>
+          - name: restriction
+            type: json
+            description: Constraints on fulfillment tasks. In Canvas, this field is used to represent the due date for a task.
           - name: input
             type: array[json]
             description: >-
@@ -64,24 +64,24 @@ sections:
           - name: _id
             type: string
             description: Search by a task id
+          - name: _sort # TODO: remove or document further - unsure based on code fumage
+            type: string
+            description:
+          - name: description
+            type: string
+            description: Search by description
           - name: label
             type: string
             description: Search for a task with an associated label
           - name: owner
             type: string
             description: Search by task owner
-          - name: description
-            type: string
-            description: Search by description
           - name: patient
             type: string
             description: Search by patient
           - name: requester
             type: string
             description: Search by task requester
-          - name: _sort
-            type: string
-            description:
         endpoints: [search, create, update]
         search:
           responses: [200, 400, 401, 403]
