@@ -155,21 +155,23 @@
     {% if endpoint == 'search' %}
     <div class="apidoc__gridrow">
         <div class="apidoc__gridcol">
-            <h3>Query Parameters</h3>
-            {% for parameter in block.search_parameters %}
-            <div class="apidoc__object">
-                <div class="apidoc__object__name">
-                    {{ parameter.name }}
-                    {% if parameter.required %}<span class="apidoc__object__required">required</span>{% endif %}
+            {% if block.search_parameters %}
+                <h3>Query Parameters</h3>
+                {% for parameter in block.search_parameters %}
+                <div class="apidoc__object">
+                    <div class="apidoc__object__name">
+                        {{ parameter.name }}
+                        {% if parameter.required %}<span class="apidoc__object__required">required</span>{% endif %}
+                    </div>
+                    <div class="apidoc__object__type">
+                        {{ parameter.type }}
+                    </div>
+                    <div class="apidoc__object__description">
+                        {{ parameter.description | markdownify }}
+                    </div>
                 </div>
-                <div class="apidoc__object__type">
-                    {{ parameter.type }}
-                </div>
-                <div class="apidoc__object__description">
-                    {{ parameter.description | markdownify }}
-                </div>
-            </div>
-            {% endfor %}
+                {% endfor %}
+            {% endif %}
         </div>
         <div class="apidoc__gridcol">
             {% if block.search.example_request %}
