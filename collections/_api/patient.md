@@ -337,6 +337,67 @@ curl --request POST \
      --data '
 {
     "resourceType": "Patient",
+    "extension":
+    [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
+            "extension":
+            [
+                {
+                    "url": "ncpdp-id",
+                    "valueIdentifier":
+                    {
+                        "value": "1123152",
+                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2131-1",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2186-5",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+            "valueCode": "America/New_York"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+            "valueString": "I am a clinical caption from a Create message"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+            "valueString": "I am an administrative caption from a Create message"
+        }
+    ],
     "identifier":
     [
         {
@@ -497,7 +558,26 @@ curl --request POST \
                 "text": "English"
             }
         }
-    ],
+    ]
+}
+'
+```
+{% endtab %}
+
+{% tab patient-create-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Patient"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+payload = {
+    "resourceType": "Patient",
     "extension":
     [
         {
@@ -558,26 +638,7 @@ curl --request POST \
             "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
             "valueString": "I am an administrative caption from a Create message"
         }
-    ]
-}
-'
-```
-{% endtab %}
-
-{% tab patient-create-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Patient"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>",
-    "content-type": "application/json"
-}
-
-payload = {
-    "resourceType": "Patient",
+    ],
     "identifier":
     [
         {
@@ -737,67 +798,6 @@ payload = {
                 ],
                 "text": "English"
             }
-        }
-    ],
-    "extension":
-    [
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
-            "extension":
-            [
-                {
-                    "url": "ncpdp-id",
-                    "valueIdentifier":
-                    {
-                        "value": "1123152",
-                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
-                    }
-                }
-            ]
-        },
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-            "extension":
-            [
-                {
-                    "url": "ombCategory",
-                    "valueCoding":
-                    {
-                        "code": "2131-1",
-                        "system": "urn:oid:2.16.840.1.113883.6.238"
-                    }
-                }
-            ]
-        },
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-            "extension":
-            [
-                {
-                    "url": "ombCategory",
-                    "valueCoding":
-                    {
-                        "code": "2186-5",
-                        "system": "urn:oid:2.16.840.1.113883.6.238"
-                    }
-                }
-            ]
-        },
-        {
-            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
-            "valueCode": "America/New_York"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
-            "valueString": "I am a clinical caption from a Create message"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
-            "valueString": "I am an administrative caption from a Create message"
         }
     ]
 }
@@ -1245,6 +1245,67 @@ curl --request PUT \
      --data '
 {
     "resourceType": "Patient",
+    "extension":
+    [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
+            "extension":
+            [
+                {
+                    "url": "ncpdp-id",
+                    "valueIdentifier":
+                    {
+                        "value": "1123152",
+                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2131-1",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2186-5",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+            "valueCode": "America/New_York"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+            "valueString": "Prefers to be called Sammy"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+            "valueString": "I am an administrative caption from a Create message"
+        }
+    ],
     "identifier":
     [
         {
@@ -1405,7 +1466,26 @@ curl --request PUT \
                 "text": "English"
             }
         }
-    ],
+    ]
+}
+'
+```
+{% endtab %}
+
+{% tab patient-update-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Patient/<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+payload = {
+    "resourceType": "Patient",
     "extension":
     [
         {
@@ -1460,32 +1540,13 @@ curl --request PUT \
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
-            "valueString": "I am a clinical caption from a Create message"
+            "valueString": "Prefers to be called Sammy"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
             "valueString": "I am an administrative caption from a Create message"
         }
-    ]
-}
-'
-```
-{% endtab %}
-
-{% tab patient-update-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Patient/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>",
-    "content-type": "application/json"
-}
-
-payload = {
-    "resourceType": "Patient",
+    ],
     "identifier":
     [
         {
@@ -1645,67 +1706,6 @@ payload = {
                 ],
                 "text": "English"
             }
-        }
-    ],
-    "extension":
-    [
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
-            "extension":
-            [
-                {
-                    "url": "ncpdp-id",
-                    "valueIdentifier":
-                    {
-                        "value": "1123152",
-                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
-                    }
-                }
-            ]
-        },
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-            "extension":
-            [
-                {
-                    "url": "ombCategory",
-                    "valueCoding":
-                    {
-                        "code": "2131-1",
-                        "system": "urn:oid:2.16.840.1.113883.6.238"
-                    }
-                }
-            ]
-        },
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-            "extension":
-            [
-                {
-                    "url": "ombCategory",
-                    "valueCoding":
-                    {
-                        "code": "2186-5",
-                        "system": "urn:oid:2.16.840.1.113883.6.238"
-                    }
-                }
-            ]
-        },
-        {
-            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
-            "valueCode": "America/New_York"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
-            "valueString": "I am a clinical caption from a Create message"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
-            "valueString": "I am an administrative caption from a Create message"
         }
     ]
 }
