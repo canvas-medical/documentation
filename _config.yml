@@ -10,8 +10,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 theme_color: '#eee9d9'
 logo: assets/images/large-logo.png
 
-### Google Analytics, and Cookie consent uncomment and put the API key
-#google_analytics: id
+### Cookie consent
 #cookie_consent: true
 
 ### Collections
@@ -60,7 +59,7 @@ feed:
   collections:
     release-notes:
       path: "/release-notes.xml"
-    
+
 
 ### Build settings
 minify_html: false
