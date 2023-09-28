@@ -83,6 +83,7 @@ exclude:
   - amplify.yml
   - config
   - icon.png
+  - icon-whiteonblue.png
   - node_modules
   - optimization-fix
   - optimization-fix-this-file-is-ignored.js
