@@ -91,3 +91,5 @@ exclude:
   - webpack.config.js
   - yarn-error.log
   - yarn.lock
+
+  google_analytics: "<UA-82101035-1>"
