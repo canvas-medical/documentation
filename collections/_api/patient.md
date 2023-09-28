@@ -336,6 +336,16 @@ curl --request POST \
      --header 'content-type: application/json' \
      --data '
 {
+    "resourceType": "Patient",
+    "identifier":
+    [
+        {
+            "use": "usual",
+            "system": "HealthCo",
+            "value": "s07960990"
+        }
+    ],
+    "active": true,
     "name":
     [
         {
@@ -346,27 +356,207 @@ curl --request POST \
                 "Samantha",
                 "Ann"
             ]
-        }
-    ],
-    "birthDate": "1980-11-13",
-    "gender": "female",
-    "extension": [
+        },
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
+            "use": "nickname",
+            "given":
+            [
+                "Sammy"
+            ]
         }
     ],
-    "address": [
+    "telecom":
+    [
+        {
+            "system": "phone",
+            "value": "5554320555",
+            "use": "mobile",
+            "rank": 1
+        },
+        {
+            "system": "email",
+            "value": "samantha.jones@example.com",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "female",
+    "birthDate": "1980-11-13",
+    "address":
+    [
         {
             "use": "home",
             "type": "both",
             "text": "1234 Main St., Los Angeles, CA 94107",
-            "line": [
+            "line":
+            [
                 "1234 Main St."
             ],
             "city": "Los Angeles",
             "state": "CA",
             "postalCode": "94107"
+        }
+    ],
+    "photo":
+    [
+        {
+            "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
+        }
+    ],
+    "contact":
+    [
+        {
+            "name":
+            {
+                "text": "Dan Jones"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Spouse"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "danjones@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": true
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
+                }
+            ]
+        },
+        {
+            "name":
+            {
+                "text": "Linda Stewart"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Mother"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "phone",
+                    "value": "5557327068"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
+                }
+            ]
+        },
+        {
+            "name":
+            {
+                "text": "Jimmy Stewart"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Father"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "j.stewart@example.com"
+                }
+            ]
+        }
+    ],
+    "communication":
+    [
+        {
+            "language":
+            {
+                "coding":
+                [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/all-languages",
+                        "code": "en",
+                        "display": "English"
+                    }
+                ],
+                "text": "English"
+            }
+        }
+    ],
+    "extension":
+    [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
+            "extension":
+            [
+                {
+                    "url": "ncpdp-id",
+                    "valueIdentifier":
+                    {
+                        "value": "1123152",
+                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2131-1",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2186-5",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+            "valueCode": "America/New_York"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+            "valueString": "I am a clinical caption from a Create message"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+            "valueString": "I am an administrative caption from a Create message"
         }
     ]
 }
@@ -387,6 +577,16 @@ headers = {
 }
 
 payload = {
+    "resourceType": "Patient",
+    "identifier":
+    [
+        {
+            "use": "usual",
+            "system": "HealthCo",
+            "value": "s07960990"
+        }
+    ],
+    "active": True,
     "name":
     [
         {
@@ -397,27 +597,207 @@ payload = {
                 "Samantha",
                 "Ann"
             ]
-        }
-    ],
-    "birthDate": "1980-11-13",
-    "gender": "female",
-    "extension": [
+        },
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
+            "use": "nickname",
+            "given":
+            [
+                "Sammy"
+            ]
         }
     ],
-    "address": [
+    "telecom":
+    [
+        {
+            "system": "phone",
+            "value": "5554320555",
+            "use": "mobile",
+            "rank": 1
+        },
+        {
+            "system": "email",
+            "value": "samantha.jones@example.com",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "female",
+    "birthDate": "1980-11-13",
+    "address":
+    [
         {
             "use": "home",
             "type": "both",
             "text": "1234 Main St., Los Angeles, CA 94107",
-            "line": [
+            "line":
+            [
                 "1234 Main St."
             ],
             "city": "Los Angeles",
             "state": "CA",
             "postalCode": "94107"
+        }
+    ],
+    "photo":
+    [
+        {
+            "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
+        }
+    ],
+    "contact":
+    [
+        {
+            "name":
+            {
+                "text": "Dan Jones"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Spouse"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "danjones@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": True
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": True
+                }
+            ]
+        },
+        {
+            "name":
+            {
+                "text": "Linda Stewart"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Mother"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "phone",
+                    "value": "5557327068"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": True
+                }
+            ]
+        },
+        {
+            "name":
+            {
+                "text": "Jimmy Stewart"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Father"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "j.stewart@example.com"
+                }
+            ]
+        }
+    ],
+    "communication":
+    [
+        {
+            "language":
+            {
+                "coding":
+                [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/all-languages",
+                        "code": "en",
+                        "display": "English"
+                    }
+                ],
+                "text": "English"
+            }
+        }
+    ],
+    "extension":
+    [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
+            "extension":
+            [
+                {
+                    "url": "ncpdp-id",
+                    "valueIdentifier":
+                    {
+                        "value": "1123152",
+                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2131-1",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2186-5",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+            "valueCode": "America/New_York"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+            "valueString": "I am a clinical caption from a Create message"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+            "valueString": "I am an administrative caption from a Create message"
         }
     ]
 }
@@ -445,17 +825,17 @@ print(response.text)
 ```json
 {
     "resourceType": "Patient",
-    "id": "57db0d48fd834be4a2ad068c553e6fbb",
+    "id": "7162fd82487e4dc8aa2581ddbca91892",
     "text":
     {
         "status": "generated",
-        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Mark<b>Williams</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>644854429</td></tr><tr><td>Date of birth</td><td><span>1980-11-13</span></td></tr></tbody></table></div>"
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Samantha<b>Jones</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>963277285</td></tr><tr><td>Date of birth</td><td><span>1980-11-13</span></td></tr></tbody></table></div>"
     },
     "extension":
     [
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "M"
+            "valueCode": "F"
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
@@ -465,11 +845,11 @@ print(response.text)
                 [
                     {
                         "system": "http://snomed.info/sct",
-                        "code": "446151000124109",
-                        "display": "Identifies as male gender (finding)"
+                        "code": "446141000124107",
+                        "display": "Identifies as female gender (finding)"
                     }
                 ],
-                "text": "Identifies as male gender (finding)"
+                "text": "Identifies as female gender (finding)"
             }
         },
         {
@@ -560,10 +940,21 @@ print(response.text)
                 ]
             },
             "system": "http://canvasmedical.com",
-            "value": "644854429",
+            "value": "963277285",
             "assigner":
             {
                 "display": "Canvas Medical"
+            }
+        },
+        {
+            "id": "1e628d77-5cdd-400f-a239-b24929d4a0aa",
+            "use": "usual",
+            "system": "HealthCo",
+            "value": "s07960990",
+            "period":
+            {
+                "start": "1970-01-01",
+                "end": "2100-12-31"
             }
         }
     ],
@@ -572,11 +963,11 @@ print(response.text)
     [
         {
             "use": "official",
-            "family": "Williams",
+            "family": "Jones",
             "given":
             [
-                "Mark",
-                "John"
+                "Samantha",
+                "Ann"
             ],
             "period":
             {
@@ -588,7 +979,7 @@ print(response.text)
             "use": "nickname",
             "given":
             [
-                "Marko"
+                "Sammy"
             ],
             "period":
             {
@@ -597,29 +988,177 @@ print(response.text)
             }
         }
     ],
-    "gender": "male",
+    "telecom":
+    [
+        {
+            "id": "aa0d6ad0-0b69-4740-9c8c-759c769a63d1",
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
+                    "valueBoolean": false
+                }
+            ],
+            "system": "phone",
+            "value": "5554320555",
+            "use": "mobile",
+            "rank": 1
+        },
+        {
+            "id": "49c0c29d-c56e-41bb-89ab-79562bb75afc",
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
+                    "valueBoolean": false
+                }
+            ],
+            "system": "email",
+            "value": "samantha.jones@example.com",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "female",
     "birthDate": "1980-11-13",
     "deceasedBoolean": false,
     "address":
     [
         {
-            "id": "322caf77-2609-4257-b3dc-faa437e877c4",
+            "id": "611aaf01-a515-4d55-b43d-88b8735359f7",
             "use": "home",
             "type": "both",
             "line":
             [
-                "789 Front St."
+                "1234 Main St."
             ],
-            "city": "Denver",
-            "state": "CO",
-            "postalCode": "80014",
-            "country": "us"
+            "city": "Los Angeles",
+            "state": "CA",
+            "postalCode": "94107",
+            "country": "United States"
         }
     ],
     "photo":
     [
         {
-            "url": "https://canvas-client-media.s3.amazonaws.com/local/patient-avatars/20230926_195900_57db0d48fd834be4a2ad068c553e6fbb.unknown_image?AWSAccessKeyId=AKIAQB7SIDR7IJXXMF47&Signature=%2BIg4FlLrYym31y6vTgit%2FXC49pE%3D&Expires=1695769441"
+            "url": "https://canvas-client-media.s3.amazonaws.com/local/patient-avatars/20230928_213831_7162fd82487e4dc8aa2581ddbca91892.unknown_image?AWSAccessKeyId=AKIAQB7SIDR7IJXXMF47&Signature=kG1YseB%2FjSd7UMErYFVst8%2B3yHY%3D&Expires=1695938081"
+        }
+    ],
+    "contact":
+    [
+        {
+            "id": "1ba81cb4-7f97-429d-b0d8-4c4f067b11a5",
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": true
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
+                }
+            ],
+            "relationship":
+            [
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://schemas.canvasmedical.com/fhir/contact-category",
+                            "code": "EMC",
+                            "display": "Emergency contact"
+                        },
+                        {
+                            "system": "http://schemas.canvasmedical.com/fhir/contact-category",
+                            "code": "ARI",
+                            "display": "Authorized for release of information"
+                        }
+                    ],
+                    "text": "Spouse"
+                }
+            ],
+            "name":
+            {
+                "text": "Dan Jones"
+            },
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "danjones@example.com"
+                }
+            ]
+        },
+        {
+            "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": false
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
+                }
+            ],
+            "relationship":
+            [
+                {
+                    "coding":
+                    [
+                        {
+                            "system": "http://schemas.canvasmedical.com/fhir/contact-category",
+                            "code": "ARI",
+                            "display": "Authorized for release of information"
+                        }
+                    ],
+                    "text": "Mother"
+                }
+            ],
+            "name":
+            {
+                "text": "Linda Stewart"
+            },
+            "telecom":
+            [
+                {
+                    "system": "phone",
+                    "value": "5557327068"
+                }
+            ]
+        },
+        {
+            "id": "30639a10-18c2-4222-8d26-32b2ca36a1bb",
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": false
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": false
+                }
+            ],
+            "relationship":
+            [
+                {
+                    "text": "Father"
+                }
+            ],
+            "name":
+            {
+                "text": "Jimmy Stewart"
+            },
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "j.stewart@example.com"
+                }
+            ]
         }
     ],
     "communication":
@@ -919,7 +1458,7 @@ print(response.text)
 </div>
 
 <div id="patient-search-request">
-{% include search-request.html resource_type="Patient" search_string="family=Williams&gender=male" %}
+{% include search-request.html resource_type="Patient" search_string="family=Jones&gender=female" %}
 </div>
 
 <div id="patient-search-response">
@@ -934,15 +1473,15 @@ print(response.text)
     [
         {
             "relation": "self",
-            "url": "/Patient?family=Williams&gender=male&_count=10&_offset=0"
+            "url": "/Patient?family=Jones&gender=female&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Patient?family=Williams&gender=male&_count=10&_offset=0"
+            "url": "/Patient?family=Jones&gender=female&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Patient?family=Williams&gender=male&_count=10&_offset=0"
+            "url": "/Patient?family=Jones&gender=female&_count=10&_offset=0"
         }
     ],
     "entry":
@@ -951,17 +1490,17 @@ print(response.text)
             "resource":
             {
                 "resourceType": "Patient",
-                "id": "57db0d48fd834be4a2ad068c553e6fbb",
+                "id": "7162fd82487e4dc8aa2581ddbca91892",
                 "text":
                 {
                     "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Mark<b>Williams</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>644854429</td></tr><tr><td>Date of birth</td><td><span>1980-11-13</span></td></tr></tbody></table></div>"
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Samantha<b>Jones</b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>963277285</td></tr><tr><td>Date of birth</td><td><span>1980-11-13</span></td></tr></tbody></table></div>"
                 },
                 "extension":
                 [
                     {
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                        "valueCode": "M"
+                        "valueCode": "F"
                     },
                     {
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
@@ -971,11 +1510,11 @@ print(response.text)
                             [
                                 {
                                     "system": "http://snomed.info/sct",
-                                    "code": "446151000124109",
-                                    "display": "Identifies as male gender (finding)"
+                                    "code": "446141000124107",
+                                    "display": "Identifies as female gender (finding)"
                                 }
                             ],
-                            "text": "Identifies as male gender (finding)"
+                            "text": "Identifies as female gender (finding)"
                         }
                     },
                     {
@@ -1066,10 +1605,21 @@ print(response.text)
                             ]
                         },
                         "system": "http://canvasmedical.com",
-                        "value": "644854429",
+                        "value": "963277285",
                         "assigner":
                         {
                             "display": "Canvas Medical"
+                        }
+                    },
+                    {
+                        "id": "1e628d77-5cdd-400f-a239-b24929d4a0aa",
+                        "use": "usual",
+                        "system": "HealthCo",
+                        "value": "s07960990",
+                        "period":
+                        {
+                            "start": "1970-01-01",
+                            "end": "2100-12-31"
                         }
                     }
                 ],
@@ -1078,11 +1628,11 @@ print(response.text)
                 [
                     {
                         "use": "official",
-                        "family": "Williams",
+                        "family": "Jones",
                         "given":
                         [
-                            "Mark",
-                            "John"
+                            "Samantha",
+                            "Ann"
                         ],
                         "period":
                         {
@@ -1094,7 +1644,7 @@ print(response.text)
                         "use": "nickname",
                         "given":
                         [
-                            "Marko"
+                            "Sammy"
                         ],
                         "period":
                         {
@@ -1103,23 +1653,171 @@ print(response.text)
                         }
                     }
                 ],
-                "gender": "male",
+                "telecom":
+                [
+                    {
+                        "id": "aa0d6ad0-0b69-4740-9c8c-759c769a63d1",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
+                                "valueBoolean": false
+                            }
+                        ],
+                        "system": "phone",
+                        "value": "5554320555",
+                        "use": "mobile",
+                        "rank": 1
+                    },
+                    {
+                        "id": "49c0c29d-c56e-41bb-89ab-79562bb75afc",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/has-consent",
+                                "valueBoolean": false
+                            }
+                        ],
+                        "system": "email",
+                        "value": "samantha.jones@example.com",
+                        "use": "work",
+                        "rank": 1
+                    }
+                ],
+                "gender": "female",
                 "birthDate": "1980-11-13",
                 "deceasedBoolean": false,
                 "address":
                 [
                     {
-                        "id": "322caf77-2609-4257-b3dc-faa437e877c4",
+                        "id": "611aaf01-a515-4d55-b43d-88b8735359f7",
                         "use": "home",
                         "type": "both",
                         "line":
                         [
-                            "789 Front St."
+                            "1234 Main St."
                         ],
-                        "city": "Denver",
-                        "state": "CO",
-                        "postalCode": "80014",
-                        "country": "us"
+                        "city": "Los Angeles",
+                        "state": "CA",
+                        "postalCode": "94107",
+                        "country": "United States"
+                    }
+                ],
+                "contact":
+                [
+                    {
+                        "id": "1ba81cb4-7f97-429d-b0d8-4c4f067b11a5",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                                "valueBoolean": true
+                            }
+                        ],
+                        "relationship":
+                        [
+                            {
+                                "coding":
+                                [
+                                    {
+                                        "system": "http://schemas.canvasmedical.com/fhir/contact-category",
+                                        "code": "EMC",
+                                        "display": "Emergency contact"
+                                    },
+                                    {
+                                        "system": "http://schemas.canvasmedical.com/fhir/contact-category",
+                                        "code": "ARI",
+                                        "display": "Authorized for release of information"
+                                    }
+                                ],
+                                "text": "Spouse"
+                            }
+                        ],
+                        "name":
+                        {
+                            "text": "Dan Jones"
+                        },
+                        "telecom":
+                        [
+                            {
+                                "system": "email",
+                                "value": "danjones@example.com"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                                "valueBoolean": false
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                                "valueBoolean": true
+                            }
+                        ],
+                        "relationship":
+                        [
+                            {
+                                "coding":
+                                [
+                                    {
+                                        "system": "http://schemas.canvasmedical.com/fhir/contact-category",
+                                        "code": "ARI",
+                                        "display": "Authorized for release of information"
+                                    }
+                                ],
+                                "text": "Mother"
+                            }
+                        ],
+                        "name":
+                        {
+                            "text": "Linda Stewart"
+                        },
+                        "telecom":
+                        [
+                            {
+                                "system": "phone",
+                                "value": "5557327068"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "30639a10-18c2-4222-8d26-32b2ca36a1bb",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                                "valueBoolean": false
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                                "valueBoolean": false
+                            }
+                        ],
+                        "relationship":
+                        [
+                            {
+                                "text": "Father"
+                            }
+                        ],
+                        "name":
+                        {
+                            "text": "Jimmy Stewart"
+                        },
+                        "telecom":
+                        [
+                            {
+                                "system": "email",
+                                "value": "j.stewart@example.com"
+                            }
+                        ]
                     }
                 ],
                 "communication":
