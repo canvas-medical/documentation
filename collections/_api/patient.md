@@ -1244,96 +1244,229 @@ curl --request PUT \
      --header 'content-type: application/json' \
      --data '
 {
-  "extension": [
-    {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-      "valueCode": "M"
-    },
-    {
-        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-        "extension": [
-            {
-                "url": "ombCategory",
-                "valueCoding": {
-                    "code": "2186-5",
-                    "system": "urn:oid:2.16.840.1.113883.6.238"
-                }
-            }
-        ]
-    },
-    {
-        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-        "extension": [
-            {
-                "url": "ombCategory",
-                "valueCoding": {
-                    "code": "2131-1",
-                    "system": "urn:oid:2.16.840.1.113883.6.238"
-                }
-            }
-        ]
-    },
-    {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
-      "extension": [
+    "resourceType": "Patient",
+    "identifier":
+    [
         {
-          "url": "ncpdp-id",
-          "valueIdentifier": {
-            "value": "1123152",
-            "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
-          }
+            "use": "usual",
+            "system": "HealthCo",
+            "value": "s07960990"
         }
-      ]
-    },
-    {
-      "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
-      "valueCode": "America/New_York"
-    },
-    {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
-      "valueString": "I am a clinical caption from a Create message"
-    },
-    {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
-      "valueString": "I am an administrative caption from a Create message"
-    }
-  ],
-  "name": [
-    {
-      "use": "official",
-      "family": "Williams",
-      "given": [
-        "Mark",
-        "John"
-      ]
-    },
-    {
-      "use": "nickname",
-      "given": [
-        "Nick Name"
-      ]
-    }
-  ],
-  "birthDate": "1980-11-13",
-  "gender": "male",
-  "address": [
-      {
-          "use": "home",
-          "type": "both",
-          "text": "1234 Main St., Los Angeles, CA 94107",
-          "line": [
-              "1234 Main St."
-          ],
-          "city": "Los Angeles",
-          "state": "CA",
-          "postalCode": "94107"
-      }
-  ],
-  "photo": [
-    {
-      "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
-    }
-  ]
+    ],
+    "active": true,
+    "name":
+    [
+        {
+            "use": "official",
+            "family": "Jones",
+            "given":
+            [
+                "Samantha",
+                "Ann"
+            ]
+        },
+        {
+            "use": "nickname",
+            "given":
+            [
+                "Sammy"
+            ]
+        }
+    ],
+    "telecom":
+    [
+        {
+            "system": "phone",
+            "value": "5554320555",
+            "use": "mobile",
+            "rank": 1
+        },
+        {
+            "system": "email",
+            "value": "samantha.jones@example.com",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "female",
+    "birthDate": "1980-11-13",
+    "address":
+    [
+        {
+            "use": "home",
+            "type": "both",
+            "text": "1234 Main St., Los Angeles, CA 94107",
+            "line":
+            [
+                "1234 Main St."
+            ],
+            "city": "Los Angeles",
+            "state": "CA",
+            "postalCode": "94107"
+        }
+    ],
+    "photo":
+    [
+        {
+            "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
+        }
+    ],
+    "contact":
+    [
+        {
+            "name":
+            {
+                "text": "Dan Jones"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Spouse"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "danjones@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": true
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
+                }
+            ]
+        },
+        {
+            "name":
+            {
+                "text": "Linda Stewart"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Mother"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "phone",
+                    "value": "5557327068"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
+                }
+            ]
+        },
+        {
+            "name":
+            {
+                "text": "Jimmy Stewart"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Father"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "j.stewart@example.com"
+                }
+            ]
+        }
+    ],
+    "communication":
+    [
+        {
+            "language":
+            {
+                "coding":
+                [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/all-languages",
+                        "code": "en",
+                        "display": "English"
+                    }
+                ],
+                "text": "English"
+            }
+        }
+    ],
+    "extension":
+    [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
+            "extension":
+            [
+                {
+                    "url": "ncpdp-id",
+                    "valueIdentifier":
+                    {
+                        "value": "1123152",
+                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2131-1",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2186-5",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+            "valueCode": "America/New_York"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+            "valueString": "I am a clinical caption from a Create message"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+            "valueString": "I am an administrative caption from a Create message"
+        }
+    ]
 }
 '
 ```
@@ -1352,96 +1485,229 @@ headers = {
 }
 
 payload = {
-  "extension": [
-    {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-      "valueCode": "M"
-    },
-    {
-        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-        "extension": [
-            {
-                "url": "ombCategory",
-                "valueCoding": {
-                    "code": "2186-5",
-                    "system": "urn:oid:2.16.840.1.113883.6.238"
-                }
-            }
-        ]
-    },
-    {
-        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-        "extension": [
-            {
-                "url": "ombCategory",
-                "valueCoding": {
-                    "code": "2131-1",
-                    "system": "urn:oid:2.16.840.1.113883.6.238"
-                }
-            }
-        ]
-    },
-    {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
-      "extension": [
+    "resourceType": "Patient",
+    "identifier":
+    [
         {
-          "url": "ncpdp-id",
-          "valueIdentifier": {
-            "value": "1123152",
-            "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
-          }
+            "use": "usual",
+            "system": "HealthCo",
+            "value": "s07960990"
         }
-      ]
-    },
-    {
-      "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
-      "valueCode": "America/New_York"
-    },
-    {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
-      "valueString": "I am a clinical caption from a Create message"
-    },
-    {
-      "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
-      "valueString": "I am an administrative caption from a Create message"
-    }
-  ],
-  "name": [
-    {
-      "use": "official",
-      "family": "Williams",
-      "given": [
-        "Mark",
-        "John"
-      ]
-    },
-    {
-      "use": "nickname",
-      "given": [
-        "Nick Name"
-      ]
-    }
-  ],
-  "birthDate": "1980-11-13",
-  "gender": "male",
-  "address": [
-      {
-          "use": "home",
-          "type": "both",
-          "text": "1234 Main St., Los Angeles, CA 94107",
-          "line": [
-              "1234 Main St."
-          ],
-          "city": "Los Angeles",
-          "state": "CA",
-          "postalCode": "94107"
-      }
-  ],
-  "photo": [
-    {
-      "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
-    }
-  ]
+    ],
+    "active": True,
+    "name":
+    [
+        {
+            "use": "official",
+            "family": "Jones",
+            "given":
+            [
+                "Samantha",
+                "Ann"
+            ]
+        },
+        {
+            "use": "nickname",
+            "given":
+            [
+                "Sammy"
+            ]
+        }
+    ],
+    "telecom":
+    [
+        {
+            "system": "phone",
+            "value": "5554320555",
+            "use": "mobile",
+            "rank": 1
+        },
+        {
+            "system": "email",
+            "value": "samantha.jones@example.com",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "female",
+    "birthDate": "1980-11-13",
+    "address":
+    [
+        {
+            "use": "home",
+            "type": "both",
+            "text": "1234 Main St., Los Angeles, CA 94107",
+            "line":
+            [
+                "1234 Main St."
+            ],
+            "city": "Los Angeles",
+            "state": "CA",
+            "postalCode": "94107"
+        }
+    ],
+    "photo":
+    [
+        {
+            "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
+        }
+    ],
+    "contact":
+    [
+        {
+            "name":
+            {
+                "text": "Dan Jones"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Spouse"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "danjones@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": True
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": True
+                }
+            ]
+        },
+        {
+            "name":
+            {
+                "text": "Linda Stewart"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Mother"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "phone",
+                    "value": "5557327068"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": True
+                }
+            ]
+        },
+        {
+            "name":
+            {
+                "text": "Jimmy Stewart"
+            },
+            "relationship":
+            [
+                {
+                    "text": "Father"
+                }
+            ],
+            "telecom":
+            [
+                {
+                    "system": "email",
+                    "value": "j.stewart@example.com"
+                }
+            ]
+        }
+    ],
+    "communication":
+    [
+        {
+            "language":
+            {
+                "coding":
+                [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/all-languages",
+                        "code": "en",
+                        "display": "English"
+                    }
+                ],
+                "text": "English"
+            }
+        }
+    ],
+    "extension":
+    [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
+            "extension":
+            [
+                {
+                    "url": "ncpdp-id",
+                    "valueIdentifier":
+                    {
+                        "value": "1123152",
+                        "system": "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2131-1",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension":
+            [
+                {
+                    "url": "ombCategory",
+                    "valueCoding":
+                    {
+                        "code": "2186-5",
+                        "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
+            "valueCode": "America/New_York"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/clinical-note",
+            "valueString": "I am a clinical caption from a Create message"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/administrative-note",
+            "valueString": "I am an administrative caption from a Create message"
+        }
+    ]
 }
 
 response = requests.put(url, json=payload, headers=headers)
