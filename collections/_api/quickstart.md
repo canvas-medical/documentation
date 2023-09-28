@@ -65,7 +65,7 @@ Run the following request to find the list of Practitioners in your organization
 ```shell
 curl --location 'https://fumage-<sandbox-name>.canvasmedical.com/Practitioner' \
 --header 'Content-Type: application/fhir+json' \
---header 'Authorization: Bearer <bearer-token>u' | jq 
+--header 'Authorization: Bearer <bearer-token>' | jq
 ```
 
 You will then get a response similar to: 
@@ -113,7 +113,7 @@ Now lets set up the cURL command to create the appointment. Again you will need 
 
 ```shell
 curl -i --location 'https://fumage-<sandbox-name>.canvasmedical.com/Appointment' \
-  --header 'Authorization: Bearer kpGhI9j7U6IVq7ScBaxmSogpKmA3bsfu' \
+  --header 'Authorization: Bearer <bearer-token>' \
   --header 'Content-Type: application/json' \
   --data '{
     "resource": {
