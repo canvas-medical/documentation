@@ -61,9 +61,12 @@ sections:
               • Multiple choice<br><br>
               Answers to free text questions are provided as a `valueString`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.<br><br>
               Canvas supports LOINC, SNOMED, and INTERNAL code systems for for answers provided as a `valueCoding`. The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):<br><br>
-              • http://loinc.org -> LOINC<br>
-              • http://snomed.info/sct -> SNOMED<br>
-              • http://schemas.{instance-name}.canvasmedical.com/fhir/systems/internal -> INTERNAL<br>
+
+                | FHIR system uri                                                        | Canvas system value |
+                |------------------------------------------------------------------------|---------------------|
+                | http://loinc.org                                                       | LOINC               |
+                | http://snomed.info/sct                                                 | SNOMED              |
+                | http://schemas.{instance-name}.canvasmedical.com/fhir/systems/internal | INTERNAL            |
             type: array[json]
         search_parameters:
           - name: _id
