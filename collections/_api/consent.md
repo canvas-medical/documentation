@@ -61,20 +61,20 @@ sections:
             type: string
             description: Who the consent applies to
           - name: period
-            type: string
+            type: date
             description: >-
               Timeframe for this rule<br><br>
-              Expects date strings, prefaced with one of eq, lt, le, gt, ge.<br><br>
+              Expects date strings formatted like YYYY-MM-DD, prefaced with one of eq, lt, le, gt, ge.<br><br>
         endpoints: [create, read, search]
         create:
           description: >-
-            ###### Updating existing PatientConsent objects
+            **Updating existing patient consent objects**<br><br>
 
-            A PatientConsent is uniquely distinguished by its patient and ConsentCoding<br><br>
+            A patient consent is uniquely distinguished by its patient and consent coding<br><br>
             
-            This Create endpoint also acts as an update endpoint. If the patient already has an existing Patient Consent with the same ConsentCoding, the endpoint updates that consent in place and the id returned in the response will not be changed.<br><br>
+            This Create endpoint also acts as an Update endpoint. If the patient already has an existing patient consent with the same consent coding, the endpoint updates that consent in place and the id returned in the response will not be changed.<br><br>
 
-            Setting up the type of Consents allowed in your instance must be completed before using this endpoint.  See the related guide above for details.
+            Setting up the type of consents allowed in your instance must be completed before using this endpoint.  See the related guide above for details.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: consent-create-request
           example_response: consent-create-response
