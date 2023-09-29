@@ -7,7 +7,104 @@ sections:
         name: Patient
         article: "a"
         description: >-
-           Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br> Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.<br><br>[http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html)
+          Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br> [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html)<br><br>
+
+          **Supported Extensions**
+          <br><br>
+
+          Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all `json` types and should be included in the `extension` array field as shown in the request/response examples on this page. The following extensions are supported:<br><br>
+
+          **`birthsex`**
+          <br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex)
+          <br><br>
+          A code classifying the person’s sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC). This extension aligns with the C-CDA Birth Sex Observation (LOINC 76689-9). After version 6.0.0, this extension is no longer a USCDI Requirement.
+          <br><br>
+          Supported values are:
+
+            | value | description |
+            | :---- | ---------   |
+            | **M** | Male        |
+            | **F** | Female      |
+            | **O** | Other       |
+            | **U** | Unknown     |
+
+          **`genderIdentity`**
+          <br><br>
+          [http://hl7.org/fhir/us/core/2022Jan/StructureDefinition-us-core-genderIdentity.html](http://hl7.org/fhir/us/core/2022Jan/StructureDefinition-us-core-genderIdentity.html)
+          <br><br>
+          This extension provides concepts to describe the gender a person identifies as.
+          <br><br>
+          Please note that if this extension is included, it will override the root `gender` field. Supported values are:
+
+            | value | description |
+            | :---- | ---------   |
+            | **446151000124109** | Identifies as Male |
+            | **446141000124107** | Identifies as Female |
+            | **407377005** | Female-to-Male (FTM)/Transgender Male/Trans Man |
+            | **407376001** | Male-to-Female (MTF)/Transgender Female/Trans Woman |
+            | **446131000124102** | Genderqueer, neither exclusively male nor female |
+            | **OTH** | Additional gender category or other, please specify |
+            | **ASKU** | Choose not to disclose |
+
+          **`sexual-orientation`**
+          <br><br>
+          Sexual orientation of the patient. Supported values are:
+
+            | value | description |
+            | :---- | ---------   |
+            | **20430005** | Straight or heterosexual |
+            | **38628009** | Lesbian, gay or homosexual |
+            | **42035005** | Bisexual |
+            | **OTH** | Something else, please describe |
+            | **UNK** | Don’t Know |
+            | **ASKU** | Choose not to disclose |
+
+          **`race`**
+          <br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](http://hl7.org/fhir/us/core/StructureDefinition/us-core-race)<br><br>
+          An extension to specify the races of a patient.
+          <br><br>
+          For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-race**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.<br><br>
+
+          **`ethnicity`**
+          <br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity)<br><br>
+          An extension to specify the ethnicities of a patient.
+          <br><br>
+          For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.<br><br>
+
+          **`timezone`**
+          <br><br>
+          The timezone a patient lives in.
+          <br><br>
+          For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/StructureDefinition/tz-code**, and the `valueCode` can contain any valid timezone code defined [here](http://build.fhir.org/valueset-timezones.html).<br><br>
+
+          **`clinical-note`**
+          <br><br>
+          This note displays under the patient's name in the clinical chart.
+          <br><br>
+          For create and update actions, the `url` attribute must equal **http://schemas.canvasmedical.com/fhir/extensions/clinical-note**. The `valueString` attribute is a free text field.<br><br>
+
+          **`administrative-note`**
+          <br><br>
+          This note displays under the patient's name in the administrative profile.
+          <br><br>
+          For create and update actions, the `url` attribute must equal **http://schemas.canvasmedical.com/fhir/extensions/administrative-note**. The `valueString` attribute is a free text field.<br><br>
+
+          **`preferred-pharmacy`**
+          <br><br>
+          A patient can have multiple preferred pharmacies added to their profile.
+          <br><br>
+          For create and update actions, the `url` attribute must be equal to *http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy*. For each object in `extension`, a `url` attribute with the value **ncpdp-id** should be included along with a `valueIdentifier` object including the NCPDP number of the pharmacy under `value` and the url **http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber** under `system`.<br><br>
+
+          **`business-line`**
+          <br><br>
+          The business line that the patient belongs to.
+          <br><br>
+          Not all Canvas instances have Business Line functionality enabled. See [here](https://canvas-medical.zendesk.com/hc/en-us/articles/16777163916307-Customized-Patient-Communication#h_01H0T0Z79XFX215GRSABFC91JZ) for information on Business Lines.<br><br>
+          If using business line functionality, create and update actions should include a json object with the `url` attribute equal to **http://schemas.canvasmedical.com/fhir/extensions/business-line** and the `valueId` set to the externallyExposableId of the business line in Canvas.
+
         attributes:
           - name: id
             type: string
@@ -17,7 +114,7 @@ sections:
             description: A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource.
           - name: extension
             type: array[json]
-            description: Reference the **extension-\*** fields below to see the possible extensions contained in this resource.
+            description: Reference the information at the top of this page to see the possible extensions contained in this resource. Please note that the `birthsex` extension is required.
           - name: identifier
             type: array[json]
             description: The identifier list defines additional identifiers that are able to be stored for a patient.
@@ -135,15 +232,19 @@ sections:
                   - name: end
                     type: date
           - name: photo
-            type: json
+            type: array[json]
             description: Image of the patient. Data should be passed as a base64-encoded string. This image shows on the patient avatar in the Canvas UI.
+            create_description: >-
+              When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
+            update_description: >-
+              When updating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
             attributes:
               - name: url
                 type: string
           - name: contact
             type: array[json]
             required: false
-            description: A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient Registration page in the Canvas UI.
+            description: A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient profile page in the Canvas UI.
             attributes:
               - name: id
                 type: string
@@ -156,7 +257,7 @@ sections:
                   - name: text
                     type: string
               - name: relationship
-                type: json
+                type: array[json]
                 description: This is a list of objects where you can specify the text that stores the contact's relationship. It is a free text field. While a list, we currently only store and display the first object's text.
                 attributes:
                   - name: text
@@ -183,77 +284,6 @@ sections:
               - name: language
                 type: json
                 description: The language which can be used to communicate with the patient about his or her health. [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (Preferred but limited to [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html)).
-          - name: extension - birthsex
-            type: json
-            required: true
-            description: >-
-                A code classifying the person’s sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC). This extension aligns with the C-CDA Birth Sex Observation (LOINC 76689-9). After version 6.0.0, this extension is no longer a USCDI Requirement. Supported Values are:<br><br>
-                - M - Male<br>
-                - F - Female<br>
-                - O - Other<br>
-                - UNK - Unknown<br><br>
-                [http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex)
-          - name: extension - genderIdentity
-            type: json
-            description: >-
-              This extension represents an individual’s sense of being a man, woman, boy, girl, nonbinary, or something else, ascertained by asking them what that identity is. Systems requiring multiple gender identities and associated dates SHOULD use the FHIR R5 [http://hl7.org/fhir/extensions/StructureDefinition-individual-genderIdentity.html](genderIdentity) extension. When future versions of US Core are based on FHIR R5, the FHIR R5 extension will supersede this extension.<br><br>The following value codes are supported:<br><br>
-              - 446151000124109 - Identifies as Male<br>
-              - 446141000124107 - Identifies as Female<br>
-              - 407377005 - Female-to-Male (FTM)/Transgender Male/Trans Man<br>
-              - 407376001 - Male-to-Female (MTF)/Transgender Female/Trans Woman<br>
-              - 446131000124102 - Genderqueer, neither exclusively male nor female<br>
-              - OTH - Additional gender category or other, please specify<br>
-              - ASKU - Choose not to disclose
-          - name: extension - sexual-orientation
-            type: json
-            description: >-
-              Sexual orientation of the patient. The following value codes are supported:<br><br>
-              - 20430005 - Straight or heterosexual<br>
-              - 38628009 - Lesbian, gay or homosexual<br>
-              - 42035005 - Bisexual<br>
-              - OTH - Something else, please describe<br>
-              - UNK - Don't Know<br>
-              - ASKU - Choose not to disclose
-          - name: extension - race
-            type: codeable concept
-            description: An extension to specify the races of a patient. This is defined using the Us Core Race extension [http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](http://hl7.org/fhir/us/core/StructureDefinition/us-core-race)
-            create_description: The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each race needed from the ValueSet.
-            update_description: The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each race needed from the ValueSet.
-          - name: extension - ethnicity
-            type: json
-            description: >-
-              An extension to specify the ethnicities of a patient - [http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity)
-            create_description:
-                The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each ethnicity needed from the ValueSet.
-            update_description:
-                The url must match "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity" Then you will define an extension list of objects where each object needs a valueCoding object. The system of each valueCoding will equal "urn:oid:2.16.840.1.113883.6.238". Then you can specify the appropriate code of each ethnicity needed from the ValueSet.
-          - name: extension - timezone
-            type: json
-            description:
-                The timezone a patient lives in.
-            create_description:
-                An optional extension Canvas accepts is to specify the timezone a Patient lives in. The extension must have the url equal to "http://hl7.org/fhir/StructureDefinition/tz-code". Then the valueCode field can be anything defined here. You can see examples here. If the URL does not match exactly, a timezone will not be set. If the URL matches exactly but a valid timezone is not given, the database will save what is passed in; however, the UI will display the current user's timezone.
-            update_description:
-               An optional extension Canvas accepts is to specify the timezone a Patient lives in. The extension must have the url equal to "http://hl7.org/fhir/StructureDefinition/tz-code". Then the valueCode field can be anything defined here. You can see examples here. If the URL does not match exactly, a timezone will not be set. If the URL matches exactly but a valid timezone is not given, the database will save what is passed in; however, the UI will display the current user's timezone.
-          - name: extension - clinical-note
-            type: json
-            description: This note displays under the patient's name in the clinical chart.
-            create_description: This note displays under the patient's name in the clinical chart. The `url` must equal "http://schemas.canvasmedical.com/fhir/extensions/clinical-note", while the `valueString` is a free text field.
-            update_description: This note displays under the patient's name in the clinical chart. The `url` must equal "http://schemas.canvasmedical.com/fhir/extensions/clinical-note", while the `valueString` is a free text field.
-          - name: extension - administrative-note
-            type: json
-            description: This note displays under the patient's name in the administrative profile.
-            create_description: This note displays under the patient's name in the administrative profile. The `url` must equal "http://schemas.canvasmedical.com/fhir/extensions/administrative-note", while the `valueString` is a free text field.
-          - name: extension - preferred-pharmacy
-            type: json
-            description: A patient can have multiple preferred pharmacies added to their profile.
-            create_description: >-
-                The url must match http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy. The extension list of objects where each object needs: url that must match ncpdp-id valueIdentifier object that contains the system that must equal "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber". Then you can specify the appropriate value of the pharmacy, which is a 7 digit NDPDP ID. Here are a few callouts on workflow for the value attribute: <br><br>**1.** If a valid 7 digit NCPDP id value is specified, then the patient's preferred pharmacy will be updated accordingly with the pharmacy's name, phone, fax and address.<br>**2.** If there is any other value given that is not a 7 digit number, you will see an error that they message did not adhere to the Patient Schema.<br>**3.** If a 7 digit number is passed, but it is not a valid NCPDP id and does not correlate to a pharmacy in Canvas, the patient's preferred pharmacy will be blank.<br>**4.** If this extension is not specified in the request body, any current preferred pharmacy set for the patient will remain.
-            update_description: >-
-                The url must match http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy. The extension list of objects where each object needs: url that must match ncpdp-id valueIdentifier object that contains the system that must equal "http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber". Then you can specify the appropriate value of the pharmacy, which is a 7 digit NDPDP ID. Here are a few callouts on workflow for the value attribute: <br><br>**1.** If a valid 7 digit NCPDP id value is specified, then the patient's preferred pharmacy will be updated accordingly with the pharmacy's name, phone, fax and address.<br>**2.** If there is any other value given that is not a 7 digit number, you will see an error that they message did not adhere to the Patient Schema.<br>**3.** If a 7 digit number is passed, but it is not a valid NCPDP id and does not correlate to a pharmacy in Canvas, the patient's preferred pharmacy will be blank.<br>**4.** If this extension is not specified in the request body, any current preferred pharmacy set for the patient will remain.
-          - name: extension - business-line
-            type: json
-            description: The business line that the patient belongs to.
         search_parameters:
           - name: _has:CareTeam:participant:member
             type: boolean
@@ -307,7 +337,7 @@ sections:
           example_request: patient-create-request
           example_response: patient-create-response
           description: >-
-            Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the `Location:` header. You will use this for subsequent requests that reference this patient.<br><br> This ID will also match the url when navigated to the patient chart. https://.canvasmedical.com/patient/<br><br> Most of the fields that are populated through this endpoint will display and be editable on the Patient Registration page. You can navigate to this view when you click the Patient's name in the top left corner on their patient chart or if you click the three dot menu next to the patient name and click `Registration`.
+            Upon successful creation, the Patient identifier can be found in the `Location` header of the response. The patient record in Canvas can be viewed at *https://\<instance\>.canvasmedical.com/patient/\<id\>*. <br><br> Most of the fields that are populated through this endpoint will display and be editable on the Patient profile page.
         read:
           responses: [200, 401, 403, 404]
           example_request: patient-read-request
@@ -342,6 +372,25 @@ curl --request POST \
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
+            "valueCodeableConcept":
+            {
+                "coding":
+                [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": "446141000124107",
+                        "display": "Identifies as female gender (finding)"
+                    }
+                ],
+                "text": "Identifies as female gender (finding)"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation",
+            "valueCode": "20430005"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
@@ -583,6 +632,25 @@ payload = {
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
+            "valueCodeableConcept":
+            {
+                "coding":
+                [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": "446141000124107",
+                        "display": "Identifies as female gender (finding)"
+                    }
+                ],
+                "text": "Identifies as female gender (finding)"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation",
+            "valueCode": "20430005"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
@@ -851,6 +919,10 @@ print(response.text)
                 ],
                 "text": "Identifies as female gender (finding)"
             }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation",
+            "valueCode": "20430005"
         },
         {
             "extension":
@@ -1252,6 +1324,25 @@ curl --request PUT \
             "valueCode": "F"
         },
         {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
+            "valueCodeableConcept":
+            {
+                "coding":
+                [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": "446141000124107",
+                        "display": "Identifies as female gender (finding)"
+                    }
+                ],
+                "text": "Identifies as female gender (finding)"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation",
+            "valueCode": "20430005"
+        },
+        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
             "extension":
             [
@@ -1491,6 +1582,21 @@ payload = {
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
+            "valueCodeableConcept":
+            {
+                "coding":
+                [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": "446141000124107",
+                        "display": "Identifies as female gender (finding)"
+                    }
+                ],
+                "text": "Identifies as female gender (finding)"
+            }
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
@@ -1782,6 +1888,10 @@ print(response.text)
                             ],
                             "text": "Identifies as female gender (finding)"
                         }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation",
+                        "valueCode": "20430005"
                     },
                     {
                         "extension":
