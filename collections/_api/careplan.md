@@ -55,6 +55,7 @@ sections:
           example_request: careplan-search-request
           example_response: careplan-search-response
 ---
+
 <div id="careplan-read-request">
 {% include read-request.html resource_type="CarePlan" %}  
 </div>
@@ -154,32 +155,7 @@ sections:
 </div>
 
 <div id="careplan-search-request">
-  {% tabs careplan-search-request %}
-    {% tab careplan-search-request curl %}
-```shell
-curl --request GET \
-    --url 'https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan' \
-    --header 'Authorization: Bearer <token>' \
-    --header 'accept: application/json'
-```
-    {% endtab %}
-    {% tab careplan-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/CarePlan?patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-  {% endtabs %}
+{% include search-request.html resource_type="CarePlan" search_string="patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan" %}
 </div>
 
 <div id="careplan-search-response">

@@ -57,6 +57,7 @@ sections:
           example_response: immunization-search-response
           example_request: immunization-search-request
 ---
+
 <div id="immunization-read-request">
 {% include read-request.html resource_type="Immunization" %}
 </div>

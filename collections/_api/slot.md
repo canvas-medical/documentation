@@ -47,33 +47,7 @@ sections:
 ---
 
 <div id="slot-search-request">
-{% tabs slot-search-request %}
-{% tab slot-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Slot?schedule=Location.2-Staff.3640cd20de8a470aa570a852859ac87e&start=2023-09-21&end=2023-09-23&duration=20"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-
-```
-{% endtab %}
-{% tab slot-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Slot?schedule=Location.2-Staff.3640cd20de8a470aa570a852859ac87e&start=2023-09-21&end=2023-09-23&duration=20' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include search-request.html resource_type="Slot" search_string="schedule=Location.2-Staff.3640cd20de8a470aa570a852859ac87e&start=2023-09-21&end=2023-09-23&duration=20" %}
 </div>
 
 <div id="slot-search-response">

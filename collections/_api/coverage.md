@@ -102,6 +102,7 @@ sections:
           example_request: coverage-search-request
           example_response: coverage-search-response
 ---
+
 <div id="coverage-create-request">
   {% tabs coverage-create-request %}
     {% tab coverage-create-request curl %}

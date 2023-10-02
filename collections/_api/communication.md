@@ -70,6 +70,7 @@ sections:
           example_response: communication-search-response
         
 ---
+
 <div id="communication-create-request">
   {% tabs communication-create-request %}
     {% tab communication-create-request curl %}
@@ -131,139 +132,11 @@ print(response.text)
 </div>
 
 <div id="communication-create-response">
-  {% tabs communication-create-response %}
-    {% tab communication-create-response 201 %}
-```json
-null
-```
-    {% endtab %}
-    {% tab communication-create-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab communication-create-response 401 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "unknown",
-      "details": {
-        "text": "Authentication failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab communication-create-response 403 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab communication-create-response 405 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-supported",
-      "details": {
-        "text": "Operation is not supported"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab communication-create-response 412 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "conflict",
-      "details": {
-        "text": "Resource updated since If-Unmodified-Since date"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab communication-create-response 422 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "business-rule",
-      "details": {
-        "text": "Unprocessable entity"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-  {% endtabs %}
+{% include create-response.html %}
 </div>
 
 <div id="communication-search-request">
-  {% tabs communication-search-request %}
-    {% tab communication-search-request curl %}
-```shell
-curl --request GET \
-    --url 'https://fumage-example.canvasmedical.com/Communication?recipient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd'\
-    --header 'Authorization: Bearer <token>' \
-    --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab communication-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Communication?recipient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-  {% endtabs %}
+{% include search-request.html resource_type="Communication" search_string="recipient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd" %}
 </div>
 
 <div id="communication-search-response">
@@ -368,5 +241,3 @@ print(response.text)
     {% endtab %}
   {% endtabs %}
 </div>
-
-

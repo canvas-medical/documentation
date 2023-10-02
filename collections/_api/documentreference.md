@@ -19,7 +19,6 @@ sections:
           - name: identifier
             type: array[json]
             description: Other identifiers for the document
-            type: string
           - name: status
             description: >-
               The status of the document reference. Supported values are: **current**, **superseded** and **entered-in-error**.
@@ -82,43 +81,19 @@ sections:
         endpoints: [read, search]
         read:
           responses: [200, 401, 403, 404]
-          example_request: document-reference-read-request
-          example_response: document-reference-read-response
+          example_request: documentreference-read-request
+          example_response: documentreference-read-response
         search:
           responses: [200, 400, 401, 403]
-          example_request: document-reference-search-request
-          example_response: document-reference-search-response
+          example_request: documentreference-search-request
+          example_response: documentreference-search-response
 ---
-<div id="document-reference-read-request">
-{% tabs document-reference-read-request %}
-{% tab document-reference-read-request python %}
-```sh
-import requests
 
-url = "https://fumage-example.canvasmedical.com/DocumentReference/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab document-reference-read-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/DocumentReference/<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+<div id="documentreference-read-request">
+{%  include read-request.html resource_type="DocumentReference" %}
 </div>
 
-<div id="document-reference-read-response">
+<div id="documentreference-read-response">
 {% tabs document-reference-read-response %}
 {% tab document-reference-read-response 200 %}
 ```json
@@ -226,37 +201,11 @@ curl --request GET \
 {% endtabs %}
 </div>
 
-
-<div id="document-reference-search-request">
-{% tabs document-reference-search-request %}
-{% tab document-reference-search-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab document-reference-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+<div id="documentreference-search-request">
+{% include search-request.html resource_type="DocumentReference" search_string="subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2" %}
 </div>
 
-<div id="document-reference-search-response">
+<div id="documentreference-search-response">
 {% tabs document-reference-search-response %}
 {% tab document-reference-search-response 200 %}
 ```json

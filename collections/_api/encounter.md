@@ -94,33 +94,9 @@ sections:
           example_request: encounter-search-request
           description: Search for Encounter resources
 ---
+
 <div id="encounter-read-request">
-{% tabs encounter-read-request %}
-{% tab encounter-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Encounter/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab encounter-read-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Encounter/<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{%  include read-request.html resource_type="Encounter" %}
 </div>
 
 <div id="encounter-read-response">
@@ -281,32 +257,7 @@ curl --request GET \
 </div>
 
 <div id="encounter-search-request">
-{% tabs encounter-search-request %}
-{% tab encounter-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Encounter?patient=Patient/8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab encounter-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Encounter?patient=Patient/8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include search-request.html resource_type="Encounter" search_string="patient=Patient/8f19219e36054ea89c4d98c9b258c2f1&date=ge2023-09-15" %}
 </div>
 
 <div id="encounter-search-response">
@@ -483,4 +434,3 @@ curl --request GET \
 {% endtab %}
 {% endtabs %}
 </div>
-

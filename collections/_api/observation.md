@@ -176,9 +176,8 @@ sections:
           responses: [200, 400, 401, 403]
           example_request: observation-search-request
           example_response: observation-search-response
-        
-
 ---
+
 <div id="observation-create-request">
   {% tabs observation-create-request %}
     {% tab observation-create-request curl %}

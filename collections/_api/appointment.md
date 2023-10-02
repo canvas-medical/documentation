@@ -148,54 +148,30 @@ sections:
             type: string
             description: Triggers sorting of the results by a specific criteria. Accepted values are date, patient and practitioner. Use -date, -patient, -practitioner to sort in descending order
         endpoints: [create, read, update, search]
-        read:
-          description: Read an Appointment
-          responses: [200, 401, 403, 404]
-          example_request: appointment-read-request
-          example_response: appointment-read-response
-        search:
-          description: Search for an Appointment
-          responses: [200, 400, 401, 403]
-          example_request: appointment-search-request
-          example_response: appointment-search-response
         create:
           description: Create an **Appointment**<br><br> **Prevent Double Booking** By default, Canvas does not prevent appointments from being created if there is already an existing appointment for that provider. However, we have a config setting to disable double booking. If double booking is not allowed and the Appointment Create or Appointment Update request is trying to book an appointment for a given Provider that already has a scheduled appointment at that time, you will see a 422 error status with the following error message returned `This appointment time is no longer available.`
           responses: [201, 400, 401, 403, 405, 422]
           example_request: appointment-create-request
           example_response: appointment-create-response
+        read:
+          description: Read an Appointment
+          responses: [200, 401, 403, 404]
+          example_request: appointment-read-request
+          example_response: appointment-read-response
         update:
           description: Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as co are currently set in the Canvas database.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: appointment-update-request
           example_response: appointment-update-response
+        search:
+          description: Search for an Appointment
+          responses: [200, 400, 401, 403]
+          example_request: appointment-search-request
+          example_response: appointment-search-response
 ---
+
 <div id="appointment-read-request">
-{% tabs appointment-read-request %}
-{% tab appointment-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Appointment/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab appointment-read-request curl %}
-```shell
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Appointment/<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{%  include read-request.html resource_type="Appointment" %}
 </div>
 
 <div id="appointment-read-response">
@@ -303,7 +279,7 @@ curl --request GET \
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown AllergyIntolerance resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown Appointment resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
       }
     }
   ]
@@ -315,33 +291,7 @@ curl --request GET \
 </div>
 
 <div id="appointment-search-request">
-{% tabs appointment-search-request %}
-{% tab appointment-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Appointment?patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e&appointment-type=448337001"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab appointment-search-request curl %}
-```shell
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Appointment?patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e&
-     appointment-type=448337001' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include search-request.html resource_type="Appointment" search_string="patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e&appointment-type=448337001" %}
 </div>
 
 <div id="appointment-search-response">

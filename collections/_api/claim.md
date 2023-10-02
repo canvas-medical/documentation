@@ -81,6 +81,7 @@ sections:
           example_response: claim-create-response
           
 ---
+
 <div id="claim-create-request">
   {% tabs claim-create-request %}
     {% tab claim-create-request curl %}

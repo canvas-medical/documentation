@@ -82,12 +82,7 @@ sections:
           - name: requester
             type: string
             description: Search by task requester
-        endpoints: [search, create, update]
-        search:
-          responses: [200, 400, 401, 403]
-          example_request: task-search-request
-          example_response: task-search-response
-          description: Search for a task
+        endpoints: [create, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: task-create-request
@@ -99,34 +94,226 @@ sections:
           example_request: task-update-request
           example_response: task-update-response
           description: Update a task.<br><br>Any `note` comments included in the update message body will not be checked if they already exist in Canvas. Canvas will always assume each Note is an addition to the Task Comments.<br><br>Omitting the group `extension` and `authoredOn` fields in an update body does not delete the contents of that field. They will remain set to the last value they were assigned.<br><br>Omitting the `description`, `owner`, `restriction` and `input` attributes will delete the contents of the field in the Canvas database. In order to have a Task keep the values in these fields after an update, they must be included.
+        search:
+          responses: [200, 400, 401, 403]
+          example_request: task-search-request
+          example_response: task-search-response
+          description: Search for a task
 ---
-<div id="task-search-request">
-{% tabs task-search-request %}
-{% tab task-search-request python %}
+
+<div id="task-create-request">
+
+  {% tabs task-create-request %}
+
+    {% tab task-create-request curl %}
+```sh
+curl --request POST \
+     --url 'https://fumage-example.canvasmedical.com/Task' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+            "valueReference": {
+                "reference": "Group/0c59ba86-dd40-4fde-8179-6e0b91dc617b"
+            }
+        }
+    ],
+    "status": "requested",
+    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
+    "description": "Ask patient for new insurance information.",
+    "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
+    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
+    "authoredOn": "2023-09-22T14:00:00.000Z",
+    "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
+    "note": [
+        {
+            "text": "Please call patient to update insurance information.",
+            "time": "2023-09-22T14:00:00.000Z",
+            "authorReference": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" }
+        }
+    ],
+    "input": [
+        {
+            "type": { "text": "label" },
+            "valueString": "Urgent"
+        }
+    ],
+    "intent": "unknown"
+}
+'
+```
+    {% endtab %}
+
+    {% tab task-create-request python %}
 ```python
 import requests
 
-url = "https://fumage-example.canvasmedical.com/Task?owner=Practitioner%2Fa02cbf2403e140f7bc9a355c6ed420f3&label=Urgent"
+url = "https://fumage-example.canvasmedical.com/Task"
+
+payload = {
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+            "valueReference": {
+                "reference": "Group/0c59ba86-dd40-4fde-8179-6e0b91dc617b"
+            }
+        }
+    ],
+    "status": "requested",
+    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
+    "description": "Ask patient for new insurance information.",
+    "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
+    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
+    "authoredOn": "2023-09-22T14:00:00.000Z",
+    "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
+    "note": [
+        {
+            "text": "Please call patient to update insurance information.",
+            "time": "2023-09-22T14:00:00.000Z",
+            "authorReference": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" }
+        }
+    ],
+    "input": [
+        {
+            "type": { "text": "label" },
+            "valueString": "Urgent"
+        }
+    ],
+    "intent": "unknown"
+}
 
 headers = {
     "accept": "application/json",
-    "Authorization": "Bearer <token>"
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
 }
 
-response = requests.get(url, headers=headers)
+response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
 ```
-{% endtab %}
-{% tab task-search-request curl %}
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>
+
+<div id="task-create-response">
+{% include create-response.html %}
+</div>
+
+<div id="task-update-request">
+
+  {% tabs task-update-request %}
+
+    {% tab task-update-request curl %}
 ```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Task?owner=Practitioner%2Fa02cbf2403e140f7bc9a355c6ed420f3&label=Urgent' \
+curl --request PUT \
+     --url 'https://fumage-example.canvasmedical.com/Task/<id>' \
      --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+            "valueReference": {
+                "reference": "Group/0c59ba86-dd40-4fde-8179-6e0b91dc617b"
+            }
+        }
+    ],
+    "status": "completed",
+    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
+    "description": "Ask patient for new insurance information.",
+    "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
+    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
+    "authoredOn": "2023-09-22T14:00:00.000Z",
+    "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
+    "note": [
+        {
+            "text": "Please call patient to update insurance information.",
+            "time": "2023-09-22T14:00:00.000Z",
+            "authorReference": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" }
+        }
+    ],
+    "input": [
+        {
+            "type": { "text": "label" },
+            "valueString": "Urgent"
+        }
+    ],
+    "intent": "unknown"
+}
+'
 ```
-{% endtab %}
-{% endtabs %}
+    {% endtab %}
+
+    {% tab task-update-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Task/<id>"
+
+payload = {
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+            "valueReference": {
+                "reference": "Group/0c59ba86-dd40-4fde-8179-6e0b91dc617b"
+            }
+        }
+    ],
+    "status": "completed",
+    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
+    "description": "Ask patient for new insurance information.",
+    "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
+    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
+    "authoredOn": "2023-09-22T14:00:00.000Z",
+    "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
+    "note": [
+        {
+            "text": "Please call patient to update insurance information.",
+            "time": "2023-09-22T14:00:00.000Z",
+            "authorReference": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" }
+        }
+    ],
+    "input": [
+        {
+            "type": { "text": "label" },
+            "valueString": "Urgent"
+        }
+    ],
+    "intent": "unknown"
+}
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.text)
+```
+
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>
+
+<div id="task-update-response">
+{% include update-response.html resource_type="Task" %}
+</div>
+
+<div id="task-search-request">
+{% include search-request.html resource_type="Task" search_string="owner=Practitioner%2Fa02cbf2403e140f7bc9a355c6ed420f3&label=Urgent" %}
 </div>
 
 <div id="task-search-response">
@@ -278,204 +465,4 @@ curl --request GET \
 ```
 {% endtab %}
 {% endtabs %}
-</div>
-
-<div id="task-create-request">
-{% tabs task-create-request %}
-{% tab task-create-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Task"
-
-payload = {
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
-            "valueReference": {
-                "reference": "Group/0c59ba86-dd40-4fde-8179-6e0b91dc617b"
-            }
-        }
-    ],
-    "status": "requested",
-    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
-    "description": "Ask patient for new insurance information.",
-    "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
-    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
-    "authoredOn": "2023-09-22T14:00:00.000Z",
-    "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
-    "note": [
-        {
-            "text": "Please call patient to update insurance information.",
-            "time": "2023-09-22T14:00:00.000Z",
-            "authorReference": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" }
-        }
-    ],
-    "input": [
-        {
-            "type": { "text": "label" },
-            "valueString": "Urgent"
-        }
-    ],
-    "intent": "unknown"
-}
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>",
-    "content-type": "application/json"
-}
-
-response = requests.post(url, json=payload, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab task-create-request curl %}
-```sh
-curl --request POST \
-     --url 'https://fumage-example.canvasmedical.com/Task' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json' \
-     --header 'content-type: application/json' \
-     --data '
-{
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
-            "valueReference": {
-                "reference": "Group/0c59ba86-dd40-4fde-8179-6e0b91dc617b"
-            }
-        }
-    ],
-    "status": "requested",
-    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
-    "description": "Ask patient for new insurance information.",
-    "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
-    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
-    "authoredOn": "2023-09-22T14:00:00.000Z",
-    "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
-    "note": [
-        {
-            "text": "Please call patient to update insurance information.",
-            "time": "2023-09-22T14:00:00.000Z",
-            "authorReference": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" }
-        }
-    ],
-    "input": [
-        {
-            "type": { "text": "label" },
-            "valueString": "Urgent"
-        }
-    ],
-    "intent": "unknown"
-}
-'
-```
-{% endtab %}
-{% endtabs %}
-</div>
-
-<div id="task-create-response">
-{% include create-response.html %}
-</div>
-
-<div id="task-update-request">
-{% tabs task-update-request %}
-{% tab task-update-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Task/<id>"
-
-payload = {
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
-            "valueReference": {
-                "reference": "Group/0c59ba86-dd40-4fde-8179-6e0b91dc617b"
-            }
-        }
-    ],
-    "status": "completed",
-    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
-    "description": "Ask patient for new insurance information.",
-    "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
-    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
-    "authoredOn": "2023-09-22T14:00:00.000Z",
-    "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
-    "note": [
-        {
-            "text": "Please call patient to update insurance information.",
-            "time": "2023-09-22T14:00:00.000Z",
-            "authorReference": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" }
-        }
-    ],
-    "input": [
-        {
-            "type": { "text": "label" },
-            "valueString": "Urgent"
-        }
-    ],
-    "intent": "unknown"
-}
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>",
-    "content-type": "application/json"
-}
-
-response = requests.put(url, json=payload, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab task-update-request curl %}
-```sh
-curl --request PUT \
-     --url 'https://fumage-example.canvasmedical.com/Task/<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json' \
-     --header 'content-type: application/json' \
-     --data '
-{
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
-            "valueReference": {
-                "reference": "Group/0c59ba86-dd40-4fde-8179-6e0b91dc617b"
-            }
-        }
-    ],
-    "status": "completed",
-    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
-    "description": "Ask patient for new insurance information.",
-    "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
-    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
-    "authoredOn": "2023-09-22T14:00:00.000Z",
-    "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
-    "note": [
-        {
-            "text": "Please call patient to update insurance information.",
-            "time": "2023-09-22T14:00:00.000Z",
-            "authorReference": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" }
-        }
-    ],
-    "input": [
-        {
-            "type": { "text": "label" },
-            "valueString": "Urgent"
-        }
-    ],
-    "intent": "unknown"
-}
-'
-```
-{% endtab %}
-{% endtabs %}
-</div>
-
-<div id="task-update-response">
-{% include update-response.html resource_type="Task" %}
 </div>

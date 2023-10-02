@@ -43,32 +43,7 @@ sections:
 ---
 
 <div id="practitioner-read-request">
-{% tabs practitioner-read-request %}
-{% tab practitioner-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Practitioner/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab practitioner-read-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Practitioner/<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{%  include read-request.html resource_type="Practitioner" %}
 </div>
 
 <div id="practitioner-read-response">
@@ -150,33 +125,7 @@ curl --request GET \
 </div>
 
 <div id="practitioner-search-request">
-{% tabs practitioner-search-request %}
-{% tab practitioner-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Practitioner?name=Magee"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-
-```
-{% endtab %}
-{% tab practitioner-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Practitioner?name=Magee' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include search-request.html resource_type="Practitioner" search_string="name=Magee" %}
 </div>
 
 <div id="practitioner-search-response">

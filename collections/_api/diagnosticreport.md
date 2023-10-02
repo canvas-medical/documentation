@@ -64,20 +64,20 @@ sections:
         read:
           description: Read a DiagnosticReport resource
           responses: [200, 401, 403, 404]
-          example_request: diagnostic-report-read-request
-          example_response: diagnostic-report-read-response
+          example_request: diagnosticreport-read-request
+          example_response: diagnosticreport-read-response
         search:
           description: Search for DiagnosticReport resources
           responses: [200, 400, 401, 403]
-          example_request: diagnostic-report-search-request
-          example_response: diagnostic-report-search-response
+          example_request: diagnosticreport-search-request
+          example_response: diagnosticreport-search-response
 ---
 
-<div id="diagnostic-report-read-request">
+<div id="diagnosticreport-read-request">
 {% include read-request.html resource_type="DiagnosticReport" %}
 </div>
 
-<div id="diagnostic-report-read-response">
+<div id="diagnosticreport-read-response">
 {% tabs diagnostic-report-read-response %}
 {% tab diagnostic-report-read-response 200 %}
 ```json
@@ -190,37 +190,11 @@ sections:
 {% endtabs %}
 </div>
 
-
-<div id="diagnostic-report-search-request">
-{% tabs diagnostic-report-search-request %}
-{% tab diagnostic-report-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/DiagnosticReport?patient=Patient%2Fca52f2b76011429d8a0e4aa2b56b18bc&code=73562&date=ge2023-09-12"
-
-headers = {
-  "accept": "application/json",
-  "Authorization": "Bearer "
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab diagnostic-report-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/DiagnosticReport?patient=Patient%2Fca52f2b76011429d8a0e4aa2b56b18bc&code=73562&date=ge2023-09-12' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+<div id="diagnosticreport-search-request">
+{% include search-request.html resource_type="DiagnosticReport" search_string="patient=Patient%2Fca52f2b76011429d8a0e4aa2b56b18bc&code=73562&date=ge2023-09-12" %}
 </div>
 
-<div id="diagnostic-report-search-response">
+<div id="diagnosticreport-search-response">
 {% tabs diagnostic-report-search-response %}
 {% tab diagnostic-report-search-response 200 %}
 ```json

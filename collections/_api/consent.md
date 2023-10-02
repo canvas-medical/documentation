@@ -90,6 +90,7 @@ sections:
           example_response: consent-search-response
         
 ---
+
 <div id="consent-create-request">
   {% tabs consent-create-request %}
     {% tab consent-create-request curl %}
@@ -201,141 +202,11 @@ print(response.text)
 </div>
 
 <div id="consent-create-response">
-  {% tabs consent-create-response %}
-    {% tab consent-create-response 201 %}
-```json
-null
-```
-    {% endtab %}
-    {% tab consent-create-response 400 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab consent-create-response 401 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "unknown",
-      "details": {
-        "text": "Authentication failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab consent-create-response 403 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "forbidden",
-      "details": {
-        "text": "Authorization failed"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab consent-create-response 405 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "not-supported",
-      "details": {
-        "text": "Operation is not supported"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab consent-create-response 412 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "conflict",
-      "details": {
-        "text": "Resource updated since If-Unmodified-Since date"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-    {% tab consent-create-response 422 %}
-```json
-{
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "business-rule",
-      "details": {
-        "text": "Unprocessable entity"
-      }
-    }
-  ]
-}
-```
-    {% endtab %}
-  {% endtabs %}
+{% include create-response.html %}
 </div>
 
 <div id="consent-read-request">
-  {% tabs consent-read-request %}
-
-    {% tab consent-read-request curl %}
-```sh
-curl --request GET \
-     --url https://fumage-example.canvasmedical.com/Consent/<id> \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab consent-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Consent/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-  
-{% endtabs %}
+{%  include read-request.html resource_type="Consent" %}
 </div>
 
 <div id="consent-read-response">
@@ -430,33 +301,7 @@ print(response.text)
 </div>
 
 <div id="consent-search-request">
-  {% tabs consent-search-request %}
-    {% tab consent-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-    {% tab consent-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
+{% include search-request.html resource_type="Consent" search_string="patient=Patient%2F2c4b29a411b043bfb1c34c8c3683c7ca" %}
 </div>
 
 <div id="consent-search-response">
@@ -605,7 +450,3 @@ print(response.text)
     {% endtab %}
   {% endtabs %}
 </div>
-
-
-
-
