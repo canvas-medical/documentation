@@ -25,10 +25,6 @@ sections:
             description: >- # TODO - enter status mapping table from README. Having rendering issues with the table
               The current status of the task. Supported values are **requested**, **cancelled** and **completed**.
             required: true
-          - name: intent
-            type: string
-            required: true
-            description: Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
           - name: description
             type: string
             required: true
@@ -46,6 +42,13 @@ sections:
           - name: owner
             type: json
             description: Responsible individual. This must be a [Practitioner](/api/practitioner) reference.
+          - name: intent
+            type: string
+            required: true
+            description: Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
+          - name: restriction
+            type: json
+            description: Constraints on fulfillment tasks. In Canvas, this field is used to represent the due date for a task.
           - name: note
             type: array[json]
             description: >-
@@ -53,9 +56,6 @@ sections:
               - The comment's text<br>
               - Timestamp the comment was left. If omitted, this will default to current timestamp at data ingestion.<br>
               - Reference to the practitioner that left the specific comment<br>
-          - name: restriction
-            type: json
-            description: Constraints on fulfillment tasks. In Canvas, this field is used to represent the due date for a task.
           - name: input
             type: array[json]
             description: >-
