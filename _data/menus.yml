@@ -242,13 +242,13 @@ api_goal:
    url: /api/goal/#search
 api_group:
  - title: "Group Create"
-   url: /api/group/#group-create
+   url: /api/group/#create
  - title: "Group Read"
    url: /api/group/#read
  - title: "Group Update"
-   url: /api/group/#group-update
+   url: /api/group/#update
  - title: "Group Search"
-   url: /api/group/#group-search 
+   url: /api/group/#search
 api_immunization:
  - title: "Immunization Read"
    url: /api/immunization/#read
