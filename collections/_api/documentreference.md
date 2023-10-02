@@ -81,19 +81,19 @@ sections:
         endpoints: [read, search]
         read:
           responses: [200, 401, 403, 404]
-          example_request: document-reference-read-request
-          example_response: document-reference-read-response
+          example_request: documentreference-read-request
+          example_response: documentreference-read-response
         search:
           responses: [200, 400, 401, 403]
-          example_request: document-reference-search-request
-          example_response: document-reference-search-response
+          example_request: documentreference-search-request
+          example_response: documentreference-search-response
 ---
 
 <div id="documentreference-read-request">
 {%  include read-request.html resource_type="DocumentReference" %}
 </div>
 
-<div id="document-reference-read-response">
+<div id="documentreference-read-response">
 {% tabs document-reference-read-response %}
 {% tab document-reference-read-response 200 %}
 ```json
@@ -205,7 +205,7 @@ sections:
 {% include search-request.html resource_type="DocumentReference" search_string="subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2" %}
 </div>
 
-<div id="document-reference-search-response">
+<div id="documentreference-search-response">
 {% tabs document-reference-search-response %}
 {% tab document-reference-search-response 200 %}
 ```json
