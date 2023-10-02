@@ -190,34 +190,8 @@ sections:
 {% endtabs %}
 </div>
 
-
-<div id="diagnostic-report-search-request">
-{% tabs diagnostic-report-search-request %}
-{% tab diagnostic-report-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/DiagnosticReport?patient=Patient%2Fca52f2b76011429d8a0e4aa2b56b18bc&code=73562&date=ge2023-09-12"
-
-headers = {
-  "accept": "application/json",
-  "Authorization": "Bearer "
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab diagnostic-report-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/DiagnosticReport?patient=Patient%2Fca52f2b76011429d8a0e4aa2b56b18bc&code=73562&date=ge2023-09-12' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+<div id="diagnosticreport-search-request">
+{% include search-request.html resource_type="DiagnosticReport" search_string="patient=Patient%2Fca52f2b76011429d8a0e4aa2b56b18bc&code=73562&date=ge2023-09-12" %}
 </div>
 
 <div id="diagnostic-report-search-response">

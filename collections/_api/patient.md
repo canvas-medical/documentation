@@ -367,6 +367,7 @@ sections:
           description: >-
             Search for patient resources.
 ---
+
 <div id="patient-create-request">
 {% tabs patient-create-request %}
 {% tab patient-create-request curl %}

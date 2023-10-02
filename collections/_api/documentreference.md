@@ -89,6 +89,7 @@ sections:
           example_request: document-reference-search-request
           example_response: document-reference-search-response
 ---
+
 <div id="document-reference-read-request">
 {% tabs document-reference-read-request %}
 {% tab document-reference-read-request python %}
@@ -226,34 +227,8 @@ curl --request GET \
 {% endtabs %}
 </div>
 
-
-<div id="document-reference-search-request">
-{% tabs document-reference-search-request %}
-{% tab document-reference-search-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab document-reference-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+<div id="documentreference-search-request">
+{% include search-request.html resource_type="DocumentReference" search_string="subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2" %}
 </div>
 
 <div id="document-reference-search-response">

@@ -12,7 +12,7 @@ sections:
           The FHIR Location resource corresponds to Canvas Practice Location.
         attributes:
           - name: id
-            description: The identifier of the AllergyIntolerance
+            description: The identifier of the Location
             type: string
           - name: status
             description: The status property covers the general availability of the resource, not the current value which may be covered by the operationStatus, or by a schedule/slots if they are configured for the location

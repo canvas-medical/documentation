@@ -90,6 +90,7 @@ sections:
           example_response: consent-search-response
         
 ---
+
 <div id="consent-create-request">
   {% tabs consent-create-request %}
     {% tab consent-create-request curl %}
@@ -430,33 +431,7 @@ print(response.text)
 </div>
 
 <div id="consent-search-request">
-  {% tabs consent-search-request %}
-    {% tab consent-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-    {% endtab %}
-    {% tab consent-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Consent?patient=Patient%2F<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-
-  {% endtabs %}
+{% include search-request.html resource_type="Consent" search_string="patient=Patient%2F2c4b29a411b043bfb1c34c8c3683c7ca" %}
 </div>
 
 <div id="consent-search-response">
@@ -605,7 +580,3 @@ print(response.text)
     {% endtab %}
   {% endtabs %}
 </div>
-
-
-
-

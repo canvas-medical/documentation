@@ -53,8 +53,9 @@ sections:
           example_request: coverageeligibilityresponse-search-request
           example_response: coverageeligibilityresponse-search-response
 ---
+
 <div id="coverageeligibilityresponse-search-request">
-{% include search-request.html resource_type="Group" search_string="request=CoverageEligibilityRequest/<id>" %}
+{% include search-request.html resource_type="Group" search_string="request=CoverageEligibilityRequest/b41c7cda738d440cb55e0e6cb67499a1" %}
 </div>
 
 <div id="coverageeligibilityresponse-search-response">
@@ -481,4 +482,3 @@ sections:
     {% endtab %}
 {% endtabs %}
 </div>
-

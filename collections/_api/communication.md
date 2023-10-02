@@ -70,6 +70,7 @@ sections:
           example_response: communication-search-response
         
 ---
+
 <div id="communication-create-request">
   {% tabs communication-create-request %}
     {% tab communication-create-request curl %}
@@ -237,33 +238,7 @@ null
 </div>
 
 <div id="communication-search-request">
-  {% tabs communication-search-request %}
-    {% tab communication-search-request curl %}
-```shell
-curl --request GET \
-    --url 'https://fumage-example.canvasmedical.com/Communication?recipient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd'\
-    --header 'Authorization: Bearer <token>' \
-    --header 'accept: application/json'
-```
-    {% endtab %}
-
-    {% tab communication-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Communication?recipient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-    {% endtab %}
-  {% endtabs %}
+{% include search-request.html resource_type="Communication" search_string="recipient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd" %}
 </div>
 
 <div id="communication-search-response">
@@ -368,5 +343,3 @@ print(response.text)
     {% endtab %}
   {% endtabs %}
 </div>
-
-

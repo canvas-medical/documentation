@@ -228,7 +228,7 @@ sections:
 </div>
 
 <div id="medicationrequest-search-request">
-{% include search-request.html resource_type="AllergyIntolerance" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="MedicationRequest" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="medicationrequest-search-response">

@@ -33,33 +33,7 @@ sections:
 ---
 
 <div id="schedule-search-request">
-{% tabs schedule-search-request %}
-{% tab schedule-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Schedule"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-
-```
-{% endtab %}
-{% tab schedule-search-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Schedule' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include search-request-no-parameters.html resource_type="Schedule" %}
 </div>
 
 <div id="schedule-search-response">

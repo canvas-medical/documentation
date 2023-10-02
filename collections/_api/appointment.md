@@ -169,6 +169,7 @@ sections:
           example_request: appointment-update-request
           example_response: appointment-update-response
 ---
+
 <div id="appointment-read-request">
 {% tabs appointment-read-request %}
 {% tab appointment-read-request python %}
@@ -315,33 +316,7 @@ curl --request GET \
 </div>
 
 <div id="appointment-search-request">
-{% tabs appointment-search-request %}
-{% tab appointment-search-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Appointment?patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e&appointment-type=448337001"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab appointment-search-request curl %}
-```shell
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Appointment?patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e&
-     appointment-type=448337001' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{% include search-request.html resource_type="Appointment" search_string="patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e&appointment-type=448337001" %}
 </div>
 
 <div id="appointment-search-response">
