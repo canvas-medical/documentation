@@ -68,6 +68,7 @@ sections:
           example_request: goal-search-request
           example_response: goal-search-response
 ---
+
 <div id="goal-read-request">
 {% include read-request.html resource_type="Goal" %}
 </div>

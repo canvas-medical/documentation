@@ -19,7 +19,6 @@ sections:
           - name: identifier
             type: array[json]
             description: Other identifiers for the document
-            type: string
           - name: status
             description: >-
               The status of the document reference. Supported values are: **current**, **superseded** and **entered-in-error**.
@@ -90,33 +89,8 @@ sections:
           example_response: document-reference-search-response
 ---
 
-<div id="document-reference-read-request">
-{% tabs document-reference-read-request %}
-{% tab document-reference-read-request python %}
-```sh
-import requests
-
-url = "https://fumage-example.canvasmedical.com/DocumentReference/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab document-reference-read-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/DocumentReference/<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+<div id="documentreference-read-request">
+{%  include read-request.html resource_type="DocumentReference" %}
 </div>
 
 <div id="document-reference-read-response">

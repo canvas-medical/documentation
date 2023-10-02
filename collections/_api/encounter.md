@@ -94,33 +94,9 @@ sections:
           example_request: encounter-search-request
           description: Search for Encounter resources
 ---
+
 <div id="encounter-read-request">
-{% tabs encounter-read-request %}
-{% tab encounter-read-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Encounter/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-{% tab encounter-read-request curl %}
-```sh
-curl --request GET \
-     --url 'https://fumage-example.canvasmedical.com/Encounter/<id>' \
-     --header 'Authorization: Bearer <token>' \
-     --header 'accept: application/json'
-```
-{% endtab %}
-{% endtabs %}
+{%  include read-request.html resource_type="Encounter" %}
 </div>
 
 <div id="encounter-read-response">
@@ -458,4 +434,3 @@ curl --request GET \
 {% endtab %}
 {% endtabs %}
 </div>
-

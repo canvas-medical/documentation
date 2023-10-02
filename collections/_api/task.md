@@ -455,5 +455,3 @@ curl --request PUT \
 {% endtab %}
 {% endtabs %}
 </div>
-
-
