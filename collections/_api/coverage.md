@@ -84,7 +84,7 @@ sections:
           - name: subscriberid
             type: string
             description: Retrieve all coverages with a specific subscriberID
-        endpoints: [create, read, search, update]
+        endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: coverage-create-request
