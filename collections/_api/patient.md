@@ -31,7 +31,7 @@ sections:
 
           **`genderIdentity`**
           <br><br>
-          [http://hl7.org/fhir/us/core/2022Jan/StructureDefinition-us-core-genderIdentity.html](http://hl7.org/fhir/us/core/2022Jan/StructureDefinition-us-core-genderIdentity.html)
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity)
           <br><br>
           This extension provides concepts to describe the gender a person identifies as.
           <br><br>
@@ -48,6 +48,8 @@ sections:
             | **ASKU** | Choose not to disclose |
 
           **`sexual-orientation`**
+          <br><br>
+          http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation
           <br><br>
           Sexual orientation of the patient. Supported values are:
 
@@ -76,11 +78,15 @@ sections:
 
           **`timezone`**
           <br><br>
+          [http://hl7.org/fhir/StructureDefinition/tz-code](http://hl7.org/fhir/StructureDefinition/tz-code)
+          <br><br>
           The timezone a patient lives in.
           <br><br>
           For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/StructureDefinition/tz-code**, and the `valueCode` can contain any valid timezone code defined [here](http://build.fhir.org/valueset-timezones.html).<br><br>
 
           **`clinical-note`**
+          <br><br>
+          http://schemas.canvasmedical.com/fhir/extensions/clinical-note
           <br><br>
           This note displays under the patient's name in the clinical chart.
           <br><br>
@@ -88,17 +94,23 @@ sections:
 
           **`administrative-note`**
           <br><br>
+          http://schemas.canvasmedical.com/fhir/extensions/administrative-note
+          <br><br>
           This note displays under the patient's name in the administrative profile.
           <br><br>
           For create and update actions, the `url` attribute must equal **http://schemas.canvasmedical.com/fhir/extensions/administrative-note**. The `valueString` attribute is a free text field.<br><br>
 
           **`preferred-pharmacy`**
           <br><br>
+          http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy
+          <br><br>
           A patient can have multiple preferred pharmacies added to their profile.
           <br><br>
           For create and update actions, the `url` attribute must be equal to *http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy*. For each object in `extension`, a `url` attribute with the value **ncpdp-id** should be included along with a `valueIdentifier` object including the NCPDP number of the pharmacy under `value` and the url **http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber** under `system`.<br><br>
 
           **`business-line`**
+          <br><br>
+          http://schemas.canvasmedical.com/fhir/extensions/business-line
           <br><br>
           The business line that the patient belongs to.
           <br><br>
