@@ -25,10 +25,6 @@ sections:
             description: >- # TODO - enter status mapping table from README. Having rendering issues with the table
               The current status of the task. Supported values are **requested**, **cancelled** and **completed**.
             required: true
-          - name: intent
-            type: string
-            required: true
-            description: Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
           - name: description
             type: string
             required: true
@@ -46,6 +42,13 @@ sections:
           - name: owner
             type: json
             description: Responsible individual. This must be a [Practitioner](/api/practitioner) reference.
+          - name: intent
+            type: string
+            required: true
+            description: Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
+          - name: restriction
+            type: json
+            description: Constraints on fulfillment tasks. In Canvas, this field is used to represent the due date for a task.
           - name: note
             type: array[json]
             description: >-
@@ -53,9 +56,6 @@ sections:
               - The comment's text<br>
               - Timestamp the comment was left. If omitted, this will default to current timestamp at data ingestion.<br>
               - Reference to the practitioner that left the specific comment<br>
-          - name: restriction
-            type: json
-            description: Constraints on fulfillment tasks. In Canvas, this field is used to represent the due date for a task.
           - name: input
             type: array[json]
             description: >-
@@ -114,6 +114,7 @@ curl --request POST \
      --header 'content-type: application/json' \
      --data '
 {
+    "resourceType": "Task",
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
@@ -123,11 +124,12 @@ curl --request POST \
         }
     ],
     "status": "requested",
-    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
-    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
+    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
+    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
+    "intent": "unknown",
     "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
     "note": [
         {
@@ -141,8 +143,7 @@ curl --request POST \
             "type": { "text": "label" },
             "valueString": "Urgent"
         }
-    ],
-    "intent": "unknown"
+    ]
 }
 '
 ```
@@ -155,6 +156,7 @@ import requests
 url = "https://fumage-example.canvasmedical.com/Task"
 
 payload = {
+    "resourceType": "Task",
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
@@ -164,11 +166,12 @@ payload = {
         }
     ],
     "status": "requested",
-    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
-    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
+    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
+    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
+    "intent": "unknown",
     "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
     "note": [
         {
@@ -182,8 +185,7 @@ payload = {
             "type": { "text": "label" },
             "valueString": "Urgent"
         }
-    ],
-    "intent": "unknown"
+    ]
 }
 
 headers = {
@@ -219,6 +221,7 @@ curl --request PUT \
      --header 'content-type: application/json' \
      --data '
 {
+    "resourceType": "Task",
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
@@ -228,11 +231,12 @@ curl --request PUT \
         }
     ],
     "status": "completed",
-    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
-    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
+    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
+    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
+    "intent": "unknown",
     "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
     "note": [
         {
@@ -246,8 +250,7 @@ curl --request PUT \
             "type": { "text": "label" },
             "valueString": "Urgent"
         }
-    ],
-    "intent": "unknown"
+    ]
 }
 '
 ```
@@ -260,6 +263,7 @@ import requests
 url = "https://fumage-example.canvasmedical.com/Task/<id>"
 
 payload = {
+    "resourceType": "Task",
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
@@ -269,11 +273,12 @@ payload = {
         }
     ],
     "status": "completed",
-    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
-    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
+    "requester": { "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e" },
+    "owner": { "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3" },
+    "intent": "unknown",
     "restriction": { "period": { "end": "2023-09-23T14:00:00.000Z" } },
     "note": [
         {
@@ -287,8 +292,7 @@ payload = {
             "type": { "text": "label" },
             "valueString": "Urgent"
         }
-    ],
-    "intent": "unknown"
+    ]
 }
 
 headers = {
@@ -363,7 +367,6 @@ print(response.text)
                     }
                 ],
                 "status": "completed",
-                "intent": "unknown",
                 "description": "Ask patient for new insurance information.",
                 "for":
                 {
@@ -381,6 +384,14 @@ print(response.text)
                     "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3",
                     "type": "Practitioner"
                 },
+                "intent": "unknown",
+                "restriction":
+                {
+                    "period":
+                    {
+                        "end": "2023-09-23T14:00:00+00:00"
+                    }
+                },
                 "note":
                 [
                     {
@@ -393,13 +404,6 @@ print(response.text)
                         "text": "Please call patient to update insurance information."
                     }
                 ],
-                "restriction":
-                {
-                    "period":
-                    {
-                        "end": "2023-09-23T14:00:00+00:00"
-                    }
-                },
                 "input":
                 [
                     {
