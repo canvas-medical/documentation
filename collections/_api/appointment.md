@@ -329,7 +329,7 @@ sections:
 </div>
 
 <div id="appointment-search-request">
-{% include search-request.html resource_type="Appointment" search_string="patient=Patient%2Ff7bb6d7e-1cab-42cd-b3d2-40229e1bede7&practitioner=Practitioner%2F4150cd20de8a470aa570a852859ac87e" %}
+{% include search-request.html resource_type="Appointment" search_string="patient=Patient%2Fa031d1ba40d74aebb8ed716716da05c2&practitioner=Practitioner%2F4150cd20de8a470aa570a852859ac87e" %}
 </div>
 
 <div id="appointment-search-response">
