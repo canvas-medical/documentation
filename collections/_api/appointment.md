@@ -181,52 +181,90 @@ sections:
 ```json
 {
     "resourceType": "Appointment",
-    "id": "4be5c594-cfbd-4b7c-a047-ee3b06881745",
-    "status": "checked-in",
-    "appointmentType": {
-        "coding": [
+    "id": "621a66fc-9d5c-4de0-97fb-935d611ac176",
+    "contained":
+    [
+        {
+            "resourceType": "Endpoint",
+            "id": "appointment-meeting-endpoint-0",
+            "status": "active",
+            "connectionType":
             {
-                "system": "INTERNAL",
-                "code": "INIV",
-                "display": "Initial Visit"
+                "code": "https"
+            },
+            "payloadType":
+            [
+                {
+                    "coding":
+                    [
+                        {
+                            "code": "video-call"
+                        }
+                    ]
+                }
+            ],
+            "address": "https://url-for-video-chat.example.com?meeting=abc123"
+        }
+    ],
+    "status": "proposed",
+    "appointmentType":
+    {
+        "coding":
+        [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "448337001",
+                "display": "Telemedicine"
             }
         ]
     },
-    "reasonCode": [
+    "reasonCode":
+    [
         {
-            "coding": [
+            "coding":
+            [
                 {
-                    "system": "Internal",
-                    "code": "INIV30",
-                    "display": "Initial Visit 30",
+                    "system": "INTERNAL",
+                    "code": "INIV",
+                    "display": "Initial Visit",
                     "userSelected": false
                 }
-            ]
+            ],
+            "text": "Initial 30 Minute Visit"
         }
     ],
-    "supportingInformation": [
+    "description": "Initial 30 Minute Visit",
+    "supportingInformation":
+    [
         {
             "reference": "Location/1",
             "type": "Location"
         },
         {
-            "reference": "Encounter/63e2f110-71e2-4b7e-befd-4f9f3317b520",
+            "reference": "#appointment-meeting-endpoint-0",
+            "type": "Endpoint"
+        },
+        {
+            "reference": "Encounter/23668e1a-e914-4eac-885c-1a2a27244ab7",
             "type": "Encounter"
         }
     ],
-    "start": "2023-06-06T18:00:00+00:00",
-    "end": "2023-06-06T18:30:00+00:00",
-    "participant": [
+    "start": "2023-10-24T13:30:00+00:00",
+    "end": "2023-10-24T14:00:00+00:00",
+    "participant":
+    [
         {
-            "actor": {
-                "reference": "Practitioner/3a182f42885645e0bc3d608e7c02aad8",
+            "actor":
+            {
+                "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
                 "type": "Practitioner"
             },
             "status": "accepted"
         },
         {
-            "actor": {
-                "reference": "Patient/a29eaebb284143ba97c76b01fdb46964",
+            "actor":
+            {
+                "reference": "Patient/ee1c7803325b47b492008f3e7c9d7a3d",
                 "type": "Patient"
             },
             "status": "accepted"
@@ -291,7 +329,7 @@ sections:
 </div>
 
 <div id="appointment-search-request">
-{% include search-request.html resource_type="Appointment" search_string="patient=Patient%2F9420c5f6c44e47ec82d7e48f78d5723a&practitioner=Practitioner%2Ffc87cbb2525f4c5eb50294f620c7a15e&appointment-type=448337001" %}
+{% include search-request.html resource_type="Appointment" search_string="patient=Patient%2Ff7bb6d7e-1cab-42cd-b3d2-40229e1bede7&practitioner=Practitioner%2F4150cd20de8a470aa570a852859ac87e" %}
 </div>
 
 <div id="appointment-search-response">
@@ -301,85 +339,58 @@ sections:
 {
     "resourceType": "Bundle",
     "type": "searchset",
-    "total": 2,
-    "link": [
+    "total": 1,
+    "link":
+    [
         {
             "relation": "self",
-            "url": "/Appointment?date=ge2022-02-24&practitioner=Practitioner%2F3a182f42885645e0bc3d608e7c02aad8&patient=Patient%2Fa29eaebb284143ba97c76b01fdb46964&_count=10"
+            "url": "/Appointment?patient=Patient%2Fa031d1ba40d74aebb8ed716716da05c2&practitioner=Practitioner%2F4150cd20de8a470aa570a852859ac87e&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Appointment?date=ge2022-02-24&practitioner=Practitioner%2F3a182f42885645e0bc3d608e7c02aad8&patient=Patient%2Fa29eaebb284143ba97c76b01fdb46964&_count=10"
+            "url": "/Appointment?patient=Patient%2Fa031d1ba40d74aebb8ed716716da05c2&practitioner=Practitioner%2F4150cd20de8a470aa570a852859ac87e&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Appointment?date=ge2022-02-24&practitioner=Practitioner%2F3a182f42885645e0bc3d608e7c02aad8&patient=Patient%2Fa29eaebb284143ba97c76b01fdb46964&_count=10"
+            "url": "/Appointment?patient=Patient%2Fa031d1ba40d74aebb8ed716716da05c2&practitioner=Practitioner%2F4150cd20de8a470aa570a852859ac87e&_count=10&_offset=0"
         }
     ],
-    "entry": [
+    "entry":
+    [
         {
-            "resource": {
+            "resource":
+            {
                 "resourceType": "Appointment",
-                "id": "4be5c594-cfbd-4b7c-a047-ee3b06881745",
-                "status": "checked-in",
-                "appointmentType": {
-                    "coding": [
+                "id": "f7bb6d7e-1cab-42cd-b3d2-40229e1bede7",
+                "contained":
+                [
+                    {
+                        "resourceType": "Endpoint",
+                        "id": "appointment-meeting-endpoint-0",
+                        "status": "active",
+                        "connectionType":
                         {
-                            "system": "INTERNAL",
-                            "code": "INIV",
-                            "display": "Initial Visit"
-                        }
-                    ]
-                },
-                "reasonCode": [
-                    {
-                        "coding": [
+                            "code": "https"
+                        },
+                        "payloadType":
+                        [
                             {
-                                "system": "Internal",
-                                "code": "INIV30",
-                                "display": "Initial Visit 30",
-                                "userSelected": false
+                                "coding":
+                                [
+                                    {
+                                        "code": "video-call"
+                                    }
+                                ]
                             }
-                        ]
+                        ],
+                        "address": "https://url-for-video-chat.example.com?meeting=abc123"
                     }
                 ],
-                "supportingInformation": [
-                    {
-                        "reference": "Location/1",
-                        "type": "Location"
-                    },
-                    {
-                        "reference": "Encounter/63e2f110-71e2-4b7e-befd-4f9f3317b520",
-                        "type": "Encounter"
-                    }
-                ],
-                "start": "2023-06-06T18:00:00+00:00",
-                "end": "2023-06-06T18:30:00+00:00",
-                "participant": [
-                    {
-                        "actor": {
-                            "reference": "Practitioner/3a182f42885645e0bc3d608e7c02aad8",
-                            "type": "Practitioner"
-                        },
-                        "status": "accepted"
-                    },
-                    {
-                        "actor": {
-                            "reference": "Patient/a29eaebb284143ba97c76b01fdb46964",
-                            "type": "Patient"
-                        },
-                        "status": "accepted"
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Appointment",
-                "id": "f98df7f2-10d4-4738-aaad-bf1e98ee85d3",
-                "status": "checked-in",
-                "appointmentType": {
-                    "coding": [
+                "status": "proposed",
+                "appointmentType":
+                {
+                    "coding":
+                    [
                         {
                             "system": "http://snomed.info/sct",
                             "code": "448337001",
@@ -387,41 +398,53 @@ sections:
                         }
                     ]
                 },
-                "reasonCode": [
+                "reasonCode":
+                [
                     {
-                        "coding": [
+                        "coding":
+                        [
                             {
-                                "system": "Internal",
-                                "code": "INIV30",
-                                "display": "Initial Visit 30",
+                                "system": "INTERNAL",
+                                "code": "INIV",
+                                "display": "Initial Visit",
                                 "userSelected": false
                             }
-                        ]
+                        ],
+                        "text": "Initial 30 Minute Visit"
                     }
                 ],
-                "supportingInformation": [
+                "description": "Initial 30 Minute Visit",
+                "supportingInformation":
+                [
                     {
                         "reference": "Location/1",
                         "type": "Location"
                     },
                     {
-                        "reference": "Encounter/2fb638a3-fae8-47b0-afdb-2d8246da20ed",
+                        "reference": "#appointment-meeting-endpoint-0",
+                        "type": "Endpoint"
+                    },
+                    {
+                        "reference": "Encounter/797ccaae-2939-4e8a-9d91-5e9574a11a4e",
                         "type": "Encounter"
                     }
                 ],
-                "start": "2023-08-22T19:00:00+00:00",
-                "end": "2023-08-22T19:30:00+00:00",
-                "participant": [
+                "start": "2023-10-24T13:30:00+00:00",
+                "end": "2023-10-24T14:00:00+00:00",
+                "participant":
+                [
                     {
-                        "actor": {
-                            "reference": "Practitioner/3a182f42885645e0bc3d608e7c02aad8",
+                        "actor":
+                        {
+                            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
                             "type": "Practitioner"
                         },
                         "status": "accepted"
                     },
                     {
-                        "actor": {
-                            "reference": "Patient/a29eaebb284143ba97c76b01fdb46964",
+                        "actor":
+                        {
+                            "reference": "Patient/a031d1ba40d74aebb8ed716716da05c2",
                             "type": "Patient"
                         },
                         "status": "accepted"
@@ -495,62 +518,9 @@ curl --request POST \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
-     --data '{
-    "reasonCode":
-    [
-        {
-            "coding":
-            [
-                {
-                    "system": "INTERNAL",
-                    "code": "9903",
-                    "display": "Urgent Visit"
-                }
-            ],
-            "text": "Weekly check-in"
-        }
-    ],
-    "description": "Weekly check-in.",
-    "participant":
-    [
-        {
-            "actor":
-            {
-                "reference": "Patient/1e59c8e07e8640cdbefe5f1096593ede"
-            },
-            "status": "accepted"
-        },
-        {
-            "actor":
-            {
-                "reference": "Practitioner/2a6cfdb145c8469b9d935fe91f6b0172"
-            },
-            "status": "accepted"
-        }
-    ],
-    "appointmentType":
-    {
-        "coding":
-        [
-            {
-                "system": "http://snomed.info/sct",
-                "code": "448337001",
-                "display": "Telemedicine consultation with patient (procedure)"
-            }
-        ]
-    },
-    "start": "2023-09-20T13:30:00.000Z",
-    "end": "2023-09-20T14:00:00.000Z",
-    "supportingInformation":
-    [
-        {
-            "reference": "Location/1"
-        },
-        {
-            "reference": "#appointment-meeting-endpoint",
-            "type": "Endpoint"
-        }
-    ],
+     --data '
+{
+    "resourceType": "Appointment",
     "contained":
     [
         {
@@ -572,11 +542,67 @@ curl --request POST \
                     ]
                 }
             ],
-            "address": "https://url-for-video-chat.example.com?meetingi=abc123"
+            "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
-    "status": "proposed"
-    }'
+    "status": "proposed",
+    "appointmentType":
+    {
+        "coding":
+        [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "448337001",
+                "display": "Telemedicine consultation with patient (procedure)"
+            }
+        ]
+    },
+    "reasonCode":
+    [
+        {
+            "coding":
+            [
+                {
+                    "system": "INTERNAL",
+                    "code": "INIV",
+                    "display": "Initial Visit",
+                    "userSelected": false
+                }
+            ],
+            "text": "Initial 30 Minute Visit"
+        }
+    ],
+    "supportingInformation":
+    [
+        {
+            "reference": "Location/1"
+        },
+        {
+            "reference": "#appointment-meeting-endpoint",
+            "type": "Endpoint"
+        }
+    ],
+    "start": "2023-10-24T13:30:00.000Z",
+    "end": "2023-10-24T14:00:00.000Z",
+    "participant":
+    [
+        {
+            "actor":
+            {
+                "reference": "Patient/ee1c7803325b47b492008f3e7c9d7a3d"
+            },
+            "status": "accepted"
+        },
+        {
+            "actor":
+            {
+                "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e"
+            },
+            "status": "accepted"
+        }
+    ]
+}
+'
 ```
 {% endtab %}
 
@@ -594,61 +620,6 @@ headers = {
 
 payload = {
     "resourceType": "Appointment",
-    "reasonCode":
-    [
-        {
-            "coding":
-            [
-                {
-                    "system": "INTERNAL",
-                    "code": "9903",
-                    "display": "Urgent Visit"
-                }
-            ],
-            "text": "Weekly check-in"
-        }
-    ],
-    "description": "Weekly check-in.",
-    "participant":
-    [
-        {
-            "actor":
-            {
-                "reference": "Patient/1e59c8e07e8640cdbefe5f1096593ede"
-            },
-            "status": "accepted"
-        },
-        {
-            "actor":
-            {
-                "reference": "Practitioner/2a6cfdb145c8469b9d935fe91f6b0172"
-            },
-            "status": "accepted"
-        }
-    ],
-    "appointmentType":
-    {
-        "coding":
-        [
-            {
-                "system": "http://snomed.info/sct",
-                "code": "448337001",
-                "display": "Telemedicine consultation with patient (procedure)"
-            }
-        ]
-    },
-    "start": "2023-09-20T13:30:00.000Z",
-    "end": "2023-09-20T14:00:00.000Z",
-    "supportingInformation":
-    [
-        {
-            "reference": "Location/1"
-        },
-        {
-            "reference": "#appointment-meeting-endpoint",
-            "type": "Endpoint"
-        }
-    ],
     "contained":
     [
         {
@@ -670,11 +641,67 @@ payload = {
                     ]
                 }
             ],
-            "address": "https://url-for-video-chat.example.com?meetingi=abc123"
+            "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
-    "status": "proposed"
+    "status": "proposed",
+    "appointmentType":
+    {
+        "coding":
+        [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "448337001",
+                "display": "Telemedicine consultation with patient (procedure)"
+            }
+        ]
+    },
+    "reasonCode":
+    [
+        {
+            "coding":
+            [
+                {
+                    "system": "INTERNAL",
+                    "code": "INIV",
+                    "display": "Initial Visit",
+                    "userSelected": False
+                }
+            ],
+            "text": "Initial 30 Minute Visit"
+        }
+    ],
+    "supportingInformation":
+    [
+        {
+            "reference": "Location/1"
+        },
+        {
+            "reference": "#appointment-meeting-endpoint",
+            "type": "Endpoint"
+        }
+    ],
+    "start": "2023-10-24T13:30:00.000Z",
+    "end": "2023-10-24T14:00:00.000Z",
+    "participant":
+    [
+        {
+            "actor":
+            {
+                "reference": "Patient/ee1c7803325b47b492008f3e7c9d7a3d"
+            },
+            "status": "accepted"
+        },
+        {
+            "actor":
+            {
+                "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e"
+            },
+            "status": "accepted"
+        }
+    ]
 }
+
 response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
@@ -699,62 +726,7 @@ curl --request PUT \
      --header 'content-type: application/json' \
      --data '
 {
-    "status": "cancelled",
-    "reasonCode":
-    [
-        {
-            "coding":
-            [
-                {
-                    "system": "INTERNAL",
-                    "code": "9903",
-                    "display": "Urgent Visit"
-                }
-            ],
-            "text": "Weekly check-in"
-        }
-    ],
-    "description": "Weekly check-in.",
-    "participant":
-    [
-        {
-            "actor":
-            {
-                "reference": "Patient/1e59c8e07e8640cdbefe5f1096593ede"
-            },
-            "status": "accepted"
-        },
-        {
-            "actor":
-            {
-                "reference": "Practitioner/2a6cfdb145c8469b9d935fe91f6b0172"
-            },
-            "status": "accepted"
-        }
-    ],
-    "appointmentType":
-    {
-        "coding":
-        [
-            {
-                "system": "http://snomed.info/sct",
-                "code": "448337001",
-                "display": "Telemedicine consultation with patient (procedure)"
-            }
-        ]
-    },
-    "start": "2023-09-20T13:30:00.000Z",
-    "end": "2023-09-20T14:00:00.000Z",
-    "supportingInformation":
-    [
-        {
-            "reference": "Location/1"
-        },
-        {
-            "reference": "#appointment-meeting-endpoint",
-            "type": "Endpoint"
-        }
-    ],
+    "resourceType": "Appointment",
     "contained":
     [
         {
@@ -776,10 +748,67 @@ curl --request PUT \
                     ]
                 }
             ],
-            "address": "https://url-for-video-chat.example.com?meetingi=abc123"
+            "address": "https://url-for-video-chat.example.com?meeting=abc123"
+        }
+    ],
+    "status": "cancelled",
+    "appointmentType":
+    {
+        "coding":
+        [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "448337001",
+                "display": "Telemedicine consultation with patient (procedure)"
+            }
+        ]
+    },
+    "reasonCode":
+    [
+        {
+            "coding":
+            [
+                {
+                    "system": "INTERNAL",
+                    "code": "INIV",
+                    "display": "Initial Visit",
+                    "userSelected": false
+                }
+            ],
+            "text": "Initial 30 Minute Visit"
+        }
+    ],
+    "supportingInformation":
+    [
+        {
+            "reference": "Location/1"
+        },
+        {
+            "reference": "#appointment-meeting-endpoint",
+            "type": "Endpoint"
+        }
+    ],
+    "start": "2023-10-24T13:30:00.000Z",
+    "end": "2023-10-24T14:00:00.000Z",
+    "participant":
+    [
+        {
+            "actor":
+            {
+                "reference": "Patient/ee1c7803325b47b492008f3e7c9d7a3d"
+            },
+            "status": "accepted"
+        },
+        {
+            "actor":
+            {
+                "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e"
+            },
+            "status": "accepted"
         }
     ]
-}'
+}
+'
 ```
 {% endtab %}
 {% tab appointment-update-request python %}
@@ -795,62 +824,7 @@ headers = {
 }
 
 payload = {
-    "status": "cancelled",
-    "reasonCode":
-    [
-        {
-            "coding":
-            [
-                {
-                    "system": "INTERNAL",
-                    "code": "9903",
-                    "display": "Urgent Visit"
-                }
-            ],
-            "text": "Weekly check-in"
-        }
-    ],
-    "description": "Weekly check-in.",
-    "participant":
-    [
-        {
-            "actor":
-            {
-                "reference": "Patient/1e59c8e07e8640cdbefe5f1096593ede"
-            },
-            "status": "accepted"
-        },
-        {
-            "actor":
-            {
-                "reference": "Practitioner/2a6cfdb145c8469b9d935fe91f6b0172"
-            },
-            "status": "accepted"
-        }
-    ],
-    "appointmentType":
-    {
-        "coding":
-        [
-            {
-                "system": "http://snomed.info/sct",
-                "code": "448337001",
-                "display": "Telemedicine consultation with patient (procedure)"
-            }
-        ]
-    },
-    "start": "2023-09-20T13:30:00.000Z",
-    "end": "2023-09-20T14:00:00.000Z",
-    "supportingInformation":
-    [
-        {
-            "reference": "Location/1"
-        },
-        {
-            "reference": "#appointment-meeting-endpoint",
-            "type": "Endpoint"
-        }
-    ],
+    "resourceType": "Appointment",
     "contained":
     [
         {
@@ -872,11 +846,69 @@ payload = {
                     ]
                 }
             ],
-            "address": "https://url-for-video-chat.example.com?meetingi=abc123"
+            "address": "https://url-for-video-chat.example.com?meeting=abc123"
+        }
+    ],
+    "status": "cancelled",
+    "appointmentType":
+    {
+        "coding":
+        [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "448337001",
+                "display": "Telemedicine consultation with patient (procedure)"
+            }
+        ]
+    },
+    "reasonCode":
+    [
+        {
+            "coding":
+            [
+                {
+                    "system": "INTERNAL",
+                    "code": "INIV",
+                    "display": "Initial Visit",
+                    "userSelected": False
+                }
+            ],
+            "text": "Initial 30 Minute Visit"
+        }
+    ],
+    "supportingInformation":
+    [
+        {
+            "reference": "Location/1"
+        },
+        {
+            "reference": "#appointment-meeting-endpoint",
+            "type": "Endpoint"
+        }
+    ],
+    "start": "2023-10-24T13:30:00.000Z",
+    "end": "2023-10-24T14:00:00.000Z",
+    "participant":
+    [
+        {
+            "actor":
+            {
+                "reference": "Patient/ee1c7803325b47b492008f3e7c9d7a3d"
+            },
+            "status": "accepted"
+        },
+        {
+            "actor":
+            {
+                "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e"
+            },
+            "status": "accepted"
         }
     ]
 }
+
 response = requests.put(url, json=payload, headers=headers)
+
 print(response.text)
 ```
 {% endtab %}
