@@ -403,6 +403,8 @@ sdk_workflow_kit:
    url: /sdk/change-types
  - title: "Patient Recordsets"
    url: /sdk/patient-recordsets
+ - title: "FHIRHelper and FumageHelper"
+   url: /sdk/fhir-helper-and-fumage-helper"
  - title: "Settings/Secret Store"
    url: /sdk/secret-store
  - title: "Sandboxing and Allowed Imports"
