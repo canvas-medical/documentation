@@ -150,7 +150,7 @@ sections:
               | :----------------------------- | :--------- | :----------- | :------------------------ |
               | vital sign panel               | 85353-1    |              |                           |
               | blood pressure                 | 85354-9    | mmHg         |                           |
-              | weight                         | 29463-7    | oz           | lbs, kg                   |
+              | weight                         | 29463-7    | oz           | lb, kg                   |
               | height                         | 8302-2     | in           | cm                        |
               | pulse rate                     | 8867-4     | bpm          |                           |
               | body temperature               | 8310-5     | °F           |                           |
