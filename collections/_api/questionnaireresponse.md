@@ -37,7 +37,8 @@ sections:
           - name: encounter
             description: >-
               Encounter created as part of<br><br>
-              If `encounter` is provided, the QuestionnaireResponse will be added to the existing encounter (note). If it is not provided, a new data import note will be created. It will be inserted into the timeline using the timestamp passed in `authored`.
+              If `encounter` is provided, the QuestionnaireResponse will be added to the existing encounter (note). If it is not provided, a new data import note will be created. It will be inserted into the timeline using the timestamp passed in `authored`.<br><br>
+              **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
             type: json
           - name: authored
             description: >-

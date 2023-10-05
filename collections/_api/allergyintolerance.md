@@ -36,7 +36,8 @@ sections:
             type: json
           - name: encounter
             description: >-
-              Encounter when the allergy or intolerance was asserted
+              Encounter when the allergy or intolerance was asserted<br><br>
+              **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
             type: json
           - name: onsetDateTime
             description: >-
