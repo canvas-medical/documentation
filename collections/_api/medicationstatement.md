@@ -28,7 +28,8 @@ sections:
           - name: context
             description: >-
               Encounter / Episode associated with MedicationStatement<br><br>
-              The `context` attribute is accepted by create and update interactions, but is not returned by read or search interactions.
+              The `context` attribute is accepted by create and update interactions, but is not returned by read or search interactions.<br><br>
+              **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
             type: json
           - name: effectivePeriod
             description: The interval when the medication is/was/will be taken

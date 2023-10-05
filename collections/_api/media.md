@@ -22,7 +22,7 @@ sections:
             description: >-
               Encounter associated with media<br><br>
               The encounter attribute contains a reference to the encounter that is associated with the media. If an encounter is provided, the media will be inserted into the existing note for the encounter. If an encounter is not provided, then a new data import note will be created and the media will be inserted this new note.<br><br>
-              **Canvas does not support record creation on the same encounter at the same time.** Please avoid using this endpoint to create data into the same encounter at the same time. Please ensure each create request comes back successful before sending off another with the same encounter. This is to prevent a race condition where requests going to the same note in Canvas will only display the last request given to the note.
+              **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
             type: json
           - name: operator
             description: >-
