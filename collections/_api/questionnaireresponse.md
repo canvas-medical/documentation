@@ -90,6 +90,15 @@ sections:
           - name: questionnaire
             description: The questionnaire the answers are provided for
             type: string
+          - name: questionnaire.code
+            description: The questionnaire the answers are provided for
+            type: string
+          - name: questionnaire.item.code
+            description: A code that corresponds to one of its items in the questionnaire
+            type: string
+          - name: _sort
+            description: Triggers sorting of the results by a specific criteria. Accepted values are **_id** and **authored**. Use **-_id** or **-authored** to sort in descending order.
+            type: string
         endpoints: [create, read, search]
         create:
           description: >-

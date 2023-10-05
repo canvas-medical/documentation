@@ -64,9 +64,9 @@ sections:
           - name: _id
             type: string
             description: Search by a task id
-          - name: _sort # TODO: remove or document further - unsure based on code fumage
+          - name: _sort
             type: string
-            description:
+            description: Triggers sorting of the results by a specific criteria. Accepted values are **_id** and **due-date**. Use **-_id** or **-due-date** to sort in descending order.
           - name: description
             type: string
             description: Search by description

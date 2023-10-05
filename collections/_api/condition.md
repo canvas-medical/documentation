@@ -57,8 +57,14 @@ sections:
           - name: _id
             description: The identifier of the Condition
             type: string
+          - name: clinical-status
+            description: The clinical status of the condition
+            type: string
           - name: patient
             description: Who has the condition
+            type: string
+          - name: verification-status
+            description: The verification status to support the clinical status of the condition
             type: string
         endpoints: [create, read, update, search]
         create:
