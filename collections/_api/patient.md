@@ -158,16 +158,16 @@ sections:
             required: false
             description: Contact details for the individual.
             create_description: >-
-                Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently we do store the other systems in our database, we just do not display them.
+                Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
             update_description:
-                Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently we do store the other systems in our database, we just do not display them.
+                Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
             attributes:
               - name: id
                 type: string
               - name: extension
                 type: array
                 description: >-
-                    This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that we have the patient's consent to send text messages or emails to this number. This extension is identified with the <code>url</code> [http://schemas.canvasmedical.com/fhir/extensions/has-consent](http://schemas.canvasmedical.com/fhir/extensions/has-consent). A boolean value can be specified in the <code>valueBoolean</code> attribute. <b>Note: This will not send a verification email or text as is the Canvas UI does. It will bypass this step and mark the contact as verified.</b>
+                    This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that the patient has consented to receiving text messages or emails to this contact point. This extension is identified with the <code>url</code> [http://schemas.canvasmedical.com/fhir/extensions/has-consent](http://schemas.canvasmedical.com/fhir/extensions/has-consent). A boolean value can be specified in the <code>valueBoolean</code> attribute. <b>Note: This will not send a verification email or text as is the Canvas UI does. It will bypass this step and mark the contact as verified.</b>
                 attributes:
                   - name: url
                     type: string
@@ -193,9 +193,9 @@ sections:
               A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **male**, **female**, **other** and **unknown**.<br><br>
               [https://hl7.org/fhir/R4/valueset-administrative-gender.html](https://hl7.org/fhir/R4/valueset-administrative-gender.html)
             create_description: >-
-                The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently we are tied to the FHIR values allowed: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
+                The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently Canvas accepts the following FHIR values: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
             update_description: >-
-                The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently we are tied to the FHIR values allowed: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
+                The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently Canvas accepts the following FHIR values: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
           - name: birthDate
             type: date
             required: true
@@ -270,7 +270,7 @@ sections:
                     type: string
               - name: relationship
                 type: array[json]
-                description: This is a list of objects where you can specify the text that stores the contact's relationship. It is a free text field. While a list, we currently only store and display the first object's text.
+                description: This is a list of objects where you can specify the text that stores the contact's relationship. It is a free text field. While a list, Canvas currently only stores and displays the text of the first object.
                 attributes:
                   - name: text
                     type: string
@@ -359,7 +359,7 @@ sections:
           example_request: patient-update-request
           example_response: patient-update-response
           description: >-
-            <b>How updates/deletions to the identifier, telecom, address, and contact fields are handled:</b><br><br> Patient Search/Read will include an <code>id</code>  value for these fields.<br><br>If the <code>id</code>  field is included in the iteration, then we will attempt to match to an existing value for that field.<br><br> If the <code>id</code> field is <b>not</b> included in the iteration, then we will attempt to create a new entry in the database for that field.<br><br> If a <code>telecom</code>, <code>address</code>, or <code>contact</code> iteration returned via Search/Read is <b>not</b> included in the Update message, then it will be deleted.<br><br><b>Other Fields</b><br><br>If a field is required according to Patient Create, it is also required in the update. If the field is not required and is not added to the update request, the saved data will not be changed.
+            <b>How updates/deletions to the identifier, telecom, address, and contact fields are handled:</b><br><br> Patient Search/Read will include an <code>id</code>  value for these fields.<br><br>If the <code>id</code>  field is included in the iteration, then Canvas will attempt to match to an existing value for that field.<br><br> If the <code>id</code> field is <b>not</b> included in the iteration, then Canvas will attempt to create a new entry in the database for that field.<br><br> If a <code>telecom</code>, <code>address</code>, or <code>contact</code> iteration returned via Search/Read is <b>not</b> included in the Update message, then it will be deleted.<br><br><b>Other Fields</b><br><br>If a field is required according to Patient Create, it is also required in the update. If the field is not required and is not added to the update request, the saved data will not be changed.
         search:
           responses: [200, 400, 401, 403]
           example_request: patient-search-request

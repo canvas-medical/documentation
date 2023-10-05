@@ -52,7 +52,7 @@ sections:
               Clinically relevant time/time-period for observation<br><br>
               For an individual vital sign, if the effectiveDateTime differs from the panel time, it will 
               be reflected in a read/search; however, you will not see the individual date in the UI, only the panel's datetime.<br><br>
-              If ommitted from create, we will save a default value of the current datetime.
+              If omitted from create, Canvas will save a default value of the current datetime.
           - name: issued
             type: datetime
             description: >-
