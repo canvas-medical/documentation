@@ -96,7 +96,7 @@ sections:
     {% tab condition-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/Condition \
+     --url 'https://fumage-example.canvasmedical.com/Condition' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -404,7 +404,7 @@ print(response.text)
     {% tab condition-update-request curl %}
 ```shell
 curl --request PUT \
-     --url https://fumage-example.canvasmedical.com/Condition/<id> \
+     --url 'https://fumage-example.canvasmedical.com/Condition/<id>' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

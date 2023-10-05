@@ -56,7 +56,7 @@ sections:
     {% tab coverageeligibilityrequest-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/CoverageEligibilityRequest \
+     --url 'https://fumage-example.canvasmedical.com/CoverageEligibilityRequest' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

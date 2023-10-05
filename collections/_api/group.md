@@ -75,7 +75,7 @@ sections:
     {% tab group-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/Group \
+     --url 'https://fumage-example.canvasmedical.com/Group' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -260,7 +260,7 @@ print(response.text)
     {% tab group-update-request curl %}
 ```shell
 curl --request PUT \
-     --url https://fumage-example.canvasmedical.com/Group/<id> \
+     --url 'https://fumage-example.canvasmedical.com/Group/<id>' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

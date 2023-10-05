@@ -82,7 +82,7 @@ sections:
     {% tab medicationstatement-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/MedicationStatement \
+     --url 'https://fumage-example.canvasmedical.com/MedicationStatement' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -260,7 +260,7 @@ print(response.text)
     {% tab medicationstatement-update-request curl %}
 ```shell
 curl --request PUT \
-     --url https://fumage-example.canvasmedical.com/MedicationStatement/<id> \
+     --url 'https://fumage-example.canvasmedical.com/MedicationStatement/<id>' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
