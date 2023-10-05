@@ -88,7 +88,8 @@ sections:
           example_request: task-create-request
           example_response: task-create-response
           description: >-
-            Create a task. Upon successful creation, the Canvas-issued identifier assigned for the new resource can be found in the `Location:` header. Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). Open tasks will also display in the [Task Panel](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List).
+            Create a task.<br><br>
+            Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). Open tasks will also display in the [Task Panel](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List).
         update:
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: task-update-request
