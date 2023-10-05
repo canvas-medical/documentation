@@ -7,7 +7,9 @@ sections:
         name: Schedule
         article: "a"
         description: >-
-          A container for slots of time that may be available for booking appointments<br><br>[http://hl7.org/fhir/R4/schedule.html](http://hl7.org/fhir/R4/schedule.html)<br><br>Schedules don’t exist as a stored resource within Canvas. Staff can have separate availabilities at each practice location associated with the organization record. The schedule **id** here is important when searching for bookable time slots for appointments.
+          A container for slots of time that may be available for booking appointments<br><br>
+          [http://hl7.org/fhir/R4/schedule.html](http://hl7.org/fhir/R4/schedule.html)<br><br>
+          Staff availability is denoted separately at each practice location associated with the organization record. The schedule **id** obtained from a Schedule search is used to search for bookable time slots for appointments.
         attributes:
           - name: id
             description: >-

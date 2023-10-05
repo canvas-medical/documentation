@@ -59,7 +59,9 @@ sections:
               A Questionnaire search of of the form `/Questionnaire?questionnaire-code=711013002` will return Questionnaire resources uploaded to Canvas that have the code **711013002**.
             type: string
           - name: status
-            description: The current status of the questionnaire
+            description: >-
+              The current status of the questionnaire<br><br>
+              Supported codes for search interactions are: **active**, **retired
             type: string
         endpoints: [read, search]
         read:
