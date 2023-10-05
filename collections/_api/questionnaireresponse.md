@@ -96,16 +96,16 @@ sections:
             Create an QuestionnaireResponse resource.<br><br>
             If `encounter` is provided, the QuestionnaireResponse will be added to the existing encounter (note). If it is not provided, a new data import note will be created. It will be inserted into the timeline using the timestamp passed in `authored`.<br><br>
             **Validation**<br><br>
-            🚧 *Beware of ambiguous choices!*<br><br>
+            *Beware of ambiguous choices!*<br><br>
             If the questionnaire contains a question with identical codings for different choices, Canvas will not know which of the choices were selected. In this case, Canvas will reject the request. For the request to succeed, each question must have a uniquely coded set of choices. Choice codings can be reused across questions, but not within them.<br><br>
             If this scenario occurs, the following error message will be returned:<br><br>
             `Question received a response option code: {code} that belongs to more than one option response`<br><br>
-            🚧 *More Coding Validation*<br><br>
+            *More Coding Validation*<br><br>
             The system is the `valueCoding` answer needs to match the system that the question specified in the Questionnaire Search Response. If it does not, the following error message will be returned:<br><br>
             `Question expects answer of code system {system} but {system} was given`<br><br>
             If a code is passed that does not exist for that question in Canvas, the following error message will be returned:<br><br>
             `Question received an invalid response option code: {code}`<br><br>
-            🚧 Answer Validation<br><br>
+            *Answer Validation*<br><br>
             For single or free text questions, if more than one answer is provided, the following error message will be returned:<br><br>
             `Question of type {type} is expecting at most one answer`<br><br>
             For free text questions, the answer object must include a `valueString` or the following error message will be returned:<br><br>

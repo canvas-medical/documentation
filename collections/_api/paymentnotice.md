@@ -27,10 +27,6 @@ sections:
             required: true
             description: >-
               A reference to the patient whose balance this payment is being applied to.
-            attributes:
-                - name: reference
-                  type: string
-                  required: true
           - name: created
             type: datetime
             required: true

@@ -31,9 +31,9 @@ sections:
             description: >-
               The patient who received the immunization
           - name: occurrenceDateTime
-            type: string
+            type: date
             description: >-
-              The date and time the immunization was administered or reported to have been administered
+              The date or datetime the immunization was administered or reported to have been administered
           - name: primarySource
             type: boolean
             description: >-

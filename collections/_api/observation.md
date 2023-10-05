@@ -11,9 +11,11 @@ sections:
           Canvas supports the following US Core Profiles for Observations:<br>
             - [US Core Laboratory Result Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-observation-lab.html)
             - [US Core Pediatric BMI for Age Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-pediatric-bmi-for-age.html)
+            - [US Core Pediatric Head Occipital-frontal Circumference Percentile Profile](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-head-occipital-frontal-circumference-percentile.html)
             - [US Core Pediatric Weight for Height Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-pediatric-weight-for-height.html)
-            - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-smokingstatus.html)<br>
-            
+            - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-smokingstatus.html)
+            - [US Core Pulse Oximetry Profile](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-pulse-oximetry.html)<br>
+
           The following USCDI data elements are retrievable from this endpoint:<br>
             - Laboratory Tests
             - Laboratory Values/Results
@@ -111,10 +113,9 @@ sections:
           - name: date
             type: array
             description: >-
-              Obtained date/time (UTC).  
-              <li>Uses an operand and a date field in the format YYYY-MM-DD.</li>
-              <li>eq, gt, ge, lt, and le are supported operands (eq is assumed if no operand is sent).</li>
-              <li><b>Example</b>:  "/Observation?date=ge2021-09-16"</li>
+              Obtained date/time (UTC).<br><br>
+              The date parameter is specified with an operand an a date value in YYYY-MM-DD format, e.g. `/Observation?date=ge2021-09-16`. If no operand is provided, the operand **eq** is used.<br><br>
+              Supported operands are: **eq**, **gt**, **ge**, **lt**
           - name: derived-from
             type: string
             description: >-
@@ -165,9 +166,9 @@ sections:
         
             **Additional examples**
 
-              - [Creating a vital panel](https://canvasmedical.postman.co/workspace/Canvas-Medical-Interoperability~5af171b4-61c3-4090-89e6-bc10d1970ebb/request/16792990-463cfe84-d9ff-42c9-a110-4fedfe2baa9b)
-              - [Creating a vital sign with components (should only be used for blood pressure)](https://canvasmedical.postman.co/workspace/Canvas-Medical-Interoperability~5af171b4-61c3-4090-89e6-bc10d1970ebb/request/16792990-4866da6b-f0ec-44d1-8a61-85441dc60ad7)
-              - [Creating a vital sign without components](https://canvasmedical.postman.co/workspace/Canvas-Medical-Interoperability~5af171b4-61c3-4090-89e6-bc10d1970ebb/request/16792990-3f5dbfe9-073f-45a6-ba49-38dc80e3c7ce)
+              - [Creating a vital panel](https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation/request/17030070-9375d12e-012c-4a68-8f2a-5709c758b4f0)
+              - [Creating a vital sign with components (should only be used for blood pressure)](https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation/request/17030070-b020fab6-334b-4aa9-9cde-cf1dc59444b4)
+              - [Creating a vital sign without components](https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation/request/17030070-f87d6190-3a72-42e0-9429-520bd6eaa66b)
         read:
           responses: [200, 401, 403, 404]
           example_request: observation-read-request
@@ -217,7 +218,7 @@ curl --request POST \
   "effectiveDateTime": "2022-07-29T08:50:24.883809+00:00",
   "valueQuantity": {
     "value": "50",
-    "unit": "in"
+    "unit": "kg"
   },
   "derivedFrom": [
     {
