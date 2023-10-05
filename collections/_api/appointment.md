@@ -88,7 +88,8 @@ sections:
           - name: description [deprecated]
             type: string
             description: >-
-              Shown on a subject line in a meeting request, or appointment list. Note: This field is being deprecated in favor of `reasonCode`. The text in `reasonCode` and this description attribute will always match.
+              Shown on a subject line in a meeting request, or appointment list.<br><br>
+              **Note:** This field is being deprecated in favor of `reasonCode`. The text in `reasonCode` and this description attribute will always match.
           - name: supportingInformation
             type: array[json]
             description: >-
