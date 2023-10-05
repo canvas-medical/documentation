@@ -45,7 +45,7 @@ sections:
             create_description:
                 Currently, Canvas only supports creating an appointment with the status "proposed". Any other input will be ignored. If no status is added it defaults to "proposed". A status can be updated later using the [Appointment Update](/api/appointment/#update) endpoint.
             update_description: >-
-              The update endpoint supports the following statuses: **proposed, pending, booked, arrived, fulfilled, cancelled, noshow, checked-in** <br><br> We currently do not support marking an appointment as entered-in-error or waitlist. See [Appointment Read](/api/appointment/#read) for a better understanding of how these FHIR statuses are mapping in Canvas. <br><br>Once an appointment's status is updated to "cancelled" it cannot be changed to a different status. If the status is removed, the update will default to what it was previously set to.
+              The update endpoint supports the following statuses: **proposed, pending, booked, arrived, fulfilled, cancelled, noshow, checked-in** <br><br> Canvas currently does not support marking an appointment as entered-in-error or waitlist. See [Appointment Read](/api/appointment/#read) for a better understanding of how these FHIR statuses are mapping in Canvas. <br><br>Once an appointment's status is updated to "cancelled" it cannot be changed to a different status. If the status is removed, the update will default to what it was previously set to.
           - name: appointmentType
             type: json
             description: >-
@@ -77,7 +77,7 @@ sections:
             description: >-
               Coded reason this appointment is scheduled. Canvas supports two ways to specify the reason for vist (RFV): [structured](/documenation/reason-for-visit-codings) and unstructured. Both the `coding` and `text` attributes are used for Structured RFVs, whereas unstructured RFVs only leverage the `text` attribute.
             create_description:
-              We only accept the first item in the reasonCode list. If you are taking advantage of our [structured reason for visit](/documenation/reason-for-visit-codings) feature,  you can provide a `coding` where we look up that `code` value in settings and display the structured RFV matching that code. If `Appointment.reasonCode[0].coding[0].code` is not a valid ReasonForVisitSettingCoding you will get the error "structured reason for visit with code {code} does not exist". <br><br> The `text` attribute maps to the free text Reason For Visit command.  If you are using the structured reason for visit feature, this text will display as the `comment` in the command.
+              Canvas only accepts the first item in the reasonCode list. If you are taking advantage of our [structured reason for visit](/documenation/reason-for-visit-codings) feature, you can provide a `coding` that Canvas can use to look up the `code` value in settings and display the structured RFV matching that code. If `Appointment.reasonCode[0].coding[0].code` is not a valid ReasonForVisitSettingCoding you will get the error "structured reason for visit with code {code} does not exist". <br><br> The `text` attribute maps to the free text Reason For Visit command.  If you are using the structured reason for visit feature, this text will display as the `comment` in the command.
             update_description:
               In the Canvas UI, if the reasonCode / description is changed, it will update the reason for visit on that appointment. The old reason for visit will be marked as entered-in-error, and the text will no longer display. Below is an example of what an appointment's note will look like after changing the description multiple times. The originator and entered-in-error will be set to Canvas Bot, which can be seen if you click on the crossed off "Reason for Visit".<br><br>![api-update-rfv](/assets/images/api-update-rfv.png){:width="80%"}
             attributes:
@@ -109,7 +109,7 @@ sections:
             type: datetime
             description: When appointment is to conclude.
             create_description:
-              The end attribute is used with the start timestamp to determine the duration in minutes of the appointment. It is written in [instant format for FHIR](https://www.hl7.org/fhir/datatypes.html#instant). Seconds and milliseconds can be omitted, but YYYY-MM-DDTHH:MM are required. <br><br> ⚠ Currently, we do not provide any validation on this end date. If you have an end_date before the start_date, it will result in a negative duration being displayed on the UI.
+              The end attribute is used with the start timestamp to determine the duration in minutes of the appointment. It is written in [instant format for FHIR](https://www.hl7.org/fhir/datatypes.html#instant). Seconds and milliseconds can be omitted, but YYYY-MM-DDTHH:MM are required. <br><br> ⚠ Currently, Canvas does not provide any validation on this end date. If you have an end_date before the start_date, it will result in a negative duration being displayed on the UI.
           - name: participant
             description: >-
                Participants involved in appointment. Must include at least one entry for a practitioner. An optional 2nd entry may be used for the patient.<br><br>  The `actor.reference`:  `Practitioner/<practitioner_id>` maps to the rendering provider in Canvas.
@@ -149,7 +149,7 @@ sections:
             description: Triggers sorting of the results by a specific criteria. Accepted values are date, patient and practitioner. Use -date, -patient, -practitioner to sort in descending order
         endpoints: [create, read, update, search]
         create:
-          description: Create an **Appointment**<br><br> **Prevent Double Booking** By default, Canvas does not prevent appointments from being created if there is already an existing appointment for that provider. However, we have a config setting to disable double booking. If double booking is not allowed and the Appointment Create or Appointment Update request is trying to book an appointment for a given Provider that already has a scheduled appointment at that time, you will see a 422 error status with the following error message returned `This appointment time is no longer available.`
+          description: Create an **Appointment**<br><br> **Prevent Double Booking** By default, Canvas does not prevent appointments from being created if there is already an existing appointment for that provider. However, Canvas has a config setting to disable double booking. If double booking is not allowed and the Appointment Create or Appointment Update request is trying to book an appointment for a given Provider that already has a scheduled appointment at that time, you will see a 422 error status with the following error message returned `This appointment time is no longer available.`
           responses: [201, 400, 401, 403, 405, 422]
           example_request: appointment-create-request
           example_response: appointment-create-response

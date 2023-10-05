@@ -60,7 +60,7 @@ sections:
             description: >-
               FHIR resource for the coverage(s) to use when adjudicating the claim<br><br>
               `sequence` should be unique for each insurance in the claim message.<br><br>
-              `focal` indicates whether this insurance should be used to adjudicate the claim in this message. We will ignore any elements that are False.<br><br>
+              `focal` indicates whether this insurance should be used to adjudicate the claim in this message. Canvas will ignore any elements that are False.<br><br>
               `coverage` is a Canvas coverage resource identifying the coverage for this iteration of insurance<br><br>Additional information on a Coverage can be obtained from the Coverage search endpoint
             type: array[json]
             required: true
@@ -69,7 +69,7 @@ sections:
               List of service charges to be used in the claim.<br><br>
               `sequence` should be unique for each item in the message.<br><br>
               `diagnosisSequence` should have one or more `sequence` values from the `diagnosis` section.<br><br>
-              `productOrService` is an object that specifies the coding of the service. We use the first coding where system is **http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code**.<br><br>
+              `productOrService` is an object that specifies the coding of the service. Canvas uses the first coding where system is **http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code**.<br><br>
               `modifier` specifies the list of charge modifier codings. Canvas accepts the first element where the coding's system is **http://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers**. Canvas uses the 2 character modifiers from this ValueSet.<br><br>
             type: array[json]
             required: true

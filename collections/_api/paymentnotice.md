@@ -35,7 +35,7 @@ sections:
             type: datetime
             required: true
             description: >-
-              Required by the FHIR spec. We recommend sending the current datetime on create; however, the value returned by the search interaction will be the creation timestamp of the actual database record.
+              Required by the FHIR spec. Canvas recommends sending the current datetime on create; however, the value returned by the search interaction will be the creation timestamp of the actual database record.
           - name: payment
             type: json
             required: true
