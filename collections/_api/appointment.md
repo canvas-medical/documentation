@@ -147,7 +147,7 @@ sections:
             description: The status of the appointment
           - name: _sort
             type: string
-            description: Triggers sorting of the results by a specific criteria. Accepted values are date, patient and practitioner. Use -date, -patient, -practitioner to sort in descending order
+            description: Triggers sorting of the results by a specific criteria. Supported values are **date**, **patient** and **practitioner**. Use **-date**, **-patient**, **-practitioner** to sort in descending order.
         endpoints: [create, read, update, search]
         create:
           description: Create an **Appointment**<br><br> **Prevent Double Booking** By default, Canvas does not prevent appointments from being created if there is already an existing appointment for that provider. However, Canvas has a config setting to disable double booking. If double booking is not allowed and the Appointment Create or Appointment Update request is trying to book an appointment for a given Provider that already has a scheduled appointment at that time, you will see a 422 error status with the following error message returned `This appointment time is no longer available.`

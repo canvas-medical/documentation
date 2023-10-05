@@ -307,7 +307,7 @@ sections:
             description: A Canvas-issued unique identifier known as the patient key. This can be found in the url of the patient's chart.
           - name: _sort
             type: string
-            description: Triggers sorting of the results by a specific criteria. Accepted values are **id**, **birthdate**, **family** and **given**. Use **-id**, **-birthdate**, **-family** and **-given** to sort in descending order.
+            description: Triggers sorting of the results by a specific criteria. Supported values are **_id**, **birthdate**, **family**, and **given**. Use **-_id**, **-birthdate**, **-family**, and **-given** to sort in descending order.
           - name: active
             type: boolean
             description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false) patients.
