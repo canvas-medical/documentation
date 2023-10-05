@@ -135,7 +135,7 @@ sections:
     {% tab questionnaireresponse-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/QuestionnaireResponse \
+     --url 'https://fumage-example.canvasmedical.com/QuestionnaireResponse' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

@@ -57,7 +57,7 @@ sections:
     {% tab media-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/Media \
+     --url 'https://fumage-example.canvasmedical.com/Media' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

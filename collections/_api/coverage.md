@@ -108,7 +108,7 @@ sections:
     {% tab coverage-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/Coverage \
+     --url 'https://fumage-example.canvasmedical.com/Coverage' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -477,7 +477,7 @@ print(response.text)
     {% tab coverage-update-request curl %}
 ```shell
 curl --request PUT \
-     --url https://fumage-example.canvasmedical.com/Coverage/<id> \
+     --url 'https://fumage-example.canvasmedical.com/Coverage/<id>' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

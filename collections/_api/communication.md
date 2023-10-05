@@ -76,7 +76,7 @@ sections:
     {% tab communication-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/Communication \
+     --url 'https://fumage-example.canvasmedical.com/Communication' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

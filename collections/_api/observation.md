@@ -183,7 +183,7 @@ sections:
     {% tab observation-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/Observation \
+     --url 'https://fumage-example.canvasmedical.com/Observation' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

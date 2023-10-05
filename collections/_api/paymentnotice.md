@@ -106,7 +106,7 @@ sections:
     {% tab paymentnotice-create-request curl %}
 ```sh
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/PaymentNotice \
+     --url 'https://fumage-example.canvasmedical.com/PaymentNotice' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

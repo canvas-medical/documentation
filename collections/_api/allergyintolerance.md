@@ -100,7 +100,7 @@ sections:
     {% tab allergyintolerance-create-request curl %}
 ```shell
 curl --request POST \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance \
+     --url 'https://fumage-example.canvasmedical.com/AllergyIntolerance' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
@@ -411,7 +411,7 @@ print(response.text)
     {% tab allergyintolerance-update-request curl %}
 ```shell
 curl --request PUT \
-     --url https://fumage-example.canvasmedical.com/AllergyIntolerance/<id> \
+     --url 'https://fumage-example.canvasmedical.com/AllergyIntolerance/<id>' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \

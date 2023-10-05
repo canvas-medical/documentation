@@ -189,7 +189,7 @@ sections:
     {% tab careteam-update-request curl %}
 ```shell
 curl --request PUT \
-     --url https://fumage-example.canvasmedical.com/CareTeam/<id> \
+     --url 'https://fumage-example.canvasmedical.com/CareTeam/<id>' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
