@@ -57,7 +57,7 @@
     }
 
     &__submenu {
-        padding-left: $container-padding;
+        padding-left: 0px;
         list-style-type: none;
 
         a {
@@ -78,7 +78,14 @@
         }
     }
 
-    ul {
-        padding-left: 0.5em;
+    &__submenu {
+        > .toc__item {
+            padding-left: 12px;
+            position: relative;
+            > div > .toc__toggle {
+                position: absolute;
+                left: -1px;
+            }
+        }
     }
 }
