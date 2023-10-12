@@ -436,6 +436,13 @@ Next, pull up the chart of any patient. You should see your Measure appear in th
 
 <img src="https://files.readme.io/b9a7cf0-my_first_protocol_in_chart.png" alt="My First Protocol in Chart" width="60%">
 
+By default, a protocol will recompute for all patients after it is uploaded (unless it is a [notification protocol](/sdk/notification-protocol)). If you wish to upload a protocol without recomputing for all patients, you can use the `--no-compute` flag with the upload command, like so:
+
+`(env) $ canvas-cli upload test_measure.py --no-compute`
+
+This can be useful for times when you want to make an update to your protocol (like a docstring change), but don't find it necessary to recompute for all patients at that time. 
+The `--no-compute` flag is only available in versions of the canvas-workflow-kit >= v0.6.10, so be sure to upgrade before you use it! 
+
 <br>
 
 ### Testing Your Protocol Against Patient Data
