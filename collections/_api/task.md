@@ -82,6 +82,9 @@ sections:
           - name: requester
             type: string
             description: Search by task requester
+          - name: status
+            type: string
+            description: Search by task status
         endpoints: [create, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
