@@ -66,6 +66,7 @@ from canvas_workflow_kit.protocol import (STATUS_NOT_APPLICABLE,
                                           ClinicalQualityMeasure,
                                           ProtocolResult)
 from canvas_workflow_kit.utils import send_notification
+from canvas_workflow_kit.fhir import FumageHelper
 
 
 class AppointmentNotification(ClinicalQualityMeasure):
@@ -78,36 +79,9 @@ class AppointmentNotification(ClinicalQualityMeasure):
         compute_on_change_types = [CHANGE_TYPE.APPOINTMENT]
         notification_only = True
 
-    def get_fhir_api_token(self):
-        """ Given the Client ID and Client Secret for authentication to FHIR,
-        return a bearer token """
-
-        grant_type = "client_credentials"
-        client_id = self.settings.CLIENT_ID
-        client_secret = self.settings.CLIENT_SECRET
-
-        token_response = requests.request(
-            "POST",
-            f'https://{self.instance_name}.canvasmedical.com/auth/token/',
-            headers={'Content-Type': 'application/x-www-form-urlencoded'},
-            data=f"grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}"
-        )
-
-        if token_response.status_code != 200:
-            raise Exception('Unable to get a valid FHIR bearer token')
-
-        return token_response.json().get('access_token')
-
     def get_fhir_appointment(self, appointment_id):
         """ Given a Task ID we can perform a FHIR Task Search Request"""
-        response = requests.get(
-            (f"https://fumage-{self.instance_name}.canvasmedical.com/"
-             f"Appointment/{appointment_id}"),
-            headers={
-                'Authorization': f'Bearer {self.get_fhir_api_token()}',
-                'accept': 'application/json'
-            }
-        )
+        response = self.fhir.read("Appointment", appointment_id)
 
         if response.status_code != 200:
             raise Exception("Failed to search Appointments")
@@ -166,8 +140,8 @@ class AppointmentNotification(ClinicalQualityMeasure):
             }
 
         elif changed_model == 'appointment':
-            self.instance_name = self.settings.INSTANCE_NAME
-            self.token = self.get_fhir_api_token()
+            self.fhir = FumageHelper(self.settings)
+            self.fhir.get_fhir_api_token()
 
             appointment_id = self.field_changes.get('external_id')
             appointment = self.get_fhir_appointment(appointment_id)
