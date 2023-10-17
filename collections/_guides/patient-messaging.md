@@ -51,7 +51,6 @@ class MessageNotification(ClinicalQualityMeasure):
         """ Given a Communication ID we can perform a FHIR Communication Search Request"""
 
         fhir = FumageHelper(self.settings)
-        fhir.get_fhir_api_token()
         response = fhir.search("Communication", {'_id:': message_id})
 
         if response.status_code != 200:

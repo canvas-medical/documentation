@@ -141,7 +141,6 @@ class AppointmentNotification(ClinicalQualityMeasure):
 
         elif changed_model == 'appointment':
             self.fhir = FumageHelper(self.settings)
-            self.fhir.get_fhir_api_token()
 
             appointment_id = self.field_changes.get('external_id')
             appointment = self.get_fhir_appointment(appointment_id)

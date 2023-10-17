@@ -249,7 +249,6 @@ class BehvaioralReferralTaskUpdate(ClinicalQualityMeasure):
         """
 
         self.fhir = FumageHelper(self.settings)
-        self.fhir.get_fhir_api_token()
 
         result = ProtocolResult()
 
