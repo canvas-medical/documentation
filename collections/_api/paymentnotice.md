@@ -77,7 +77,7 @@ sections:
           - name: request
             type: string
             description: A reference to the patient whose balance the payment was applied to.
-        endpoints: [create,read, search]
+        endpoints: [create, read, search]
         create:
           description: >-
             Create a PaymentNotice resource.<br><br>
