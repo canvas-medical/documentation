@@ -39,6 +39,7 @@ highlighterRougeDivs.forEach((div) => {
 
   // Prepend the toolbar to the highlighter-rouge div
   div.prepend(toolbarDiv);
+  console.log(toolbarDiv);
 
   // Add click event listener to the clipboard icon
   clipboardIconDiv.addEventListener('click', () => {
@@ -50,6 +51,8 @@ highlighterRougeDivs.forEach((div) => {
       });
     }
   });
+
+  
 
   // Add click event listener to the expand icon
   expandIconDiv.addEventListener('click', () => {
@@ -125,3 +128,69 @@ window.addEventListener('beforeunload', () => {
     localStorage.setItem('scroll-position-side-nav', sideNav.scrollTop);
   }
 });
+
+
+// ** TROUBLESHOOTING CLICK NOT WORKING ON API PAGES
+
+
+// document.querySelectorAll('li').forEach((item, index) => {
+//   const ele = item.querySelector('div.rogue__toolbar');
+//   if (ele) {
+//     ele.addEventListener('click', () => {
+//       const codeElement = div.querySelector('code');
+//       if (codeElement) {
+//         const content = codeElement.innerHTML;
+
+//         // Create the modal window
+//         const modal = document.createElement('div');
+//         modal.classList.add('rogue__modal');
+
+//         // Create the modal content
+//         const modalContent = document.createElement('div');
+//         modalContent.classList.add('rogue__modal__content');
+
+//         // Create the wrapper div.highlighter-rouge
+//         const highlighterRouge = document.createElement('div');
+//         highlighterRouge.classList.add('highlighter-rouge');
+
+//         // Create the inner div.highlight
+//         const innerHighlight = document.createElement('div');
+//         innerHighlight.classList.add('highlight');
+
+//         // Create the pre.highlight
+//         const preHighlight = document.createElement('pre');
+//         preHighlight.classList.add('highlight');
+//         preHighlight.innerHTML = content;
+
+//         // Append the pre.highlight to the inner div.highlight
+//         innerHighlight.appendChild(preHighlight);
+
+//         // Append the inner div.highlight to the wrapper div.highlighter-rouge
+//         highlighterRouge.appendChild(innerHighlight);
+
+//         // Append the wrapper div to the modal content
+//         modalContent.appendChild(highlighterRouge);
+
+//         // Create the close button
+//         const closeButton = document.createElement('span');
+//         closeButton.classList.add('rogue__modal__close');
+//         closeButton.innerHTML = '&times;'; // Close symbol
+
+//         // Add click event listener to close the modal
+//         closeButton.addEventListener('click', () => {
+//           document.body.removeChild(modal);
+//         });
+
+//         // Append the close button to the modal content
+//         modalContent.appendChild(closeButton);
+
+//         // Append the modal content to the modal window
+//         modal.appendChild(modalContent);
+
+//         // Append the modal window to the document body
+//         document.body.appendChild(modal);
+//       }
+//     });
+//   }
+// });
+
