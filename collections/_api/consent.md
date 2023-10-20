@@ -57,6 +57,9 @@ sections:
               For create interactions, `period.start` is required with a **YYYY-MM-DD** format.<br><br>
               A `period.end` with a past date will mark the consent as Expired in the UI.
         search_parameters:
+          - name: _id
+            type: string
+            description: The identifier of the Consent
           - name: patient
             type: string
             description: Who the consent applies to
