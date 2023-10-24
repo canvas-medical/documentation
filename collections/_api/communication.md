@@ -53,22 +53,27 @@ sections:
             type: string
             description: >-
               Message sender<br><br>Supported: **Patient**, **Practitioner**
-        endpoints: [create, search]
+        endpoints: [create, read, search]
         create:
           description: >-
             Messages created through this endpoint will be added to the patient's timeline based on the created date.<br><br>
             If the sender of the message is a `Practitioner`, the message will be displayed as a draft in the timeline, drafter by Canvas Bot. There is no way to mark it as sent via the API today.<br><br>
-            If the sender of the message is a patient, the message will show in the recipient's message inbox for review, as well as on the timeline. 
+            If the sender of the message is a patient, the message will show in the recipient's message inbox for review, as well as on the timeline.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: communication-create-request
           example_response: communication-create-response
+        read:
+          description: Read a Communication resource.
+          responses: [200, 401, 403, 404]
+          example_request: communication-read-request
+          example_response: communication-read-response
         search:
           description: >-
             Communication search will only return messages between a practitioner and patient, not between two practitioners.<br><br>
           responses: [200, 400, 401, 403]
           example_request: communication-search-request
           example_response: communication-search-response
-        
+
 ---
 
 <div id="communication-create-request">
@@ -181,7 +186,7 @@ print(response.text)
         },
         "payload": [
           {
-            "contentString": "Similique amet at est necessitatibus repellendus eius." 
+            "contentString": "Similique amet at est necessitatibus repellendus eius."
           }
         ]
       }
@@ -224,6 +229,90 @@ print(response.text)
 ```
     {% endtab %}
     {% tab communication-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+  {% endtabs %}
+</div>
+
+<div id="communication-read-request">
+{%  include read-request.html resource_type="Communication" %}
+</div>
+
+<div id="communication-read-response">
+{% tabs communication-read-response %}
+{% tab communication-read-response 200 %}
+```json
+{
+    "resourceType": "Communication",
+    "id": "17b7d61e-4b0e-4940-bd37-b64f5c2ae29d",
+    "status": "unknown",
+    "sent": "2023-10-23T21:19:22.865089+00:00",
+    "recipient": [
+        {
+            "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e",
+            "type": "Practitioner"
+        }
+    ],
+    "sender": {
+        "reference": "Patient/43f1418bae9c41919203e0006761067c",
+        "type": "Patient"
+    },
+    "payload": [
+        {
+            "contentString": "What's up doc?"
+        }
+    ]
+}
+
+```
+    {% endtab %}
+    {% tab communication-read-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "id": "101",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+    {% tab communication-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+    {% tab communication-read-response 403 %}
 ```json
 {
   "resourceType": "OperationOutcome",

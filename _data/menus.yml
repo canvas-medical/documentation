@@ -2,16 +2,16 @@ main:
   - title: API
     url: /api/
   - title: SDK
-    url: /sdk/ 
+    url: /sdk/
   - title: Guides
     url: /guides/
 
-api: 
+api:
  - title: "Canvas FHIR"
    identifier: api_canvas_fhir
  - title: "Resources"
-   identifier: api_resources  
-    
+   identifier: api_resources
+
 api_canvas_fhir:
  - title: "Introduction"
    url: /api/
@@ -182,6 +182,8 @@ api_claim:
 api_communication:
  - title: "Communication Create"
    url: /api/communication/#create
+ - title: "Communication Read"
+   url: /api/communication/#read
  - title: "Communication Search"
    url: /api/communication/#search
 api_condition:
@@ -234,7 +236,7 @@ api_encounter:
  - title: "Encounter Read"
    url: /api/encounter/#read
  - title: "Encounter Search"
-   url: /api/encounter/#search   
+   url: /api/encounter/#search
 api_goal:
  - title: "Goal Read"
    url: /api/goal/#read
@@ -253,7 +255,7 @@ api_immunization:
  - title: "Immunization Read"
    url: /api/immunization/#read
  - title: "Immunization Search"
-   url: /api/immunization/#search 
+   url: /api/immunization/#search
 api_location:
  - title: "Location Read"
    url: /api/location/#read
@@ -261,7 +263,7 @@ api_location:
    url: /api/location/#search
 api_media:
  - title: "Media Create"
-   url: /api/media/#create 
+   url: /api/media/#create
 api_medication:
  - title: "Medication Read"
    url: /api/medication/#read
@@ -361,11 +363,11 @@ guides:
 
 guides_list:
  - title: "Asynchronous Care"
-   url: /guides/asynchronous-care/  
+   url: /guides/asynchronous-care/
  - title: "Build a Safety Framework"
-   url: /guides/build-a-safety-framework/ 
+   url: /guides/build-a-safety-framework/
  - title: "Capture Charges"
-   url: /guides/capture-charges/ 
+   url: /guides/capture-charges/
  - title: "Customize Search Results"
    url: /guides/customize-search-results/
  - title: "External Scheduling"
@@ -375,7 +377,7 @@ guides_list:
  - title: "Patient Messaging"
    url: /guides/patient-messaging/
  - title: "Team Based Care"
-   url: /guides/team-based-care/ 
+   url: /guides/team-based-care/
 
 guides_templates:
  - title: "Behavioral Health"
@@ -390,14 +392,14 @@ sdk:
  - title: "SDK Overview"
    identifier: sdk_overview
  - title: "Workflow Kit"
-   identifier: sdk_workflow_kit 
+   identifier: sdk_workflow_kit
 
 sdk_overview:
  - title: "Introduction"
-   url: /sdk/   
+   url: /sdk/
 
 sdk_workflow_kit:
- - title: "Quickstart" 
+ - title: "Quickstart"
    url: /sdk/sdk-quickstart/
  - title: "Change Types"
    url: /sdk/change-types
@@ -419,13 +421,13 @@ sdk_workflow_kit:
    url: /sdk/notification-protocol
  - title: "Making FHIR Requests"
    url: /sdk/making-fhir-requests
- - title: "Canvas CLI Additional Commands" 
+ - title: "Canvas CLI Additional Commands"
    url: /sdk/canvas-cli
- - title: "Protocol Logging Tool" 
+ - title: "Protocol Logging Tool"
    url: /sdk/protocol-logging-tool
- - title: "Managing Protocols in Settings" 
+ - title: "Managing Protocols in Settings"
    url: /sdk/managing-protocols-in-settings
- - title: "Value Sets" 
+ - title: "Value Sets"
    identifier: sdk_workflow_kit_value_sets
    url: /sdk/value-sets
 
