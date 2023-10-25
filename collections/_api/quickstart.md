@@ -24,6 +24,7 @@ curl -i --location 'https://fumage-<sandbox-name>.canvasmedical.com/Patient' \
                 "valueCode": "M"
             }
         ],
+        "gender": "male",
         "active": true,
         "name": [
             {
