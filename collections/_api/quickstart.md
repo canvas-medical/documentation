@@ -21,18 +21,17 @@ curl -i --location 'https://fumage-<sandbox-name>.canvasmedical.com/Patient' \
         "extension": [
             {
                 "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                "valueCode": "M"
+                "valueCode": "F"
             }
         ],
-        "gender": "male",
+        "gender": "female",
         "active": true,
         "name": [
             {
                 "use": "official",
-                "family": "Bahar",
+                "family": "Mitko",
                 "given": [
-                    "Issam",
-                    "Khuzaimah"
+                    "Salina"
                 ]
             }
         ],
