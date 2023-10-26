@@ -39,7 +39,6 @@ highlighterRougeDivs.forEach((div) => {
 
   // Prepend the toolbar to the highlighter-rouge div
   div.prepend(toolbarDiv);
-  console.log(toolbarDiv);
 
   // Add click event listener to the clipboard icon
   clipboardIconDiv.addEventListener('click', () => {
