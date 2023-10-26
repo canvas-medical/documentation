@@ -66,6 +66,7 @@ minify_html: false
 plugins:
   - jekyll-algolia
   - jekyll-feed
+  - jekyll-glossary_tooltip
   - jekyll-menus
   - jekyll-seo-tag
   - jekyll-sitemap
