@@ -1,0 +1,76 @@
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const codeSource = document.querySelector('{{ include.selector }}');
+    const exampleCode = codeSource.cloneNode(true);
+    exampleCode.id = '';
+    codeSource.classList.add('apidoc__hidden');
+    const randomId = document.querySelector('{{ include.div }}');
+    randomId.appendChild(exampleCode).addEventListener('click', () => { console.log('working') });
+    randomId.appendChild(exampleCode);
+    const toolBars = randomId.querySelectorAll('div.rogue__toolbar');
+    toolBars.forEach((item, index) => {
+        if (item.closest('li.active')) {
+            const codeElement = item.nextElementSibling.querySelector('code');
+            item.querySelector('rogue__copy').addEventListener('click', () => {
+                const textToCopy = codeElement.textContent;
+                navigator.clipboard.writeText(textToCopy).catch((error) => {
+                    console.error('Unable to copy text to clipboard:', error);
+                });
+            })
+
+            item.querySelector('rogue__expand').addEventListener('click', () => {
+                const content = codeElement.innerHTML;
+
+                // Create the modal window
+                const modal = document.createElement('div');
+                modal.classList.add('rogue__modal');
+
+                // Create the modal content
+                const modalContent = document.createElement('div');
+                modalContent.classList.add('rogue__modal__content');
+
+                // Create the wrapper div.highlighter-rouge
+                const highlighterRouge = document.createElement('div');
+                highlighterRouge.classList.add('highlighter-rouge');
+
+                // Create the inner div.highlight
+                const innerHighlight = document.createElement('div');
+                innerHighlight.classList.add('highlight');
+
+                // Create the pre.highlight
+                const preHighlight = document.createElement('pre');
+                preHighlight.classList.add('highlight');
+                preHighlight.innerHTML = content;
+
+                // Append the pre.highlight to the inner div.highlight
+                innerHighlight.appendChild(preHighlight);
+
+                // Append the inner div.highlight to the wrapper div.highlighter-rouge
+                highlighterRouge.appendChild(innerHighlight);
+
+                // Append the wrapper div to the modal content
+                modalContent.appendChild(highlighterRouge);
+
+                // Create the close button
+                const closeButton = document.createElement('span');
+                closeButton.classList.add('rogue__modal__close');
+                closeButton.innerHTML = '&times;'; // Close symbol
+
+                // Add click event listener to close the modal
+                closeButton.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+
+                // Append the close button to the modal content
+                modalContent.appendChild(closeButton);
+
+                // Append the modal content to the modal window
+                modal.appendChild(modalContent);
+
+                // Append the modal window to the document body
+                document.body.appendChild(modal);
+            });
+        }
+    });
+});
+</script>
