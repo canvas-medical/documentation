@@ -58,7 +58,7 @@
             {% assign div = "payload-" | prepend: "#" | append: randomId %}
             {% assign selector = block.example_payload | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-js.html div=div selector=selector %}
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -103,7 +103,7 @@
             {% assign div = "request-" | prepend: "#" | append: randomId %}
             {% assign selector = block.read.example_request | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-js.html div=div selector=selector %}
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -125,7 +125,7 @@
             {% assign div = "response-" | prepend: "#" | append: randomId %}
             {% assign selector = block.read.example_response | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-js.html div=div selector=selector %}
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -158,7 +158,7 @@
             {% assign div = "request-" | prepend: "#" | append: randomId %}
             {% assign selector = block.search.example_request | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-js.html div=div selector=selector %}
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -180,7 +180,7 @@
             {% assign div = "response-" | prepend: "#" | append: randomId %}
             {% assign selector = block.search.example_response | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-js.html div=div selector=selector %}
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -200,7 +200,7 @@
             {% assign div = "request-" | prepend: "#" | append: randomId %}
             {% assign selector = block.create.example_request | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-js.html div=div selector=selector %}
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -222,7 +222,7 @@
             {% assign div = "response-" | prepend: "#" | append: randomId %}
             {% assign selector = block.create.example_response | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-js.html div=div selector=selector %}
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -242,7 +242,7 @@
             {% assign div = "request-" | prepend: "#" | append: randomId %}
             {% assign selector = block.update.example_request | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-js.html div=div selector=selector %}
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -264,7 +264,7 @@
             {% assign div = "response-" | prepend: "#" | append: randomId %}
             {% assign selector = block.update.example_response | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-js.html div=div selector=selector %}
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
         {% endif %}

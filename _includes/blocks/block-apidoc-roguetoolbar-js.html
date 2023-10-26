@@ -9,16 +9,15 @@ window.addEventListener('DOMContentLoaded', () => {
     randomId.appendChild(exampleCode);
     const toolBars = randomId.querySelectorAll('div.rogue__toolbar');
     toolBars.forEach((item, index) => {
-        if (item.closest('li.active')) {
+        if (item?.closest('li.active')) {
             const codeElement = item.nextElementSibling.querySelector('code');
-            item.querySelector('rogue__copy').addEventListener('click', () => {
+            item.querySelector('.rogue__copy').addEventListener('click', () => {
                 const textToCopy = codeElement.textContent;
                 navigator.clipboard.writeText(textToCopy).catch((error) => {
                     console.error('Unable to copy text to clipboard:', error);
                 });
             })
-
-            item.querySelector('rogue__expand').addEventListener('click', () => {
+            item.querySelector('.rogue__expand').addEventListener('click', () => {
                 const content = codeElement.innerHTML;
 
                 // Create the modal window
@@ -69,7 +68,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
                 // Append the modal window to the document body
                 document.body.appendChild(modal);
-            });
+            })
         }
     });
 });
