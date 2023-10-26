@@ -1,0 +1,33 @@
+{
+  "packages": [
+    "nodejs@latest",
+    "yarn@latest",
+    "ruby_3_1@latest",
+    "gcc@latest",
+    "gnumake@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      "yarn install",
+      "bundle config build.sassc --disable-lto",
+      "bundle install"
+    ],
+    "scripts": {
+      "dev": [
+        "yarn dev"
+      ],
+      "build": [
+        "yarn build"
+      ],
+      "build-pwa": [
+        "yarn build:pwa"
+      ],
+      "serve-dist": [
+        "yarn serve:dist"
+      ],
+      "clean-project": [
+        "yarn clean-project"
+      ]
+    }
+  }
+}
