@@ -85,7 +85,7 @@ For example:
     indicating how many protocols need to be satisfied for that particular
     patient.
 
-![Screen_Shot_2021-05-11_at_9.37.32_AM.png](/assets/images/care-protocols/protocol-header.png){:width="543" height="129"}
+![Screen_Shot_2021-05-11_at_9.37.32_AM.png](/assets/images/protocols/protocol-header.png){:width="543" height="129"}
 
 -   Click on the protocols icon to display the protocols modal on the right-hand side.
 -   Filter through the protocols in this section by selecting a view from the drop the down menu at the top of the protocols modal.
@@ -93,7 +93,7 @@ For example:
     -   Pending
     -   Inactive
 
-![j.gif](/assets/images/care-protocols/active-pending-inactive.gif){:width="511" height="302"}
+![j.gif](/assets/images/protocols/active-pending-inactive.gif){:width="511" height="302"}
 
 ***NOTE:** Active protocols are the default view after clicking on the protocols filter icon.*
 
