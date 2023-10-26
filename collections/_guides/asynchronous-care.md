@@ -88,7 +88,6 @@ The interview [change type](/sdk/change-types/) allows you to recompute a Protoc
 {% include alert.html type="info" content= "This Protocol is dependent on a Questionnaire called the Diagnostic Assessment Tool with specific codings for the questionnaire and each of its questions - the loader data for this Questionnaire is below." %}
 
 ``` python
-from canvas_workflow_kit import events
 from canvas_workflow_kit.constants import CHANGE_TYPE
 from canvas_workflow_kit.protocol import (STATUS_DUE, STATUS_SATISFIED,
                                           ClinicalQualityMeasure,
@@ -141,30 +140,12 @@ class DiagnosticAssessment(ClinicalQualityMeasure):
     class Meta:
 
         title = 'Diagnostic Assessment'
-
         version = 'v1.0.0'
-
         description = ('A protocol that recommends diagnosing'
                        'certain conditions based on questionnaire responses.')
-
-        information = 'https://canvasmedical.com/'
-
         identifiers = ['DiagnosticAssessment']
-
         types = ['Tools']
-
-        responds_to_event_types = [
-            events.HEALTH_MAINTENANCE,
-        ]
-        compute_on_change_types = [
-            CHANGE_TYPE.INTERVIEW, CHANGE_TYPE.CONDITION
-        ]
-
-        authors = ['Canvas Medical']
-
-        references = ['Canvas Medical']
-
-        funding_source = ''
+        compute_on_change_types = [CHANGE_TYPE.INTERVIEW, CHANGE_TYPE.CONDITION]
 
     most_recent_interview = None
     positive_question_ids = set()
