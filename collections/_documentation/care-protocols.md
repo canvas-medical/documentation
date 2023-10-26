@@ -114,18 +114,50 @@ For example:
 
 ## List of Protocols: {#h_01FBAEB815BYVMH5ZDCRJNSQD7}
 
-The *Annual Wellness Visit (HCC005v1)* protocol recommends an annual wellness visit for patients 65 years and older, if they have not had one in the past year. This is determined by the presence of CPT codes G0438 and G0439.
+### Annual Wellness Visit (HCC005v1)
 
-The *Breast Cancer Screening (CMS125v6)* protocol recommends a breast cancer screening for all patients born as female and that have an age between 51 and 73 inclusive. Patients that will be excluded have a Bilateral or serial R/L mastectomy documented in past surgical history. The qualifying interventions are at least one breast cancer screening imaging study during the last cycle (default: 27 months) including full field digital mammography and digital mammography with tomosynthesis, or an imaging report must be uploaded and reviewed by a provider to complete the intervention. The imaging report must be linked to 24606-6 LOINC.
+This is a protocol that recommends an annual wellness visit for patients 65 years and older, if they have not had one in the past year. This is determined by the presence of CPT codes G0438 and G0439.
 
-*CKD Suspect (HCC002v2)* is a protocol that recommends updating the Conditions List to include kidney related problems if a patient has two eGFR lab values lower than 60 mL/min per 1.73 m2 in the past two years.
+![screenshot](/assets/images/protocols/annual-wellness-visit.png){:width="500"}
 
-*Colorectal Cancer Screening (CMS130v6)* is a protocol that recommends ordering a stool test, direct visualization (colonoscopy/sigmoidoscopy), or imaging (CT colonography) for patients 45-75 years of age who are not in hospice and who have no documentation of total colectomy or previous colorectal cancer.
+## Breast Cancer Screening (CMS125v6)
 
-*Diabetes Mellitus With Secondary Complication Suspected (HCC003v1)* is a protocol that recommends updating a Diabetes without complications diagnosis to *Diabetes with secondary complications* for patients with an active diagnosis of *Diabetes without complications* who also have an active diagnosis of a condition considered secondary to or exacerbated by diabetes mellitus. This update may not always be clinically necessary; this protocol functions as a prompt to consider whether the change is appropriate.
+This protocol recommends a breast cancer screening for all patients born as female and that have an age between 51 inclusive and 74 exclusive, who do not have a qualifying intervention in the last 27 months. Patients with bilateral or serial right and left mastectomy (as documented in past surgical history) are excluded. Patients are considered to have satisfied this protocol if an imaging study with LOINC 24606-6 has been uploaded and reviewed. Imaging studies with this code include “mammography, diagnostic; bilateral”, “mammography, diagnostic; unilateral”, and “mammography, screening; bilateral”.
 
-## Roles: {#h_01HDPA0TP7CN9MJZ3JCMC4B2S7}
+![screenshot](/assets/images/protocols/breast-cancer-screening.png){:width="500"}
 
--   Provider
--   Clinical staff
--   Population Health
+### CKD Suspect (HCC002v2)
+
+This is a protocol that recommends updating the Conditions List to include kidney related problems if a patient has two eGFR lab values lower than 60 mL/min per 1.73 m2 in the past two years. Note that the eGFR is calculated from the creatinine (not taken from the structured eGFR field).
+
+![screenshot](/assets/images/protocols/ckd-suspect.png){:width="500"}
+
+### Colorectal Cancer Screening
+
+This protocol recommends colorectal cancer screening for patients 50-75 years of age who are not in hospice and who have no documentation of total colectomy or previous colorectal cancer. The protocol is considered satisfied if the patient has a stool test within the last year, flexible sigmoidoscopy within the last 5 years, or colonoscopy within the last 10 years.
+
+![screenshot](/assets/images/protocols/colorectal-cancer-screening.png){:width="500"}
+
+### Diabetes Mellitus With Secondary Complication Suspected (HCC003v1)
+
+This protocol recommends updating a Diabetes without complications diagnosis to Diabetes with secondary complications for patients with an active diagnosis of Diabetes without complications who also have an active diagnosis of a condition considered secondary to or exacerbated by diabetes mellitus (including renal, retinal, neurologic or vascular complications). This update may not always be clinically necessary; this protocol functions as a prompt to consider whether the change is appropriate.
+
+### Diabetes Mellitus: Eye Exam (CMS131v6)
+
+This protocol recommends an eye exam for all patients with diabetes mellitus between the ages of 18 to 75 years old. The diabetes mellitus eye exam protocol excludes patients who were in hospice care during the measurement year. The interventions that will satisfy the diabetes mellitus eye exam protocol include the ordering of a Retinal or Dilated Eye Exam, a Specialist Consult Report must be uploaded/come in via Data Integration and must also be reviewed by the provider to satisfy the protocol. The integration specialty consult reports to use include: Ophthalmology: Diabetic Retinopathy Screening.
+
+![screenshot](/assets/images/protocols/diabetes-eye-exam.png){:width="500"}
+
+### Diabetes Mellitus: Hemoglobin HbA1c Poor Control (> 9%) (CMS122v6)
+
+This is a protocol for patients between the ages of 18-75 years old with a diagnosis of diabetes. It identifies patients with “poor control” which is defined as either a hemoglobin A1c > 9% or no hemoglobin A1c in the last year. For those with no hemoglobin A1c in the past year, a recommendation is surfaced to check labs. For those with A1c > 9% a recommendation is surfaced for dietary changes.
+
+### Dysrhythmia Suspects (HCC004v1)
+
+This protocol looks for all patients with an active medication in an anti-arrhythmic drug class and identifies patients who have an active anti-arrhythmic medication without an active dysrhythmia related problem, and recommends updating the Conditions List to include dysrhythmia related problem as clinically appropriate.
+
+![screenshot](/assets/images/protocols/dysrhythmia-suspects.png){:width="500"}
+
+### Problem List Hygiene (HCC001v1)
+
+This protocol looks for all patients with significant active conditions which have not been assessed in the last year, and recommends a provider Assess or resolve conditions as clinically appropriate.
