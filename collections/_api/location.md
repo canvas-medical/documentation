@@ -14,6 +14,11 @@ sections:
           - name: id
             description: The identifier of the Location
             type: string
+          - name: identifier
+            description: >-
+              Unique code or number identifying the location to its users.<br>
+              **Supported**: Group NPI values using the `http://hl7.org/fhir/sid/us-npi` system
+            type: array[json]
           - name: status
             description: The status property covers the general availability of the resource, not the current value which may be covered by the operationStatus, or by a schedule/slots if they are configured for the location
             type: string
@@ -25,6 +30,13 @@ sections:
             type: array[string]
           - name: description
             description: Additional details about the location that could be displayed as further information to identify the location beyond its name
+            type: string
+          - name: address
+            description: Physical address
+            type: json
+        search_parameters:
+          - name: _id
+            description: The identifier of the Location
             type: string
         endpoints: [read, search]
         read:
@@ -52,12 +64,28 @@ sections:
 {
     "resourceType": "Location",
     "id": "a04b44ec-c7df-4808-9043-e9c4b1d352a9",
+    "identifier": [
+        {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "12321"
+        }
+    ],
     "status": "active",
     "name": "Canvas Medical",
     "alias": [
         "Canvas Medical HQ"
     ],
-    "description": "Canvas Medical, San Francisco, CA"
+    "description": "Canvas Medical, San Francisco, CA",
+    "address": {
+        "use": "work",
+        "line": [
+            "405 49th St"
+        ],
+        "city": "Oakland",
+        "state": "CA",
+        "postalCode": "94609",
+        "country": "USA"
+    }
 }
 ```
     {% endtab %}
@@ -150,12 +178,28 @@ sections:
             "resource": {
                 "resourceType": "Location",
                 "id": "a04b44ec-c7df-4808-9043-e9c4b1d352a9",
+                "identifier": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/us-npi",
+                        "value": "12321"
+                    }
+                ],
                 "status": "active",
                 "name": "Canvas Medical",
                 "alias": [
                     "Canvas Medical HQ"
                 ],
-                "description": "Canvas Medical, San Francisco, CA"
+                "description": "Canvas Medical, San Francisco, CA",
+                "address": {
+                    "use": "work",
+                    "line": [
+                        "405 49th St"
+                    ],
+                    "city": "Oakland",
+                    "state": "CA",
+                    "postalCode": "94609",
+                    "country": "USA"
+                }
             }
         }
     ]
