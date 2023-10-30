@@ -1,14 +1,8 @@
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-    const codeSource = document.querySelector('{{ include.selector }}');
-    const exampleCode = codeSource.cloneNode(true);
-    exampleCode.id = '';
-    codeSource.classList.add('apidoc__hidden');
-    const randomId = document.querySelector('{{ include.div }}');
-    randomId.appendChild(exampleCode).addEventListener('click', () => { console.log('working') });
-    randomId.appendChild(exampleCode);
-    const toolBars = randomId.querySelectorAll('div.rogue__toolbar');
-    toolBars.forEach((item, index) => {
+
+    const toolbarActions = (node) => {
+    const toolBars = node.querySelectorAll('div.rogue__toolbar');
+    toolBars.forEach((item) => {
         if (item?.closest('li.active')) {
             const codeElement = item.nextElementSibling.querySelector('code');
             item.querySelector('.rogue__copy').addEventListener('click', () => {
@@ -71,5 +65,36 @@ window.addEventListener('DOMContentLoaded', () => {
             })
         }
     });
+    }
+window.addEventListener('DOMContentLoaded', () => {
+    const codeSource = document.querySelector('{{ include.selector }}');
+    const exampleCode = codeSource.cloneNode(true);
+    exampleCode.id = '';
+    codeSource.classList.add('apidoc__hidden');
+    const randomId = document.querySelector('{{ include.div }}');
+    randomId.appendChild(exampleCode);
+    toolbarActions(randomId);
+
+
+
+    // Observer the toolbars for tab change
+    // Select the node that will be observed for mutations
+    const targetNode = document.querySelectorAll("ul.tab li");
+
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: true, characterData: true, childList: false, subtree: false };
+
+    // Callback function to execute when mutations are observed
+    const callback = (mutationList, observer) => {
+        toolbarActions(mutationList[0].target.closest("div[id^='request-']"));
+    };
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    for (const element of targetNode) {
+        observer.observe(element, config);
+    }
 });
 </script>
