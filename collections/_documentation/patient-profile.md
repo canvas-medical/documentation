@@ -16,7 +16,7 @@ The Canvas generated MRN is available in the top navigation menu, with a button 
 
 ## Patient Demographics
 ### Demographics
-The patient demographics section allows you to capture additonal fields beyond the basics needs to create a new profile. You must click `Edit` to update the fields and `Submit` to save. If you do not want to save your changes you can click `Cancel` instead. All fields marked with a red asterisk are required in order to save. 
+The patient demographics section allows you to capture additional fields when creating a new profile. You must click `Edit` to update the fields and `Submit` to save. If you do not want to save your changes you can click `Cancel` instead. All fields marked with a red asterisk are required in order to save. 
 ### Active Status
 The patient's status (Active vs Inactive) can be managed using the checkbox at the top. After submitting an updated form with an unchecked box, you will see an `Inactive` badge added to the patient's banner.  
 ### Deceased Workflow

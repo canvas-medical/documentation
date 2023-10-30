@@ -5,7 +5,7 @@ layout: documentation
 Managing your Fee Schedule is important to ensure proper reimbursement of the services provided.
 <br>
 <br>
-## Adding to your fee chedule
+## Adding to your fee schedule
 
 To add a new procedure code, click `add fee schedule +`  in the top right corner and then complete the following form. 
 
