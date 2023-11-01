@@ -54,18 +54,11 @@
         </div>
         <div class="apidoc__gridcol">
             {% if block.example_payload %}
-            {% assign randomId = "now" | date: "%N" | modulo: 10000 %}
-            <div id="payload-{{ randomId }}"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    const codeSource = document.querySelector('#{{ block.example_payload }}');
-                    const exampleCode = codeSource.cloneNode(true);
-                    exampleCode.id = '';
-                    codeSource.classList.add('apidoc__hidden');
-                    const randomId = document.querySelector('#payload-{{ randomId }}');
-                    randomId.appendChild(exampleCode);
-                });
-            </script>
+            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
+            {% assign div = "payload-" | prepend: "#" | append: randomId %}
+            {% assign selector = block.example_payload | prepend: "#" %}
+            <div id="{{ div | remove_first: '#' }}"></div>
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -107,17 +100,10 @@
         <div class="apidoc__gridcol">
             {% if block.read.example_request %}
             {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            <div id="request-{{ randomId }}"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    const codeSource = document.querySelector('#{{ block.read.example_request }}');
-                    const exampleCode = codeSource.cloneNode(true);
-                    exampleCode.id = '';
-                    codeSource.classList.add('apidoc__hidden');
-                    const randomId = document.querySelector('#request-{{ randomId }}');
-                    randomId.appendChild(exampleCode);
-                });
-            </script>
+            {% assign div = "request-" | prepend: "#" | append: randomId %}
+            {% assign selector = block.read.example_request | prepend: "#" %}
+            <div id="{{ div | remove_first: '#' }}"></div>
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -136,17 +122,10 @@
         <div class="apidoc__gridcol">
             {% if block.read.example_response %}
             {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            <div id="response-{{ randomId }}"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    const codeSource = document.querySelector('#{{ block.read.example_response }}');
-                    const exampleCode = codeSource.cloneNode(true);
-                    exampleCode.id = '';
-                    codeSource.classList.add('apidoc__hidden');
-                    const randomId = document.querySelector('#response-{{ randomId }}');
-                    randomId.appendChild(exampleCode);
-                });
-            </script>
+            {% assign div = "response-" | prepend: "#" | append: randomId %}
+            {% assign selector = block.read.example_response | prepend: "#" %}
+            <div id="{{ div | remove_first: '#' }}"></div>
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -176,17 +155,10 @@
         <div class="apidoc__gridcol">
             {% if block.search.example_request %}
             {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            <div id="request-{{ randomId }}"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    const codeSource = document.querySelector('#{{ block.search.example_request }}');
-                    const exampleCode = codeSource.cloneNode(true);
-                    exampleCode.id = '';
-                    codeSource.classList.add('apidoc__hidden');
-                    const randomId = document.querySelector('#request-{{ randomId }}');
-                    randomId.appendChild(exampleCode);
-                });
-            </script>
+            {% assign div = "request-" | prepend: "#" | append: randomId %}
+            {% assign selector = block.search.example_request | prepend: "#" %}
+            <div id="{{ div | remove_first: '#' }}"></div>
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -205,17 +177,10 @@
         <div class="apidoc__gridcol">
             {% if block.search.example_response %}
             {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            <div id="response-{{ randomId }}"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    const codeSource = document.querySelector('#{{ block.search.example_response }}');
-                    const exampleCode = codeSource.cloneNode(true);
-                    exampleCode.id = '';
-                    codeSource.classList.add('apidoc__hidden');
-                    const randomId = document.querySelector('#response-{{ randomId }}');
-                    randomId.appendChild(exampleCode);
-                });
-            </script>
+            {% assign div = "response-" | prepend: "#" | append: randomId %}
+            {% assign selector = block.search.example_response | prepend: "#" %}
+            <div id="{{ div | remove_first: '#' }}"></div>
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -232,17 +197,10 @@
         <div class="apidoc__gridcol">
             {% if block.create.example_request %}
             {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            <div id="request-{{ randomId }}"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    const codeSource = document.querySelector('#{{ block.create.example_request }}');
-                    const exampleCode = codeSource.cloneNode(true);
-                    exampleCode.id = '';
-                    codeSource.classList.add('apidoc__hidden');
-                    const randomId = document.querySelector('#request-{{ randomId }}');
-                    randomId.appendChild(exampleCode);
-                });
-            </script>
+            {% assign div = "request-" | prepend: "#" | append: randomId %}
+            {% assign selector = block.create.example_request | prepend: "#" %}
+            <div id="{{ div | remove_first: '#' }}"></div>
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -261,17 +219,10 @@
         <div class="apidoc__gridcol">
             {% if block.create.example_response %}
             {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            <div id="response-{{ randomId }}"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    const codeSource = document.querySelector('#{{ block.create.example_response }}');
-                    const exampleCode = codeSource.cloneNode(true);
-                    exampleCode.id = '';
-                    codeSource.classList.add('apidoc__hidden');
-                    const randomId = document.querySelector('#response-{{ randomId }}');
-                    randomId.appendChild(exampleCode);
-                });
-            </script>
+            {% assign div = "response-" | prepend: "#" | append: randomId %}
+            {% assign selector = block.create.example_response | prepend: "#" %}
+            <div id="{{ div | remove_first: '#' }}"></div>
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -288,17 +239,10 @@
         <div class="apidoc__gridcol">
             {% if block.update.example_request %}
             {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            <div id="request-{{ randomId }}"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    const codeSource = document.querySelector('#{{ block.update.example_request }}');
-                    const exampleCode = codeSource.cloneNode(true);
-                    exampleCode.id = '';
-                    codeSource.classList.add('apidoc__hidden');
-                    const randomId = document.querySelector('#request-{{ randomId }}');
-                    randomId.appendChild(exampleCode);
-                });
-            </script>
+            {% assign div = "request-" | prepend: "#" | append: randomId %}
+            {% assign selector = block.update.example_request | prepend: "#" %}
+            <div id="{{ div | remove_first: '#' }}"></div>
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
     </div>
@@ -317,17 +261,10 @@
         <div class="apidoc__gridcol">
             {% if block.update.example_response %}
             {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            <div id="response-{{ randomId }}"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    const codeSource = document.querySelector('#{{ block.update.example_response }}');
-                    const exampleCode = codeSource.cloneNode(true);
-                    exampleCode.id = '';
-                    codeSource.classList.add('apidoc__hidden');
-                    const randomId = document.querySelector('#response-{{ randomId }}');
-                    randomId.appendChild(exampleCode);
-                });
-            </script>
+            {% assign div = "response-" | prepend: "#" | append: randomId %}
+            {% assign selector = block.update.example_response | prepend: "#" %}
+            <div id="{{ div | remove_first: '#' }}"></div>
+            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
         </div>
         {% endif %}
