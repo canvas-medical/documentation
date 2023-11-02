@@ -6,7 +6,7 @@ layout: documentation
 The patient’s profile can be used to register your patients and store important demographic and billing information. 
 
 ## Patient Banner
-After creating a new profile, key patient identifiers are displayed in the top left corner of the patient’s profile and chart. The banner pulls first and last name, with preferred name in parentheses, DOB, patient’s preferred timezone, age, sex at birth, and phone number from the patient demographics. Edits can be made by following the instructions below. The patient’s photo can be added using the [Canvas Remote]({{site.baseurl}}/documentation/canvas-remote/) iOS app, which can be downloaded from the app store. 
+After creating a new profile, key patient identifiers are displayed in the top left corner of the patient’s profile and chart. The banner pulls first and last name, with preferred name in parentheses, DOB, patient’s preferred timezone, age, sex at birth, and phone number from the patient demographics. Edits can be made by following the instructions below. The patient’s photo can be added using the [Canvas Remote](/documentation/canvas-remote/){:target="_blank"} iOS app, which can be downloaded from the app store. 
 
 Use the Administrative Caption to communicate reminders/notes within the office related to insurance, copay, payments, and forms. It is visible within the profile, the detailed view of the appointment card on the schedule, the patient search when creating new appointments, and on the print view of the schedule. 
 {% include alert.html type="warning" content="The administrative caption is not visible within the Chart. Switch over to the Chart and leverage the Clinical Caption if you need to communicate with your clinicians." %}
@@ -43,7 +43,7 @@ Adding a preferred pharmacy in the profile will drive prescribing workflows. The
 If the patient uses multiple pharmacies (let's say brick & mortar and mail-order), you can add multiple preferred pharmacies to their profile. You must set a default to drive the behavior noted above. The additional pharmacies will be available as quickpicks within the pharmacy dropdown in the Prescribe Commands. 
 
 ## Patient Consents
-After Patient Consents have been [configured](/documentation/consents) , they can be added either through the Profile or in Data Integration. After being added, the Profile should be used to track and manage existing consents. 
+After Patient Consents have been [configured](/documentation/consents){:target="_blank"} , they can be added either through the Profile or in Data Integration. After being added, the Profile should be used to track and manage existing consents. 
 
 Consents marked as mandatory will always present on the profile, whether or not they have been collected. A red badge is used to indicate outstanding consents that need to be collected and/or updated with the necessary documentation. 
 
@@ -138,7 +138,7 @@ Temp, Old) and `type` (Postal, Physical, Both) Patients <b>MUST</b> have at leas
 
 ### Facilty Addresses
 
-Facilities must be configured in your admin settings following [these steps](/documentation/facilities). Once configured, you can add a facility using the drop down. The facility will have a default address. From there, you can add a specfic room number. 
+Facilities must be configured in your admin settings following [these steps](/documentation/facilities){:target="_blank"}. Once configured, you can add a facility using the drop down. The facility will have a default address. From there, you can add a specfic room number. 
 
 ## Phone numbers
 
@@ -151,8 +151,8 @@ You can add multiple emails with free text descriptions to denote their use. Use
 
 ## Contacts
 
-You can add contacts, with addiitonal data points per patient, to ensure all relevant individuals are included in the patient profile. When adding or updating a contact, the name, relationship, phone number, email, and comments fields are all free text to capture the necessary information. These values will appear next to the contact's name for immediate visibility to all data points. Addtiionally, you can select from pre-populated Category options from the dropdown menu, each contact can have one or multiple categories selected. Categories can be configured in your admin settings following [these steps](/documentation/contact-categories) and once added, each categoriy value will appear as a colored label next to the contact name. The contact categories of Power of attorney, authorized for release of information, and emergency contact are default categories that will automatically appear in the dropdown for all contacts. 
+You can add contacts, with addiitonal data points per patient, to ensure all relevant individuals are included in the patient profile. When adding or updating a contact, the name, relationship, phone number, email, and comments fields are all free text to capture the necessary information. These values will appear next to the contact's name for immediate visibility to all data points. Addtiionally, you can select from pre-populated Category options from the dropdown menu, each contact can have one or multiple categories selected. Categories can be configured in your admin settings following [these steps](/documentation/contact-categories){:target="_blank"} and once added, each categoriy value will appear as a colored label next to the contact name. The contact categories of Power of attorney, authorized for release of information, and emergency contact are default categories that will automatically appear in the dropdown for all contacts. 
 
-If a contact has been created with the category of `Power of attorney`, this contact will appear as a dropdown option in the [Data Integration](https://canvas-medical.zendesk.com/hc/en-us/articles/360056078034-Data-Integration-Overview) workflow if the corresponding patient and Power of Attorney document type are inputted. If no contact appears, you must first add the contact to the corresponding patient profile with the `Power of attorney` contact category in order to see the contact in the Data Integration contact workflow. Once the Power of Attorney document has been submitted with a contact, the document can be viewed from the corresponing contact in the patient profile.   
+If a contact has been created with the category of `Power of attorney`, this contact will appear as a dropdown option in the [Data Integration](https://canvas-medical.zendesk.com/hc/en-us/articles/360056078034-Data-Integration-Overview){:target="_blank"} workflow if the corresponding patient and Power of Attorney document type are inputted. If no contact appears, you must first add the contact to the corresponding patient profile with the `Power of attorney` contact category in order to see the contact in the Data Integration contact workflow. Once the Power of Attorney document has been submitted with a contact, the document can be viewed from the corresponing contact in the patient profile.   
 
 All contact details can be updated or the contact can be removed at any time. 
