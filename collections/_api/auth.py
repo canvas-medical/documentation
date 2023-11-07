@@ -1,57 +1,3 @@
----
-title: "Authentication - Best Practices"
-layout: apipage
----
-
-## Introduction
-
-The OAuth 2.0 authentication/authorization flow differs from the traditional username/password flow
-still heavily used in healthcare interoperability.  To help users new to writing applications using 
-OAuth, here are some best practices recommended by Canvas.
-
-### The Access Token: Don't lose it, reuse it
-
-#### Don't do this
-
-For some connections requiring a username and password, it may be necessary to use those credentials
-every time a message is sent to that system.  In that type of flow, you might need to write 
-something like:
-
-```python
-import requests
-
-token = get_new_auth_token()
-patient = get_patient(token, patient_id)
-
-updated_patient_body = update_patient(patient, name="Frank")
-
-token = get_new_auth_token()
-update_patient(token, updated_patient_body)
-
-token = get_new_auth_token()
-schedule_appointment(token, patient=patient, type="telehealth")
-
-...
-```
-
-#### Do this instead
-
-Regardless of the authentication method used, a successful request includes `"expires_in": ` in the
-response body.  The value will be some integer value - such as 36000 - which is the number of seconds until
-that token will be set to expired in Canvas.  Reusing the token and eliminating redundant token requests results in:
-  - increased **performance** by reducing the overall number of requests
-  - a more **secure** system since having fewer tokens reduces the overall surface area for illegitamate access
-
-  - **General Guidelines**:
-    - store the access token as securely as the client id and secret
-    - depending on your use case, it may be best to store a token just for that session or to reuse
-      it until it nears expiration
-    - store the expiration datetime as well and check it before requesting a new token
-    - use a refresh token if you provided in the authentication response for the authentication flow being used
-
-There's any number of ways to do this in your language of choice.  In Python, your code may look more like:
-
-```python
 import os
 import requests
 
@@ -71,7 +17,7 @@ def get_new_auth_token():
         {
             "grant_type": "client_credentials",
             "client_id": f"{CLIENT_ID}",
-            "client_secret": f"{CLIENT_SECRET}
+            "client_secret": f"{CLIENT_SECRET}"
         }
     )
     headers = { "Content-Type": "application/x-www-form-urlencoded", }
@@ -124,10 +70,3 @@ if __name__ == '__main__':
         response = requests.request("GET", f"{FUMAGE_BASE_URL}/Appointment?patient=Patient/{patient_id}")
 
         # do something with the appointments - save locally, modify and update, etc.
-
-```
-
-#### Takeaway
-Safely stored access tokens can and should be reused!<br>
-Additional reading:
-- [Token Best Practices from Auth0](https://auth0.com/docs/secure/tokens/token-best-practices)
