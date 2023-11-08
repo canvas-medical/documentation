@@ -125,7 +125,7 @@ if __name__ == '__main__':
     patients = response.json()["entry"]
     for patient in patients:
         patient_id = patient["resource"]["id"]
-        response = requests.request("GET", f"{FUMAGE_BASE_URL}/Appointment?patient=Patient/{patient_id}")
+        response = requests.get(f"{FUMAGE_BASE_URL}/Appointment?patient=Patient/{patient_id}")
 
         # do something with the appointments - save locally, modify and update, etc.
 
