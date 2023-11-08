@@ -86,7 +86,7 @@ sections:
 
           **`clinical-note`**
           <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/clinical-note](http://schemas.canvasmedical.com/fhir/extensions/clinical-note)
+          http://schemas.canvasmedical.com/fhir/extensions/clinical-note
           <br><br>
           This note displays under the patient's name in the clinical chart.
           <br><br>
