@@ -102,7 +102,7 @@ sections:
 
           **`preferred-pharmacy`**
           <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy](http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy)
+          http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy
           <br><br>
           A patient can have multiple preferred pharmacies added to their profile.
           <br><br>
