@@ -246,14 +246,11 @@ sections:
                     type: date
           - name: photo
             type: array[json]
-            description: Image of the patient. Data should be passed as a base64-encoded string. This image shows on the patient avatar in the Canvas UI.
+            description: Image of the patient. This image shows on the patient avatar in the Canvas UI.
             create_description: >-
               When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
             update_description: >-
               When updating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
-            attributes:
-              - name: url
-                type: string
           - name: contact
             type: array[json]
             required: false
