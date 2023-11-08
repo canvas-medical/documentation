@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
     headers = { "Authorization": f"Bearer {access_token}" }
 
-    response = requests.request("GET", f"{FUMAGE_BASE_URL}/Patient?name=Briddle", headers=headers)
+    response = requests.get(f"{FUMAGE_BASE_URL}/Patient?name=Briddle", headers=headers)
 
     if response.status_code == 401:
         # attempt to acquire a new token 1 time if we get a 401 - maybe it was manually expired or
