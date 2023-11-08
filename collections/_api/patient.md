@@ -110,7 +110,7 @@ sections:
 
           **`business-line`**
           <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/business-line](http://schemas.canvasmedical.com/fhir/extensions/business-line)
+          http://schemas.canvasmedical.com/fhir/extensions/business-line
           <br><br>
           The business line that the patient belongs to.
           <br><br>
