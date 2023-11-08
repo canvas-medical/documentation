@@ -94,7 +94,7 @@ sections:
 
           **`administrative-note`**
           <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/administrative-note](http://schemas.canvasmedical.com/fhir/extensions/administrative-note)
+          http://schemas.canvasmedical.com/fhir/extensions/administrative-note
           <br><br>
           This note displays under the patient's name in the administrative profile.
           <br><br>
