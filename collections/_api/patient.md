@@ -49,7 +49,7 @@ sections:
 
           **`sexual-orientation`**
           <br><br>
-          http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation
+          [http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation](http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation)
           <br><br>
           Sexual orientation of the patient. Supported values are:
 
@@ -86,7 +86,7 @@ sections:
 
           **`clinical-note`**
           <br><br>
-          http://schemas.canvasmedical.com/fhir/extensions/clinical-note
+          [http://schemas.canvasmedical.com/fhir/extensions/clinical-note](http://schemas.canvasmedical.com/fhir/extensions/clinical-note)
           <br><br>
           This note displays under the patient's name in the clinical chart.
           <br><br>
@@ -94,7 +94,7 @@ sections:
 
           **`administrative-note`**
           <br><br>
-          http://schemas.canvasmedical.com/fhir/extensions/administrative-note
+          [http://schemas.canvasmedical.com/fhir/extensions/administrative-note](http://schemas.canvasmedical.com/fhir/extensions/administrative-note)
           <br><br>
           This note displays under the patient's name in the administrative profile.
           <br><br>
@@ -102,7 +102,7 @@ sections:
 
           **`preferred-pharmacy`**
           <br><br>
-          http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy
+          [http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy](http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy)
           <br><br>
           A patient can have multiple preferred pharmacies added to their profile.
           <br><br>
@@ -110,7 +110,7 @@ sections:
 
           **`business-line`**
           <br><br>
-          http://schemas.canvasmedical.com/fhir/extensions/business-line
+          [http://schemas.canvasmedical.com/fhir/extensions/business-line](http://schemas.canvasmedical.com/fhir/extensions/business-line)
           <br><br>
           The business line that the patient belongs to.
           <br><br>
