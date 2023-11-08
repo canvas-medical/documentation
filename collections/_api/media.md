@@ -14,7 +14,7 @@ sections:
           - name: status
             description: >-
               The current state of the media<br><br>Supported codes for create interactions are: **completed**, **entered-in-error**
-            type: status
+            type: string
           - name: subject
             description: Who/What this Media is a record of
             type: json
@@ -42,12 +42,27 @@ sections:
               Comments made about the media<br><br>
               The note attribute is an array of JSON objects, each of which contains a text attribute that contains the text of a comment that will be attached to the inserted media on the UI.
             type: array[json]
-        endpoints: [create]
+        endpoints: [create, read, search]
         create:
           description: Create a Media resource.<br><br>Media resources that are created will appear as a [Visual Exam Finding](https://canvas-medical.zendesk.com/hc/en-us/articles/360057916493-Command-Visual-Exam-Finding) in a patient's chart.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: media-create-request
           example_response: media-create-response
+        read:
+          description: Read a Media resource.
+          responses: [200, 401, 403, 404]
+          example_request: media-read-request
+          example_response: media-read-response
+        update:
+          description: Update an Media resource.
+          responses: [200, 400, 401, 403, 404, 405, 412, 422]
+          example_request: media-update-request
+          example_response: media-update-response
+        search:
+          description: Search for Media resources.
+          responses: [200, 400, 401, 403]
+          example_request: media-search-request
+          example_response: media-search-response
 ---
 
 <div id="media-create-request">
@@ -141,4 +156,219 @@ print(response.text)
 
 <div id="media-create-response">
 {% include create-response.html %}
+</div>
+
+<div id="media-read-request">
+{%  include read-request.html resource_type="Media" %}
+</div>
+
+<div id="media-read-response">
+
+  {% tabs media-read-response %}
+
+    {% tab media-read-response 200 %}
+```json
+{
+    "resourceType": "Media",
+    "id": "729e5242-bad6-4bd7-905d-9716ae262971",
+    "status": "completed",
+    "subject": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
+        "type": "Patient"
+    },
+    "encounter": {
+        "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+    },
+    "operator": {
+        "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+    },
+    "content": {
+        "contentType": "image/jpeg",
+        "url": "https://canvas-client-media.s3.amazonaws.com/example/20231004_154853_07a4ecdae69d4870b6f60398b28e2839.jpg?AWSAccessKeyId=AKIAQB7SIDR7G73XKHCY&Signature=l3gnPv9wgYhdaZ2ba5RlZYrFCu0%3D&Expires=1696473402",
+        "title": "Image title"
+    },
+    "note": [
+        {
+            "text": "Note #1"
+        },
+        {
+            "text": "Note #2"
+        }
+    ]
+}
+```
+    {% endtab %}
+
+    {% tab media-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab media-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab media-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown Media resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>
+
+<div id="media-search-request">
+{% include search-request.html resource_type="Media" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+</div>
+
+<div id="media-search-response">
+
+  {% tabs media-search-response %}
+
+    {% tab media-search-response 200 %}
+```json
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/Media?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Media?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Media?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Media",
+                "id": "729e5242-bad6-4bd7-905d-9716ae262971",
+                "status": "completed",
+                "subject": {
+                    "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
+                    "type": "Patient"
+                },
+                "encounter": {
+                    "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
+                },
+                "operator": {
+                    "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
+                },
+                "content": {
+                    "contentType": "image/jpeg",
+                    "url": "https://canvas-client-media.s3.amazonaws.com/example/20231004_154853_07a4ecdae69d4870b6f60398b28e2839.jpg?AWSAccessKeyId=AKIAQB7SIDR7G73XKHCY&Signature=l3gnPv9wgYhdaZ2ba5RlZYrFCu0%3D&Expires=1696473402",
+                    "title": "Image title"
+                },
+                "note": [
+                    {
+                        "text": "Note #1"
+                    },
+                    {
+                        "text": "Note #2"
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+    {% endtab %}
+
+    {% tab media-search-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab media-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab media-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
