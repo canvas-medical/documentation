@@ -119,3 +119,6 @@ If you're using the Authorization Code Flow, you need to pass scopes as part of 
 Since Canvas currently works on a User level (e.g., the logged-in user isn't a Patient), the most relevant scopes can be found [here](https://www.hl7.org/fhir/smart-app-launch/scopes-and-launch-context.html#user-level-scopes).
 
 In short, they have the form: `user/resourceType.(read|write|*)`, where `resourceType` can be one of the supported resources (e.g., `Patient, Practitioner, etc) or a wildcard `*`.
+
+## Additional reading
+- [Authentication Best Practices](/api/authentication-best-practices)
