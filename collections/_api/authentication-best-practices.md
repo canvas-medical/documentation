@@ -113,7 +113,7 @@ if __name__ == '__main__':
         # we have the wrong expiration date
         access_token = get_new_auth_token()
         headers = { "Authorization": f"Bearer {access_token}" }
-        response = requests.request("GET", f"{FUMAGE_BASE_URL}/Patient?name=Briddle", headers=headers)
+        response = requests.get(f"{FUMAGE_BASE_URL}/Patient?name=Briddle", headers=headers)
 
         if response.status_code == 401:
             # limit retries but throw a specific exception for authentication related issues
