@@ -49,7 +49,7 @@ sections:
 
           **`sexual-orientation`**
           <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation](http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation)
+          http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation
           <br><br>
           Sexual orientation of the patient. Supported values are:
 
