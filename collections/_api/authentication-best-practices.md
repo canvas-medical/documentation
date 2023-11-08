@@ -80,7 +80,7 @@ def get_new_auth_token():
     )
     headers = { "Content-Type": "application/x-www-form-urlencoded", }
 
-    response = requests.request("POST", f"{url}/auth/token/", headers=headers, data=payload)
+    response = requests.post(f"{url}/auth/token/", headers=headers, data=payload)
 
     if response.status_code == 200:
         access_token = response.json()["access_token"]
