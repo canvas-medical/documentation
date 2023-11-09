@@ -21,6 +21,8 @@ api_canvas_fhir:
    url: /api/quickstart/
  - title: "Customer Authentication"
    url: /api/customer-authentication/
+ - title: Authentication Best Practices
+   url: /api/authentication-best-practices/
  - title: "Conditional Requests"
    url: /api/conditional-requests/
  - title: "Pagination"
@@ -305,8 +307,6 @@ api_patient:
 api_paymentnotice:
  - title: "PaymentNotice Create"
    url: /api/paymentnotice/#create
- - title: "PaymentNotice Read"
-   url: /api/paymentnotice/#read
  - title: "PaymentNotice Search"
    url: /api/paymentnotice/#search
 api_practitioner:
@@ -405,8 +405,6 @@ sdk_workflow_kit:
    url: /sdk/change-types
  - title: "Patient Recordsets"
    url: /sdk/patient-recordsets
- - title: "FHIRHelper and FumageHelper"
-   url: /sdk/fhir-helper-and-fumage-helper"
  - title: "Settings/Secret Store"
    url: /sdk/secret-store
  - title: "Sandboxing and Allowed Imports"

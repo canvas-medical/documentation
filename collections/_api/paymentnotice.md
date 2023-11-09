@@ -74,6 +74,9 @@ sections:
                     description: >-
                       In search responses, the code of **paid** will be noted.
         search_parameters:
+          - name: _id
+            description: The Canvas-issued unique identifier of the PaymentNotice
+            type: string
           - name: request
             type: string
             description: A reference to the patient whose balance the payment was applied to.
