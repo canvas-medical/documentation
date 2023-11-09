@@ -6,7 +6,7 @@ layout: apipage
 
 To get you started quickly, the Canvas sandbox APIs authenticate requests using a long-lived Bearer token explained in our [Create a Sandbox Environment Doc](/guides/sandbox)  
 
-If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) to get you set up. 
+If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) and [Authentication Best Practices](/api/authentication-best-practices) to get you set up.
 
 ## Create a patient
 
@@ -21,17 +21,17 @@ curl -i --location 'https://fumage-<sandbox-name>.canvasmedical.com/Patient' \
         "extension": [
             {
                 "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                "valueCode": "M"
+                "valueCode": "F"
             }
         ],
+        "gender": "female",
         "active": true,
         "name": [
             {
                 "use": "official",
-                "family": "Bahar",
+                "family": "Mitko",
                 "given": [
-                    "Issam",
-                    "Khuzaimah"
+                    "Salina"
                 ]
             }
         ],

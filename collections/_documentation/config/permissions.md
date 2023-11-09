@@ -35,7 +35,7 @@ Auth groups for model permissions are managed by Canvas. They cannot be altered.
 
 ## Object permissions
 
-Follow [these instructions]({{site.baseurl}}/documentation/patient-groups) to create patient groups. When creating them, there is an option to use them for permissions. Selecting yes will automatically create object-based auth groups. 
+Follow [these instructions](/documentation/patient-groups){:target="_blank"} to create patient groups. When creating them, there is an option to use them for permissions. Selecting yes will automatically create object-based auth groups. 
 
 Object permissions will impact user experience in the following ways:
 - <b>Navigating to the patient chart:</b> If a user does not have access to a patient, they will not be able to navigate to their chart or profile. Links to the patient's chart or profile will be grayed out. If the user navigates to the URL for a patient's chart, they will encounter a generic screen with a message "You do not have permission to view this data".
@@ -52,7 +52,7 @@ Every instance has a default auth group called <b>“All Patients”</b>. If a s
 
 ### Default permissions based on role
 
-When configuring [roles]({{site.baseurl}}/documentation/roles), you can set default auth groups. Every time a new staff is created with that role, they will automatically inherit these auth groups.
+When configuring [roles](/documentation/roles){:target="_blank"}, you can set default auth groups. Every time a new staff is created with that role, they will automatically inherit these auth groups.
 
 Updates to roles have the following impact on auth groups assigned to staff:
 - If the default auth groups are changed after a staff is created, it will have no impact on their assigned auth groups.

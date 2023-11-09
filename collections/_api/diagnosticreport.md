@@ -43,7 +43,7 @@ sections:
             description: Observations
           - name: presentedForm
             type: array[json]
-            description: Entire report as issued
+            description: Entire report as issued. This field is only returned in read responses and is not returned search responses.
         search_parameters:
           - name: _id
             type: string
@@ -272,12 +272,6 @@ sections:
                         "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e",
                         "type": "Practitioner"
                     }
-                ],
-                "presentedForm":
-                [
-                    {
-                        "url": "https://canvas-client-media.s3.amazonaws.com/local/PDF_VLHGufm.pdf?AWSAccessKeyId=xxxx&Signature=xxxx&Expires=1694807775"
-                    }
                 ]
             }
         },
@@ -323,12 +317,6 @@ sections:
                     {
                         "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e",
                         "type": "Practitioner"
-                    }
-                ],
-                "presentedForm":
-                [
-                    {
-                        "url": "https://canvas-client-media.s3.amazonaws.com/local/PDF_kS8w1sl.pdf?AWSAccessKeyId=xxxx&Signature=xxxx&Expires=1694808176"
                     }
                 ]
             }
