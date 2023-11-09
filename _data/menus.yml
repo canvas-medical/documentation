@@ -21,6 +21,8 @@ api_canvas_fhir:
    url: /api/quickstart/
  - title: "Customer Authentication"
    url: /api/customer-authentication/
+ - title: Authentication Best Practices
+   url: /api/authentication-best-practices/
  - title: "Conditional Requests"
    url: /api/conditional-requests/
  - title: "Pagination"
@@ -332,6 +334,8 @@ api_questionnaireresponse:
    url: /api/questionnaireresponse/#create
  - title: "QuestionnaireResponse Read"
    url: /api/questionnaireresponse/#read
+ - title: "QuestionnaireResponse Update"
+   url: /api/questionnaireresponse/#update
  - title: "QuestionnaireResponse Search"
    url: /api/questionnaireresponse/#search
 api_schedule:

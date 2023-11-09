@@ -74,10 +74,13 @@ sections:
                     description: >-
                       In search responses, the code of **paid** will be noted.
         search_parameters:
+          - name: _id
+            description: The Canvas-issued unique identifier of the PaymentNotice
+            type: string
           - name: request
             type: string
             description: A reference to the patient whose balance the payment was applied to.
-        endpoints: [create, search]
+        endpoints: [create, read, search]
         create:
           description: >-
             Create a PaymentNotice resource.<br><br>
@@ -88,6 +91,11 @@ sections:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: paymentnotice-create-request
           example_response: paymentnotice-create-response
+        read:
+          description: Read a PaymentNotice resource.
+          responses: [200, 401, 403, 404]
+          example_request: paymentnotice-read-request
+          example_response: paymentnotice-read-response
         search:
           description: Search for PaymentNotice resources.
           responses: [200, 400, 401, 403]
@@ -162,6 +170,102 @@ print(response.text)
 
 <div id="paymentnotice-create-response">
 {% include create-response.html %}
+</div>
+
+<div id="paymentnotice-read-request">
+{% include read-request.html resource_type="PaymentNotice" %}
+</div>
+
+<div id="paymentnotice-read-response">
+
+  {% tabs paymentnotice-read-response %}
+
+    {% tab paymentnotice-read-response 200 %}
+```json
+{
+    "resourceType": "PaymentNotice",
+    "id": "297e160c-8246-4054-8023-554d8e14c8c8",
+    "status": "active",
+    "request": {
+        "reference": "Patient/3f688bb915d04e168dbfa635da4ab259",
+        "type": "Patient"
+    },
+    "created": "2023-10-17T18:27:59.232743+00:00",
+    "payment": {
+        "display": "Unused"
+    },
+    "recipient": {
+        "display": "Unused"
+    },
+    "amount": {
+        "value": 25.0,
+        "currency": "USD"
+    },
+    "paymentStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/paymentstatus",
+                "code": "paid"
+            }
+        ]
+    }
+}
+```
+    {% endtab %}
+
+    {% tab paymentnotice-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab paymentnotice-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab paymentnotice-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown PaymentNotice resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="paymentnotice-search-request">

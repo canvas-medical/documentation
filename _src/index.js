@@ -10,5 +10,6 @@ import '../_js/filtertag';
 import '../_js/getheight';
 import '../_js/jekylltabs';
 import '../_js/roguetoolbar';
+import '../_js/scrollstate';
 import '../_js/tocaccordion';
 import '../_js/toggle';

@@ -1,0 +1,106 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "gcc@latest": {
+      "last_modified": "2023-09-27T18:02:17Z",
+      "resolved": "github:NixOS/nixpkgs/517501bcf14ae6ec47efd6a17dda0ca8e6d866f9#gcc13",
+      "source": "devbox-search",
+      "version": "13.2.0",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/9y5z6hys1dp9fsn9iwh96n3y4mzr49dy-gcc-wrapper-13.2.0"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/060xpczv2c9x5hgakvrjlahacppygag6-gcc-wrapper-13.2.0"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/2bf9nr233drw86z518pakcqkwm3vqhyj-gcc-wrapper-13.2.0"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/3779srln4c6qfgvdx09nx3qawwxswmaa-gcc-wrapper-13.2.0"
+        }
+      }
+    },
+    "gnumake@latest": {
+      "last_modified": "2023-09-27T18:02:17Z",
+      "resolved": "github:NixOS/nixpkgs/517501bcf14ae6ec47efd6a17dda0ca8e6d866f9#gnumake",
+      "source": "devbox-search",
+      "version": "4.4.1",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/221p2yp3dlb6dxr93iidq4gpx9i25n81-gnumake-4.4.1"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/7j6z1qfnwbl6ixa7gwki112hp1rk7f55-gnumake-4.4.1"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/gy3qhhljpwjhmn6s4l2hnwh1nwg0p779-gnumake-4.4.1"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/5rdxplg3cczslq4banvk3449ry5k9hx7-gnumake-4.4.1"
+        }
+      }
+    },
+    "nodejs@latest": {
+      "last_modified": "2023-10-21T11:05:41Z",
+      "resolved": "github:NixOS/nixpkgs/44881e03af1c730cbb1d72a4d41274a2c957813a#nodejs_21",
+      "source": "devbox-search",
+      "version": "21.0.0",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/0bii7gbhm1ap01wik3bvpimj96mg5x9b-nodejs-21.0.0"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/4ir5dxb84zc41wric6k52bjrl7airzrw-nodejs-21.0.0"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/gakpbn91pkljsfys8rw35bhb019zws9h-nodejs-21.0.0"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/3w5mc8ym9lc117z0j701dad7cg69arsz-nodejs-21.0.0"
+        }
+      }
+    },
+    "ruby_3_1@latest": {
+      "last_modified": "2023-09-27T18:02:17Z",
+      "plugin_version": "0.0.2",
+      "resolved": "github:NixOS/nixpkgs/517501bcf14ae6ec47efd6a17dda0ca8e6d866f9#ruby",
+      "source": "devbox-search",
+      "version": "3.1.4",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/mva5k2vrfz42a7k8zrwq0zxkgn4dwjzl-ruby-3.1.4"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/r9pzs21sn0r7qbhwvd1x2d9waccjnrwc-ruby-3.1.4"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/7xb6s42vk99ay217r7v6kgjsf7wmggnk-ruby-3.1.4"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/5xbwwbyjmc1xvjzhghk6r89rn4ylidv8-ruby-3.1.4"
+        }
+      }
+    },
+    "yarn@latest": {
+      "last_modified": "2023-09-27T18:02:17Z",
+      "resolved": "github:NixOS/nixpkgs/517501bcf14ae6ec47efd6a17dda0ca8e6d866f9#yarn",
+      "source": "devbox-search",
+      "version": "1.22.19",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/bgskrpwr2mhjz8iaiwffqm3yp513dp50-yarn-1.22.19"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/lvnq6659c1ll4h0zpbjp6syqm5szhjsp-yarn-1.22.19"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/1i5grwcqqxiaid655ba6a59j46p642ix-yarn-1.22.19"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/i2d711xk76lzfd817wrg76czlljq2yjv-yarn-1.22.19"
+        }
+      }
+    }
+  }
+}

@@ -246,14 +246,11 @@ sections:
                     type: date
           - name: photo
             type: array[json]
-            description: Image of the patient. Data should be passed as a base64-encoded string. This image shows on the patient avatar in the Canvas UI.
+            description: Image of the patient. This image shows on the patient avatar in the Canvas UI.
             create_description: >-
               When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
             update_description: >-
               When updating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
-            attributes:
-              - name: url
-                type: string
           - name: contact
             type: array[json]
             required: false
@@ -330,11 +327,11 @@ sections:
             type: string
             description: >-
                 The Canvas-issued MRN or a saved identifier from an external system. <br><br><b>Examples:</b><br><br>
-                <code>/Patient?identifier=abc123</code> will return patients with an identifier of “abc123” issued by any system, including Canvas-issued MRNs<br><br>
-                <code>/Patient?identifier=foo|abc123</code> will return patients with an identifier of “abc123" issued by the system named “foo” <br><br>
-                <code>/Patient?identifier=http://canvasmedical.com|012345</code> will return the patient with the Canvas-issued MRN of “012345"<br><br>
-                <code>/Patient?identifier=foo|</code> will return all patients with an identifier issued by the system named “foo”<br><br>
-                <code>/Patient?identifier=|abc123</code> will return patients with an identifier of “abc123" issued by the system named “” (empty string)
+                <code>/Patient?identifier=abc123</code> will return patients with an identifier of "abc123" issued by any system, including Canvas-issued MRNs<br><br>
+                <code>/Patient?identifier=foo|abc123</code> will return patients with an identifier of "abc123" issued by the system named "foo" <br><br>
+                <code>/Patient?identifier=http://canvasmedical.com|012345</code> will return the patient with the Canvas-issued MRN of "012345"<br><br>
+                <code>/Patient?identifier=foo|</code> will return all patients with an identifier issued by the system named "foo"<br><br>
+                <code>/Patient?identifier=|abc123</code> will return patients with an identifier of "abc123" issued by the system named "" (empty string)
           - name: name
             type: string
             description: Part of a first or last name

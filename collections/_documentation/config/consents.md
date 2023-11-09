@@ -8,7 +8,7 @@ Canvas allows users to customize the types of consents that are documented in th
 <br>
 ## Patient Consent Codings
 
-### Adding a Patient Cosent Coding
+### Adding a Patient Consent Coding
 
 To add a new patient consent, click ![role-button](/assets/images/add-patient-consent-coding.png){:width="16%"} in the top right corner and then complete the following form. 
 
@@ -33,7 +33,7 @@ To add a new patient consent, click ![role-button](/assets/images/add-patient-co
 ![consent](/assets/images/consent.png){:width="60%"}
 <br>
 <br>
-### Updating a Patient Cosent Coding
+### Updating a Patient Consent Coding
 To edit a Patient Consent Coding, click into an existing consent and make changes as needed. You can also take a bulk action to delete Patient Consent Codings by checking the boxes next to each and using delete in the action drop-down. 
 <br>
 <br>
@@ -52,5 +52,5 @@ To add a new Patient Consent Rejection Coding, click the ![role-button](/assets/
 ![Protocol framework](/assets/images/reject-consent.png){:width="60%"}
 <br>
 <br>
-### Updating a Patient Cosent Rejection Coding
+### Updating a Patient Consent Rejection Coding
 To edit a patient consent rejection coding, click into an existing rejection coding and make changes as needed. You can also take a bulk action to delete rejection codings by checking the boxes next to each and using delete in the action drop-down. 

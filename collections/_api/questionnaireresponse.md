@@ -99,7 +99,7 @@ sections:
           - name: _sort
             description: Triggers sorting of the results by a specific criteria. Accepted values are **_id** and **authored**. Use **-_id** or **-authored** to sort in descending order.
             type: string
-        endpoints: [create, read, search]
+        endpoints: [create, read, update, search]
         create:
           description: >-
             Create an QuestionnaireResponse resource.<br><br>
@@ -130,6 +130,13 @@ sections:
           responses: [200, 401, 403, 404]
           example_request: questionnaireresponse-read-request
           example_response: questionnaireresponse-read-response
+        update:
+          description: >-
+            Update a QuestionnaireResponse resource.<br><br>
+            The only type of QuestionnaireResponse update interaction that is supported by Canvas is to mark an existing QuestionnaireResponse as **entered-in-error**. No changes to other fields will be processed.
+          responses: [200, 400, 401, 403, 404, 405, 412, 422]
+          example_request: questionnaireresponse-update-request
+          example_response: questionnaireresponse-update-response
         search:
           description: Search for QuestionnaireResponse resources.
           responses: [200, 400, 401, 403]
@@ -439,6 +446,173 @@ print(response.text)
 
   {% endtabs %}
 
+</div>
+
+<div id="questionnaireresponse-update-request">
+
+  {% tabs questionnaireresponse-update-request %}
+
+    {% tab questionnaireresponse-update-request curl %}
+```shell
+curl --request PUT \
+     --url 'https://fumage-example.canvasmedical.com/QuestionnaireResponse/<id>' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+    "resourceType": "QuestionnaireResponse",
+    "id": "e76e44b4-4e68-4f72-b1c3-1de528a3bb2a",
+    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "status": "entered-in-error",
+    "subject": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
+        "type": "Patient"
+    },
+    "encounter": {
+        "reference": "Encounter/ffa0bd44-997f-4ad4-8782-1a6c0ef01f1c",
+        "type": "Encounter"
+    },
+    "authored": "2022-12-19T18:11:20.914260+00:00",
+    "author": {
+        "reference": "Practitioner/9cdb7a92d6614dcfa7948f2143a9f8e8",
+        "type": "Practitioner"
+    },
+    "item": [
+        {
+            "linkId": "e2e5ddc3-a0ec-4a1b-9c53-bf2e2e990fe1",
+            "text": "Tobacco status",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "8517006",
+                        "display": "Former user"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "d210dc3a-3427-4f58-8707-3f38393a8416",
+            "text": "Tobacco type",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "722496004",
+                        "display": "Cigarettes"
+                    }
+                },
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "722498003",
+                        "display": "eCigarette"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "a656c6c8-ecea-403f-a430-f80899f26914",
+            "text": "Tobacco comment",
+            "answer": [
+                {
+                    "valueString": "Yep"
+                }
+            ]
+        }
+    ]
+}'
+```
+    {% endtab %}
+
+    {% tab questionnaireresponse-update-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/QuestionnaireResponse/<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+payload = {
+    "resourceType": "QuestionnaireResponse",
+    "id": "e76e44b4-4e68-4f72-b1c3-1de528a3bb2a",
+    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "status": "entered-in-error",
+    "subject": {
+        "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
+        "type": "Patient"
+    },
+    "encounter": {
+        "reference": "Encounter/ffa0bd44-997f-4ad4-8782-1a6c0ef01f1c",
+        "type": "Encounter"
+    },
+    "authored": "2022-12-19T18:11:20.914260+00:00",
+    "author": {
+        "reference": "Practitioner/9cdb7a92d6614dcfa7948f2143a9f8e8",
+        "type": "Practitioner"
+    },
+    "item": [
+        {
+            "linkId": "e2e5ddc3-a0ec-4a1b-9c53-bf2e2e990fe1",
+            "text": "Tobacco status",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "8517006",
+                        "display": "Former user"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "d210dc3a-3427-4f58-8707-3f38393a8416",
+            "text": "Tobacco type",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "722496004",
+                        "display": "Cigarettes"
+                    }
+                },
+                {
+                    "valueCoding": {
+                        "system": "http://snomed.info/sct",
+                        "code": "722498003",
+                        "display": "eCigarette"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "a656c6c8-ecea-403f-a430-f80899f26914",
+            "text": "Tobacco comment",
+            "answer": [
+                {
+                    "valueString": "Yep"
+                }
+            ]
+        }
+    ]
+}
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.text)
+```
+    {% endtab %}
+
+  {% endtabs %}
+
+</div>
+
+<div id="questionnaireresponse-update-response">
+{% include update-response.html resource_type="QuestionnaireResponse" %}
 </div>
 
 <div id="questionnaireresponse-search-request">
