@@ -2225,116 +2225,116 @@ print(response.text)
                 ],
                 "contact":
                 [
-                  {
-                      "id": "1ba81cb4-7f97-429d-b0d8-4c4f067b11a5",
-                      "extension":
-                      [
-                          {
-                              "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                              "valueBoolean": true
-                          },
-                          {
-                              "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                              "valueBoolean": true
-                          }
-                      ],
-                      "relationship":
-                      [
-                          {
-                              "coding": [
-                                  {
-                                      "system": "http://schemas.canvasmedical.com/fhir/contact-category",
-                                      "code": "ARI",
-                                      "display": "Authorized for release of information"
-                                  },
-                                  {
-                                      "system": "http://schemas.canvasmedical.com/fhir/contact-category",
-                                      "code": "POA",
-                                      "display": "Power of attorney"
-                                  },
-                                  {
-                                      "system": "http://schemas.canvasmedical.com/fhir/contact-category",
-                                      "code": "EMC",
-                                      "display": "Emergency contact"
-                                  }
-                              ],
-                              "text": "Spouse"
-                          }
-                      ],
-                      "name":
-                      {
-                          "text": "Dan Jones"
-                      },
-                      "telecom":
-                      [
-                          {
-                              "system": "email",
-                              "value": "danjones@example.com"
-                          }
-                      ]
-                  },
-                  {
-                      "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
-                      "extension":
-                      [
-                          {
-                              "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                              "valueBoolean": false
-                          },
-                          {
-                              "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                              "valueBoolean": false
-                          }
-                      ],
-                      "relationship":
-                      [
-                          {
-                              "text": "Mother"
-                          }
-                      ],
-                      "name":
-                      {
-                          "text": "Linda Stewart"
-                      },
-                      "telecom":
-                      [
-                          {
-                              "system": "phone",
-                              "value": "5557327068"
-                          }
-                      ]
-                  },
-                  {
-                      "id": "30639a10-18c2-4222-8d26-32b2ca36a1bb",
-                      "extension":
-                      [
-                          {
-                              "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                              "valueBoolean": false
-                          },
-                          {
-                              "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                              "valueBoolean": false
-                          }
-                      ],
-                      "relationship":
-                      [
-                          {
-                              "text": "Father"
-                          }
-                      ],
-                      "name":
-                      {
-                          "text": "Jimmy Stewart"
-                      },
-                      "telecom":
-                      [
-                          {
-                              "system": "email",
-                              "value": "j.stewart@example.com"
-                          }
-                      ]
-                  }
+                    {
+                        "id": "1ba81cb4-7f97-429d-b0d8-4c4f067b11a5",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                                "valueBoolean": true
+                            }
+                        ],
+                        "relationship":
+                        [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "http://schemas.canvasmedical.com/fhir/contact-category",
+                                        "code": "ARI",
+                                        "display": "Authorized for release of information"
+                                    },
+                                    {
+                                        "system": "http://schemas.canvasmedical.com/fhir/contact-category",
+                                        "code": "POA",
+                                        "display": "Power of attorney"
+                                    },
+                                    {
+                                        "system": "http://schemas.canvasmedical.com/fhir/contact-category",
+                                        "code": "EMC",
+                                        "display": "Emergency contact"
+                                    }
+                                ],
+                                "text": "Spouse"
+                            }
+                        ],
+                        "name":
+                        {
+                            "text": "Dan Jones"
+                        },
+                        "telecom":
+                        [
+                            {
+                                "system": "email",
+                                "value": "danjones@example.com"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                                "valueBoolean": false
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                                "valueBoolean": false
+                            }
+                        ],
+                        "relationship":
+                        [
+                            {
+                                "text": "Mother"
+                            }
+                        ],
+                        "name":
+                        {
+                            "text": "Linda Stewart"
+                        },
+                        "telecom":
+                        [
+                            {
+                                "system": "phone",
+                                "value": "5557327068"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "30639a10-18c2-4222-8d26-32b2ca36a1bb",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                                "valueBoolean": false
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                                "valueBoolean": false
+                            }
+                        ],
+                        "relationship":
+                        [
+                            {
+                                "text": "Father"
+                            }
+                        ],
+                        "name":
+                        {
+                            "text": "Jimmy Stewart"
+                        },
+                        "telecom":
+                        [
+                            {
+                                "system": "email",
+                                "value": "j.stewart@example.com"
+                            }
+                        ]
+                    }
                 ],
                 "communication":
                 [
