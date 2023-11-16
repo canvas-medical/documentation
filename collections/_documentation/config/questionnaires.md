@@ -86,7 +86,7 @@ These are set by updating the appropriate columns within the row for each Questi
 **Custom Scoring:** This allows a narrative such as "a score of ## means..." This has to be completed by Canvas Engineering. Please create a Support request with the scoring scale and details. 
 
 ## Uploading Questionnaires
-The Questionnaire loader is available to you in your settings menu. Paste in the URL of your Questionnaires-for-Loader Spreadsheet and the name of the tab you wish to load. A preview will appear for you to confirm that the questionnaire has been built correctly. You can choose to cancel the upload if you need to fix anything within the Google Sheet and reupload it as needed. If everything looks good, click load to make available for use in Canvas. 
+The Questionnaire loader is available to you in your {%glossary admin settings%}  menu. Paste in the URL of your Questionnaires-for-Loader Spreadsheet and the name of the tab you wish to load. A preview will appear for you to confirm that the questionnaire has been built correctly. You can choose to cancel the upload if you need to fix anything within the Google Sheet and reupload it as needed. If everything looks good, click load to make available for use in Canvas. 
 
 We have enforced some validation in creating the questionnaires In order to ensure data is captured in a consistent way and can be used programmatically once collected.
 

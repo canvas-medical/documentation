@@ -1,6 +1,6 @@
-# https://github.com/erikw/jekyll-glossary_tooltip
-# - term: a_term_name           # Can contain spaces
-#  definition: A description of the term
-#  url: https://jekyllrb.com/  # Is optional
-# - term: another term
-#  definition: Some other term definition text
+- term: plugin
+  definition: A functional extension of a system.
+- term: admin settings
+  definition: <b>Admin Settings:</b> Where you configure your Canvas instance.<br><br> To navigate to your admin settings, click the triple line menu in the top left corner of your window and select <em>settings</em>.
+- term: MRN
+  definition: <b>MRN:</b> Medical Record Number. Canvas generates an MRN as a unique identifier for each patient. It can be found in the patient banner.

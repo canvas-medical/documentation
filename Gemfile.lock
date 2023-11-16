@@ -58,6 +58,8 @@ GEM
       verbal_expressions (~> 0.1.5)
     jekyll-feed (0.17.0)
       jekyll (>= 3.7, < 5.0)
+    jekyll-glossary_tooltip (1.5.0)
+      jekyll (>= 3.7, < 5.0)
     jekyll-menus (0.6.1)
       jekyll (>= 3.6, < 5.0)
     jekyll-sass-converter (2.2.0)
@@ -129,6 +131,7 @@ DEPENDENCIES
   jekyll (= 4.2.1)
   jekyll-algolia
   jekyll-feed
+  jekyll-glossary_tooltip (~> 1.5)
   jekyll-menus
   jekyll-seo-tag
   jekyll-sitemap

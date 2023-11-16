@@ -11,7 +11,7 @@ After creating a new profile, key patient identifiers are displayed in the top l
 Use the Administrative Caption to communicate reminders/notes within the office related to insurance, copay, payments, and forms. It is visible within the profile, the detailed view of the appointment card on the schedule, the patient search when creating new appointments, and on the print view of the schedule. 
 {% include alert.html type="warning" content="The administrative caption is not visible within the Chart. Switch over to the Chart and leverage the Clinical Caption if you need to communicate with your clinicians." %}
 
-The Canvas generated MRN is available in the top navigation menu, with a button to quickly copy it. The banner will also display badges that indicate a patient's status of inactive or deceased, or both. 
+The Canvas generated {%glossary MRN%} is available in the top navigation menu, with a button to quickly copy it. The banner will also display badges that indicate a patient's status of inactive or deceased, or both. {%glossary MRN%} 
 
 
 ## Patient Demographics
@@ -20,7 +20,7 @@ The patient demographics section allows you to capture additional fields when cr
 ### Active Status
 The patient's status (Active vs Inactive) can be managed using the checkbox at the top. After submitting an updated form with an unchecked box, you will see an `Inactive` badge added to the patient's banner.  
 ### Deceased Workflow
-Clicking the deceased checkbox in the top right will initiate an automated workflow that cancels future appointments, removes follow up appointment requests, and marks contact information as unverifed in order to block outgoing messages. After checking the box, a modal will ask you to enter date of death, cause of death, and comments, all of which are option. After clicking `Mark as Deceased`, those additional fields will be viewable and editable within the demographics section.
+Clicking the deceased checkbox in the top right will initiate an automated workflow that cancels future appointments, removes follow up appointment requests, and marks contact information as unverifed in order to block outgoing messages. After checking the box, a modal will ask you to enter date of death, cause of death, and comments, all of which are optional. After clicking `Mark as Deceased`, those additional fields will be viewable and editable within the demographics section.
 
 {:refdef: style="text-align: center;"}
 ![Deceased](/assets/images/deceased.gif){:width="100%"}

@@ -1,23 +1,22 @@
 ---
-title: "Chart | Chart Overview"
-layout: documentation
+title: "Chart Overview"
 ---
 
-The patient chart is a collection of all the patient’s clinical elements that have been captured previously as part of the patient care. It includes notes that are taken as part of visits, asynchronous communications, messages, letters, results from labs or testing and more. As a Canvas user, here you’ll have quick access to previously documented essential information, the timeline where you will see a chronological view of all notes and the action panel on the right side of the chart that opens when you select to view items such as tasks, refills, and documents.
+The patient chart represents a comprehensive digital collection of a patient's health information and includes all of the data captured during patient interactions. The Canvas chart was purpose built to help reduce the cognitive burden placed on clinicians. The three panel design allows for relevant data to be surfaced and/or easily accessible at the point of care. In this article, we will review how to navigate the chart and the functionality available within each of the following sections:
 
-## Chart Navigation
-Global navigation stays consistent with other areas of the Canvas application.
+1. [Global Navigation](/documentation/chart-overview/#global-navigation)
+2. Patient Card
+3. Patient Summary
+4. Patient Timeline
+5. Chart Sidepanels
+6. Canvas Chat
 
-[//]: # TODO: add a screen shot with numbers corresponding to what is below
-![Navigation](/assets/images/header.png){:width="100%"}
 
-1. The New note button allows you to add a new note into the timeline which will be described before. The timeline can be filtered by using the filter icon above.
-2. The calendar icon allows you to create an appointment for that specific patient.
-3. The timeline or sequence of notes (described below) can be filtered.
-4. Action center triggers the action panel on the right
+![chart-overview](/assets/images/chart-overview.png){:width="99%"}
 
-## Patient Summary
-The patient summary is located on the left hand side of the patient chart.  It provides a quick summary of essential patient details without having to move to search through notes or move to another screen.
+
+## Global Navigation
+The global navigation stays consistent with other areas of the Canvas application. You can access your {%glossary admin settings%}, click your logo to return to the home page, or search for a patient as needed. 
 
 ### Patient Card
 The patient card includes the following:
@@ -28,6 +27,13 @@ The patient card includes the following:
 - Patient timezone (if enabled and captured)
 
 ![Navigation](/assets/images/patient-card.png){:width="50%"}
+
+## Patient Summary
+The patient summary is located on the left hand side of the patient chart.  It provides a quick summary of essential patient details without having to move to search through notes or move to another screen.
+
+
+
+
 
 ### Social Determinants
 
@@ -50,7 +56,6 @@ The patient card includes the following:
 ### Family History
 
 ### Note
-
 
 ## Note Filter Button
 Canvas's Note Filter function allows you to easily browse the patient's clinical timeline. 
