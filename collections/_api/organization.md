@@ -14,7 +14,10 @@ sections:
             description: The identifier of the Organization
             type: string
           - name: identifier
-            description: Identifies this organization across multiple systems
+            description: >-
+               Identifies this organization across multiple systems.<br><br>
+               When relevant, group NPI values will be found here.  Other identifiers, such as
+               insurance payor values, are not yet supported.<br><br>
             type: array[json]
           - name: active
             description: Whether the organization's record is still in active use

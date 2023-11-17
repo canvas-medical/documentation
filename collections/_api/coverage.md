@@ -59,7 +59,33 @@ sections:
             type: array[json]
             description: >-
               Issuer of the policy<br><br>
-              Supported resource types: **Organization** - a single iteration is supported.
+              Two methods for creating this data are supported:
+               - sending an [**Organization**](/api/organization) reference in `payor[0].reference`
+               ```json
+              "payor": [
+                    {
+                        "reference": "Organization/6741b035-2846-45b3-b7a3-251f7b7fc728",
+                        "type": "Organization",
+                        "display": "Medicare Advantage"
+                    }
+                  ],
+               ```
+               For **Read/Search**, this **Organization** reference will always be returned.
+              <br>
+               - sending a `payor[0].identifier.value` corresponding to the Coverage's payor id.  For now, these values can only be found in the Insurers Admin view in Canvas.
+               ```json
+                "payor": [
+                    {
+                      "identifier": {
+                        "system": "https://www.claim.md/services/era/",
+                        "value": "13162"
+                      },
+                      "display": "1199 National Benefit Fund"
+                    }
+                  ],
+               ```
+               <br>
+
             required: true
           - name: class
             type: json
