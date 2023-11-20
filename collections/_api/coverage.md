@@ -17,7 +17,7 @@ sections:
           - name: status
             description: >-
               The status of the Coverage<br><br>
-              Supported codes for create interactions: **active**, **entered-in-error** 
+              Supported codes for create interactions: **active**, **cancelled** 
             type: string
             required: true
           - name: type
@@ -733,7 +733,7 @@ print(response.text)
       "resource": {
         "resourceType": "Coverage",
         "id": "171a7243-f568-48cb-8052-3f2990dac1cd",
-        "status": "entered-in-error",
+        "status": "cancelled",
         "subscriber": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
@@ -770,7 +770,7 @@ print(response.text)
       "resource": {
         "resourceType": "Coverage",
         "id": "27f42512-23e6-4c17-8569-80e14792b6f8",
-        "status": "entered-in-error",
+        "status": "cancelled",
         "subscriber": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
