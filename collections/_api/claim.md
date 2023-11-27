@@ -73,13 +73,27 @@ sections:
               `modifier` specifies the list of charge modifier codings. Canvas accepts the first element where the coding's system is **http://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers**. Canvas uses the 2 character modifiers from this ValueSet.<br><br>
             type: array[json]
             required: true
-        endpoints: [create]
+        search_parameters:
+          - name: _id
+            type: string
+            description: The Canvas resource identifier of the Claim
+          - name: patient
+            type: string
+            description: Patient receiving the products or services
+        endpoints: [create, read, search]
         create:
           description: Create a Claim resource.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: claim-create-request
           example_response: claim-create-response
-          
+        read:
+          responses: [200, 401, 403, 404]
+          example_request: claim-read-request
+          example_response: claim-read-response
+        search:
+          responses: [200, 400, 401, 403]
+          example_request: claim-search-request
+          example_response: claim-search-response
 ---
 
 <div id="claim-create-request">
@@ -318,4 +332,377 @@ print(response.text)
 
 <div id="claim-create-response">
 {% include create-response.html %}
+</div>
+
+<div id="claim-read-request">
+{% include read-request.html resource_type="Claim" %}
+</div>
+
+<div id="claim-read-response">
+{% tabs claim-read-response %}
+
+{% tab claim-read-response 200 %}
+```json
+{
+    "resourceType": "Claim",
+    "id": "e4df0a15-d98c-400e-ad46-54eeb13f2753",
+    "status": "active",
+    "type": {
+        "coding": [
+            {
+                "system": "http://hl7.org/fhir/ValueSet/claim-type",
+                "code": "professional"
+            }
+        ]
+    },
+    "use": "claim",
+    "patient": {
+        "reference": "Patient/4dc9d97b71924de58b54a9a91a8250dd",
+        "type": "Patient"
+    },
+    "created": "2023-11-16",
+    "provider": {
+        "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+        "type": "Practitioner"
+    },
+    "priority": {
+        "coding": [
+            {
+                "system": "http://hl7.org/fhir/ValueSet/process-priority",
+                "code": "normal"
+            }
+        ]
+    },
+    "diagnosis": [
+        {
+            "sequence": 1,
+            "diagnosisCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/icd-10",
+                        "code": "J940",
+                        "display": "Chylous effusion"
+                    }
+                ]
+            }
+        },
+        {
+            "sequence": 2,
+            "diagnosisCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/ValueSet/icd-10",
+                        "code": "L639",
+                        "display": "Alopecia areata, unspecified"
+                    }
+                ]
+            }
+        }
+    ],
+    "insurance": [
+        {
+            "sequence": 1,
+            "focal": true,
+            "coverage": {
+                "reference": "Coverage/39f37e33-bb0b-4e6b-88ca-56ea94629974",
+                "type": "Coverage"
+            }
+        }
+    ],
+    "item": [
+        {
+            "sequence": 1,
+            "diagnosisSequence": [
+                1,
+                2
+            ],
+            "productOrService": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code",
+                        "code": "99211",
+                        "display": "Office outpatient visit 5 minutes"
+                    }
+                ]
+            },
+            "quantity": {
+                "value": 1
+            },
+            "unitPrice": {
+                "value": 50.0
+            },
+            "net": {
+                "value": 50.0
+            }
+        },
+        {
+            "sequence": 2,
+            "diagnosisSequence": [
+                1
+            ],
+            "productOrService": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code",
+                        "code": "77012",
+                        "display": "Ct guidance needle placement"
+                    }
+                ]
+            },
+            "quantity": {
+                "value": 1
+            },
+            "unitPrice": {
+                "value": 200.0
+            },
+            "net": {
+                "value": 200.0
+            }
+        }
+    ]
+}
+```
+{% endtab %}
+
+{% tab coverage-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+
+{% tab coverage-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+
+{% tab coverage-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown coverage resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+      }
+    }
+  ]
+}
+```
+{% endtab %}
+
+{% endtabs %}
+
+</div>
+
+<div id="claim-search-request">
+{% include search-request.html resource_type="Claim" search_string="patient=Patient/4dc9d97b71924de58b54a9a91a8250dd" %}
+</div>
+
+<div id="claim-search-response">
+{% tabs coverage-search-response %}
+{% tab coverage-search-response 200 %}
+```json
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
+        {
+            "relation": "self",
+            "url": "/Claim?patient=4dc9d97b71924de58b54a9a91a8250dd&_count=10&_offset=0"
+        },
+        {
+            "relation": "first",
+            "url": "/Claim?patient=4dc9d97b71924de58b54a9a91a8250dd&_count=10&_offset=0"
+        },
+        {
+            "relation": "last",
+            "url": "/Claim?patient=4dc9d97b71924de58b54a9a91a8250dd&_count=10&_offset=0"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Claim",
+                "id": "e4df0a15-d98c-400e-ad46-54eeb13f2753",
+                "status": "active",
+                "type": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/ValueSet/claim-type",
+                            "code": "professional"
+                        }
+                    ]
+                },
+                "use": "claim",
+                "patient": {
+                    "reference": "Patient/4dc9d97b71924de58b54a9a91a8250dd",
+                    "type": "Patient"
+                },
+                "created": "2023-11-16",
+                "provider": {
+                    "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                    "type": "Practitioner"
+                },
+                "priority": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/ValueSet/process-priority",
+                            "code": "normal"
+                        }
+                    ]
+                },
+                "diagnosis": [
+                    {
+                        "sequence": 1,
+                        "diagnosisCodeableConcept": {
+                            "coding": [
+                                {
+                                    "system": "http://hl7.org/fhir/ValueSet/icd-10",
+                                    "code": "J940",
+                                    "display": "Chylous effusion"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sequence": 2,
+                        "diagnosisCodeableConcept": {
+                            "coding": [
+                                {
+                                    "system": "http://hl7.org/fhir/ValueSet/icd-10",
+                                    "code": "L639",
+                                    "display": "Alopecia areata, unspecified"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "insurance": [
+                    {
+                        "sequence": 1,
+                        "focal": true,
+                        "coverage": {
+                            "reference": "Coverage/39f37e33-bb0b-4e6b-88ca-56ea94629974",
+                            "type": "Coverage"
+                        }
+                    }
+                ],
+                "item": [
+                    {
+                        "sequence": 1,
+                        "diagnosisSequence": [
+                            1,
+                            2
+                        ],
+                        "productOrService": {
+                            "coding": [
+                                {
+                                    "system": "http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code",
+                                    "code": "99211",
+                                    "display": "Office outpatient visit 5 minutes"
+                                }
+                            ]
+                        },
+                        "quantity": {
+                            "value": 1
+                        },
+                        "unitPrice": {
+                            "value": 50.0
+                        },
+                        "net": {
+                            "value": 50.0
+                        }
+                    },
+                    {
+                        "sequence": 2,
+                        "diagnosisSequence": [
+                            1
+                        ],
+                        "productOrService": {
+                            "coding": [
+                                {
+                                    "system": "http://hl7.org/fhir/us/core/ValueSet/us-core-procedure-code",
+                                    "code": "77012",
+                                    "display": "Ct guidance needle placement"
+                                }
+                            ]
+                        },
+                        "quantity": {
+                            "value": 1
+                        },
+                        "unitPrice": {
+                            "value": 200.0
+                        },
+                        "net": {
+                            "value": 200.0
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+    {% endtab %}
+
+    {% tab coverage-search-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab coverage-search-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+{% endtabs %}
 </div>
