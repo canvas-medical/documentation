@@ -309,6 +309,8 @@ api_patient:
 api_paymentnotice:
  - title: "PaymentNotice Create"
    url: /api/paymentnotice/#create
+ - title: PaymentNotice Read
+   url: /api/paymentnotice/#read
  - title: "PaymentNotice Search"
    url: /api/paymentnotice/#search
 api_practitioner:
