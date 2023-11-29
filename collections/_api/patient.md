@@ -22,12 +22,12 @@ sections:
           <br><br>
           Supported values are:
 
-            | value | description |
-            | :---- | ---------   |
-            | **M** | Male        |
-            | **F** | Female      |
-            | **O** | Other       |
-            | **U** | Unknown     |
+            | value   | description |
+            | :----   | ---------   |
+            | **M**   | Male        |
+            | **F**   | Female      |
+            | **OTH** | Other       |
+            | **UNK** | Unknown     |
 
           **`genderIdentity`**
           <br><br>
