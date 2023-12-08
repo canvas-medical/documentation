@@ -15,14 +15,14 @@ Currently these steps are taken by Canvas.
 ## How to request and view Medication History
 
 There are two ways to request medical history:
-- **Manual Requests**: Through the patient’s profile in the Admin section. Navigate to `Admin > Patients` and click “Medication history” next to a patient’s name.
+- **Manual Requests**: Through the patient’s profile in the Admin section. Navigate to `Admin > Patients` and click “Medication history” next to a patient’s name. Only users that have a valid provider NPI associated with their profile can make a request.
 - **Automatic Requests**: A scheduled task runs every 10 minutes to check for patients needing a daily medication history request. Requests are sent if not already made that calendar day.
 
 Making requests causes the following series of events to occur:
 - **Request Sent**: A `MedicationHistoryRequest` is sent to Surescripts for a patient.
 - **Response Received**: Surescripts returns a `MedicationHistoryResponse` which contains medication fill data or a denial notice.
 
-Every time a request is made, it comes from a specific provider. When making a request in the UI, the active user is the requester. When making nightly automatic requests, theres is some logic to be aware of. First the systme looks for the staff member with the care team role defined in the config `MEDICATION_HISTORY_DAILY_REQUESTS_STAFF_ROLE` for each patient. If there is no staff member with that care team role, then it falls back to the staff defined in `MEDICATION_HISTORY_DAILY_REQUESTS_DEFAULT_STAFF_USERNAME`. If neither of these is filled out there is no provider to request under and so no requests will go out.
+Every time a request is made, it comes from a specific provider. When making a request in the UI, the active user is the requester. When making nightly automatic requests, there is some logic to be aware of. First the system looks for the staff member with the care team role defined in the config `MEDICATION_HISTORY_DAILY_REQUESTS_STAFF_ROLE` for each patient. If there is no staff member with that care team role, then it falls back to the staff defined in `MEDICATION_HISTORY_DAILY_REQUESTS_DEFAULT_STAFF_USERNAME`. If neither of these is filled out there is no provider to request under and so no requests will go out.
 
 After a response has been received, Medication History can be consumed in two ways:
 - **User interface**: First, it can be viewed in the user interface in the admin section as mentioned above (`Admin > Patients` and click “Medication history” next to a patient’s name).
@@ -42,7 +42,7 @@ Both Pharmacies and PBMs will include medication data when a fill event occurs. 
 
 ### Additional guidance
 
-- **Surescripts deduplication**: Currently, deduplication is not enabled, meaning duplicate entries from PBMs and pharmacies may appear.
+- **Surescripts de-duplication**: Currently, de-duplication is not enabled, meaning duplicate entries from PBMs and pharmacies may appear.
 - **Matching algorithm**: Patient demographics from pharmacies and PBMs are used for matching, which might not always be consistent across both sources.
 - **Reasons for errors**: There are some known reasons that Surescripts will return an error. These include:
 	- Patient has special characters in name
@@ -55,7 +55,7 @@ Both Pharmacies and PBMs will include medication data when a fill event occurs. 
 For technical users who need more information about the database tables, here is a summary of the relevant tables:
 - **MedicationHistoryResponse**: This table records each response received from Surescripts. Each row in this table represents a unique response from Surescripts for a specific patient. For instance, if two requests are made on different dates and Surescripts sends responses for each, there will be two separate rows in this table, one for each response date.
 - **MedicationHistoryMedication**: This table stores specific medication data from the Surescripts responses. Each row is an instance of a fill event for a given patient. However please note that this table is pruned with every Surescripts response. Specifically, every time a new response is received, all rows in this table for the given patient and date range and overwritten. Therefore this table will always include the most up to date medication history information for all patients. As an example, if a fill was reversed and medication history is requested again, that fill would no longer appear in this table.
-- **MedicationHistoryMedicationCoding**: this table contains coding information for each medication in the above table. This is amost always NDC code.
+- **MedicationHistoryMedicationCoding**: this table contains coding information for each medication in the above table. This is almost always NDC code.
 
 Important notes regarding the tables:
 - **No Unique IDs for Fills**: Surescripts does not provide unique IDs for fill events, so it is not possible to map fill events uniquely from request to request.
