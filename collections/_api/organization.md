@@ -16,7 +16,7 @@ sections:
           - name: identifier
             description: >-
                Identifies this organization across multiple systems.<br><br>
-               When relevant, group NPI values will be found here.  Other identifiers, such as
+               When relevant, group NPI values, taxonomy ids, and tax ids will be found for relevant organizations .  Identifiers for vendors and transactors, such as
                insurance payor values, are not yet supported.<br><br>
             type: array[json]
           - name: active
@@ -29,17 +29,17 @@ sections:
             description: A contact detail for the organization
             type: array[json]
           - name: address
-            description: An address for the organization
+            description: An address for the organization.  This will include both physical and billing addresses, when available.
             type: array[json]
         search_parameters:
           - name: _id
             description: The identifier of the Organization
             type: string
           - name: address
-            description: A server defined search that may match any of the string fields in the Address, including line, city, district, state, country, postalCode, and/or text
+            description: A server defined search that may match any of the string fields in the Address, including line, city, state, and/or postalCode
             type: string
           - name: name
-            description: A portion of the organization's name or alias
+            description: A portion of the organization's name
             type: string
         endpoints: [read, search]
         read:
@@ -66,29 +66,46 @@ sections:
 ```json
 {
     "resourceType": "Organization",
-    "id": "bcf685dd-f71e-49da-b471-1ee322a8d9f4",
+    "id": "192cf534-fc40-4c68-a233-062807338635",
     "identifier": [
         {
-            "system": "http://hl7.org.fhir/sid/us-npi",
-            "value": "1144221847"
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1111111112"
+        },
+        {
+            "system": "http://nucc.org/provider-taxonomy",
+            "value": "207Q00000X"
+        },
+        {
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "TAX",
+                        "display": "Tax ID number"
+                    }
+                ]
+            },
+            "system": "urn:oid:2.16.840.1.113883.4.4",
+            "value": "123456789"
         }
     ],
     "active": true,
-    "name": "Acme Labs",
+    "name": "Canvas Training Organization",
     "telecom": [
         {
             "system": "fax",
-            "value": "5558675310",
-            "use": "work"
-        },
-        {
-            "system": "phone",
-            "value": "5558675309",
+            "value": "2314217892",
             "use": "work"
         },
         {
             "system": "email",
-            "value": "hq@acme.org",
+            "value": "example@example.com",
+            "use": "work"
+        },
+        {
+            "system": "phone",
+            "value": "9567768088",
             "use": "work"
         }
     ],
@@ -102,6 +119,17 @@ sections:
             "city": "Amherst",
             "state": "MA",
             "postalCode": "01002",
+            "country": "United States"
+        },
+        {
+            "use": "billing",
+            "type": "both",
+            "line": [
+                "1 Billing Lane"
+            ],
+            "city": "NY",
+            "state": "NY",
+            "postalCode": "11111",
             "country": "USA"
         }
     ]
@@ -165,7 +193,7 @@ sections:
 </div>
 
 <div id="organization-search-request">
-{% include search-request.html resource_type="Organization" search_string="name=acme" %}
+{% include search-request.html resource_type="Organization" search_string="name=Canvas" %}
 </div>
 
 <div id="organization-search-response">
@@ -177,48 +205,98 @@ sections:
 {
     "resourceType": "Bundle",
     "type": "searchset",
-    "total": 1,
+    "total": 2,
     "link": [
         {
             "relation": "self",
-            "url": "/Organization?name=acme&_count=10&_offset=0"
+            "url": "/Organization?name=Canvas&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Organization?name=acme&_count=10&_offset=0"
+            "url": "/Organization?name=Canvas&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Organization?name=acme&_count=10&_offset=0"
+            "url": "/Organization?name=Canvas&_count=10&_offset=0"
         }
     ],
     "entry": [
         {
             "resource": {
                 "resourceType": "Organization",
-                "id": "bcf685dd-f71e-49da-b471-1ee322a8d9f4",
-                "identifier": [
-                    {
-                        "system": "http://hl7.org.fhir/sid/us-npi",
-                        "value": "1144221847"
-                    }
-                ],
+                "id": "00000000-0000-0000-0002-000000000000",
                 "active": true,
-                "name": "Acme Labs",
+                "name": "Canvas Medical",
                 "telecom": [
                     {
-                        "system": "fax",
-                        "value": "5558675310",
-                        "use": "work"
-                    },
-                    {
                         "system": "phone",
-                        "value": "5558675309",
+                        "value": "8003701416",
                         "use": "work"
                     },
                     {
                         "system": "email",
-                        "value": "hq@acme.org",
+                        "value": "example@canvasmedical.com",
+                        "use": "work"
+                    }
+                ],
+                "address": [
+                    {
+                        "use": "work",
+                        "type": "both",
+                        "line": [
+                            "2037 Irving Street",
+                            "Suite 228"
+                        ],
+                        "city": "San Francisco",
+                        "state": "CA",
+                        "postalCode": "94122"
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Organization",
+                "id": "192cf534-fc40-4c68-a233-062807338635",
+                "identifier": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/us-npi",
+                        "value": "1111111112"
+                    },
+                    {
+                        "system": "http://nucc.org/provider-taxonomy",
+                        "value": "207Q00000X"
+                    },
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                    "code": "TAX",
+                                    "display": "Tax ID number"
+                                }
+                            ]
+                        },
+                        "system": "urn:oid:2.16.840.1.113883.4.4",
+                        "value": "123456789"
+                    }
+                ],
+                "active": true,
+                "name": "Canvas Training Organization",
+                "telecom": [
+                    {
+                        "system": "fax",
+                        "value": "2314217892",
+                        "use": "work"
+                    },
+                    {
+                        "system": "email",
+                        "value": "example@example.com",
+                        "use": "work"
+                    },
+                    {
+                        "system": "phone",
+                        "value": "9567768088",
                         "use": "work"
                     }
                 ],
@@ -232,6 +310,17 @@ sections:
                         "city": "Amherst",
                         "state": "MA",
                         "postalCode": "01002",
+                        "country": "United States"
+                    },
+                    {
+                        "use": "billing",
+                        "type": "both",
+                        "line": [
+                            "1 Billing Lane"
+                        ],
+                        "city": "NY",
+                        "state": "NY",
+                        "postalCode": "11111",
                         "country": "USA"
                     }
                 ]
