@@ -31,13 +31,14 @@ sections:
             description: >-
               The categorization of the document. Supported category codes are:<br><br>
               **clinical-note**<br>
+              **correspondence**<br>
               **educationalmaterial**<br>
               **imagingreport**<br>
               **invoicefull**<br>
               **labreport**<br>
               **patientadministrativedocument**<br>
               **referralreport**<br>
-              **uncategorizedclinicaldocument** 
+              **uncategorizedclinicaldocument**
             type: array[json]
           - name: subject
             description: >-
