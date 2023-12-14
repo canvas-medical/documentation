@@ -55,6 +55,9 @@ defaults:
 
 ### Feed settings
 feed:
+  url: "https://docs.canvasmedical.com"
+  title: Canvas Medical Release Notes
+  description: Updates 
   posts_limit: 20
   collections:
     release-notes:
