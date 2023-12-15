@@ -5,7 +5,8 @@ main:
     url: /sdk/
   - title: Guides
     url: /guides/
-
+  - title: Product Updates  
+    url: /release-notes
 api:
  - title: "Canvas FHIR"
    identifier: api_canvas_fhir
@@ -476,4 +477,14 @@ sdk_workflow_kit_value_sets:
  - title: "Result"
    url: /sdk/result
 
+releasenotes: 
+ - title: "Product Updates"
+   identifier: releasenotes_product_updates
+
+
+releasenotes_product_updates:
+ - title: "Release Notes"
+   url: /release-notes
+ - title: "Upcoming Changes"
+   url: /release-notes/upcoming-changes
 
