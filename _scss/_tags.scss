@@ -1,0 +1,33 @@
+.tag-design {
+  background-color: #ffcc00; /* Example color for 'design' tag */
+  color: #fff; /* Text color for contrast */
+  /* Other styling properties */
+}
+
+.tag-ui {
+  background-color: #cadfe3; 
+  color: #12434d; 
+  padding: 3px 9px; /* Adjust padding to create space around the text */
+  font-size: 0.8em; 
+}
+
+.tag-bugfix {
+  background-color: #f2d5d3; 
+  color: #82342f;
+  padding: 3px 9px; /* Adjust padding to create space around the text */
+  font-size: 0.8em; 
+}
+
+.tag-api {
+  background-color: #ccf0e8; 
+  color: #0c5444; 
+  padding: 3px 9px; /* Adjust padding to create space around the text */
+  font-size: 0.8em; 
+}
+
+.tag-sdk {
+  background-color: #f0d8b1; 
+  color: #855507; 
+  padding: 3px 9px; /* Adjust padding to create space around the text */
+  font-size: 0.8em; 
+}

@@ -31,6 +31,7 @@ collections:
   sdk:
     output: true
     permalink: /:collection/:title/
+
 defaults:
   - scope:
       path          : "collections/_api/**/*"
@@ -52,6 +53,7 @@ defaults:
       path          : "collections/_sdk/**/*"
     values:
       layout        : "sdk"
+
 
 ### Feed settings
 feed:
