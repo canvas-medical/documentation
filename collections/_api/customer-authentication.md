@@ -2,7 +2,7 @@
 title: "Customer Authentication"
 layout: apipage
 ---
-If you are using a [Canvas Sandbox Environment](/guides/sandbox), you can skip this step and use your Bearer Token shown on your Dashboard.
+If you are using a [Canvas Trial Environment](/guides/sandbox), you can skip this step and use your Bearer Token shown on your Interactive Guide.
 
 For our Customers that have development, staging, or production instances, you can continue below to set up authentication.
 
