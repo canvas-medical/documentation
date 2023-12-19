@@ -20,6 +20,10 @@ sections:
             required: true
             description: >-
               The status of the transmission<br><br>Supported codes for create interactions are: **unknown**
+          - name: subject
+            type: json
+            description: >-
+              Focus of the message.  Always a **Patient** reference
           - name: sent
             type: datetime
             description: When sent<br><br>**ISO 8601 format**
@@ -45,8 +49,12 @@ sections:
           - name: _id
             type: string
             description: The unique Canvas identifier of the Communication
+          - name: patient
+            type: string
+            description: >-
+              Focus of message<br><br>Supported: **Patient**
           - name: recipient
-            type: array[json]
+            type: string
             description: >-
               Message recipient<br><br>Supported: **Patient**, **Practitioner**
           - name: sender
