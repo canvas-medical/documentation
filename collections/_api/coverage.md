@@ -482,7 +482,7 @@ print(response.text)
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown coverage resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown Coverage resource 'c152eeb7-f204-4e28-acb5-c7e85390b17e'"
       }
     }
   ]

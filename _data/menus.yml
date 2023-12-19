@@ -218,6 +218,8 @@ api_coverageeligibilityrequest:
  - title: "CoverageEligibilityRequest Create"
    url: /api/coverageeligibilityrequest/#create
 api_coverageeligibilityresponse:
+ - title: "CoverageEligibilityResponse Read"
+   url: /api/coverageeligibilityresponse/#read
  - title: "CoverageEligibilityResponse Search"
    url: /api/coverageeligibilityresponse/#search
 api_device:
