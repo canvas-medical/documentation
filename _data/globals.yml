@@ -9,6 +9,6 @@ panels:
   codesample: "Request sample"
   guides: "Useful guides"
   filtertag: "Filter by tags"
-  filterdate: "Filter by date"
+  filterdate: "Jump to Month"
 footer:
   notice: Copyright © 2023 Canvas Medical Inc.
