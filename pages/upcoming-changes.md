@@ -1,4 +1,5 @@
 ---
+permalink: /product-updates/upcoming-changes/
 title: Upcoming changes
 layout: productupdates	
 date: 2023-12-01

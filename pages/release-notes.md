@@ -1,5 +1,5 @@
 ---
-permalink: /release-notes/
+permalink: /product-updates/release-notes/
 layout: releasenotes-index
 title: "Release Notes"
 ---
