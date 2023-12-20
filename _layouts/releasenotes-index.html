@@ -17,7 +17,9 @@ layout: default
 
 
       {% for item in posts %}
-      <article class="pagelayout__index__item filtertag__item filterdate__item" data-date={{ item.date | date: '%Y-%m' | slugify }} data-tag="{% for tag in item.tags %}{{tag | slugify }}{% unless forloop.last %}, {% endunless %}{% endfor %}">
+      <article class="pagelayout__index__item filtertag__item filterdate__item" data-date={{ item.date | date: '%Y-%m' |
+        slugify }}
+        data-tag="{% for tag in item.tags %}{{tag | slugify }}{% unless forloop.last %}, {% endunless %}{% endfor %}">
         <div class="pagelayout__index__title" itemprop="name headline">{{ item.title | escape }}</div>
 
         <p class="pagelayout__index__meta">
@@ -36,23 +38,23 @@ layout: default
           {{ item.content }}
         </p>
 
-<p class="pagelayout__index__tags">
-  {% for tag in item.tags %}
-    {% if tag == "ui" %}
-      <span class="tag-ui">{{ tag }}</span>
-    {% elsif tag == "bugfix" %}
-      <span class="tag-bugfix">{{ tag }}</span>
-    {% elsif tag == "api" %}
-      <span class="tag-api">{{ tag }}</span>
-    {% elsif tag == "sdk" %}
-      <span class="tag-sdk">{{ tag }}</span>
-    {% elsif tag == "config" %}
-    <span class="tag-config">{{ tag }}</span>
-    {% else %}
-      <span class="tag-default">{{ tag }}</span>
-    {% endif %}
-  {% endfor %}
-</p>
+        <p class="pagelayout__index__tags">
+          {% for tag in item.tags %}
+          {% if tag == "ui" %}
+          <span class="tag-ui">{{ tag }}</span>
+          {% elsif tag == "bugfix" %}
+          <span class="tag-bugfix">{{ tag }}</span>
+          {% elsif tag == "api" %}
+          <span class="tag-api">{{ tag }}</span>
+          {% elsif tag == "sdk" %}
+          <span class="tag-sdk">{{ tag }}</span>
+          {% elsif tag == "config" %}
+          <span class="tag-config">{{ tag }}</span>
+          {% else %}
+          <span class="tag-default">{{ tag }}</span>
+          {% endif %}
+          {% endfor %}
+        </p>
       </article>
       {% endfor %}
     </div>
