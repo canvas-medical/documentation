@@ -1,67 +1,60 @@
 ---
 layout: default
 ---
-<div class="pagelayout pagelayout__index pagelayout__centerdocs">
-  <div class="sidenav sidenavtoc">
-    {% include toc.html menu=site.menus.releasenotes %}
-  </div>
-  <div class="pagelayout__centerdocs__wrapper">
-    <div class="pagelayout__centerdocs__content">
-      <div class="pagelayout__index__items">
-        <div class="pagelayout__index__header">
-          {{ content }}
-        </div>
-
-        {% assign posts = site.release-notes | where_exp: "post", "post.hidden != true" | sort: "date" | reverse %}
-
-
-        {% for item in posts %}
-        <article class="pagelayout__index__item filtertag__item filterdate__item" data-date={{ item.date | date: '%Y-%m' | slugify }} data-tag="{% for tag in item.tags %}{{tag | slugify }}{% unless forloop.last %}, {% endunless %}{% endfor %}">
-          <div class="pagelayout__index__title" itemprop="name headline">{{ item.title | escape }}</div>
-
-          <p class="pagelayout__index__meta">
-            <time datetime="{{ item.date | date_to_xmlschema }}" itemprop="datePublished">
-              {% assign date_format = site.minima.date_format | default: "%-d %b %Y" %}
-              {{ item.date | date: date_format }}
-            </time>
-
-            {% if item.author %}
-            by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ item.author
-                }}</span></span>
-            {% endif %}
-          </p>
-
-          <p class="pagelayout__index__excerpt">
-            {{ item.content }}
-          </p>
-
-          <p class="pagelayout__index__tags">
-            {% for tag in item.tags %}
-              {% if tag == "ui" %}
-                <span class="tag-ui">{{ tag }}</span>
-              {% elsif tag == "bugfix" %}
-                <span class="tag-bugfix">{{ tag }}</span>
-              {% elsif tag == "api" %}
-                <span class="tag-api">{{ tag }}</span>
-              {% elsif tag == "sdk" %}
-                <span class="tag-sdk">{{ tag }}</span>
-              {% elsif tag == "config" %}
-              <span class="tag-config">{{ tag }}</span>
-              {% else %}
-                <span class="tag-default">{{ tag }}</span>
-              {% endif %}
-            {% endfor %}
-          </p>
-
-        </article>
-        {% endfor %}
-      </div>    
+<div class="pagelayout pagelayout__index pagelayout__index__container">
+  <div class="pagelayout__index__content">
+    <div class="sidenav">
+      {% include filtertag.html collection=site.release-notes %}
+      {% include filterdate.html collection=site.release-notes %}
     </div>
-    <div class="sidepanels">
-      <div class="sidepanels__sidepanel">
-        {% include filtertag.html collection=site.release-notes %}
-        {% include filterdate.html collection=site.release-notes %}
+
+    <div class="pagelayout__index__items">
+      <div class="pagelayout__index__header">
+        {{ content }}
       </div>
+
+      {% assign posts = site.release-notes | where_exp: "post", "post.hidden != true" | sort: "date" | reverse %}
+
+
+      {% for item in posts %}
+      <article class="pagelayout__index__item filtertag__item filterdate__item" data-date={{ item.date | date: '%Y-%m' | slugify }} data-tag="{% for tag in item.tags %}{{tag | slugify }}{% unless forloop.last %}, {% endunless %}{% endfor %}">
+        <div class="pagelayout__index__title" itemprop="name headline">{{ item.title | escape }}</div>
+
+        <p class="pagelayout__index__meta">
+          <time datetime="{{ item.date | date_to_xmlschema }}" itemprop="datePublished">
+            {% assign date_format = site.minima.date_format | default: "%-d %b %Y" %}
+            {{ item.date | date: date_format }}
+          </time>
+
+          {% if item.author %}
+          by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ item.author
+              }}</span></span>
+          {% endif %}
+        </p>
+
+        <p class="pagelayout__index__excerpt">
+          {{ item.content }}
+        </p>
+
+<p class="pagelayout__index__tags">
+  {% for tag in item.tags %}
+    {% if tag == "ui" %}
+      <span class="tag-ui">{{ tag }}</span>
+    {% elsif tag == "bugfix" %}
+      <span class="tag-bugfix">{{ tag }}</span>
+    {% elsif tag == "api" %}
+      <span class="tag-api">{{ tag }}</span>
+    {% elsif tag == "sdk" %}
+      <span class="tag-sdk">{{ tag }}</span>
+    {% elsif tag == "config" %}
+    <span class="tag-config">{{ tag }}</span>
+    {% else %}
+      <span class="tag-default">{{ tag }}</span>
+    {% endif %}
+  {% endfor %}
+</p>
+      </article>
+      {% endfor %}
     </div>
   </div>
 </div>
