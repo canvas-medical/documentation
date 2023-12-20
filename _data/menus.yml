@@ -6,7 +6,7 @@ main:
   - title: Guides
     url: /guides/
   - title: Product Updates  
-    url: /release-notes
+    url: /product-updates
 api:
  - title: "Canvas FHIR"
    identifier: api_canvas_fhir
@@ -486,7 +486,7 @@ releasenotes:
 
 releasenotes_product_updates:
  - title: "Release Notes"
-   url: /release-notes
+   url: /product-updates/release-notes
  - title: "Upcoming Changes"
-   url: /release-notes/upcoming-changes
+   url: /product-updates/upcoming-changes
 
