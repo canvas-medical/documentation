@@ -3,7 +3,6 @@ title: "EHI Export"
 layout: documentation
 ---
 
-{% include alert.html type="info" content=" This functionality will be available as of 1/1/2024." %}
 
 Canvas supports the <b>export of electronic health information (EHI)</b> based on FHIR Bulk Data Access.
 
@@ -18,6 +17,17 @@ The export will generate links to the output files for each resource. Clicking e
 
 {% include alert.html type="warning" content="This functionality is permission based. If you do not have access and need it, please reach out to your internal administrators. They can work with our support team to ensure the permissions are assigned to the necessary groups." %}
 <br>
+## Creating a Population Export
+Canvas also supports exporting EHI for a group of patients or all patients. To request an export, please contact [support](https://canvas-medical.zendesk.com/hc/en-us/requests/new){:target="_blank"} and provide the following information:
+- Your instance name (the url of your instance)
+- Your username
+- Your role
+- The group of patients, or specify all patients
+- The purpose of the export. 
+
+{% include alert.html type="info" content="Please note that population exports may take a significant time to process depending on the amount of data in your instance." %}
+
+The Canvas team can initiate the bulk export on your behalf. The output will be availble within the  `ADD FHIR BULK DATA EXPORT` table. 
 
 
 ## Format 
@@ -25,7 +35,7 @@ EHI is exported as standard FHIR R4 resources in Newline Delimited JSON format, 
 <br>
 <br>
 
-## Resources
+### Resources
 
 The resources in scope for the response are:
 
