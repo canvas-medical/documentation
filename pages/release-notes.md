@@ -18,10 +18,10 @@ Check out the latest features and fixes for Canvas. This page covers releases be
 <a href="https://docs.canvasmedical.com/release-notes.xml" style="background-color: #EEE9D9; color: #0D2C4C; padding: 6px 20px; text-decoration: none; border-radius: 20px;" target="_blank">RSS Feed</a>
 
 </body>
-</html>
+</html> 
 <html>
 <head>
-  <title>Next Product Update</title>
+  <title>see what is next</title>
 </head>
 <body>
 
