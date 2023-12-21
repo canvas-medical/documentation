@@ -1,5 +1,5 @@
 ---
-title: Update to chart summary print templage
+title: Update to chart summary print template
 date: 2023-12-21
 tags: ui
 ---
