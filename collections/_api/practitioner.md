@@ -18,28 +18,28 @@ sections:
           <br><br>
           [http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link](http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link)
           <br><br>
-          Text
+          Practitioner meeting room link for online chat or meetings. Expected value is the meeting room link.
           <br><br>
 
           **`practitioner-primary-practice-location`**
           <br><br>
           [http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location](http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location)
           <br><br>
-          Text
+          The practitioner's primary practice location, where they spend most of their time. Expected value is the primary key of the practice location.
           <br><br>
 
           **`practitioner-signature`**
           <br><br>
           [http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature](http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature)
           <br><br>
-          Text
+          Attachment of the practitioner's real handwritten signature file. Expected value is a base64-encoded file.
           <br><br>
 
           **`roles`**
           <br><br>
           [http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles)
           <br><br>
-          Text
+          An array of roles with internal role codes as values. Examples of expected values include CA, MA, etc.
           <br><br>
 
         attributes:
@@ -66,7 +66,7 @@ sections:
           - name: gender
             type: string
             description: >-
-              A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **male**, **female**, **other** and **unknown**.
+              A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **ASKU**, **F**, **M**, **O**, **OTH**, **UNK**, **male**, **female**, **other** and **unknown**.
           - name: birthDate
             type: date
             description: >-
@@ -88,6 +88,16 @@ sections:
           - name: include-non-scheduleable-practitioners
             type: boolean
             description: By default, only scheduleable staff are displayed. Passing this parameter as **true** will return all active staff.
+          - name: email
+            type: string
+            description: Practitioner user email.
+          - name: npiNumber
+            type: string
+            description: Practitioner NPI number.
+          - name: gender
+            type: boolean
+            description: >-
+              A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **male**, **female**, **other** and **unknown**.
         endpoints: [create, read, update, search]
 
         create:
