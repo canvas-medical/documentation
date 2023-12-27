@@ -7,29 +7,45 @@ sections:
         name: Practitioner
         article: "a"
         description: >-
-         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/R4/practitioner.html](https://hl7.org/fhir/R4/practitioner.html)<br><br>To create a new staff member in Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360058232193-Add-a-new-staff-member).<br><br>
+         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member in Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360058232193-Add-a-new-staff-member).<br><br>
 
          **Supported Extensions**
           <br><br>
 
-          Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all `json` types and should be included in the `extension` array field as shown in the request/response examples on this page. The following extensions are supported:<br><br>
+          Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all `json` types and should be included in the `extension` array field as shown in the request/response examples on this page. The following custom extensions are supported:<br><br>
 
           **`practitioner-personal-meeting-room-link`**
+          <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link](http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link)
+          <br><br>
+          Text
           <br><br>
 
           **`practitioner-primary-practice-location`**
           <br><br>
-
-          **`signature`**
+          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location](http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location)
+          <br><br>
+          Text
           <br><br>
 
-          **`role`**
+          **`practitioner-signature`**
+          <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature](http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature)
+          <br><br>
+          Text
+          <br><br>
+
+          **`roles`**
+          <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles)
+          <br><br>
+          Text
           <br><br>
 
         attributes:
           - name: id
             description: >-
-              The identifier of the practitioner
+              Unique Canvas identifier for this resource.
             type: string
           - name: extension
             type: array[json]
@@ -37,16 +53,16 @@ sections:
               Reference the information at the top of this page to see the possible extensions contained in this resource.
           - name: identifier
             type: array[json]
-            description: An identifier for the person as this agent
+            description: An identifier for the practitioner as this agent.
           - name: name
             type: array[json]
-            description: The name(s) associated with the practitioner
+            description: The name(s) associated with the practitioner.
           - name: telecom
             type: array[json]
-            description: A contact detail for the practitioner
+            description: Practitioner contact point(s) (email / phone / fax).
           - name: address
             type: array[json]
-            description: Address(es) of the practitioner entered in Canvas
+            description: Address(es) of the practitioner entered in Canvas.
           - name: gender
             type: string
             description: >-
@@ -54,14 +70,14 @@ sections:
           - name: birthDate
             type: date
             description: >-
-              The date of birth for the individual, formatted as YYYY-MM-DD.
+              Practitioner date of birth for the individual, formatted as YYYY-MM-DD.
           - name: photo
             type: array[json]
-            description: 	Image of the person
+            description: 	Practitioner photo(s).
           - name: qualification
             type: array[json]
             description: >-
-               Certification, licenses, or training pertaining to the provision of care<br>
+               Practitioner license(s).<br>
         search_parameters:
           - name: _id
             type: string
