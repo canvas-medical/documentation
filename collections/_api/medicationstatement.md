@@ -87,12 +87,23 @@ curl --request POST \
      --header 'accept: application/json' \
      --header 'content-type: application/json' \
      --data '
+
 {
     "resourceType": "MedicationStatement",
     "status": "active",
-    "medicationReference": {
-        "reference": "Medication/fdb-449732",
-        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    "medicationCodeableConcept": {
+        "coding": [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "449732",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            },
+            {
+                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                "code": "1092189",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            }
+        ]
     },
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -128,9 +139,19 @@ headers = {
 payload = {
     "resourceType": "MedicationStatement",
     "status": "active",
-    "medicationReference": {
-        "reference": "Medication/fdb-449732",
-        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    "medicationCodeableConcept": {
+        "coding": [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "449732",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            },
+            {
+                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                "code": "1092189",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            }
+        ]
     },
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -175,9 +196,19 @@ print(response.text)
 {
     "resourceType": "MedicationStatement",
     "status": "active",
-    "medicationReference": {
-        "reference": "Medication/fdb-449732",
-        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    "medicationCodeableConcept": {
+        "coding": [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "449732",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            },
+            {
+                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                "code": "1092189",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            }
+        ]
     },
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -268,9 +299,19 @@ curl --request PUT \
 {
     "resourceType": "MedicationStatement",
     "status": "entered-in-error",
-    "medicationReference": {
-        "reference": "Medication/fdb-449732",
-        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    "medicationCodeableConcept": {
+        "coding": [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "449732",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            },
+            {
+                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                "code": "1092189",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            }
+        ]
     },
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -306,9 +347,19 @@ headers = {
 payload = {
     "resourceType": "MedicationStatement",
     "status": "entered-in-error",
-    "medicationReference": {
-        "reference": "Medication/fdb-449732",
-        "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+    "medicationCodeableConcept": {
+        "coding": [
+            {
+                "system": "http://www.fdbhealth.com/",
+                "code": "449732",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            },
+            {
+                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                "code": "1092189",
+                "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+            }
+        ]
     },
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -373,9 +424,19 @@ print(response.text)
             "resource": {
                 "resourceType": "MedicationStatement",
                 "status": "active",
-                "medicationReference": {
-                    "reference": "Medication/fdb-449732",
-                    "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+                "medicationCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://www.fdbhealth.com/",
+                            "code": "449732",
+                            "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+                        },
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "1092189",
+                            "display": "Tylenol PM Extra Strength 25 mg-500 mg tablet"
+                        }
+                    ]
                 },
                 "subject": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
