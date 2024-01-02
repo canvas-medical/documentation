@@ -193,7 +193,7 @@ class BannerAlertContacts(ClinicalQualityMeasure):
                         placement=['appointment_card', 'scheduling_card'],
                         intent='alert',
                         href=
-                        f'http://{self.settings.INSTANCE_NAME}.canvasmedical.com/patient/{self.patient.patient_key}/edit#'
+                        f'https://{self.settings.INSTANCE_NAME}.canvasmedical.com/patient/{self.patient.patient_key}/edit#'
                     ))
                 result.recommendations.append(
                     BannerAlertIntervention(narrative=(
@@ -210,7 +210,7 @@ class BannerAlertContacts(ClinicalQualityMeasure):
                         placement=['appointment_card', 'scheduling_card'],
                         intent='alert',
                         href=
-                        f'http://{self.settings.INSTANCE_NAME}.canvasmedical.com/patient/{self.patient.patient_key}/edit#'
+                        f'https://{self.settings.INSTANCE_NAME}.canvasmedical.com/patient/{self.patient.patient_key}/edit#'
                     ))
                 result.recommendations.append(
                     BannerAlertIntervention(narrative=(
@@ -227,7 +227,7 @@ class BannerAlertContacts(ClinicalQualityMeasure):
                         placement=['appointment_card', 'scheduling_card'],
                         intent='alert',
                         href=
-                        f'http://{self.settings.INSTANCE_NAME}.canvasmedical.com/patient/{self.patient.patient_key}/edit#'
+                        f'https://{self.settings.INSTANCE_NAME}.canvasmedical.com/patient/{self.patient.patient_key}/edit#'
                     ))
                 result.recommendations.append(
                     BannerAlertIntervention(narrative=(
