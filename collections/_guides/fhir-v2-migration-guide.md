@@ -331,7 +331,7 @@ To acquire a patient scoped token, you will need to include some parameters in t
 
 ```bash
 curl --location --request POST \
-      'http://<your_subdomain_here>.canvasmedical.com/auth/token/' \
+      'https://<your_subdomain_here>.canvasmedical.com/auth/token/' \
       --header 'Content-Type: application/x-www-form-urlencoded' \
       --data-urlencode 'grant_type=client_credentials' \
       --data-urlencode 'client_id=<client_id_from_Canvas>' \
