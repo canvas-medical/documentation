@@ -183,6 +183,8 @@ api_claim:
    url: /api/claim/#create
  - title: "Claim Read"
    url: /api/claim/#read
+ - title: "Claim Update"
+   url: /api/claim/#update
  - title: "Claim Search"
    url: /api/claim/#search
 api_communication:
