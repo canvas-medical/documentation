@@ -182,6 +182,12 @@ api_careteam:
 api_claim:
  - title: "Claim Create"
    url: /api/claim/#create
+ - title: "Claim Read"
+   url: /api/claim/#read
+ - title: "Claim Update"
+   url: /api/claim/#update
+ - title: "Claim Search"
+   url: /api/claim/#search
 api_communication:
  - title: "Communication Create"
    url: /api/communication/#create
