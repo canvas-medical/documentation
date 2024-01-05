@@ -97,7 +97,7 @@ sections:
             description: >-
               Additional information to support the appointment. **References** are used to capture information about **rescheduled appointments** and the **location** of the appointment.<br><br>**Rescheduled Appointments**<br>If you see `Previously Rescheduled Appointment` in `supportingInformation`, it means that the appointment you are currently reading was created by rescheduling the appointment in that Reference. If you see `Rescheduled Replacement Appointment` in the `supportingInformation`, it means that the appointment you are currently reading is now outdated by a new appointment.
             create_description:
-              You can use a Location reference within the `SupportingInformation` attribute to specify the Location of the appointment,. To get the location id, use the [Schedule Search](/api/schedule/#search) endpoint. This will give you a `resource.id` like `Location.1-Staff.c2ff4546548e46ab8959af887b563eab`. The Location ID is the value displayed after the period. If your instance only has one practice location, the ID will always be 1.
+              You can use a Location reference within the `SupportingInformation` attribute to specify the Location of the appointment. To get the location reference, use the `id` from the [Location Search](/api/location/#search) endpoint.
             attributes:
               - name: reference
                 type: string
@@ -240,7 +240,7 @@ sections:
     "supportingInformation":
     [
         {
-            "reference": "Location/1",
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060",
             "type": "Location"
         },
         {
@@ -420,7 +420,7 @@ sections:
                 "supportingInformation":
                 [
                     {
-                        "reference": "Location/1",
+                        "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060",
                         "type": "Location"
                     },
                     {
@@ -578,7 +578,7 @@ curl --request POST \
     "supportingInformation":
     [
         {
-            "reference": "Location/1"
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060"
         },
         {
             "reference": "#appointment-meeting-endpoint",
@@ -677,7 +677,7 @@ payload = {
     "supportingInformation":
     [
         {
-            "reference": "Location/1"
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060"
         },
         {
             "reference": "#appointment-meeting-endpoint",
@@ -784,7 +784,7 @@ curl --request PUT \
     "supportingInformation":
     [
         {
-            "reference": "Location/1"
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060"
         },
         {
             "reference": "#appointment-meeting-endpoint",
@@ -882,7 +882,7 @@ payload = {
     "supportingInformation":
     [
         {
-            "reference": "Location/1"
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060"
         },
         {
             "reference": "#appointment-meeting-endpoint",
