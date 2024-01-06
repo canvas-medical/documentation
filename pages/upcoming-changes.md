@@ -27,5 +27,11 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td></td>
       <td>TBD</td>
     </tr>
+    <tr>
+      <td>FHIR API: Setting appointment location using the location integer value</td>
+      <td>The FHIR Appointment endpoint now uses the reference from the Location Read/Search endpoint for the Location in supportingInformation. We plan to discontinue support of using the location integer. </td>
+      <td></td>
+      <td>TBD</td>
+    </tr>
   </tbody>
 </table>

@@ -5,5 +5,5 @@ tags: api
 
 ---
 
-Our FHIR Claim endpoint now supports read, search, and update interactions. The update endpoint is limited to updating the queue of the claim. This allows third-party RCM vendors to keep claims in Canvas in sync with their operations. [Read more](/api/claim)
+Our FHIR Claim endpoint now supports read, search, and update interactions. The update endpoint is limited to updating the queue of the claim. This allows third-party RCM vendors to keep claims in Canvas in sync with their operations. [Read more.](/api/claim)
 
