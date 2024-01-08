@@ -1,14 +1,10 @@
 ---
-permalink: /product-updates/upcoming-changes/
-title: Upcoming changes
+permalink: /product-updates/important-dates/
+title: Important Dates
 layout: productupdates	
 date: 2023-12-01
 hidden: true
 ---
-
-
-
-## 📆 Important dates to remember
 Stay up to date on the latest important dates for the Canvas platform.
 
 <table border="1">

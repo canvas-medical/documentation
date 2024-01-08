@@ -493,6 +493,8 @@ releasenotes:
 releasenotes_product_updates:
  - title: "Release Notes"
    url: /product-updates/release-notes
- - title: "Upcoming Changes"
-   url: /product-updates/upcoming-changes
+ - title: "Important Dates"
+   url: /product-updates/important-dates
+ - title: "Roadmap"
+   url: /product-updates/roadmap
 
