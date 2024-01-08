@@ -36,6 +36,24 @@ To add a Google Delivered Planned Reports, click add Google Delivered Planned Re
 
 **Title:** Name your report.
 
+## Admin preferences to reports
+
+Admin have the following options when creating reports: 
+
+**Search fields:** Admin can utilize command, title, and google_spreadsheet_id when searching a report
+
+**Filter fields:** Status, command, frequency
+
+**Actions:** Activate/Inactivate, run report now, validate sql
+
+    - Action to validate any custom sql written and it will tell you if it is valid or what the error is
+
+    - Action to run the reports now instead of having to wait for the scheduled time. 
+
+Google Spreadsheet column will be a clickable link actually opening the sheets
+
+There is validation that requires planned day of the week or planned day of the month dropdown value to be selected based on the frequency value selected. If daily frequency is selected neither are required and planned_day saves as 0 since it does not apply. 
+
 ## Updating Google Delivered Planned Reports
 
 To edit a Google Delivered Planned Report, click into an existing report and make changes as needed. 
