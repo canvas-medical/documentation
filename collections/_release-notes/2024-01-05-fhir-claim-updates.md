@@ -2,6 +2,7 @@
 title: Updates to FHIR Claim Endpoint
 date: 2024-01-05
 tags: api
+layout: productupdates
 
 ---
 

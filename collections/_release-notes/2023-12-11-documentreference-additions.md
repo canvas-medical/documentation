@@ -2,6 +2,7 @@
 title: More PDF documents available through DocumentReference
 date: 2023-12-11
 tags: api
+layout: productupdates
 ---
 Customers have expressed a need to access more PDFs from Canvas via API, in order to share these with external parties or in patient-facing experience. As a result we have significantly expanded the scope of DocumentReference, to include the following documents:
 

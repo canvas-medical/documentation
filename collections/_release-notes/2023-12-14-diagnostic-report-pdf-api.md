@@ -1,6 +1,6 @@
 ---
 title: DiagnosticReport now contains the associated PDF
-layout: releasenotes
+layout: productupdates
 date: 2023-12-14
 tags: api 
 ---
