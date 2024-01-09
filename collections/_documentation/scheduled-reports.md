@@ -22,7 +22,9 @@ To add a Google Delivered Planned Reports, click add Google Delivered Planned Re
 
 **Frequency:** Choose how often you would like the report to run
 
-**Planned day:** This is only necessary if you selected weekly or monthly for your frequency. If you selected weekly, then choose the day of the week. If you selected monthly, then choose the day of the month. 
+**Planned day of week:** This is only necessary if you selected weekly for your frequency. 
+
+**Planned day of month:** This is only necessary if you selected monthly for your frequency. You can select a specific day, or choose the last day of the month. 
 
 **Planned hour:** The time that the report will run. Reports run at the top of the hour for your organization's timezone. 
 
@@ -36,6 +38,27 @@ To add a Google Delivered Planned Reports, click add Google Delivered Planned Re
 
 **Title:** Name your report.
 
-## Updating Google Delivered Planned Reports
+## Managing Existing Reports
+The table shows all existing scheduled reports with the following details
+- ID
+- Command
+- Interval
+- Status
+- Link to Google Spreadsheet
 
-To edit a Google Delivered Planned Report, click into an existing report and make changes as needed. 
+### Searching and Filtering Google Delivered Planned Reports
+You can search your scheduled reports using the search tool bar at the top. You can search by title or google_spreadsheet_id. Click `Show all` to remove the search parameter. 
+
+You can also filter reports based on status, command, or frequency, using the filters on the right. One from each section can be selected to narrow down your results. Click `X Clear all filters` to remove the selected filters. 
+
+### Updating Google Delivered Planned Reports
+
+To edit a Google Delivered Planned Report, click into an existing report and make changes as needed. You can also use the action dropdown to delete, activate, or inactivate one or several selected reports. 
+
+### Validating your SQL Query
+To ensure your report runs successfully, we have added a tool to validate your custom SQL query. Click the checkbox on the report, or reports that you want to validate, select `Confirm valid SQL for custom SQL repoorts` from the action dropdown, and click `Go`. A banner at the top will appear with the result, including any errors found. 
+
+### Manually Running Google Delivered Planned Reports
+
+The reports will run based on the schedule you set. If you need to run a report outside of that schedule, click the checkbox on the report, or reports, use the action dropdown, select `Run selected reports now`, and click `Go`. A banner at the top will appear with the status of the report, including any errors preventing it from running. 
+
