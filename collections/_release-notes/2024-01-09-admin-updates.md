@@ -6,8 +6,8 @@ tags: config ui
 
 We have updated the following admin pages to improve the experience, add functionality, and allow more flexibility when managing your instance settings. 
 
-- Protocol Upload
-- Protocol Upload Version
-- Protocol Override Snooze Reason
+- Protocol Upload - [Read more](/sdk/managing-protocols-in-settings/#protocol-upload)
+- Protocol Upload Version - [Read more](/sdk/managing-protocols-in-settings/#protocol-upload-version)
+- Protocol Override Snooze Reason 
 - Google Planned Delivered Reports - [Read more](/documentation/scheduled-reports/#managing-existing-reports)
 - Constance Config
