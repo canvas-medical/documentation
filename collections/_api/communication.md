@@ -19,7 +19,9 @@ sections:
             type: string
             required: true
             description: >-
-              The status of the transmission<br><br>Supported codes for create interactions are: **unknown**
+              The status of the transmission.
+            create_description: >-
+             Supported codes for create interactions are **unknown**. 
           - name: subject
             type: json
             description: >-
@@ -61,6 +63,10 @@ sections:
             type: string
             description: >-
               Message sender<br><br>Supported: **Patient**, **Practitioner**
+          - name: status
+            type: string
+            description: >-
+             Status<br><br>Supported: **Completed, In-progress, Preparation**
         endpoints: [create, read, search]
         create:
           description: >-
