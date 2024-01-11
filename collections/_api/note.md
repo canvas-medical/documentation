@@ -13,6 +13,11 @@ New scopes are introduced: user/Note.read and user/Note.write. These scopes will
 - Create a new [OAuth application](/api/customer-authentication)
 - Ask Canvas to add the new scopes to an existing OAuth application that you have these scopes should be added to your OAuth app’s Allowed Scopes, shown below. From your Admin page, navigate to oauth, then Canvas oauth application. Then select the application you use for accessing APIs, open it, and scroll to the bottom and add the new scopes to your allowed scopes.
 
+{:refdef: style="text-align: center;"}
+![description](/assets/images/allowed-scopes.png){:width="70%"}
+{: refdef}
+
+
 ``` python
 import requests
 
@@ -28,16 +33,20 @@ response = requests.request("POST", url, headers=headers, data=payload)
 print(response.text)
 ```
 
+<br>
 Then use your token in the request headers as you do with the FHIR API:
 
+{:refdef: style="text-align: center;"}
+![description](/assets/images/note-api-token.png){:width="100%"}
+{: refdef}
 
-## Using the Note API
+
 <br>
 
-### Note Create
+## Note Create
 To create a Note resource, POST to `/core/api/notes/v1/Note` using the supported attributes below. Notes will be created with the state “NEW” by default.
 
-#### Attributes
+### Attributes
 
 
 <b>`title`</b> text<br>
@@ -78,7 +87,7 @@ Defines a coding system for the note type, to be used with the paired noteTypeCo
 <b>`noteTypeCoding`</b> text<br>
 Defines a code for the note type, to be used with the paired noteTypeSystem.
 
-#### Example
+### Example
 ``` python
 import requests
 import json
@@ -105,10 +114,10 @@ print(response.text)
 
 <br>
 
-### Note Read
+## Note Read
 To read a Note resource, request a GET from `/core/api/notes/v1/Note/{noteKey}`
 
-#### Attributes
+### Attributes
 
 <b>`noteKey`</b> string<br>
 The unique key of the Note.
@@ -163,7 +172,7 @@ Defines a coding system for the note type, to be used with the paired noteTypeCo
 <b>`noteTypeCoding`</b> text<br>
 Defines a code for the note type, to be used with the paired noteTypeSystem.
 
-#### Example
+### Example
 ```python
 import requests
 
@@ -178,10 +187,12 @@ response = requests.request("GET", url, headers=headers, data=payload)
 
 print(response.text)
 ```
-### Note Update
+<br>
+
+## Note Update
 To update an existing Note resource, `PATCH` to `/core/api/notes/v1/Note/{noteKey}` using any of the following allowed attributes. 
 
-#### Attributes
+### Attributes
 
 <b>`title`</b> text<br>
 The user-defined title of the Note.
@@ -206,7 +217,7 @@ Locking an unlocked note (excluding DATA notes)<br>
 Unlocking a locked note (excluding DATA notes)<br>
 “LKD” → “ULK”
 
-#### Example
+### Example
 
 ``` python
 import requests
@@ -231,5 +242,56 @@ print(response.text)
 ```
 
 
+<br>
 
-### Note Search
+## Note Search
+To search for Note resources, request a `GET` from `/core/api/notes/v1/Note` and append your search criteria as URL parameters. 
+
+### Query Params
+**patient_key** text 
+filters to this patient’s notes only
+
+**provider_key** text
+filters to this provider’s notes only
+
+**note_type_name** text
+filters to this type of note (human-readable)
+
+**note_type_system** and **note_type_coding** text
+filters to this type of note with system/code pair
+
+**datetime_of_service** datetime
+filters the service datetime with the following options:
+- = (exact)
+- lte (less than or equal to)
+- gte (greater than or equal to)
+- lt (less than)
+- gt (greater than)
+
+`&datetime_of_service__gte=2023-12-06T19:10:56.115532Z`
+
+### Pagination
+To paginate your requests, simply add a limit query parameter, e.g. `GET` from `/core/api/notes/v1/Note?limit=10`. You can also page through the results with the offset parameter, e.g. `/core/api/notes/v1/Note?limit=10&offset=10`. The response will include a record count, as well as **next**, and **previous** URLs for convenience, and the note data will be contained in the **results** value.
+
+### Ordering
+To order your results, simply add an ordering query parameter, e.g. `GET` from `/core/api/notes/v1/Note?ordering=datetime_of_service`. To reverse the sort order, prepend the field with a hyphen, e.g. `?ordering=-datetime_of_service`. Available ordering fields include:
+- created (the datetime the note was created)
+- modified (the datetime the note was last updated)
+- datetime_of_service (the datetime of the actual service associated with the note)
+
+### Example
+
+``` python
+import requests
+
+url = "https://<your_instance>.canvasmedical.com/core/api/notes/v1/Note?patient_key=8d84776879de49518a4bc3bb81d96dd4&note_type_name=Office%20visit"
+
+payload = ""
+headers = {
+  'Authorization': 'Bearer QdPhY9QLIs4zlawv5UG42JDASGqX0l'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+```
