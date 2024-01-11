@@ -63,10 +63,11 @@ sections:
             type: string
             description: >-
               Message sender<br><br>Supported: **Patient**, **Practitioner**
-          - name: status
-            type: string
-            description: >-
-             Status<br><br>Supported: **Completed, In-progress, Preparation**
+          # TODO: add bac
+          # - name: status
+          #   type: string
+          #   description: >-
+          #    Status<br><br>Supported: **completed**, **in-progress**, **preparation**
         endpoints: [create, read, search]
         create:
           description: >-
