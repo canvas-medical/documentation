@@ -38,6 +38,26 @@ sections:
                 type: array[json]
               - name: address
                 type: string
+          - name: identifier
+            type: array[json]
+            description: >-
+              External Ids for this item
+            create_description: >-
+              The identifier list defines additional identifiers that are able to be stored for an appointment.<br><br>These identifiers will not be surfaced on the Patient's chart, but they may help you identify the patient in your system by associating your identifier with the resource's `id`.
+            update_description: >-
+              The identifier list defines additional identifiers that are able to be stored for an appointment.<br><br>These identifiers will not be surfaced on the Patient's chart, but they may help you identify the patient in your system by associating your identifier with the resource's `id`.<br><br>
+              To update an existing `identifier`, include the `id` in the `identifier[x].id` field returned from Read/Search.<br><br>
+              The `identifier` section sent in an update will entirely replace existing identifiers currently within the period.start and period.end dates.<br><br>
+              If an <code>identifier</code> already exists in the Canvas database and is not included in the Update message, it will be deleted if and only if the period.end date is in the future.
+            attributes:
+            - name: use
+              type: string
+            - name: system
+              type: string
+            - name: value
+              type: string
+            - name: period
+              type: json
           - name: status
             type: string
             description: >-
@@ -207,6 +227,18 @@ sections:
                 }
             ],
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
+        }
+    ],
+    "identifier": [
+        {
+            "id": "97b28298-f618-4972-9a6b-d095785587d6",
+            "use": "usual",
+            "system": "AssigningSystem",
+            "value": "test123",
+            "period": {
+                "start": "2024-01-01",
+                "end": "2024-12-31"
+            }
         }
     ],
     "status": "proposed",
@@ -389,6 +421,18 @@ sections:
                         "address": "https://url-for-video-chat.example.com?meeting=abc123"
                     }
                 ],
+                "identifier": [
+                  {
+                      "id": "97b28298-f618-4972-9a6b-d095785587d6",
+                      "use": "usual",
+                      "system": "AssigningSystem",
+                      "value": "test123",
+                      "period": {
+                          "start": "2024-01-01",
+                          "end": "2024-12-31"
+                      }
+                  }
+                ],
                 "status": "proposed",
                 "appointmentType":
                 {
@@ -548,6 +592,17 @@ curl --request POST \
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
+    "identifier": [
+        {
+            "use": "usual",
+            "system": "AssigningSystem",
+            "value": "test123",
+            "period": {
+                "start": "2024-01-01",
+                "end": "2024-12-31"
+            }
+        }
+    ],
     "status": "proposed",
     "appointmentType":
     {
@@ -646,6 +701,17 @@ payload = {
             ],
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
+    ],
+    "identifier": [
+      {
+          "use": "usual",
+          "system": "AssigningSystem",
+          "value": "test123",
+          "period": {
+              "start": "2024-01-01",
+              "end": "2024-12-31"
+          }
+      }
     ],
     "status": "proposed",
     "appointmentType":
@@ -754,6 +820,18 @@ curl --request PUT \
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
+    "identifier": [
+      {
+          "id": "97b28298-f618-4972-9a6b-d095785587d6",
+          "use": "usual",
+          "system": "AssigningSystem",
+          "value": "test123",
+          "period": {
+              "start": "2024-01-01",
+              "end": "2024-12-31"
+          }
+      }
+    ],
     "status": "cancelled",
     "appointmentType":
     {
@@ -851,6 +929,18 @@ payload = {
             ],
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
+    ],
+    "identifier": [
+      {
+          "id": "97b28298-f618-4972-9a6b-d095785587d6",
+          "use": "usual",
+          "system": "AssigningSystem",
+          "value": "test123",
+          "period": {
+              "start": "2024-01-01",
+              "end": "2024-12-31"
+          }
+      }
     ],
     "status": "cancelled",
     "appointmentType":
