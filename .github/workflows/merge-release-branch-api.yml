@@ -1,3 +1,4 @@
+name: Release - API Merge Release Branch
 on:
   repository_dispatch:
     types: [merge-release-branch]
