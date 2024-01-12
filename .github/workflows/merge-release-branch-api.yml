@@ -1,0 +1,22 @@
+on:
+  repository_dispatch:
+    types: [merge-release-branch]
+
+jobs:
+  merge-release-branch-to-main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize Inputs
+        id: initialize-inputs
+        run: |
+          echo "RELEASE_NAME=${{ github.event.client_payload.release_name }}" | tee -a $GITHUB_ENV
+          echo "DRY_RUN=${{ github.event.client_payload.dry_run }}" | tee -a $GITHUB_ENV
+      - name: Checkout Repo
+        id: checkout-repo
+        uses: actions/checkout@v4
+      - name: Merge Release Branch
+        id: merge-release-branch
+        uses: ./.github/actions/merge-release-branch
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+          dry_run: ${{ env.DRY_RUN }}
