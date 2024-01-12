@@ -32,7 +32,7 @@ runs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        ref: production
+        ref: main
     - id: config-git-user
       shell: bash
       run: |
