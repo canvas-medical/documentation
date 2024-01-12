@@ -1,0 +1,24 @@
+on:
+  workflow_dispatch:
+    inputs:
+      release_name:
+        description: Name of the release (branch) w/version
+        required: true
+        type: string
+      dry_run:
+        description: Just run through the motions, but don't merge/tag/close/create/etc...
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  merge-release-branch-to-main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge Release Branch
+        id: merge-release-branch
+        uses: ./.github/actions/merge-release-branch
+        with:
+          release_name: ${{ inputs.release_name }}
+          dry_run: ${{ inputs.dry_run }}
