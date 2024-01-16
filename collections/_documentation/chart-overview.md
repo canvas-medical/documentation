@@ -5,15 +5,13 @@ title: "Chart Overview"
 The patient chart represents a comprehensive digital collection of a patient's health information and includes all of the data captured during patient interactions. The Canvas chart was purpose built to help reduce the cognitive burden placed on clinicians. The three panel design allows for relevant data to be surfaced and/or easily accessible at the point of care. In this article, we will review how to navigate the chart and the functionality available within each of the following sections:
 
 1. [Global Navigation](/documentation/chart-overview/#global-navigation)
-2. Patient Card
-3. Patient Summary
+2. [Patient Card](/documentation/chart-overview/#patient-card)
+3. [Patient Summary](/documentation/chart-overview/#patient-summary)
 4. Patient Timeline
 5. Chart Sidepanels
 6. Canvas Chat
 
-
 ![chart-overview](/assets/images/chart-overview.png){:width="99%"}
-
 
 ## Global Navigation
 The global navigation stays consistent with other areas of the Canvas application. You can access your {%glossary admin settings%}, click your logo to return to the home page, or search for a patient as needed. 
@@ -26,34 +24,80 @@ The patient card includes the following:
 - Date of Birth
 - Patient timezone (if enabled and captured)
 
+<!-- DOCSTODO : Add link to constance config page on timezone-->
+
 ![Navigation](/assets/images/patient-card.png){:width="50%"}
 
 ## Patient Summary
 The patient summary is located on the left hand side of the patient chart.  It provides a quick summary of essential patient details without having to move to search through notes or move to another screen.
 
+Many of the sections are interactive. The action buttons included in each section allow care team members to leverage the existing documentation to add to their encounters. 
 
-
-
+{% include alert.html type="warning" content="The presence and order of summary sections is not currently configurable." %}
 
 ### Social Determinants
+Social determinants of health are the economic and social conditions that influence an individual's health, functioning, and quality-of-life outcomes and risks. 
+
+In Canvas, social determinants are determined by answers to corresponding questionnaires. The `use_in_shx (REQ)` setting can be set at both the questionnaire and question level when creating [custom questionnaires](/documentation/questionnaires). Selecting `True` will display the questionnaire or question name and the date that it was last recorded within the social determinants section.
+
+{% include alert.html type="info" content="You may see that the responses to some questions also appear in this section. We have coded that logic into the system. You cannot accomplish this with custom questionnaires; however, many Canvas provided questionnaires leverage this capability." %}
 
 ### Goals
+All active goals display in the patient summary by default. From this section, you can easily reference each goal, aong with its current status and due date. 
+
+#### Detailed View
+To monitor the progress of a goal over time, you can leverage the detailed view. Click on each goal to bring up the goal modal, which includes the start date, due date, priority level, each assessment date, and their respective status. Clicking on specific assessment dates allows you to view the associated progress or barrier comments. To exit the detailed view, simply click on the `X` or anywhere outside of the modal.
+
+![Goal Status](/assets/images/goal-status.gif){:width="99%"}
+
+#### Sorting and Filters
+Hover over the goals section header to activate the filter button. Clicking on the button will result in two dropdowns to appear. The first allows you to filter the goals based on status, choosing from `Active`, `Closed`, or `All`. The second drop-down menu allows you to sort goals either by due date or alphabetically. After adjusting your filters and sorting preferences, click on the filter icon again to hide the options. 
+
+![Goal Filter](/assets/images/goal-filter.gif){:width="99%"}
+<!-- DOCSTODO : Add combined gif and remove both above-->
 
 ### Conditions
+The condition list allows you to see all of the patients medical issues and their associated ICD-10 codes at a glance. The summary section surfaces both active and historical records. The default sort logic is based on when the condition was last assessed.
+
+#### Detailed View
+The condition modal allows you to see the progression of a condition over time. Click on any condition (active or resolved) to see more details, including the onset date, the background, any medications where the condition added an an indication, and a timeline view of past actions taken during or in between encounters. From the modal, you can choose to assess or resolve the condition. To exit the detailed view, simply click on the `X` or anywhere outside of the modal.
+
+#### Sorting and Filters
+Hover over the condition section header to activate the filter button. Clicking on the button will result in two dropdowns to appear. The first allows you to filter the condition list based on status, choosing from `Active`, `Resolved`, or `All`. The second drop-down menu allows you to sort conditions either by last assessed date or alphabetically. After adjusting your filters and sorting preferences, click on the filter icon again to hide the options. 
+
+#### Take Action
+From the condition list, end users can choose to `assess` or `resolve` active conditions, `activate` resolved conditions, or add a new condition using the plus sign. Clicking on each of these buttons will prompt the user to complete additional details relevant to the action. Clicking the button again will add those details to the appropriate note based on command insertion logic noted [here]
+
+{% include alert.html type="danger" content="After adding the necessary details, make sure to click the assess/resolve/diagnose buttons to make sure the data is added to the note. Clicking outside of the form may cause data loss, as the form does not automatically save or warn the user that navigating away will cause the input to be cleared." %}
+
+
+
+<!-- DOCSTODO : Add GIF of condition modal-->
+
 
 ### Medications
 
+#### Detailed View
+#### Filters
+#### Take Action
+
 ### Allergies
+#### Filters
+#### Take Action
 
 ### Care Team
 
 ### Vitals
+#### Flowsheet
 
 ### Immunzations
+#### Take Action
 
 ### Surgical History
+#### Take Action
 
 ### Family History
+#### Take Action
 
 ### Note
 
