@@ -8,14 +8,20 @@ Canvas supports the <b>export of electronic health information (EHI)</b> based o
 
 
 ## Creating a Single Patient Export
+### In the UI
 To generate a single patient export, navigate to `Fhir bulk data exports` in your admin settings. 
 
 Click on `ADD FHIR BULK DATA EXPORT` to pull up the tool. Select the appropriate Oauth application from the dropdown. These are typically created by your team as a part of implementation. Support can also help to create one if needed. Export type defaults to 'Patient'. Search for the patient and click `Start Export`.
 
 The export will generate links to the output files for each resource. Clicking each will download the files locally. 
 
-
 {% include alert.html type="warning" content="This functionality is permission based. If you do not have access and need it, please reach out to your internal administrators. They can work with our support team to ensure the permissions are assigned to the necessary groups." %}
+
+### Using the API
+You can initiate a single patient export by issuing a request like the one below:<br>
+`POST https://fumage-<instance-name>.canvasmedical.com/Patient/<id>/$export`
+
+
 <br>
 ## Creating a Population Export
 Canvas also supports exporting EHI for a group of patients or all patients. To request an export, please contact [support](https://canvas-medical.zendesk.com/hc/en-us/requests/new){:target="_blank"} and provide the following information:
