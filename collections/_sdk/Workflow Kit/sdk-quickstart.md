@@ -333,7 +333,7 @@ Let's step through the example above:
       <tr>
         <td><code>types</code></td>
         <td><em>list[string]</em></td>
-        <td><strong>false</strong></td>
+        <td><strong>true</strong></td>
         <td>This is a list of shorthand, abbreviated types identified with the Protocol. Some industry standard examples of these are <em>CCP</em>, <em>CQM</em>, and <em>HCC</em>. These are populated in parentheses next to <em>identifiers</em> in the Protocols section of a patient's chart.</td>
       </tr>
       <tr>
