@@ -60,6 +60,7 @@ sections:
               type: json
           - name: status
             type: string
+            required: true
             description: >-
               The status of the appointment. <br><br> **Canvas to FHIR Mapping**<br>unconfirmed > proposed<br>attempted > pending<br>confirmed > booked<br>arrived > arrived<br>roomed > check-in<br>exited > fulfilled<br>no-showed > noshow<br>cancelled > cancelled<br>deleted > entered-in-error
             create_description:
@@ -113,6 +114,7 @@ sections:
               Shown on a subject line in a meeting request, or appointment list.<br><br>
               **Note:** This field is being deprecated in favor of `reasonCode`. The text in `reasonCode` and this description attribute will always match.
           - name: supportingInformation
+            required: true
             type: array[json]
             description: >-
               Additional information to support the appointment. **References** are used to capture information about **rescheduled appointments** and the **location** of the appointment.<br><br>**Rescheduled Appointments**<br>If you see `Previously Rescheduled Appointment` in `supportingInformation`, it means that the appointment you are currently reading was created by rescheduling the appointment in that Reference. If you see `Rescheduled Replacement Appointment` in the `supportingInformation`, it means that the appointment you are currently reading is now outdated by a new appointment.
@@ -125,15 +127,18 @@ sections:
                 type: string
           - name: start
             type: datetime
+            required: true
             description: When appointment is to take place.
             create_description:
               The `start` attribute determines the start timestamp of the appointment. It is written in [instant format for FHIR](https://www.hl7.org/fhir/datatypes.html#instant). Seconds and milliseconds can be omitted, but YYYY-MM-DDTHH:MM are required.
           - name: end
             type: datetime
+            required: true
             description: When appointment is to conclude.
             create_description:
               The end attribute is used with the start timestamp to determine the duration in minutes of the appointment. It is written in [instant format for FHIR](https://www.hl7.org/fhir/datatypes.html#instant). Seconds and milliseconds can be omitted, but YYYY-MM-DDTHH:MM are required. <br><br> ⚠ Currently, Canvas does not provide any validation on this end date. If you have an end_date before the start_date, it will result in a negative duration being displayed on the UI.
           - name: participant
+            required: true
             description: >-
                Participants involved in appointment. Must include at least one entry for a practitioner. An optional 2nd entry may be used for the patient.<br><br>  The `actor.reference`:  `Practitioner/<practitioner_id>` maps to the rendering provider in Canvas.
             create_description:
