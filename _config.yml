@@ -31,6 +31,7 @@ collections:
   sdk:
     output: true
     permalink: /:collection/:title/
+
 defaults:
   - scope:
       path          : "collections/_api/**/*"
@@ -53,8 +54,12 @@ defaults:
     values:
       layout        : "sdk"
 
+
 ### Feed settings
 feed:
+  url: "https://docs.canvasmedical.com"
+  title: Canvas Medical Release Notes
+  description: Updates 
   posts_limit: 20
   collections:
     release-notes:

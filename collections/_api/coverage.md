@@ -17,7 +17,7 @@ sections:
           - name: status
             description: >-
               The status of the Coverage<br><br>
-              Supported codes for create interactions: **active**, **entered-in-error** 
+              Supported codes for create interactions: **active**, **cancelled** 
             type: string
             required: true
           - name: type
@@ -59,7 +59,33 @@ sections:
             type: array[json]
             description: >-
               Issuer of the policy<br><br>
-              Supported resource types: **Organization** - a single iteration is supported.
+              Two methods for creating this data are supported:
+               - sending an [**Organization**](/api/organization) reference in `payor[0].reference`
+               ```json
+              "payor": [
+                    {
+                        "reference": "Organization/6741b035-2846-45b3-b7a3-251f7b7fc728",
+                        "type": "Organization",
+                        "display": "Medicare Advantage"
+                    }
+                  ],
+               ```
+               For **Read/Search**, this **Organization** reference will always be returned.
+              <br>
+               - sending a `payor[0].identifier.value` corresponding to the Coverage's payor id.  For now, these values can only be found and updated in the [Insurers Admin view](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers) in Canvas.
+               ```json
+                "payor": [
+                    {
+                      "identifier": {
+                        "system": "https://www.claim.md/services/era/",
+                        "value": "13162"
+                      },
+                      "display": "1199 National Benefit Fund"
+                    }
+                  ],
+               ```
+               <br>
+
             required: true
           - name: class
             type: json
@@ -147,11 +173,9 @@ curl --request POST \
   },
   "payor": [
     {
-      "identifier": {
-        "system": "https://www.claim.md/services/era/",
-        "value": "AMM03"
-      },
-      "display": "Independence Blue Cross Blue Shield"
+      "reference": "Organization/6741b035-2846-45b3-b7a3-251f7b7fc728",
+      "type": "Organization",
+      "display": "Medicare Advantage"
     }
   ],
   "class": [
@@ -241,11 +265,9 @@ payload = {
   },
   "payor": [
     {
-      "identifier": {
-        "system": "https://www.claim.md/services/era/",
-        "value": "AMM03"
-      },
-      "display": "Independence Blue Cross Blue Shield"
+      "reference": "Organization/6741b035-2846-45b3-b7a3-251f7b7fc728",
+      "type": "Organization",
+      "display": "Medicare Advantage"
     }
   ],
   "class": [
@@ -460,7 +482,7 @@ print(response.text)
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown coverage resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown Coverage resource 'c152eeb7-f204-4e28-acb5-c7e85390b17e'"
       }
     }
   ]
@@ -516,11 +538,9 @@ curl --request PUT \
   },
   "payor": [
     {
-      "identifier": {
-        "system": "https://www.claim.md/services/era/",
-        "value": "AMM03"
-      },
-      "display": "Independence Blue Cross Blue Shield"
+      "reference": "Organization/6741b035-2846-45b3-b7a3-251f7b7fc728",
+      "type": "Organization",
+      "display": "Medicare Advantage"
     }
   ],
   "class": [
@@ -610,11 +630,9 @@ payload = {
   },
   "payor": [
     {
-      "identifier": {
-        "system": "https://www.claim.md/services/era/",
-        "value": "AMM03"
-      },
-      "display": "Independence Blue Cross Blue Shield"
+      "reference": "Organization/6741b035-2846-45b3-b7a3-251f7b7fc728",
+      "type": "Organization",
+      "display": "Medicare Advantage"
     }
   ],
   "class": [
@@ -715,7 +733,7 @@ print(response.text)
       "resource": {
         "resourceType": "Coverage",
         "id": "171a7243-f568-48cb-8052-3f2990dac1cd",
-        "status": "entered-in-error",
+        "status": "cancelled",
         "subscriber": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
@@ -752,7 +770,7 @@ print(response.text)
       "resource": {
         "resourceType": "Coverage",
         "id": "27f42512-23e6-4c17-8569-80e14792b6f8",
-        "status": "entered-in-error",
+        "status": "cancelled",
         "subscriber": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"

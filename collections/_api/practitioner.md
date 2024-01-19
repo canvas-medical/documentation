@@ -19,6 +19,13 @@ sections:
           - name: name
             type: array[json]
             description: The name(s) associated with the practitioner
+          - name: address
+            type: array[json]
+            description: Address(es) of the practitioner entered in Canvas
+          - name: qualification
+            type: array[json]
+            description: >-
+               Certification, licenses, or training pertaining to the provision of care<br>
         search_parameters:
           - name: _id
             type: string
@@ -50,7 +57,7 @@ sections:
 {% tabs practitioner-read-response %}
 {% tab practitioner-read-response 200 %}
 ```json
-{
+ {
     "resourceType": "Practitioner",
     "id": "e766816672f34a5b866771c773e38f3c",
     "identifier": [
@@ -68,8 +75,46 @@ sections:
                 "Youta"
             ]
         }
-    ]
-}
+    ],
+    "address": [
+        {
+            "use": "work",
+            "line": [
+                "405 49th St"
+            ],
+            "city": "Oakland",
+            "state": "CA",
+            "postalCode": "94609",
+            "country": "USA"
+        }
+    ],
+    "qualification": [
+          {
+            "identifier": [
+                {
+                    "system": "http://www.mbc.ca.gov/",
+                    "value": "A60695"
+                }
+            ],
+            "code": {
+                "text": "License"
+            },
+            "period": {
+                "start": "2017-07-11",
+                "end": "2019-07-11"
+            },
+            "issuer": {
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
+                        "valueString": "MEDICAL BOARD OF CALIFORNIA"
+                    }
+                ],
+                "display": "MEDICAL BOARD OF CALIFORNIA"
+            }
+          }
+      ]
+  }
 ```
 {% endtab %}
 {% tab practitioner-read-response 401 %}
@@ -169,6 +214,44 @@ sections:
                         "given": [
                             "Steven"
                         ]
+                    }
+                ],
+                "address": [
+                    {
+                        "use": "work",
+                        "line": [
+                            "405 49th St"
+                        ],
+                        "city": "Oakland",
+                        "state": "CA",
+                        "postalCode": "94609",
+                        "country": "USA"
+                    }
+                ],
+                "qualification": [
+                    {
+                        "identifier": [
+                            {
+                                "system": "http://www.mbc.ca.gov/",
+                                "value": "A60695"
+                            }
+                        ],
+                        "code": {
+                            "text": "License"
+                        },
+                        "period": {
+                            "start": "2017-07-11",
+                            "end": "2019-07-11"
+                        },
+                        "issuer": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
+                                    "valueString": "MEDICAL BOARD OF CALIFORNIA"
+                                }
+                            ],
+                            "display": "MEDICAL BOARD OF CALIFORNIA"
+                        }
                     }
                 ]
             }

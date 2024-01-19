@@ -7,7 +7,7 @@ sections:
         name: DocumentReference
         article: "a"
         description: >-
-          A reference to a document of any kind for any purpose. Provides metadata about the document so that the document can be discovered and managed. The scope of a document is any seralized object with a mime-type, so includes formal patient centric documents (CDA), cliical notes, scanned paper, and non-patient specific documents like policy text.<br><br>
+          A reference to a document of any kind for any purpose. Provides metadata about the document so that the document can be discovered and managed. The scope of a document is any seralized object with a mime-type, so includes formal patient centric documents (CDA), clinical notes, scanned paper, and non-patient specific documents like policy text.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-documentreference.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-documentreference.html)<br><br>
           PDFs are generated for lab reports, imaging reports and invoicing associated with a patient.
         attributes:
@@ -29,7 +29,16 @@ sections:
             type: json
           - name: category
             description: >-
-              The categorization of the document. Supported category codes are: **labreport**, **imagingreport**, **educationalmaterial** and **invoicefull**.
+              The categorization of the document. Supported category codes are:<br><br>
+              **clinical-note**<br>
+              **correspondence**<br>
+              **educationalmaterial**<br>
+              **imagingreport**<br>
+              **invoicefull**<br>
+              **labreport**<br>
+              **patientadministrativedocument**<br>
+              **referralreport**<br>
+              **uncategorizedclinicaldocument**
             type: array[json]
           - name: subject
             description: >-
@@ -114,6 +123,7 @@ sections:
         {
             "coding": [
                 {
+                    "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                     "code": "invoicefull"
                 }
             ]
@@ -253,6 +263,7 @@ sections:
                         "coding":
                         [
                             {
+                                "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "labreport"
                             }
                         ]

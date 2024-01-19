@@ -5,7 +5,8 @@ main:
     url: /sdk/
   - title: Guides
     url: /guides/
-
+  - title: Product Updates  
+    url: /product-updates/release-notes
 api:
  - title: "Canvas FHIR"
    identifier: api_canvas_fhir
@@ -181,6 +182,12 @@ api_careteam:
 api_claim:
  - title: "Claim Create"
    url: /api/claim/#create
+ - title: "Claim Read"
+   url: /api/claim/#read
+ - title: "Claim Update"
+   url: /api/claim/#update
+ - title: "Claim Search"
+   url: /api/claim/#search
 api_communication:
  - title: "Communication Create"
    url: /api/communication/#create
@@ -217,6 +224,8 @@ api_coverageeligibilityrequest:
  - title: "CoverageEligibilityRequest Create"
    url: /api/coverageeligibilityrequest/#create
 api_coverageeligibilityresponse:
+ - title: "CoverageEligibilityResponse Read"
+   url: /api/coverageeligibilityresponse/#read
  - title: "CoverageEligibilityResponse Search"
    url: /api/coverageeligibilityresponse/#search
 api_device:
@@ -309,6 +318,8 @@ api_patient:
 api_paymentnotice:
  - title: "PaymentNotice Create"
    url: /api/paymentnotice/#create
+ - title: PaymentNotice Read
+   url: /api/paymentnotice/#read
  - title: "PaymentNotice Search"
    url: /api/paymentnotice/#search
 api_practitioner:
@@ -474,3 +485,15 @@ sdk_workflow_kit_value_sets:
  - title: "Result"
    url: /sdk/result
 
+releasenotes: 
+ - title: "Product Updates"
+   identifier: releasenotes_product_updates
+
+
+releasenotes_product_updates:
+ - title: "Release Notes"
+   url: /product-updates/release-notes
+ - title: "Important Dates"
+   url: /product-updates/important-dates
+ - title: "Roadmap"
+   url: /product-updates/roadmap

@@ -38,8 +38,29 @@ sections:
                 type: array[json]
               - name: address
                 type: string
+          - name: identifier
+            type: array[json]
+            description: >-
+              External Ids for this item
+            create_description: >-
+              The identifier list defines additional identifiers that are able to be stored for an appointment.<br><br>These identifiers will not be surfaced on the Patient's chart, but they may help you identify the patient in your system by associating your identifier with the resource's `id`.
+            update_description: >-
+              The identifier list defines additional identifiers that are able to be stored for an appointment.<br><br>These identifiers will not be surfaced on the Patient's chart, but they may help you identify the patient in your system by associating your identifier with the resource's `id`.<br><br>
+              To update an existing `identifier`, include the `id` in the `identifier[x].id` field returned from Read/Search.<br><br>
+              The `identifier` section sent in an update will entirely replace existing identifiers currently within the period.start and period.end dates.<br><br>
+              If an <code>identifier</code> already exists in the Canvas database and is not included in the Update message, it will be deleted if and only if the period.end date is in the future.
+            attributes:
+            - name: use
+              type: string
+            - name: system
+              type: string
+            - name: value
+              type: string
+            - name: period
+              type: json
           - name: status
             type: string
+            required: true
             description: >-
               The status of the appointment. <br><br> **Canvas to FHIR Mapping**<br>unconfirmed > proposed<br>attempted > pending<br>confirmed > booked<br>arrived > arrived<br>roomed > check-in<br>exited > fulfilled<br>no-showed > noshow<br>cancelled > cancelled<br>deleted > entered-in-error
             create_description:
@@ -51,7 +72,7 @@ sections:
             description: >-
               The style of appointment or patient that has been booked in the slot (not service type). Canvas supports configurable [apppointment and note types](/documentation/appointment-and-note-types/).
             create_description: >-
-              Canvas supports configurable [appointment and note types](/documentation/appointment-and-note-types/). There are a few things to note with this field: <br><br>**1.**If `appointmentType` attribute is omitted from the body completely, the note type that has `Is default appointment type` will be used (usually Office Visit if unchanged)<br><br>**2.**The `appointmentType` field must contain one coding, and it must be a SNOMED or INTERNAL coding.<br><br>**3.**If a code that does not exist is passed, you will see a 422 error status with error message `Appointment Create Error: Appointment Type does not exist with system: {system} and code: {code}` <br><br>**4.** If a code is passed that is not marked as `Is Scheduleable`, you will get a 422 error status with error message `Appointment Create Error: Appointment type must be scheduleable`.
+              Canvas supports configurable [appointment and note types](/documentation/appointment-and-note-types/). There are a few things to note with this field: <br><br>**1.**If the `appointmentType` attribute is omitted from the body completely, the note type that has `Is default appointment type` will be used (usually Office Visit if unchanged)<br><br>**2.**The `appointmentType` field must contain one coding, and it must be a SNOMED or INTERNAL coding.<br><br>**3.**If a code that does not exist is passed, you will see a 422 error status with error message `Appointment Create Error: Appointment Type does not exist with system: {system} and code: {code}` <br><br>**4.** If a code is passed that is not marked as `Is Scheduleable`, you will get a 422 error status with error message `Appointment Create Error: Appointment type must be scheduleable`.
             update_description: >-
               Canvas supports configurable [appointment and note types](/documentation/appointment-and-note-types/). There are a few things to note with this field: <br><br>**1.**If `appointmentType` attribute is omitted from the body completely, the note type that has `Is default appointment type` will be used (usually Office Visit if unchanged)<br><br>**2.**The `appointmentType` field must contain one coding, and it must be a SNOMED or INTERNAL coding.<br><br>**3.**If a code that does not exist is passed, you will see a 422 error status with error message `Appointment Create Error: Appointment Type does not exist with system: {system} and code: {code}` <br><br>**4.** If a code is passed that is not marked as `Is Scheduleable`, you will get a 422 error status with error message `Appointment Create Error: Appointment type must be scheduleable`.
             attributes:
@@ -75,9 +96,11 @@ sections:
           - name: reasonCode
             type: array[json]
             description: >-
-              Coded reason this appointment is scheduled. Canvas supports two ways to specify the reason for vist (RFV): [structured](/documenation/reason-for-visit-codings) and unstructured. Both the `coding` and `text` attributes are used for Structured RFVs, whereas unstructured RFVs only leverage the `text` attribute.
+              Coded reason this appointment is scheduled. Canvas supports two ways to specify the reason for vist (RFV): [structured](/documentation/reason-for-visit-setting-codings) and unstructured. Both the `coding` and `text` attributes are used for Structured RFVs, whereas unstructured RFVs only leverage the `text` attribute.
             create_description:
-              Canvas only accepts the first item in the reasonCode list. If you are taking advantage of our [structured reason for visit](/documenation/reason-for-visit-codings) feature, you can provide a `coding` that Canvas can use to look up the `code` value in settings and display the structured RFV matching that code. If `Appointment.reasonCode[0].coding[0].code` is not a valid ReasonForVisitSettingCoding you will get the error "structured reason for visit with code {code} does not exist". <br><br> The `text` attribute maps to the free text Reason For Visit command.  If you are using the structured reason for visit feature, this text will display as the `comment` in the command.
+              Canvas only accepts the first item in the reasonCode list.<br><br>
+
+              If you are taking advantage of our [structured reason for visit](/documentation/reason-for-visit-setting-codings) feature, you can provide a `coding` that Canvas can use to look up the `code` value in configured in settings and display the structured RFV matching that code. If `Appointment.reasonCode[0].coding[0].code` is not a valid ReasonForVisitSettingCoding you will get the error "structured reason for visit with code {code} does not exist". <br><br> The `text` attribute maps to the free text Reason For Visit command.  If you are using the structured reason for visit feature, this text will display as the `comment` in the command.  **If you are not using the structured reason for visit feature**, then only `Appointment.reasonCode[0].text` needs to be populated in your message - `coding` should be omitted.
             update_description:
               In the Canvas UI, if the reasonCode / description is changed, it will update the reason for visit on that appointment. The old reason for visit will be marked as entered-in-error, and the text will no longer display. Below is an example of what an appointment's note will look like after changing the description multiple times. The originator and entered-in-error will be set to Canvas Bot, which can be seen if you click on the crossed off "Reason for Visit".<br><br>![api-update-rfv](/assets/images/api-update-rfv.png){:width="80%"}
             attributes:
@@ -91,11 +114,12 @@ sections:
               Shown on a subject line in a meeting request, or appointment list.<br><br>
               **Note:** This field is being deprecated in favor of `reasonCode`. The text in `reasonCode` and this description attribute will always match.
           - name: supportingInformation
+            required: true
             type: array[json]
             description: >-
               Additional information to support the appointment. **References** are used to capture information about **rescheduled appointments** and the **location** of the appointment.<br><br>**Rescheduled Appointments**<br>If you see `Previously Rescheduled Appointment` in `supportingInformation`, it means that the appointment you are currently reading was created by rescheduling the appointment in that Reference. If you see `Rescheduled Replacement Appointment` in the `supportingInformation`, it means that the appointment you are currently reading is now outdated by a new appointment.
             create_description:
-              You can use a Location reference within the `SupportingInformation` attribute to specify the Location of the appointment,. To get the location id, use the [Schedule Search](/api/schedule/#search) endpoint. This will give you a `resource.id` like `Location.1-Staff.c2ff4546548e46ab8959af887b563eab`. The Location ID is the value displayed after the period. If your instance only has one practice location, the ID will always be 1.
+              You can use a Location reference within the `SupportingInformation` attribute to specify the Location of the appointment. To get the location reference, use the `id` from the [Location Search](/api/location/#search) endpoint.
             attributes:
               - name: reference
                 type: string
@@ -103,19 +127,22 @@ sections:
                 type: string
           - name: start
             type: datetime
+            required: true
             description: When appointment is to take place.
             create_description:
               The `start` attribute determines the start timestamp of the appointment. It is written in [instant format for FHIR](https://www.hl7.org/fhir/datatypes.html#instant). Seconds and milliseconds can be omitted, but YYYY-MM-DDTHH:MM are required.
           - name: end
             type: datetime
+            required: true
             description: When appointment is to conclude.
             create_description:
               The end attribute is used with the start timestamp to determine the duration in minutes of the appointment. It is written in [instant format for FHIR](https://www.hl7.org/fhir/datatypes.html#instant). Seconds and milliseconds can be omitted, but YYYY-MM-DDTHH:MM are required. <br><br> ⚠ Currently, Canvas does not provide any validation on this end date. If you have an end_date before the start_date, it will result in a negative duration being displayed on the UI.
           - name: participant
+            required: true
             description: >-
                Participants involved in appointment. Must include at least one entry for a practitioner. An optional 2nd entry may be used for the patient.<br><br>  The `actor.reference`:  `Practitioner/<practitioner_id>` maps to the rendering provider in Canvas.
             create_description:
-              This list object requires one entry for a practitioner. An optional 2nd entry may be supplied for the patient.<br><br>   • The first entry has the `actor.reference` specify `Practitioner/<practitioner_id>` for the provider. This id can be found through a [Practitioner Search](/api/practitioner/#search). If `<practitioner_id>` is left blank, the practitioner will be set to Canvas Bot by default. <br>   • The second entry has the `actor.reference` specify `Patient/<patient_id>` for the patient this appointment is for. This id can be found through a [Patient Search](/api/patient/#search). <br><br>Per FHIR,  status is required, but it is not used by Canvas. Canvas recommends sending “active"
+              This list object requires one entry for a practitioner. An optional 2nd entry may be supplied for the patient.<br><br>   • The first entry has the `actor.reference` specify `Practitioner/<practitioner_id>` for the provider. This id can be found through a [Practitioner Search](/api/practitioner/#search). If `<practitioner_id>` is left blank, the practitioner will be set to Canvas Bot by default. <br>   • The second entry has the `actor.reference` specify `Patient/<patient_id>` for the patient this appointment is for. This id can be found through a [Patient Search](/api/patient/#search). <br><br>Per FHIR,  status is required, but it is not used by Canvas. Canvas recommends sending "active"
             type: array[json]
             attributes:
               - name: actor
@@ -207,6 +234,18 @@ sections:
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
+    "identifier": [
+        {
+            "id": "97b28298-f618-4972-9a6b-d095785587d6",
+            "use": "usual",
+            "system": "AssigningSystem",
+            "value": "test123",
+            "period": {
+                "start": "2024-01-01",
+                "end": "2024-12-31"
+            }
+        }
+    ],
     "status": "proposed",
     "appointmentType":
     {
@@ -238,7 +277,7 @@ sections:
     "supportingInformation":
     [
         {
-            "reference": "Location/1",
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060",
             "type": "Location"
         },
         {
@@ -387,6 +426,18 @@ sections:
                         "address": "https://url-for-video-chat.example.com?meeting=abc123"
                     }
                 ],
+                "identifier": [
+                  {
+                      "id": "97b28298-f618-4972-9a6b-d095785587d6",
+                      "use": "usual",
+                      "system": "AssigningSystem",
+                      "value": "test123",
+                      "period": {
+                          "start": "2024-01-01",
+                          "end": "2024-12-31"
+                      }
+                  }
+                ],
                 "status": "proposed",
                 "appointmentType":
                 {
@@ -418,7 +469,7 @@ sections:
                 "supportingInformation":
                 [
                     {
-                        "reference": "Location/1",
+                        "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060",
                         "type": "Location"
                     },
                     {
@@ -546,6 +597,17 @@ curl --request POST \
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
+    "identifier": [
+        {
+            "use": "usual",
+            "system": "AssigningSystem",
+            "value": "test123",
+            "period": {
+                "start": "2024-01-01",
+                "end": "2024-12-31"
+            }
+        }
+    ],
     "status": "proposed",
     "appointmentType":
     {
@@ -576,7 +638,7 @@ curl --request POST \
     "supportingInformation":
     [
         {
-            "reference": "Location/1"
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060"
         },
         {
             "reference": "#appointment-meeting-endpoint",
@@ -645,6 +707,17 @@ payload = {
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
+    "identifier": [
+      {
+          "use": "usual",
+          "system": "AssigningSystem",
+          "value": "test123",
+          "period": {
+              "start": "2024-01-01",
+              "end": "2024-12-31"
+          }
+      }
+    ],
     "status": "proposed",
     "appointmentType":
     {
@@ -675,7 +748,7 @@ payload = {
     "supportingInformation":
     [
         {
-            "reference": "Location/1"
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060"
         },
         {
             "reference": "#appointment-meeting-endpoint",
@@ -752,6 +825,18 @@ curl --request PUT \
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
+    "identifier": [
+      {
+          "id": "97b28298-f618-4972-9a6b-d095785587d6",
+          "use": "usual",
+          "system": "AssigningSystem",
+          "value": "test123",
+          "period": {
+              "start": "2024-01-01",
+              "end": "2024-12-31"
+          }
+      }
+    ],
     "status": "cancelled",
     "appointmentType":
     {
@@ -782,7 +867,7 @@ curl --request PUT \
     "supportingInformation":
     [
         {
-            "reference": "Location/1"
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060"
         },
         {
             "reference": "#appointment-meeting-endpoint",
@@ -850,6 +935,18 @@ payload = {
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
+    "identifier": [
+      {
+          "id": "97b28298-f618-4972-9a6b-d095785587d6",
+          "use": "usual",
+          "system": "AssigningSystem",
+          "value": "test123",
+          "period": {
+              "start": "2024-01-01",
+              "end": "2024-12-31"
+          }
+      }
+    ],
     "status": "cancelled",
     "appointmentType":
     {
@@ -880,7 +977,7 @@ payload = {
     "supportingInformation":
     [
         {
-            "reference": "Location/1"
+            "reference": "Location/b3476a18-3f63-422d-87e7-b3dc0cd55060"
         },
         {
             "reference": "#appointment-meeting-endpoint",

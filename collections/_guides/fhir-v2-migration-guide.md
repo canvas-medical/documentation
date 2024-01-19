@@ -203,7 +203,8 @@ We created a diff-tool that allowed for requests sent to the v1 API to be mock-r
 - The `birthDate` field must meet FHIR’s date format requirements.
 - `identifier[*].use` must now be one of (`usual | official | temp | secondary | old`) if it is provided
 - `contact[*].name` previously accepted a list. Now it conforms to the FHIR spec and no longer accepts a list.
-- Previously, the `gender` field value was the same as the stored `sexAtBirth` value. Now the gender field value in read and search responses is extracted from the gender identity extension value if one was passed in to create or update, or the value of the gender field if the gender identity extension was not used.
+- Previously, the `gender` field value was the same as the stored `birthsex` value. Now the gender field value in read and search responses is extracted from the gender identity extension value if one was passed in to create or update, or the value of the gender field if the gender identity extension was not used.
+- The `birthsex` extension will now follow standard FHIR and can only be one of `(M | F | OTH | UNK | ASKU)`
 - `http://schemas.canvasmedical.com/fhir/extensions/emergency-contact`, `http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information`, `http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity`, and `http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation` extensions were added.
 - Previously, omitting the `telecom`, `address`, or `contact` arrays entirely would have no effect on the database values for those fields.  In the new API, omitting these fields entirely will have the same effect as sending an empty array would (i.e. removing any data currently in the database for those fields), to properly adhere to how REST APIs should handle updates.
 - The race and ethnicity extensions are now specified with this format:
@@ -247,6 +248,7 @@ can be obtained from the FHIR documentation for each extension:
 - There are some minor spacing differences in the values of the `text.div` field.
 - Extensions with no `valueString` values (namely `http://schemas.canvasmedical.com/fhir/extensions/clinical-note` and `http://schemas.canvasmedical.com/fhir/extensions/administrative-note extensions`) are no longer returned.
 - Previously, the `gender` field value was the same as the stored `sexAtBirth` value. Now the `gender` field value in read and search responses is extracted from the gender identity extension value if one was passed in to create or update, or the value of the gender field if the gender identity extension was not used.
+- The `birthsex` extension will now follow standard FHIR and be one of `(M | F | OTH | UNK | ASKU)`
 - `http://schemas.canvasmedical.com/fhir/extensions/emergency-contact`, `http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information`, `http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity`, and `http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation` extensions were added.
 
 **Special note regarding `telecom[*].rank`**
@@ -329,7 +331,7 @@ To acquire a patient scoped token, you will need to include some parameters in t
 
 ```bash
 curl --location --request POST \
-      'http://<your_subdomain_here>.canvasmedical.com/auth/token/' \
+      'https://<your_subdomain_here>.canvasmedical.com/auth/token/' \
       --header 'Content-Type: application/x-www-form-urlencoded' \
       --data-urlencode 'grant_type=client_credentials' \
       --data-urlencode 'client_id=<client_id_from_Canvas>' \

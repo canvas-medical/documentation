@@ -57,6 +57,9 @@ sections:
               For create interactions, `period.start` is required with a **YYYY-MM-DD** format.<br><br>
               A `period.end` with a past date will mark the consent as Expired in the UI.
         search_parameters:
+          - name: _id
+            description: The Canvas-issued unique identifier of the Consent
+            type: string
           - name: patient
             type: string
             description: Who the consent applies to
@@ -68,6 +71,8 @@ sections:
         endpoints: [create, read, search]
         create:
           description: >-
+            Before creating a consent via the API, Patient Consent Codings **must** be [configured in Canvas](/documentation/consents).<br><br>
+
             **Updating existing patient consent objects**<br><br>
 
             A patient consent is uniquely distinguished by its patient and consent coding<br><br>
