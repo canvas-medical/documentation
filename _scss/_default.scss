@@ -37,9 +37,9 @@ h2 {
   @media (min-width: $breakpoint-lg) {
     font-size: 2rem;
   }
-  margin-top: 1rem;
+  margin-top: 3rem;
   margin-bottom: 1rem;
-  font-weight: 400;
+  font-weight: 450;
 }
 
 h3 {
@@ -48,20 +48,20 @@ h3 {
   @media (min-width: $breakpoint-lg) {
     font-size: 1.6rem;
   }
-  margin-top: 1rem;
+  margin-top: 2rem;
   margin-bottom: 1rem;
   font-weight: 400;
 }
 
 h4 {
   display: block;
-  font-size: 1.2rem;
+  font-size: 1.0rem;
   @media (min-width: $breakpoint-lg) {
-    font-size: 1.6rem;
+    font-size: 1.2rem;
   }
   margin-top: 1rem;
   margin-bottom: 1rem;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 h5 {
