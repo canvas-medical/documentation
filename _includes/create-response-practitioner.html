@@ -6,12 +6,20 @@
     "id": "55096fbcdfb240fd8c999c325304de03",
     "extension": [
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+            "valueString": "username123"
+        },
+        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueString": "https://meet.google.com/room-001"
+            "valueUrl": "https://meet.google.com/room-001"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueString": "1"
+            "valueReference": {
+                "reference": "Location/43bd7961-c88f-4728-b12b-4be773b8aeda",
+                "type": "Location",
+                "display": "Canvas Clinic San Francisco"
+            }
         },
         {
             "extension": [
@@ -25,17 +33,22 @@
         },
         {
             "extension": [
-                {
-                    "url": "code",
-                    "valueCode": "CC"
-                }
-            ],
+            {
+                "extension": [
+                    {
+                        "url": "display",
+                        "valueString": "Care Coordinator"
+                    }
+                ],
+                "url": "code",
+                "valueCode": "CC"
+            }
+        ],
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
         }
     ],
     "identifier": [
         {
-            "id": "test123456789test3",
             "system": "http://hl7.org/fhir/sid/us-npi ",
             "value": "1920301155"
         }
@@ -52,23 +65,37 @@
     ],
     "telecom": [
         {
-            "system": "PHONE",
+            "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
+            "system": "phone",
             "value": "5554320555",
-            "use": "MOBILE"
+            "use": "mobile",
+            "rank": 1
         },
         {
-            "system": "PHONE",
+            "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
+            "system": "phone",
             "value": "333555",
-            "use": "WORK"
+            "use": "work",
+            "rank": 1
         },
         {
-            "system": "EMAIL",
+            "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
+            "system": "email",
             "value": "samantha.jones@example.com",
-            "use": "WORK"
+            "use": "work",
+            "rank": 1
+        },
+        {
+            "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
+            "system": "email",
+            "value": "samantha.jones2@example.com",
+            "use": "work",
+            "rank": 2
         }
     ],
     "address": [
         {
+            "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
             "use": "work",
             "line": [
                 "1234 Main St., Los Angeles, CA 94107"
@@ -79,6 +106,7 @@
             "country": "United States"
         },
         {
+            "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
             "use": "work",
             "line": [
                 "1234 Main St., Los Angeles, CA 94107"
@@ -89,7 +117,6 @@
             "country": "United States"
         }
     ],
-    "gender": "F",
     "birthDate": "1988-10-10",
     "photo": [
         {
@@ -97,12 +124,8 @@
             "title": "Samantha Jones: pk=21"
         },
         {
-            "url": "https://canvas-vicert-test.s3.us-west-2.amazonaws.com/canvas-vicert-test/local/20231226_125820_48ce0458c73a46a087cee4a0a0c38d64.png",
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY",
             "title": "Samantha Jones: pk=22"
-        },
-        {
-            "url": "https://canvas-vicert-test.s3.us-west-2.amazonaws.com/canvas-vicert-test/local/20231226_125821_35a2160829ec496e8baa280704dfa0e3.png",
-            "title": "Samantha Jones: pk=23"
         }
     ],
     "qualification": [

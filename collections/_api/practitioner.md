@@ -25,7 +25,7 @@ sections:
           <br><br>
           [http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location](http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location)
           <br><br>
-          The practitioner's primary practice location, where they spend most of their time. Expected value is the primary key of the practice location.
+          The practitioner's primary practice location, where they spend most of their time. Expected value is reference to the Location model.
           <br><br>
 
           **`practitioner-signature`**
@@ -40,6 +40,13 @@ sections:
           [http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles)
           <br><br>
           An array of roles with internal role codes as values. Examples of expected values include CA, MA, etc.
+          <br><br>
+
+          **`username`**
+          <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/username](http://schemas.canvasmedical.com/fhir/extensions/username)
+          <br><br>
+          A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication. Expected value is string.
           <br><br>
 
         attributes:
@@ -59,14 +66,13 @@ sections:
             description: The name(s) associated with the practitioner.
           - name: telecom
             type: array[json]
-            description: Practitioner contact point(s) (email / phone / fax).
+            required: true
+            description: >- 
+                Practitioner contact point(s) (email / phone / fax). At least one contact field with the specifications 'system': 'phone' and 'use': 'work' is designated as the primary phone for staff or users. There must be exactly one contact field with the specifications 'system': 'email' and 'rank': 1. An error will be triggered if there is more than one email with rank 1, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed. Updating email contact fields is not permitted, during updates, the values must remain unchanged from the original creation or retrieval.
           - name: address
             type: array[json]
-            description: Address(es) of the practitioner entered in Canvas.
-          - name: gender
-            type: string
-            description: >-
-              A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **ASKU**, **F**, **M**, **O**, **OTH**, **UNK**, **male**, **female**, **other** and **unknown**.
+            required: true
+            description: Address(es) of the practitioner entered in Canvas. Country will be "United States" by default.
           - name: birthDate
             type: date
             description: >-
@@ -94,10 +100,6 @@ sections:
           - name: npiNumber
             type: string
             description: Practitioner NPI number.
-          - name: gender
-            type: boolean
-            description: >-
-              A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **male**, **female**, **other** and **unknown**.
         endpoints: [create, read, update, search]
 
         create:
@@ -114,7 +116,8 @@ sections:
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: practitioner-update-request
           example_response: practitioner-update-response
-          description: Update Practitioner
+          description: >-
+            During the update (PUT) of 'addresses' and 'contacts' for practitioner, it is now expected that an 'id' is provided in the object of each 'address' or 'telecom' entity being updated. If 'id' is not provided, a new field will be created during the update, and any existing fields that are missing in comparison to those in the database (if not sent with an 'id') will be deleted. During an update, if a 'url' for the signature is provided, it will be ignored, and no action will be taken. For all other fields, if omitted from the (PUT) request, their values will be deleted in the database, including extensions. This applies to 'signature', 'primary practice location', 'meeting room link', 'photo', 'roles', and 'address' all of those entries will be erased. However, 'username' remains unchanged. If, for example, 'signature' or 'primary practice location' is omitted or 'meeting room link' is excluded, the values will be nullified. The same applies to 'photo', 'roles', and 'address' all of those entries will be deleted. Only for contact points, an empty array cannot be sent, nor can the field be omitted, as API validation will require the presence of required fields.
         search:
           responses: [200, 400, 401, 403]
           example_request: practitioner-search-request
@@ -136,19 +139,25 @@ curl --request POST \
     "resourceType": "Practitioner",
     "identifier": [
         {
-            "id": "test123456789test3",
             "system": "http://hl7.org/fhir/sid/us-npi",
             "value": "1920301155"
         }
     ],
     "extension": [
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+            "valueString": "username123"
+        },
+        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueString": "https://meet.google.com/room-001"
+            "valueUrl": "https://meet.google.com/room-001"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueString": "1"
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location"
+            }
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
@@ -200,9 +209,14 @@ curl --request POST \
             "value": "samantha.jones@example.com",
             "use": "work",
             "rank": 1
+        },
+        {
+            "system": "email",
+            "value": "samantha.jones2@example.com",
+            "use": "work",
+            "rank": 2
         }
     ],
-    "gender": "F",
     "birthDate": "1988-10-10",
     "address": [
         {
@@ -257,10 +271,7 @@ curl --request POST \
             "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI"
         },
         {
-            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mNk+M9Qz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC"
-        },
-        {
-            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8/5+hnoEIwDiqkL4KAcT9GO0U4BxoAAAAAElFTkSuQmCC"
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ]
 }
@@ -284,19 +295,25 @@ payload = {
     "resourceType": "Practitioner",
     "identifier": [
         {
-            "id": "test123456789test3",
             "system": "http://hl7.org/fhir/sid/us-npi",
             "value": "1920301155"
         }
     ],
     "extension": [
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+            "valueString": "username123"
+        },
+        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueString": "https://meet.google.com/room-001"
+            "valueUrl": "https://meet.google.com/room-001"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueString": "1"
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location"
+            }
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
@@ -348,9 +365,14 @@ payload = {
             "value": "samantha.jones@example.com",
             "use": "work",
             "rank": 1
+        },
+        {
+            "system": "email",
+            "value": "samantha.jones2@example.com",
+            "use": "work",
+            "rank": 2
         }
     ],
-    "gender": "F",
     "birthDate": "1988-10-10",
     "address": [
         {
@@ -405,10 +427,7 @@ payload = {
             "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI"
         },
         {
-            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mNk+M9Qz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC"
-        },
-        {
-            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8/5+hnoEIwDiqkL4KAcT9GO0U4BxoAAAAAElFTkSuQmCC"
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ]
 }
@@ -434,23 +453,31 @@ print(response.text)
 {% tabs practitioner-read-response %}
 {% tab practitioner-read-response 200 %}
 ```json
- {
+{
     "resourceType": "Practitioner",
     "id": "55096fbcdfb240fd8c999c325304de03",
     "extension": [
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+            "valueString": "username123"
+        },
+        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueString": "https://meet.google.com/room-001"
+            "valueUrl": "https://meet.google.com/room-001"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueString": "1"
+            "valueReference": {
+                "reference": "Location/43bd7961-c88f-4728-b12b-4be773b8aeda",
+                "type": "Location",
+                "display": "Canvas Clinic San Francisco"
+            }
         },
         {
             "extension": [
                 {
                     "valueAttachment": {
-                        "url": "https://canvas-vicert-test.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=Uh0EByy4Ie9cpGwYZF3bCYAn6sE%3D&Expires=1703597910"
+                        "url": "https://canvas-vicert-test.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
                     }
                 }
             ],
@@ -458,17 +485,22 @@ print(response.text)
         },
         {
             "extension": [
-                {
-                    "url": "code",
-                    "valueCode": "CC"
-                }
-            ],
+            {
+                "extension": [
+                    {
+                        "url": "display",
+                        "valueString": "Care Coordinator"
+                    }
+                ],
+                "url": "code",
+                "valueCode": "CC"
+            }
+        ],
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
         }
     ],
     "identifier": [
         {
-            "id": "test123456789test3",
             "system": "http://hl7.org/fhir/sid/us-npi ",
             "value": "1920301155"
         }
@@ -485,23 +517,37 @@ print(response.text)
     ],
     "telecom": [
         {
-            "system": "PHONE",
+            "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
+            "system": "phone",
             "value": "5554320555",
-            "use": "MOBILE"
+            "use": "mobile",
+            "rank": 1
         },
         {
-            "system": "PHONE",
+            "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
+            "system": "phone",
             "value": "333555",
-            "use": "WORK"
+            "use": "work",
+            "rank": 1
         },
         {
-            "system": "EMAIL",
+            "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
+            "system": "email",
             "value": "samantha.jones@example.com",
-            "use": "WORK"
+            "use": "work",
+            "rank": 1
+        },
+        {
+            "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
+            "system": "email",
+            "value": "samantha.jones2@example.com",
+            "use": "work",
+            "rank": 2
         }
     ],
     "address": [
         {
+            "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
             "use": "work",
             "line": [
                 "1234 Main St., Los Angeles, CA 94107"
@@ -512,6 +558,7 @@ print(response.text)
             "country": "United States"
         },
         {
+            "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
             "use": "work",
             "line": [
                 "1234 Main St., Los Angeles, CA 94107"
@@ -522,7 +569,6 @@ print(response.text)
             "country": "United States"
         }
     ],
-    "gender": "F",
     "birthDate": "1988-10-10",
     "photo": [
         {
@@ -530,12 +576,8 @@ print(response.text)
             "title": "Samantha Jones: pk=21"
         },
         {
-            "url": "https://canvas-vicert-test.s3.us-west-2.amazonaws.com/canvas-vicert-test/local/20231226_125820_48ce0458c73a46a087cee4a0a0c38d64.png",
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY",
             "title": "Samantha Jones: pk=22"
-        },
-        {
-            "url": "https://canvas-vicert-test.s3.us-west-2.amazonaws.com/canvas-vicert-test/local/20231226_125821_35a2160829ec496e8baa280704dfa0e3.png",
-            "title": "Samantha Jones: pk=23"
         }
     ],
     "qualification": [
@@ -634,19 +676,25 @@ curl --request PUT \
     "resourceType": "Practitioner",
     "identifier": [
         {
-            "id": "test123456789test3",
             "system": "http://hl7.org/fhir/sid/us-npi",
             "value": "1920301155"
         }
     ],
     "extension": [
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+            "valueString": "username123"
+        },
+        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueString": "https://meet.google.com/room-001"
+            "valueUrl": "https://meet.google.com/room-001"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueString": "1"
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location"
+            }
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
@@ -698,9 +746,14 @@ curl --request PUT \
             "value": "samantha.jones@example.com",
             "use": "work",
             "rank": 1
+        },
+        {
+            "system": "email",
+            "value": "samantha.jones2@example.com",
+            "use": "work",
+            "rank": 2
         }
     ],
-    "gender": "F",
     "birthDate": "1988-10-10",
     "address": [
         {
@@ -755,10 +808,7 @@ curl --request PUT \
             "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI"
         },
         {
-            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mNk+M9Qz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC"
-        },
-        {
-            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8/5+hnoEIwDiqkL4KAcT9GO0U4BxoAAAAAElFTkSuQmCC"
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ]
 }
@@ -782,19 +832,25 @@ payload = {
     "resourceType": "Practitioner",
     "identifier": [
         {
-            "id": "test123456789test3",
             "system": "http://hl7.org/fhir/sid/us-npi",
             "value": "1920301155"
         }
     ],
     "extension": [
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+            "valueString": "username123"
+        },
+        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueString": "https://meet.google.com/room-001"
+            "valueUrl": "https://meet.google.com/room-001"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueString": "1"
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location"
+            }
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
@@ -846,9 +902,14 @@ payload = {
             "value": "samantha.jones@example.com",
             "use": "work",
             "rank": 1
+        },
+        {
+            "system": "email",
+            "value": "samantha.jones2@example.com",
+            "use": "work",
+            "rank": 2
         }
     ],
-    "gender": "F",
     "birthDate": "1988-10-10",
     "address": [
         {
@@ -903,10 +964,7 @@ payload = {
             "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI"
         },
         {
-            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mNk+M9Qz0AEYBxVSF+FAAhKDveksOjmAAAAAElFTkSuQmCC"
-        },
-        {
-            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8/5+hnoEIwDiqkL4KAcT9GO0U4BxoAAAAAElFTkSuQmCC"
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ]
 }
@@ -937,12 +995,20 @@ print(response.text)
     "id": "55096fbcdfb240fd8c999c325304de03",
     "extension": [
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+            "valueString": "username123"
+        },
+        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueString": "https://meet.google.com/room-001"
+            "valueUrl": "https://meet.google.com/room-001"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueString": "1"
+            "valueReference": {
+                "reference": "Location/43bd7961-c88f-4728-b12b-4be773b8aeda",
+                "type": "Location",
+                "display": "Canvas Clinic San Francisco"
+            }
         },
         {
             "extension": [
@@ -956,17 +1022,22 @@ print(response.text)
         },
         {
             "extension": [
-                {
-                    "url": "code",
-                    "valueCode": "CC"
-                }
-            ],
+            {
+                "extension": [
+                    {
+                        "url": "display",
+                        "valueString": "Care Coordinator"
+                    }
+                ],
+                "url": "code",
+                "valueCode": "CC"
+            }
+        ],
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
         }
     ],
     "identifier": [
         {
-            "id": "test123456789test3",
             "system": "http://hl7.org/fhir/sid/us-npi ",
             "value": "1920301155"
         }
@@ -983,23 +1054,37 @@ print(response.text)
     ],
     "telecom": [
         {
-            "system": "PHONE",
+            "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
+            "system": "phone",
             "value": "5554320555",
-            "use": "MOBILE"
+            "use": "mobile",
+            "rank": 1
         },
         {
-            "system": "PHONE",
+            "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
+            "system": "phone",
             "value": "333555",
-            "use": "WORK"
+            "use": "work",
+            "rank": 1
         },
         {
-            "system": "EMAIL",
+            "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
+            "system": "email",
             "value": "samantha.jones@example.com",
-            "use": "WORK"
+            "use": "work",
+            "rank": 1
+        },
+        {
+            "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
+            "system": "email",
+            "value": "samantha.jones2@example.com",
+            "use": "work",
+            "rank": 2
         }
     ],
     "address": [
         {
+            "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
             "use": "work",
             "line": [
                 "1234 Main St., Los Angeles, CA 94107"
@@ -1010,6 +1095,7 @@ print(response.text)
             "country": "United States"
         },
         {
+            "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
             "use": "work",
             "line": [
                 "1234 Main St., Los Angeles, CA 94107"
@@ -1020,7 +1106,6 @@ print(response.text)
             "country": "United States"
         }
     ],
-    "gender": "F",
     "birthDate": "1988-10-10",
     "photo": [
         {
@@ -1028,12 +1113,8 @@ print(response.text)
             "title": "Samantha Jones: pk=21"
         },
         {
-            "url": "https://canvas-vicert-test.s3.us-west-2.amazonaws.com/canvas-vicert-test/local/20231226_125820_48ce0458c73a46a087cee4a0a0c38d64.png",
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY",
             "title": "Samantha Jones: pk=22"
-        },
-        {
-            "url": "https://canvas-vicert-test.s3.us-west-2.amazonaws.com/canvas-vicert-test/local/20231226_125821_35a2160829ec496e8baa280704dfa0e3.png",
-            "title": "Samantha Jones: pk=23"
         }
     ],
     "qualification": [
