@@ -20,7 +20,7 @@ permalink: "/"
                     <div class="anchorContainer">
                     <a href="/documentation">Transition Overview</a><br>
                     <a href="https://canvas-medical.zendesk.com/hc/en-us">Knowledge Center ↗</a><br>
-                    <a href="https://canvas-medical.zendesk.com/hc/en-us/sections/360010471754-Release-Documents">Release Notes ↗</a> 
+                    <a href="/product-updates/release-notes">Release Notes</a> 
                     </div>
                 </div>
             </div>
