@@ -488,6 +488,8 @@ sdk_workflow_kit_value_sets:
 releasenotes: 
  - title: "Product Updates"
    identifier: releasenotes_product_updates
+ - title: "Beta Programs"
+   identifier: releasenotes_betas
 
 
 releasenotes_product_updates:
@@ -497,4 +499,8 @@ releasenotes_product_updates:
    url: /product-updates/important-dates
  - title: "Roadmap"
    url: /product-updates/roadmap
+
+releasenotes_betas:
+ - title: "Commands Module"
+   url: /product-updates/commands-module 
 

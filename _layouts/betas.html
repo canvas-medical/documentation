@@ -1,0 +1,24 @@
+---
+layout: default
+---
+<div class="pagelayout pagelayout__centerdocs">
+  <div class="sidenav sidenavtoc">
+    <!-- <div class="sidenav__toggle">
+      {% include icons/horizontal-toggle.svg %}
+    </div> -->
+    {% include toc.html menu=site.menus.releasenotes %}
+  </div>
+  <div class="pagelayout__centerdocs__wrapper">
+    <div class="pagelayout__centerdocs__content">
+      {% include article.html %}
+    </div>
+    <div class="sidepanels">
+      <div class="sidepanels__sidepanel">
+        {% include panel-guides.html %}
+      </div>
+      <div class="sidepanels__sidepanel">
+        {% include panel-anchorlist.html %}
+      </div>
+    </div>
+  </div>
+</div>

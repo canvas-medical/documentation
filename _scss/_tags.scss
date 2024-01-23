@@ -52,3 +52,35 @@
   padding: 3px 9px; /* Adjust padding to create space around the text */
   font-size: 0.8em;   
 }
+
+.tag-complete {
+  background-color: #00CE7D; 
+  color: #FFFFFF; 
+  padding: 3px 9px; /* Adjust padding to create space around the text */
+  font-size: 0.8em;
+  border-radius: 12px;   
+}
+
+.tag-beta-testing {
+  background-color: #22698C; 
+  color: #FFFFFF; 
+  padding: 3px 9px; /* Adjust padding to create space around the text */
+  font-size: 0.8em;  
+  border-radius: 12px;    
+}
+
+.tag-in-progress {
+  background-color: #FFA400; 
+  color: #FFFFFF; 
+  padding: 3px 9px; /* Adjust padding to create space around the text */
+  font-size: 0.8em; 
+  border-radius: 12px;     
+}
+
+.tag-next-up {
+  background-color: #EEE9D9; 
+  color: #0D2C4C; 
+  padding: 3px 9px; /* Adjust padding to create space around the text */
+  font-size: 0.8em;
+  border-radius: 12px;     
+}
