@@ -138,12 +138,7 @@
     {% include blocks/block-apidoc-endpoints.html %}
     <div class="apidoc__gridrow">
         <div class="apidoc__gridcol">
-            <div id="{{ endpoint }}" class="apidoc__info">
-                <span class="apidoc__info__method apidoc__info__method__{{ method }}">{{ method }}</span>
-                <div class="apidoc__info__url">/{{ block.name }}{{ url }}</div>
-                <h4 class="apidoc__info__summary">{{ block.name }} {{ endpoint }}</h4>
-                <div class="apidoc__info__description">{{ block[endpoint].description | markdownify }}</div>
-            </div>
+            <div id="{{ endpoint }}" class="apidoc__info"><span class="apidoc__info__method apidoc__info__method__{{ method }}">{{ method }}</span><div class="apidoc__info__url">/{{ block.name }}{{ url }}</div><h4 class="apidoc__info__summary">{{ block.name }} {{ endpoint }}</h4><div class="apidoc__info__description">{{ block[endpoint].description | markdownify }}</div></div>
         </div>
         <div class="apidoc__gridcol">
         </div>
