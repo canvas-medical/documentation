@@ -11,22 +11,6 @@ sections:
           [https://hl7.org/fhir/R4/media.html](https://hl7.org/fhir/R4/media.html)<br><br>
           FHIR Media maps to a Visual Exam Finding in Canvas.
         attributes:
-          - name: id
-            description: >-
-              The identifier of the Media
-            type: string
-          - name: extension
-            type: array[json]
-            description: >-
-              Canvas supports a note identifier extension on this resource for create, read, update, and search interactions. The note identifier can be used with the Canvas Note API.<br>
-              <br>
-              **Important:** For create interactions, Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note.<br>
-              <br>
-              The `url` for the extension is: **http://schemas.canvasmedical.com/fhir/extensions/note-id**<br>
-              <br>
-              The `valueId` contains the note identifier.<br>
-              <br>
-              See the request and response examples for more information.
           - name: status
             description: >-
               The current state of the media<br><br>Supported codes for create interactions are: **completed**, **entered-in-error**
@@ -95,12 +79,6 @@ curl --request POST \
      --data '
 {
     "resourceType": "Media",
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
-        }
-    ],
     "status": "completed",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -142,12 +120,6 @@ headers = {
 
 payload = {
     "resourceType": "Media",
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
-        }
-    ],
     "status": "completed",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -199,12 +171,6 @@ print(response.text)
 {
     "resourceType": "Media",
     "id": "729e5242-bad6-4bd7-905d-9716ae262971",
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
-        }
-    ],
     "status": "completed",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -321,12 +287,6 @@ print(response.text)
             "resource": {
                 "resourceType": "Media",
                 "id": "729e5242-bad6-4bd7-905d-9716ae262971",
-                "extension": [
-                    {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
-                    }
-                ],
                 "status": "completed",
                 "subject": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",

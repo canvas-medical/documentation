@@ -15,18 +15,6 @@ sections:
           - name: id
             description: The identifier of the MedicationStatement
             type: string
-          - name: extension
-            type: array[json]
-            description: >-
-              Canvas supports a note identifier extension on this resource for create interactions. The note identifier can be used with the Canvas Note API.<br>
-              <br>
-              **Important:** For create interactions, Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note.<br>
-              <br>
-              The `url` for the extension is: **http://schemas.canvasmedical.com/fhir/extensions/note-id**<br>
-              <br>
-              The `valueId` contains the note identifier.<br>
-              <br>
-              See the request and response examples for more information.
           - name: status
             description: >-
               A code representing the patient or other source's judgment about the state of the medication used that this statement is about<br><br>Supported codes for create interactions are: **active**, **entered-in-error**, **stopped**
@@ -101,12 +89,6 @@ curl --request POST \
      --data '
 {
     "resourceType": "MedicationStatement",
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
-        }
-    ],
     "status": "active",
     "medicationReference": {
         "reference": "Medication/fdb-449732",
@@ -145,12 +127,6 @@ headers = {
 
 payload = {
     "resourceType": "MedicationStatement",
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
-        }
-    ],
     "status": "active",
     "medicationReference": {
         "reference": "Medication/fdb-449732",
@@ -198,7 +174,6 @@ print(response.text)
 ```json
 {
     "resourceType": "MedicationStatement",
-    "id": "e76e44b4-4e68-4f72-b1c3-1de528a3bb2a",
     "status": "active",
     "medicationReference": {
         "reference": "Medication/fdb-449732",
@@ -292,12 +267,6 @@ curl --request PUT \
      --data '
 {
     "resourceType": "MedicationStatement",
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
-        }
-    ],
     "status": "entered-in-error",
     "medicationReference": {
         "reference": "Medication/fdb-449732",
@@ -336,12 +305,6 @@ headers = {
 
 payload = {
     "resourceType": "MedicationStatement",
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
-        }
-    ],
     "status": "entered-in-error",
     "medicationReference": {
         "reference": "Medication/fdb-449732",
@@ -409,7 +372,6 @@ print(response.text)
         {
             "resource": {
                 "resourceType": "MedicationStatement",
-                "id": "e76e44b4-4e68-4f72-b1c3-1de528a3bb2a",
                 "status": "active",
                 "medicationReference": {
                     "reference": "Medication/fdb-449732",

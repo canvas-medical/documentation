@@ -38,16 +38,6 @@ sections:
                 type: array[json]
               - name: address
                 type: string
-          - name: extension
-            type: array[json]
-            description: >-
-              Canvas supports a note identifier extension on this resource for read and search interactions. The note identifier can be used with the Canvas Note API.<br>
-              <br>
-              The `url` for the extension is: **http://schemas.canvasmedical.com/fhir/extensions/note-id**<br>
-              <br>
-              The `valueId` contains the note identifier.<br>
-              <br>
-              See the request and response examples for more information.
           - name: identifier
             type: array[json]
             description: >-
@@ -244,12 +234,6 @@ sections:
             "address": "https://url-for-video-chat.example.com?meeting=abc123"
         }
     ],
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
-        }
-    ],
     "identifier": [
         {
             "id": "97b28298-f618-4972-9a6b-d095785587d6",
@@ -440,12 +424,6 @@ sections:
                             }
                         ],
                         "address": "https://url-for-video-chat.example.com?meeting=abc123"
-                    }
-                ],
-                "extension": [
-                    {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
                     }
                 ],
                 "identifier": [
