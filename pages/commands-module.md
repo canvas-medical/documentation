@@ -62,15 +62,15 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
      <tr> 
       <td>Assess</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
     </tr>
      <tr> 
       <td>Medication Statement</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
     </tr>
      <tr> 
       <td>Goal</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
     </tr>
      <tr> 
       <td>Update Goal</td>
