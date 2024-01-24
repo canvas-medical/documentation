@@ -41,7 +41,7 @@ sections:
           - name: extension
             type: array[json]
             description: >-
-              Canvas supports a note identifier extension on this resource for read and search interactions. The note identifier can be used with the Canvas Note API.<br>
+              Canvas supports a note identifier extension on this resource for read and search interactions. The note identifier can be used with the [Canvas Note API](/api/note).<br>
               <br>
               The `url` for the extension is: **http://schemas.canvasmedical.com/fhir/extensions/note-id**<br>
               <br>

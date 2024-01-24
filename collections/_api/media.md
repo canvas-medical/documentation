@@ -18,7 +18,7 @@ sections:
           - name: extension
             type: array[json]
             description: >-
-              Canvas supports a note identifier extension on this resource for create, read, update, and search interactions. The note identifier can be used with the Canvas Note API.<br>
+              Canvas supports a note identifier extension on this resource for create, read, update, and search interactions. The note identifier can be used with the [Canvas Note API](/api/note).<br>
               <br>
               **Important:** For create interactions, Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note.<br>
               <br>
