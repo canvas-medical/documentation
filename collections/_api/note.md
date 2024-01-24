@@ -11,7 +11,7 @@ The Note API uses the existing OAuth authentication flow from the FHIR API, so y
 New scopes are introduced: user/Note.read and user/Note.write. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
 
 - Create a new [OAuth application](/api/customer-authentication)
-- Ask Canvas to add the new scopes to an existing OAuth application that you have these scopes should be added to your OAuth app’s Allowed Scopes, shown below. From your Admin page, navigate to oauth, then Canvas oauth application. Then select the application you use for accessing APIs, open it, and scroll to the bottom and add the new scopes to your allowed scopes.
+- Ask Canvas to add the new scopes to an existing OAuth application 
 
 {:refdef: style="text-align: center;"}
 ![description](/assets/images/allowed-scopes.png){:width="70%"}
