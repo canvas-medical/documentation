@@ -18,7 +18,7 @@
                     {{ attribute.name }}
                 </div>
                 <div class="apidoc__object__type">
-                    {{ attribute.type }}
+                    {{ attribute.type }} {% if attribute.required %}<span class="apidoc__object__required">required</span>{% endif %}
                 </div>
                 {% include blocks/block-apidoc-attributes-context.html context=include.context %}
             </div>
