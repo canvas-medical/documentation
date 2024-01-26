@@ -43,7 +43,7 @@ Then use your token in the request headers as you do with the FHIR API:
 
 <br>
 
-## Note Create
+## Create
 To create a Note resource, POST to `/core/api/notes/v1/Note` using the supported attributes below. Notes will be created with the state “NEW” by default.
 
 ### Attributes
@@ -114,7 +114,7 @@ print(response.text)
 
 <br>
 
-## Note Read
+## Read
 To read a Note resource, request a GET from `/core/api/notes/v1/Note/{noteKey}`
 
 ### Attributes
@@ -189,7 +189,7 @@ print(response.text)
 ```
 <br>
 
-## Note Update
+## Update
 To update an existing Note resource, `PATCH` to `/core/api/notes/v1/Note/{noteKey}` using any of the following allowed attributes. 
 
 ### Attributes
@@ -244,7 +244,7 @@ print(response.text)
 
 <br>
 
-## Note Search
+## Search
 To search for Note resources, request a `GET` from `/core/api/notes/v1/Note` and append your search criteria as URL parameters. 
 
 ### Query Params
