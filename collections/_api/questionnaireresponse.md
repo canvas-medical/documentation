@@ -82,7 +82,7 @@ sections:
                   description: Type the reference refers to (e.g. "Encounter")
           - name: authored
             description: >-
-              Date the answers were gathered in iso8601 format like `"2022-03-19T14:54:12.194952+00:00"`.<br><br>
+              Date the answers were gathered in ISO 8601 format like `"2022-03-19T14:54:12.194952+00:00"`.<br><br>
               If omitted, the current timestamp will be used.
             type: datetime
           - name: author
