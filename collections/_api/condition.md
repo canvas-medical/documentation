@@ -18,6 +18,18 @@ sections:
           - name: text
             description: Text summary of the Condition, for human interpretation
             type: json
+          - name: extension
+            type: array[json]
+            description: >-
+              Canvas supports a note identifier extension on this resource for create, read, update, and search interactions. The note identifier can be used with the [Canvas Note API](/api/note).<br>
+              <br>
+              **Important:** For create interactions, Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note.<br>
+              <br>
+              The `url` for the extension is: **http://schemas.canvasmedical.com/fhir/extensions/note-id**<br>
+              <br>
+              The `valueId` contains the note identifier.<br>
+              <br>
+              See the request and response examples for more information.
           - name: clinicalStatus
             description: The clinical status of the condition.
             type: json
@@ -109,6 +121,12 @@ curl --request POST \
      --data '
 {
     "resourceType": "Condition",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+        }
+    ],
     "clinicalStatus": {
         "coding": [
             {
@@ -186,6 +204,12 @@ headers = {
 
 payload = {
     "resourceType": "Condition",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+        }
+    ],
     "clinicalStatus": {
         "coding": [
             {
@@ -273,6 +297,12 @@ print(response.text)
 {
     "resourceType": "Condition",
     "id": "3340c331-d446-4700-9c23-7959bd393f26",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+        }
+    ],
     "clinicalStatus":
     {
         "coding":
@@ -417,6 +447,12 @@ curl --request PUT \
      --data '
 {
     "resourceType": "Condition",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+        }
+    ],
     "clinicalStatus": {
         "coding": [
             {
@@ -494,6 +530,12 @@ headers = {
 
 payload = {
     "resourceType": "Condition",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+        }
+    ],
     "clinicalStatus": {
         "coding": [
             {
@@ -601,6 +643,12 @@ print(response.text)
             "resource": {
                 "resourceType": "Condition",
                 "id": "3340c331-d446-4700-9c23-7959bd393f26",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    }
+                ],
                 "clinicalStatus": {
                     "coding": [
                         {
