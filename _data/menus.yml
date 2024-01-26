@@ -10,8 +10,10 @@ main:
 api:
  - title: "Canvas FHIR"
    identifier: api_canvas_fhir
- - title: "Resources"
+ - title: "FHIR Resources"
    identifier: api_resources
+ - title: "Custom APIs"
+   identifier: api_custom_apis
 
 api_canvas_fhir:
  - title: "Introduction"
@@ -364,6 +366,13 @@ api_task:
    url: /api/task/#update
  - title: "Task Search"
    url: /api/task/#search
+
+
+api_custom_apis:
+ - title: "Note"
+   url: /api/note
+ - title: "CCDA"
+   url: /api/ccda   
 
 documentation:
  - title: "Click here to learn about our transition plan for our knowledge center"
