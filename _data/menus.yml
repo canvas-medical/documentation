@@ -512,4 +512,6 @@ releasenotes_product_updates:
 releasenotes_betas:
  - title: "Commands Module"
    url: /product-updates/commands-module 
+ - title: "Note API"
+   url: /product-updates/note-api 
 
