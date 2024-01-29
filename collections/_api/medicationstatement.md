@@ -46,7 +46,7 @@ sections:
                 - name: system
                   type: string
                   required: true
-                  description: The url of the medication coding. Currently we support `"http://www.nlm.nih.gov/research/umls/rxnorm"` or `"http://www.fdbhealth.com/"`
+                  description: The url of the medication coding. Currently Canvas supports `"http://www.nlm.nih.gov/research/umls/rxnorm"` or `"http://www.fdbhealth.com/"`
                 - name: code
                   type: string
                   required: true
