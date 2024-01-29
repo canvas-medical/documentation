@@ -14,3 +14,7 @@
     {% assign method = 'put' %}
     {% assign url = '/{id}' %}
 {% endif %}
+{% if endpoint contains 'operation' %}
+    {% assign method = endpoint.method %}
+    {% assign url = endpoint.url %}
+{% endif %}

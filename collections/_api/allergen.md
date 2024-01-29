@@ -32,7 +32,7 @@ sections:
           example_request: allergen-read-request
           example_response: allergen-read-response
         search:
-          description: Search for Allergyen resources.
+          description: Search for Allergen resources.
           responses: [200, 400, 401, 403]
           example_request: allergen-search-request
           example_response: allergen-search-response
