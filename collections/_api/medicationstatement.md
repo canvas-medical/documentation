@@ -28,7 +28,7 @@ sections:
                   type: string
                   required: true
                   description: >-
-                    Reference that defines the content of this object. Currently we only support extensions for note identifier we have a url of `http://schemas.canvasmedical.com/fhir/extensions/note-id`
+                    Literal reference that defines the content of this object. Currently we only support extensions for note identifier we have a url of `http://schemas.canvasmedical.com/fhir/extensions/note-id`
                 - name: valueId
                   type: string
                   required: false
@@ -38,9 +38,24 @@ sections:
             description: >-
               A code representing the patient or other source's judgment about the state of the medication used that this statement is about<br><br>Supported codes for create interactions are: **active**, **entered-in-error**, **stopped**
             type: string
+          - name: medicationReference
+            description: What medication was taken. <br><br>
+                Canvas recommends using a medicationReference on create/update to ensure a proper medication lookup is done on validation similar to our commands framework on the Canvas UI. Use the [Medication search endpoint](/api/medication/#search) to help find the correct FDB ID. <br><br>
+                A create/update requires either a medicationReference or medicationCodeableConcept when making a request
+            type: json
+            attributes:
+                - name: reference
+                  type: string
+                  required: true
+                  description: The reference string of the medication in the format of `"Medication/fdb-449732"`
+                - name: display
+                  type: string
+                  required: true
+                  description: The display name of the medication
           - name: medicationCodeableConcept
-            description: What medication was taken
-            required: true
+            description: What medication was taken. <br><br>
+                Canvas recommends using a medicationReference on create/update; however on a Read/Search the medicationCodeableConcept will be returned to allow visibility into all the coding associated with the medication (e.g RxNorm, FDB)  <br><br>
+                A create/update requires either a medicationReference or medicationCodeableConcept when making a request
             type: json
             attributes:
                 - name: system
@@ -167,19 +182,9 @@ curl --request POST \
         }
     ],
     "status": "active",
-    "medicationCodeableConcept": {
-        "coding": [
-            {
-                "system": "http://www.fdbhealth.com/",
-                "code": "259181",
-                "display": "Advil 200 mg tablet"
-            },
-            {
-                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                "code": "310965",
-                "display": "Advil 200 mg tablet"
-            }
-        ]
+    "medicationReference": {
+        "reference": "Medication/fdb-259181",
+        "display": "Advil 200 mg tablet"
     },
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -221,19 +226,9 @@ payload = {
         }
     ],
     "status": "active",
-    "medicationCodeableConcept": {
-        "coding": [
-            {
-                "system": "http://www.fdbhealth.com/",
-                "code": "259181",
-                "display": "Advil 200 mg tablet"
-            },
-            {
-                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                "code": "310965",
-                "display": "Advil 200 mg tablet"
-            }
-        ]
+    "medicationReference": {
+        "reference": "Medication/fdb-259181",
+        "display": "Advil 200 mg tablet"
     },
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -388,19 +383,9 @@ curl --request PUT \
         }
     ],
     "status": "entered-in-error",
-    "medicationCodeableConcept": {
-        "coding": [
-            {
-                "system": "http://www.fdbhealth.com/",
-                "code": "259181",
-                "display": "Advil 200 mg tablet"
-            },
-            {
-                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                "code": "310965",
-                "display": "Advil 200 mg tablet"
-            }
-        ]
+    "medicationReference": {
+        "reference": "Medication/fdb-259181",
+        "display": "Advil 200 mg tablet"
     },
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
@@ -442,19 +427,9 @@ payload = {
         }
     ],
     "status": "entered-in-error",
-    "medicationCodeableConcept": {
-        "coding": [
-            {
-                "system": "http://www.fdbhealth.com/",
-                "code": "259181",
-                "display": "Advil 200 mg tablet"
-            },
-            {
-                "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-                "code": "310965",
-                "display": "Advil 200 mg tablet"
-            }
-        ]
+    "medicationReference": {
+        "reference": "Medication/fdb-259181",
+        "display": "Advil 200 mg tablet"
     },
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"
