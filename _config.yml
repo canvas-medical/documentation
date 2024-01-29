@@ -72,6 +72,7 @@ minify_html: false
 plugins:
   - jekyll-algolia
   - jekyll-feed
+  - jekyll-last-modified-at
   - jekyll-menus
   - jekyll-seo-tag
   - jekyll-sitemap
