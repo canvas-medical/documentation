@@ -35,7 +35,7 @@ Functionality within Canvas is shared across all supported care settings and so 
 
 Our test plan focused on capturing and documenting the number of instances that each certified capability (listed below) is successfully utilized in the real world. In instances where no evidence exists due to zero adoption of a certified capability or the inability to capture evidence of successful use for other reasons, we will demonstrate the required certified capability using interactive testing methods in a semi-controlled setting as close to a “real world” implementation as possible.
 
-Adoption of certified functionality has been low within our relatively small customer base. Many of our customers are either direct-to-consumer or focus on employer or commercial contracts. We did not have any customers participate in a Quality Incentive Program necessitating a CERT ID in 2023 due to their size or delivery model. 
+Adoption of certified functionality has been low within our customer base. Many of our customers are either direct-to-consumer or focus on employer or commercial contracts.
 
 We did run across some issues during live testing with the functionality that is not widely used by customers. We make fast and frequent changes to our platform, and in doing so, unintentionally altered some of the lesser used and therefore understood features. Post testing - all non-conformities were reported within 30 days and quickly corrected. 
 
