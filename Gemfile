@@ -18,6 +18,7 @@ gem "jekyll", "4.2.1"
 group :jekyll_plugins do
    gem 'jekyll-algolia'
    gem 'jekyll-feed'
+   gem 'jekyll-last-modified-at'
    gem 'jekyll-menus'
    gem 'jekyll-seo-tag'
    gem 'jekyll-sitemap'

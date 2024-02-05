@@ -9,6 +9,7 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 theme_color: '#eee9d9'
 logo: assets/images/large-logo.png
+timezone: America/Los_Angeles
 
 ### Cookie consent
 #cookie_consent: true
@@ -71,6 +72,7 @@ minify_html: false
 plugins:
   - jekyll-algolia
   - jekyll-feed
+  - jekyll-last-modified-at
   - jekyll-menus
   - jekyll-seo-tag
   - jekyll-sitemap
