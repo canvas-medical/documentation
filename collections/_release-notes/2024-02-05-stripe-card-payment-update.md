@@ -1,5 +1,5 @@
 ---
-title: Updated Stripe Card Payment API Payload
+title: API Payload Sent from Stripe Card Payments Updated
 layout: productupdates
 tags: bugfix
 ---
