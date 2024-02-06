@@ -14,17 +14,16 @@ sections:
         attributes:
           - name: id
             type: string
-            required: true
+            required_in: update
+            exclude_in: create
             description: >-
               The identifier of the appointment
           - name: contained
             type: array[json]
             description: >-
               Used to store links for telehealth appointments. Requires a reference to "#appointment-meeting-endpoint" in the SupportingInformation attribute.
-            create_description:
+            create_and_update_description:
              <b>Custom Meeting Links for Virtual Appointments:</b> You can specify a telehealth meeting link using a SupportingInformation `reference` of "#appointment-meeting-endpoint" with a `type` of "Endpoint".  You would need to specify the `address` url of the meeting link in a contained object along with the `resourceType` = `Endpoint` and the `id` = `appointment-meeting-endpoint`. All other fields are automatically populated by Canvas and are not required.
-            update_description:
-              <b>Custom Meeting Links for Virtual Appointments:</b> You can specify a telehealth meeting link using a SupportingInformation `reference` of "#appointment-meeting-endpoint" with a `type` of "Endpoint".  You would need to specify the `address` url of the meeting link in a contained object along with the `resourceType` = `Endpoint` and the `id` = `appointment-meeting-endpoint`. All other fields are automatically populated by Canvas and are not required.
             attributes:
               - name: resourceType
                 type: string

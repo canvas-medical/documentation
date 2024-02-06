@@ -113,23 +113,6 @@
             {% endif %}
         </div>
     </div>
-    <div class="apidoc__gridrow">
-        <div class="apidoc__gridcol">
-            {% if block.attributes %}
-            <h3>Attributes</h3>
-            {% include blocks/block-apidoc-attributes.html context='overview' %}
-            {% endif %}
-        </div>
-        <div class="apidoc__gridcol">
-            {% if block.example_payload %}
-            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            {% assign div = "payload-" | prepend: "#" | append: randomId %}
-            {% assign selector = block.example_payload | prepend: "#" %}
-            <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
-            {% endif %}
-        </div>
-    </div>
     {% if block.endpoints %}
     {% assign min = 10001 %}
     {% assign max = 99999 %}
@@ -167,6 +150,14 @@
             {% assign selector = block.read.example_request | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
             {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            {% if block.attributes %}
+            <h3>Attributes</h3>
+            {% include blocks/block-apidoc-attributes.html context='read' %}
             {% endif %}
         </div>
     </div>
@@ -222,6 +213,14 @@
             {% assign selector = block.search.example_request | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
             {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            {% if block.attributes %}
+            <h3>Attributes</h3>
+            {% include blocks/block-apidoc-attributes.html context='search' %}
             {% endif %}
         </div>
     </div>
