@@ -1,31 +1,71 @@
-{% if include.context == 'overview' %}
-{% if attribute.description %}
-<div class="apidoc__object__description">
-    {{ attribute.description | markdownify }}
-</div>
-{% endif %}
-{% endif %}
+<!-- {% if include.context == 'overview' %}
+    {% if attribute.description %}
+    <div class="apidoc__object__description">
+        {{ attribute.description | markdownify }}
+    </div>
+    {% endif %}
+{% endif %} -->
 
 {% if include.context == 'update' %}
-{% if attribute.update_description %}
-<div class="apidoc__object__description">
-    {{ attribute.update_description | markdownify }}
-</div>
-{% elsif attribute.description %}
-<div class="apidoc__object__description">
-    {{ attribute.description | markdownify }}
-</div>
-{% endif %}
+    {% if attribute.create_and_update_description %}
+    <div class="apidoc__object__description">
+        {{ attribute.create_and_update_description | markdownify }}
+    </div>
+    {% elsif attribute.update_description %}
+    <div class="apidoc__object__description">
+        {{ attribute.update_description | markdownify }}
+    </div>
+    {% elsif attribute.description %}
+    <div class="apidoc__object__description">
+        {{ attribute.description | markdownify }}
+    </div>
+    {% endif %}
 {% endif %}
 
 {% if include.context == 'create' %}
-{% if attribute.create_description %}
-<div class="apidoc__object__description">
-    {{ attribute.create_description | markdownify }}
-</div>
-{% elsif attribute.description %}
-<div class="apidoc__object__description">
-    {{ attribute.description | markdownify }}
-</div>
+    {% if attribute.create_and_update_description %}
+    <div class="apidoc__object__description">
+        {{ attribute.create_and_update_description | markdownify }}
+    </div>
+    {% elsif attribute.create_description %}
+    <div class="apidoc__object__description">
+        {{ attribute.create_description | markdownify }}
+    </div>
+    {% elsif attribute.description %}
+    <div class="apidoc__object__description">
+        {{ attribute.description | markdownify }}
+    </div>
+    {% endif %}
 {% endif %}
+
+{% if include.context == 'read' %}
+    {% if attribute.read_and_search_description %}
+    <div class="apidoc__object__description">
+        {{ attribute.read_and_search_description | markdownify }}
+    </div>
+    {% elsif attribute.read_description %}
+    <div class="apidoc__object__description">
+        {{ attribute.read_description | markdownify }}
+    </div>
+    {% elsif attribute.description %}
+    <div class="apidoc__object__description">
+        {{ attribute.description | markdownify }}
+    </div>
+    {% endif %}
+{% endif %}
+
+{% if include.context == 'search' %}
+    {% if attribute.read_and_search_description %}
+    <div class="apidoc__object__description">
+        {{ attribute.read_and_search_description | markdownify }}
+    </div>
+    {% elsif attribute.search_description %}
+    <div class="apidoc__object__description">
+        {{ attribute.search_description | markdownify }}
+    </div>
+    {% elsif attribute.description %}
+    <div class="apidoc__object__description">
+        {{ attribute.description | markdownify }}
+    </div>
+    {% endif %}
 {% endif %}
