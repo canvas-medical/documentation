@@ -205,6 +205,16 @@
                     <div class="apidoc__object__description">
                         {{ parameter.description | markdownify }}
                     </div>
+                    <div class="apidoc__object__enum_options">
+                        {% if parameter.search_options %}
+                            <b>Search Values Supported:</b>
+                            <ul>
+                                {% for option in parameter.search_options %}
+                                    <li>{{ option.value }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endfor %}
             {% endif %}

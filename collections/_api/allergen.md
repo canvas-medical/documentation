@@ -12,7 +12,7 @@ sections:
           Best practices is to utilize this endpoint to find codings to feed the [Allergy Intolerance Create/Update](/api/allergyintolerance/#create). These substances come directly from our integration with FDB.
         attributes:
           - name: resourceType
-            description: The FHIR Resource name
+            description: The FHIR Resource name.
             type: string
           - name: id
             description: The identifier of the Allergen.
@@ -30,7 +30,7 @@ sections:
             type: json
             attributes: 
               - name: coding
-                description: Identifies where the definition of the code comes from
+                description: Identifies where the definition of the code comes from.
                 type: array[json]
                 attributes: 
                   - name: system
@@ -51,15 +51,13 @@ sections:
         search_requirements_description: An Allergen Search requires either a code or _text search parameter to perform. 
         search_parameters:
           - name: _text
-            description: Performs a case insensitive partial search on the narrative of the Allergen
+            description: Performs a case insensitive partial search on the narrative of the Allergen.
             type: string
           - name: code
-            description: "Code system and code that identifies the allergen formatted like <br>
-            `system_url|code`. 
-            <br><br>
-            The following code systems are currently supported to search by: <br>
-            - `http://www.nlm.nih.gov/research/umls/rxnorm`<br>
-            - `http://snomed.info/sct`"
+            description: Code system and code that identifies the allergen formatted like <br> `system_url|code`.
+            search_options:
+              - value: http://www.nlm.nih.gov/research/umls/rxnorm|code
+              - value: http://snomed.info/sct|code
             type: string
         endpoints: [read, search]
         read:
