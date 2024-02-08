@@ -1,0 +1,26 @@
+{% if attribute.exclude_in contains include.context %}
+{% else %}
+    <div class="apidoc__object">
+        <div class="apidoc__object__name">
+            {{ attribute.name }}
+        </div>
+        <div class="apidoc__object__type">
+            {{ attribute.type }} {% if attribute.required_in contains include.context %}<span class="apidoc__object__required">required</span>{% endif
+            %}
+        </div>
+        {% include blocks/block-apidoc-attributes-context.html context=include.context %}
+        <div class="apidoc__object__enum_options">
+            {% if attribute.enum_options %}
+                <b>Value Options Supported:</b>
+                <ul>
+                    {% for option in attribute.enum_options %}
+                        <li>{{ option.value }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        {% if attribute.attributes %}
+            {% include blocks/block-apidoc-child-attributes.html context=include.context attribute=attribute.attributes%}
+        {% endif %}
+    </div>
+{% endif %}

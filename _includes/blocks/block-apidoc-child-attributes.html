@@ -1,0 +1,8 @@
+<div class="apidoc__object__children">
+    <div class="apidoc__object__children__toggle">Click to view child attributes</div>
+    <div class="apidoc__object__children__panel">
+        {% for attribute in attribute.attributes %}
+            {% include blocks/block-apidoc-attribute-object.html context=include.context attribute=attribute%}
+        {% endfor %}
+    </div>
+</div>

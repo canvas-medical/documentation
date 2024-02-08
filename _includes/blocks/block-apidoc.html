@@ -156,7 +156,7 @@
     <div class="apidoc__gridrow">
         <div class="apidoc__gridcol">
             {% if block.attributes %}
-            <h3>Attributes</h3>
+            <h3>Response Payload Attributes</h3>
             {% include blocks/block-apidoc-attributes.html context='read' %}
             {% endif %}
         </div>
@@ -190,6 +190,9 @@
         <div class="apidoc__gridcol">
             {% if block.search_parameters %}
                 <h3>Query Parameters</h3>
+                <div>
+                    <b>{{ block.search_requirements_description }}</b>
+                </div>
                 {% for parameter in block.search_parameters %}
                 <div class="apidoc__object">
                     <div class="apidoc__object__name">
@@ -214,6 +217,15 @@
             <div id="{{ div | remove_first: '#' }}"></div>
             {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
             {% endif %}
+        </div>
+    </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            <h3> Response Payload Attributes</h3>
+            {% capture search_block %}
+                {% include search-attributes.md %}
+            {% endcapture %}
+            {% include blocks/block-apidoc-attributes.html context='search' block=search_block %}
         </div>
     </div>
     <div class="apidoc__gridrow">

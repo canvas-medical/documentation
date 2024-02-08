@@ -8,22 +8,58 @@ sections:
         article: "an"
         description: >-
           A substance that, upon exposure to an individual, may cause a harmful or undesirable physiological response.
+          <br><br>
+          Best practices is to utilize this endpoint to find codings to feed the [Allergy Intolerance Create/Update](/api/allergyintolerance/#create). These substances come directly from our integration with FDB.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name
+            type: string
           - name: id
-            description: The identifier of the Allergen
+            description: The identifier of the Allergen.
             type: string
           - name: text
-            description: Text summary of the Allergen, for human interpretation
+            description: Text summary of the Allergen, for human interpretation.
             type: json
+            attributes:
+              - name: status
+                description: All allergens returned from this endpoint will show a status of `generated` since this resource is generated from FDB.
+              - name: div
+                description: Limited xhtml content that contains the human readable text of the Allergen.
           - name: code
-            description: Code that identifies the allergen
+            description: "Code that identifies the allergen <br><br> In Canvas we will return two different codings: one from FDB and one RxNorm"
             type: json
+            attributes: 
+              - name: coding
+                description: Identifies where the definition of the code comes from
+                type: array[json]
+                attributes: 
+                  - name: system
+                    description: >-
+                      The system of the coding. Will either be 
+                    enum_options: 
+                      - value: http://www.nlm.nih.gov/research/umls/rxnorm
+                      - value: http://snomed.info/sct
+                    type: string
+                  - name: code
+                    description: >-
+                      The code of the allergen
+                    type: string
+                  - name: display
+                    description: >-
+                      The display name of the coding
+                    type: string
+        search_requirements_description: An Allergen Search requires either a code or _text search parameter to perform. 
         search_parameters:
           - name: _text
-            description: Search on the narrative of the Allergen
+            description: Performs a case insensitive partial search on the narrative of the Allergen
             type: string
           - name: code
-            description: Code that identifies the allergen
+            description: "Code system and code that identifies the allergen formatted like <br>
+            `system_url|code`. 
+            <br><br>
+            The following code systems are currently supported to search by: <br>
+            - `http://www.nlm.nih.gov/research/umls/rxnorm`<br>
+            - `http://snomed.info/sct`"
             type: string
         endpoints: [read, search]
         read:
