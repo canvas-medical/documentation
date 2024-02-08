@@ -510,6 +510,8 @@ releasenotes_product_updates:
    url: /product-updates/roadmap
 
 releasenotes_betas:
+ - title: "Commands API"
+   url: /product-updates/commands-api 
  - title: "Commands Module"
    url: /product-updates/commands-module 
  - title: "Note API"
