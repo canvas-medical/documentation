@@ -190,6 +190,8 @@ api_claim:
    url: /api/claim/#update
  - title: "Claim Search"
    url: /api/claim/#search
+ - title: "Claim Operations"
+   url: /api/claim-operations
 api_communication:
  - title: "Communication Create"
    url: /api/communication/#create
