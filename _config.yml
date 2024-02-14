@@ -62,9 +62,11 @@ feed:
   title: Canvas Medical Release Notes
   description: Updates 
   posts_limit: 20
+  content_type: "html"
   collections:
     release-notes:
       path: "/release-notes.xml"
+      permalink: /release-notes/:title  
 
 
 ### Build settings

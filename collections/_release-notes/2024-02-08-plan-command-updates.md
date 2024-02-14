@@ -2,7 +2,7 @@
 title: Updates to Plan Command
 date: 2024-02-08
 tags: ui
-layout: producupdates
+layout: productupdates
 ---
 
 Migrated commands now support the following: 
