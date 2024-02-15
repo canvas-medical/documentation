@@ -10,10 +10,10 @@ This endpoint is a [FHIR operation](https://hl7.org/fhir/R4/operations.html), so
 
 The bearer token included in requests send to this endpoint must have one of the following scopes:
 
-```
-system/Claim.add-activity-log-item
-user/Claim.add-activity-log-item
-```
+
+- `system/Claim.add-activity-log-item`
+- `user/Claim.add-activity-log-item`
+
 
 {% tabs claim-operations %}
 {% tab claim-operations curl %}
