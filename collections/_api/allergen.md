@@ -35,7 +35,7 @@ sections:
                 attributes: 
                   - name: system
                     description: >-
-                      The system of the coding. Will either be 
+                      The system url of the coding. Currently we support: 
                     enum_options: 
                       - value: http://www.nlm.nih.gov/research/umls/rxnorm
                       - value: http://snomed.info/sct
@@ -54,7 +54,7 @@ sections:
             description: Performs a case insensitive partial search on the narrative of the Allergen.
             type: string
           - name: code
-            description: Code system and code that identifies the allergen formatted like <br> `system_url|code`.
+            description: System url and code that identifies the allergen formatted like <br> `system_url|code`.
             search_options:
               - value: http://www.nlm.nih.gov/research/umls/rxnorm|code
               - value: http://snomed.info/sct|code
