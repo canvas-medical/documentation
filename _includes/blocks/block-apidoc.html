@@ -231,6 +231,12 @@
     </div>
     <div class="apidoc__gridrow">
         <div class="apidoc__gridcol">
+            <h3>Response Payload Attributes</h3>
+                {% include /blocks/block-apidoc-attributes-datasource.html datasource=site.data.globals.search_attributes %}
+        </div>
+    </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
             {% if block.attributes %}
             <h3>Attributes</h3>
             {% include blocks/block-apidoc-attributes.html context='search' %}
