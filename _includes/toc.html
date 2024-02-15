@@ -12,7 +12,8 @@
                 </div>
                 {% if item.children %}
                 <ul class="toc__submenu toc__accordion toc__accordion__expanded">
-                    {% for item in item.children %}
+                    {% assign itemSorted = item.children | sort: "sort" %}
+                    {% for item in itemSorted %}
                     <li class="toc__item">
                         <div>
                             {% if item.children %}<span class="toc__toggle{% if item.children %}{% for item in item.children %}{% assign this_url = item.url | split: '#' %}{% if this_url[0] == page.url %} toc__toggle__expanded toc__active__toggle{% endif %}{% endfor %}{% endif %}">{% include icons/chevron.svg %}</span>{% endif %}
