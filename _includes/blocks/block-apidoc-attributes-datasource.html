@@ -1,0 +1,3 @@
+{% for attribute in include.datasource %}
+    {% include blocks/block-apidoc-attribute-object.html context="search" attribute=attribute%}
+{% endfor %}
