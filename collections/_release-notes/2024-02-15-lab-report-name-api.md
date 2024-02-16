@@ -1,5 +1,5 @@
 ---
-title: Show All Report Names in Diagnostic Reference
+title: Show All Report Names in DiagnosticReport
 layout: productupdates
 date: 2024-02-15
 tags: api
