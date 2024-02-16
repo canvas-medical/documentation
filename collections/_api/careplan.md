@@ -8,7 +8,8 @@ sections:
         article: "a"
         description: >-
           Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions.<br><br>
-          [https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careplan.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careplan.html)
+          [https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careplan.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careplan.html)<br><br>
+          A CarePlan in Canvas translates to the [Integrated Care Plan PDF](https://canvas-medical.zendesk.com/hc/en-us/articles/4535429811091-Integrated-Care-Plan) you can print on the patient's chart. This endpoint will return either one or zero care plans for each patient. If no care plan was returned for a given patient, then that patient has never had a Goal command committed on their chart. 
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -27,19 +28,46 @@ sections:
           - name: status
             description: >-
               Indicates whether the plan is currently being acted upon, represents future intentions or is now a historical record. Currently, this value will always return `active`.
-            type: string
+            type: enum [active]
           - name: intent
             description: >-
               Indicates the level of authority/intentionality associated with the care plan and where the care plan fits into the workflow chain. Currently, this value will always return `plan`
-            type: string
+            type: enum [plan]
           - name: category
             description: >-
               Type of plan.
-            type: json
+            type: array[json]
+            attributes:
+                - name: coding
+                  description: A CodeableConcept combination of one or more coding elements
+                  type: array[json]
+                  attributes: 
+                    - name: system
+                      description: >-
+                        The system url of the coding.
+                      enum_options: 
+                        - value: http://hl7.org/fhir/us/core/CodeSystem/careplan-category
+                        - value: http://snomed.info/sct
+                      type: string
+                    - name: code
+                      description: The code of the category
+                      type: string
+                    - name: display
+                      description: >-
+                        The display name of the coding
+                      type: string
           - name: subject
             description: >-
               Who care plan is for.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                required: true
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient")
         search_parameters:
           - name: _id
             type: string
@@ -47,6 +75,9 @@ sections:
           - name: category
             type: string
             description: A category code in the format `system|code`
+            search_options:
+              - value: http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan
+              - value: http://snomed.info/sct|734163000
           - name: patient
             type: string
             description: FHIR resource for a patient
