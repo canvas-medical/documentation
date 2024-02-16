@@ -58,7 +58,7 @@ sections:
                       type: string
           - name: subject
             description: >-
-              Who care plan is for.
+              Who the care plan is for.
             type: json
             attributes:
               - name: reference
