@@ -12,49 +12,81 @@ sections:
           For information about creating Device resources for a patient, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4413855312147-Implantable-Device-List). Devices are not currently used by the Canvas UI, but any devices that are created can be accessed with the Device read and search endpoints, In order to generate the type attribute, a device code must be created and linked to the device via the admin settings on Canvas.
 
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
             description: The identifier of the Device
             type: string
           - name: udiCarrier
-            description: Unique Device Identifier (UDI) Barcode string
+            description: Unique Device Identifier (UDI) Barcode string.
             type: array[json]
+            attributes: 
+              - name: deviceIdentifier
+                type: string
+                description:  Mandatory fixed portion of UDI.
+              - name: carrierHRF
+                type: string
+                description: UDI Human Readable Barcode String.
           - name: status
-            description: Status of the Device availability
-            type: string
+            description: Status of the Device availability.
+            type: enum [ active | inactive ]
           - name: distinctIdentifier
-            description: The distinct identification string
+            description: The distinct identification string. This will match the `id` attribute.
             type: string
           - name: manufacturer
-            description: Name of device manufacturer
+            description: Name of device manufacturer.
             type: string
           - name: manufactureDate
-            description: Date when the device was made
+            description: Date when the device was made.
             type: date
           - name: expirationDate
-            description: Date of expiry of this device (if applicable)
+            description: Date of expiry of this device (if applicable).
             type: date
           - name: lotNumber
-            description: Lot number of manufacture
+            description: Lot number of manufacture.
             type: string
           - name: serialNumber
-            description: Serial number assigned by the manufacturer
+            description: Serial number assigned by the manufacturer.
             type: string
           - name: modelNumber
-            description: The model number for the device
+            description: The model number for the device.
             type: string
           - name: type
-            description: The kind or type of device
+            description: The kind or type of device.
             type: json
+            attributes:
+              - name: coding
+                description: A CodeableConcept combination of one or more coding elements.
+                attributes: 
+                  - name: system
+                    description: >-
+                      The system url of the coding.
+                    type: string
+                  - name: code
+                    description: The code of the category.
+                    type: string
+                  - name: display
+                    description: >-
+                      The display name of the coding.
+                    type: string
           - name: patient
             description: Patient to whom Device is affixed
             type: json
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
         search_parameters:
           - name: _id
             type: string
-            description: The identifier of the Device
+            description: The identifier of the Device.
           - name: patient
             type: string
-            description: Patient information, if the resource is affixed to a person
+            description: The patient reference associated to the Device in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
         endpoints: [read, search]
         read:
           description: 
