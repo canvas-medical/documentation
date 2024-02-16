@@ -31,7 +31,7 @@ sections:
             type: enum [active]
           - name: intent
             description: >-
-              Indicates the level of authority/intentionality associated with the care plan and where the care plan fits into the workflow chain. Currently, this value will always return `plan`
+              Indicates the level of authority/intentionality associated with the care plan and where the care plan fits into the workflow chain. Currently, this value will always return `plan`.
             type: enum [plan]
           - name: category
             description: >-
@@ -39,7 +39,7 @@ sections:
             type: array[json]
             attributes:
                 - name: coding
-                  description: A CodeableConcept combination of one or more coding elements
+                  description: A CodeableConcept combination of one or more coding elements.
                   type: array[json]
                   attributes: 
                     - name: system
@@ -50,11 +50,11 @@ sections:
                         - value: http://snomed.info/sct
                       type: string
                     - name: code
-                      description: The code of the category
+                      description: The code of the category.
                       type: string
                     - name: display
                       description: >-
-                        The display name of the coding
+                        The display name of the coding.
                       type: string
           - name: subject
             description: >-
@@ -64,23 +64,23 @@ sections:
               - name: reference
                 type: string
                 required: true
-                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
               - name: type
                 type: string
-                description: Type the reference refers to (e.g. "Patient")
+                description: Type the reference refers to (e.g. "Patient").
         search_parameters:
           - name: _id
             type: string
-            description: The unique Canvas identifier of the CarePlan
+            description: The unique Canvas identifier of the CarePlan.
           - name: category
             type: string
-            description: A category code in the format `system|code`
+            description: A category code in the format `system|code`.
             search_options:
               - value: http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan
               - value: http://snomed.info/sct|734163000
           - name: patient
             type: string
-            description: FHIR resource for a patient
+            description: FHIR resource for a patient.
         endpoints: [read, search]
         read:
           description: Read a CarePlan resource.
