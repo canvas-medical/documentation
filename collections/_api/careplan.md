@@ -79,7 +79,7 @@ sections:
               - value: http://snomed.info/sct|734163000
           - name: patient
             type: string
-            description: FHIR resource for a patient.
+            description: The patient reference for who this care plan is for, in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
         endpoints: [read, search]
         read:
           description: Read a CarePlan resource.
@@ -192,7 +192,7 @@ sections:
 </div>
 
 <div id="careplan-search-request">
-{% include search-request.html resource_type="CarePlan" search_string="patient=Patient%2F11430ad243f84ad2a47b1267d33ce9b8&category=http%3A%2F%2Fhl7.org%2Ffhir%2Fus%2Fcore%2FCodeSystem%2Fcareplan-category%7Cassess-plan" %}
+{% include search-request.html resource_type="CarePlan" search_string="patient=Patient/11430ad243f84ad2a47b1267d33ce9b8&category=http://hl7.org/fhir/us/core/CodeSystem/careplan-category|assess-plan" %}
 </div>
 
 <div id="careplan-search-response">
@@ -206,15 +206,15 @@ sections:
     "link": [
         {
             "relation": "self",
-            "url": "/CarePlan?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/CarePlan?patient=Patient/a1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/CarePlan?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/CarePlan?patient=Patient/a1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/CarePlan?patient=Patient%2Fa1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
+            "url": "/CarePlan?patient=Patient/a1197fa9e65b4a5195af15e0234f61c2&_count=10&_offset=0"
         }
     ],
     "entry": [
