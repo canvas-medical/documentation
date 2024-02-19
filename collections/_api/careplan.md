@@ -63,7 +63,6 @@ sections:
             attributes:
               - name: reference
                 type: string
-                required: true
                 description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
               - name: type
                 type: string
