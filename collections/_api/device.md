@@ -204,7 +204,7 @@ sections:
 </div>
 
 <div id="device-search-request">
-{% include search-request.html resource_type="Device" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="Device" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="device-search-response">
@@ -220,15 +220,15 @@ sections:
     "link": [
         {
             "relation": "self",
-            "url": "/Device/?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+            "url": "/Device/?patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Device/?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+            "url": "/Device/?patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Device/?patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
+            "url": "/Device/?patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0&_count=10&_offset=0"
         }
     ],
     "entry": [
