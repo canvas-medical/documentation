@@ -1,0 +1,280 @@
+{% tabs update-response %}
+    {% tab update-response 200 %}
+```json
+{
+  "resourceType": "Practitioner",
+  "id": "55096fbcdfb240fd8c999c325304de03",
+  "extension": [
+      {
+          "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+          "valueString": "username123"
+      },
+      {
+          "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
+          "valueUrl": "https://meet.google.com/room-001"
+      },
+      {
+          "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
+          "valueReference": {
+              "reference": "Location/43bd7961-c88f-4728-b12b-4be773b8aeda",
+              "type": "Location",
+              "display": "Canvas Clinic San Francisco"
+          }
+      },
+      {
+          "extension": [
+              {
+                  "valueAttachment": {
+                      "url": "https://canvas-vicert-test.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+                  }
+              }
+          ],
+          "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+      },
+      {
+          "extension": [
+          {
+              "extension": [
+                  {
+                      "url": "display",
+                      "valueString": "Care Coordinator"
+                  }
+              ],
+              "url": "code",
+              "valueCode": "CC"
+          }
+      ],
+          "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
+      }
+  ],
+  "identifier": [
+      {
+          "system": "http://hl7.org/fhir/sid/us-npi ",
+          "value": "1920301155"
+      }
+  ],
+  "name": [
+      {
+          "use": "usual",
+          "text": "Samantha Jones",
+          "family": "Jones",
+          "given": [
+              "Samantha"
+          ]
+      }
+  ],
+  "telecom": [
+      {
+          "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
+          "system": "phone",
+          "value": "5554320555",
+          "use": "mobile",
+          "rank": 1
+      },
+      {
+          "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
+          "system": "phone",
+          "value": "333555",
+          "use": "work",
+          "rank": 1
+      },
+      {
+          "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
+          "system": "email",
+          "value": "samantha.jones@example.com",
+          "use": "work",
+          "rank": 1
+      },
+      {
+          "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
+          "system": "email",
+          "value": "samantha.jones2@example.com",
+          "use": "work",
+          "rank": 2
+      }
+  ],
+  "address": [
+      {
+          "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
+          "use": "work",
+          "line": [
+              "1234 Main St., Los Angeles, CA 94107"
+          ],
+          "city": "Los Angeles",
+          "state": "CA",
+          "postalCode": "94107",
+          "country": "United States"
+      },
+      {
+          "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
+          "use": "work",
+          "line": [
+              "1234 Main St., Los Angeles, CA 94107"
+          ],
+          "city": "Los Angeles",
+          "state": "CA",
+          "postalCode": "94107",
+          "country": "United States"
+      }
+  ],
+  "birthDate": "1988-10-10",
+  "photo": [
+      {
+          "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
+          "title": "Samantha Jones: pk=21"
+      },
+      {
+          "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY",
+          "title": "Samantha Jones: pk=22"
+      }
+  ],
+  "qualification": [
+      {
+          "identifier": [
+              {
+                  "system": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url",
+                  "value": "PRT-01"
+              }
+          ],
+          "code": {
+              "text": "License"
+          },
+          "period": {
+              "start": "2020-01-01",
+              "end": "2024-05-05"
+          },
+          "issuer": {
+              "extension": [
+                  {
+                      "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
+                      "valueString": "MDUB2"
+                  }
+              ],
+              "display": "MD University Los Angeles"
+          }
+      }
+  ]
+}
+```
+    {% endtab %}
+   
+    {% tab update-response 400 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "Bad request"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab update-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab update-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab update-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown {{ include.resource_type }} resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab update-response 405 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-supported",
+      "details": {
+        "text": "Operation is not supported"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab update-response 412 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "conflict",
+      "details": {
+        "text": "Resource updated since If-Unmodified-Since date"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab update-response 422 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "business-rule",
+      "details": {
+        "text": "Unprocessable entity"
+      }
+    }
+  ]
+}
+```
+
+{% endtab %}
+{% endtabs %}
