@@ -14,6 +14,13 @@ sections:
 
           Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all `json` types and should be included in the `extension` array field as shown in the request/response examples on this page. The following custom extensions are supported:<br><br>
 
+          **`username`**
+          <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/username](http://schemas.canvasmedical.com/fhir/extensions/username)
+          <br><br>
+          A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication. Expected value is string.
+          <br><br>
+
           **`practitioner-personal-meeting-room-link`**
           <br><br>
           [http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link](http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link)
@@ -39,15 +46,10 @@ sections:
           <br><br>
           [http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles)
           <br><br>
-          An array of roles with internal role codes as values. Examples of expected values include CA, MA, etc.
+          An array of roles with internal role codes as values. Examples of expected values include RN, CA, MA, etc.
           <br><br>
 
-          **`username`**
-          <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/username](http://schemas.canvasmedical.com/fhir/extensions/username)
-          <br><br>
-          A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication. Expected value is string.
-          <br><br>
+
 
         attributes:
           - name: id
@@ -61,6 +63,9 @@ sections:
           - name: identifier
             type: array[json]
             description: An identifier for the practitioner as this agent.
+          - name: active
+            type: boolean
+            description: A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
           - name: name
             type: array[json]
             description: The name(s) associated with the practitioner.
@@ -88,12 +93,15 @@ sections:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier
+          - name: include-non-scheduleable-practitioners
+            type: boolean
+            description: By default, only scheduleable practitioners are displayed. Passing this parameter as **true** will return all active practitioners.
+          - name: active
+            type: string
+            description: Search by active status ("true" or "false" - case insensitive). By default if this param is not present, it will return practitioners with active set to True ("true").
           - name: name
             type: string
             description: A search that may match any of the string fields in the name, including family, given, prefix, suffix, and/or text. Partial search is supported. If the practitioner you are looking for is inactive, you will still need to pass `include-non-scheduleable-practitioners=true`.
-          - name: include-non-scheduleable-practitioners
-            type: boolean
-            description: By default, only scheduleable staff are displayed. Passing this parameter as **true** will return all active staff.
           - name: email
             type: string
             description: Practitioner user email.
@@ -442,7 +450,7 @@ print(response.text)
 </div>
 
 <div id="practitioner-create-response">
-{% include create-response-practitioner.html %}
+{% include create-response.html %}
 </div>
 
 <div id="practitioner-read-request">
@@ -979,7 +987,7 @@ print(response.text)
 </div>
 
 <div id="practitioner-update-response">
-{% include update-response-practitioner.html %}
+{% include update-response.html %}
 </div>
 
 <div id="practitioner-search-request">
