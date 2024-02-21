@@ -145,12 +145,6 @@ curl --request POST \
      --data '
 {
     "resourceType": "Practitioner",
-    "identifier": [
-        {
-            "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1920301155"
-        }
-    ],
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
@@ -174,28 +168,57 @@ curl --request POST \
             }
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
             "extension": [
                 {
                     "url": "code",
-                    "valueCode": "CC"
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "RN"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "MA"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "CC"
+                            }
+                        ]
+                    }
                 }
-            ]
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
         }
     ],
+    "identifier": [
+        {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1920301155"
+        }
+    ],
+    "active": true,
     "name": [
         {
-            "use": "official",
+            "use": "usual",
             "family": "Jones",
             "given": [
-                "Samantha",
-                "Ann"
-            ]
-        },
-        {
-            "use": "nickname",
-            "given": [
-                "Sammy"
+                "Samantha"
             ]
         }
     ],
@@ -225,27 +248,36 @@ curl --request POST \
             "rank": 2
         }
     ],
-    "birthDate": "1988-10-10",
     "address": [
         {
-            "use": "home",
-            "type": "both",
+            "use": "work",
             "line": [
-                "1234 Main St., Los Angeles, CA 94107"
+                "1234 Main St"
             ],
             "city": "Los Angeles",
             "state": "CA",
-            "postalCode": "94107"
+            "postalCode": "94107",
+            "country": "United States"
         },
         {
             "use": "work",
-            "type": "both",
             "line": [
-                "1234 Main St., Los Angeles, CA 94107"
+                "12 Cesar Chavez St"
             ],
-            "city": "Los Angeles",
+            "city": "San Francisco",
             "state": "CA",
-            "postalCode": "94107"
+            "postalCode": "94110",
+            "country": "United States"
+        }
+    ],
+    "birthDate": "1988-10-10",
+    "photo": [
+        {
+            "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
+            "title": "Profile photo 1 -- sample title"
+        },
+        {
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ],
     "qualification": [
@@ -272,14 +304,6 @@ curl --request POST \
                     }
                 ]
             }
-        }
-    ],
-    "photo": [
-        {
-            "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI"
-        },
-        {
-            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ]
 }
@@ -301,12 +325,6 @@ headers = {
 
 payload = {
     "resourceType": "Practitioner",
-    "identifier": [
-        {
-            "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1920301155"
-        }
-    ],
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
@@ -330,28 +348,57 @@ payload = {
             }
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
             "extension": [
                 {
                     "url": "code",
-                    "valueCode": "CC"
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "RN"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "MA"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "CC"
+                            }
+                        ]
+                    }
                 }
-            ]
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
         }
     ],
+    "identifier": [
+        {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1920301155"
+        }
+    ],
+    "active": True,
     "name": [
         {
-            "use": "official",
+            "use": "usual",
             "family": "Jones",
             "given": [
-                "Samantha",
-                "Ann"
-            ]
-        },
-        {
-            "use": "nickname",
-            "given": [
-                "Sammy"
+                "Samantha"
             ]
         }
     ],
@@ -381,27 +428,36 @@ payload = {
             "rank": 2
         }
     ],
-    "birthDate": "1988-10-10",
     "address": [
         {
-            "use": "home",
-            "type": "both",
+            "use": "work",
             "line": [
-                "1234 Main St., Los Angeles, CA 94107"
+                "1234 Main St"
             ],
             "city": "Los Angeles",
             "state": "CA",
-            "postalCode": "94107"
+            "postalCode": "94107",
+            "country": "United States"
         },
         {
             "use": "work",
-            "type": "both",
             "line": [
-                "1234 Main St., Los Angeles, CA 94107"
+                "12 Cesar Chavez St"
             ],
-            "city": "Los Angeles",
+            "city": "San Francisco",
             "state": "CA",
-            "postalCode": "94107"
+            "postalCode": "94110",
+            "country": "United States"
+        }
+    ],
+    "birthDate": "1988-10-10",
+    "photo": [
+        {
+            "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
+            "title": "Profile photo 1 -- sample title"
+        },
+        {
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ],
     "qualification": [
@@ -428,14 +484,6 @@ payload = {
                     }
                 ]
             }
-        }
-    ],
-    "photo": [
-        {
-            "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI"
-        },
-        {
-            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ]
 }
@@ -476,7 +524,7 @@ print(response.text)
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
             "valueReference": {
-                "reference": "Location/43bd7961-c88f-4728-b12b-4be773b8aeda",
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
                 "type": "Location",
                 "display": "Canvas Clinic San Francisco"
             }
@@ -493,17 +541,43 @@ print(response.text)
         },
         {
             "extension": [
-            {
-                "extension": [
-                    {
-                        "url": "display",
-                        "valueString": "Care Coordinator"
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "RN",
+                                "display": "Nurse"
+                            }
+                        ]
                     }
-                ],
-                "url": "code",
-                "valueCode": "CC"
-            }
-        ],
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "MA",
+                                "display": "Medical Assistant"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "CC",
+                                "display": "Care Coordinator"
+                            }
+                        ]
+                    }
+                }
+            ],
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
         }
     ],
@@ -513,6 +587,7 @@ print(response.text)
             "value": "1920301155"
         }
     ],
+    "active": true,
     "name": [
         {
             "use": "usual",
@@ -558,7 +633,7 @@ print(response.text)
             "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
             "use": "work",
             "line": [
-                "1234 Main St., Los Angeles, CA 94107"
+                "1234 Main St"
             ],
             "city": "Los Angeles",
             "state": "CA",
@@ -569,11 +644,11 @@ print(response.text)
             "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
             "use": "work",
             "line": [
-                "1234 Main St., Los Angeles, CA 94107"
+                "12 Cesar Chavez St"
             ],
-            "city": "Los Angeles",
+            "city": "San Francisco",
             "state": "CA",
-            "postalCode": "94107",
+            "postalCode": "94110",
             "country": "United States"
         }
     ],
@@ -581,11 +656,10 @@ print(response.text)
     "photo": [
         {
             "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
-            "title": "Samantha Jones: pk=21"
+            "title": "Profile photo 1 -- sample title"
         },
         {
-            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY",
-            "title": "Samantha Jones: pk=22"
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ],
     "qualification": [
@@ -682,17 +756,7 @@ curl --request PUT \
      --data '
 {
     "resourceType": "Practitioner",
-    "identifier": [
-        {
-            "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1920301155"
-        }
-    ],
     "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
-            "valueString": "username123"
-        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
             "valueUrl": "https://meet.google.com/room-001"
@@ -702,320 +766,6 @@ curl --request PUT \
             "valueReference": {
                 "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
                 "type": "Location"
-            }
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
-            "valueAttachment": {
-                "data": "data:application/pdf;base64,JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
-            }
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
-            "extension": [
-                {
-                    "url": "code",
-                    "valueCode": "CC"
-                }
-            ]
-        }
-    ],
-    "name": [
-        {
-            "use": "official",
-            "family": "Jones",
-            "given": [
-                "Samantha",
-                "Ann"
-            ]
-        },
-        {
-            "use": "nickname",
-            "given": [
-                "Sammy"
-            ]
-        }
-    ],
-    "telecom": [
-        {
-            "system": "phone",
-            "value": "5554320555",
-            "use": "mobile",
-            "rank": 1
-        },
-        {
-            "system": "phone",
-            "value": "333555",
-            "use": "work",
-            "rank": 1
-        },
-        {
-            "system": "email",
-            "value": "samantha.jones@example.com",
-            "use": "work",
-            "rank": 1
-        },
-        {
-            "system": "email",
-            "value": "samantha.jones2@example.com",
-            "use": "work",
-            "rank": 2
-        }
-    ],
-    "birthDate": "1988-10-10",
-    "address": [
-        {
-            "use": "home",
-            "type": "both",
-            "line": [
-                "1234 Main St., Los Angeles, CA 94107"
-            ],
-            "city": "Los Angeles",
-            "state": "CA",
-            "postalCode": "94107"
-        },
-        {
-            "use": "work",
-            "type": "both",
-            "line": [
-                "1234 Main St., Los Angeles, CA 94107"
-            ],
-            "city": "Los Angeles",
-            "state": "CA",
-            "postalCode": "94107"
-        }
-    ],
-    "qualification": [
-        {
-            "identifier": [
-                {
-                    "system": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url",
-                    "value": "PRT-01"
-                }
-            ],
-            "code": {
-                "text": "License"
-            },
-            "period": {
-                "start": "2020-01-01",
-                "end": "2024-05-05"
-            },
-            "issuer": {
-                "display": "MD University Los Angeles",
-                "extension": [
-                    {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                        "valueString": "MDUB2"
-                    }
-                ]
-            }
-        }
-    ],
-    "photo": [
-        {
-            "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI"
-        },
-        {
-            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
-        }
-    ]
-}
-'
-```
-{% endtab %}
-
-{% tab practitioner-update-request python %}
-```python
-import requests
-
-url = "https://fumage-example.canvasmedical.com/Practitioner/<id>"
-
-headers = {
-    "accept": "application/json",
-    "Authorization": "Bearer <token>",
-    "content-type": "application/json"
-}
-
-payload = {
-    "resourceType": "Practitioner",
-    "identifier": [
-        {
-            "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1920301155"
-        }
-    ],
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
-            "valueString": "username123"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueUrl": "https://meet.google.com/room-001"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueReference": {
-                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
-                "type": "Location"
-            }
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
-            "valueAttachment": {
-                "data": "data:application/pdf;base64,JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
-            }
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
-            "extension": [
-                {
-                    "url": "code",
-                    "valueCode": "CC"
-                }
-            ]
-        }
-    ],
-    "name": [
-        {
-            "use": "official",
-            "family": "Jones",
-            "given": [
-                "Samantha",
-                "Ann"
-            ]
-        },
-        {
-            "use": "nickname",
-            "given": [
-                "Sammy"
-            ]
-        }
-    ],
-    "telecom": [
-        {
-            "system": "phone",
-            "value": "5554320555",
-            "use": "mobile",
-            "rank": 1
-        },
-        {
-            "system": "phone",
-            "value": "333555",
-            "use": "work",
-            "rank": 1
-        },
-        {
-            "system": "email",
-            "value": "samantha.jones@example.com",
-            "use": "work",
-            "rank": 1
-        },
-        {
-            "system": "email",
-            "value": "samantha.jones2@example.com",
-            "use": "work",
-            "rank": 2
-        }
-    ],
-    "birthDate": "1988-10-10",
-    "address": [
-        {
-            "use": "home",
-            "type": "both",
-            "line": [
-                "1234 Main St., Los Angeles, CA 94107"
-            ],
-            "city": "Los Angeles",
-            "state": "CA",
-            "postalCode": "94107"
-        },
-        {
-            "use": "work",
-            "type": "both",
-            "line": [
-                "1234 Main St., Los Angeles, CA 94107"
-            ],
-            "city": "Los Angeles",
-            "state": "CA",
-            "postalCode": "94107"
-        }
-    ],
-    "qualification": [
-        {
-            "identifier": [
-                {
-                    "system": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url",
-                    "value": "PRT-01"
-                }
-            ],
-            "code": {
-                "text": "License"
-            },
-            "period": {
-                "start": "2020-01-01",
-                "end": "2024-05-05"
-            },
-            "issuer": {
-                "display": "MD University Los Angeles",
-                "extension": [
-                    {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                        "valueString": "MDUB2"
-                    }
-                ]
-            }
-        }
-    ],
-    "photo": [
-        {
-            "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI"
-        },
-        {
-            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
-        }
-    ]
-}
-
-response = requests.put(url, json=payload, headers=headers)
-
-print(response.text)
-```
-{% endtab %}
-
-{% endtabs %}
-</div>
-
-<div id="practitioner-update-response">
-{% include update-response.html %}
-</div>
-
-<div id="practitioner-search-request">
-{% include search-request.html resource_type="Practitioner" search_string="name=Samantha" %}
-</div>
-
-<div id="practitioner-search-response">
-{% tabs practitioner-search-response %}
-{% tab practitioner-search-response 200 %}
-```json
-{
-    "resourceType": "Practitioner",
-    "id": "55096fbcdfb240fd8c999c325304de03",
-    "extension": [
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
-            "valueString": "username123"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueUrl": "https://meet.google.com/room-001"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueReference": {
-                "reference": "Location/43bd7961-c88f-4728-b12b-4be773b8aeda",
-                "type": "Location",
-                "display": "Canvas Clinic San Francisco"
             }
         },
         {
@@ -1030,17 +780,43 @@ print(response.text)
         },
         {
             "extension": [
-            {
-                "extension": [
-                    {
-                        "url": "display",
-                        "valueString": "Care Coordinator"
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "RN",
+                                "display": "Nurse"
+                            }
+                        ]
                     }
-                ],
-                "url": "code",
-                "valueCode": "CC"
-            }
-        ],
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "MA",
+                                "display": "Medical Assistant"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "CC",
+                                "display": "Care Coordinator"
+                            }
+                        ]
+                    }
+                }
+            ],
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
         }
     ],
@@ -1050,6 +826,7 @@ print(response.text)
             "value": "1920301155"
         }
     ],
+    "active": true,
     "name": [
         {
             "use": "usual",
@@ -1095,7 +872,7 @@ print(response.text)
             "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
             "use": "work",
             "line": [
-                "1234 Main St., Los Angeles, CA 94107"
+                "1234 Main St"
             ],
             "city": "Los Angeles",
             "state": "CA",
@@ -1106,11 +883,11 @@ print(response.text)
             "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
             "use": "work",
             "line": [
-                "1234 Main St., Los Angeles, CA 94107"
+                "12 Cesar Chavez St"
             ],
-            "city": "Los Angeles",
+            "city": "San Francisco",
             "state": "CA",
-            "postalCode": "94107",
+            "postalCode": "94110",
             "country": "United States"
         }
     ],
@@ -1118,11 +895,401 @@ print(response.text)
     "photo": [
         {
             "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
-            "title": "Samantha Jones: pk=21"
+            "title": "Profile photo 1 -- sample title"
         },
         {
-            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY",
-            "title": "Samantha Jones: pk=22"
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
+        }
+    ],
+    "qualification": [
+        {
+            "identifier": [
+                {
+                    "system": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url",
+                    "value": "PRT-01"
+                }
+            ],
+            "code": {
+                "text": "License"
+            },
+            "period": {
+                "start": "2020-01-01",
+                "end": "2024-05-05"
+            },
+            "issuer": {
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
+                        "valueString": "MDUB2"
+                    }
+                ],
+                "display": "MD University Los Angeles"
+            }
+        }
+    ]
+}
+'
+```
+{% endtab %}
+
+{% tab practitioner-update-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Practitioner/<id>"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+payload = {
+    "resourceType": "Practitioner",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
+            "valueUrl": "https://meet.google.com/room-001"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location"
+            }
+        },
+        {
+            "extension": [
+                {
+                    "valueAttachment": {
+                        "url": "https://canvas-vicert-test.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+                    }
+                }
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+        },
+        {
+            "extension": [
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "RN",
+                                "display": "Nurse"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "MA",
+                                "display": "Medical Assistant"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "CC",
+                                "display": "Care Coordinator"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
+        }
+    ],
+    "identifier": [
+        {
+            "system": "http://hl7.org/fhir/sid/us-npi ",
+            "value": "1920301155"
+        }
+    ],
+    "active": True,
+    "name": [
+        {
+            "use": "usual",
+            "family": "Jones",
+            "given": [
+                "Samantha"
+            ]
+        }
+    ],
+    "telecom": [
+        {
+            "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
+            "system": "phone",
+            "value": "5554320555",
+            "use": "mobile",
+            "rank": 1
+        },
+        {
+            "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
+            "system": "phone",
+            "value": "333555",
+            "use": "work",
+            "rank": 1
+        },
+        {
+            "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
+            "system": "email",
+            "value": "samantha.jones@example.com",
+            "use": "work",
+            "rank": 1
+        },
+        {
+            "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
+            "system": "email",
+            "value": "samantha.jones2@example.com",
+            "use": "work",
+            "rank": 2
+        }
+    ],
+    "address": [
+        {
+            "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
+            "use": "work",
+            "line": [
+                "1234 Main St"
+            ],
+            "city": "Los Angeles",
+            "state": "CA",
+            "postalCode": "94107",
+            "country": "United States"
+        },
+        {
+            "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
+            "use": "work",
+            "line": [
+                "12 Cesar Chavez St"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "94110",
+            "country": "United States"
+        }
+    ],
+    "birthDate": "1988-10-10",
+    "photo": [
+        {
+            "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
+            "title": "Profile photo 1 -- sample title"
+        },
+        {
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
+        }
+    ],
+    "qualification": [
+        {
+            "identifier": [
+                {
+                    "system": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url",
+                    "value": "PRT-01"
+                }
+            ],
+            "code": {
+                "text": "License"
+            },
+            "period": {
+                "start": "2020-01-01",
+                "end": "2024-05-05"
+            },
+            "issuer": {
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
+                        "valueString": "MDUB2"
+                    }
+                ],
+                "display": "MD University Los Angeles"
+            }
+        }
+    ]
+}
+
+response = requests.put(url, json=payload, headers=headers)
+
+print(response.text)
+```
+{% endtab %}
+
+{% endtabs %}
+</div>
+
+<div id="practitioner-update-response">
+{% include update-response.html %}
+</div>
+
+<div id="practitioner-search-request">
+{% include search-request.html resource_type="Practitioner" search_string="name=Samantha" %}
+</div>
+
+<div id="practitioner-search-response">
+{% tabs practitioner-search-response %}
+{% tab practitioner-search-response 200 %}
+```json
+{
+    "resourceType": "Practitioner",
+    "id": "55096fbcdfb240fd8c999c325304de03",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+            "valueString": "username123"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
+            "valueUrl": "https://meet.google.com/room-001"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location",
+                "display": "Canvas Clinic San Francisco"
+            }
+        },
+        {
+            "extension": [
+                {
+                    "valueAttachment": {
+                        "url": "https://canvas-vicert-test.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+                    }
+                }
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+        },
+        {
+            "extension": [
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "RN",
+                                "display": "Nurse"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "MA",
+                                "display": "Medical Assistant"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "coding": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                "code": "CC",
+                                "display": "Care Coordinator"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
+        }
+    ],
+    "identifier": [
+        {
+            "system": "http://hl7.org/fhir/sid/us-npi ",
+            "value": "1920301155"
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "usual",
+            "text": "Samantha Jones",
+            "family": "Jones",
+            "given": [
+                "Samantha"
+            ]
+        }
+    ],
+    "telecom": [
+        {
+            "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
+            "system": "phone",
+            "value": "5554320555",
+            "use": "mobile",
+            "rank": 1
+        },
+        {
+            "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
+            "system": "phone",
+            "value": "333555",
+            "use": "work",
+            "rank": 1
+        },
+        {
+            "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
+            "system": "email",
+            "value": "samantha.jones@example.com",
+            "use": "work",
+            "rank": 1
+        },
+        {
+            "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
+            "system": "email",
+            "value": "samantha.jones2@example.com",
+            "use": "work",
+            "rank": 2
+        }
+    ],
+    "address": [
+        {
+            "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
+            "use": "work",
+            "line": [
+                "1234 Main St"
+            ],
+            "city": "Los Angeles",
+            "state": "CA",
+            "postalCode": "94107",
+            "country": "United States"
+        },
+        {
+            "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
+            "use": "work",
+            "line": [
+                "12 Cesar Chavez St"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "94110",
+            "country": "United States"
+        }
+    ],
+    "birthDate": "1988-10-10",
+    "photo": [
+        {
+            "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
+            "title": "Profile photo 1 -- sample title"
+        },
+        {
+            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
         }
     ],
     "qualification": [
