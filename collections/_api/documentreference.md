@@ -212,7 +212,7 @@ sections:
 </div>
 
 <div id="documentreference-search-request">
-{% include search-request.html resource_type="DocumentReference" search_string="subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2" %}
+{% include search-request.html resource_type="DocumentReference" search_string="subject=Patient/cfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http://loinc.org|11502-2" %}
 </div>
 
 <div id="documentreference-search-response">
@@ -227,15 +227,15 @@ sections:
     [
         {
             "relation": "self",
-            "url": "/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2&_count=10&_offset=0"
+            "url": "/DocumentReference?subject=Patient/cfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http://loinc.org|11502-2&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2&_count=10&_offset=0"
+            "url": "/DocumentReference?subject=Patient/cfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http://loinc.org|11502-2&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2&_count=10&_offset=0"
+            "url": "/DocumentReference?subject=Patient/cfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http://loinc.org|11502-2&_count=10&_offset=0"
         }
     ],
     "entry":
