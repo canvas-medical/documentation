@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           The findings and interpretation of diagnostic tests performed on patients, groups of patients, devices, and locations, and/or specimens derived from these. The report includes clinical context such as requesting and provider information, and some mix of atomic results, images, textual and coded interpretations, and formatted representation of diagnostic reports. [https://hl7.org/fhir/R4/diagnosticreport.html](https://hl7.org/fhir/R4/diagnosticreport.html)<br><br>
-          This endpoint currently displays Lab and Imaging Reports associated with patient's in Canvas
+          This endpoint implements the US Core DiagnosticReport Profile for Report. The following USCDI data elements are retrievable from this endpoint:<br><br>Clinical Notes:<br>- Imaging Narrative<br>- Laboratory Report Narrative<br>- Pathology Report Narrative<br>- Procedure Note<br><br>Laboratory:<br>- Tests<br>- Values/Results
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -37,7 +37,7 @@ sections:
                 Status of the Diagnostic Report see [https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html](https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html). Currently Canvas only supports two types of statuses. 
           - name: category
             type: array[json]
-            description: Service category [https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html](https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html). Use this attribute to help distinguish the Diagnositc Report between a Lab or Imaging Report in Canvas.
+            description: Service category [https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html](https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html). Use this attribute to help distinguish the type of report in Canvas.
             attributes: 
               - name: coding
                 description: Identifies where the definition of the code comes from.
@@ -57,6 +57,8 @@ sections:
                     enum_options: 
                       - value: LAB
                       - value: LP29684-5
+                      - value: LP7839-6
+                      - value: LP29708-2
                   - name: display
                     description: >-
                       The display name of the coding.
@@ -64,6 +66,8 @@ sections:
                     enum_options: 
                       - value: Laboratory
                       - value: Radiology
+                      - value: Cardiology
+                      - value: Pathology
           - name: code
             type: json
             description: Name/Code for this diagnostic report.
