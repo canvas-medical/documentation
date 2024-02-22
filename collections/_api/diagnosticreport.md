@@ -137,11 +137,11 @@ sections:
                 description: Type the reference refers to (e.g. "Observation").
           - name: presentedForm
             type: array[json]
-            description: Entire report as issued.
+            description: Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created.
             attributes:
                 - name: url
                   type: string
-                  description: Uri where the data can be found.
+                  description: Uri where the data can be found. 
         search_parameters:
           - name: _id
             type: string
