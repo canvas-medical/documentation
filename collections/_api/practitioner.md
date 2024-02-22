@@ -39,17 +39,15 @@ sections:
           <br><br>
           [http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature](http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature)
           <br><br>
-          Attachment of the practitioner's real handwritten signature file. Expected value is a base64-encoded file.
+          Attachment of the practitioner's real handwritten signature file. Expected value is a base64-encoded file during Practitioner create. More info on updating signatures can be found below in the Practitioner update section.
           <br><br>
 
           **`roles`**
           <br><br>
           [http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles)
           <br><br>
-          An array of roles with internal role codes as values. Examples of expected values include RN, CA, MA, etc.
+          An array of roles with internal role codes as values. Examples of expected values include RN, CA, MA, etc. For more detailed information, look into the payload examples or read the instructions below.
           <br><br>
-
-
 
         attributes:
           - name: id
@@ -62,33 +60,127 @@ sections:
               Reference the information at the top of this page to see the possible extensions contained in this resource.
           - name: identifier
             type: array[json]
-            description: An identifier for the practitioner as this agent.
+            description: 
+              An identifier for the practitioner as this agent.
+              <br><br>
+              This is the NPI number of Staff in Canvas database.
+              <br><br>
+              It accepts only one array item. That signle item must have **system** set to "http://hl7.org/fhir/sid/us-npi" and the **value** must be a 10 digit number.
           - name: active
             type: boolean
             description: A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
           - name: name
             type: array[json]
+            required: true
             description: The name(s) associated with the practitioner.
+            create_description: >-
+              The name(s) associated with the practitioner. Value for "use" must be set to "usual". At this point, this API is accepting only "family" (last) name and only one "given" name. See the payload examples for concrete details.
+            update_description: >-
+              The name(s) associated with the practitioner. Value for "use" must be set to "usual". At this point, this API is accepting only "family" (last) name and only one "given" name. See the payload examples for concrete details.
           - name: telecom
             type: array[json]
-            required: true
             description: >- 
-                Practitioner contact point(s) (email / phone / fax). At least one contact field with the specifications 'system': 'phone' and 'use': 'work' is designated as the primary phone for staff or users. There must be exactly one contact field with the specifications 'system': 'email' and 'rank': 1. An error will be triggered if there is more than one email with rank 1, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed. Updating email contact fields is not permitted, during updates, the values must remain unchanged from the original creation or retrieval.
+              Practitioner contact point(s) (email / phone / fax). 
+              <br><br>
+              At least one contact field with the specifications **'system'**: **'phone'** and **'use'**: **'work'** is designated as the primary phone for staff or users.
+              <br><br>
+              There must be exactly one contact field with the specifications **'system'**: **'email'** and **'rank'**: **1**. An error will be triggered if there is more than one email with rank 1, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed.
+              <br><br>
+              **IMPORTANT**: Updating email contact fields is not permitted, during updates, the values must remain unchanged from the original creation or retrieval.
+            attributes:
+              - name: id
+                type: string
+                description: The identifier (ID) of the telecom (contact point) record in Canvas database.
+                create_description:
+                  The identifier (ID) of the telecom (contact point) record in Canvas database. <br><br>
+                  This "id" property is only needed during updates. For more info on that, check the update part of these docs.
+                update_description:
+                  The identifier (ID) of the telecom (contact point) record in Canvas database. <br><br>
+                  If you want to update specific telecom record in Canvas database, you are going to use this property to target that record. <br><br>
+                  If you omit "id" during update, a new telecom record will be created.
+              - name: system
+                type: string
+                required: true
+                description: Supported values are **phone**, **fax**, **email**, **pager**, and **other**.
+              - name: value
+                type: string
+                required: true
+                description: Free text string of the value for this contact point.
+                create_description: 
+                  Free text string of the value for this contact point.<br><br>
+                  Values for phone numbers (where "system" is set to "phone") must be only digits, with no sign characters or spaces.
+                update_description:
+                  Free text string of the value for this contact point.<br><br>
+                  Values for phone numbers (where "system" is set to "phone") must be only digits, with no sign characters or spaces.
+              - name: use
+                type: string
+                required: true
+                description: Supported values are  **home**, **work**, **temp**, **old** and **mobile**.
+              - name: rank
+                type: integer
+                required: true
+                description: An integer representing the preferred order of contact points per system.
           - name: address
             type: array[json]
             required: true
-            description: Address(es) of the practitioner entered in Canvas. Country will be "United States" by default.
+            description: Address(es) of the practitioner entered in Canvas database. No default values will be set.
+            attributes:
+              - name: id
+                type: string
+                description: The identifier (ID) of the address record in Canvas database.
+                create_description:
+                  The identifier (ID) of the address record in Canvas database. <br><br>
+                  This "id" property is only needed during updates. For more info on that, check the update part of these docs.
+                update_description:
+                  The identifier (ID) of the address record in Canvas database. <br><br>
+                  If you want to update specific address record in Canvas database, you are going to use this property to target that record. <br><br>
+                  If you omit "id" during update, a new address record will be created.
+              - name: use
+                type: string
+                required: true
+                description: Supported values are **home**, **work**, **temp**, **old** and **billing**.
+              - name: type
+                type: string
+                required: true
+                description: Supported values are **both**, **physical** and **postal**.
+              - name: line
+                type: string
+                description: List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
+              - name: city
+                type: string
+                description: String representing the city of the address.
+              - name: state
+                type: string
+                description: 2 letter state abbreviation of the address.
+              - name: postalCode
+                type: string
+                description: The 5 digit postal code of the address.
+              - name: country
+                type: string
           - name: birthDate
             type: date
             description: >-
               Practitioner date of birth for the individual, formatted as YYYY-MM-DD.
           - name: photo
             type: array[json]
-            description: 	Practitioner photo(s).
+            description: Practitioner photo(s).
+            create_description: >-
+              Practitioner photo(s). <br><br>
+              Apart from setting "title" to each photo, on create this API is accepting only "url" values for now. Titles are optional.
+            update_description: >-
+              Practitioner photo(s). <br><br>
+              You cannot directly update any photo during update. You can only remove certain photos by ommiting them form the payload and add new ones with which you want to replace them. Titles are optional.
           - name: qualification
             type: array[json]
             description: >-
-               Practitioner license(s).<br>
+              Practitioner license(s)
+            create_description: >-
+              Practitioner license(s). <br><br>
+              See the payload examples for more details.
+            create_description: >-
+              Practitioner license(s). <br><br>
+              See the payload examples for more details.
+
         search_parameters:
           - name: _id
             type: string
@@ -108,24 +200,39 @@ sections:
           - name: npiNumber
             type: string
             description: Practitioner NPI number.
+
         endpoints: [create, read, update, search]
 
         create:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: practitioner-create-request
           example_response: practitioner-create-response
-          description: Create Practitioner
+          description: >-
+            Create Practitioner with provided fields and values.
+            <br><br>
+            **IMPORTANT**: You cannot send an empty list for "telecom", nor omit the telecom field from the payload. The required fields in telecom are email and phone. Only one email with rank 1 and at least one "work" phone number. For detailed information on this, check the telecom attributes description.
+
         read:
           responses: [200, 401, 403, 404]
           example_request: practitioner-read-request
           example_response: practitioner-read-response
           description: Read a Practitioner resource
+
         update:
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: practitioner-update-request
           example_response: practitioner-update-response
           description: >-
-            During the update (PUT) of 'addresses' and 'contacts' for practitioner, it is now expected that an 'id' is provided in the object of each 'address' or 'telecom' entity being updated. If 'id' is not provided, a new field will be created during the update, and any existing fields that are missing in comparison to those in the database (if not sent with an 'id') will be deleted. During an update, if a 'url' for the signature is provided, it will be ignored, and no action will be taken. For all other fields, if omitted from the (PUT) request, their values will be deleted in the database, including extensions. This applies to 'signature', 'primary practice location', 'meeting room link', 'photo', 'roles', and 'address' all of those entries will be erased. However, 'username' remains unchanged. If, for example, 'signature' or 'primary practice location' is omitted or 'meeting room link' is excluded, the values will be nullified. The same applies to 'photo', 'roles', and 'address' all of those entries will be deleted. Only for contact points, an empty array cannot be sent, nor can the field be omitted, as API validation will require the presence of required fields.
+            Update Practitioner with provided fields and values.
+            <br><br>
+            During the update (PUT) of 'addresses' and 'contacts' for practitioner, it is expected that an **'id'** is provided in the object of each 'address' or 'telecom' entity being updated. If 'id' is not provided, a new field will be created during the update, and any existing fields that are missing in comparison to those in the database (if not sent with an 'id') will be deleted. 
+            <br><br>
+            During an update, if a **'url'** for the signature is provided, it will be ignored, and no action will be taken.
+            <br><br>
+            For all other fields, if omitted from the (PUT) request, their values will be deleted in the database, including extensions. This applies to 'signature', 'primary practice location', 'meeting room link', 'photo', 'roles', and 'address' all of those entries will be erased if their respective extensions are excluded from the payload during update (PUT HTTP method call). However, only the 'username' remains unchanged and this API will return error if the PUT payload is trying to change the Practitioner's (Staff) username. The same applies to 'photo' and to the list of role codes in 'roles' extension, all of those entries will be deleted if they are ommited from the payload during the update.
+            <br><br>
+            **IMPORTANT**: You cannot send an empty list for "telecom", nor omit the telecom field from the payload. The required fields in telecom are email and phone. Only one email with rank 1 and at least one "work" phone number. For detailed information on this, check the telecom attributes description.
+
         search:
           responses: [200, 400, 401, 403]
           example_request: practitioner-search-request
