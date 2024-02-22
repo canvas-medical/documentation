@@ -30,6 +30,8 @@ api_canvas_fhir:
    url: /api/conditional-requests/
  - title: "Pagination"
    url: /api/pagination
+ - title: "Date Filtering"
+   url: /api/date-filtering
  - title: "Errors"
    url: /api/errors/
  - title: "Service Base URLs"
