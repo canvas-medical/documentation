@@ -11,7 +11,6 @@ sections:
 
          **Supported Extensions**
           <br><br>
-
           Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all `json` types and should be included in the `extension` array field as shown in the request/response examples on this page. The following custom extensions are supported:<br><br>
 
           **`username`**
@@ -170,6 +169,15 @@ sections:
             update_description: >-
               Practitioner photo(s). <br><br>
               You cannot directly update any photo during update. You can only remove certain photos by ommiting them form the payload and add new ones with which you want to replace them. Titles are optional.
+            attributes:
+              - name: url
+                type: string
+                required: true
+                description: URL address of the Practitioner's photo(s).
+              - name: title
+                type: string
+                required: true
+                description: Title of the Practitioner's photo(s).
           - name: qualification
             type: array[json]
             description: >-
@@ -177,10 +185,31 @@ sections:
             create_description: >-
               Practitioner license(s). <br><br>
               See the payload examples for more details.
-            create_description: >-
+            update_description: >-
               Practitioner license(s). <br><br>
               See the payload examples for more details.
-
+            attributes:
+              - name: identifier
+                type: array[json]
+                description: 
+                  Identifier array with a single object allowed for identifying the issuing authority url.<br><br>
+                  Object attributes are **system** and **value**. The url value for system can be found in the payload
+              - name: code
+                type: object[json]
+                description: License code object. This attribute accepts no value. It just returns "License" text.
+              - name: period
+                type: object[json]
+                description: 
+                  An object containing start and end periods of the license.<br><br>
+                  Object attributes are **start** and **end** dates.<br><br>
+                  Expected date format is **YYYY-MM-DD** (Example - "2020-01-01")
+              - name: issuer
+                type: object[json]
+                description: 
+                  An object extension for issuing authority short name.<br><br>
+                  Extension array may hold only one object with **url** and **valueString** attributes.
+                  Look at the payload examples for more details.
+                    
         search_parameters:
           - name: _id
             type: string
@@ -225,13 +254,13 @@ sections:
           description: >-
             Update Practitioner with provided fields and values.
             <br><br>
-            During the update (PUT) of 'addresses' and 'contacts' for practitioner, it is expected that an **'id'** is provided in the object of each 'address' or 'telecom' entity being updated. If 'id' is not provided, a new field will be created during the update, and any existing fields that are missing in comparison to those in the database (if not sent with an 'id') will be deleted. 
+            During the update of **addresses** and **telecoms** for Practitioner, it is expected that an **"id"** is provided in the object of each **"address"** or **"telecom"** entity being updated. If **"id"** is not provided, a new field will be created during the update. Any existing fields that are missing in comparison to those in the database (if not sent with an "id") will be permanently deleted. Same behavior applies to **"photo"** and the nested array of valueCodeableConcept objects for **roles** in the roles extension with one exception that you don't have "id" attributes for photos and roles.
             <br><br>
-            During an update, if a **'url'** for the signature is provided, it will be ignored, and no action will be taken.
+            During an update, if a **"url"** for the **Practitiner's signature** is provided, it will be ignored, and no action will be taken.
             <br><br>
-            For all other fields, if omitted from the (PUT) request, their values will be deleted in the database, including extensions. This applies to 'signature', 'primary practice location', 'meeting room link', 'photo', 'roles', and 'address' all of those entries will be erased if their respective extensions are excluded from the payload during update (PUT HTTP method call). However, only the 'username' remains unchanged and this API will return error if the PUT payload is trying to change the Practitioner's (Staff) username. The same applies to 'photo' and to the list of role codes in 'roles' extension, all of those entries will be deleted if they are ommited from the payload during the update.
+            Generally, when a field is omitted from the payload request, it will be considered as an intention to remove the value stored associated to that field, thus their values will be deleted in the database. This is also valid for extensions. The only exception is the **username** extension, which remains unchanged and this API will return error if the update request is trying to change the Practitioner's (Staff) username.
             <br><br>
-            **IMPORTANT**: You cannot send an empty list for "telecom", nor omit the telecom field from the payload. The required fields in telecom are email and phone. Only one email with rank 1 and at least one "work" phone number. For detailed information on this, check the telecom attributes description.
+            **IMPORTANT**: You cannot send an empty list for **"telecom"**, nor omit the telecom field from the update payload. The required data in telecom is Practitioner's **"email"** and **"phone"**. **Only one email with rank 1 and at least one "work" phone number are required.** For detailed information on this, check the telecom attributes description.
 
         search:
           responses: [200, 400, 401, 403]
