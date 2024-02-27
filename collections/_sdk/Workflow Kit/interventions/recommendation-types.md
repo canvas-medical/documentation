@@ -318,7 +318,7 @@ A recommendation that contains the link will appear in the list of Protocols for
 | `patient`     | `Patient`  | `true`   | An instance of a `Patient`. This should always be passed as `self.patient`.                                                                                                                |
 | `imaging`\*   | `ValueSet` | `true`   | The `ValueSet` class for the imaging that is being ordered. It is recommended that a ValueSet with only a single code is included.                                                         |
 | `title`       | _string_   | `false`  | The text to show on a patient's chart that describes the recommendation.                                                                                                                   |
-| `context`\*\* | _dict_     | `false`  | A dictionary that may contain the keys `conditions` and `priority`. If `conditions` is included, it will populate the indications field of the `image` command. If `priority` is included, it will specify the priority level for the image processing task. The `priority` can either be `routine` or `urgent`.                                          |
+| `context` | _dict_     | `false`  | A dictionary that may contain the keys `conditions` and `priority`. If `conditions` is included, it will populate the indications field of the `image` command. If `priority` is included, it will specify the priority level for the image processing task. The `priority` can either be `routine` or `urgent`.                                          |
 | `narrative`   | _string_   | `false`  | The text to show on a patient's chart under the title of the recommendation. For this to successfully display, the command \`add_narrative(imaging_recommendation.narrative) must be used. |
 
 \* Imaging Note: In order for the coding in the imaging argument above to populate the image command, the Image Order Templates in the settings page must have an entry that matches. If there is not a matching image order template, one can be created via the admin settings. Select 'Imaging report templates', which can be found under the **data integration** section. Then select 'ADD IMAGING REPORT TEMPLATE' on the upper righthand corner. The name and long name can be any string, but the code must match the code associated with the imaging object that was passed in. The code system must be inputted in url format (e.g. LOINC would be <http://loinc.org>). The mappings are shown below. For help setting up these templates correctly or if access is needed, please consult Canvas's support and implementation teams. 
@@ -371,7 +371,7 @@ An Imaging recommendation will appear in the list of Protocols for applicable pa
 
 After pressing the _Order_ button, a Note Command to order imaging will be populated in the chart:
 
-![](https://files.readme.io/6867ab1-Screen_Shot_2022-08-05_at_12.40.58_PM.png "Screen Shot 2022-08-05 at 12.40.58 PM.png"){:width="70%"}
+![](/assets/images/imagerec.png){:width="80%"}
 <br>
 <br>
 * * *
