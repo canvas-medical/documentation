@@ -254,7 +254,7 @@ sections:
           description: >-
             Update Practitioner with provided fields and values.
             <br><br>
-            During the update of **addresses** and **telecoms** for Practitioner, it is expected that an **"id"** is provided in the object of each **"address"** or **"telecom"** entity being updated. If **"id"** is not provided, a new field will be created during the update. Any existing fields that are missing in comparison to those in the database (if not sent with an "id") will be permanently deleted. Same behavior applies to **"photo"** and the nested array of valueCodeableConcept objects for **roles** in the roles extension with one exception that you don't have "id" attributes for photos and roles.
+            During the update of **addresses** and **telecoms** for Practitioner, it is expected that an **"id"** is provided in the object of each **"address"** or **"telecom"** entity being updated. If **"id"** is not provided, a new field will be created during the update. Any existing fields that are missing in comparison to those in the database (if not sent with an "id") will be permanently deleted. Same behavior applies to **"photo"** and the nested array of valueCoding objects for **roles** in the roles extension with one exception that you don't have "id" attributes for photos and roles.
             <br><br>
             During an update, if a **"url"** for the **Practitiner's signature** is provided, it will be ignored, and no action will be taken.
             <br><br>
@@ -307,35 +307,23 @@ curl --request POST \
             "extension": [
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "RN"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "RN"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "MA"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "MA"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "CC"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "CC"
                     }
                 }
             ],
@@ -487,35 +475,23 @@ payload = {
             "extension": [
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "RN"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "RN"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "MA"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "MA"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "CC"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "CC"
                     }
                 }
             ],
@@ -679,38 +655,23 @@ print(response.text)
             "extension": [
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "RN",
-                                "display": "Nurse"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "RN"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "MA",
-                                "display": "Medical Assistant"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "MA"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "CC",
-                                "display": "Care Coordinator"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "CC"
                     }
                 }
             ],
@@ -918,38 +879,23 @@ curl --request PUT \
             "extension": [
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "RN",
-                                "display": "Nurse"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "RN"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "MA",
-                                "display": "Medical Assistant"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "MA"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "CC",
-                                "display": "Care Coordinator"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "CC"
                     }
                 }
             ],
@@ -1108,38 +1054,23 @@ payload = {
             "extension": [
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "RN",
-                                "display": "Nurse"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "RN"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "MA",
-                                "display": "Medical Assistant"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "MA"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "CC",
-                                "display": "Care Coordinator"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "CC"
                     }
                 }
             ],
@@ -1309,38 +1240,23 @@ print(response.text)
             "extension": [
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "RN",
-                                "display": "Nurse"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "RN"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "MA",
-                                "display": "Medical Assistant"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "MA"
                     }
                 },
                 {
                     "url": "code",
-                    "valueCodeableConcept": {
-                        "coding": [
-                            {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "CC",
-                                "display": "Care Coordinator"
-                            }
-                        ]
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "CC"
                     }
                 }
             ],
