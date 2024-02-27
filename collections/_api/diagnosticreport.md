@@ -121,7 +121,7 @@ sections:
             description: DateTime this version was made.
           - name: performer
             type: array[json]
-            description: Responsible Diagnostic Service. In Canvas this will be the Practitioner who reviewed the Report.
+            description: Responsible Diagnostic Service. In Canvas this will be the Practitioner who is assigned to the Report.
             attributes:
               - name: reference
                 type: string

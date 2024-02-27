@@ -9,48 +9,130 @@ sections:
         description: >-
           A reference to a document of any kind for any purpose. Provides metadata about the document so that the document can be discovered and managed. The scope of a document is any seralized object with a mime-type, so includes formal patient centric documents (CDA), clinical notes, scanned paper, and non-patient specific documents like policy text.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-documentreference.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-documentreference.html)<br><br>
-          PDFs are generated for lab reports, imaging reports and invoicing associated with a patient.
+          A Document Reference can represent many different PDFs generated in Canvas:
+          
+
+          - A [Letter](https://canvas-medical.zendesk.com/hc/en-us/articles/360057339634-Letters) that has been faxed or printed from the patient's chart.
+          
+          - All documents uploaded via [Data Integration](https://canvas-medical.zendesk.com/hc/en-us/articles/360056078034-Data-Integration-Overview) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
+          
+          - [POC Lab Command's](https://canvas-medical.zendesk.com/hc/en-us/articles/360055629214-Point-of-Care-POC-Tests) committed on the Patient's chart
+          
+          - [Clinical Notes](https://canvas-medical.zendesk.com/hc/en-us/articles/360057949073-Printing-a-Chart-Note) representing a PDF of each locked note. This also includes superseded versions on notes.
+          
+          - Any [Educational Material](https://canvas-medical.zendesk.com/hc/en-us/articles/4999882305939-Educational-Material-Command) committed on a patient's chart.
+          
+          - Any [Invoices](https://canvas-medical.zendesk.com/hc/en-us/articles/4406239284499-Statements-and-Invoicing) generated for a patient.
+
+
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
             description: >-
-              The identifier of the document reference
+              The identifier of the document reference.
             type: string
-            required: true
           - name: identifier
             type: array[json]
-            description: Other identifiers for the document
+            description: Other identifiers for the document.
+            attributes:
+              - name: system
+                type: string
+                description:  The namespace for the identifier value.
+                enum_options: 
+                  - value: http://schemas.canvasmedical.com/fhir/document-reference-identifier
+              - name: value
+                type: string
+                description: The identifier value that is unique.
           - name: status
             description: >-
-              The status of the document reference. Supported values are: **current**, **superseded** and **entered-in-error**.
-            type: string
+              The status of the document reference. <br><br>
+
+              - Letters and POC Lab Reports will always have a status of `current`.
+              
+              - Documents uploaded in Data Integration will have a status of `current` when created. If a document is removed from the patient's chart, it will have a status of `entered-in-error`.
+              
+              - For Clinical Note documents, the status will be `current` if it is the latest PDF of the locked note. If it is an older version due to a practitioner unlocking/ammending the note, the status will be `superseded`. If the note is deleted on the patient's chart, the status will be `entered-in-error`.
+
+              - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
+
+              - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
+            type: enum [ current | superseded | entered-in-error]
           - name: type
             description: >-
-              A coding for the type of document
+              A coding for the type of document.
             type: json
+            attributes:
+              - name: coding
+                description: Identifies where the definition of the code comes from.
+                type: array[json]
+                attributes: 
+                  - name: system
+                    description: >-
+                      The system url of the coding.
+                    enum_options: 
+                      - value: http://loinc.org
+                    type: string
+                  - name: code
+                    description: >-
+                      The code value.
+                    type: string
+                    enum_options: 
+                      - value: codes supported in [Data Integration](https://canvas-medical.zendesk.com/hc/en-us/articles/360056078034-Data-Integration-Overview)
+                      - value: 51852-2 (Letters)
+                      - value: 34895-3 (Educational Material)
+                      - value: 94093-2 (Invoices/Itemized Bill)
+                  - name: display
+                    description: >-
+                      The display name of the coding.
+                    type: string
           - name: category
-            description: >-
-              The categorization of the document. Supported category codes are:<br><br>
-              **clinical-note**<br>
-              **correspondence**<br>
-              **educationalmaterial**<br>
-              **imagingreport**<br>
-              **invoicefull**<br>
-              **labreport**<br>
-              **patientadministrativedocument**<br>
-              **referralreport**<br>
-              **uncategorizedclinicaldocument**
+            description: The categorization of the document.
+            attributes:
+              - name: coding
+                description: Identifies where the definition of the code comes from.
+                type: array[json]
+                attributes: 
+                  - name: system
+                    description: >-
+                      The system url of the coding.
+                    enum_options: 
+                      - value: http://schemas.canvasmedical.com/fhir/document-reference-category
+                    type: string
+                  - name: code
+                    description: >-
+                      The code value.
+                    type: string
+                    enum_options: 
+                      - value: clinical-note
+                      - value: correspondence
+                      - value: educationalmaterial
+                      - value: imagingreport
+                      - value: invoicefull
+                      - value: labreport
+                      - value: patientadministrativedocument
+                      - value: referralreport
+                      - value: uncategorizedclinicaldocument
             type: array[json]
           - name: subject
             description: >-
-              Who/what is the subject of the document
+              Who/what is the subject of the document.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: date
             description: >-
-              When this document reference was created
+              When this document reference was created.
             type: date
           - name: author
             description: >-
-              Who and/or what authored the document
+              Who and/or what authored the document. 
             type: array[json]
           - name: custodian
             description: >-
