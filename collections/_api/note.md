@@ -21,7 +21,7 @@ New scopes are introduced: user/Note.read and user/Note.write. These scopes will
 ``` python
 import requests
 
-url = "https://patina.canvasmedical.com/auth/token/"
+url = "https://<your-instance>.canvasmedical.com/auth/token/"
 
 payload = 'grant_type=client_credentials&client_id=canvas&client_secret=canvas'
 headers = {
@@ -92,7 +92,7 @@ Defines a code for the note type, to be used with the paired noteTypeSystem.
 import requests
 import json
 
-url = "https://patina.canvasmedical.com/core/api/notes/v1/Note"
+url = "https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note"
 
 payload = json.dumps({
   "title": "Some Custom Title",
@@ -176,7 +176,7 @@ Defines a code for the note type, to be used with the paired noteTypeSystem.
 ```python
 import requests
 
-url = "https://patina.canvasmedical.com/core/api/notes/v1/Note/4a6064e9-293c-4541-b1cc-515f81435e74"
+url = "https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note/4a6064e9-293c-4541-b1cc-515f81435e74"
 
 payload = ""
 headers = {
@@ -223,7 +223,7 @@ Unlocking a locked note (excluding DATA notes)<br>
 import requests
 import json
 
-url = "https://patina.canvasmedical.com/core/api/notes/v1/Note/4a6064e9-293c-4541-b1cc-515f81435e74"
+url = "https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note/4a6064e9-293c-4541-b1cc-515f81435e74"
 
 payload = json.dumps({
   "stateChange": "LKD",
