@@ -6,7 +6,7 @@
 title: Canvas Documentation
 description: Canvas Documentation
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://docs.canvasmedical.com" # the base hostname & protocol for your site, e.g. http://example.com
 theme_color: '#eee9d9'
 logo: assets/images/large-logo.png
 timezone: America/Los_Angeles
