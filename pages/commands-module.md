@@ -71,15 +71,15 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
      <tr> 
       <td>Goal</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
     </tr>
      <tr> 
       <td>Update Goal</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
     </tr>
      <tr> 
       <td>Medication Statement</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
     </tr>
     <tr> 
       <td>Prescribe</td>
