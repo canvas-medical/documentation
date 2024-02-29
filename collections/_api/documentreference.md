@@ -166,7 +166,7 @@ sections:
                     description: Mime type of the content, with charset etc.
                     type: string
                   - name: url
-                    description: Uri where the data can be found. Please note that urls may have an AWSAccessKeyId and an Expires attribute. By default documents stored in AWS S3 will expire 10 minutes after the response payload is returned.
+                    description: URI where the data can be found. Please note that urls may have an AWSAccessKeyId and an Expires attribute. By default documents stored in AWS S3 will expire 10 minutes after the response payload is returned.
                     type: string
               - name: format
                 type: json
