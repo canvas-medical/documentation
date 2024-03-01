@@ -78,8 +78,8 @@ sections:
             type: boolean
             description: >-
               Whether the immunization was administered by a primary source.<br><br>
-              - **true** indicates that the immunization was administered within the clinic. To document immunizations like these, use a [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293).<br><br>
-              - **false** indicates that the immunization was administered outside the clinic. To document this immunizations like these, use a [Immunization Statement Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
+              - **true** indicates that the immunization was administered within the clinic. To document immunizations like these, use an [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293).<br><br>
+              - **false** indicates that the immunization was administered outside the clinic. To document this immunizations like these, use an [Immunization Statement Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
         search_parameters:
           - name: _id
             type: string
