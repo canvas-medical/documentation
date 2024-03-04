@@ -9,34 +9,63 @@ sections:
         description: >-
           Details and position information for a physical place where services are provided and resources and participants may be stored, found, contained, or accommodated.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-location.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-location.html)<br><br>
-          The FHIR Location resource corresponds to Canvas Practice Location.
+          The FHIR Location resource corresponds to Canvas Practice Locations.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
             description: The identifier of the Location
             type: string
           - name: identifier
-            description: >-
-              Unique code or number identifying the location to its users.<br>
-              **Supported**: Group NPI values using the `http://hl7.org/fhir/sid/us-npi` system
+            description: Unique code or number identifying the location to its users. Currently this supports displaying the Group NPI.
             type: array[json]
-          - name: status
-            description: The status property covers the general availability of the resource, not the current value which may be covered by the operationStatus, or by a schedule/slots if they are configured for the location
-            type: string
+            attributes:
+              - name: system
+                description: The namespace for the identifier value.
+                type: string
+                enum_options:
+                  - value: http://hl7.org/fhir/sid/us-npi
+              - name: value
+                description: The value that is unique.
+                type: string
+          - name: status 
+            description: The status property covers the general availability of the resource, not the current value which may be covered by the operationStatus, or by a schedule/slots if they are configured for the location.
+            type: enum [ active | inactive ]
           - name: name
-            description: Name of the location as used by humans
+            description: Name of the location as used by humans. This is the practice location's full name in Canvas.
             type: string
           - name: alias
-            description: A list of alternate names that the location is known as, or was known as, in the past
+            description: A list of alternate names that the location is known as, or was known as, in the past. This is the practice location's short name in Canvas.
             type: array[string]
           - name: description
-            description: Additional details about the location that could be displayed as further information to identify the location beyond its name
+            description: "Additional details about the location that could be displayed as further information to identify the location beyond its name. Canvas will produce this in the format `Organization full name: Location full name`"
             type: string
           - name: address
-            description: Physical address
+            description: Physical location.
             type: json
+            attributes:
+              - name: use
+                type: enum [ home | work | temp | old | billing ]
+                description: Purpose of this address
+              - name: line
+                type: array[string]
+                description: "Street name, number, direction & P.O. Box etc. This repeating element order: The order in which lines should appear in an address label."
+              - name: city
+                type: string
+                description: Name of city, town etc.
+              - name: state
+                type: string
+                description: Sub-unit of country (Canvas uses abbreviations).
+              - name: postalCode
+                type: string
+                description: Postal code for area.
+              - name: country
+                type: string
+                description: Country
         search_parameters:
           - name: _id
-            description: The identifier of the Location
+            description: The identifier of the Location.
             type: string
         endpoints: [read, search]
         read:
