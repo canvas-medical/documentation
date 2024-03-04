@@ -9,45 +9,34 @@ sections:
         description: >-
          A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member in Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360058232193-Add-a-new-staff-member).<br><br>
 
-         **Supported Extensions**
-          <br><br>
-          Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all `json` types and should be included in the `extension` array field as shown in the request/response examples on this page. The following custom extensions are supported:<br><br>
+         **Supported Extensions** <br><br>
+          
+          Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all JSON types and should be included in the `extension` array field as shown in the request/response examples on this page. <br><br>
+          
+          During updates, When an extension is omitted from the payload request, it will be considered as an intention to remove the value stored associated to that field, thus their values will be deleted in Canvas. The only exception is the `username` extension, which remains unchanged and this API will return error if the update request is trying to change the Practitioner's (Staff) username. <br><br>
+          
+          The following custom extensions are supported: <br><br>
+          
+          **`username`** <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/username](http://schemas.canvasmedical.com/fhir/extensions/username) <br><br>
+          A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication. Expected value is a string. <br><br>
+          
+          **`practitioner-personal-meeting-room-link`** <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link](http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link) <br><br>
+          Practitioner meeting room link for online chat or meetings. Expected value is the meeting room link. <br><br>
+          
+          **`practitioner-primary-practice-location`** <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location](http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location) <br><br>
+          The practitioner's primary practice location, where they spend most of their time. Expected value is reference to the Location model. <br><br>
 
-          **`username`**
-          <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/username](http://schemas.canvasmedical.com/fhir/extensions/username)
-          <br><br>
-          A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication. Expected value is string.
-          <br><br>
-
-          **`practitioner-personal-meeting-room-link`**
-          <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link](http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link)
-          <br><br>
-          Practitioner meeting room link for online chat or meetings. Expected value is the meeting room link.
-          <br><br>
-
-          **`practitioner-primary-practice-location`**
-          <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location](http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location)
-          <br><br>
-          The practitioner's primary practice location, where they spend most of their time. Expected value is reference to the Location model.
-          <br><br>
-
-          **`practitioner-signature`**
-          <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature](http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature)
-          <br><br>
-          Attachment of the practitioner's real handwritten signature file. Expected value is a base64-encoded file during Practitioner create. More info on updating signatures can be found below in the Practitioner update section.
-          <br><br>
-
-          **`roles`**
-          <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles)
-          <br><br>
-          An array of roles with internal role codes as values. Examples of expected values include RN, CA, MA, etc. For more detailed information, look into the payload examples or read the instructions below.
-          <br><br>
-
+          **`practitioner-signature`** <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature](http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature) <br><br>
+          Attachment of the practitioner's real handwritten signature file. Expected value is a base64-encoded file during Practitioner create. During an update, if a `url` for the Practitioner's signature is provided, it will be ignored, and no action will be taken. <br><br>
+          
+          **`roles`** <br><br>
+          [http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles) <br><br>
+          An array of roles with internal role codes as values. Examples of expected values include RN, CA, MA, etc. For more detailed information, look into the payload examples or read the instructions below. <br><br>
+          
         attributes:
           - name: id
             description: >-
@@ -62,40 +51,57 @@ sections:
             description: 
               An identifier for the practitioner as this agent.
               <br><br>
-              This is the NPI number of Staff in Canvas database.
+              This is the NPI number of the Practitioner in Canvas.
               <br><br>
-              It accepts only one array item. That signle item must have **system** set to "http://hl7.org/fhir/sid/us-npi" and the **value** must be a 10 digit number.
+              It accepts only one array item. That single item must have `system` set to "http://hl7.org/fhir/sid/us-npi" and the value must be a 10 digit number.
           - name: active
             type: boolean
             description: A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
           - name: name
             type: array[json]
             required: true
-            description: The name(s) associated with the practitioner.
-            create_description: >-
-              The name(s) associated with the practitioner. Value for "use" must be set to "usual". At this point, this API is accepting only "family" (last) name and only one "given" name. See the payload examples for concrete details.
-            update_description: >-
-              The name(s) associated with the practitioner. Value for "use" must be set to "usual". At this point, this API is accepting only "family" (last) name and only one "given" name. See the payload examples for concrete details.
+            description: The name associated with the practitioner.
+            attributes:
+              - name: use
+                type: string
+                description: The `use` attribute must be set to **usual** for Practitioner.
+                required: true
+              - name: family
+                type: string
+                description: Practitioner's last name.
+                required: true
+              - name: given
+                type: array[string]
+                required: true
+                description: Practitioner's first name. Only one first name is allowed.
           - name: telecom
             type: array[json]
-            description: >- 
-              Practitioner contact point(s) (email / phone / fax). 
+            required: true
+            description: Practitioner contact point(s) (email / phone / fax).
+            create_description: >-
+              Practitioner contact point(s) (email / phone / fax).
               <br><br>
-              At least one contact field with the specifications **'system'**: **'phone'** and **'use'**: **'work'** is designated as the primary phone for staff or users.
+              At least one contact point with the specifications `system`: **phone** and `use`: **work** is required and it is designated as the primary phone for the Practitioner.
               <br><br>
-              There must be exactly one contact field with the specifications **'system'**: **'email'** and **'rank'**: **1**. An error will be triggered if there is more than one email with rank 1, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed.
+              There must be exactly one contact point with the specifications `system`: **email** and `rank`: **1**. An error will be triggered if there is more than one `email` with `rank` set to **1**, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed.
+            update_description: >-
+              Practitioner contact point(s) (email / phone / fax).
               <br><br>
-              **IMPORTANT**: Updating email contact fields is not permitted, during updates, the values must remain unchanged from the original creation or retrieval.
+              At least one contact point with the specifications `system`: **phone** and `use`: **work** is required as the primary phone for the Practitioner.
+              <br><br>
+              There must be exactly one contact point with the specifications `system`: **email** and `rank`: **1**. An error will be triggered if there is more than one `email` with `rank` set to **1**, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed.
+              <br><br>
+              **IMPORTANT**: Updating email contact points is not permitted. During updates, the values must remain unchanged from the original creation or retrieval.
             attributes:
               - name: id
                 type: string
-                description: The identifier (ID) of the telecom (contact point) record in Canvas database.
+                description: The identifier (ID) of the telecom (contact point) record in Canvas.
                 create_description:
-                  The identifier (ID) of the telecom (contact point) record in Canvas database. <br><br>
+                  The identifier (ID) of the telecom (contact point) record in Canvas. <br><br>
                   This "id" property is only needed during updates. For more info on that, check the update part of these docs.
                 update_description:
-                  The identifier (ID) of the telecom (contact point) record in Canvas database. <br><br>
-                  If you want to update specific telecom record in Canvas database, you are going to use this property to target that record. <br><br>
+                  The identifier (ID) of the telecom (contact point) record in Canvas. <br><br>
+                  If you want to update a specific telecom record in Canvas, use this property to target that record. <br><br>
                   If you omit "id" during update, a new telecom record will be created.
               - name: system
                 type: string
@@ -122,17 +128,17 @@ sections:
           - name: address
             type: array[json]
             required: true
-            description: Address(es) of the practitioner entered in Canvas database. No default values will be set.
+            description: Address(es) of the practitioner entered in Canvas. No default values will be set.
             attributes:
               - name: id
                 type: string
-                description: The identifier (ID) of the address record in Canvas database.
+                description: The identifier (ID) of the address record in Canvas.
                 create_description:
-                  The identifier (ID) of the address record in Canvas database. <br><br>
+                  The identifier (ID) of the address record in Canvas. <br><br>
                   This "id" property is only needed during updates. For more info on that, check the update part of these docs.
                 update_description:
-                  The identifier (ID) of the address record in Canvas database. <br><br>
-                  If you want to update specific address record in Canvas database, you are going to use this property to target that record. <br><br>
+                  The identifier (ID) of the address record in Canvas. <br><br>
+                  If you want to update a specific address record in Canvas, use this property to target that record. <br><br>
                   If you omit "id" during update, a new address record will be created.
               - name: use
                 type: string
@@ -143,19 +149,20 @@ sections:
                 required: true
                 description: Supported values are **both**, **physical** and **postal**.
               - name: line
-                type: string
+                type: array[string]
                 description: List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
               - name: city
                 type: string
                 description: String representing the city of the address.
               - name: state
                 type: string
-                description: 2 letter state abbreviation of the address.
+                description: Two-letter state abbreviation of the address.
               - name: postalCode
                 type: string
-                description: The 5 digit postal code of the address.
+                description: The 5-digit postal code of the address.
               - name: country
                 type: string
+                description: Specifies the country in which the practitioner's address is located. This field typically contains the name of the country, following the ISO 3166 standard.
           - name: birthDate
             type: date
             description: >-
@@ -163,21 +170,14 @@ sections:
           - name: photo
             type: array[json]
             description: Practitioner photo(s).
-            create_description: >-
-              Practitioner photo(s). <br><br>
-              Apart from setting "title" to each photo, on create this API is accepting only "url" values for now. Titles are optional.
-            update_description: >-
-              Practitioner photo(s). <br><br>
-              You cannot directly update any photo during update. You can only remove certain photos by ommiting them form the payload and add new ones with which you want to replace them. Titles are optional.
             attributes:
               - name: url
                 type: string
                 required: true
-                description: URL address of the Practitioner's photo(s).
+                description: URL address of the Practitioner's photo.
               - name: title
                 type: string
-                required: true
-                description: Title of the Practitioner's photo(s).
+                description: Title of the Practitioner's photo.
           - name: qualification
             type: array[json]
             description: >-
@@ -193,7 +193,7 @@ sections:
                 type: array[json]
                 description: 
                   Identifier array with a single object allowed for identifying the issuing authority url.<br><br>
-                  Object attributes are **system** and **value**. The url value for system can be found in the payload
+                  Object attributes are `system` and `value`. The url value for system can be found in the payload
               - name: code
                 type: object[json]
                 description: License code object. This attribute accepts no value. It just returns "License" text.
@@ -201,13 +201,13 @@ sections:
                 type: object[json]
                 description: 
                   An object containing start and end periods of the license.<br><br>
-                  Object attributes are **start** and **end** dates.<br><br>
-                  Expected date format is **YYYY-MM-DD** (Example - "2020-01-01")
+                  Object attributes are `start` and `end` dates.<br><br>
+                  Expected date format is YYYY-MM-DD (Example - "2020-01-01")
               - name: issuer
                 type: object[json]
                 description: 
                   An object extension for issuing authority short name.<br><br>
-                  Extension array may hold only one object with **url** and **valueString** attributes.
+                  Extension array may hold only one object with `url` and `valueString` attributes.
                   Look at the payload examples for more details.
                     
         search_parameters:
@@ -216,13 +216,13 @@ sections:
             description: A Canvas-issued unique identifier
           - name: include-non-scheduleable-practitioners
             type: boolean
-            description: By default, only scheduleable practitioners are displayed. Passing this parameter as **true** will return all active practitioners.
+            description: By default, only scheduleable practitioners are displayed. Passing this parameter as "true" will return both schedulable and non-schedulable practitioners.
           - name: active
             type: string
-            description: Search by active status ("true" or "false" - case insensitive). By default if this param is not present, it will return practitioners with active set to True ("true").
+            description: Search by `active` status ("true" or "false" - case insensitive). By default if this param is not present, it will return practitioners with `active` set to True ("true").
           - name: name
             type: string
-            description: A search that may match any of the string fields in the name, including family, given, prefix, suffix, and/or text. Partial search is supported. If the practitioner you are looking for is inactive, you will still need to pass `include-non-scheduleable-practitioners=true`.
+            description: A search that may match any of the string fields in the name, including `family`, `given`, `prefix`, `suffix`, and/or `text`. Partial search is supported.
           - name: email
             type: string
             description: Practitioner user email.
@@ -236,10 +236,7 @@ sections:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: practitioner-create-request
           example_response: practitioner-create-response
-          description: >-
-            Create Practitioner with provided fields and values.
-            <br><br>
-            **IMPORTANT**: You cannot send an empty list for "telecom", nor omit the telecom field from the payload. The required fields in telecom are email and phone. Only one email with rank 1 and at least one "work" phone number. For detailed information on this, check the telecom attributes description.
+          description: Create Practitioner with provided fields and values.
 
         read:
           responses: [200, 401, 403, 404]
@@ -251,16 +248,7 @@ sections:
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: practitioner-update-request
           example_response: practitioner-update-response
-          description: >-
-            Update Practitioner with provided fields and values.
-            <br><br>
-            During the update of **addresses** and **telecoms** for Practitioner, it is expected that an **"id"** is provided in the object of each **"address"** or **"telecom"** entity being updated. If **"id"** is not provided, a new field will be created during the update. Any existing fields that are missing in comparison to those in the database (if not sent with an "id") will be permanently deleted. Same behavior applies to **"photo"** and the nested array of valueCoding objects for **roles** in the roles extension with one exception that you don't have "id" attributes for photos and roles.
-            <br><br>
-            During an update, if a **"url"** for the **Practitiner's signature** is provided, it will be ignored, and no action will be taken.
-            <br><br>
-            Generally, when a field is omitted from the payload request, it will be considered as an intention to remove the value stored associated to that field, thus their values will be deleted in the database. This is also valid for extensions. The only exception is the **username** extension, which remains unchanged and this API will return error if the update request is trying to change the Practitioner's (Staff) username.
-            <br><br>
-            **IMPORTANT**: You cannot send an empty list for **"telecom"**, nor omit the telecom field from the update payload. The required data in telecom is Practitioner's **"email"** and **"phone"**. **Only one email with rank 1 and at least one "work" phone number are required.** For detailed information on this, check the telecom attributes description.
+          description: Update Practitioner with provided fields and values.
 
         search:
           responses: [200, 400, 401, 403]
@@ -300,10 +288,11 @@ curl --request POST \
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
             "valueAttachment": {
-                "data": "data:application/pdf;base64,JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
+                "data": "JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
             }
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
             "extension": [
                 {
                     "url": "code",
@@ -326,8 +315,7 @@ curl --request POST \
                         "code": "CC"
                     }
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
+            ]
         }
     ],
     "identifier": [
@@ -424,7 +412,7 @@ curl --request POST \
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                        "valueString": "MDUB2"
+                        "valueString": "MDU LA"
                     }
                 ]
             }
@@ -472,6 +460,7 @@ payload = {
             }
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
             "extension": [
                 {
                     "url": "code",
@@ -494,8 +483,7 @@ payload = {
                         "code": "CC"
                     }
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
+            ]
         }
     ],
     "identifier": [
@@ -652,6 +640,7 @@ print(response.text)
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
             "extension": [
                 {
                     "url": "code",
@@ -674,8 +663,7 @@ print(response.text)
                         "code": "CC"
                     }
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
+            ]
         }
     ],
     "identifier": [
@@ -876,6 +864,7 @@ curl --request PUT \
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
             "extension": [
                 {
                     "url": "code",
@@ -898,8 +887,7 @@ curl --request PUT \
                         "code": "CC"
                     }
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
+            ]
         }
     ],
     "identifier": [
@@ -1051,6 +1039,7 @@ payload = {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
             "extension": [
                 {
                     "url": "code",
@@ -1073,8 +1062,7 @@ payload = {
                         "code": "CC"
                     }
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
+            ]
         }
     ],
     "identifier": [
@@ -1237,6 +1225,7 @@ print(response.text)
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
             "extension": [
                 {
                     "url": "code",
@@ -1259,8 +1248,7 @@ print(response.text)
                         "code": "CC"
                     }
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles"
+            ]
         }
     ],
     "identifier": [

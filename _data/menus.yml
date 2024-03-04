@@ -331,10 +331,10 @@ api_paymentnotice:
 api_practitioner:
  - title: "Practitioner Create"
    url: /api/practitioner/#create
- - title: "Practitioner Update"
-   url: /api/practitioner/#update
  - title: "Practitioner Read"
    url: /api/practitioner/#read
+ - title: "Practitioner Update"
+   url: /api/practitioner/#update
  - title: "Practitioner Search"
    url: /api/practitioner/#search
 api_procedure:
