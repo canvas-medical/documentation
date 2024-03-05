@@ -23,7 +23,7 @@ sections:
             description: The status of the immunization.
           - name: statusReason
             type: json
-            description: A coding for reason not given, if recorded - ommitted otherwise.
+            description: A coding for reason not given, if recorded - omitted otherwise.
             attributes:
               - name: coding
                 description: Identifies where the definition of the code comes from.
