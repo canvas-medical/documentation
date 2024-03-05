@@ -9,7 +9,7 @@ sections:
         description: >-
          This resource is primarily used for the identification and definition of a medication for the purposes of prescribing, dispensing, and administering a medication as well as for making statements about medication use.<br><br>
          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medication.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medication.html)<br><br>
-         Best practices is to utilize this endpoint to find codings to feed the [Medication Statement Create/Update](/api/medicationstatement/#create). These medications come directly from our integration with FDB.
+         Best practice is to utilize this endpoint to find codings to feed the [Medication Statement Create/Update](/api/medicationstatement/#create). These medications come directly from our integration with FDB.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
