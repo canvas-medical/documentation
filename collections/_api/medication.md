@@ -26,7 +26,7 @@ sections:
               - name: div
                 description: Limited xhtml content that contains the human readable text of the Medication.
           - name: code
-            description: Code that identifies the medication.
+            description: Codes that identify this medication.
             type: json
             attributes: 
               - name: coding
