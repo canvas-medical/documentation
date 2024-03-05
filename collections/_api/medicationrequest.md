@@ -11,12 +11,15 @@ sections:
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html)<br><br>
           FHIR MedicationRequests maps to the [Prescribe](https://canvas-medical.zendesk.com/hc/en-us/articles/360063523313-Prescribing-a-Medication) and [Refill](https://canvas-medical.zendesk.com/hc/en-us/articles/360057482354-Refill-Medications) commands in Canvas. Any adjustments made with the [Adjust Prescription](https://canvas-medical.zendesk.com/hc/en-us/articles/360061706154-Adjust-an-Existing-Medication) command will appear in MedicationRequest API responses.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
-            description: The identifier of the MedicationRequest
+            description: The identifier of the MedicationRequest.
             type: string
           - name: status
             description: A code specifying the current state of the order. Generally, this will be active or completed state
-            type: string
+            type: enum [ active | stopped | entered-in-error | cancelled | unknown ]
           - name: intent
             description: Whether the request is a proposal, plan, or an original order
             type: string
