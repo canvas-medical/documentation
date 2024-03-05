@@ -1,10 +1,14 @@
 <div class="filterdate">
   <h5>{{ site.data.globals.panels.filterdate }}</h5>
-  {% assign postsByYearMonth = include.collection | group_by_exp:"post", "post.date | date: '%B %Y'" %}
+  {% assign postsByYearMonth = include.collection | group_by_exp:"post", "post.date | date: '%Y-%m'" %}
   <div class="filterdate__links">
     {% assign sortedPostsByYearMonth = postsByYearMonth | sort: 'name' | reverse %}
-    {% for yearMonth in sortedPostsByYearMonth %}
-      <div class="filterdate__link" filter-date="{{ yearMonth.name | date: '%Y-%m' }}">{{ yearMonth.name }}</div>
+    {% for yearMonthFilter in sortedPostsByYearMonth %}
+      {% assign yearMonthName = yearMonthFilter.name | split: "-" %}
+      {% assign yearName = yearMonthName[0] %}
+      {% assign monthName = yearMonthName[1] | replace: "01","January" | replace: "02","February" | replace: "03","March" | replace: "04","April" | replace: "05","May" | replace: "06","June" | replace: "07","July" | replace: "08","August" |
+      replace: "09","September" | replace: "10","October" | replace: "11","November" | replace: "12","December" %}
+      <div class="filterdate__link" filter-date="{{ yearMonthFilter.name }}">{{ monthName }} {{ yearName }}</div>
     {% endfor %}
   </div>
 </div>
