@@ -39,6 +39,7 @@ sections:
                     enum_options: 
                       - value: http://www.nlm.nih.gov/research/umls/rxnorm
                       - value: http://snomed.info/sct
+                      - value: http://www.fdbhealth.com/
                     type: string
                   - name: code
                     description: >-
