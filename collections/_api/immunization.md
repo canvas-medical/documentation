@@ -8,44 +8,84 @@ sections:
         article: "a"
         description: >-
           Describes the event of a patient being administered a vaccine or a record of an immunization as reported by a patient, a clinician or another party.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html)
+          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html)<br><br>
+
+          In Canvas, Immunization records can be created using either the [Immunization Statement Commmand](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293) or the [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
             type: string
-            description: >-
-              The Canvas identifier of the immunization
+            description: The Canvas identifier of the immunization.
           - name: status
-            type: string
-            description: >-
-              The status of the immunization<br><br>One of: **completed**, **not-done**, **entered-in-error**
+            type: enum [ completed | entered-in-error | not-done ]
+            description: The status of the immunization.
           - name: statusReason
             type: json
-            description: >-
-              A coding for reason not given, if recorded - ommitted otherwise.
+            description: A coding for reason not given, if recorded - omitted otherwise.
+            attributes:
+              - name: coding
+                description: Identifies where the definition of the code comes from.
+                type: array[json]
+                attributes: 
+                  - name: system
+                    description: The system url of the coding.
+                    type: string
+                    enum_options:
+                      - value: http://terminology.hl7.org/CodeSystem/v3-ActReaso
+                  - name: code
+                    description: The code.
+                    type: string
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
           - name: vaccineCode
             type: json
-            description: >-
-              Coding for the administered vaccine 
+            description: Coding for the administered vaccine.
+            attributes:
+              - name: coding
+                description: Identifies where the definition of the code comes from.
+                type: array[json]
+                attributes: 
+                  - name: system
+                    description: The system url of the coding.
+                    type: string
+                    enum_options:
+                      - value: http://hl7.org/fhir/sid/cvx
+                      - value: http://www.ama-assn.org/go/cpt
+                      - value: unstructured
+                  - name: code
+                    description: The code.
+                    type: string
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
           - name: patient
             type: json
-            description: >-
-              The patient who received the immunization
+            description: The patient who received the immunization.
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: occurrenceDateTime
             type: date
-            description: >-
-              The date or datetime the immunization was administered or reported to have been administered
+            description: The date or datetime the immunization was administered or reported to have been administered.
           - name: primarySource
             type: boolean
             description: >-
-              Whether the immunization was administered by a primary source<br><br>
-              **true** indicates that the immunization was administered within the clinic. To document immunizations like these, check out this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293).<br><br>
-              **false** indicates that the immunization was administered outside the clinic. To document this immunizations like these, check out this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
+              Whether the immunization was administered by a primary source.<br><br>
+              - **true** indicates that the immunization was administered within the clinic. To document immunizations like these, use an [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293).<br><br>
+              - **false** indicates that the immunization was administered outside the clinic. To document this immunizations like these, use an [Immunization Statement Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
         search_parameters:
           - name: _id
             type: string
-            description: A Canvas-issued unique identifier
+            description: A Canvas-issued unique identifier for a specific immunization.
           - name: patient
-            description: The patient for the vaccination record
+            description: The patient for the vaccination record in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
         endpoints: [read, search]
         read:
