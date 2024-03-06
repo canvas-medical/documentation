@@ -32,7 +32,7 @@ sections:
             description: CoverageEligibilityRequest reference the elibibility response is for
           - name: outcome
             type: string
-            description: Outcome of the request processing, will always be **"complete"**
+            description: Outcome of the request processing, if an error occurs it will be marked as **"error"** othervise it will be marked as **"complete"**
           - name: insurer
             type: json
             description: >-
