@@ -3,6 +3,9 @@
     cursor: pointer;
     color: $link-color;
     display: block;
+  &:hover {
+    text-decoration: underline;
+  }
     &__active {
       color: $active-color;
     }
