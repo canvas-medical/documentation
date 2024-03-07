@@ -456,7 +456,7 @@ payload = {
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
             "valueAttachment": {
-                "data": "data:application/pdf;base64,JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
+                "data": "JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
             }
         },
         {
@@ -580,7 +580,7 @@ payload = {
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                        "valueString": "MDUB2"
+                        "valueString": "MDU LA"
                     }
                 ]
             }
@@ -630,6 +630,7 @@ print(response.text)
             }
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
             "extension": [
                 {
                     "valueAttachment": {
@@ -637,7 +638,7 @@ print(response.text)
                     }
                 }
             ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+            
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
@@ -668,7 +669,7 @@ print(response.text)
     ],
     "identifier": [
         {
-            "system": "http://hl7.org/fhir/sid/us-npi ",
+            "system": "http://hl7.org/fhir/sid/us-npi",
             "value": "1920301155"
         }
     ],
@@ -763,13 +764,13 @@ print(response.text)
                 "end": "2024-05-05"
             },
             "issuer": {
+                "display": "MD University Los Angeles",
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                        "valueString": "MDUB2"
+                        "valueString": "MDU LA"
                     }
-                ],
-                "display": "MD University Los Angeles"
+                ]
             }
         }
     ]
@@ -854,14 +855,14 @@ curl --request PUT \
             }
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
             "extension": [
                 {
                     "valueAttachment": {
                         "url": "https://canvas-vicert-test.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
                     }
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+            ]
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
@@ -892,7 +893,7 @@ curl --request PUT \
     ],
     "identifier": [
         {
-            "system": "http://hl7.org/fhir/sid/us-npi ",
+            "system": "http://hl7.org/fhir/sid/us-npi",
             "value": "1920301155"
         }
     ],
@@ -987,13 +988,13 @@ curl --request PUT \
                 "end": "2024-05-05"
             },
             "issuer": {
+                "display": "MD University Los Angeles",
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                        "valueString": "MDUB2"
+                        "valueString": "MDU LA"
                     }
-                ],
-                "display": "MD University Los Angeles"
+                ]
             }
         }
     ]
@@ -1067,7 +1068,7 @@ payload = {
     ],
     "identifier": [
         {
-            "system": "http://hl7.org/fhir/sid/us-npi ",
+            "system": "http://hl7.org/fhir/sid/us-npi",
             "value": "1920301155"
         }
     ],
@@ -1161,13 +1162,13 @@ payload = {
                 "end": "2024-05-05"
             },
             "issuer": {
+                "display": "MD University Los Angeles",
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                        "valueString": "MDUB2"
+                        "valueString": "MDU LA"
                     }
-                ],
-                "display": "MD University Los Angeles"
+                ]
             }
         }
     ]
@@ -1215,14 +1216,14 @@ print(response.text)
             }
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
             "extension": [
                 {
                     "valueAttachment": {
                         "url": "https://canvas-vicert-test.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
                     }
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+            ]
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
@@ -1253,7 +1254,7 @@ print(response.text)
     ],
     "identifier": [
         {
-            "system": "http://hl7.org/fhir/sid/us-npi ",
+            "system": "http://hl7.org/fhir/sid/us-npi",
             "value": "1920301155"
         }
     ],
@@ -1348,13 +1349,13 @@ print(response.text)
                 "end": "2024-05-05"
             },
             "issuer": {
+                "display": "MD University Los Angeles",
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                        "valueString": "MDUB2"
+                        "valueString": "MDU LA"
                     }
-                ],
-                "display": "MD University Los Angeles"
+                ]
             }
         }
     ]
