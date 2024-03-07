@@ -51,7 +51,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>HPI</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
     </tr>
      <tr> 
       <td>Reason for Visit</td>
@@ -63,7 +63,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
      <tr> 
       <td>Questionnaire</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
     </tr>
      <tr> 
       <td>Assess</td>
