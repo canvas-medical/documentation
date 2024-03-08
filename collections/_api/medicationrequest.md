@@ -85,7 +85,7 @@ sections:
               This attribute is deprecated and will be removed in a future release. It currently (and incorrectly) contains information about the dispenser of the medication. Canvas recommends disregarding this attribute. Information about the dispenser can be obtained from the `performer` attribute under `dispenseRequest`.
             type: json
           - name: reasonCode
-            description: Reason or indication for ordering or not ordering the medication.<br><br> In canvas this represents the indications on a Prescribe/Refill Command.
+            description: Reason or indication for ordering or not ordering the medication.<br><br> In Canvas this represents the indications on a Prescribe/Refill Command.
             type: array[json]
             attributes:
                 - name: coding
