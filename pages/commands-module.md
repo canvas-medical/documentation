@@ -98,15 +98,15 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><span class="tag-next-up"> Next up </span> </td>
     </tr>
      <tr> 
+      <td>Image</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+    </tr>
+     <tr> 
       <td>Diagnose</td>
       <td><span class="tag-next-up"> Next up </span> </td>
     </tr>
     <tr> 
       <td>Immunization Statement</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
-    </tr>
-     <tr> 
-      <td>Image</td>
       <td><span class="tag-next-up"> Next up </span> </td>
     </tr>
      <tr> 
