@@ -63,7 +63,7 @@ from canvas_workflow_kit.timeframe import Timeframe
 start_date = arrow.get('2021-01-01')
 end_date = start_date.shift(years=1)
 timeframe = Timeframe(start=start_date, end=end_date)
-self.patient.conditions.within(timeframe)
+self.patient.conditions.intersects(timeframe)
 
 now = arrow.now()
 self.patient.conditions.before(now)
@@ -82,7 +82,7 @@ start_date = arrow.get('2021-01-01')
 end_date = start_date.shift(years=1)
 timeframe = Timeframe(start=start_date, end=end_date)
 
-self.patient.conditions.find(Diabetes).within(timeframe)
+self.patient.conditions.find(Diabetes).intersects(timeframe)
 ```
 
  Except `first`, `last` and `last_value`, which pick the last record and extract a value from it:
@@ -95,8 +95,8 @@ start_date = arrow.get('2021-01-01')
 end_date = start_date.shift(years=1)
 timeframe = Timeframe(start=start_date, end=end_date)
 
-self.patient.conditions.find(Diabetes).within(timeframe).first()
-self.patient.conditions.find(Diabetes).within(timeframe).last()
+self.patient.conditions.find(Diabetes).intersects(timeframe).first()
+self.patient.conditions.find(Diabetes).intersects(timeframe).last()
 self.patient.lab_reports.find(Hba1CLaboratoryTest).within(timeframe).last_value()
 ```
 
