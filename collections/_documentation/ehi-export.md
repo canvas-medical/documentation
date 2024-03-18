@@ -19,7 +19,7 @@ The export will generate links to the output files for each resource. Clicking e
 
 ### Using the API
 You can initiate a single patient export by issuing a request like the one below:<br>
-`POST https://fumage-<instance-name>.canvasmedical.com/Patient/<id>/$export`
+`GET https://fumage-<instance-name>.canvasmedical.com/Patient/<id>/$export`
 
 
 <br>
