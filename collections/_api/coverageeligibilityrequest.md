@@ -12,34 +12,34 @@ sections:
         attributes:
           - name: status
             type: string
-            required: true
+            required_in: create,update
             description: >-
               Describes the state the request is in.<br><br>Supported values: **active**
           - name: purpose
             type: array[string]
-            required: true
+            required_in: create,update
             description: >-
               What information is being requested.<br><br>Supported values: only **["benefits"]** is valid
           - name: patient
             type: json
-            required: true
+            required_in: create,update
             description: >-
               Canvas patient resource whom the eligibility request is for
           - name: created
             type: date
-            required: true
+            required_in: create,update
             description: >-
               Creation date, required by the FHIR schema, but unused by Canvas.<br><br>
               Canvas recommends sending the current datetime in ISO 8601 format.
           - name: insurer
             type: json
-            required: true
+            required_in: create,update
             description: >-
               Coverage issuer, required by the FHIR schema but unused by Canvas.<br><br>
               Canvas recommends setting `insurer` to `{}`.
           - name: insurance
             type: array[json]
-            required: true
+            required_in: create,update
             description: >-
               Canvas Coverage resource identifying the insurance to check eligibility against<br><br>
               Supported values: a single iteration containing a **Coverage** resource.<br><br>

@@ -16,35 +16,35 @@ sections:
             description: >-
               The identifier of the payment notice
             type: string
-            required: true
+            required_in: create,update
           - name: status
             type: string
-            required: true
+            required_in: create,update
             description: >-
               Required by the FHIR spec. Canvas only supports payments with a status of **active**.
           - name: request
             type: json
-            required: true
+            required_in: create,update
             description: >-
               A reference to the patient whose balance this payment is being applied to.
           - name: created
             type: datetime
-            required: true
+            required_in: create,update
             description: >-
               Required by the FHIR spec. Canvas recommends sending the current datetime on create; however, the value returned by the search interaction will be the creation timestamp of the actual database record.
           - name: payment
             type: json
-            required: true
+            required_in: create,update
             description: >-
               The `payment` field is required by FHIR, but is not used by Canvas. Canvas recommends sending an empty JSON object.
           - name: recipient
             type: json
-            required: true
+            required_in: create,update
             description: >-
               The `recipient` field is required by FHIR, but is not used by Canvas. Canvas recommends sending an empty JSON object.
           - name: amount
             type: json
-            required: true
+            required_in: create,update
             description: >-
               The payment amount.
             attributes:

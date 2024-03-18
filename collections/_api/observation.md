@@ -30,24 +30,24 @@ sections:
             description: >-
               The status of the result value<br><br>
               Supported codes for create interactions:  **final**, **unknown**
-            required: true
+            required_in: create,update
           - name: category
             type: array[json]
             description: >-
               Classifies the general type of observation being made<br><br>
               Supported for create interactions: **vital-signs**
-            required: true
+            required_in: create,update
           - name: code
             type: json
             description: >-
               Describes what was observed<br><br>
               For create interactions, only vital sign LOINC codes are supported.  
-            required: true
+            required_in: create,update
           - name: subject
             type: json
             description: >-
               Canvas Patient reference the Observation is for
-            required: true
+            required_in: create,update
           - name: effectiveDateTime
             type: datetime
             description: >-

@@ -24,10 +24,10 @@ sections:
             type: string
             description: >- # TODO - enter status mapping table from README. Having rendering issues with the table
               The current status of the task. Supported values are **requested**, **cancelled** and **completed**.
-            required: true
+            required_in: create,update
           - name: description
             type: string
-            required: true
+            required_in: create,update
             description: Human-readable explanation of task
           - name: for
             type: json
@@ -37,14 +37,14 @@ sections:
             description: Task Creation Date. If omitted from the message, it will default to the current timestamp at the time of ingestion.
           - name: requester
             type: json
-            required: true
+            required_in: create,update
             description: Who is asking for task to be done. This must be a [Practitioner](/api/practitioner) reference.
           - name: owner
             type: json
             description: Responsible individual. This must be a [Practitioner](/api/practitioner) reference.
           - name: intent
             type: string
-            required: true
+            required_in: create,update
             description: Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
           - name: restriction
             type: json
