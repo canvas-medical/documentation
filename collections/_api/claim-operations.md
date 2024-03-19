@@ -8,6 +8,12 @@ date: 2023-02-12
 Add an activity log item to a Claim.<br><br>
 This endpoint is a [FHIR operation](https://hl7.org/fhir/R4/operations.html), so it accepts a [Parameters](https://hl7.org/fhir/R4/parameters.html) resource in the request body. It will accept one and only one parameter, which must have the name **comment**. The comment that will be added is provided as a `valueString`. See the request example for more detail.
 
+The bearer token included in requests send to this endpoint must have one of the following scopes:
+
+
+- `system/Claim.add-activity-log-item`
+- `user/Claim.add-activity-log-item`
+
 
 {% tabs claim-operations %}
 {% tab claim-operations curl %}
