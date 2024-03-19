@@ -366,6 +366,8 @@ api_slot:
 api_task:
  - title: "Task Create"
    url: /api/task/#create
+ - title: "Task Read"
+   url: /api/task/#read
  - title: "Task Update"
    url: /api/task/#update
  - title: "Task Search"

@@ -85,7 +85,7 @@ sections:
           - name: status
             type: string
             description: Search by task status
-        endpoints: [create, update, search]
+        endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: task-create-request
@@ -93,6 +93,11 @@ sections:
           description: >-
             Create a task.<br><br>
             Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). Open tasks will also display in the [Task Panel](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List).
+        read:
+          description: Read a Task resource.
+          responses: [200, 401, 403, 404]
+          example_request: task-read-request
+          example_response: task-read-response
         update:
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: task-update-request
@@ -210,6 +215,142 @@ print(response.text)
 
 <div id="task-create-response">
 {% include create-response.html %}
+</div>
+
+<div id="task-read-request">
+{% include read-request.html resource_type="Task" %}
+</div>
+
+<div id="task-read-response">
+
+  {% tabs task-read-response %}
+
+    {% tab task-read-response 200 %}
+```json
+ {
+    "resourceType": "Task",
+    "id": "5f72fbcc-10ac-48ff-a2d2-02b229c38ce9",
+    "extension":
+    [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-group",
+            "valueReference":
+            {
+                "reference": "Group/0c59ba86-dd40-4fde-8179-6e0b91dc617b",
+                "type": "Group",
+                "display": "Payment Collection"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/task-permalink",
+            "valueString": "http://example.canvasmedical.com/permalinks/v1/VGFzazo4OTo3MA=="
+        }
+    ],
+    "status": "completed",
+    "description": "Ask patient for new insurance information.",
+    "for":
+    {
+        "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f",
+        "type": "Patient"
+    },
+    "authoredOn": "2023-09-22T14:00:00+00:00",
+    "requester":
+    {
+        "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+        "type": "Practitioner"
+    },
+    "owner":
+    {
+        "reference": "Practitioner/a02cbf2403e140f7bc9a355c6ed420f3",
+        "type": "Practitioner"
+    },
+    "intent": "unknown",
+    "restriction":
+    {
+        "period":
+        {
+            "end": "2023-09-23T14:00:00+00:00"
+        }
+    },
+    "note":
+    [
+        {
+            "authorReference":
+            {
+                "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                "type": "Practitioner"
+            },
+            "time": "2023-09-22T14:00:00+00:00",
+            "text": "Please call patient to update insurance information."
+        }
+    ],
+    "input":
+    [
+        {
+            "type":
+            {
+                "text": "label"
+            },
+            "valueString": "Urgent"
+        }
+    ]
+}
+```
+    {% endtab %}
+
+    {% tab task-read-response 401 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "unknown",
+      "details": {
+        "text": "Authentication failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab task-read-response 403 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "details": {
+        "text": "Authorization failed"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+    {% tab task-read-response 404 %}
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "not-found",
+      "details": {
+        "text": "Unknown Task resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+      }
+    }
+  ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+
 </div>
 
 <div id="task-update-request">
