@@ -21,12 +21,17 @@ sections:
             - Laboratory Values/Results
             - Smoking Status
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
             type: string
+            exclude_in: create
             description: >-
               The Canvas identifier of the observation
           - name: status
-            type: string
+            required_in: create
+            type: enum [ final ]
             description: >-
               The status of the result value<br><br>
               Supported codes for create interactions:  **final**, **unknown**
@@ -42,12 +47,19 @@ sections:
             description: >-
               Describes what was observed<br><br>
               For create interactions, only vital sign LOINC codes are supported.  
-            required_in: create,update
+            required_in: create
           - name: subject
             type: json
-            description: >-
-              Canvas Patient reference the Observation is for
-            required_in: create,update
+            description: Canvas Patient reference the Observation is for.
+            required_in: create
+            attributes:
+              - name: reference
+                type: string
+                required_in: create
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: effectiveDateTime
             type: datetime
             description: >-
@@ -141,7 +153,7 @@ sections:
             
             **Note types**<br>
             Most our FHIR endpoints insert commands into a Data Import Note type on the patient's timeline.
-            With the release of [configurable note types](https://canvas-medical.zendesk.com/hc/en-us/articles/6623684024083-Note-Types-), if you specify a new Note Type with **system = Canvas** and **code = VitalsImport**, 
+            With the release of [configurable note types](https://canvas-medical.zendesk.com/hc/en-us/articles/6623684024083-Note-Types-), if you create a new Note Type in Settings with **system = Canvas** and **code = VitalsImport**,
             then the Observation Create endpoint will always import into that note type instead.<br><br>
 
 
