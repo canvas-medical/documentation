@@ -17,7 +17,7 @@ sections:
             description: The identifier of the communication
           - name: status
             type: string
-            required: true
+            required_in: create,update
             description: >-
               The status of the transmission.
             create_description: >-
@@ -34,19 +34,19 @@ sections:
             description: When received<br><br>**ISO 8601 format**
           - name: recipient
             type: array[json]
-            required: true
+            required_in: create,update
             description: >-
               Message recipient<br><br>Supported reference types for create interactions: a single **Patient** or **Practitioner**
           - name: sender
             type: json
-            required: true
+            required_in: create,update
             description: >-
               Message sender<br><br>Supported reference types for create interactions: **Patient**, **Practitioner**
           - name: payload
             type: array[json]
             description: >-
               Message payload<br><br>Supported payload content types: **contentString**
-            required: true
+            required_in: create,update
         search_parameters:
           - name: _id
             type: string

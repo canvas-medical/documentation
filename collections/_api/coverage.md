@@ -19,7 +19,7 @@ sections:
               The status of the Coverage<br><br>
               Supported codes for create interactions: **active**, **cancelled** 
             type: string
-            required: true
+            required_in: create,update
           - name: type
             type: json
             description: >-
@@ -30,25 +30,25 @@ sections:
               Who was signed up for or 'owns' the Coverage<br><br>
               Supported resource types: **Patient**
             type: json
-            required: true
+            required_in: create,update
           - name: subscriberId
             description: >-
               The insurer assigned ID for the subscriber
             type: string
-            required: true
+            required_in: create,update
           - name: beneficiary
             description: >-
               Who benefits from the coverage; the patient when products or services are provided.<br><br>
               Supported resource types for create interactions are: **Patient**
             type: json
-            required: true
+            required_in: create,update
           - name: relationship
             type: json
             description: >-
               The relationship of beneficiary (patient) to the subscriber<br><br>
               Supported codes for create interactions are: **child**, **spouse**, **other**, **self**, **injured** with a system of **http://hl7.org/fhir/ValueSet/subscriber-relationship**<br><br>
               A single iteration is supported.
-            required: true
+            required_in: create,update
           - name: period
             description: >-
               The period during which the Coverage is in force.<br><br>
@@ -86,7 +86,7 @@ sections:
                ```
                <br>
 
-            required: true
+            required_in: create,update
           - name: class
             type: json
             description: >-

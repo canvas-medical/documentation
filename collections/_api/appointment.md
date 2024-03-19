@@ -14,17 +14,16 @@ sections:
         attributes:
           - name: id
             type: string
-            required: true
+            required_in: update
+            exclude_in: create
             description: >-
               The identifier of the appointment
           - name: contained
             type: array[json]
             description: >-
               Used to store links for telehealth appointments. Requires a reference to "#appointment-meeting-endpoint" in the SupportingInformation attribute.
-            create_description:
+            create_and_update_description:
              <b>Custom Meeting Links for Virtual Appointments:</b> You can specify a telehealth meeting link using a SupportingInformation `reference` of "#appointment-meeting-endpoint" with a `type` of "Endpoint".  You would need to specify the `address` url of the meeting link in a contained object along with the `resourceType` = `Endpoint` and the `id` = `appointment-meeting-endpoint`. All other fields are automatically populated by Canvas and are not required.
-            update_description:
-              <b>Custom Meeting Links for Virtual Appointments:</b> You can specify a telehealth meeting link using a SupportingInformation `reference` of "#appointment-meeting-endpoint" with a `type` of "Endpoint".  You would need to specify the `address` url of the meeting link in a contained object along with the `resourceType` = `Endpoint` and the `id` = `appointment-meeting-endpoint`. All other fields are automatically populated by Canvas and are not required.
             attributes:
               - name: resourceType
                 type: string
@@ -70,7 +69,7 @@ sections:
               type: json
           - name: status
             type: string
-            required: true
+            required_in: create,update
             description: >-
               The status of the appointment. <br><br> **Canvas to FHIR Mapping**<br>unconfirmed > proposed<br>attempted > pending<br>confirmed > booked<br>arrived > arrived<br>roomed > check-in<br>exited > fulfilled<br>no-showed > noshow<br>cancelled > cancelled<br>deleted > entered-in-error
             create_description:
@@ -81,10 +80,8 @@ sections:
             type: json
             description: >-
               The style of appointment or patient that has been booked in the slot (not service type). Canvas supports configurable [apppointment and note types](/documentation/appointment-and-note-types/).
-            create_description: >-
+            create_and_update_description: >-
               Canvas supports configurable [appointment and note types](/documentation/appointment-and-note-types/). There are a few things to note with this field: <br><br>**1.**If the `appointmentType` attribute is omitted from the body completely, the note type that has `Is default appointment type` will be used (usually Office Visit if unchanged)<br><br>**2.**The `appointmentType` field must contain one coding, and it must be a SNOMED or INTERNAL coding.<br><br>**3.**If a code that does not exist is passed, you will see a 422 error status with error message `Appointment Create Error: Appointment Type does not exist with system: {system} and code: {code}` <br><br>**4.** If a code is passed that is not marked as `Is Scheduleable`, you will get a 422 error status with error message `Appointment Create Error: Appointment type must be scheduleable`.
-            update_description: >-
-              Canvas supports configurable [appointment and note types](/documentation/appointment-and-note-types/). There are a few things to note with this field: <br><br>**1.**If `appointmentType` attribute is omitted from the body completely, the note type that has `Is default appointment type` will be used (usually Office Visit if unchanged)<br><br>**2.**The `appointmentType` field must contain one coding, and it must be a SNOMED or INTERNAL coding.<br><br>**3.**If a code that does not exist is passed, you will see a 422 error status with error message `Appointment Create Error: Appointment Type does not exist with system: {system} and code: {code}` <br><br>**4.** If a code is passed that is not marked as `Is Scheduleable`, you will get a 422 error status with error message `Appointment Create Error: Appointment type must be scheduleable`.
             attributes:
               - name: coding
                 type: array[json]
@@ -124,7 +121,7 @@ sections:
               Shown on a subject line in a meeting request, or appointment list.<br><br>
               **Note:** This field is being deprecated in favor of `reasonCode`. The text in `reasonCode` and this description attribute will always match.
           - name: supportingInformation
-            required: true
+            required_in: create,update
             type: array[json]
             description: >-
               Additional information to support the appointment. **References** are used to capture information about **rescheduled appointments** and the **location** of the appointment.<br><br>**Rescheduled Appointments**<br>If you see `Previously Rescheduled Appointment` in `supportingInformation`, it means that the appointment you are currently reading was created by rescheduling the appointment in that Reference. If you see `Rescheduled Replacement Appointment` in the `supportingInformation`, it means that the appointment you are currently reading is now outdated by a new appointment.
@@ -137,18 +134,18 @@ sections:
                 type: string
           - name: start
             type: datetime
-            required: true
+            required_in: create,update
             description: When appointment is to take place.
             create_description:
               The `start` attribute determines the start timestamp of the appointment. It is written in [instant format for FHIR](https://www.hl7.org/fhir/datatypes.html#instant). Seconds and milliseconds can be omitted, but YYYY-MM-DDTHH:MM are required.
           - name: end
             type: datetime
-            required: true
+            required_in: create,update
             description: When appointment is to conclude.
             create_description:
               The end attribute is used with the start timestamp to determine the duration in minutes of the appointment. It is written in [instant format for FHIR](https://www.hl7.org/fhir/datatypes.html#instant). Seconds and milliseconds can be omitted, but YYYY-MM-DDTHH:MM are required. <br><br> ⚠ Currently, Canvas does not provide any validation on this end date. If you have an end_date before the start_date, it will result in a negative duration being displayed on the UI.
           - name: participant
-            required: true
+            required_in: create,update
             description: >-
                Participants involved in appointment. Must include at least one entry for a practitioner. An optional 2nd entry may be used for the patient.<br><br>  The `actor.reference`:  `Practitioner/<practitioner_id>` maps to the rendering provider in Canvas.
             create_description:
@@ -158,7 +155,7 @@ sections:
               - name: actor
                 type: json
               - name: status
-                required: true
+                required_in: create,update
                 type: string
         search_parameters:
           - name: _id

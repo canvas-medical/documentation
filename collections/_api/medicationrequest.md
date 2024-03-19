@@ -9,70 +9,185 @@ sections:
         description: >-
           An order or request for both supply of the medication and the instructions for administration of the medication to a patient. The resource is called "MedicationRequest" rather than "MedicationPrescription" or "MedicationOrder" to generalize the use across inpatient and outpatient settings, including care plans, etc., and to harmonize with workflow patterns.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html)<br><br>
-          FHIR MedicationRequests maps to the [Prescribe](https://canvas-medical.zendesk.com/hc/en-us/articles/360063523313-Prescribing-a-Medication) and [Refill](https://canvas-medical.zendesk.com/hc/en-us/articles/360057482354-Refill-Medications) commands in Canvas. Any adjustments made with the [Adjust Prescription](https://canvas-medical.zendesk.com/hc/en-us/articles/360061706154-Adjust-an-Existing-Medication) command will appear in MedicationRequest API responses.
+          FHIR MedicationRequest maps to the [Prescribe](https://canvas-medical.zendesk.com/hc/en-us/articles/360063523313-Prescribing-a-Medication), [Refill](https://canvas-medical.zendesk.com/hc/en-us/articles/360057482354-Refill-Medications), [Adjust Prescription](https://canvas-medical.zendesk.com/hc/en-us/articles/360061706154-Adjust-an-Existing-Medication), [Deny Refill](https://canvas-medical.zendesk.com/hc/en-us/articles/360059826994-Denying-an-electronic-refill-request) or [Approve Refill](https://canvas-medical.zendesk.com/hc/en-us/articles/360063524493-Approve-an-electronic-refill-request) commands in Canvas.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
-            description: The identifier of the MedicationRequest
+            description: The identifier of the MedicationRequest.
             type: string
           - name: status
-            description: A code specifying the current state of the order. Generally, this will be active or completed state
-            type: string
+            description: A code specifying the current state of the order.
+            type: enum [ active | entered-in-error | cancelled ]
           - name: intent
-            description: Whether the request is a proposal, plan, or an original order
-            type: string
+            description: Whether the request is a proposal, plan, or an original order. <br><br>A Medication Request that corresponds to a refill in the patient's chart will have an intent of `filler-order` while all other Medication Requests will be `order`.
+            type: enum [ order | filler-order ]
           - name: reportedBoolean
-            description: Indicates if this record was captured as a secondary 'reported' record rather than as an original primary source-of-truth record
+            description: Indicates if this record was captured as a secondary 'reported' record rather than as an original primary source-of-truth record.<br><br> Currently this will always be False from Canvas.
             type: boolean
           - name: medicationCodeableConcept
             description: Identifies the medication being requested. This is simply an attribute carrying a code that identifies the medication from a known list of medications.
             type: json
+            attributes:
+                - name: coding
+                  description: Identifies where the definition of the code comes from.
+                  type: array[json]
+                  attributes: 
+                    - name: system
+                      description: The system url of the coding.
+                      enum_options: 
+                        - value: http://www.nlm.nih.gov/research/umls/rxnorm
+                        - value: http://www.fdbhealth.com/
+                      type: string
+                    - name: code
+                      description: The code of the medication.
+                      type: string
+                    - name: display
+                      description: The display name of the coding.
+                      type: string
           - name: subject
-            description: Who or group medication request is for
+            description: Who or group medication request is for.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: encounter
-            description: Encounter created as part of encounter/admission/stay
+            description: Encounter created as part of encounter/admission/stay. 
             type: json
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the encounter in the format of `"Encounter/f7663d7b-13bd-4236-843e-086306aea125"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Encounter").
           - name: authoredOn
-            description: When request was initially authored
+            description: When request was initially authored. In Canvas this corresponds to the time the command was created. 
             type: datetime
           - name: requester
-            description: Who/What requested the Request
+            description: Who/What requested the Request.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the subject in the format of `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Practitioner").
           - name: performer [deprecated]
             description: >-
               Intended performer of administration<br><br>
               This attribute is deprecated and will be removed in a future release. It currently (and incorrectly) contains information about the dispenser of the medication. Canvas recommends disregarding this attribute. Information about the dispenser can be obtained from the `performer` attribute under `dispenseRequest`.
             type: json
           - name: reasonCode
-            description: Reason or indication for ordering or not ordering the medication
+            description: Reason or indication for ordering or not ordering the medication.<br><br> In Canvas this represents the indications on a Prescribe/Refill Command.
             type: array[json]
+            attributes:
+                - name: coding
+                  description: Identifies where the definition of the code comes from.
+                  type: array[json]
+                  attributes: 
+                    - name: system
+                      description: The system url of the coding.
+                      type: string
+                      enum_options:
+                        - value: http://hl7.org/fhir/sid/icd-10-cm
+                    - name: code
+                      description: The code of the indication.
+                      type: string
+                    - name: display
+                      description: The display name of the coding.
+                      type: string
           - name: note
-            description: Information about the prescription
+            description: Information about the prescription.
             type: array[json]
+            attributes:
+                - name: text
+                  type: string
+                  description: The annotation - text content.
           - name: dosageInstruction
-            description: How the medication should be taken
+            description: How the medication should be taken.
             type: array[json]
+            attributes:
+                - name: text
+                  type: string
+                  description: Free text dosage instructions. In Canvas this text comes from the `SIG` or  `DIRECTIONS` field on the associated command.
+                - name: doseAndRate
+                  type: array[json]
+                  description: Amount of medication administered.
+                  attributes:
+                    - name: doseQuantity
+                      type: json
+                      description: Amount of medication per dose.
+                      attributes:
+                        - name: unit
+                          description: Unit representation. 
+                          type: string
           - name: dispenseRequest
-            description: Medication supply authorization
+            description: Medication supply authorization.
             type: json
+            attributes: 
+                - name: numberOfRepeatsAllowed
+                  type: integer
+                  description: Number of refills authorized.
+                - name: quantity
+                  type: json
+                  description: Amount of medication to supply per dispense.
+                  attributes: 
+                    - name: value
+                      type: decimal
+                      description: Numerical value.
+                - name: expectedSupplyDuration
+                  type: json
+                  description: Number of days supply per dispense.
+                  attributes:
+                    - name: value
+                      type: integer
+                      description: Numerical value.
+                    - name: unit
+                      description: Unit representation. 
+                      type: string
+                      enum_options:
+                        - value: days
+                - name: performer
+                  type: json
+                  description: Intended dispenser. In Canvas this represents the pharmacy the medication request was sent to. 
+                  attributes:
+                    - name: display
+                      type: string
+                      description: "Text alternative for the resource. <br><br>This display name concatenates the following information about the pharmacy: Name, NCPDP ID, Address, Phone, and Fax"
           - name: substitution
-            description: Any restrictions on medication substitution
+            description: Any restrictions on medication substitution.
             type: json
+            attributes:
+                - name: allowedBoolean
+                  type: boolean
+                  description: Whether substitution is allowed or not.
         search_parameters:
           - name: _id
-            description: The identifier of the MedicationRequest
+            description: The identifier of the MedicationRequest.
             type: string
           - name: intent
-            description: >-
-              Returns prescriptions with different intents<br><br>Supported codes for search interactions: **order**, **filler-order**
+            description: Search Medication Requests by specific intents.
+            search_options:
+                - value: order
+                - value: filler-order
             type: string
           - name: patient
-            description: Returns prescriptions for a specific patient	
+            description: The patient reference associated to the Medication Request in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
           - name: status
-            description: >-
-              Status of the prescription<br><br>Supported codes for search interactions: **active**, **cancelled**, **entered-in-error**, **stopped** 
+            description: Search Medication Requests by a specific status.
             type: string
+            search_options:
+                - value: active
+                - value: entered-in-error
+                - value: cancelled
         endpoints: [read, search]
         read:
           description: Read a MedicationRequest resource.
@@ -228,7 +343,7 @@ sections:
 </div>
 
 <div id="medicationrequest-search-request">
-{% include search-request.html resource_type="MedicationRequest" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="MedicationRequest" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="medicationrequest-search-response">

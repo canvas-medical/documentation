@@ -113,23 +113,6 @@
             {% endif %}
         </div>
     </div>
-    <div class="apidoc__gridrow">
-        <div class="apidoc__gridcol">
-            {% if block.attributes %}
-            <h3>Attributes</h3>
-            {% include blocks/block-apidoc-attributes.html context='overview' %}
-            {% endif %}
-        </div>
-        <div class="apidoc__gridcol">
-            {% if block.example_payload %}
-            {% assign randomId = "now" | date: "%N" | modulo: diff | plus: min %}
-            {% assign div = "payload-" | prepend: "#" | append: randomId %}
-            {% assign selector = block.example_payload | prepend: "#" %}
-            <div id="{{ div | remove_first: '#' }}"></div>
-            {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
-            {% endif %}
-        </div>
-    </div>
     {% if block.endpoints %}
     {% assign min = 10001 %}
     {% assign max = 99999 %}
@@ -170,6 +153,14 @@
             {% endif %}
         </div>
     </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            {% if block.attributes %}
+            <h3>Response Payload Attributes</h3>
+            {% include blocks/block-apidoc-attributes.html context='read' %}
+            {% endif %}
+        </div>
+    </div>
     {% if block.read.responses %}
     <div class="apidoc__gridrow">
         <div class="apidoc__gridcol">
@@ -199,6 +190,9 @@
         <div class="apidoc__gridcol">
             {% if block.search_parameters %}
                 <h3>Query Parameters</h3>
+                <div class="apidoc__object">
+                    <b>{{ block.search_requirements_description }}</b>
+                </div>
                 {% for parameter in block.search_parameters %}
                 <div class="apidoc__object">
                     <div class="apidoc__object__name">
@@ -211,6 +205,16 @@
                     <div class="apidoc__object__description">
                         {{ parameter.description | markdownify }}
                     </div>
+                    <div class="apidoc__object__enum_options">
+                        {% if parameter.search_options %}
+                            <b>Search Values Supported:</b>
+                            <ul>
+                                {% for option in parameter.search_options %}
+                                    <li>{{ option.value }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endfor %}
             {% endif %}
@@ -222,6 +226,20 @@
             {% assign selector = block.search.example_request | prepend: "#" %}
             <div id="{{ div | remove_first: '#' }}"></div>
             {% include blocks/block-apidoc-roguetoolbar-js.html div=div selector=selector %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            <h3>Response Payload Attributes</h3>
+                {% include /blocks/block-apidoc-attributes-datasource.html datasource=site.data.api-attributes.search_attributes %}
+        </div>
+    </div>
+    <div class="apidoc__gridrow">
+        <div class="apidoc__gridcol">
+            {% if block.attributes %}
+            <h3>Attributes</h3>
+            {% include blocks/block-apidoc-attributes.html context='search' %}
             {% endif %}
         </div>
     </div>

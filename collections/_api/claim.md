@@ -34,39 +34,39 @@ sections:
             description: >-
               The status of the resource instance.<br><br>Supported codes for create interactions are: **active**
             type: string
-            required: true
+            required_in: create,update
           - name: type
             description: >-
               The category of claim.<br><br>Supported codes for create interactions are: **professional** with a `system` of **http://terminology.hl7.org/CodeSystem/claim-type**
             type: json
-            required: true
+            required_in: create,update
           - name: use
             description: >-
               A code to indicate the nature of the request<br><br>Supported codes for create interactions are: **claim**
             type: string
-            required: true
+            required_in: create,update
           - name: patient
             description: >-
               The Canvas patient resource for the claim
             type: json
-            required: true
+            required_in: create,update
           - name: created
             description: |-
               The date this resource was created.<br>
               Canvas will use this as the date of service for the claims in this message.<br><br>
               Expected format is : **YYYY-MM-DD**
             type: date
-            required: true
+            required_in: create,update
           - name: provider
             description: >-
               The Canvas provider resource for the staff responsible for the claim.
             type: json
-            required: true
+            required_in: create,update
           - name: priority
             description: >-
               The provider-required urgency of processing the request.<br><br>Supported codes for create interactions are: **normal** with a system of **http://terminology.hl7.org/CodeSystem/processpriority**
             type: json
-            required: true
+            required_in: create,update
           - name: supportingInfo
             description: >-
               Additional information about the Claim<br><br>Canvas supports a single iteration for a reason for visit - the text in the `valueString` will be used.
@@ -75,7 +75,7 @@ sections:
             description: >-
               Information about diagnoses relevant to the claim items.<br><br>These diagnoses will create Assessments in Canvas.<br><br>The `sequence` should be unique within the Claim message, usually starting at 1 and incrementing as needed.<br><br>Must be a `diagnosisCodeableConcept`<br><br>Codes are supported from the following systems: **http://hl7.org/fhir/sid/icd-10-cm**
             type: array[json]
-            required: true
+            required_in: create,update
           - name: insurance
             description: >-
               FHIR resource for the coverage(s) to use when adjudicating the claim<br><br>
@@ -83,7 +83,7 @@ sections:
               `focal` indicates whether this insurance should be used to adjudicate the claim in this message. Canvas will ignore any elements that are False.<br><br>
               `coverage` is a Canvas coverage resource identifying the coverage for this iteration of insurance<br><br>Additional information on a Coverage can be obtained from the Coverage search endpoint
             type: array[json]
-            required: true
+            required_in: create,update
           - name: item
             description: >-
               List of service charges to be used in the claim.<br><br>
@@ -92,7 +92,7 @@ sections:
               `productOrService` is an object that specifies the coding of the service. Canvas uses the first coding where system is **http://www.ama-assn.org/go/cpt**.<br><br>
               `modifier` specifies the list of charge modifier codings. Canvas accepts the first element where the coding's system is **https://www.cms.gov/Medicare/Coding/HCPCSReleaseCodeSets**. Canvas uses the 2 character modifiers from this CodeSet.<br><br>
             type: array[json]
-            required: true
+            required_in: create,update
         search_parameters:
           - name: _id
             type: string

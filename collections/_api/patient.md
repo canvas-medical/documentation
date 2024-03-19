@@ -150,16 +150,14 @@ sections:
             description: A boolean to specify if the patient is active in the healthcare system. If this value is not set, Canvas will default this to true.
           - name: name
             type: array[json]
-            required: true
+            required_in: create,update
             description: >-
                 The identifier of the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` attribute will be displayed on the Canvas UI but it will not be editable through the UI. <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.<br><br> In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will be ignored.
           - name: telecom
             type: array[json]
             required: false
             description: Contact details for the individual.
-            create_description: >-
-                Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
-            update_description:
+            create_and_update_description: >-
                 Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
             attributes:
               - name: id
@@ -179,7 +177,7 @@ sections:
                 description: Supported values are **phone**, **fax**, **email**, **pager**, **url**, **sms**, and **other**. If omitted, the default value is **other**.
               - name: value
                 type: string
-                required: true
+                required_in: create,update
                 description: Free text string of the value for this contact point
               - name: use
                 type: string
@@ -189,23 +187,19 @@ sections:
                 description: An integer representing the preferred order of contact points per system. The default value is 1.
           - name: gender
             type: string
-            required: true
+            required_in: create,update
             description: >-
               A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **male**, **female**, **other** and **unknown**.<br><br>
               [https://hl7.org/fhir/R4/valueset-administrative-gender.html](https://hl7.org/fhir/R4/valueset-administrative-gender.html)
-            create_description: >-
-                The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently Canvas accepts the following FHIR values: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
-            update_description: >-
+            create_and_update_description: >-
                 The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently Canvas accepts the following FHIR values: male, female, other, and unknown. <br><br> If <code>unknown</code> is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If <code>other</code> is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
           - name: birthDate
             type: date
-            required: true
+            required_in: create,update
             description: >-
               The date of birth for the individual, formatted as YYYY-MM-DD.
-            create_description: >-
-                 The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
-            update_description: >-
-             The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
+            create_and_update_description: >-
+              The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
           - name: deceasedBoolean
             type: boolean
             required: false
@@ -247,10 +241,8 @@ sections:
           - name: photo
             type: array[json]
             description: Image of the patient. This image shows on the patient avatar in the Canvas UI.
-            create_description: >-
+            create_and_update_description: >-
               When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
-            update_description: >-
-              When updating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
           - name: contact
             type: array[json]
             required: false
@@ -261,7 +253,7 @@ sections:
                 description: A Canvas identifier for the contact.
               - name: name
                 type: json
-                required: true
+                required_in: create,update
                 description: This is an object where you can specify the <code>text</code> that stores the contact's name.
                 attributes:
                   - name: text

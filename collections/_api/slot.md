@@ -33,7 +33,7 @@ sections:
           - name: schedule
             type: string
             description: The Schedule Resource that we are seeking a slot within. The [Schedule](/api/schedule) resource can be used to retrieve a list of Schedule ids.
-            required: true
+            required_in: create,update
           - name: start
             type: date
             description: >-

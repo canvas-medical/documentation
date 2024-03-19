@@ -130,6 +130,14 @@
       }
     }
 
+    &__enum_options {
+      margin: 0.5rem;
+      flex-basis: 100%;
+      > p:first-of-type {
+        margin-top: 0;
+      }
+    }
+
     &__children {
       flex-basis: 100%;
       margin: 0.5rem;
