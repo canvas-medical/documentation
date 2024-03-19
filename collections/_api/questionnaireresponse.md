@@ -28,7 +28,7 @@ sections:
             attributes:
                 - name: url
                   type: string
-                  required: true
+                  required_in: create,update
                   description: >-
                     Reference that defines the content of this object. Currently we only support two different urls <br><br>
                         1. For permalinks which have a url of `http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink` <br><br>
@@ -43,25 +43,25 @@ sections:
                   required: false
                   description: The valueId field is used for the Note extension and will be the note's unique identifier
           - name: questionnaire
-            required: true
+            required_in: create,update
             description: >-
               Form being answered<br><br>
               The `questionnaire` field contains a value that is formatted like a Questionnaire reference, e.g. `Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
             type: string
           - name: status
-            required: true
+            required_in: create,update
             description: >-
               The position of the questionnaire response within its overall lifecycle<br><br>
               Supported codes for create interactions are: **completed**
             type: string
           - name: subject
-            required: true
+            required_in: create,update
             description: The subject of the questions
             type: json
             attributes:
                 - name: reference
                   type: string
-                  required: true
+                  required_in: create,update
                   description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`
                 - name: type
                   type: string
@@ -75,7 +75,7 @@ sections:
             attributes:
                 - name: reference
                   type: string
-                  required: true
+                  required_in: create,update
                   description: The reference string of the encounter in the format of `"Encounter/cdbd6534-ba0d-4917-a5a6-6a2d46dcf0f7"`
                 - name: type
                   type: string
@@ -94,7 +94,7 @@ sections:
             attributes:
                 - name: reference
                   type: string
-                  required: true
+                  required_in: create,update
                   description: The reference string of the author in the format of `"Practitioner/cdbd6534-ba0d-4917-a5a6-6a2d46dcf0f7"`
                 - name: type
                   type: string
@@ -123,14 +123,14 @@ sections:
             attributes:
                 - name: linkId
                   type: string
-                  required: true
+                  required_in: create,update
                   description: A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
                 - name: text
                   type: string
                   description: Human readable text of the question. Not stored but can be helpful to include for troubleshooting.
                 - name: answer
                   type: array[json]
-                  required: true
+                  required_in: create,update
                   description: A list of one or more answers to this question. <br><br>
                         • If this is for a question where the answer is a free-text field (i.e. Questionnaire item type = "text"), then the list will contain a single object containing a valueString field with the response text. <br>
                         • If this is for a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more objects containing a `code`, `display`, and `system`

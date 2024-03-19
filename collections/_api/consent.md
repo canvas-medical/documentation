@@ -16,35 +16,35 @@ sections:
               The identifier of the Consent
           - name: status
             type: string
-            required: true
+            required_in: create,update
             description: >-
               Indicates the current state of this consent<br><br>
               Supported codes for create interactions are: **active**, **inactive**, and **rejected**
           - name: scope
             type: json
-            required: true
+            required_in: create,update
             description: >-
               Type of consent being presented: e.g. ADR, Privacy, Treatment, Research.<br><br>
               For create interactions, this field is required by FHIR but ignored by Canvas, so {} is an accepted value.
           - name: category
             type: array[json]
-            required: true
+            required_in: create,update
             description: >-
               A classification of the type of consents found in the statement.
           - name: patient
             type: json
-            required: true
+            required_in: create,update
             description: Who the consent applies to
           - name: dateTime
             type: datetime
-            required: true
+            required_in: create,update
             description: >-
               When this Consent was issued / created / indexed<br><br>
               For create interactions, this value will be ignored.<br><br>
               For read/search interactions, this value will be the Consent's create datetime.
           - name: sourceAttachment
             type: json
-            required: true
+            required_in: create,update
             description: >-
               The source on which this consent statement is based.<br><br>
               For create interactions, `sourceAttachment.title`, `sourceAttachment.content_type`, and `sourceAttachment.data` are required.<br><br>
