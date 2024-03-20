@@ -60,7 +60,7 @@ sections:
                           - value: http://schemas.canvasmedical.com/fhir/extensions/active-health-benefit-plan-coverage-description
                       - name: valueString
                         type: string
-                        description: The valueString field is used for the plan name extension.
+                        description: The plan name of the insurance.
         search_parameters:
           - name: _id
             type: string
