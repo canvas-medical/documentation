@@ -44,8 +44,15 @@ sections:
               The amount of information surfaced here depends on the what the payor supports. Our clearinghouse (Claim.md) performs these eligibility checks, but not all coverages will support real-time eligibility checks. For more information on coverages within Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4408206355603-Patient-Coverages-2-0).
             attributes:
                 - name: coverage 
-                  description: Coverage reference.
+                  description: Insurance information.
                   type: json
+                  attributes:
+                      - name: reference
+                        type: string
+                        description: The reference string of the coverage in the format of `"Coverage/4a86f580-e192-489a-a9f0-7c915fc67111"`.
+                      - name: type
+                        type: string
+                        description: Type the reference refers to (e.g. "Coverage").
                 - name: item
                   description: Array of items containing benefits and authorization details.
                   type: array[json]
