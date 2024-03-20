@@ -40,8 +40,27 @@ sections:
           - name: insurance
             type: array[json]
             description: >-
-              Includes the **Coverage** reference and an array of items containing benefits and authorization details<br><br>
+              Includes the **Coverage** reference, extension for plan name and an array of items containing benefits and authorization details<br><br>
               The amount of information surfaced here depends on the what the payor supports. Our clearinghouse (Claim.md) performs these eligibility checks, but not all coverages will support real-time eligibility checks. For more information on coverages within Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4408206355603-Patient-Coverages-2-0).
+            attributes:
+                - name: coverage 
+                  description: Coverage reference.
+                  type: json
+                - name: item
+                  description: Array of items containing benefits and authorization details.
+                  type: array[json]
+                - name: extension
+                  type: array[json]
+                  read_and_search_description: Canvas supports a plan name extension on this resource for read and search interactions.
+                  attributes:
+                      - name: url
+                        type: string
+                        description: Reference that defines the content of this object.
+                        enum_options:
+                          - value: http://schemas.canvasmedical.com/fhir/extensions/active-health-benefit-plan-coverage-description
+                      - name: valueString
+                        type: string
+                        description: The valueString field is used for the plan name extension.
         search_parameters:
           - name: _id
             type: string
@@ -95,6 +114,12 @@ sections:
   },
   "insurance": [
     {
+      "extension": [
+        {
+          "url": "http://schemas.canvasmedical.com/fhir/extensions/active-health-benefit-plan-coverage-description",
+          "valueString": "Humana Gold Plus"
+        }
+      ],
       "coverage": {
           "reference": "Coverage/4a86f580-e192-489a-a9f0-7c915fc67111",
           "type": "Coverage"
@@ -525,6 +550,12 @@ sections:
         },
         "insurance": [
           {
+            "extension": [
+              {
+                "url": "http://schemas.canvasmedical.com/fhir/extensions/active-health-benefit-plan-coverage-description",
+                "valueString": "Humana Gold Plus"
+              }
+            ],
             "coverage": {
                 "reference": "Coverage/4a86f580-e192-489a-a9f0-7c915fc67111",
                 "type": "Coverage"
