@@ -7,7 +7,7 @@ sections:
         name: Practitioner
         article: "a"
         description: >-
-         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member in Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360058232193-Add-a-new-staff-member).<br><br>
+         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member manually in the Canvas UI, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360058232193-Add-a-new-staff-member).<br><br>
 
          **Supported Extensions** <br><br>
           
@@ -39,32 +39,37 @@ sections:
           
         attributes:
           - name: id
+            type: string
+            required_in: update
             description: >-
               Unique Canvas identifier for this resource.
-            type: string
           - name: extension
             type: array[json]
             description: >-
               Reference the information at the top of this page to see the possible extensions contained in this resource.
           - name: identifier
             type: array[json]
-            description: 
-              An identifier for the practitioner as this agent.
-              <br><br>
-              This is the NPI number of the Practitioner in Canvas.
-              <br><br>
-              It accepts only one array item. That single item must have `system` set to "http://hl7.org/fhir/sid/us-npi" and the value must be a 10 digit number.
+            description: A secondary identifier for the Practitioner. This is the NPI number of the Practitioner in Canvas.
+            attributes:
+              - name: system
+                type: string
+                description: The `system` attribute specifies the namespace in which the identifier value is unique. It is a predefined URL that represents the coding system or authority responsible for issuing the identifier. This URL is determined by our organization and is used to ensure that the identifier is recognized and interpreted correctly within our system.
+                enum_options:
+                  - value: http://hl7.org/fhir/sid/us-npi
+              - name: value
+                type: string
+                description: Practitioner's NPI number. Its value must be a 10 digit number.
           - name: active
             type: boolean
             description: A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
           - name: name
             type: array[json]
-            required: true
+            required_in: create, update
             description: The name associated with the practitioner.
             attributes:
               - name: use
-                type: string
-                description: The `use` attribute must be set to **usual** for Practitioner.
+                type: enum [ ususal ]
+                description: The 'use' attribute specifies the context in which the name is used. For this API, the only permitted value is 'usual,' which indicates that the name provided is the name typically used to identify the practitioner in daily practice.
                 required: true
               - name: family
                 type: string
@@ -76,7 +81,7 @@ sections:
                 description: Practitioner's first name. Only one first name is allowed.
           - name: telecom
             type: array[json]
-            required: true
+            required_in: create, update
             description: Practitioner contact point(s) (email / phone / fax).
             create_description: >-
               Practitioner contact point(s) (email / phone / fax).
@@ -96,64 +101,56 @@ sections:
               - name: id
                 type: string
                 description: The identifier (ID) of the telecom (contact point) record in Canvas.
-                create_description:
-                  The identifier (ID) of the telecom (contact point) record in Canvas. <br><br>
-                  This "id" property is only needed during updates. For more info on that, check the update part of these docs.
+                exclude_in: create
                 update_description:
                   The identifier (ID) of the telecom (contact point) record in Canvas. <br><br>
                   If you want to update a specific telecom record in Canvas, use this property to target that record. <br><br>
                   If you omit "id" during update, a new telecom record will be created.
               - name: system
-                type: string
+                type: enum [ phone | fax | email | pager | other ]
                 required: true
-                description: Supported values are **phone**, **fax**, **email**, **pager**, and **other**.
+                description: Telecommunications form for contact point - what communications system is required to make use of the contact.
               - name: value
                 type: string
                 required: true
-                description: Free text string of the value for this contact point.
-                create_description: 
-                  Free text string of the value for this contact point.<br><br>
-                  Values for phone numbers (where "system" is set to "phone") must be only digits, with no sign characters or spaces.
-                update_description:
-                  Free text string of the value for this contact point.<br><br>
+                description: The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).
+                create_and_update_description:
+                  The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).
                   Values for phone numbers (where "system" is set to "phone") must be only digits, with no sign characters or spaces.
               - name: use
-                type: string
+                type: enum [ home | work | temp | old | mobile ]
                 required: true
-                description: Supported values are  **home**, **work**, **temp**, **old** and **mobile**.
+                description: Identifies the purpose for the contact point.
               - name: rank
                 type: integer
                 required: true
-                description: An integer representing the preferred order of contact points per system.
+                description: Specifies a preferred order in which to use a set of contacts. ContactPoints with lower rank values are more preferred than those with higher rank values.
           - name: address
             type: array[json]
-            required: true
             description: Address(es) of the practitioner entered in Canvas. No default values will be set.
             attributes:
               - name: id
                 type: string
                 description: The identifier (ID) of the address record in Canvas.
-                create_description:
-                  The identifier (ID) of the address record in Canvas. <br><br>
-                  This "id" property is only needed during updates. For more info on that, check the update part of these docs.
+                exclude_in: create
                 update_description:
                   The identifier (ID) of the address record in Canvas. <br><br>
                   If you want to update a specific address record in Canvas, use this property to target that record. <br><br>
                   If you omit "id" during update, a new address record will be created.
               - name: use
-                type: string
+                type: enum [ home | work | temp | old | billing ]
                 required: true
-                description: Supported values are **home**, **work**, **temp**, **old** and **billing**.
+                description: Defines the purpose of this address.
               - name: type
-                type: string
+                type: enum [ both | physical | postal ] 
                 required: true
-                description: Supported values are **both**, **physical** and **postal**.
+                description: Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.
               - name: line
                 type: array[string]
-                description: List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
+                description: This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.<br><br> The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
               - name: city
                 type: string
-                description: String representing the city of the address.
+                description: The name of the city, town, suburb, village or other community or delivery center.
               - name: state
                 type: string
                 description: Two-letter state abbreviation of the address.
@@ -165,8 +162,7 @@ sections:
                 description: Specifies the country in which the practitioner's address is located. This field typically contains the name of the country, following the ISO 3166 standard.
           - name: birthDate
             type: date
-            description: >-
-              Practitioner date of birth for the individual, formatted as YYYY-MM-DD.
+            description: The date on which the practitioner was born, formatted as YYYY-MM-DD.
           - name: photo
             type: array[json]
             description: Practitioner photo(s).
@@ -174,42 +170,66 @@ sections:
               - name: url
                 type: string
                 required: true
-                description: URL address of the Practitioner's photo.
+                description: Uri where the data can be found.
               - name: title
                 type: string
-                description: Title of the Practitioner's photo.
+                description: Label to display in place of the data.
           - name: qualification
             type: array[json]
-            description: >-
-              Practitioner license(s)
-            create_description: >-
-              Practitioner license(s). <br><br>
-              See the payload examples for more details.
-            update_description: >-
-              Practitioner license(s). <br><br>
-              See the payload examples for more details.
+            description: Practitioner license(s)
             attributes:
               - name: identifier
                 type: array[json]
-                description: 
-                  Identifier array with a single object allowed for identifying the issuing authority url.<br><br>
-                  Object attributes are `system` and `value`. The url value for system can be found in the payload
+                required: true
+                description: This component identifies the issuing authority of the Practitioner's qualification (license).
+                attributes:
+                  - name: system
+                    type: string
+                    description: The `system` attribute specifies the namespace in which the identifier value is unique. It is a predefined URL that represents the coding system or authority responsible for issuing the identifier. This URL is determined by our organization and is used to ensure that the identifier is recognized and interpreted correctly within our system.
+                    enum_options:
+                      - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url
+                  - name: value
+                    type: string
+                    description: The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
               - name: code
                 type: object[json]
-                description: License code object. This attribute accepts no value. It just returns "License" text.
+                description: License coding object. This attribute has no effect.
+                attributes:
+                  - name: text
+                    type: string
+                    description: This field has no effect. Provide **"License"** as value.
+                    enum_options:
+                      - value: License
               - name: period
                 type: object[json]
-                description: 
-                  An object containing start and end periods of the license.<br><br>
-                  Object attributes are `start` and `end` dates.<br><br>
-                  Expected date format is YYYY-MM-DD (Example - "2020-01-01")
+                required: true
+                description: A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
+                attributes:
+                  - name: start
+                    type: string
+                    description: Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
+                  - name: end
+                    type: string
+                    description: Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
               - name: issuer
                 type: object[json]
-                description: 
-                  An object extension for issuing authority short name.<br><br>
-                  Extension array may hold only one object with `url` and `valueString` attributes.
-                  Look at the payload examples for more details.
-                    
+                description: A component of the Practitioner's license object that defines the license issuing authority short name.
+                attributes:
+                  - name: display
+                    type: string
+                    description: The display text of the license's short name.
+                  - name: extension
+                    type: array[json]
+                    attributes:
+                      - name: url
+                        type: string
+                        description: Reference that defines the content of this object.
+                        enum_options:
+                          - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name
+                      - name: valueString
+                        type: string
+                        description: The issuing authority short name.
+                  
         search_parameters:
           - name: _id
             type: string
