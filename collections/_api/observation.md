@@ -27,27 +27,78 @@ sections:
           - name: id
             type: string
             exclude_in: create
-            description: >-
-              The Canvas identifier of the observation
+            description: The Canvas identifier of the observation
           - name: status
             required_in: create
-            type: enum [ final ]
-            description: >-
-              The status of the result value<br><br>
-              Supported codes for create interactions:  **final**, **unknown**
-            required_in: create,update
+            type: enum [ final | unknown | entered-in-error ]
+            description: The status of the result value. 
+            create_description: The status of the result value. In Canvas only `final` committed vitals can be created.
+            required_in: create
           - name: category
             type: array[json]
-            description: >-
-              Classifies the general type of observation being made<br><br>
-              Supported for create interactions: **vital-signs**
-            required_in: create,update
+            exclude_in: create
+            description: Classifies the general type of observation being made.
+            attributes: 
+              - name: coding
+                description: Identifies where the definition of the code comes from.
+                type: array[json]
+                attributes: 
+                  - name: system
+                    description: The system url of the coding.
+                    type: string
+                    enum_options:
+                      - value: http://terminology.hl7.org/CodeSystem/observation-category
+                  - name: code
+                    description: The code of the observation.
+                    type: string
+                    enum_options: 
+                      - value: vital-signs
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
+                    enum_options: 
+                      - value: Vital Signs
           - name: code
             type: json
-            description: >-
-              Describes what was observed<br><br>
+            description: Describes what was observed.
+            create_description: >-
+              Describes what was observed.<br><br>
               For create interactions, only vital sign LOINC codes are supported.  
             required_in: create
+            attributes: 
+              - name: coding
+                description: Identifies where the definition of the code comes from.
+                type: array[json]
+                required_in: create
+                attributes: 
+                  - name: system
+                    description: >-
+                      The system url of the coding.
+                    type: string
+                    required_in: create
+                    enum_options:
+                      - value: http://loinc.org
+                  - name: code
+                    description: The code of the observation.
+                    type: string
+                    required_in: create
+                    enum_options: 
+                      - value: 85353-1 (panel)
+                      - value: 85354-9 (blood pressure)
+                      - value: 29463-7 (weight)
+                      - value: 8302-2 (height)
+                      - value: 8867-4 (pulse rate)
+                      - value: 8310-5 (body temperature)
+                      - value: 2708-6 (oxygen saturation arterial)
+                      - value: 59408-5 (oxygen saturation)
+                      - value: 9279-1 (respiration rate)
+                      - value: 56086-2 (waist circumference)
+                      - value: 80339-5 (note)
+                      - value: 8884-9 (pulse rhythm)
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
+                    required_in: create
           - name: subject
             type: json
             description: Canvas Patient reference the Observation is for.
@@ -62,56 +113,196 @@ sections:
                 description: Type the reference refers to (e.g. "Patient").
           - name: effectiveDateTime
             type: datetime
-            description: >-
-              Clinically relevant time/time-period for observation<br><br>
-              For an individual vital sign, if the effectiveDateTime differs from the panel time, it will 
-              be reflected in a read/search; however, you will not see the individual date in the UI, only the panel's datetime.<br><br>
+            description: Clinically relevant time/time-period for observation.
+            create_description: >-
+              Clinically relevant time/time-period for observation.<br><br>
+              For an individual vital sign, if the effectiveDateTime differs from the panel time, it will be reflected in a read/search; however, you will not see the individual date in the UI, only the panel's datetime.<br><br>
               If omitted from create, Canvas will save a default value of the current datetime.
           - name: issued
             type: datetime
-            description: >-
-              Date/Time this version was made available<br><br>
-              `issued` is not a field you can create via Observation Create -  it is the timestamp in Canvas when the vital record was ingested.
-          - name: value[x]
+            exclude_in: create
+            description: Date/Time this version was made available. It is the timestamp in Canvas when the vital record was ingested.
+          - name: valueQuantity
+            exclude_in: read, search
             type: json
-            description: >-
-              Actual result<br><br>
-              Supported value types for create interactions: `valueQuantity`<br><br>
-              **Additional notes for create:**
-               - If the observation is a vital sign panel, the `valueQuantity` will be ignored.<br>
-               - For the submitted `code`, only units from the table above can be sent in `valueQuantity.unit`. Sending a different unit will result in a 422 error. 
-               - If `unit` is omitted, the it will default to the unit in the table above.
-               - If `value` is omitted, it will default to an empty field. 
-               - If this field's input type cannot be converted to the given vital sign's expected type (e.g. a string "fifty" is given for weight), it will only display on the Canvas UI's patient chart on the left-hand column under vitals - it will not display in the Vitals command that is generated on the imported note. It will still be saved in the database and returned in a read/search.<br>
-               - Blood pressure vital sign observations support components for diastolic and systolic blood pressure. However, if only the components are included, and the `valueQuantity` isn't included (e.g. "100/80"), it will not display on the Canvas UI.
-               - When creating a vital sign for pulse rhythm, accepted values are: **Regular**, **Irregularly Irregular**, **Regulary Irregular**
+            description: Actual result.
+            create_description:
+              Actual result.<br><br>
 
+              This is used for vital observation that correspond with a numeric value. If this field is not provided or specifically the value attribute in the json is omitted, Canvas will interpret that as an empty value. A Read/Search of this observation will display the `dataAbsentReason` attribute. <br><br>
+
+              Currently supported numeric values are<br><br>
+                  -  height<br>
+                  -  weight<br>
+                  -  waist circumference<br>
+                  -  body temperature<br>
+                  -  pulse rate<br>
+                  -  oxygen saturation<br>
+                  -  respiration rate
+            attributes:
+              - name: value
+                type: number
+                description: Numerical value (with implicit precision).
+              - name: unit
+                type: string
+                create_description: Unit representation. If omitted, it will default to the values in the table defined above. For the submitted `code`, only units from the table above can be sent. Sending a different unit will result in a 422 error.
+          - name: valueString
+            type: string
+            exclude_in: read, search
+            create_description:
+              Actual result.<br><br>
+
+              This is used for vital observation that correspond with a string value. If this field is not provided or specifically the value attribute in the json is omitted, Canvas will interpret that as an empty value. A Read/Search of this observation will display the `dataAbsentReason` attribute. <br><br>
+
+              Currently supported string values are <br>
+              - **note** - this is a free text comment field in the Canvas Vital Command <br><br>
+              - **pulse rhythm** - This is an enum in the Canvas Vital command. Values supported are **Regular**, **Irregularly Irregular**, **Regulary Irregular**. If one of these values is not provided, a 422 error will occur. <br><br>
+              - **blood pressure** - This is a string reprentation of the systolic and diastolic combined in the format `"100/80"`. If this valueString is not given, it will not appear correctly in the Canvas Vital Command. 
+          - name: value[x]
+            type: string | json
+            exclude_in: create
+            read_and_search_description: Actual result.<br><br>Canvas currently will support `valueQuantity` for observations with numeric values and `valueString` for observations containing text values. 
+            attributes:
+              - name: value
+                type: number
+                description: Numerical value (with implicit precision).
+              - name: unit
+                type: string
+                description: Unit representation.
+              - name: system
+                type: string
+                description: System that defines coded unit form.
+                enum_options: 
+                  - value: http://unitsofmeasure.org
+              - name: code
+                type: string
+                description: Coded form of the unit
+                enum_options:
+                  - value: "[lb_av]"
+                  - value: "cm"
+                  - value: "[in_i]"
+                  - value: "[degF]"
+                  - value: "mm[Hg]"
+                  - value: "%"
+                  - value: "[in_i]"
+                  - value: "/min"
+                  - value: "kg/m2"
+                  - value: "L/min"
           - name: dataAbsentReason
             type: json
+            exclude_in: create
             description: Why the result is missing (if there is no `value[x]` section)
+            attributes: 
+              - name: coding
+                description: Identifies where the definition of the code comes from.
+                type: array[json]
+                attributes: 
+                  - name: system
+                    description: The system url of the coding.
+                    type: string
+                    enum_options:
+                      - value: http://terminology.hl7.org/CodeSystem/data-absent-reason
+                  - name: code
+                    description: The code of the observation.
+                    type: string
+                    enum_options: 
+                      - value: not-performed
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
+                    enum_options: 
+                      - value: Not Performed         
           - name: hasMember
             type: array[json]
-            description: >-
-              Related Observation reference(s) that belongs to the Observation group/panel<br><br>
-              Present when an Observation is something like a panel (e.g. a vital signs panel) and has child observations (e.g. pulse rhythm done as a part of the vitals signs panel)<br><br>
+            read_and_search_description: Related Observation reference(s) that belongs to the Observation group/panel. <br><br> In Canvas, all the vital signs taken in a Vitals Command will be listed in this `hasMember` attribute.
+            create_description: >-
+              Related Observation reference(s) that belongs to the Observation group/panel.<br><br>
+              Only need to supply this attribute in a Vital Sign Panel to specify specific child observations that are a part of the panel. In Canvas these will form the Vitals Command. This observation IDs can be found using the [Observation Search](/api/observation/#search). <br><br>
               If a new vital sign panel is created and links pre-existing vital signs via the `hasMember` attribute, those linked observations will update their `derivedFrom` attribute to be set to the newly created vital sign panel.
+            attributes:
+                - name: reference
+                  type: string
+                  required_in: create
+                  description: The reference string of the child observation in the format of `"Observation/920807d3-034b-4423-a65b-980068cb4bd1"`.
+                - name: type
+                  type: string
+                  description: Type the reference refers to (e.g. "Observation").              
           - name: derivedFrom
             type: array[json]
             description: >-
-              Related Observation resource that the Observation is made from<br><br>
-              **For create interactions:**
+              Related Observation resource that the Observation is made from.<br><br> In Canvas this observation would correspond to the "parent" vital sign panel.
+            create_description: >-
+              Related Observation resource that the Observation is made from.<br><br>
               This attribute should only be used to link a vital sign to an existing "parent" vital sign panel. It ingests a reference to the vital sign panel's observation. This observation ID can be found using the [Observation Search](/api/observation/#search).<br><br> 
+              If this field is omitted on a vital sign observation, a vital sign panel will automatically be created. <br><br>
               It is important to note that each vital sign panel can only contain a single vital sign of each type. Adding a duplicate of a vital sign will result in a 422 error: "Vital sign reading already exists for the given reading".
+            attributes:
+              - name: reference
+                type: string
+                required_in: create
+                description: The reference string of the child observation in the format of `"Observation/920807d3-034b-4423-a65b-980068cb4bd1"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Observation").   
           - name: component
             type: array[json]
-            description: >-
+            description: Component results. <br><br> Currently only used for blood pressure observations to display the systolic and diastolic components.
+            create_description: >-
               Component results<br><br>
-              **For create interactions:** This attribute is only used for blood pressure, as it has two components (systolic and diastolic). <br>
+              This attribute is only used for blood pressure, as it has two components (systolic and diastolic). <br>
               
                - These components are added to a vital sign observation by including their `code` and `valueQuantity`. 
-               - The components are what will be stored in the database; however, they will not display on the UI. 
-               - The `valueQuantity` for the blood pressure vital sign (e.g. "100/80") will be the one used to generate a display on the UI. 
+               - The components are what will be stored in the database; however, they will not display on the UI. The `Observation.valueString` will be the attribute that displays on the UI.
                - The `valueQuantity` for the systolic component should match the first number in the blood pressure vital sign `valueQuantity`, where the `valueQuantity` of the diastole component should match the second number.
+            attributes:
+              - name: code
+                type: json
+                description: Type of component observation (code / type).
+                attributes: 
+                  - name: coding
+                    description: Identifies where the definition of the code comes from.
+                    type: array[json]
+                    attributes: 
+                      - name: system
+                        description: The system url of the coding.
+                        type: string
+                        enum_options:
+                          - value: http://loinc.org
+                      - name: code
+                        description: The code of the observation.
+                        type: string
+                        required_in: create
+                        enum_options: 
+                          - value: 8480-6 (systolic)
+                          - value: 8462-4 (diastolic)
+                      - name: display
+                        description: The display name of the coding.
+                        type: string
+                        enum_options:
+                          - value: Systolic blood pressure
+                          - value: Diastolic blood pressure
+              - name: valueQuantity
+                type: json
+                description: Actual component result.
+                attributes:
+                  - name: value
+                    type: number
+                    description: Numerical value (with implicit precision).
+                  - name: unit
+                    type: string
+                    description: Unit representation.
+                    enum_options: 
+                      - value: mmHg
+                  - name: system
+                    type: string
+                    description: System that defines coded unit form.
+                    enum_options: 
+                      - value: http://unitsofmeasure.org
+                  - name: code
+                    type: string
+                    description: Coded form of the unit
+                    enum_options:
+                      - value: "mm[Hg]"
         search_parameters:
           - name: _id
             type: string
