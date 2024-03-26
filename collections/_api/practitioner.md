@@ -8,34 +8,6 @@ sections:
         article: "a"
         description: >-
          A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member manually in the Canvas UI, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360058232193-Add-a-new-staff-member).<br><br>
-
-         **Supported Extensions** <br><br>
-          
-          Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all JSON types and should be included in the `extension` array field as shown in the request/response examples on this page. <br><br>
-          
-          During updates, When an extension is omitted from the payload request, it will be considered as an intention to remove the value stored associated to that field, thus their values will be deleted in Canvas. The only exception is the `username` extension, which remains unchanged and this API will return error if the update request is trying to change the Practitioner's (Staff) username. <br><br>
-          
-          The following custom extensions are supported: <br><br>
-          
-          **`username`** <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/username](http://schemas.canvasmedical.com/fhir/extensions/username) <br><br>
-          A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication. Expected value is a string. <br><br>
-          
-          **`practitioner-personal-meeting-room-link`** <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link](http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link) <br><br>
-          Practitioner meeting room link for online chat or meetings. Expected value is the meeting room link. <br><br>
-          
-          **`practitioner-primary-practice-location`** <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location](http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location) <br><br>
-          The practitioner's primary practice location, where they spend most of their time. Expected value is reference to the Location model. <br><br>
-
-          **`practitioner-signature`** <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature](http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature) <br><br>
-          Attachment of the practitioner's real handwritten signature file. Expected value is a base64-encoded file during Practitioner create. During an update, if a `url` for the Practitioner's signature is provided, it will be ignored, and no action will be taken. <br><br>
-          
-          **`roles`** <br><br>
-          [http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles) <br><br>
-          An array of roles with internal role codes as values. Examples of expected values include RN, CA, MA, etc. For more detailed information, look into the payload examples or read the instructions below. <br><br>
           
         attributes:
           - name: id
@@ -45,15 +17,83 @@ sections:
               Unique Canvas identifier for this resource.
           - name: extension
             type: array[json]
-            description: >-
-              Reference the information at the top of this page to see the possible extensions contained in this resource.
+            description: Canvas supports specific FHIR extensions on this resource. 
+            create_description: Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.
+            update_description: Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.<br><br> 
+              During updates, When an extension is omitted from the payload request, it will be considered as an intention to remove the value stored associated to that field, thus their values will be deleted in Canvas. The only exception is the username extension, which remains unchanged and this API will return error if the update request is trying to change the Practitioner’s (Staff) username.
+            attributes:
+              - name: url
+                type: string
+                required_in: create, update
+                description: Identifies the meaning of the extension
+                enum_options:
+                  - value: http://schemas.canvasmedical.com/fhir/extensions/username
+                  - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link
+                  - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location
+                  - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature
+                  - value: http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles
+              - name: valueString
+                type: string
+                description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+              - name: valueUrl
+                type: string
+                description: Value of extension.<br><br> The `valueUrl` attribute is needed for the meeting link extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link`. This value will represent the url that will be associated to any telehealth notes in Canvas. 
+              - name: valueReference
+                type: json
+                description: Value of extension.<br><br> The `valueReference` attribute is needed for the primary location extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location`. This attribute will be the reference the practitioner's primary location they practice at. 
+                attributes:
+                  - name: reference
+                    type: string
+                    required_in: create
+                    description: The reference string of the location in the format of `"Location/95b9ac2d-e963-4d7a-b165-7901870f1663"`.
+                  - name: type
+                    type: string
+                    description: Type the reference refers to (e.g. "Location").
+              - name: valueAttachment
+                type: json
+                description: Value of extension.<br><br> The `valueAttachment` attribute is needed for the signature extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature`. This attribute represents the attachment of the practitioner’s real handwritten signature file.
+                attributes:
+                  - name: data
+                    type: string
+                    description: A base64-encoded file. 
+                    required_in: create
+                    exclude_in: search, read
+                  - name: url
+                    type: string
+                    description: Uri where the data can be found.
+                    exclude_in: create, update
+              - name: extension
+                type: array[json]
+                description: For the Role extensions where the url is `http://schemas.canvasmedical.com/fhir/extensions/roles`, the `extension` attribute is used to define the list of role's this practitioner has at the practice. 
+                attributes: 
+                  - name: url
+                    type: string
+                    description: Identifies the meaning of the extension.
+                    enum_options: 
+                      - value: code
+                  - name: valueCoding
+                    type: json
+                    required_in: create, update
+                    attributes: 
+                      - name: system
+                        description: The system url of the coding.
+                        type: string
+                        enum_options: 
+                          - value: http://schemas.canvasmedical.com/fhir/roles
+                      - name: code
+                        required_in: create, update
+                        description: The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/12851926883859-Creating-and-modifying-roles) for more information.
+                        type: string
+                      - name: display
+                        description: The display name of the coding.
+                        type: string
           - name: identifier
             type: array[json]
             description: A secondary identifier for the Practitioner. This is the NPI number of the Practitioner in Canvas.
             attributes:
               - name: system
                 type: string
-                description: The `system` attribute specifies the namespace in which the identifier value is unique. It is a predefined URL that represents the coding system or authority responsible for issuing the identifier. This URL is determined by our organization and is used to ensure that the identifier is recognized and interpreted correctly within our system.
+                description: The `system` attribute specifies the namespace in which the identifier value is unique. 
                 enum_options:
                   - value: http://hl7.org/fhir/sid/us-npi
               - name: value
@@ -70,14 +110,14 @@ sections:
               - name: use
                 type: enum [ ususal ]
                 description: The 'use' attribute specifies the context in which the name is used. For this API, the only permitted value is 'usual,' which indicates that the name provided is the name typically used to identify the practitioner in daily practice.
-                required: true
+                required_in: create, update
               - name: family
                 type: string
                 description: Practitioner's last name.
-                required: true
+                required_in: create, update
               - name: given
                 type: array[string]
-                required: true
+                required_in: create, update
                 description: Practitioner's first name. Only one first name is allowed.
           - name: telecom
             type: array[json]
@@ -108,22 +148,22 @@ sections:
                   If you omit "id" during update, a new telecom record will be created.
               - name: system
                 type: enum [ phone | fax | email | pager | other ]
-                required: true
+                required_in: create, update
                 description: Telecommunications form for contact point - what communications system is required to make use of the contact.
               - name: value
                 type: string
-                required: true
+                required_in: create, update
                 description: The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).
                 create_and_update_description:
                   The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).
                   Values for phone numbers (where "system" is set to "phone") must be only digits, with no sign characters or spaces.
               - name: use
                 type: enum [ home | work | temp | old | mobile ]
-                required: true
+                required_in: create, update
                 description: Identifies the purpose for the contact point.
               - name: rank
                 type: integer
-                required: true
+                required_in: create, update
                 description: Specifies a preferred order in which to use a set of contacts. ContactPoints with lower rank values are more preferred than those with higher rank values.
           - name: address
             type: array[json]
@@ -139,11 +179,11 @@ sections:
                   If you omit "id" during update, a new address record will be created.
               - name: use
                 type: enum [ home | work | temp | old | billing ]
-                required: true
+                required_in: create, update
                 description: Defines the purpose of this address.
               - name: type
                 type: enum [ both | physical | postal ] 
-                required: true
+                required_in: create, update
                 description: Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.
               - name: line
                 type: array[string]
@@ -169,7 +209,7 @@ sections:
             attributes:
               - name: url
                 type: string
-                required: true
+                required_in: create, update
                 description: Uri where the data can be found.
               - name: title
                 type: string
@@ -180,12 +220,12 @@ sections:
             attributes:
               - name: identifier
                 type: array[json]
-                required: true
+                required_in: create, update
                 description: This component identifies the issuing authority of the Practitioner's qualification (license).
                 attributes:
                   - name: system
                     type: string
-                    description: The `system` attribute specifies the namespace in which the identifier value is unique. It is a predefined URL that represents the coding system or authority responsible for issuing the identifier. This URL is determined by our organization and is used to ensure that the identifier is recognized and interpreted correctly within our system.
+                    description: The `system` attribute specifies the namespace in which the identifier value is unique. 
                     enum_options:
                       - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url
                   - name: value
@@ -202,7 +242,7 @@ sections:
                       - value: License
               - name: period
                 type: object[json]
-                required: true
+                required_in: create, update
                 description: A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
                 attributes:
                   - name: start
