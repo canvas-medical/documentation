@@ -31,7 +31,7 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature
-                  - value: http://schemas.canvasmedical.com/fhir/extensions/roles](http://schemas.canvasmedical.com/fhir/extensions/roles
+                  - value: http://schemas.canvasmedical.com/fhir/extensions/roles
               - name: valueString
                 type: string
                 description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
