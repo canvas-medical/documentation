@@ -1,5 +1,5 @@
 ---
-title: FHIR DocumentReference Now Included Title & Comments
+title: FHIR DocumentReference Now Includes Title & Comments
 date: 2024-04-02 20:00:00 
 tags: api 
 layout: productupdates
