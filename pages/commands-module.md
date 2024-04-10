@@ -55,7 +55,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
      <tr> 
       <td>Reason for Visit</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
     </tr>
      <tr> 
       <td>Stop Medication</td>
@@ -67,15 +67,15 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
      <tr> 
       <td>Assess</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
     </tr>
      <tr> 
       <td>Goal</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
     </tr>
      <tr> 
       <td>Update Goal</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
     </tr>
      <tr> 
       <td>Medication Statement</td>
