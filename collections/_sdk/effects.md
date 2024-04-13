@@ -1,0 +1,7 @@
+---
+title: "Effects"
+---
+
+### Effects
+
+Effects...

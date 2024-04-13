@@ -14,6 +14,17 @@ layout: "landingpage"
             <span>Leverage our guides to foster clinician developer collaboration and implement workflows using a combination of the API, SDK, and out-of-the-box functionality. The majority of the guides require both configuration by superusers, as well as custom development. We encourage you to pair together to explore what is possible and use them to iterate on your care model. </span>
         </div>
         <div class="cardWrapper topPaddingSm bottomPaddingSm">
+        <a href="/guides/your-first-plugin">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Your First Plugin</span>
+                </div>
+                <div class="cardBody">
+                    Customize the behavior of Canvas using plugins
+                </div>
+            </div>
+        </a>
         <a href="/guides/optimize-patient-intake">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">

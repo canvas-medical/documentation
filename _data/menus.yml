@@ -408,6 +408,8 @@ guides_list:
    url: /guides/patient-messaging/
  - title: "Team Based Care"
    url: /guides/team-based-care/
+ - title: "Your First Plugin"
+   url: /guides/your-first-plugin/
 
 guides_templates:
  - title: "Behavioral Health"
@@ -427,6 +429,20 @@ sdk:
 sdk_overview:
  - title: "Introduction"
    url: /sdk/
+ - title: "Commands"
+   url: /sdk/commands/
+ - title: "Data"
+   url: /sdk/data/
+ - title: "Effects"
+   url: /sdk/effects/
+ - title: "Events"
+   url: /sdk/events/
+ - title: "Protocols"
+   url: /sdk/protocols/
+ - title: "Utils"
+   url: /sdk/utils/
+ - title: "Views"
+   url: /sdk/views/
 
 sdk_workflow_kit:
  - title: "Quickstart"
