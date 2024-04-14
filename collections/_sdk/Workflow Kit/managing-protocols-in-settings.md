@@ -6,7 +6,7 @@ updatedAt: "2022-02-18T20:32:50.391Z"
 ---
 ## Viewing a Protocol in Settings
 
-The quickstart explains how to [upload](/sdk/sdk-quickstart/#creating-a-protocol) your protocol code using the `canvas-cli upload` command. In this section, we will explore how to find and view your uploaded Protocol in the Settings section of the Canvas UI.
+The quickstart explains how to [upload](/sdk/workflow-sdk-quickstart/#creating-a-protocol) your protocol code using the `canvas-cli upload` command. In this section, we will explore how to find and view your uploaded Protocol in the Settings section of the Canvas UI.
 
 ### Navigating to Settings
 
@@ -58,7 +58,7 @@ There are also many **Actions** you can perform in the actions drop down menu th
 If you click on the Name of the protocol, it will take you into the detailed page where there are two things you can exclusively do from this page:
 
 
-1. **Test the Protocol against a Patient** This is the same functionality that is available when using the `canvas-cli test-fixture` command that was shown in [Create A Protocol](/sdk/sdk-quickstart/#testing-your-protocol-against-patient-data) article. To execute a test, paste a patient key into the box, and click the _Test against patient id/key_ button. You will receive output similar to the terminal output of the `test-fixture` command. 
+1. **Test the Protocol against a Patient** This is the same functionality that is available when using the `canvas-cli test-fixture` command that was shown in [Create A Protocol](/sdk/workflow-sdk-quickstart/#testing-your-protocol-against-patient-data) article. To execute a test, paste a patient key into the box, and click the _Test against patient id/key_ button. You will receive output similar to the terminal output of the `test-fixture` command. 
 2. **Change the Active Version** This will change the version of the Protocol that is currently active. When uploading using the `canvas-cli upload` command, the version that is uploaded is automatically set as the active version. But coming in here allows you to go back to an older version if needed.
 
 

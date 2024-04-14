@@ -423,7 +423,7 @@ guides_care-models-bh:
 sdk:
  - title: "SDK Overview"
    identifier: sdk_overview
- - title: "Workflow Kit"
+ - title: "Workflow Kit (Deprecated)"
    identifier: sdk_workflow_kit
 
 sdk_overview:
@@ -446,7 +446,7 @@ sdk_overview:
 
 sdk_workflow_kit:
  - title: "Quickstart"
-   url: /sdk/sdk-quickstart/
+   url: /sdk/workflow-sdk-quickstart/
  - title: "Change Types"
    url: /sdk/change-types
  - title: "Patient Recordsets"

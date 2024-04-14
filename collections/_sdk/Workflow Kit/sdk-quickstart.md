@@ -1,6 +1,6 @@
 ---
-title: "Quickstart"
-slug: "sdk-quickstart"
+title: "Workflow SDK Quickstart"
+slug: "workflow-sdk-quickstart"
 excerpt: "Canvas Workflow Kit SDK Installation Quickstart"
 hidden: false
 createdAt: "2022-02-08T17:38:02.138Z"
@@ -8,8 +8,16 @@ updatedAt: "2022-02-16T22:42:57.253Z"
 ---
 ## Introduction
 
-The <b>Canvas Workflow Kit</b> is a Software Development Kit (SDK) that makes it possible to extend the functionality of a Canvas instance. By providing a built-in command-line interface, skeleton code and test commands, developers can use the the SDK to create custom Protocols.
-<br><br>
+The <b>Canvas Workflow Kit</b> is a Software Development Kit (SDK) that makes it
+possible to extend the functionality of a Canvas instance. By providing a
+built-in command-line interface, skeleton code and test commands, developers
+can use the SDK to customize Protocols. The Canvas Workflow Kit’s original
+purpose was to support clinical quality measures. Through Protocols, customers
+are able to drive recommendations or changes to workflow based on various
+patient changes. Due to the original purpose of the Canvas Workflow Kit,
+recommending changes in workflow or creating additional interventions based on
+triggers or events beyond patient data is not possible.
+
 ## Installation
 
 The SDK can either be [downloaded directly from PyPI](https://pypi.org/project/canvas-workflow-kit/) or can be installed using the Python Package Manager `pip`. Python 3.8 or above is required.
@@ -71,7 +79,7 @@ Finally, create a directory in the location of your choice to store your project
 
 When using the Canvas Workflow Kit, it helps to have patient data to develop and test against. The SDK allows for patient data to be fetched from a Canvas instance and populated in your project's workspace in _.json_ format.
 
-Create a directory named `patients` within your project directory (the one that we named `canvas_protocols` [above]({{site.baseurl}}/sdk/sdk-quickstart/#initial-setup):
+Create a directory named `patients` within your project directory (the one that we named `canvas_protocols` [above]({{site.baseurl}}/sdk/workflow-sdk-quickstart/#initial-setup):
 
 ```sh
 (env) $ pwd
@@ -449,7 +457,7 @@ The `--no-compute` flag is only available in versions of the canvas-workflow-kit
 
 So far in this tutorial, you have created a basic Protocol, uploaded it to your development Canvas instance, and seen how it appears in the UI. This was a very basic measure used for example purposes. However, much more complex logic can and will be used when developing actual Protocols. For this reason, the SDK includes a command named `test-fixture` in order to test your code against patient data locally.
 
-In the previous section, it was explained how to [fetch patient data](sdk/sdk-quickstart/#fetching-patient-data) that is stored locally in _*.json_ files. To test the Protocol that you just created in `test_measure.py`, the following command can be run from within the `src` directory:
+In the previous section, it was explained how to [fetch patient data](/sdk/workflow-sdk-quickstart/#fetching-patient-data) that is stored locally in _*.json_ files. To test the Protocol that you just created in `test_measure.py`, the following command can be run from within the `src` directory:
 
 ```
 (env) $ canvas-cli test-fixture test_measure.py ../patients
@@ -463,7 +471,7 @@ This command will run the Protocol against each patient in the `/patients/` dire
 
 ## Expanding a Protocol
 
-Building on our [previous example](sdk/sdk-quickstart/#creating-a-protocol), we will now explore how to create logic to tell if a patient has or has not satisfied the requirements for fulfilling a Protocol. This is important in order to only display Protocol alerts for those that have not been satisfied. Conversely, we also want to display information about the Protocol under the _Inactive_ status if it indeed has been satisfied.
+Building on our [previous example](/sdk/workflow-sdk-quickstart/#creating-a-protocol), we will now explore how to create logic to tell if a patient has or has not satisfied the requirements for fulfilling a Protocol. This is important in order to only display Protocol alerts for those that have not been satisfied. Conversely, we also want to display information about the Protocol under the _Inactive_ status if it indeed has been satisfied.
 
 To help visualize this, let's say that we want to develop a Protocol for all patients 65 and older to be interviewed in order to screen their risk of falling. Patients who are eligible for this Protocol should be interviewed once a year.
 

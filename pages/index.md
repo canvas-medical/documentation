@@ -34,7 +34,7 @@ permalink: "/"
                     </span>
                      <div class="anchorContainer">
                     <a href="/api/quickstart">API Quickstart</a><br/>
-                    <a href="/sdk/sdk-quickstart/">SDK Quickstart</a><br/>
+                    <a href="/sdk/workflow-sdk-quickstart/">SDK Quickstart</a><br/>
                     </div>
                 </div>
             </div>
