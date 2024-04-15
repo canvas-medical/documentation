@@ -1,5 +1,5 @@
 ---
-title: Improved Performance Loading Charts and Inserting/Deleting Notes
+title: Improves Performance Loading Charts and Inserting/Deleting Notes
 date: 2024-04-15
 layout: productupdates
 tags: ui 
