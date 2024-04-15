@@ -1,5 +1,5 @@
 ---
-title: Fixed Automated Task Creation from Lab Errors
+title: Fixes Automated Task Creation from Lab Errors
 layout: productupdates
 tags: ui bugfix
 date: 2024-04-08

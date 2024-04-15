@@ -1,5 +1,5 @@
 ---
-title: SDK Reason for Visit, Assess, Goal, and Update Goal Commands Enabled for All Customers
+title: Enables SDK Reason for Visit, Assess, Goal, and Update Goal Commands for All Customers
 date: 2024-04-10
 layout: productupdates
 tags: sdk 
