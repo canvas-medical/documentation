@@ -9,7 +9,7 @@ if events_protobuf_filename.nil?
   exit 1
 end
 
-events_documentation_markdown_filename = ARGV[0]
+events_documentation_markdown_filename = ARGV[1]
 if events_documentation_markdown_filename.nil?
   puts "No target documentation file given."
   puts "Usage: update_events_table.rb <events_protobuf_filename> <events_documentation_markdown_filename>"
@@ -30,7 +30,7 @@ end
 inside_event_enum = false
 event_constants = {}
 File.foreach(events_protobuf_filename) do |line|
-  if inside_event_enum && line.include?('=')
+  if inside_event_enum && line.include?('=') && !line.strip.start_with?('//')
     event_constants[line.split('=')[0].strip] = ""
   end
 
@@ -44,7 +44,7 @@ File.foreach(events_protobuf_filename) do |line|
 end
 
 # At this point, we have an array of hashes, where the key is the event
-# constant and the value is the description.
+# constant and the value is an empty string placeholder for the description.
 #
 # Now, let's ingest the events table markdown file, associate any pre-existing
 # event descriptions and rewrite the table.
@@ -53,27 +53,59 @@ in_the_event_table = false
 
 File.foreach(events_documentation_markdown_filename) do |line|
 
-  if in_the_event_table && !line.strip.starts_with?('|')
-    puts "out of the event table: #{line}"
+  if in_the_event_table && !line.strip.start_with?('|')
     in_the_event_table = false
   end
 
   if line.strip == '| Event | Description |'
-    puts "in the event table: #{line}"
     in_the_event_table = true
     next
   end
 
   if in_the_event_table
-    event, description = line.split('|')
-    puts "found event: #{event} with description: #{description}"
+    line_without_outer_pipes = line.strip.delete_suffix('|').delete_prefix('|')
+    event, description = line_without_outer_pipes.split('|')
+    event = event.strip
+    description = description.strip
     if event_constants.key? event
-      puts "the event is present!"
-      puts "event: #{event}"
-      puts "description: #{description}"
       event_constants[event] = description
     end
   end
 end
 
-p event_constants
+# p event_constants
+
+rewritten_table_lines = ['| Event | Description |']
+rewritten_table_lines.append('| ----- | ----------- |')
+event_constants.each do |event_type, description|
+  rewritten_table_lines.append("| #{event_type} | #{description} |")
+end
+
+# Now write the new file. This will include all non-table lines from the original file
+# and the new table lines from rewritten_table_lines.
+
+File.open("#{File.expand_path(File.dirname(__FILE__))}/events.temp.md", "w+") do |f|
+  inside_event_table = false
+  new_event_table_written = false
+  File.foreach(events_documentation_markdown_filename) do |line|
+    if line.strip == '| Event | Description |'
+      inside_event_table = true
+    end
+
+    if inside_event_table && !line.strip.start_with?('|')
+      inside_event_table = false
+    end
+
+    if !inside_event_table
+      f.puts(line)
+    end
+
+    if inside_event_table && ! new_event_table_written
+      rewritten_table_lines.each { |element| f.puts(element) }
+      new_event_table_written = true
+    end
+
+  end
+end
+
+puts File.expand_path(File.dirname(__FILE__))

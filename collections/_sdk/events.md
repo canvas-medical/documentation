@@ -8,7 +8,7 @@ Important paragraph about events
 
 | Event | Description |
 | ----- | ----------- |
-| TASK_ASSIGNED | Boogers |
+| ALLERGY_INTOLERANCE_CREATED | Boogers |
 
 
 ### Important content
