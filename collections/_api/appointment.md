@@ -300,7 +300,12 @@ sections:
         {
             "reference": "Encounter/23668e1a-e914-4eac-885c-1a2a27244ab7",
             "type": "Encounter"
-        }
+        },
+        {
+            "reference": "Appointment/7fa2874e-73c8-418d-bb25-eea0ccac651c",
+            "type": "Appointment",
+            "display": "Co-scheduled appointment"
+        } 
     ],
     "start": "2023-10-24T13:30:00+00:00",
     "end": "2023-10-24T14:00:00+00:00",
