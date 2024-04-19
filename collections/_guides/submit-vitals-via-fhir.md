@@ -90,7 +90,7 @@ However, if the request failed it will throw an error to see what went wrong. It
 
 ```python
 if response.status_code == 201:
-    panel_id = response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')
+    panel_id = response.headers['location'].replace(f"{url.replace('https', 'http')}/", '').replace('/_history/1', '')
 else:
     raise Exception(f"Failed to perform {response.url}. \n Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
 ```
@@ -727,11 +727,11 @@ The output will look like:
 }
 ```
 
-And finally let's perform a FHIR Observation Search to see all the vital signs that are for that patient:
+And finally let's perform a FHIR Observation Search to see all the vital signs that are for that patient using the derived from search parameter:
 
 ```python
 from pprint import pprint
-response = requests.get(f"{url}?patient=Patient/cc95008fad96426e8e6d15e2811b8318&category=http://terminology.hl7.org/CodeSystem/observation-category|vital-signs&_count=50", headers=headers)
+response = requests.get(f"{url}?patient=Patient/{patient_id}&category=http://terminology.hl7.org/CodeSystem/observation-category|vital-signs&derived-from=Observation/{panel_id}&_count=20", headers=headers)
 if response.status_code == 200:
     pprint(response.json())
 else:
