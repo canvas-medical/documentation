@@ -645,7 +645,7 @@ The output will look like:
 ```json
 {
     "resourceType": "Observation",
-    "id": "b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
+    "id": "64ef9722-87c9-4b51-96d5-5812f15654d2",
     "status": "final",
     "category": [
         {
@@ -668,11 +668,11 @@ The output will look like:
         ]
     },
     "subject": {
-        "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
+        "reference": "Patient/b23295011ddf4df799976866c84d79d3",
         "type": "Patient"
     },
-    "effectiveDateTime": "2024-03-27T10:00:00+00:00",
-    "issued": "2024-03-27T21:35:12.364027+00:00",
+    "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
+    "issued": "2024-04-19T18:13:03.574074+00:00",
     "dataAbsentReason": {
         "coding": [
             {
@@ -684,44 +684,54 @@ The output will look like:
     },
     "hasMember": [
         {
-            "reference": "Observation/f8facb98-b0c3-4ddc-9fad-a9a92306b04f",
-            "type": "Observation"
+            "reference": "Observation/a21ee97f-dd35-4266-afaf-3e1b0a537668",
+            "type": "Observation",
+            "display": "Height"
         },
         {
-            "reference": "Observation/99308606-14f8-477a-9f15-8f4b93eba560",
-            "type": "Observation"
+            "reference": "Observation/c9898fa2-e78e-48b0-8c7b-7ab8c99f0d30",
+            "type": "Observation",
+            "display": "Weight"
         },
         {
-            "reference": "Observation/e816f764-a2b6-470d-95b0-24b5bcb10377",
-            "type": "Observation"
+            "reference": "Observation/a70a2979-d820-42e4-a0c6-cdbd80d7468f",
+            "type": "Observation",
+            "display": "Waist Circumference"
         },
         {
-            "reference": "Observation/b804767c-b713-4b5f-a61a-51fa53312807",
-            "type": "Observation"
+            "reference": "Observation/794c1f41-a564-4f4c-b56e-6ab5ee40ad0e",
+            "type": "Observation",
+            "display": "Body Temperature"
         },
         {
-            "reference": "Observation/b0289af9-77c4-4d9d-8bb6-a5e860018193",
-            "type": "Observation"
+            "reference": "Observation/4fe8ba77-14aa-4d4a-b7eb-eaa0020a741f",
+            "type": "Observation",
+            "display": "Blood Pressure"
         },
         {
-            "reference": "Observation/0deed76f-8354-459d-b2eb-58e185276b51",
-            "type": "Observation"
+            "reference": "Observation/8a7c9a2b-3b06-4ede-bb98-620788cf2071",
+            "type": "Observation",
+            "display": "Pulse"
         },
         {
-            "reference": "Observation/b3b8ac48-c114-4db4-8c5a-9d856e91a5e2",
-            "type": "Observation"
+            "reference": "Observation/53a6e624-d7a6-4eef-8e05-9d98c889d820",
+            "type": "Observation",
+            "display": "Pulse Rhythm"
         },
         {
-            "reference": "Observation/c745b8bd-0d2e-4145-95b6-bdc467a78584",
-            "type": "Observation"
+            "reference": "Observation/3ef9d6d0-68db-46ce-b30d-ca7081da14b7",
+            "type": "Observation",
+            "display": "Respiration Rate"
         },
         {
-            "reference": "Observation/03fa41bd-37d3-42d8-b5b9-2ccf4f3bf85f",
-            "type": "Observation"
+            "reference": "Observation/e08993a5-1d62-4bb2-ae00-c30bcd8e66bf",
+            "type": "Observation",
+            "display": "Oxygen Saturation Arterial"
         },
         {
-            "reference": "Observation/29dcfac3-259f-489a-b8b6-b351c0574270",
-            "type": "Observation"
+            "reference": "Observation/49c4871d-ce6c-4281-86aa-27a8dd03ccf8",
+            "type": "Observation",
+            "display": "Note"
         }
     ]
 }
@@ -744,26 +754,26 @@ The response will look like:
 {
     "resourceType": "Bundle",
     "type": "searchset",
-    "total": 11,
+    "total": 10,
     "link": [
         {
             "relation": "self",
-            "url": "/Observation?patient=Patient%2Fcc95008fad96426e8e6d15e2811b8318&category=http%3A%2F%2Fterminology.hl7.org%2FCodeSystem%2Fobservation-category%7Cvital-signs&_count=50&_offset=0"
+            "url": "/Observation?category=vital-signs&derived-from=Observation%2F64ef9722-87c9-4b51-96d5-5812f15654d2&patient=Patient%2Fb23295011ddf4df799976866c84d79d3&_count=50&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/Observation?patient=Patient%2Fcc95008fad96426e8e6d15e2811b8318&category=http%3A%2F%2Fterminology.hl7.org%2FCodeSystem%2Fobservation-category%7Cvital-signs&_count=50&_offset=0"
+            "url": "/Observation?category=vital-signs&derived-from=Observation%2F64ef9722-87c9-4b51-96d5-5812f15654d2&patient=Patient%2Fb23295011ddf4df799976866c84d79d3&_count=50&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/Observation?patient=Patient%2Fcc95008fad96426e8e6d15e2811b8318&category=http%3A%2F%2Fterminology.hl7.org%2FCodeSystem%2Fobservation-category%7Cvital-signs&_count=50&_offset=0"
+            "url": "/Observation?category=vital-signs&derived-from=Observation%2F64ef9722-87c9-4b51-96d5-5812f15654d2&patient=Patient%2Fb23295011ddf4df799976866c84d79d3&_count=50&_offset=0"
         }
     ],
     "entry": [
         {
             "resource": {
                 "resourceType": "Observation",
-                "id": "f8facb98-b0c3-4ddc-9fad-a9a92306b04f",
+                "id": "a21ee97f-dd35-4266-afaf-3e1b0a537668",
                 "status": "final",
                 "category": [
                     {
@@ -786,11 +796,11 @@ The response will look like:
                     ]
                 },
                 "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T16:35:01.626082+00:00",
+                "issued": "2024-04-19T18:13:04.487846+00:00",
                 "valueQuantity": {
                     "value": 69.0,
                     "unit": "in",
@@ -799,7 +809,7 @@ The response will look like:
                 },
                 "derivedFrom": [
                     {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
                         "type": "Observation"
                     }
                 ]
@@ -808,7 +818,7 @@ The response will look like:
         {
             "resource": {
                 "resourceType": "Observation",
-                "id": "99308606-14f8-477a-9f15-8f4b93eba560",
+                "id": "c9898fa2-e78e-48b0-8c7b-7ab8c99f0d30",
                 "status": "final",
                 "category": [
                     {
@@ -831,11 +841,11 @@ The response will look like:
                     ]
                 },
                 "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T17:28:15.964593+00:00",
+                "issued": "2024-04-19T18:13:05.094527+00:00",
                 "valueQuantity": {
                     "value": 176.4,
                     "unit": "lb",
@@ -844,7 +854,7 @@ The response will look like:
                 },
                 "derivedFrom": [
                     {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
                         "type": "Observation"
                     }
                 ]
@@ -853,7 +863,97 @@ The response will look like:
         {
             "resource": {
                 "resourceType": "Observation",
-                "id": "e816f764-a2b6-470d-95b0-24b5bcb10377",
+                "id": "a70a2979-d820-42e4-a0c6-cdbd80d7468f",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "56086-2",
+                            "display": "Waist Circumference"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
+                    "type": "Patient"
+                },
+                "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
+                "issued": "2024-04-19T18:13:05.741607+00:00",
+                "valueQuantity": {
+                    "value": 98.2,
+                    "unit": "cm",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "cm"
+                },
+                "derivedFrom": [
+                    {
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
+                        "type": "Observation"
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Observation",
+                "id": "794c1f41-a564-4f4c-b56e-6ab5ee40ad0e",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8310-5",
+                            "display": "Body Temperature"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
+                    "type": "Patient"
+                },
+                "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
+                "issued": "2024-04-19T18:13:06.216429+00:00",
+                "valueQuantity": {
+                    "value": 98.4,
+                    "unit": "°F",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "[degF]"
+                },
+                "derivedFrom": [
+                    {
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
+                        "type": "Observation"
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Observation",
+                "id": "4fe8ba77-14aa-4d4a-b7eb-eaa0020a741f",
                 "status": "final",
                 "category": [
                     {
@@ -876,14 +976,14 @@ The response will look like:
                     ]
                 },
                 "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T17:58:41.765214+00:00",
+                "issued": "2024-04-19T18:13:06.801703+00:00",
                 "derivedFrom": [
                     {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
                         "type": "Observation"
                     }
                 ],
@@ -928,7 +1028,7 @@ The response will look like:
         {
             "resource": {
                 "resourceType": "Observation",
-                "id": "b804767c-b713-4b5f-a61a-51fa53312807",
+                "id": "8a7c9a2b-3b06-4ede-bb98-620788cf2071",
                 "status": "final",
                 "category": [
                     {
@@ -951,11 +1051,11 @@ The response will look like:
                     ]
                 },
                 "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T18:05:35.559963+00:00",
+                "issued": "2024-04-19T18:13:07.375137+00:00",
                 "valueQuantity": {
                     "value": 115.0,
                     "unit": "bpm",
@@ -964,7 +1064,7 @@ The response will look like:
                 },
                 "derivedFrom": [
                     {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
                         "type": "Observation"
                     }
                 ]
@@ -973,136 +1073,7 @@ The response will look like:
         {
             "resource": {
                 "resourceType": "Observation",
-                "id": "b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
-                "status": "final",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
-                                "code": "vital-signs",
-                                "display": "Vital Signs"
-                            }
-                        ]
-                    }
-                ],
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://loinc.org",
-                            "code": "85353-1",
-                            "display": "Vital Signs Panel"
-                        }
-                    ]
-                },
-                "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
-                    "type": "Patient"
-                },
-                "effectiveDateTime": "2024-03-27T10:00:00+00:00",
-                "issued": "2024-03-27T21:35:12.364027+00:00",
-                "dataAbsentReason": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
-                            "code": "not-performed",
-                            "display": "Not Performed"
-                        }
-                    ]
-                },
-                "hasMember": [
-                    {
-                        "reference": "Observation/f8facb98-b0c3-4ddc-9fad-a9a92306b04f",
-                        "type": "Observation"
-                    },
-                    {
-                        "reference": "Observation/99308606-14f8-477a-9f15-8f4b93eba560",
-                        "type": "Observation"
-                    },
-                    {
-                        "reference": "Observation/e816f764-a2b6-470d-95b0-24b5bcb10377",
-                        "type": "Observation"
-                    },
-                    {
-                        "reference": "Observation/b804767c-b713-4b5f-a61a-51fa53312807",
-                        "type": "Observation"
-                    },
-                    {
-                        "reference": "Observation/b0289af9-77c4-4d9d-8bb6-a5e860018193",
-                        "type": "Observation"
-                    },
-                    {
-                        "reference": "Observation/0deed76f-8354-459d-b2eb-58e185276b51",
-                        "type": "Observation"
-                    },
-                    {
-                        "reference": "Observation/b3b8ac48-c114-4db4-8c5a-9d856e91a5e2",
-                        "type": "Observation"
-                    },
-                    {
-                        "reference": "Observation/c745b8bd-0d2e-4145-95b6-bdc467a78584",
-                        "type": "Observation"
-                    },
-                    {
-                        "reference": "Observation/03fa41bd-37d3-42d8-b5b9-2ccf4f3bf85f",
-                        "type": "Observation"
-                    },
-                    {
-                        "reference": "Observation/29dcfac3-259f-489a-b8b6-b351c0574270",
-                        "type": "Observation"
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Observation",
-                "id": "b0289af9-77c4-4d9d-8bb6-a5e860018193",
-                "status": "final",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
-                                "code": "vital-signs",
-                                "display": "Vital Signs"
-                            }
-                        ]
-                    }
-                ],
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://loinc.org",
-                            "code": "56086-2",
-                            "display": "Waist Circumference"
-                        }
-                    ]
-                },
-                "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
-                    "type": "Patient"
-                },
-                "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T17:35:36.431581+00:00",
-                "valueQuantity": {
-                    "value": 98.2,
-                    "unit": "cm",
-                    "system": "http://unitsofmeasure.org",
-                    "code": "cm"
-                },
-                "derivedFrom": [
-                    {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
-                        "type": "Observation"
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Observation",
-                "id": "0deed76f-8354-459d-b2eb-58e185276b51",
+                "id": "53a6e624-d7a6-4eef-8e05-9d98c889d820",
                 "status": "final",
                 "category": [
                     {
@@ -1125,15 +1096,15 @@ The response will look like:
                     ]
                 },
                 "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T18:32:13.486363+00:00",
+                "issued": "2024-04-19T18:13:07.860791+00:00",
                 "valueString": "Regular",
                 "derivedFrom": [
                     {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
                         "type": "Observation"
                     }
                 ]
@@ -1142,7 +1113,7 @@ The response will look like:
         {
             "resource": {
                 "resourceType": "Observation",
-                "id": "b3b8ac48-c114-4db4-8c5a-9d856e91a5e2",
+                "id": "3ef9d6d0-68db-46ce-b30d-ca7081da14b7",
                 "status": "final",
                 "category": [
                     {
@@ -1165,11 +1136,11 @@ The response will look like:
                     ]
                 },
                 "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T18:35:48.662967+00:00",
+                "issued": "2024-04-19T18:13:08.331239+00:00",
                 "valueQuantity": {
                     "value": 15.0,
                     "unit": "bpm",
@@ -1178,7 +1149,7 @@ The response will look like:
                 },
                 "derivedFrom": [
                     {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
                         "type": "Observation"
                     }
                 ]
@@ -1187,7 +1158,7 @@ The response will look like:
         {
             "resource": {
                 "resourceType": "Observation",
-                "id": "c745b8bd-0d2e-4145-95b6-bdc467a78584",
+                "id": "e08993a5-1d62-4bb2-ae00-c30bcd8e66bf",
                 "status": "final",
                 "category": [
                     {
@@ -1215,11 +1186,11 @@ The response will look like:
                     ]
                 },
                 "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T18:48:39.269569+00:00",
+                "issued": "2024-04-19T18:13:08.847291+00:00",
                 "valueQuantity": {
                     "value": 98.0,
                     "unit": "%",
@@ -1228,7 +1199,7 @@ The response will look like:
                 },
                 "derivedFrom": [
                     {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
                         "type": "Observation"
                     }
                 ]
@@ -1237,52 +1208,7 @@ The response will look like:
         {
             "resource": {
                 "resourceType": "Observation",
-                "id": "03fa41bd-37d3-42d8-b5b9-2ccf4f3bf85f",
-                "status": "final",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
-                                "code": "vital-signs",
-                                "display": "Vital Signs"
-                            }
-                        ]
-                    }
-                ],
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://loinc.org",
-                            "code": "8310-5",
-                            "display": "Body Temperature"
-                        }
-                    ]
-                },
-                "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
-                    "type": "Patient"
-                },
-                "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T17:41:05.882156+00:00",
-                "valueQuantity": {
-                    "value": 98.4,
-                    "unit": "°F",
-                    "system": "http://unitsofmeasure.org",
-                    "code": "[degF]"
-                },
-                "derivedFrom": [
-                    {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
-                        "type": "Observation"
-                    }
-                ]
-            }
-        },
-        {
-            "resource": {
-                "resourceType": "Observation",
-                "id": "29dcfac3-259f-489a-b8b6-b351c0574270",
+                "id": "49c4871d-ce6c-4281-86aa-27a8dd03ccf8",
                 "status": "final",
                 "category": [
                     {
@@ -1305,15 +1231,15 @@ The response will look like:
                     ]
                 },
                 "subject": {
-                    "reference": "Patient/cc95008fad96426e8e6d15e2811b8318",
+                    "reference": "Patient/b23295011ddf4df799976866c84d79d3",
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-03-29T08:50:24.883809+00:00",
-                "issued": "2024-03-28T18:57:56.444652+00:00",
+                "issued": "2024-04-19T18:13:09.336889+00:00",
                 "valueString": "Last Blood sugar was 78",
                 "derivedFrom": [
                     {
-                        "reference": "Observation/b7beaf7f-7c5b-4129-9c0a-8c67ddde4d98",
+                        "reference": "Observation/64ef9722-87c9-4b51-96d5-5812f15654d2",
                         "type": "Observation"
                     }
                 ]
