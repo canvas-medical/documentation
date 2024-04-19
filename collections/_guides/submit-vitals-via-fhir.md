@@ -17,7 +17,7 @@ The Canvas [FHIR Observation Create](/api/observation/#create) endpoint supports
 * * *
 ## What you'll learn
 In this guide, you will learn how to do the following:
-1. Creating a vital panel via FHIR
+1. Create a vital panel via FHIR
 2. Submit various vital signs into the same panel via FHIR
 3. Perform a FHIR Observation Search to view the completed panel
 <br>
@@ -86,13 +86,13 @@ response = requests.post(url, json=payload, headers=headers)
 
 On a successful create, when the `response.status_code` equal 201. We can fetch the ID of the newly created observation in the `response.headers['location']` attribute. The value will always be in the format `{url}/{id}/_history/1`. We need to extract the `id` from the value. 
 
-However, if the request failed it will throw an error to see what went wrong. It will also display the Fumage Correlation ID that can be given to Customer Support for help with further debugging.
+However, if the request failed it will throw an error to see what went wrong. It will also display the Correlation ID that can be given to Customer Support for help with further debugging.
 
 ```python
 if response.status_code == 201:
     panel_id = response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be a Data Import note placed on that patient's timeline based on the date passed in the `effectiveDateTime` attribute with an empty Vitals Command:
