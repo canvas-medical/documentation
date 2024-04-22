@@ -29,4 +29,6 @@ We support the following date search modifiers:
 
 - `ne`
     Not equal to the date. <br>
-    Example: `"?date=ne2021-01-01"`
+    Example: `"?date=ne2021-01-01"`<br><br>
+
+You can supply multiple date search parameters to search in a range. For example if we want to find all the records within 2024-04-11 and 2024-04-20, we can pass `?date=ge2024-04-11&date=le2024-04-20`
