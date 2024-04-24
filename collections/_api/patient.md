@@ -240,7 +240,7 @@ sections:
                     type: date
           - name: photo
             type: array[json]
-            description: Image of the patient. This image shows on the patient avatar in the Canvas UI.
+            description: Returns the static image URL of the patient, which is then used to generate a new S3 presigned URL. This URL is later utilized in the second request called for a presigned URL for the patient photo.
             create_and_update_description: >-
               When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
           - name: contact
@@ -333,7 +333,7 @@ sections:
           - name: phone
             type: string
             description: Patient phone number. Expected to be 10 digits.
-        endpoints: [create, read, update, search]
+        endpoints: [create, read, update, search, files]
         create:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: patient-create-request
@@ -356,6 +356,12 @@ sections:
           example_response: patient-search-response
           description: >-
             Search for patient resources.
+        files:
+          responses: [307, 400, 401, 403, 404]
+          example_request: patient-read-file-request
+          example_response: patient-read-file-response
+          description: >-
+            Upon calling this endpoint, it will generate and redirect to the presigned S3 URL.
 ---
 
 <div id="patient-create-request">
@@ -1180,7 +1186,7 @@ print(response.text)
     "photo":
     [
         {
-            "url": "https://canvas-client-media.s3.amazonaws.com/local/patient-avatars/20230928_213831_7162fd82487e4dc8aa2581ddbca91892.unknown_image?AWSAccessKeyId=AKIAQB7SIDR7IJXXMF47&Signature=kG1YseB%2FjSd7UMErYFVst8%2B3yHY%3D&Expires=1695938081"
+            "url": "http://canvasmedical.com/Patient/d6ac88753e1e4fc4b664db0c9aa9cde5/files/photo"
         }
     ],
     "contact":
