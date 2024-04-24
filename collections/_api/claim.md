@@ -10,6 +10,14 @@ sections:
           A provider issued list of professional services and products which have been provided, or are to be provided, to a patient which is sent to an insurer for reimbursement.<br><br>
           [http://hl7.org/fhir/R4/claim.html](http://hl7.org/fhir/R4/claim.html)
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
+          - name: id
+            description: The identifier of the Claim.
+            required_in: update
+            exclude_in: create
+            type: string
           - name: extension
             type: array[json]
             description: >-
