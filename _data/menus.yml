@@ -245,6 +245,8 @@ api_diagnosticreport:
  - title: "DiagnosticReport Search"
    url: /api/diagnosticreport/#search
 api_documentreference:
+ - title: "DocumentReference Create"
+   url: /api/documentreference/#create
  - title: "DocumentReference Read"
    url: /api/documentreference/#read
  - title: "DocumentReference Search"
