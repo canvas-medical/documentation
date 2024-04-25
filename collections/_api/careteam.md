@@ -13,7 +13,11 @@ sections:
           <br><br>
           See our [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4409741845011-Care-Teams) for information about setting up Care Teams and Care Team Roles in Canvas.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
+            required_in: update
             description: >-
               The identifier of the CareTeam<br><br>
               The default behavior is to return all active care team memberships for the patient. To return care team members of a different status, add `.status` at the end of the ID. Example: **3e72c07b5aac4dc5929948f82c9afdfd.inactive**
@@ -47,6 +51,7 @@ sections:
         endpoints: [read, update, search]
         read:
           description: Read a CareTeam resource.
+          additional_path_parameter_description: The default behavior is to return all active care team memberships for the patient. To return care team members of a different status, add `.status` at the end of the ID (e.g `CareTeam/3e72c07b5aac4dc5929948f82c9afdfd.inactive`).
           responses: [200, 401, 403, 404]
           example_request: careteam-read-request
           example_response: careteam-read-response
