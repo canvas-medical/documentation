@@ -52,6 +52,7 @@ sections:
               • `contentType`: Supported MIME content types are **image/heic**, **image/jpeg**, **image/png**<br>
               • `content`: Base64 string of the media content<br>
               • `title`: title of the content file<br>
+              • **`extension`: As we are transitioning to the new URL format (static URL), we are enabling an extension to  retain previously used URLs until the transition to the new static URL is finalized. Use this extension for backward-compatible URLs until the transition is completed.**
             type: json
           - name: note
             description: >-
@@ -217,6 +218,12 @@ print(response.text)
         "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
     },
     "content": {
+        "extension": [
+              {
+                  "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                  "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/20240412_124150_e8443b40ac434173a45e649b40b6a9f4.png?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=cTm%2BodgYbW8WSgnjUld8GBmmRXo%3D&Expires=1714137543"
+              }
+        ],
         "contentType": "image/jpeg",
         "url": "https://canvas-client-media.s3.amazonaws.com/example/20231004_154853_07a4ecdae69d4870b6f60398b28e2839.jpg?AWSAccessKeyId=AKIAQB7SIDR7G73XKHCY&Signature=l3gnPv9wgYhdaZ2ba5RlZYrFCu0%3D&Expires=1696473402",
         "title": "Image title"
@@ -339,6 +346,12 @@ print(response.text)
                     "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
                 },
                 "content": {
+                    "extension": [
+                        {
+                            "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                            "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/20240412_124150_e8443b40ac434173a45e649b40b6a9f4.png?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=cTm%2BodgYbW8WSgnjUld8GBmmRXo%3D&Expires=1714137543"
+                        }
+                    ],
                     "contentType": "image/jpeg",
                     "url": "https://canvas-client-media.s3.amazonaws.com/example/20231004_154853_07a4ecdae69d4870b6f60398b28e2839.jpg?AWSAccessKeyId=AKIAQB7SIDR7G73XKHCY&Signature=l3gnPv9wgYhdaZ2ba5RlZYrFCu0%3D&Expires=1696473402",
                     "title": "Image title"

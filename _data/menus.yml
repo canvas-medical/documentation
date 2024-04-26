@@ -281,6 +281,10 @@ api_location:
 api_media:
  - title: "Media Create"
    url: /api/media/#create
+ - title: "Media Read"
+   url: /api/media/#read
+ - title: "Media Search"
+   url: /api/media/#search
 api_medication:
  - title: "Medication Read"
    url: /api/medication/#read
