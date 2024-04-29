@@ -8,17 +8,17 @@ The commands module lets you define commands within a specific note in Canvas, w
 
 The following commands are available for use in this module:
 
-- Assess
-- Diagnose
-- Goal
-- HistoryOfPresentIllness
-- MedicationStatement
-- Plan
-- Prescribe
-- Questionnaire
-- ReasonForVisit
-- StopMedication
-- UpdateGoal
+- [Assess](#assess)
+- [Diagnose](#diagnose)
+- [Goal](#goal)
+- [HistoryOfPresentIllness](#historyofpresentillness)
+- [MedicationStatement](#medicationstatement)
+- [Plan](#plan)
+- [Prescribe](#prescribe)
+- [Questionnaire](#questionnaire)
+- [ReasonForVisit](#reasonforvisit)
+- [StopMedication](#stopmedication)
+- [UpdateGoal](#updategoal)
 
 All commands share the following init kwarg parameters:
 
