@@ -24,7 +24,7 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 **Commands**:
 
 - `auth`: Manage authenticating in Canvas instances
-- `logs`: Listens and prints log streams from the instance
+- `logs`: Stream logs from the instance
 - `plugin`: Manage plugins in a Canvas instance
 - `print-config`: Print the config and exit
 
