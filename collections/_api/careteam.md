@@ -55,9 +55,24 @@ sections:
               Members of the team.<br><br>
               Canvas only allows practitioners to be members of a patient CareTeam. A practitioner can only have one role on a CareTeam, and only one practitioner can have a given role on a CareTeam. <br><br>
             update_description: >-
-              If `participant` is ommitted or sent as an empty list, Canvas will inactivate any care team memberships it finds for the given subject. 
+              If `participant` is omitted or sent as an empty list, Canvas will inactivate any care team participants it finds for the given subject.
             type: array[json]
             attributes:
+                - name: extension
+                  type: array[json]
+                  read_and_search_description: Canvas uses an extension to display whether a specific participant in a care team is the lead or not.
+                  update_description: Canvas supports the ability to mark a participant of a care team as the lead using a specific extension. <br><br>If this extension is omitted, any current care team lead designated in Canvas will stay as the lead. 
+                  attributes:
+                    - name: url
+                      type: string
+                      required_in: update
+                      description: Reference that defines the content of this object.
+                      enum_options:
+                      - value: http://schemas.canvasmedical.com/fhir/extensions/care-team-lead
+                    - name: valueBoolean
+                      type: boolean
+                      required_in: update
+                      description: Value of extension. If the value is set to `True`, it indicates the specific participant as the lead for this care team. Only one active participant can be the lead of a care team.
                 - name: role
                   type: array[json]
                   description: Type of involvement
@@ -101,7 +116,7 @@ sections:
             description: Search for a specific patient's care team in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
           - name: status
-            description: Search for care team memberships of a patient by a specific status. If a status is not specified to search by, note the `id` in the response batch will end in `.status` for all care teams that are not active statuses.
+            description: Search for care team participants of a patient by a specific status. If a status is not specified to search by, note the `id` in the response batch will end in `.status` for all care teams that are not active statuses.
             type: string
             search_options:
                 - value: proposed
@@ -112,17 +127,17 @@ sections:
         endpoints: [read, update, search]
         read:
           description: Read a CareTeam resource.
-          additional_path_parameter_description: The default behavior is to return all active care team memberships for the patient. To return care team members of a different status, add `.status` at the end of the ID (e.g `CareTeam/3e72c07b5aac4dc5929948f82c9afdfd.inactive`).
+          additional_path_parameter_description: The default behavior is to return all active care team participants for the patient. To return care team participants of a different status, add `.status` at the end of the ID (e.g `CareTeam/3e72c07b5aac4dc5929948f82c9afdfd.inactive`).
           responses: [200, 401, 403, 404]
           example_request: careteam-read-request
           example_response: careteam-read-response
         update:
           description: >-
             Update a CareTeam resource.<br><br>
-            The CareTeam update endpoint acts as an upsert, so there is no CareTeam `create` endpoint. Any participants included in the payload will be the patient's active care team members. While any participants no longer included in the payload will be marked as `inactive`. 
+            The CareTeam update endpoint acts as an upsert, so there is no CareTeam `create` endpoint. Any participants included in the payload will be the patient's active care team participants. While any participants no longer included in the payload will be marked as `inactive`.
             <br><br>
             **If-Unmodified-Since Header**:<br>
-            Due to a legacy design detail with the CareTeam implementation, there is a specific condition under which inclusion of this header will not produce expected results. In the case where all members of a CareTeam are removed through the Canvas user interface (i.e. not through the FHIR API), the last modified date for the CareTeam will be equal to the last modified date of the patient record until another member is added to the CareTeam.<br><br>
+            Due to a legacy design detail with the CareTeam implementation, there is a specific condition under which inclusion of this header will not produce expected results. In the case where all participants of a CareTeam are removed through the Canvas user interface (i.e. not through the FHIR API), the last modified date for the CareTeam will be equal to the last modified date of the patient record until another participant is added to the CareTeam.<br><br>
             More information about the If-Unmodified-Since header can be found in the [Conditional Requests documentation](/api/conditional-requests/).
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: careteam-update-request
@@ -156,6 +171,12 @@ sections:
     },
     "participant": [
         {
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "valueBoolean": true
+                }
+            ],
             "role": [
                 {
                     "coding": [
@@ -173,6 +194,12 @@ sections:
             }
         },
         {
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "valueBoolean": false
+                }
+            ],
             "role": [
                 {
                     "coding": [
@@ -273,6 +300,12 @@ curl --request PUT \
     },
     "participant": [
         {
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "valueBoolean": true
+                }
+            ],
             "role": [
                 {
                     "coding": [
@@ -290,6 +323,12 @@ curl --request PUT \
             }
         },
         {
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "valueBoolean": false
+                }
+            ],
             "role": [
                 {
                     "coding": [
@@ -335,6 +374,12 @@ payload = {
     },
     "participant": [
         {
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "valueBoolean": True
+                }
+            ],
             "role": [
                 {
                     "coding": [
@@ -352,6 +397,12 @@ payload = {
             }
         },
         {
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "valueBoolean": False
+                }
+            ],
             "role": [
                 {
                     "coding": [
@@ -426,6 +477,12 @@ print(response.text)
                 },
                 "participant": [
                     {
+                        "extension": [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                                "valueBoolean": true
+                            }
+                        ],
                         "role": [
                             {
                                 "coding": [
@@ -443,6 +500,12 @@ print(response.text)
                         }
                     },
                     {
+                        "extension": [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                                "valueBoolean": false
+                            }
+                        ],
                         "role": [
                             {
                                 "coding": [
@@ -475,6 +538,12 @@ print(response.text)
                 },
                 "participant": [
                     {
+                        "extension": [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                                "valueBoolean": false
+                            }
+                        ],
                         "role": [
                             {
                                 "coding": [
