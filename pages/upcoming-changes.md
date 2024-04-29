@@ -59,7 +59,7 @@ Stay up to date on the latest important dates for the Canvas platform.
         <tr>
       <td>FHIR API: Resource Attachment File URLs</td>
       <td style="color: red;">Breaking Change</td>
-      <td>The FHIR spec does not allow expiring presigned URLs for resource attachments. Going forward, HTTP clients that request resource attachment files will need to provide a bearer token in the request. The affected resources are Consent, DocumentReference, DiagnosticReport, Media, Patient, and Practitioner. Unless otherwise specificed, the responses for these requests will be a temporary redirect to the presigned URLs. We have added a temporary extension to the Attachment attribute in each resource that includes the presigned URLs to support the transition.</td>
+      <td>The FHIR spec does not allow expiring pre-signed URLs for resource attachments. Going forward, HTTP clients that request resource attachment files will need to provide a bearer token in the request. The affected resources are Consent, DocumentReference, DiagnosticReport, Media, Patient, and Practitioner. Unless otherwise specified, the responses for these requests will be a temporary redirect to the pre-signed URLs. We have added a temporary extension to the Attachment attribute in each resource that includes the pre-signed URLs to support the transition.</td>
     <td><small>TBD <br> (updates to the existing Attachment attribute)</small></td>
     <td><small>TBD <br> (removing the temporary extension)</small></td>
     </tr>
