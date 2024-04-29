@@ -15,7 +15,7 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 **Options**:
 
 - `--no-ansi`: Disable colorized output
-- `--version`
+- `--version`: Display the installed version of the CLI tool
 - `--verbose`: Show extra output
 - `--install-completion`: Install completion for the current shell.
 - `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
