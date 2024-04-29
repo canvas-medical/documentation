@@ -35,7 +35,7 @@ Stay up to date on the latest important dates for the Canvas platform.
     <tr>
       <td>FHIR API: Create and Updates Return Null</td>
       <td style="color: red;">Breaking Change</td>
-      <td>We currently return the string "null" in the response body for successful create and update interactions. This behavior does not adhere to the FHIR spec. We will be updating all create and update endpoints to return empty response bodies on successful interactions.</td>
+      <td>We currently return the string <code>null</code> in the response body for successful create and update interactions. This behavior does not adhere to the FHIR spec. We will be updating all create and update endpoints to return empty response bodies on successful interactions.</td>
       <td>07/02/2024</td>
       <td></td>
     </tr>
@@ -55,6 +55,13 @@ Stay up to date on the latest important dates for the Canvas platform.
       <code>Location: [base]/[type]/[id]</code></td>
       <td>07/02/2024</td>
       <td></td>
+    </tr>
+        <tr>
+      <td>FHIR API: Resource Attachment File URLs</td>
+      <td style="color: red;">Breaking Change</td>
+      <td>The FHIR spec does not allow expiring pre-signed URLs for resource attachments. Going forward, HTTP clients that request resource attachment files will need to provide a bearer token in the request. The affected resources are Consent, DocumentReference, DiagnosticReport, Media, Patient, and Practitioner. Unless otherwise specified, the responses for these requests will be a temporary redirect to the pre-signed URLs. We have added a temporary extension to the Attachment attribute in each resource that includes the pre-signed URLs to support the transition.</td>
+    <td><small>TBD <br> (updates to the existing Attachment attribute)</small></td>
+    <td><small>TBD <br> (removing the temporary extension)</small></td>
     </tr>
     <tr>
       <td>FHIR API: Setting appointment location using the location integer value</td>
