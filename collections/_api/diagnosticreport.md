@@ -142,8 +142,8 @@ sections:
           - name: presentedForm
             type: array[json]
             description: >-
-              Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created. <br>
-              **NOTE: As we are transitioning to the new URL format (static URL), we are enabling an extension to retain previously used URLs until the transition to the new static URL is finalized. Use this extension for backward-compatible URLs until the transition is completed.**
+              Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created. <br><br>
+              **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             attributes:
                 - name: url
                   type: string

@@ -156,12 +156,13 @@ sections:
                 description: Type the reference refers to (e.g. "Organization").
           - name: content
             type: array[json]
-            description: Document referenced
+            description: >-
+              Document referenced<br><br>
+              **Note: There is a temporary extension on Attachment that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             attributes:
               - name: attachment
                 description: >-
-                    Where to access the document.<br>
-                    **NOTE: As we are transitioning to the new URL format (static URL), we are enabling an extension to retain previously used URLs until the transition to the new static URL is finalized. Use this extension for backward-compatible URLs until the transition is completed.**
+                    Where to access the document.<br><br>
                 type: json
                 attributes: 
                   - name: contentType

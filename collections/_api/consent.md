@@ -48,8 +48,8 @@ sections:
             description: >-
               The source on which this consent statement is based.<br><br>
               For create interactions, `sourceAttachment.title`, `sourceAttachment.content_type`, and `sourceAttachment.data` are required.<br><br>
-              For read/search interactions, Canvas returns the `sourceAttachment.url`.<br>
-              **NOTE: As we are transitioning to the new URL format (static URL), we are enabling an extension to retain previously used URLs until the transition to the new static URL is finalized. Use this extension for backward-compatible URLs until the transition is completed.**
+              For read/search interactions, Canvas returns the `sourceAttachment.url`.<br><br>
+              **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
           - name: provision
             type: json
             description: >-
