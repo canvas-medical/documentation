@@ -222,7 +222,7 @@ $ canvas plugin init [OPTIONS] [TEMPLATE]
 
 ### `canvas plugin install`
 
-Installs a given Python package into a running Canvas instance.
+Installs a plugin into a Canvas instance
 
 **Usage**:
 
