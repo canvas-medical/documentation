@@ -175,7 +175,7 @@ $ canvas plugin [OPTIONS] COMMAND [ARGS]...
 **Commands**:
 
 - `delete`: Delete a disabled plugin from an instance
-- `init`: Create a plugin from a template using Cookiecutter
+- `init`: Create a plugin from a template
 - `install`: Installs a given Python package into a running Canvas instance
 - `list`: Lists all plugins from the instance
 - `update`: Updates a plugin from an instance
