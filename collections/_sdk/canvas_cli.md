@@ -242,7 +242,7 @@ $ canvas plugin install [OPTIONS] PACKAGE
 
 ### `canvas plugin validate-manifest`
 
-Validates the Canvas Manifest json file of a plugin package.
+Validates the Canvas manifest json file of a plugin.
 
 **Usage**:
 
