@@ -177,7 +177,7 @@ $ canvas plugin [OPTIONS] COMMAND [ARGS]...
 - `delete`: Delete a disabled plugin from an instance
 - `init`: Create a plugin from a template
 - `install`: Installs a plugin into a Canvas instance
-- `list`: Lists all plugins from the instance
+- `list`: Lists all plugins from an instance
 - `update`: Updates a plugin from an instance
 - `validate-manifest`: Validates the Canvas Manifest json file of a plugin package
 
