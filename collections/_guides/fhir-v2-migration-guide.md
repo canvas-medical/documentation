@@ -52,8 +52,8 @@ We created a diff-tool that allowed for requests sent to the v1 API to be mock-r
     - The `status` field is required, but is not used by Canvas. Canvas recommends sending **active**.
     - The `connectionType` field is required, but is not used by Canvas. Canvas recommends sending an empty JSON object: `{}`
     - The `payloadType` field is required, but is not used by Canvas. Canvas recommends sending: `[{"coding": []}]`
-  - The `appointmentType` field must contain one coding, and it must be a SNOMED or INTERNAL coding.
-  - Per FHIR, the `status` field on `participant` elements is required, but is not used by Canvas. Canvas recommends sending **active**.
+- The `appointmentType` field must contain one coding, and it must be a SNOMED or INTERNAL coding.
+- Per FHIR, the `status` field on `participant` elements is required, but is not used by Canvas. Canvas recommends sending **active**.
 
 **Search**
 
