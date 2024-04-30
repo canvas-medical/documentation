@@ -179,7 +179,7 @@ $ canvas plugin [OPTIONS] COMMAND [ARGS]...
 - `install`: Installs a plugin into a Canvas instance
 - `list`: Lists all plugins from an instance
 - `update`: Updates a plugin from an instance
-- `validate-manifest`: Validates the Canvas Manifest json file of a plugin package
+- `validate-manifest`: Validates the Canvas manifest json file of a plugin
 
 ### `canvas plugin delete`
 
