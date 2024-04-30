@@ -68,7 +68,7 @@ sections:
                       required_in: update
                       description: Reference that defines the content of this object.
                       enum_options:
-                      - value: http://schemas.canvasmedical.com/fhir/extensions/care-team-lead
+                      - value: http://schemas.canvasmedical.com/fhir/extensions/careteam-lead
                     - name: valueBoolean
                       type: boolean
                       required_in: update
@@ -173,7 +173,7 @@ sections:
         {
             "extension": [
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
                     "valueBoolean": true
                 }
             ],
@@ -196,7 +196,7 @@ sections:
         {
             "extension": [
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
                     "valueBoolean": false
                 }
             ],
@@ -302,7 +302,7 @@ curl --request PUT \
         {
             "extension": [
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
                     "valueBoolean": true
                 }
             ],
@@ -325,7 +325,7 @@ curl --request PUT \
         {
             "extension": [
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
                     "valueBoolean": false
                 }
             ],
@@ -376,7 +376,7 @@ payload = {
         {
             "extension": [
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
                     "valueBoolean": True
                 }
             ],
@@ -399,7 +399,7 @@ payload = {
         {
             "extension": [
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
                     "valueBoolean": False
                 }
             ],
@@ -479,7 +479,7 @@ print(response.text)
                     {
                         "extension": [
                             {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
                                 "valueBoolean": true
                             }
                         ],
@@ -502,7 +502,7 @@ print(response.text)
                     {
                         "extension": [
                             {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
                                 "valueBoolean": false
                             }
                         ],
@@ -540,7 +540,7 @@ print(response.text)
                     {
                         "extension": [
                             {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/care-team-lead",
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
                                 "valueBoolean": false
                             }
                         ],
