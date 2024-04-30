@@ -252,7 +252,7 @@ $ canvas plugin validate-manifest [OPTIONS] PACKAGE
 
 **Arguments**:
 
-- `PACKAGE`: Path to a dir containing the python package to install [required]
+- `PACKAGE`: Path to a dir containing the plugin to install [required]
 
 **Options**:
 
