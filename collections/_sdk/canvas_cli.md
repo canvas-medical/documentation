@@ -203,7 +203,7 @@ $ canvas plugin delete [OPTIONS] NAME
 
 ### `canvas plugin init`
 
-Create a plugin from a template using Cookiecutter.
+Create a plugin from a template.
 
 **Usage**:
 
