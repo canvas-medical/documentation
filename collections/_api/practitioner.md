@@ -33,9 +33,12 @@ sections:
           - name: name
             type: string
             description: A search that may match any of the string fields in the name, including family, given, prefix, suffix, and/or text. Partial search is supported. If the practitioner you are looking for is inactive, you will still need to pass `include-non-scheduleable-practitioners=true`.
-          - name: include-non-scheduleable-practitioners
+          - name: include-non-schedulable-practitioners
             type: boolean
-            description: By default, only scheduleable staff are displayed. Passing this parameter as **true** will return all active staff.
+            description: By default, only schedulable staff are displayed. Passing this parameter as **true** will return all active staff.
+          - name: "[ DEPRECATED ] include-non-scheduleable-practitioners"
+            description: Please migrate to use the correct search parameter `include-non-schedulable-practitioners`.
+
         endpoints: [read, search]
         read:
           responses: [200, 401, 403, 404]
