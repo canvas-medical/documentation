@@ -4,6 +4,34 @@ title: "Events"
 
 ### Events
 
+**What is an Event?**
+
+An event is an occurrence of an action that happens within Canvas. For example, a patient being prescribed a medication, a user searching for a condition or an appointment being created are all examples of events.
+
+**Why should I use them?**
+
+By writing plugins that respond to events, plugin code is able to be notified and react to events that occur in Canvas. This enables plugin authors to create custom workflows whenever a relevant event takes place.
+
+**How do I use them?**
+
+To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseProtocol`. For example:
+
+```
+from canvas_sdk.events import EventType
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
+
+    def compute(self):
+        ....
+```
+
+The plugin author can enter custom workflow code into the `compute` method that will execute every time an Allergy Intolerance is created in Canvas.
+
+For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
+
+### Event Types
+
 The following Canvas events are able to trigger a plugin to execute.
 
 | Event | Description |
