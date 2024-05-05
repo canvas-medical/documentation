@@ -1,162 +1,165 @@
 ---
 title: "Customize Search Results"
+last_modified_at: "2024-05-17"
 guide_for:
 ---
-Canvas's search functions are typically used dozens of times in a single patient interaction. Navigating through the thousands of options within a drop-down can be a daunting task for a clinician. Keywords and quick-picks can help improve the experience, but their impact is often limited. Our plugins allow you to add your own complex logic to help surface the right options, with the right context, at the right time. We currently support altering our condition search results through the Plugins beta, and will continue to expand this offering throughout the platform. 
+How can you encourage the right selections to be made according to your care model? Our plugins allow you to add your own complex logic to help surface the right options, with the right context, at the right time. We support modifying search results in [all refactored commands](/product-updates/commands-module/#progress). 
 
-{% include alert.html type="info" content=" <b>Plugins are currently in beta.</b> If you are interested in participating in our beta for Plugins, please reach out to product@canvasmedical.com." %}
+{% include alert.html type="info" content=" <b>Plugins are new.</b> If you are interested in enabling plugins for your Canvas instance, please reach out to product@canvasmedical.com." %}
 
-First time using plugins? Follow our [quickstart guide](https://canvas-medical.github.io/canvas-core/quickstart/plugins.html#) to get started. 
-<br>
-* * *
-## What you'll learn
-In this guide, you will learn how to do the following:
-- Customize Condition Search
-- Customize Medication Search (coming soon)
-- Customize Refer Search (coming soon)
-<br>
-<br>
+First, we'll show you a complete example of customizing the search results for
+choosing a medication in a Medication Statement command, then we'll break it
+down piece by piece so you can adapt the example to your own needs.
 
-* * *
+## The Complete Example
 
-### Customize Condition Search
+This example checks for the presence of a particular medication in the search
+results and, if present, annotates that medication option with additional
+information and adjusts its position to the top of the search results.
 
-Your care team may identify ways to make searching easier in Canvas. Plugins can be used to add custom logic, tags, and/or options to the Canvas's search results. Use the examples below to help you brainstorm with your team how to implement changes that would better support your care model. 
-- Replace the results entirely
-    - Only surface the 10 diagnoses that are treated based on your diagnostic range
-    - Call out to an external API to leverage a different source of data or search tool (i.e IMO)
-- Add Results
-    - Add updated descriptions for difficult to find ICD-10 codes
-- Remove Results 
-    - Remove age specific codes that do not match the patient's profile
-    - Remove codes that are excluded benefits
-    - Remove BMI codes that do not match the patient's vitals
-- Reorder Results
-    - Prioritize specific codes over unspecified codes
-    - Prioritize risk adjustable codes
-    - Highlight suspect diagnoses based on captured clinical data
-- Add Annotations to Result
-    - Add warnings for unspecified codes
-    - Add warnings for already diagnosed conditions
-    - Surface payer specific HCC and risk adjustment data
-    - Surface necessary buddy code warnings 
+For reference, here's the difference in behavior with the plugin inactive vs
+active:
 
-Condition search can be modified by intercepting one of two events: <b>PreSearch</b> and <b>PostSearch</b>.
+**Inactive (normal behavior):**
+![With the plugin inactive, the results are unaltered](/assets/images/customize-search-results/plugin-inactive.png){: style='max-width: 100%'}
 
-Use <b>PreSearch</b> if you want to entirely bypass the built-in Canvas search function entirely, and supply your own results based on the user query. In this case, you need to add results to the pre search event. They need to be formatted properly, including `icd10_code`, `icd10_text`, and `preferred_snomed_term` so that the application can use them correctly. You can specify the order and add annotations if desired. This could be useful if your care model has a narrow diagnostic range or if you are calling out another tool's API to return results. 
+**Active (modified behavior):**
+![With the plugin active, the preferred result is listed first, and with additional context](/assets/images/customize-search-results/plugin-active.png){: style='max-width: 100%'}
 
-{% include alert.html type="warning" content="If you are going to remove all the Canvas results as a matter of course, it is better to use PreSearch, to avoid the delay associated with calling the Canvas search function."%}
 
-The example below replaces the Canvas condition search results with the six options listed.
-<br>
+Here's the code in its entirety:
 
 ```python
-from canvas_core import events, logging
-from canvas_core.search.events import PreSearch
-from canvas_core.search.results import CONDITION_SEARCH, Condition, SearchResult
+import json
 
-logger = logging.get_logger(__name__)
-
-@events.handle_event(PreSearch, origin=CONDITION_SEARCH)
-def handle_condition_presearch(event: PreSearch[Condition]) -> None:
-    """Override the condition search result to return recommended conditions"""
-
-    logger.info("Event Interception for Conditions", query=event.query, usage=event.usage)
-
-    if event.usage != 'command.diagnose':
-        return
-
-    logger.info("Pre-searching for diagnose conditions", query=event.query, usage=event.usage)
+from canvas_sdk.events import EventType
+from canvas_sdk.effects import Effect, EffectType
+from canvas_sdk.protocols import BaseProtocol
 
 
-    event.results = [
-        SearchResult[Condition](
-            icd10_code="F32A",
-            icd10_text= "Depression, unspecified",
-            preferred_snomed_term="Depression, unspecified"
-        ),
-        SearchResult[Condition](
-            icd10_code='F419',
-            icd10_text='Anxiety disorder, unspecified',
-            preferred_snomed_term='Anxiety disorder, unspecified'
-        ),
-       SearchResult[Condition](
-            icd10_code='F319',
-            icd10_text='Bipolar disorder, unspecified',
-            preferred_snomed_term='Bipolar disorder, unspecified'
-        ),
-        SearchResult[Condition](
-            icd10_code="F0391",
-            icd10_text= "Unspecified dementia with behavioral disturbance",
-            preferred_snomed_term="Unspecified dementia with behavioral disturbance"
-        ),
-        SearchResult[Condition](
-            icd10_code='F4311',
-            icd10_text='Post-traumatic stress disorder, acute',
-            preferred_snomed_term='Post-traumatic stress disorder, acute'
-        ),
-       SearchResult[Condition](
-            icd10_code='F840',
-            icd10_text='Autistic disorder',
-            preferred_snomed_term='Autistic disorder'
-        )
-    ]
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
-    logger.info("Finished results for condition search", query=event.query)
+    def compute(self):
+        results = self.context.get("results")
+
+        if results is None:
+            return [Effect(type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS, payload=json.dumps(None))]
+
+        post_processed_results = []
+        for result in results:
+            should_float_to_top = False
+            for coding in result.get("extra", {}).get("coding", []):
+                if (
+                    coding.get("code") == 554704
+                    and coding.get("system") == "http://www.fdbhealth.com/"
+                ):
+                    if result.get("annotations") is None:
+                        result["annotations"] = []
+                    result["annotations"].append("Kirkland Signature")
+                    should_float_to_top = True
+            if should_float_to_top:
+                post_processed_results.insert(0, result)
+            else:
+                post_processed_results.append(result)
+
+        return [
+            Effect(
+                type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS,
+                payload=json.dumps(post_processed_results),
+            )
+        ]
 ```
-<br>
-Use <b>PostSearch</b> if you want to start with the results from the built-in Canvas search function and work with those. You can add results, remove results, reorder results, or annotate results.<br><br>
-The example below adds HCC weight information to the search results for the specified ICD10 codes.  
 
+## Anatomy of the Example
+This code can be broken down into the following sections:
+- Register interest in the correct search event
+- Decide whether to make any changes
+- Loop through the results, making modifications as appropriate
+- Return the modified results as a properly typed effect
+
+### Register interest in the correct search event
 ```python
-from canvas_core import events, logging
-from canvas_core.search import events as search_events
-from canvas_core.search import results
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
-logger = logging.get_logger(__name__)
-
-HCC_WEIGHTS: dict[str, str] = {
-    "I110": "HCC 85, weight 0.42",
-    "T8621": "HCC 186, weight 1.0",
-    "T8622": "HCC 186, weight 1.0",
-    "I501": "HCC 85, weight 0.42",
-    "I5020": "HCC 85, weight 0.42",
-    "I5021": "HCC 85, weight 0.42",
-    "I5022": "HCC 85, weight 0.42",
-    "I5023": "HCC 85, weight 0.42",
-    "I5030": "HCC 85, weight 0.42",
-    "I5031": "HCC 85, weight 0.42",
-    "I5032": "HCC 85, weight 0.42",
-    "I5033": "HCC 85, weight 0.42",
-}
-
-
-@events.handle_event(search_events.PreSearch)
-def handle_search_pre_search(event: search_events.PreSearch) -> None:
-    """Log a message before a search request is executed."""
-    logger.debug("Handling pre-search event.", source=event.source, query=event.query)
-
-
-@events.handle_event(search_events.PostSearch, origin=results.CONDITION_SEARCH)
-def handle_search_condition_post_search(event: search_events.PostSearch[results.Condition]) -> None:
-    """Annotate condition search results with HCC weights."""
-    for condition in event.results:
-        if condition.data.icd10_code in HCC_WEIGHTS:
-            condition.add_annotation(HCC_WEIGHTS[condition.data.icd10_code])
-
-    logger.debug(
-        "Handling post-search event.",
-        source=event.source,
-        query=event.query,
-        results=event.results,
-    )
+    def compute(self):
+        results = self.context.get("results")
 ```
-<br>
 
-### Customize Medication Search (coming soon)
-### Customize Refer Search (coming soon)
+The class inherits from `BaseProtocol`, which clues the plugin-runner into
+registering your code as interested in the event or events listed in the
+`RESPONDS_TO` class constant. We only specify one event here,
+`MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, but you could make this value
+a list to fire on multiple events. The event we've chosen to listen for can be
+read backwards to understand when it fires. This event is emitted after ("_post_") the
+normal _search_ results are found for the _medication_ autocomplete field of the
+_medication statement_ command. This event comes with a context that contains the
+search results that would be served to the user if there were no
+modifications.
 
+### Decide whether to make any changes
+```python
+        if results is None:
+            return [Effect(type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS, payload=json.dumps(None))]
+```
 
+If the value of the results `is None`, we bail out early. There is a subtle
+difference between results of `None` and an empty result set (`[]`). Results
+being `None` means "make no changes, present the results without modification",
+whereas an empty result set means "present no options to the user".
 
+### Loop through the results, making modifications as appropriate
+```python
+        post_processed_results = []
+        for result in results:
+            should_float_to_top = False
+            for coding in result.get("extra", {}).get("coding", []):
+                if (
+                    coding.get("code") == 554704
+                    and coding.get("system") == "http://www.fdbhealth.com/"
+                ):
+                    if result.get("annotations") is None:
+                        result["annotations"] = []
+                    result["annotations"].append("Kirkland Signature")
+                    should_float_to_top = True
+            if should_float_to_top:
+                post_processed_results.insert(0, result)
+            else:
+                post_processed_results.append(result)
+```
 
+In this block of code, we create a new list named `post_processed_results` to
+hold our modified result set. We then loop through each result in the
+unmodified results set, and check to see if the current medication result matches our
+chosen criteria (FDB code 554704).
 
+If it does match, we first check to see if any
+annotations already exist and initialize the annotations list if needed. We
+then append our chosen annotation to the result's annotation list and flag it
+as needing to be floated to the top (we had defaulted it to not be floated
+earlier on).
+
+Finally, we add the result to our parallel list, `post_processed_results`. If
+it matched and was marked as being floated to the top, we insert it into the
+list at position 0. If it did not match, we append the result to the end of
+the list.
+
+### Return the modified results as a properly typed effect
+```python
+        return [
+            Effect(
+                type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS,
+                payload=json.dumps(post_processed_results),
+            )
+        ]
+```
+
+With our list of modified results in place, we just need to return an effect
+of type `AUTOCOMPLETE_SEARCH_RESULTS` with our modified list as the payload.
+
+The dropdown of options presented to the user now reflects our modifications!
+
+<br />
+<br />
+<br />
