@@ -44,7 +44,7 @@ Then use your token in the request headers as you do with the FHIR API:
 <br>
 
 ## Create
-To create a Note resource, POST to `/core/api/notes/v1/Note` using the supported attributes below. Notes will be created with the state “NEW” by default.
+To create a Note resource, POST to `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note` using the supported attributes below. Notes will be created with the state “NEW” by default.
 
 ### Attributes
 
@@ -115,7 +115,7 @@ print(response.text)
 <br>
 
 ## Read
-To read a Note resource, request a GET from `/core/api/notes/v1/Note/{noteKey}`
+To read a Note resource, request a GET from `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note/{noteKey}`
 
 ### Attributes
 
@@ -190,7 +190,7 @@ print(response.text)
 <br>
 
 ## Update
-To update an existing Note resource, `PATCH` to `/core/api/notes/v1/Note/{noteKey}` using any of the following allowed attributes. 
+To update an existing Note resource, `PATCH` to `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note/{noteKey}` using any of the following allowed attributes. 
 
 ### Attributes
 
@@ -245,7 +245,7 @@ print(response.text)
 <br>
 
 ## Search
-To search for Note resources, request a `GET` from `/core/api/notes/v1/Note` and append your search criteria as URL parameters. 
+To search for Note resources, request a `GET` from `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note` and append your search criteria as URL parameters. 
 
 ### Query Params
 **patient_key** text 
@@ -271,10 +271,10 @@ filters the service datetime with the following options:
 `&datetime_of_service__gte=2023-12-06T19:10:56.115532Z`
 
 ### Pagination
-To paginate your requests, simply add a limit query parameter, e.g. `GET` from `/core/api/notes/v1/Note?limit=10`. You can also page through the results with the offset parameter, e.g. `/core/api/notes/v1/Note?limit=10&offset=10`. The response will include a record count, as well as **next**, and **previous** URLs for convenience, and the note data will be contained in the **results** value.
+To paginate your requests, simply add a limit query parameter, e.g. `GET` from `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note?limit=10`. You can also page through the results with the offset parameter, e.g. `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note?limit=10&offset=10`. The response will include a record count, as well as **next**, and **previous** URLs for convenience, and the note data will be contained in the **results** value.
 
 ### Ordering
-To order your results, simply add an ordering query parameter, e.g. `GET` from `/core/api/notes/v1/Note?ordering=datetime_of_service`. To reverse the sort order, prepend the field with a hyphen, e.g. `?ordering=-datetime_of_service`. Available ordering fields include:
+To order your results, simply add an ordering query parameter, e.g. `GET` from `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note?ordering=datetime_of_service`. To reverse the sort order, prepend the field with a hyphen, e.g. `?ordering=-datetime_of_service`. Available ordering fields include:
 - created (the datetime the note was created)
 - modified (the datetime the note was last updated)
 - datetime_of_service (the datetime of the actual service associated with the note)
