@@ -115,7 +115,8 @@ print(response.text)
 <br>
 
 ## Read
-To read a Note resource, request a GET from `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note/{noteKey}`
+To read a Note resource, request a GET from <br>
+`https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note/{noteKey}`
 
 ### Attributes
 
@@ -190,7 +191,9 @@ print(response.text)
 <br>
 
 ## Update
-To update an existing Note resource, `PATCH` to `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note/{noteKey}` using any of the following allowed attributes. 
+To update an existing Note resource, `PATCH` to <br>
+`https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note/{noteKey}` 
+<br> using any of the following allowed attributes. 
 
 ### Attributes
 
@@ -245,7 +248,8 @@ print(response.text)
 <br>
 
 ## Search
-To search for Note resources, request a `GET` from `https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note` and append your search criteria as URL parameters. 
+To search for Note resources, request a `GET` from <br>
+`https://<your-instance>.canvasmedical.com/core/api/notes/v1/Note` <br>and append your search criteria as URL parameters. 
 
 ### Query Params
 **patient_key** text 
