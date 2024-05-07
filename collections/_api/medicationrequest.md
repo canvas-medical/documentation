@@ -181,6 +181,9 @@ sections:
           - name: patient
             description: The patient reference associated to the Medication Request in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
+          - name: requester
+            description: The Practitioner reference associated to the MedicationRequest.requester attribute in the format `Practitioner/6c20b7152cf7421791c5ab4113060b3f`.
+            type: string
           - name: status
             description: Search Medication Requests by a specific status.
             type: string
