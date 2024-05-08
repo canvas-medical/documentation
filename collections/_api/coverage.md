@@ -110,6 +110,12 @@ sections:
           - name: subscriberid
             type: string
             description: Retrieve all coverages with a specific subscriberID
+          - name: status
+            type: string
+            description: Retrieve coverages by a specific status.
+            search_options:
+              - value: active
+              - value: cancelled
         endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
