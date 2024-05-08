@@ -1,0 +1,127 @@
+### Getting Started
+
+`pip install canvas`
+
+**Usage**:
+
+```console
+$ canvas [OPTIONS] COMMAND [ARGS]...
+```
+
+**Options**:
+
+- `--no-ansi`: Disable colorized output
+- `--version`
+- `--verbose`: Show extra output
+- `--install-completion`: Install completion for the current shell.
+- `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
+- `--help`: Show this message and exit.
+
+**Commands**:
+
+- `init`: Create a new plugin
+- `install`: Install a plugin into a Canvas instance
+- `uninstall`: Uninstall a plugin from a Canvas instance
+- `list`: List all plugins from a Canvas instance
+- `validate-manifest`: Validate the Canvas Manifest json file
+- `logs`: Listen and print log streams from a Canvas instance
+
+## `canvas init`
+
+Create a new plugin.
+
+**Usage**:
+
+```console
+$ canvas init [OPTIONS]
+```
+
+**Options**:
+
+- `--help`: Show this message and exit.
+
+## `canvas install`
+
+Install a plugin into a Canvas instance.
+
+**Usage**:
+
+```console
+$ canvas install [OPTIONS] PLUGIN_NAME
+```
+
+**Arguments**:
+
+- `PLUGIN_NAME`: Path to plugin to install [required]
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+## `canvas uninstall`
+
+Uninstall a plugin from a Canvas instance..
+
+**Usage**:
+
+```console
+$ canvas uninstall [OPTIONS] NAME
+```
+
+**Arguments**:
+
+- `NAME`: Plugin name to delete [required]
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+## `canvas list`
+
+List all plugins from a Canvas instance.
+
+**Usage**:
+
+```console
+$ canvas list [OPTIONS]
+```
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+## `canvas validate-manifest`
+
+Validate the Canvas Manifest json file.
+
+**Usage**:
+
+```console
+$ canvas validate-manifest [OPTIONS] PACKAGE
+```
+
+**Arguments**:
+
+- `PLUGIN_NAME`: Path to plugin to install [required]
+
+**Options**:
+
+- `--help`: Show this message and exit.
+
+## `canvas logs`
+
+Listens and prints log streams from the instance.
+
+**Usage**:
+
+```console
+$ canvas logs [OPTIONS]
+```
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
