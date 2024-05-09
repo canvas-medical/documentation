@@ -281,6 +281,10 @@ api_location:
 api_media:
  - title: "Media Create"
    url: /api/media/#create
+ - title: "Media Read"
+   url: /api/media/#read
+ - title: "Media Search"
+   url: /api/media/#search
 api_medication:
  - title: "Medication Read"
    url: /api/medication/#read
@@ -410,6 +414,8 @@ guides_list:
    url: /guides/optimize-patient-intake/
  - title: "Patient Messaging"
    url: /guides/patient-messaging/
+ - title: "Submit a Full Vital Panel via FHIR"
+   url: /guides/submit-vitals-via-fhir/
  - title: "Team Based Care"
    url: /guides/team-based-care/
 

@@ -20,14 +20,16 @@ The commands module is a new, standardized framework for building commands in Ca
 
 ## Expected benefits
 
-Commands migrated to the new framework will function similarly if not identically (minus any confusing quirks or bugs!). However, the following are benefits that we anticipate with commands SDK:
+Commands migrated to the new framework will function similarly if not identically (minus any confusing quirks or bugs!).However, the following are benefits that we anticipate with SDK commands:
 
-### Current State
+### Current State 
 - **Improved performance.** The framework dramatically simplifies the data model behind commands in Canvas, and we expect that this much simpler data model will have a noticeable impact on note load times.
 - **Zero chance for data loss to occur.** The simpler data model allows information to be captured consistently at several layers in the application – starting with the user’s browser cache – which means that your data is persisted in some form as soon as it’s entered.
 - **Consistent keyboard controls.** The framework uses built-in browser accessibility features to provide a first-class keyboard navigation experience across all commands.
 - **Carry forward previous respones** The ability to pull forward the last recorded response will be available more widely across commands. 
-- **Add partially complete commands to automations.** Migrated commands can be added to automations before they are committing, allowing users to include commands that are not fully filled out. 
+- **Add partially complete commands to automations.** Migrated commands can be added to automations before they are committed, allowing users to include commands that are not fully filled out.
+
+[Read more about SDK commands.](/documentation/commands-overview) 
 
 
 ### Future State
@@ -38,80 +40,108 @@ Commands migrated to the new framework will function similarly if not identicall
 ## Progress
 
 <table border="1">
+  <colgroup>
+    <col width="30%">
+    <col width="20%">
+    <col width="50%">
+  </colgroup>
   <thead>
     <tr>
       <th>Command</th>
       <th>Status</th>
+      <th>Changes</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>Plan</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
     </tr>
     <tr> 
       <td>HPI</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
     </tr>
      <tr> 
       <td>Reason for Visit</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
     </tr>
      <tr> 
       <td>Stop Medication</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
     </tr>
      <tr> 
       <td>Questionnaire</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td><ui><li>No longer supports same encounter carry forward setting</li><li>Comment bubbles always show and are color coded to indicate whether content is present (yellow)</li><li>Blank free text responses will no longer print with the question name (i.e ~TXT~)</li></ui></td>
     </tr>
      <tr> 
       <td>Assess</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td><ui><li>Assessing from the condition list adds an uncommitted command directly into the note (based on cursor placement), rather than opening a modal </li></ui></td>
     </tr>
      <tr> 
       <td>Goal</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
     </tr>
      <tr> 
       <td>Update Goal</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
     </tr>
      <tr> 
       <td>Medication Statement</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
     </tr>
     <tr> 
       <td>Prescribe</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ui><li>Adds max refill validation for epcs</li> <li>Limits to 2 indications</li></ui> </td>
     </tr>
       <tr> 
       <td>Task</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Diagnose</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+        <tr> 
+      <td>Perform</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
     </tr>
      <tr> 
       <td>Lab Order</td>
       <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
     </tr>
        <tr> 
       <td>Refill</td>
       <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
     </tr>
      <tr> 
       <td>Image</td>
       <td><span class="tag-next-up"> Next up </span> </td>
-    </tr>
-     <tr> 
-      <td>Diagnose</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
     </tr>
     <tr> 
       <td>Immunization Statement</td>
       <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
     </tr>
      <tr> 
       <td>Refer</td>
       <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
     </tr>
   </tbody>
 </table>

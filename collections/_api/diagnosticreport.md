@@ -141,11 +141,16 @@ sections:
                 description: Type the reference refers to (e.g. "Observation").
           - name: presentedForm
             type: array[json]
-            description: Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created.
+            description: >-
+              Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created. <br><br>
+              **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             attributes:
                 - name: url
                   type: string
-                  description: Uri where the data can be found. 
+                  description: Uri where the data can be found.
+                - name: extension
+                  type: json
+                  description: Extension for backward-compatible URLs 
         search_parameters:
           - name: _id
             type: string
@@ -236,6 +241,12 @@ sections:
     "presentedForm":
     [
         {
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/Screenshot_2024-02-21_at_15.26.42.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=Ns%2BLQ5z5XXWH4WMOXWczuMQ7s0A%3D&Expires=1714138104"
+                }
+            ],
             "url": "https://canvas-client-media.s3.amazonaws.com/instance/Imaging_Report.pdf?AWSAccessKeyId=xxxx&Signature=xxxx&Expires=1675179226"
         }
     ]
@@ -381,6 +392,12 @@ sections:
                 ],
                 "presentedForm": [
                     {
+                        "extension": [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/Screenshot_2024-02-21_at_15.26.42.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=Ns%2BLQ5z5XXWH4WMOXWczuMQ7s0A%3D&Expires=1714138104"
+                            }
+                        ],
                         "url": "https://canvas-client-media.s3.amazonaws.com/instance/20220414_180403_74.pdf?AWSAccessKeyId=xxx&Signature=xxx&Expires=1708462267"
                     }
                 ]
