@@ -3,9 +3,17 @@ title: "Customize Search Results"
 last_modified_at: "2024-05-17"
 guide_for:
 ---
-How can you encourage the right selections to be made according to your care model? Our plugins allow you to add your own complex logic to help surface the right options, with the right context, at the right time. We support modifying search results in [all refactored commands](/product-updates/commands-module/#progress). 
+In a typical visit note, it's common for clinicians to make 20, 30, even 50 or more selections from structured terminologies with commands like Diagnose, Prescribe, Family History, and many more. You can help clinicians make faster and more accurate selections with Canvas plugins. Write simple plugin code to apply custom filtering, sorting, and search result annotations in real time with near zero latency.
 
-{% include alert.html type="info" content=" <b>Plugins are new.</b> If you are interested in enabling plugins for your Canvas instance, please reach out to product@canvasmedical.com." %}
+This search modification can help clinicians:
+
+- Choose the most appropriate medication that is also covered by insurance
+- Prioritize in-network specialists
+- Consider appropriate risk adjustment factors when selecting diagnosis codes
+
+Canvas supports modifying search results in [all refactored commands](/product-updates/commands-module/#progress).
+
+{% include alert.html type="info" content=" <b>Plugins are new.</b> If you are interested in enabling plugins for your Canvas instance, please reach out to <a href='mailto:support@canvasmedical.com'>support@canvasmedical.com</a>)." %}
 
 First, we'll show you a complete example of customizing the search results for
 choosing a medication in a Medication Statement command, then we'll break it
@@ -21,10 +29,12 @@ For reference, here's the difference in behavior with the plugin inactive vs
 active:
 
 **Inactive (normal behavior):**
-![With the plugin inactive, the results are unaltered](/assets/images/customize-search-results/plugin-inactive.png){: style='max-width: 100%'}
+
+![With the plugin inactive, the results are unaltered](/assets/images/customize-search-results/plugin-inactive.png){: style='width: 400px'}
 
 **Active (modified behavior):**
-![With the plugin active, the preferred result is listed first, and with additional context](/assets/images/customize-search-results/plugin-active.png){: style='max-width: 100%'}
+
+![With the plugin active, the preferred result is listed first, and with additional context](/assets/images/customize-search-results/plugin-active.png){: style='width: 400px'}
 
 
 Here's the code in its entirety:
