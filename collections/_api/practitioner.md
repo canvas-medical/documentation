@@ -51,13 +51,21 @@ sections:
                     description: Type the reference refers to (e.g. "Location").
               - name: valueAttachment
                 type: json
-                description: Value of extension.<br><br> The `valueAttachment` attribute is needed for the signature extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature`. This attribute represents the attachment of the practitioner’s real handwritten signature file.
+                description: >- 
+                    Value of extension.<br><br> The `valueAttachment` attribute is needed for the signature extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature`. This attribute represents the attachment of the practitioner’s real handwritten signature file. <br>
+                    **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
+                create_and_update_description: >-
+                    Value of extension.<br><br> The `valueAttachment` attribute is needed for the signature extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature`. This attribute represents the attachment of the practitioner’s real handwritten signature file.
                 attributes:
                   - name: data
                     type: string
                     description: A base64-encoded file. 
                     required_in: create
                     exclude_in: search, read
+                  - name: extension
+                    description: Extension for backward-compatible URLs 
+                    type: json
+                    exclude_in: create, update
                   - name: url
                     type: string
                     description: Uri where the data can be found.
@@ -691,14 +699,15 @@ print(response.text)
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
-            "extension": [
-                {
-                    "valueAttachment": {
-                        "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+            "valueAttachment": {
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                        "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
                     }
-                }
-            ],
-            
+                ],
+                "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+            }
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
@@ -1277,13 +1286,15 @@ print(response.text)
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
-            "extension": [
-                {
-                    "valueAttachment": {
-                        "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+            "valueAttachment": {
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                        "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
                     }
-                }
-            ]
+                ],
+                "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+            }
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",

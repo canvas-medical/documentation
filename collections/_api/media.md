@@ -53,6 +53,12 @@ sections:
               • `content`: Base64 string of the media content<br>
               • `title`: title of the content file<br><br>
               **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
+            create_and_update_description: >-
+              Actual Media<br><br>
+              The content attribute is a JSON object that contains metadata about the content and the content itself. This is a required value. The content object contains three attributes:<br><br>
+              • `contentType`: Supported MIME content types are **image/heic**, **image/jpeg**, **image/png**<br>
+              • `content`: Base64 string of the media content<br>
+              • `title`: title of the content file<br><br>
             type: json
           - name: note
             description: >-
