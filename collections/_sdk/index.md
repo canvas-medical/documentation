@@ -17,7 +17,7 @@ create a co-pilot for charting.
 ## Getting Started
 A guide for developing your first plugin can be found [here](/guides/your-first-plugin).
 
-The Canvas SDK and related tooling is open source tooling. Check out the repo on [GitHub](https://github.com/canvas-medical/canvas-plugins).
+The Canvas SDK and related tooling is open source. Check out the repo on [GitHub](https://github.com/canvas-medical/canvas-plugins).
 
 Get help, request help, suggest future capabilities, or otherwise interact with the Canvas Care Modeling Community [here](https://github.com/canvas-medical/canvas-plugins/discussions).
 
