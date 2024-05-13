@@ -274,9 +274,9 @@ sections:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier
-          - name: include-non-scheduleable-practitioners
+          - name: include-non-schedulable-practitioners
             type: boolean
-            description: By default, only scheduleable practitioners are displayed. Passing this parameter as "true" will return both schedulable and non-schedulable practitioners.
+            description: By default, only schedulable practitioners are displayed. Passing this parameter as "true" will return both schedulable and non-schedulable practitioners.
           - name: active
             type: string
             description: Search by `active` status ("true" or "false" - case insensitive). By default if this param is not present, it will return practitioners with `active` set to True ("true").
