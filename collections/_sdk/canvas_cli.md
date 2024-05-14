@@ -1,4 +1,31 @@
+---
+title: "Canvas CLI"
+---
+
 ### Getting Started
+
+Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas instance subdomains, and add client_id and client_secret credentials to each section. For example, if your Canvas instance url is `https://buttered-popcorn.canvasmedical.com/`, you would have a section `[buttered-popcorn]` with key-value pairs for `client_id` and `client_secret`.
+
+**Example:**
+
+```
+[buttered-popcorn]
+client_id=butter
+client_secret=salt
+
+[dev-buttered-popcorn]
+client_id=devbutter
+client_secret=devsalt
+is_default=true
+
+[localhost]
+client_id=localclientid
+client_secret=localclientsecret
+```
+
+You can define your default host with `is_default=true`. If no default is explicitly defined, the Canvas CLI will use the first instance in the file as the default for each of the CLI commands.
+
+Next, you're ready to install canvas.
 
 `pip install canvas`
 
