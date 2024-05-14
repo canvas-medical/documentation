@@ -7,7 +7,7 @@ layout: "landingpage"
 <div class="cardSectionFullWidthContainer">
     <div class="cardSectionInnerContainer">
         <div class="cardTitleContainer">
-            <img class="cardTitleIcon" src="{{ "/assets/images/guides.svg" | relative_url }}">
+            <img class="cardTitleIcon" src="{{ "/assets/images/font-awesome/fa-book.svg" | relative_url }}">
             <h1 class="cardSectionH1">&nbsp;Guides</h1>
         </div>
         <div class="cardSectionParagraphGuides">

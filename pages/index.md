@@ -64,7 +64,7 @@ permalink: "/"
             </div>
             <div class="cardContainer">
                 <div class="cardHeading">
-                    <img class="cardIcon" src="{{ "/assets/images/guides.svg" | relative_url }}"><span>&nbsp;&nbsp;Guides</span>
+                    <img class="cardIcon" src="{{ "/assets/images/font-awesome/fa-book.svg" | relative_url }}"><span>&nbsp;&nbsp;Guides</span>
                 </div>
                 <div class="cardBody">
                     <span>

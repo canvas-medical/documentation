@@ -17,7 +17,7 @@ create a co-pilot for charting.
 ## Getting Started
 
 <div style="display: flex; margin-bottom: 10px;margin-right: 10px;border: 3px solid #F5F5F5;border-radius: 5px;">
-    <img src="/assets/images/guides.svg" style="margin: 15px;width: 30px;">
+    <img src="/assets/images/font-awesome/fa-book.svg" style="margin: 15px;width: 30px;">
     <div style="margin: 10px;">
         <h3 style="margin-bottom: 0px; margin: 0;">Guide: Your First Plugin</h3>
         <span>A guide for developing your first plugin can be found <a href="/guides/your-first-plugin">here</a>.</span>
