@@ -1,5 +1,5 @@
 ---
-title: Truncate Internal Comment on Tasks
+title: Truncates Internal Comment on Tasks
 layout: productupdates
 tags: ui
 date: 2024-04-10 22:00:00

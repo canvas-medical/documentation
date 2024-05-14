@@ -124,4 +124,15 @@ layout: "landingpage"
             </div>
             </div>
         </a>
+        <a href="/guides/submit-vitals-via-fhir">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span>Submit Vitals via FHIR</span>
+                </div>
+                <div class="cardBody">
+                Learn how to document a full vitals panel via FHIR
+            </div>
+            </div>
+        </a>
 </div>

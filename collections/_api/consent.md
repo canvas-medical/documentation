@@ -48,7 +48,8 @@ sections:
             description: >-
               The source on which this consent statement is based.<br><br>
               For create interactions, `sourceAttachment.title`, `sourceAttachment.content_type`, and `sourceAttachment.data` are required.<br><br>
-              For read/search interactions, Canvas returns the `sourceAttachment.url`.
+              For read/search interactions, Canvas returns the `sourceAttachment.url`.<br><br>
+              **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
           - name: provision
             type: json
             description: >-
@@ -241,6 +242,12 @@ print(response.text)
   },
   "dateTime": "2022-04-13T14:43:32.317476+00:00",
   "sourceAttachment": {
+      "extension": [
+              {
+                  "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                  "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
+              }
+      ],
       "url": "https://canvas-client-media.s3.amazonaws.com/training/20220330_211811_60.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=h68Xavx0JLoA7zUhBA4bnSeVCvQ%3D&Expires=1693416882"
   },
   "provision": {
@@ -360,6 +367,12 @@ print(response.text)
           },
           "dateTime": "2022-04-13T14:43:32.317476+00:00",
           "sourceAttachment": {
+            "extension": [
+                  {
+                      "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                      "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
+                  }
+              ],
               "url": "https://canvas-client-media.s3.amazonaws.com/training/20220330_211811_60.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=2xQC7mNbJ36CzRkC%2FmlqynHDW%2FU%3D&Expires=1694808853"
           },
           "provision": {

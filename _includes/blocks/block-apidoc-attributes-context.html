@@ -1,3 +1,9 @@
+{% if attribute.description_for_all_endpoints %}
+<div class="apidoc__object__description">
+    {{ attribute.description_for_all_endpoints | markdownify }}
+</div>
+{% endif %}
+
 {% if include.context == 'update' %}
     {% if attribute.create_and_update_description %}
     <div class="apidoc__object__description">
