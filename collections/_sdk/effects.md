@@ -14,7 +14,7 @@ Effects are useful because they can perform pre-determined actions in the Canvas
 
 Effects can be returned as a list from the `compute` method of a plugin that inherits from `BaseProtocol`. For example:
 
-```
+```python
 from canvas_sdk.events import EventType
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.protocols import BaseProtocol

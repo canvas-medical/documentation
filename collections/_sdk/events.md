@@ -14,7 +14,7 @@ By writing plugins that respond to events, plugin code is able to be notified an
 
 To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseProtocol`. For example:
 
-```
+```python
 from canvas_sdk.events import EventType
 
 class Protocol(BaseProtocol):
