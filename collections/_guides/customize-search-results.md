@@ -2,6 +2,9 @@
 title: "Customize Search Results"
 last_modified_at: "2024-05-17"
 guide_for:
+- /sdk/events/
+- /sdk/effects/
+- /sdk/protocols/
 ---
 In a typical visit note, it's common for clinicians to make 20, 30, even 50 or more selections from structured terminologies with commands like Diagnose, Prescribe, Family History, and many more. You can help clinicians make faster and more accurate selections with Canvas plugins. Write simple plugin code to apply custom filtering, sorting, and search result annotations in real time with near zero latency.
 

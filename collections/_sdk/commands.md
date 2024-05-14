@@ -2,7 +2,7 @@
 title: "Commands"
 ---
 
-# Commands
+{% include alert.html type="info" content= "<b>Work in progress: </b> The effects returned by these objects will be of limited value until commands update live in the note. We are working on this in order to enable you to create co-charting plugins."  %}
 
 The commands module lets you define commands within a specific note in Canvas, which capture and display data. Each command can be imported into a plugin and used to build a new, or reference an existing, command instance within a specific note.
 
@@ -20,9 +20,11 @@ The following commands are available for use in this module:
 - [StopMedication](#stopmedication)
 - [UpdateGoal](#updategoal)
 
-All commands share the following init kwarg parameters:
+## Common Attributes
 
-**Parameters**:
+### Parameters
+
+All commands share the following init kwarg parameters:
 
 | Name           | Type     | Required                               | Description                                                             |
 | :------------- | :------- | :------------------------------------- | :---------------------------------------------------------------------- |
@@ -32,25 +34,27 @@ All commands share the following init kwarg parameters:
 
 All parameters can be set upon initialization, and also updated on the class instance.
 
+### Methods
+
 All commands have the following methods:
 
-### originate
+#### originate
 
 Returns an Effect that originates a new command in the note body.
 
-### edit
+#### edit
 
 Returns an Effect that edits an existing command with the values set on the command class instance.
 
-### delete
+#### delete
 
 Returns an Effect that deletes an existing, non-committed command from the note body.
 
-### commit
+#### commit
 
 Returns an Effect that commits an existing, non-committed command to the note body.
 
-### enter_in_error
+#### enter_in_error
 
 Returns an effect that enter-in-errors an existing, committed command in the note body.
 

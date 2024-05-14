@@ -2,8 +2,6 @@
 title: "Effects"
 ---
 
-### Effects
-
 **What is an Effect?**
 
 Effects are sent from plugins back to Canvas in order to perform an action. Effects can be used to react to events that are received in plugins and then send Canvas instructions to 'do something'.
@@ -47,11 +45,8 @@ The following effects are available to be applied in Canvas.
 
 | Effect | Description |
 | ----- | ----------- |
-| LOG | Logs a message to the console. |
 | AUTOCOMPLETE_SEARCH_RESULTS | Can be used to modify search results by re-ordering or adding text annotations to individual result records. |
 
-The following effects are on the roadmap to be available in the near future.
-
-| Effect | Description |
-| ----- | ----------- |
-| ADD_PLAN_COMMAND | Adds the Plan command into a note. |
+<br/>
+<br/>
+<br/>

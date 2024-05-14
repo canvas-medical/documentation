@@ -2,9 +2,7 @@
 title: "Utils"
 ---
 
-## Utils
-
-### Making requests with Http
+## Making requests with Http
 
 The Canvas SDK offers a helper class for completing HTTP calls.
 

@@ -2,8 +2,6 @@
 title: "Events"
 ---
 
-### Events
-
 **What is an Event?**
 
 An event is an occurrence of an action that happens within Canvas. For example, a patient being prescribed a medication, a user searching for a condition or an appointment being created are all examples of events.
@@ -87,6 +85,7 @@ The following Canvas events are able to trigger a plugin to execute.
 | TASK_UPDATED | Occurs when a task is updated. |
 | VITAL_SIGN_CREATED | Occurs when a vitals entry is created for a patient using the Vitals command. Additional details for the vitals become available with subsequent VITAL_SIGN_UPDATED events. |
 | VITAL_SIGN_UPDATED | Occurs when a vitals entry is updated for a patient. |
+| MEDICATION_STATEMENT__MEDICATION__POST_SEARCH | Occurs after a medication statement search for a medication. |
 
 
 The following events are on the roadmap to be available in the near future.
@@ -107,7 +106,6 @@ The following events are on the roadmap to be available in the near future.
 | POST_COMMAND_EXECUTE_ACTION | Occurs after an action is executed on any command. |
 | ASSESS_COMMAND__CONDITION_SELECTED | Occurs after a condition is selected in the Assess command. |
 | MEDICATION_STATEMENT__MEDICATION__PRE_SEARCH | Occurs before a medication statement search for a medication. |
-| MEDICATION_STATEMENT__MEDICATION__POST_SEARCH | Occurs after a medication statement search for a medication. |
 | MEDICATION_STATEMENT__MEDICATION__SELECTED | Occurs when a medication is selected from medication statement search results. |
 | ASSESS_COMMAND__PRE_ORIGINATE | Occurs before the Assess command is first entered into a note. |
 | ASSESS_COMMAND__POST_ORIGINATE | Occurs after the Assess command is first entered into a note. |

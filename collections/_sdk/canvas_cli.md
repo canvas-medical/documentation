@@ -2,9 +2,16 @@
 title: "Canvas CLI"
 ---
 
-### Getting Started
+## Getting Started
 
+### Installation
+
+To install the Canvas CLI, simply `pip install canvas`.
+
+### Configuration and Authenticating to Your Canvas Instance
 Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas instance subdomains, and add client_id and client_secret credentials to each section. For example, if your Canvas instance url is `https://buttered-popcorn.canvasmedical.com/`, you would have a section `[buttered-popcorn]` with key-value pairs for `client_id` and `client_secret`.
+
+{% include alert.html type="info" content= "<b>Getting Credentials: </b>Learn how to get register a client_id and client_secret <a href='/api/customer-authentication/#registering-a-third-party-application-on-canvas'>here</a>.<br/>The Canvas CLI uses OAuth, just like the FHIR API."  %}
 
 **Example:**
 
@@ -25,11 +32,9 @@ client_secret=localclientsecret
 
 You can define your default host with `is_default=true`. If no default is explicitly defined, the Canvas CLI will use the first instance in the file as the default for each of the CLI commands.
 
-Next, you're ready to install canvas.
+**You are now ready to use the Canvas CLI**
 
-`pip install canvas`
-
-**Usage**:
+## Usage
 
 ```console
 $ canvas [OPTIONS] COMMAND [ARGS]...
@@ -44,7 +49,7 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 - `--help`: Show this message and exit.
 
-**Commands**:
+## Commands
 
 - `init`: Create a new plugin
 - `install`: Install a plugin into a Canvas instance
@@ -53,7 +58,7 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
 
-## `canvas init`
+### `canvas init`
 
 Create a new plugin.
 
@@ -67,7 +72,7 @@ $ canvas init [OPTIONS]
 
 - `--help`: Show this message and exit.
 
-## `canvas install`
+### `canvas install`
 
 Install a plugin into a Canvas instance.
 
@@ -86,9 +91,9 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
-## `canvas uninstall`
+### `canvas uninstall`
 
-Uninstall a plugin from a Canvas instance..
+Uninstall a plugin from a Canvas instance.
 
 **Usage**:
 
@@ -105,9 +110,9 @@ $ canvas uninstall [OPTIONS] NAME
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
-## `canvas list`
+### `canvas list`
 
-List all plugins from a Canvas instance.
+List all plugins on a Canvas instance.
 
 **Usage**:
 
@@ -120,7 +125,7 @@ $ canvas list [OPTIONS]
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
-## `canvas validate-manifest`
+### `canvas validate-manifest`
 
 Validate the Canvas Manifest json file.
 
@@ -132,15 +137,15 @@ $ canvas validate-manifest [OPTIONS] PACKAGE
 
 **Arguments**:
 
-- `PLUGIN_NAME`: Path to plugin to install [required]
+- `PACKAGE`: Path to plugin to validate [required]
 
 **Options**:
 
 - `--help`: Show this message and exit.
 
-## `canvas logs`
+### `canvas logs`
 
-Listens and prints log streams from the instance.
+Subscribes to a log stream and prints to your console.
 
 **Usage**:
 
