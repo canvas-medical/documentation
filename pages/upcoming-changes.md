@@ -29,5 +29,11 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td></td>
       <td>TBD</td>
     </tr>
+    <tr>
+      <td>Workflow SDK</td>
+      <td>The Workflow SDK has been deprecated, and will only receive fixes for defects or security issues. We are replacing its functionality with the Canvas SDK and its plugins, and will not set a date for the removal of the Workflow SDK until the Canvas SDK reaches feature parity. At that time we will present a migration plan to convert Workflow SDK Protocols into Canvas Plugins.</td>
+      <td></td>
+      <td>TBD<br/>(Not Soon)</td>
+    </tr>
   </tbody>
 </table>

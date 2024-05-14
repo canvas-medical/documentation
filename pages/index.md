@@ -33,8 +33,32 @@ permalink: "/"
                         Customize the clinical experience with our SDK, and extend it with our API
                     </span>
                      <div class="anchorContainer">
-                    <a href="/api/quickstart">API Quickstart</a><br/>
-                    <a href="/sdk/workflow-sdk-quickstart/">SDK Quickstart</a><br/>
+                        <dl>
+                          <dt>
+                            <strong>SDK</strong>
+                          </dt>
+                          <dd>
+                            <a href="/sdk/">Introduction</a><br/>
+                          </dd>
+                          <dd>
+                            <a href="/guides/your-first-plugin/">Your First Plugin</a><br/>
+                          </dd>
+                          <dt>
+                            <strong>API</strong>
+                          </dt>
+                          <dd>
+                            <a href="/api/">Introduction</a><br/>
+                          </dd>
+                          <dd>
+                            <a href="/api/quickstart">Quickstart</a><br/>
+                          </dd>
+                          <dt>
+                            <strong>Workflow Kit <a href="/product-updates/important-dates/">(Deprecated)</a></strong>
+                          </dt>
+                          <dd>
+                            <a href="/sdk/workflow-sdk-quickstart/">Quickstart</a><br/>
+                          </dd>
+                        </dl>
                     </div>
                 </div>
             </div>
