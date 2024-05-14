@@ -53,7 +53,7 @@ permalink: "/"
                             <a href="/api/quickstart">Quickstart</a><br/>
                           </dd>
                           <dt>
-                            <strong>Workflow Kit <a href="/product-updates/important-dates/">(Deprecated)</a></strong>
+                            <strong>Workflow Kit <a href="/product-updates/important-dates/#:~:text=07/02/2024-,Workflow%20SDK,-New%20Version">(Deprecated)</a></strong>
                           </dt>
                           <dd>
                             <a href="/sdk/workflow-sdk-quickstart/">Quickstart</a><br/>
