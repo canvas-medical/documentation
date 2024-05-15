@@ -11,8 +11,8 @@ This endpoint is a [FHIR operation](https://hl7.org/fhir/R4/operations.html), so
 The bearer token included in requests send to this endpoint must have one of the following scopes:
 
 
-- `system/Staff.send-reset-password-email`
-- `user/Staff.send-reset-password-email`
+- `system/Practitioner.send-reset-password-email`
+- `user/Practitioner.send-reset-password-email`
 
 
 {% tabs send-reset-password-to-practitioner %}
