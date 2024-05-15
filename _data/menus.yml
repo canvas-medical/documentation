@@ -341,8 +341,8 @@ api_practitioner:
    url: /api/practitioner/#update
  - title: "Practitioner Search"
    url: /api/practitioner/#search
- - title: "Send Reset Password Email"
-   url: /api/practitioner-password-reset-email
+ - title: "Practitioner Operations"
+   url: /api/practitioner-operations
 api_procedure:
  - title: "Procedure Read"
    url: /api/procedure/#read
