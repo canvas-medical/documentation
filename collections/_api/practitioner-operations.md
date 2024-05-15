@@ -1,6 +1,6 @@
 ---
 layout: apipage
-title: Send reset password email to Practitioner
+title: Practitioner Operations
 date: 2024-05-15
 ---
 ## send-reset-password-email
