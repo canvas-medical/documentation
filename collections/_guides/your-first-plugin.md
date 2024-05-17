@@ -1,6 +1,6 @@
 ---
 title: "Your First Plugin"
-guide_for: 
+guide_for:
 - /sdk/quickstart/
 - /sdk/canvas_cli/
 - /sdk/events/
@@ -19,7 +19,7 @@ The video below showcases a Canvas engineer working through this guide
 step-by-step.
 
 <iframe width="560" height="315"
-src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=XuqH0aDwIcEyAJkI&amp;controls=0"
+src="https://www.youtube.com/embed/X2JOEElq2ck?si=V6oA6eolpyq_kYGE&amp;controls=0"
 title="YouTube video player" frameborder="0" allow="accelerometer; autoplay;
 clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
