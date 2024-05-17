@@ -6,7 +6,7 @@ title: "Canvas CLI"
 
 ### Installation
 
-To install the Canvas CLI, simply `pip install canvas`.
+To install the Canvas CLI, simply `pip install canvas`. Python 3.11 or 3.12 is required.
 
 ### Configuration and Authenticating to Your Canvas Instance
 Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas instance subdomains, and add client_id and client_secret credentials to each section. For example, if your Canvas instance url is `https://buttered-popcorn.canvasmedical.com/`, you would have a section `[buttered-popcorn]` with key-value pairs for `client_id` and `client_secret`.

@@ -27,7 +27,7 @@ referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## 1. Install the Canvas CLI
 
-To install the Canvas CLI, simply `pip install canvas`. You can find
+To install the Canvas CLI, simply `pip install canvas`. Python 3.11 or 3.12 is required. You can find
 additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
 
 ## 2. Configure the Canvas CLI for your instances
@@ -122,7 +122,7 @@ installation of the plugin.
         "effects": [],
         "views": []
     },
-    "secrets": [],
+    "secrets": ["my_secret_code"],
     "tags": {},
     "references": [],
     "license": "",
@@ -138,8 +138,7 @@ Only protocols declared here are invoked by the plugin runner. If they are
 not declared, they will be ignored.
 
 Secrets can be declared (though not defined) here. Any secrets declared here
-will be initialized on plugin install, and can be set in the plugin listing on
-your Canvas instance.
+will be initialized on plugin install, and can be set in the plugin listing in the Settings section of your Canvas instance.
 
 ### README.md
 
