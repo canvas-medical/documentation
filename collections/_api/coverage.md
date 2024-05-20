@@ -15,6 +15,7 @@ sections:
             type: string
           - name: id
             required_in: update
+            exclude_in: create
             description: The identifier of the Coverage.
             type: string
           - name: status
