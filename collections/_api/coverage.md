@@ -14,7 +14,7 @@ sections:
             description: The FHIR Resource name.
             type: string
           - name: id
-            required_in: create,update
+            required_in: update
             description: The identifier of the Coverage.
             type: string
           - name: status
