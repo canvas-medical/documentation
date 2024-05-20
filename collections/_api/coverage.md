@@ -171,7 +171,7 @@ sections:
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
           - name: subscriberId
-            description: The insurer assigned ID for the subscriber.
+            description: The insurer-assigned ID for the subscriber.
             type: string
             required_in: create,update
           - name: beneficiary
@@ -262,7 +262,7 @@ sections:
               The period during which the Coverage is in force.<br><br>
               A missing end date means the coverage continues to be in force.
             create_and_update_description:
-              If the start date is missing on a create/update, it will be set to the current date of ingestion.
+              If the start date is missing for a create/update interaction, it will be set to the current date of ingestion.
             type: json
             attributes:
               - name: start
@@ -275,7 +275,7 @@ sections:
             type: array[json]
             description_for_all_endpoints: Issuer of the policy.
             create_and_update_description: >-
-              Two methods for passing this data are supported:
+              Two methods for specifying this data are supported:
                - sending an [**Organization**](/api/organization) reference in `payor[0].reference`
                ```json
                 "payor": [
