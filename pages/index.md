@@ -2,7 +2,7 @@
 layout: landingpage
 title: Documentation
 permalink: "/"
---- 
+---
 
 <div class="cardSectionFullWidthContainer cardSectionBackground">
     <div class="cardSectionInnerContainer">
@@ -20,7 +20,7 @@ permalink: "/"
                     <div class="anchorContainer">
                     <a href="/documentation">Transition Overview</a><br>
                     <a href="https://canvas-medical.zendesk.com/hc/en-us">Knowledge Center ↗</a><br>
-                    <a href="/product-updates/release-notes">Release Notes</a> 
+                    <a href="/product-updates/release-notes">Release Notes</a>
                     </div>
                 </div>
             </div>
@@ -30,7 +30,7 @@ permalink: "/"
                 </div>
                 <div class="cardBody">
                      <span>
-                        Customize the clinical experience with our SDK, and extend it with our API
+                        Customize the Canvas experience with our SDK, and extend it with our API
                     </span>
                      <div class="anchorContainer">
                         <dl>

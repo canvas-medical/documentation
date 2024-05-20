@@ -8,7 +8,7 @@ An event is an occurrence of an action that happens within Canvas. For example, 
 
 **Why should I use them?**
 
-By writing plugins that respond to events, plugin code is able to be notified and react to events that occur in Canvas. This enables plugin authors to create custom workflows whenever a relevant event takes place.
+By writing plugins that respond to events, plugin code is notified and can react to events that occur in Canvas. This enables plugin authors to create custom workflows whenever a relevant event takes place, such as making a POST request to a webhook.
 
 **How do I use them?**
 

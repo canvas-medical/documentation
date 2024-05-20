@@ -11,7 +11,7 @@ To help customers implement and iterate on their care model in Canvas, we create
 The Canvas SDK allows for the development of plugins that listen for events
 and respond with one or more effects on the system. Use plugins to make
 recommendations, generate tasks, re-order or enrich search results, or even
-create a co-pilot for charting.
+create a copilot for charting.
 
 
 ## Getting Started

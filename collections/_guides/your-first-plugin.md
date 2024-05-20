@@ -10,7 +10,7 @@ guide_for:
 Plugins are your tool for customizing the Canvas experience. By using the
 modules of the Canvas SDK, you can react to [events](/sdk/events/) emitted from the EHR,
 request additional [data](/sdk/data/) if needed, and respond with [effects](/sdk/effects/) that
-mutate state in Canvas. You can also use [utils](/sdk/utils/) to do things like call out to web
+alter workflows and add or change data in Canvas. You can also use [utils](/sdk/utils/) to do things like call out to web
 services with our provided HTTP client.
 
 ## Video
@@ -204,7 +204,7 @@ class Protocol(BaseProtocol):
 
         # Return zero, one, or many effects.
         # Example:
-        # return [Effect(type=EffectType.ADD_PLAN_COMMAND, payload=json.dumps(payload))]
+        # return [Effect(type=EffectType.LOG, payload=json.dumps(payload))]
         return []
 ```
 
