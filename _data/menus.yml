@@ -420,6 +420,8 @@ guides_list:
    url: /guides/submit-vitals-via-fhir/
  - title: "Team Based Care"
    url: /guides/team-based-care/
+ - title: "Your First Plugin"
+   url: /guides/your-first-plugin/
 
 guides_templates:
  - title: "Behavioral Health"
@@ -433,16 +435,36 @@ guides_care-models-bh:
 sdk:
  - title: "SDK Overview"
    identifier: sdk_overview
- - title: "Workflow Kit"
+ - title: "Workflow Kit (Deprecated)"
    identifier: sdk_workflow_kit
 
 sdk_overview:
  - title: "Introduction"
    url: /sdk/
+ - title: "Command Line Interface"
+   url: /sdk/canvas_cli/
+ - title: "Modules"
+   identifier: sdk_modules
+
+sdk_modules:
+ - title: "Commands"
+   url: /sdk/commands/
+ - title: "Data"
+   url: /sdk/data/
+ - title: "Effects"
+   url: /sdk/effects/
+ - title: "Events"
+   url: /sdk/events/
+ - title: "Protocols"
+   url: /sdk/protocols/
+ - title: "Utils"
+   url: /sdk/utils/
+ - title: "Views"
+   url: /sdk/views/
 
 sdk_workflow_kit:
  - title: "Quickstart"
-   url: /sdk/sdk-quickstart/
+   url: /sdk/workflow-sdk-quickstart/
  - title: "Change Types"
    url: /sdk/change-types
  - title: "Patient Recordsets"
@@ -464,7 +486,7 @@ sdk_workflow_kit:
  - title: "Making FHIR Requests"
    url: /sdk/making-fhir-requests
  - title: "Canvas CLI Additional Commands"
-   url: /sdk/canvas-cli
+   url: /sdk/canvas-cli-additional-commands
  - title: "Protocol Logging Tool"
    url: /sdk/protocol-logging-tool
  - title: "Managing Protocols in Settings"

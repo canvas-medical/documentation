@@ -39,3 +39,6 @@ Zone.Identifier
 # Vim
 *.swp
 *.swo
+
+# script output
+events.temp.md
