@@ -443,23 +443,19 @@ sdk_overview:
    url: /sdk/
  - title: "Command Line Interface"
    url: /sdk/canvas_cli/
- - title: "SDK Modules"
-   identifier: sdk_modules
-
-sdk_modules:
- - title: "Commands"
+ - title: "Commands Module"
    url: /sdk/commands/
- - title: "Data"
+ - title: "Data Module"
    url: /sdk/data/
- - title: "Effects"
+ - title: "Effects Module"
    url: /sdk/effects/
- - title: "Events"
+ - title: "Events Module"
    url: /sdk/events/
- - title: "Protocols"
+ - title: "Protocols Module"
    url: /sdk/protocols/
- - title: "Utils"
+ - title: "Utils Module"
    url: /sdk/utils/
- - title: "Views"
+ - title: "Views Module"
    url: /sdk/views/
 
 sdk_workflow_kit:
