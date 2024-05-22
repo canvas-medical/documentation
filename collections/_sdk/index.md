@@ -11,7 +11,7 @@ With the Canvas SDK, organizations will be able to not only implement and contin
 
 {% include alert.html type="warning" content="The Canvas SDK is currently in Alpha release." %}
 
-Ready to get started right away? Check out this [guide](guides/your-first-plugin/).
+Ready to get started right away? Check out this [guide](/guides/your-first-plugin/).
 
 
 ## What is the Canvas SDK?
