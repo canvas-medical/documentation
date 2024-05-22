@@ -1,7 +1,7 @@
 ---
-title: ICD-10 Codes Rank on Claims
-date: 2024-05-22
+title: Send Messages for Lab Results via the Patient App
+date: 2024-05-14
 tags: bugfix
 layout: productupdates
 ---
-Resolves bug that incorrectly ranked ICD-10 codes on claims. ICD-10 codes are now ranked on claim based on time of insertion within a note or claim, newer codes will be ranked below previously placed codes to reflect the correct order for accurate billing.
+This release fixes a bug that caused patient messages to fail to send via text or email when initiating them through the lab review modal and using Canvas' messaging capabilities.  
