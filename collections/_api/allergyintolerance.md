@@ -265,7 +265,7 @@ sections:
           example_request: allergyintolerance-read-request
           example_response: allergyintolerance-read-response
         update:
-          description: Update an AllergyIntolerance resource.<br><br>The only type of AllergyIntolerance update interaction that is supported by Canvas is to mark an existing AllergyIntolerance as **entered-in-error**. No changes to other fields will be processed.
+          description: Update an AllergyIntolerance resource.<br><br>The only type of AllergyIntolerance update interaction that is supported by Canvas is to mark an existing AllergyIntolerance as **entered-in-error** using the `verificationStatus` attribute. No changes to other fields will be processed; however, required fields still need to be supplied.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: allergyintolerance-update-request
           example_response: allergyintolerance-update-response
