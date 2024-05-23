@@ -435,7 +435,7 @@ guides_care-models-bh:
 sdk:
  - title: "SDK Overview"
    identifier: sdk_overview
- - title: "Workflow Kit (Deprecated)"
+ - title: "Workflow Kit (To Be Deprecated)"
    identifier: sdk_workflow_kit
 
 sdk_overview:
