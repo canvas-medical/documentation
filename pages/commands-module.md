@@ -120,12 +120,12 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
      <tr> 
       <td>Lab Order</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
        <tr> 
       <td>Refill</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
      <tr> 
