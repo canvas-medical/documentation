@@ -9,82 +9,253 @@ sections:
         description: >-
           Risk of harmful or undesirable, physiological response which is unique to an individual and associated with exposure to a substance.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html)
+          <br><br>
+          To learn more about documenting allergies in Canvas see [here](https://canvas-medical.zendesk.com/hc/en-us/articles/360056920593-Document-Allergies).
         attributes:
-          - name: id
-            description: >-
-              The identifier of the AllergyIntolerance
+          - name: resourceType
+            description: The FHIR Resource name.
             type: string
+          - name: id
+            description: The identifier of the AllergyIntolerance.
+            type: string
+            required_in: update
+            exclude_in: create
           - name: extension
             type: array[json]
-            description: >-
-              Canvas supports a note identifier extension on this resource for create, read, update, and search interactions. The note identifier can be used with the [Canvas Note API](/api/note).<br>
-              <br>
-              **Important:** For create interactions, Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note.<br>
-              <br>
-              The `url` for the extension is: **http://schemas.canvasmedical.com/fhir/extensions/note-id**<br>
-              <br>
-              The `valueId` contains the note identifier.<br>
-              <br>
-              See the request and response examples for more information.
+            description_for_all_endpoints: Canvas supports a note identifier extension on this resource. The note identifier can be used with the [Canvas Note API](/api/note).
+            create_description: Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note. If neither is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.
+            attributes:
+                - name: url
+                  type: string
+                  description: Reference that defines the content of this object.
+                  enum_options:
+                    - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
+                - name: valueId
+                  type: string
+                  description: The valueId field is used for the Note extension and will be the note's unique identifier.
           - name: clinicalStatus
-            description: >-
-              The clinical status of the allergy or intolerance<br><br>Supported codes for create interactions are: **active**, **inactive**
+            required_in: create, update
+            description: The clinical status of the allergy or intolerance.
             type: json
+            attributes:
+                - name: coding
+                  description: Identifies where the definition of the code comes from.
+                  type: array[json]
+                  required_in: create, update
+                  attributes: 
+                    - name: system
+                      description: The system url of the coding.
+                      required_in: create, update
+                      enum_options: 
+                        - value: http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical
+                      type: string
+                    - name: code
+                      description: The code of the clinical status.
+                      required_in: create, update
+                      type: string
+                      enum_options: 
+                        - value: active
+                        - value: inactive
+                    - name: display
+                      description: The display name of the coding.
+                      exclude_in: create, update
+                      type: string
+                      enum_options: 
+                        - value: Active
+                        - value: Inactive
+                - name: text
+                  description: Plain text representation of the concept.
+                  exclude_in: create, update
+                  type: string
+                  enum_options: 
+                    - value: Active
+                    - value: Inactive
           - name: verificationStatus
+            required_in: create, update
             description: >-
-              Assertion about certainty associated with the propensity, or potential risk, of a reaction to the identified substance (including pharmaceutical product)<br><br>Supported codes for create interactions are: **confirmed**, **entered-in-error**
+              Assertion about certainty associated with the propensity, or potential risk, of a reaction to the identified substance (including pharmaceutical product).
             type: json
+            attributes:
+                - name: coding
+                  description: Identifies where the definition of the code comes from.
+                  type: array[json]
+                  required_in: create, update
+                  attributes: 
+                    - name: system
+                      description: The system url of the coding.
+                      required_in: create, update
+                      enum_options: 
+                        - value: http://terminology.hl7.org/CodeSystem/allergyintolerance-verification
+                      type: string
+                    - name: code
+                      description: The code of the verification status.
+                      required_in: create, update
+                      type: string
+                      enum_options: 
+                        - value: confirmed
+                        - value: entered-in-error
+                    - name: display
+                      description: The display name of the coding.
+                      exclude_in: create, update
+                      type: string
+                      enum_options: 
+                        - value: Confirmed
+                        - value: Entered-in-error
+                - name: text
+                  description: Plain text representation of the concept.
+                  exclude_in: create, update
+                  type: string
+                  enum_options: 
+                    - value: Confirmed
+                    - value: Entered-in-error
           - name: type
-            description: >-
-              Identification of the underlying physiological mechanism for the reaction risk<br><br>Supported codes for create interactions are: **allergy**, **intolerance**
-            type: string
+            required_in: create, update
+            description: Identification of the underlying physiological mechanism for the reaction risk.
+            type: enum [ allergy | intolerance ]
           - name: code
-            description: >-
-              Code that identifies the allergy or intolerance<br><br>Supported codings for create interactions are obtained from the [Allergen search endpoint](/api/allergen/#search).
+            required_in: create, update
+            description_for_all_endpoints: Code that identifies the allergy or intolerance.
+            create_description: Supported codings for create interactions are obtained from the [Allergen search endpoint](/api/allergen/#search). At least one coding needs to be an FDB coding. 
             type: json
+            attributes:
+                - name: coding
+                  required_in: create, update
+                  description: Identifies where the definition of the code comes from.
+                  type: array[json]
+                  attributes: 
+                    - name: system
+                      required_in: create, update
+                      description: The system url of the coding.
+                      enum_options: 
+                        - value: http://www.fdbhealth.com/
+                        - value: http://www.nlm.nih.gov/research/umls/rxnorm
+                        - value: http://snomed.info/sct
+                      type: string
+                    - name: code
+                      required_in: create, update
+                      description: The code of the allergen.
+                      type: string
+                    - name: display
+                      required_in: create, update
+                      description: The display name of the coding.
+                      exclude_in: create, update
+                      type: string
           - name: patient
-            description: >-
-              Who the sensitivity is for
+            required_in: create, update
+            description: Who the sensitivity is for.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                required_in: create,update
+                description: The reference string of the patient in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: encounter
-            description: >-
-              Encounter when the allergy or intolerance was asserted<br><br>
-              **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
+            description_for_all_endpoints: Encounter when the allergy or intolerance was asserted.
+            create_description: >-
+                Supply an encounter reference to be able to insert the allergy command into a specific note on the patient's timeline. If no encounter is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.
+                <br><br>
+                **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the encounter in the format of `"Encounter/086cd6fe-2c94-455d-a53e-6ff1c2652cae"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Encounter").
           - name: onsetDateTime
             description: >-
-              When allergy or intolerance was identified
+              When allergy or intolerance was identified.
             type: date
           - name: recordedDate
+            exclude_in: create, update
             description: >-
-              Date first version of the resource instance was recorded
+              Date first version of the resource instance was recorded.
             type: datetime
           - name: recorder
             description: >-
-              Who recorded the sensitivity
+              Who recorded the sensitivity. <br><br>In Canvas this will be the originator and committer of the allergy command.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                required_in: create,update
+                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Practitioner").
           - name: lastOccurrence
             description: >-
-              Date of last known occurrence of a reaction
+              Date of last known occurrence of a reaction. <br><br>This date will not appear in the Canvas UI and can only be supplied or read through FHIR.
             type: date
           - name: note
             description: >-
-              Additional text not captured in other fields
+              Additional text not captured in other fields. <br><br>Canvas will display this in the `reaction` field of the allergy command. If there are multiple objects given, they will be separeted by a new line on the UI.
             type: array[json]
+            attributes:
+                - name: text
+                  type: string
+                  required_in: create, update
+                  description: The annotation - text content. 
           - name: reaction
             description: >-
-              Adverse Reaction Events linked to exposure to substance<br><br>Supported severity codes for create interactions are: **mild**, **moderate**, **severe**
+              Adverse Reaction Events linked to exposure to substance. Only one reaction is supported.
             type: array[json]
+            attributes:
+                - name: manifestation
+                  type: array[json]
+                  required_in: create, update
+                  description: Clinical symptoms/signs associated with the Event.
+                  attributes:
+                    - name: coding
+                      description: Identifies where the definition of the code comes from.
+                      type: array[json]
+                      required_in: create, update
+                      attributes: 
+                          - name: system
+                            description: The system url of the coding.
+                            required_in: create, update
+                            enum_options: 
+                              - value: http://terminology.hl7.org/CodeSystem/data-absent-reason
+                            type: string
+                          - name: code
+                            description: The code of the verification status.
+                            required_in: create, update
+                            type: string
+                            enum_options: 
+                              - value: unknown
+                          - name: display
+                            description: The display name of the coding.
+                            exclude_in: create, update
+                            type: string
+                            enum_options: 
+                              - value: Unknown
+                    - name: text
+                      description: Plain text representation of the concept.
+                      exclude_in: create, update
+                      type: string
+                      enum_options: 
+                        - value: Unknown
+                - name: severity
+                  type: string
+                  description: Clinical assessment of the severity of the reaction event as a whole.
+                  enum_options: 
+                    - value: mild
+                    - value: moderate
+                    - value: severe
         search_parameters:
           - name: _id
-            description: The identifier of the AllergyIntolerance
+            description: The identifier of the AllergyIntolerance.
             type: string
           - name: patient
-            description: Who the sensitivity is for
+            description: The patient reference associated to the AllergyIntolerance in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
         endpoints: [create, read, update, search]
         create:
-          description: Create an AllergyIntolerance resource.<br><br>Exactly one FDB coding is required in the `code` field. FDB codings can be obtained from the [Allergen search endpoint](/api/allergen/#search). The [Allergen](/api/allergen/) resource is a custom Canvas FHIR resource.<br><br>If `encounter` is provided, the AllergyIntolerance will be added to the existing encounter (note). If it is not provided, a new data import note will be created.
+          description: Create an AllergyIntolerance resource.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: allergyintolerance-create-request
           example_response: allergyintolerance-create-response
@@ -94,7 +265,7 @@ sections:
           example_request: allergyintolerance-read-request
           example_response: allergyintolerance-read-response
         update:
-          description: Update an AllergyIntolerance resource.<br><br>The only type of AllergyIntolerance update interaction that is supported by Canvas is to mark an existing AllergyIntolerance as **entered-in-error**. No changes to other fields will be processed.
+          description: Update an AllergyIntolerance resource.<br><br>The only type of AllergyIntolerance update interaction that is supported by Canvas is to mark an existing AllergyIntolerance as **entered-in-error** using the `verificationStatus` attribute. No changes to other fields will be processed; however, required fields still need to be supplied.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: allergyintolerance-update-request
           example_response: allergyintolerance-update-response
@@ -622,7 +793,7 @@ print(response.text)
 </div>
 
 <div id="allergyintolerance-search-request">
-{% include search-request.html resource_type="AllergyIntolerance" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="AllergyIntolerance" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="allergyintolerance-search-response">
