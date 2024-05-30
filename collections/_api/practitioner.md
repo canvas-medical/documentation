@@ -210,6 +210,7 @@ sections:
                 description: Specifies the country in which the practitioner's address is located. This field typically contains the name of the country, following the ISO 3166 standard.
           - name: birthDate
             type: date
+            required_in: create, update
             description: The date on which the practitioner was born, formatted as YYYY-MM-DD.
           - name: photo
             type: array[json]
