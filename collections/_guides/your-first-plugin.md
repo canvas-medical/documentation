@@ -108,7 +108,7 @@ installation of the plugin.
     "components": {
         "protocols": [
             {
-                "class": "paperwork_eviscerator.protocols.my_protocol.Protocol",
+                "class": "paperwork_eviscerator.protocols.my_protocol:Protocol",
                 "description": "A protocol that does xyz...",
                 "data_access": {
                     "event": "",
