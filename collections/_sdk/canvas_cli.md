@@ -128,12 +128,12 @@ Validate the Canvas Manifest json file.
 **Usage**:
 
 ```console
-$ canvas validate-manifest [OPTIONS] PACKAGE
+$ canvas validate-manifest [OPTIONS] PLUGIN_NAME
 ```
 
 **Arguments**:
 
-- `PACKAGE`: Path to plugin to validate [required]
+- `PLUGIN_NAME`: Path to plugin to validate [required]
 
 **Options**:
 
