@@ -72,8 +72,7 @@ run `canvas init`, and answer the prompt to name your plugin.
 ```
 $ canvas init
   [1/1] project_name (My Cool Plugin): Paperwork Eviscerator
-{"success": true, "message": "Project created in /Users/andrew/src/canvas-plugins/paperwork_eviscerator",
-"project_dir": "/Users/andrew/src/canvas-plugins/paperwork_eviscerator"}
+Project created in /Users/andrew/src/canvas-plugins/paperwork_eviscerator
 ```
 
 This output shows the location of our freshly generated plugin.

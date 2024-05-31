@@ -42,11 +42,7 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
-- `--no-ansi`: Disable colorized output
 - `--version`
-- `--verbose`: Show extra output
-- `--install-completion`: Install completion for the current shell.
-- `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 - `--help`: Show this message and exit.
 
 ## Commands
@@ -132,12 +128,12 @@ Validate the Canvas Manifest json file.
 **Usage**:
 
 ```console
-$ canvas validate-manifest [OPTIONS] PACKAGE
+$ canvas validate-manifest [OPTIONS] PLUGIN_NAME
 ```
 
 **Arguments**:
 
-- `PACKAGE`: Path to plugin to validate [required]
+- `PLUGIN_NAME`: Path to plugin to validate [required]
 
 **Options**:
 
