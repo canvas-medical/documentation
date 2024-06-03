@@ -302,7 +302,7 @@ sections:
           - name: active
             type: boolean
             description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false) patients.
-          - name: birthdate
+          - name: birthDate
             type: date
             description: The patient's birthdate
           - name: email
