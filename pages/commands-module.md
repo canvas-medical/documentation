@@ -103,6 +103,18 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td><ui><li>Adds max refill validation for epcs</li> <li>Limits to 2 indications</li></ui> </td>
     </tr>
+    </tr>
+        <tr> 
+      <td>Perform</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    </tr>
+        <tr> 
+      <td>Instruct</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
       <tr> 
       <td>Task</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
@@ -112,12 +124,6 @@ Commands migrated to the new framework will function similarly if not identicall
       <td>Diagnose</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
-    </tr>
-        <tr> 
-      <td>Perform</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr>
      <tr> 
       <td>Lab Order</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
