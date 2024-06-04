@@ -350,7 +350,7 @@ sections:
           example_request: appointment-read-request
           example_response: appointment-read-response
         update:
-          description: Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database. <br><br>An update does not work in the same way as rescheduling an appointment within the Canvas UI acts. All updates to an appointment via UI will be done directly on the appointment record and no replacing appointment will be created.
+          description: Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database. <br><br>An update does not work in the same way as rescheduling an appointment within the Canvas UI acts. All updates to an appointment via FHIR will be done directly on the appointment record and no replacing appointment will be created.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: appointment-update-request
           example_response: appointment-update-response
