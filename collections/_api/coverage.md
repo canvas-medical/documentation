@@ -206,18 +206,6 @@ sections:
                   - name: code
                     description: The code of the relationship.
                     type: string
-                    exclude_in: read, search
-                    required_in: create,update
-                    enum_options:
-                      - value: child
-                      - value: spouse
-                      - value: other
-                      - value: self
-                      - value: injured
-                  - name: code
-                    description: The code of the relationship.
-                    type: string
-                    exclude_in: create, update
                     enum_options:
                       - value: child
                       - value: spouse
@@ -225,7 +213,9 @@ sections:
                       - value: self
                       - value: injured
                       - value: parent
+                        exclude_in: create,update
                       - value: common
+                        exclude_in: create,update
                   - name: display
                     description: The display name of the coding.
                     type: string

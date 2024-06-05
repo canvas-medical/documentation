@@ -14,7 +14,10 @@
                 <b>Value Options Supported:</b>
                 <ul>
                     {% for option in attribute.enum_options %}
-                        <li>{{ option.value }}</li>
+                        {% if option.exclude_in contains include.context %}
+                        {% else %}
+                            <li>{{ option.value }}</li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             {% endif %}
