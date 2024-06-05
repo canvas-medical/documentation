@@ -9,70 +9,139 @@ sections:
         description: >-
           A record of a healthcare consumer’s choices, which permits or denies identified recipient(s) or recipient role(s) to perform one or more actions within a given policy context, for specific purposes and periods of time.<br><br>
           [https://hl7.org/fhir/R4/consent.html](https://hl7.org/fhir/R4/consent.html)
+          <br><br>
+          For more information on consents in canvas, see this [article](https://canvas-medical.zendesk.com/hc/en-us/articles/5524511564947-Patient-Consents).
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
             type: string
-            description: >-
-              The identifier of the Consent
+            required_in: update
+            exclude_in: create
+            description: The identifier of the Consent.
           - name: status
             type: string
-            required_in: create,update
-            description: >-
-              Indicates the current state of this consent<br><br>
-              Supported codes for create interactions are: **active**, **inactive**, and **rejected**
+            required_in: create
+            description: Indicates the current state of this consent.
+            enum_options:
+              - value: active
+              - value: rejected
           - name: scope
             type: json
-            required_in: create,update
-            description: >-
-              Type of consent being presented: e.g. ADR, Privacy, Treatment, Research.<br><br>
-              For create interactions, this field is required by FHIR but ignored by Canvas, so {} is an accepted value.
+            required_in: create
+            description: Type of consent being presented (e.g. ADR, Privacy, Treatment, Research).
+            create_description: For create interactions, this field is required by FHIR but ignored by Canvas, so {} is an accepted value.
+            attributes:
+              - value: text
+                type: string
+                description: Plain text representation of the concept
+                enum_options:
+                  - value: Unknown
           - name: category
             type: array[json]
-            required_in: create,update
-            description: >-
-              A classification of the type of consents found in the statement.
+            required_in: create
+            description: A classification of the type of consents found in the statement.<br><br>The category.coding needs to match a patient consent coding record defined in the Canvas Admin Settings page.
+            create_description: A `system/code` or a `system/display` is required to be able to identify the consent category being created/updated.
+            attributes:
+              - name: coding
+                required_in: create, update
+                description: Identifies where the definition of the code comes from.
+                type: array[json]
+                attributes: 
+                  - name: system
+                    required_in: create, update
+                    description: The system url of the coding.
+                    type: string
+                  - name: code
+                    description: The code of the medication.
+                    type: string
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
           - name: patient
             type: json
-            required_in: create,update
+            required_in: create
             description: Who the consent applies to
+            attributes:
+              - name: reference
+                type: string
+                required_in: create
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: dateTime
             type: datetime
-            required_in: create,update
+            exclude_in: create
             description: >-
-              When this Consent was issued / created / indexed<br><br>
-              For create interactions, this value will be ignored.<br><br>
-              For read/search interactions, this value will be the Consent's create datetime.
+              When this Consent was issued / created / indexed.<br><br>
+              This value will be the Consent's datetime of ingestion in Canvas.
           - name: sourceAttachment
             type: json
-            required_in: create,update
-            description: >-
-              The source on which this consent statement is based.<br><br>
-              For create interactions, `sourceAttachment.title`, `sourceAttachment.content_type`, and `sourceAttachment.data` are required.<br><br>
-              For read/search interactions, Canvas returns the `sourceAttachment.url`.<br><br>
+            required_in: create
+            description_for_all_endpoints: The source on which this consent statement is based.
+            create_description: For create interactions, `sourceAttachment.title`, `sourceAttachment.contentType`, and `sourceAttachment.data` are required.<br><br>
+            read_and_search_description: >-
+              Canvas returns the `sourceAttachment.url` for the document associated with the consent that has the latest period.start date.<br><br>
               **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             create_and_update_description: >-
               The source on which this consent is based.<br><br>
-              For create interactions, `sourceAttachment.title`, `sourceAttachment.content_type`, and `sourceAttachment.data` are required.<br><br>
-              For read/search interactions, Canvas returns the `sourceAttachment.url`.<br><br>
+              For create interactions, `sourceAttachment.title`, `sourceAttachment.contentType`, and `sourceAttachment.data` are required.
+            attributes:
+              - value: url
+                exclude_in: create
+                type: url
+                description: Uri where the data can be found.
+              - value: title
+                required_in: create
+                exclude_in: read,search
+                type: string
+                description:  Label to display in place of the data.
+              - value: contentType
+                required_in: create
+                exclude_in: read,search
+                type: string
+                description:  Mime type of the content, with charset etc.
+                enum_options:
+                  - value: application/pdf
+              - value: data
+                required_in: create
+                exclude_in: read,search
+                type: string
+                description:  Data inline, base64ed.
           - name: provision
             type: json
-            description: >-
-              Constraints to the base Consent<br><br>
-              Canvas uses `period.start` and `period.end` to define the start and end dates of the consent.<br><br>
+            required_in: create
+            description_for_all_endpoints: >-
+              Constraints to the base Consent.<br><br>
+              Canvas uses `period.start` and `period.end` to define the start and end dates of the consent.
+            create_description:
               For create interactions, `period.start` is required with a **YYYY-MM-DD** format.<br><br>
               A `period.end` with a past date will mark the consent as Expired in the UI.
+            attributes:
+              - value: period
+                type: json
+                required_in: create
+                description: Timeframe for this rule
+                attributes:
+                  - value: start
+                    type: date
+                    required_in: create
+                    description: Starting time with inclusive boundary
+                  - value: end
+                    type: date
+                    description: End time with inclusive boundary, if not ongoing.
         search_parameters:
           - name: _id
-            description: The Canvas-issued unique identifier of the Consent
+            description: The Canvas-issued unique identifier of the Consent.
             type: string
           - name: patient
             type: string
-            description: Who the consent applies to
+            description: Who the consent applies to in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`
           - name: period
             type: date
-            description: >-
-              Timeframe for this rule<br><br>
-              Expects date strings formatted like YYYY-MM-DD, prefaced with one of eq, lt, le, gt, ge.<br><br>
+            description: Search by the period.start. See [Date Filtering](/api/date-filtering) for more information.
         endpoints: [create, read, search]
         create:
           description: >-
@@ -82,9 +151,7 @@ sections:
 
             A patient consent is uniquely distinguished by its patient and consent coding<br><br>
             
-            This Create endpoint also acts as an Update endpoint. If the patient already has an existing patient consent with the same consent coding, the endpoint updates that consent in place and the id returned in the response will not be changed.<br><br>
-
-            Setting up the type of consents allowed in your instance must be completed before using this endpoint.  See the related guide above for details.
+            This Create endpoint also acts as an Update endpoint. If the patient already has an existing patient consent with the same consent coding, the endpoint updates that consent in place and the id returned in the response will not be changed.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: consent-create-request
           example_response: consent-create-response
@@ -317,7 +384,7 @@ print(response.text)
 </div>
 
 <div id="consent-search-request">
-{% include search-request.html resource_type="Consent" search_string="patient=Patient%2F2c4b29a411b043bfb1c34c8c3683c7ca" %}
+{% include search-request.html resource_type="Consent" search_string="patient=Patient/2c4b29a411b043bfb1c34c8c3683c7ca" %}
 </div>
 
 <div id="consent-search-response">
