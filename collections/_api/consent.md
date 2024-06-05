@@ -87,7 +87,7 @@ sections:
               **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             create_and_update_description: >-
               The source on which this consent is based.<br><br>
-              For create interactions, `sourceAttachment.title`, `sourceAttachment.content_type`, and `sourceAttachment.data` are required.
+              For create interactions, `sourceAttachment.title`, `sourceAttachment.contentType`, and `sourceAttachment.data` are required.
             attributes:
               - value: url
                 exclude_in: create
