@@ -406,13 +406,13 @@ curl --request POST \
     "telecom": [
         {
             "system": "phone",
-            "value": "5554320555",
+            "value": "5558675309",
             "use": "mobile",
             "rank": 1
         },
         {
             "system": "phone",
-            "value": "333555",
+            "value": "5551234567",
             "use": "work",
             "rank": 1
         },
@@ -421,17 +421,12 @@ curl --request POST \
             "value": "samantha.jones@example.com",
             "use": "work",
             "rank": 1
-        },
-        {
-            "system": "email",
-            "value": "samantha.jones2@example.com",
-            "use": "work",
-            "rank": 2
         }
     ],
     "address": [
         {
             "use": "work",
+            "type": "both",
             "line": [
                 "1234 Main St"
             ],
@@ -442,6 +437,7 @@ curl --request POST \
         },
         {
             "use": "work",
+            "type": "both",
             "line": [
                 "12 Cesar Chavez St"
             ],
