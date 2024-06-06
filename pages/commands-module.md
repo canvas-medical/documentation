@@ -63,37 +63,37 @@ Commands migrated to the new framework will function similarly if not identicall
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-     <tr> 
+    <tr> 
       <td>Reason for Visit</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-     <tr> 
+    <tr> 
       <td>Stop Medication</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
-     <tr> 
+    <tr> 
       <td>Questionnaire</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
-      <td><ui><li>No longer supports same encounter carry forward setting</li><li>Comment bubbles always show and are color coded to indicate whether content is present (yellow)</li><li>Blank free text responses will no longer print with the question name (i.e ~TXT~)</li></ui></td>
+      <td><ul><li>No longer supports same encounter carry forward setting</li><li>Comment bubbles always show and are color coded to indicate whether content is present (yellow)</li><li>Blank free text responses will no longer print with the question name (i.e ~TXT~)</li></ul></td>
     </tr>
-     <tr> 
+    <tr> 
       <td>Assess</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
-      <td><ui><li>Assessing from the condition list adds an uncommitted command directly into the note (based on cursor placement), rather than opening a modal </li></ui></td>
+      <td><ul><li>Assessing from the condition list adds an uncommitted command directly into the note (based on cursor placement), rather than opening a modal </li></ul></td>
     </tr>
-     <tr> 
+    <tr> 
       <td>Goal</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-     <tr> 
+    <tr> 
       <td>Update Goal</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-     <tr> 
+    <tr> 
       <td>Medication Statement</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
@@ -101,21 +101,19 @@ Commands migrated to the new framework will function similarly if not identicall
     <tr> 
       <td>Prescribe</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
-      <td><ui><li>Adds max refill validation for epcs</li> <li>Limits to 2 indications</li></ui> </td>
+      <td><ul><li>Adds max refill validation for epcs</li> <li>Limits to 2 indications</li></ul> </td>
     </tr>
-    </tr>
-        <tr> 
+    <tr> 
       <td>Perform</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
-    </tr>
-        <tr> 
+    <tr> 
       <td>Instruct</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
-      <tr> 
+    <tr> 
       <td>Task</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
@@ -124,12 +122,13 @@ Commands migrated to the new framework will function similarly if not identicall
       <td>Diagnose</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
-     <tr> 
+    </tr>
+    <tr> 
       <td>Lab Order</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
-       <tr> 
+    <tr> 
       <td>Refill</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
@@ -151,3 +150,4 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
   </tbody>
 </table>
+
