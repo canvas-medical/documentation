@@ -212,10 +212,10 @@ sections:
             description: The Canvas resource identifier of the CoverageEligibilityResponse.
           - name: patient
             type: string
-            description: The patient reference associated to the Coverage Eligibility Response in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            description: The patient reference associated with the Coverage Eligibility Response in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
           - name: request
             type: string
-            description: The coverage eligibility request reference associated to the Coverage Eligibility Response in the format `"CoverageEligibilityRequest/cd98975b-6cd4-413d-ab65-1fc5eec76762"`.
+            description: The coverage eligibility request reference associated with the Coverage Eligibility Response in the format `"CoverageEligibilityRequest/cd98975b-6cd4-413d-ab65-1fc5eec76762"`.
         endpoints: [read, search]
         read:
           responses: [200, 401, 403, 404]

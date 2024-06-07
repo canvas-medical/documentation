@@ -27,7 +27,7 @@ sections:
           - name: patient
             type: json
             required_in: create
-            description: Canvas patient resource whom the eligibility request is for.
+            description: Canvas patient resource whom the CoverageEligibilityRequest is for.
             attributes:
               - name: reference
                 type: string
@@ -40,7 +40,7 @@ sections:
             type: date
             required_in: create
             description: >-
-              Creation date, required by the FHIR schema, but unused by Canvas as it will be defaulted to the Canvas ingestion timestamp.<br><br>
+              Creation date, required by the FHIR specification, but unused by Canvas as it will be defaulted to the Canvas ingestion timestamp.<br><br>
               Canvas recommends sending the current datetime in ISO 8601 format.
           - name: insurer
             type: json
@@ -67,7 +67,7 @@ sections:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: coverageeligibilityrequest-create-request
           example_response: coverageeligibilityrequest-create-response
-          description: If Claim.MD is set up in your Canvas instance, a creation of a coverage eligibility request will kick off a request to Claim.MD to fetch the eligibility information. Use the returned `id` in the response.headers['location'] attribute to perform a [CoverageEligibilityResponse Search](/api/coverageeligibilityresponse/#search) to see what response Claim.MD returned.
+          description: If Claim.MD is set up in your Canvas instance, a creation of a coverage CoverageEligibilityRequest will kick off a request to Claim.MD to fetch the eligibility information. Use the returned `id` in the response.headers['location'] attribute to perform a [CoverageEligibilityResponse Search](/api/coverageeligibilityresponse/#search) to see what response Claim.MD returned.
 ---
 
 <div id="coverageeligibilityrequest-create-request">
