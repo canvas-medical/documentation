@@ -385,10 +385,12 @@ api_task:
 
 
 api_custom_apis:
- - title: "Note"
-   url: /api/note
  - title: "CCDA"
-   url: /api/ccda   
+   url: /api/ccda
+ - title: "Letter"
+   url: /api/letter
+ - title: "Note"
+   url: /api/note   
 
 documentation:
  - title: "Click here to learn about our transition plan for our knowledge center"
