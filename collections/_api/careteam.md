@@ -80,7 +80,7 @@ sections:
                   attributes:
                     - name: coding
                       required_in: update
-                      description: Identifies where the definition of the code comes from. <br><br>Needs to match a Care Team Role that is defined in the Settings of the Canvas instance.
+                      description: Code defined by a terminology system. <br><br>Needs to match a Care Team Role that is defined in the Settings of the Canvas instance.
                       type: array[json]
                       attributes: 
                         - name: system

@@ -29,7 +29,7 @@ sections:
             description: Describes progress made on goal, from **http://terminology.hl7.org/CodeSystem/goal-achievement**. This correspondes to the `Status` field on the latest committed goal related command.
             attributes:
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes:
                   - name: system

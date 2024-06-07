@@ -29,7 +29,7 @@ sections:
               In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers).
             attributes:
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes: 
                   - name: system
@@ -193,7 +193,7 @@ sections:
             required_in: create,update
             attributes:
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 required_in: create,update
                 attributes: 
@@ -338,7 +338,7 @@ sections:
                 description: Type of class such as 'group' or 'plan'.
                 attributes:
                   - name: coding
-                    description: Identifies where the definition of the code comes from.
+                    description: Code defined by a terminology system.
                     type: array[json]
                     required_in: create,update
                     attributes: 
