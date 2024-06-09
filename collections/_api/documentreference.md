@@ -478,6 +478,9 @@ payload = {
   {% endtabs %}
 </div>
 
+<div id="documentreference-create-response">
+{% include create-response.html %}
+</div>
 
 <div id="documentreference-read-request">
 {% include read-request.html resource_type="DocumentReference" %}
@@ -912,7 +915,7 @@ payload = {
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
-                "description: "Letter",
+                "description": "Letter",
                 "content": [
                     {
                         "attachment": {
