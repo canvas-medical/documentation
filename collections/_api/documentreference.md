@@ -23,11 +23,11 @@ sections:
           - Any [Educational Material](https://canvas-medical.zendesk.com/hc/en-us/articles/4999882305939-Educational-Material-Command) committed on a patient's chart.
           
           - Any [Invoices](https://canvas-medical.zendesk.com/hc/en-us/articles/4406239284499-Statements-and-Invoicing) generated for a patient.
-
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
             type: string
+            required_in: create
           - name: id
             description: The identifier of the document reference.
             type: string
@@ -64,9 +64,11 @@ sections:
                 description: Value of extensions for Comment and Review Mode.<br><br> The `valueString` attribute is needed for the Comment's extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-comment` and for the Review Mode extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-review-mode`. <br><br> Comment is a comment on the underlying Canvas document that is related to this DocumentReference resource, while the Review Mode is also a field on the underlying Canvas document record which determines the review mode values (`RR` for Review Required, `AR` for Already Reviewed and `RN` for Review Not Required).
               - name: valueDate
                 type: string
+                required_in: create
                 description: Value of extension.<br><br> The `valueDate` attribute is needed for the Clinical Date extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-clinical-date`. This attribute determines the Clinical Date on the underlying document record related to this DocumentReference resource. It's the `original_date` field on the related Canvas document record. Expected date value format for this field is `YYYY-MM-DD`.
               - name: valueReference
                 type: json
+                required_in: create
                 description: Value of extension.<br><br> The `valueReference` attribute is needed for expressing the Reviewer of the document where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-reviewer`. This attribute will be the reference to the Practitioner (Canvas Staff) that's assigned as the reviewer of this document.
                 attributes:
                   - name: reference
@@ -97,6 +99,7 @@ sections:
           - name: type
             description: A coding for the type of document.
             type: json
+            required_in: create
             attributes:
               - name: coding
                 description: Identifies where the definition of the code comes from.
@@ -123,29 +126,27 @@ sections:
                 type: string
                 description: Plain text representation of the type of document.
           - name: category
+            type: array[json]
+            required_in: create
             description: The categorization of the document.
             attributes:
               - name: coding
                 description: Identifies where the definition of the code comes from.
                 type: array[json]
+                required_in: create
                 attributes: 
                   - name: system
                     description: The system url of the coding.
                     enum_options: 
                       - value: http://schemas.canvasmedical.com/fhir/document-reference-category
                     type: string
+                    required_in: create
                   - name: code
                     description: The code value.
                     type: string
+                    required_in: create
                     enum_options: 
-                      - value: clinical-note
-                      - value: correspondence
-                      - value: educationalmaterial
-                      - value: imagingreport
-                      - value: invoicefull
-                      - value: labreport
                       - value: patientadministrativedocument
-                      - value: referralreport
                       - value: uncategorizedclinicaldocument
             type: array[json]
           - name: subject
@@ -178,7 +179,6 @@ sections:
               - For Invoices, the author will either be the practitioner who asked for the invoice when invoice was created adhoc or it will be Canvas Bot if the invoice was automtically generated.
 
               - There are no authors on Imaging Reports or Clinical Notes.
-
             type: array[json]
           - name: custodian
             description: >-
@@ -193,21 +193,30 @@ sections:
                 description: Type the reference refers to (e.g. "Organization").
           - name: description
             type: string
-            description: The title of the underlying Canvas Document related to this DocumentReference resource. It defaults to default Document titles when created or to custom titles added on updates. If custom document template is used with specific title, then that title is applied and rendered here as this description field. Letter template name as well are reflected as title values here, and any Educational Material document title will be also displayed in this field.
+            required_in: create
+            description: The title of the underlying Canvas Document related to this DocumentReference resource. 
+            create_description: The title of the underlying Canvas Document related to this DocumentReference resource. It requires standard Document titles.
           - name: content
             type: array[json]
+            required_in: create
             description: Document referenced
             attributes:
               - name: attachment
                 description: Where to access the document
                 type: json
+                required_in: create
                 attributes: 
                   - name: contentType
                     description: Mime type of the content, with charset etc.
                     type: string
+                    required_in: create
                   - name: url
                     description: URI where the data can be found. Please note that urls may have an AWSAccessKeyId and an Expires attribute. By default documents stored in AWS S3 will expire 10 minutes after the response payload is returned.
                     type: string
+                  - name: data
+                    type: string
+                    required_in: create
+                    description: Base64 encoded document file as a string.
               - name: format
                 type: json
                 description: Format/content rules for the document
@@ -238,7 +247,6 @@ sections:
               - For POC Lab Reports or Educational Material documents, the context will contain information about the encounter of the note the commands were committed with if applicable. 
 
               - For Lab Reports that have a Lab Review committed in a note, the context will have information about any encounter associated with that note.
-
             attributes: 
               - name: encounter
                 type: array[json]
