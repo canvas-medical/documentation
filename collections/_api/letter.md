@@ -50,7 +50,7 @@ To create a Note resource, POST to `https://<your-instance>.canvasmedical.com/co
 
 
 
-<b>`patientKey`</b> text<br>
+<b>`patientKey` (req)</b> text<br>
 The unique key of the Patient for which this letter is written.
 
 ***
