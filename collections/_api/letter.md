@@ -8,7 +8,7 @@ This API allows customers to create letters. The effect of creating a letter is 
 ## Authentication
 The Letter API uses the existing Canvas OAuth authentication flow, so you can simply post to the existing auth token endpoint /auth/token/
 
-This endpoint was built as an addition to the note API and uses the user/Note.write scope. This scope will not be in OAuth applications that were created prior to the release of the Notes API.  To get access:
+This endpoint was built as an addition to the Note API and uses the user/Note.write scope. This scope will not be in OAuth applications that were created prior to the release of the Note API.  To get access:
 
 - Create a new [OAuth application](/api/customer-authentication)
 - Ask Canvas to add the new scopes to an existing OAuth application 
