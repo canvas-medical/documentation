@@ -44,7 +44,7 @@ Then use your token in the request headers as you do with the FHIR API:
 <br>
 
 ## Create
-To create a Note resource, POST to `https://<your-instance>.canvasmedical.com/core/api/letter/v1/Letter` using the supported attributes below. Letters will be staged in the record to then be faxed or printed. Edit can be made in the UI as needed. 
+To create a Note resource, POST to `https://<your-instance>.canvasmedical.com/core/api/letter/v1/Letter` using the supported attributes below. Letters will be staged on the patient's chart to then be faxed or printed. Furhter edits can be made in the UI as needed. 
 
 ### Attributes
 
