@@ -15,7 +15,7 @@ sections:
             type: string
           - name: id
             type: string
-            description: The identifier of the coverage eligibility response.
+            description: The identifier of the CoverageEligibilityResponse.
           - name: status
             type: string
             description: Status of the resource.
@@ -27,7 +27,7 @@ sections:
             description: Reason for the request, will always be **["benefits"]**
           - name: patient
             type: json
-            description: Patient resource the eligibility response is for.
+            description: Patient resource the CoverageEligibilityResponse is for.
             attributes:
               - name: reference
                 type: string
@@ -212,10 +212,10 @@ sections:
             description: The Canvas resource identifier of the CoverageEligibilityResponse.
           - name: patient
             type: string
-            description: The patient reference associated with the Coverage Eligibility Response in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            description: The patient reference associated with the CoverageEligibilityResponse in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
           - name: request
             type: string
-            description: The coverage eligibility request reference associated with the Coverage Eligibility Response in the format `"CoverageEligibilityRequest/cd98975b-6cd4-413d-ab65-1fc5eec76762"`.
+            description: The coverage eligibility request reference associated with the CoverageEligibilityResponse in the format `"CoverageEligibilityRequest/cd98975b-6cd4-413d-ab65-1fc5eec76762"`.
         endpoints: [read, search]
         read:
           responses: [200, 401, 403, 404]
