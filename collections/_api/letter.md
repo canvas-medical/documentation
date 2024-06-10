@@ -55,7 +55,7 @@ The unique key of the Patient for which this letter is written.
 
 ***
 
-<b>`providerKey`</b> text<br>
+<b>`providerKey` (req)</b> text<br>
 The unique key of the Provider staff who is responsible for the letter.
 
 ***
