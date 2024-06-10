@@ -6,9 +6,9 @@ layout: apipage
 This API allows customers to create letters. The effect of creating a letter is the same as creating a letter in the user interface. Content can be added using HTML & CSS. Placeholders created in Canvas will not be respected. 
 
 ## Authentication
-The Note API uses the existing OAuth authentication flow from the FHIR API, so you can simply post to the existing auth token endpoint /auth/token/
+The Letter API uses the existing OAuth authentication flow from the FHIR API, so you can simply post to the existing auth token endpoint /auth/token/
 
-New scopes are introduced: user/Note.read and user/Note.write. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
+This endpoint is an extension of the note api and uses the user/Note.write scope. This scope will not be in OAuth applications that were created prior to the release of the Notes API.  To get access:
 
 - Create a new [OAuth application](/api/customer-authentication)
 - Ask Canvas to add the new scopes to an existing OAuth application 
