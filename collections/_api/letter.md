@@ -81,7 +81,7 @@ payload = json.dumps({
   "patientKey": "8d84776879de49518a4bc3bb81d96dd4",
   "providerKey": "5eede137ecfe4124b8b773040e33be14",
   "practiceLocationKey": "c67e0c59-d4d2-428c-bc13-b6e85d181ad0",
-  "content": "<!DOCTYPE html><html lang=\"en\"><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Jury Excuse Letter</title><div class=\"container\"><div class=\"header\"><h1>Jury Excuse Letter</h1></div><div class=\"content\"><p>To Whom It May Concern,</p><p>Letty Letters is a patient of mine at PRACTICE NAME. Due to a current medical condition, the patient is unable to fulfill the requirements for jury duty.</p><p>Thanks,</p></div><div class=\"signature\"><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Zhu_Zhengting_signature.jpg/1280px-Zhu_Zhengting_signature.jpg\" alt=\"Signature\" width=\"200\"></div></div></html>"
+  "content": "<p>To Whom It May Concern,</p><p>Letty Letters is a patient of mine at PRACTICE NAME. Due to a current medical condition, the patient is unable to fulfill the requirements for jury duty.</p><p>Thanks,</p></div><div class=\"signature\"><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Zhu_Zhengting_signature.jpg/1280px-Zhu_Zhengting_signature.jpg\" alt=\"Signature\" width=\"200\"></div></div></html>"
 })
 headers = {
   'Authorization': 'Bearer HqFtbSnBNX4S65VhRrg8sRxO6XcSFp',
