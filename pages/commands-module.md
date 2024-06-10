@@ -114,12 +114,12 @@ Commands migrated to the new framework will function similarly if not identicall
       <td></td>
     </tr>
     <tr> 
-      <td>Task</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
+      <td>Diagnose</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>The command now restricts adding duplicate diagnoses. Users will be prevented from committing the command and warned to add an assess command if the condition already exists.</li></ul> </td>
     </tr>
     <tr> 
-      <td>Diagnose</td>
+      <td>Task</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
@@ -130,6 +130,31 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>Refill</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Family History</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Surgical History</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Medical History</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr> 
+    <tr> 
+      <td>Allergy</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>       
+    <tr> 
+      <td>Remove Allergy</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
