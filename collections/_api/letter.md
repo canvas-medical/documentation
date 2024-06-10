@@ -66,7 +66,7 @@ The unique key of the PracticeLocation for which this letter is written.
 ***
 
 <b>`content`</b><br>
-The contents of the letter. Supports HTML & CSS. 
+The contents of the letter. Supports HTML & CSS. <b> Placeholders created in Canvas will NOT be respected. </b>
 
 
 
