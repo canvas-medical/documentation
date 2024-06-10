@@ -60,7 +60,7 @@ The unique key of the Provider staff who is responsible for the letter.
 
 ***
 
-<b>`practiceLocationKey`</b> text<br>
+<b>`practiceLocationKey` (req)</b> text<br>
 The unique key of the PracticeLocation for which this letter is written.
 
 ***
