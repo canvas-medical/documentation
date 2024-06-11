@@ -244,6 +244,8 @@ api_diagnosticreport:
    url: /api/diagnosticreport/#read
  - title: "DiagnosticReport Search"
    url: /api/diagnosticreport/#search
+ - title: "DiagnosticReport Operations"
+   url: /api/diagnosticreport-operations
 api_documentreference:
  - title: "DocumentReference Read"
    url: /api/documentreference/#read
