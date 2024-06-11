@@ -84,7 +84,7 @@ sections:
                 In Canvas this will represent the Note Type the encounter is associated with. If the Note is in a `planned` status, the coding will correspond to Canvas' appointment note type until the note is checked-in and converted to the scheduled note type. 
             attributes: 
                 - name: coding
-                  description: Identifies where the definition of the code comes from.
+                  description: Code defined by a terminology system.
                   type: array[json]
                   attributes: 
                     - name: system
@@ -115,7 +115,7 @@ sections:
                   description: Role of participant in encounter.
                   attributes:
                     - name: coding
-                      description: Identifies where the definition of the code comes from.
+                      description: Code defined by a terminology system.
                       type: array[json]
                       attributes: 
                         - name: system
@@ -182,7 +182,7 @@ sections:
             description: Coded reason the encounter takes place.
             attributes: 
                 - name: coding
-                  description: Identifies where the definition of the code comes from.
+                  description: Code defined by a terminology system.
                   type: array[json]
                   attributes: 
                     - name: system
@@ -218,7 +218,7 @@ sections:
             description: Details about the admission to a healthcare service.
             attributes: 
                 - name: coding
-                  description: Identifies where the definition of the code comes from.
+                  description: Code defined by a terminology system.
                   type: array[json]
                   attributes: 
                     - name: system

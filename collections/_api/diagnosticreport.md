@@ -40,7 +40,7 @@ sections:
             description: Service category [https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html](https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html). Use this attribute to help distinguish the type of report in Canvas.
             attributes: 
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes: 
                   - name: system
@@ -73,7 +73,7 @@ sections:
             description: Name/Code for this diagnostic report.
             attributes: 
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes: 
                   - name: system

@@ -25,7 +25,7 @@ sections:
             type: json
             attributes:
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes: 
                   - name: system

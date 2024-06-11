@@ -195,7 +195,7 @@ sections:
             attributes:
               - name: coding
                 type: array[json]
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 attributes: 
                   - name: system
                     exclude_in: create, update

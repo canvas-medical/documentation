@@ -96,7 +96,7 @@ sections:
             required_in: create,update
             attributes:
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 required_in: create,update
                 attributes: 
@@ -159,7 +159,7 @@ sections:
             required_in: create,update
             attributes:
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 required_in: create,update
                 attributes: 
@@ -309,7 +309,7 @@ sections:
                 description: Billing, service, product, or drug code.
                 attributes:
                   - name: coding
-                    description: Identifies where the definition of the code comes from.
+                    description: Code defined by a terminology system.
                     type: array[json]
                     required_in: create,update
                     attributes: 
@@ -349,7 +349,7 @@ sections:
                 description: Product or service billing modifiers. 
                 attributes:
                   - name: coding
-                    description: Identifies where the definition of the code comes from.
+                    description: Code defined by a terminology system.
                     type: array[json]
                     required_in: create,update
                     attributes: 

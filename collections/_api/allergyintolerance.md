@@ -39,7 +39,7 @@ sections:
             type: json
             attributes:
                 - name: coding
-                  description: Identifies where the definition of the code comes from.
+                  description: Code defined by a terminology system.
                   type: array[json]
                   required_in: create, update
                   attributes: 
@@ -77,7 +77,7 @@ sections:
             type: json
             attributes:
                 - name: coding
-                  description: Identifies where the definition of the code comes from.
+                  description: Code defined by a terminology system.
                   type: array[json]
                   required_in: create, update
                   attributes: 
@@ -120,7 +120,7 @@ sections:
             attributes:
                 - name: coding
                   required_in: create, update
-                  description: Identifies where the definition of the code comes from.
+                  description: Code defined by a terminology system.
                   type: array[json]
                   attributes: 
                     - name: system
@@ -211,7 +211,7 @@ sections:
                   description: Clinical symptoms/signs associated with the Event.
                   attributes:
                     - name: coding
-                      description: Identifies where the definition of the code comes from.
+                      description: Code defined by a terminology system.
                       type: array[json]
                       required_in: create, update
                       attributes: 
