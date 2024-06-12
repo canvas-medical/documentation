@@ -70,7 +70,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>Stop Medication</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr> 
@@ -95,7 +95,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>Medication Statement</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr> 
@@ -105,12 +105,12 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>Perform</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr> 
       <td>Instruct</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr> 
