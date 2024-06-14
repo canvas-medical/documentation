@@ -195,7 +195,7 @@ sections:
             attributes:
               - name: coding
                 type: array[json]
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 attributes: 
                   - name: system
                     exclude_in: create, update
@@ -227,7 +227,7 @@ sections:
 
                 1. `Location`: A reference to a Location captures what Practice Location in Canvas the appointment will take place at.<br>
                 2. `Meeting Link`: For appointments that are telehealth in Canvas, there will be a reference to an endpoint in this list. The reference attribute will match an `id` in the `Appointment.contained` attribute list. That element will display the url address of the virtual meeting link. <br>
-                3. `Appointment`: If an appointment has been rescheduled, this list could display an associated Appointment reference. If you see a display of `Previously Rescheduled Appointment`, it means that the appointment you are currently looking at was created after rescheduling the appointment in that Reference. If you see a display of `Rescheduled Replacement Appointment`, it means that the appointment you are currently looking at is now outdated by a new appointment.<br>
+                3. `Appointment`: If an appointment has been rescheduled, this list could display an associated Appointment reference. If you see a display of `Previously Rescheduled Appointment`, it means that the appointment you are currently looking at was created after rescheduling the appointment in that Reference. If you see a display of `Rescheduled Replacement Appointment`, it means that the appointment you are currently looking at is now outdated by a new appointment. If you see a display of `Co-scheduled Appointment`, it means that the appointment you are currently looking at was scheduled with other additional associated appointments for which the appointment reference ID is noted. <br>
                 4. `Encounter`: If there is any encounter associated with the appointment made in Canvas, the refence will appear in this list.
             create_and_update_description: >-
               Additional information to support the appointment. Currently, Canvas supports the ability to write 2 different types of references: <br>
@@ -253,6 +253,7 @@ sections:
                 enum_options:
                   - value: Previously Rescheduled Appointment
                   - value: Rescheduled Replacement Appointment
+                  - value: Co-scheduled Appointment
           - name: start
             type: datetime
             required_in: create,update
@@ -349,7 +350,7 @@ sections:
           example_request: appointment-read-request
           example_response: appointment-read-response
         update:
-          description: Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as co are currently set in the Canvas database.
+          description: Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database. <br><br>A FHIR Appointment update interaction behaves differently than a rescheduling workflow in the Canvas UI. FHIR updates will directly modify the Appointment referred to by the `id` rather than creating a new appointment.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: appointment-update-request
           example_response: appointment-update-response
@@ -455,7 +456,12 @@ sections:
         {
             "reference": "Encounter/23668e1a-e914-4eac-885c-1a2a27244ab7",
             "type": "Encounter"
-        }
+        },
+        {
+            "reference": "Appointment/7fa2874e-73c8-418d-bb25-eea0ccac651c",
+            "type": "Appointment",
+            "display": "Co-scheduled appointment"
+        } 
     ],
     "start": "2023-10-24T13:30:00+00:00",
     "end": "2023-10-24T14:00:00+00:00",

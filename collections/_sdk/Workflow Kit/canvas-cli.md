@@ -1,10 +1,13 @@
 ---
 title: "Canvas CLI Additional Commands"
-slug: "canvas-cli"
+slug: "canvas-cli-additional-commands"
 hidden: false
 createdAt: "2021-09-14T20:01:57.004Z"
 updatedAt: "2022-02-18T20:26:01.371Z"
 ---
+
+{% include alert.html type="info" content=" <b>Deprecated.</b> The CLI discussed here is related to the now-deprecated canvas workflow kit." %}
+
 The canvas-cli tool provides convenience methods that simplify working with canvas instances and the SDK. 
 
 ### list-versions

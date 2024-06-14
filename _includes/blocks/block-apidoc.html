@@ -169,7 +169,10 @@
                 </div>
                 <div class="apidoc__object__description">
                     The unique identifier for the {{ block.name }}
+                    <br><br>
+                    {{ block.read.additional_path_parameter_description | markdownify }}
                 </div>
+
             </div>
         </div>
         <div class="apidoc__gridcol">

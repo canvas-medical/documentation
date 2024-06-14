@@ -10,67 +10,272 @@ sections:
           Financial instrument which may be used to reimburse or pay for health care products and services. Includes both insurance and self-payment.<br>
           [https://hl7.org/fhir/R4/coverage.html](https://hl7.org/fhir/R4/coverage.html)
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
-            description: >-
-              The identifier of the Coverage
+            required_in: update
+            exclude_in: create
+            description: The identifier of the Coverage.
             type: string
           - name: status
-            description: >-
-              The status of the Coverage<br><br>
-              Supported codes for create interactions: **active**, **cancelled** 
-            type: string
+            type: enum [ active | cancelled ]
+            description: The status of the Coverage. <br><br>In Canvas, the status of `active` means it appears in the Patient's Profile page, while a status of `cancelled` means it was removed and no longer appears on the page. Of note, an expired coverage will still show as `active`, so be sure to set/read the `period.end` attribute.
             required_in: create,update
           - name: type
             type: json
             description: >-
               Type of coverage, such as medical, workers compensation, self pay, etc.<br><br>
               In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers).
+            attributes:
+              - name: coding
+                description: Code defined by a terminology system.
+                type: array[json]
+                attributes: 
+                  - name: system
+                    description: The system url of the coding.
+                    required_in: create,update
+                    enum_options: 
+                      - value: http://hl7.org/fhir/ValueSet/coverage-type
+                    type: string
+                  - name: code
+                    description: The code of the coverage type.
+                    type: string
+                    required_in: create,update
+                    enum_options:
+                       - value: ANNU
+                       - value: AUTOPOL
+                       - value: CHAR
+                       - value: COL
+                       - value: CRIME
+                       - value: DENTAL
+                       - value: DENTPRG
+                       - value: DIS
+                       - value: DISEASE
+                       - value: DRUGPOL
+                       - value: EAP
+                       - value: EWB
+                       - value: ENDRENAL
+                       - value: EHCPOL
+                       - value: FLEXP
+                       - value: GOVEMP
+                       - value: HIP
+                       - value: HMO
+                       - value: HSAPOL
+                       - value: HIRISK
+                       - value: HIVAIDS
+                       - value: IND
+                       - value: LIFE
+                       - value: LTC
+                       - value: MCPOL
+                       - value: MANDPOL
+                       - value: MENTPOL
+                       - value: MENTPRG
+                       - value: MILITARY
+                       - value: pay
+                       - value: POS
+                       - value: PPO
+                       - value: PNC
+                       - value: DISEASEPRG
+                       - value: PUBLICPOL
+                       - value: REI
+                       - value: RETIRE
+                       - value: SAFNET
+                       - value: SOCIAL
+                       - value: SUBSIDIZ
+                       - value: SUBSIDMC
+                       - value: SUBSUPP
+                       - value: SUBPOL
+                       - value: SUBPRG
+                       - value: SURPL
+                       - value: TLIFE
+                       - value: UMBRL
+                       - value: UNINSMOT
+                       - value: ULIFE
+                       - value: VET
+                       - value: VISPOL
+                       - value: CANPRG
+                       - value: WCBPOL
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
+                    enum_options:
+                      - value: Annuity policy
+                      - value: Automobile
+                      - value: Charity program
+                      - value: Collision coverage policy
+                      - value: Crime victim program
+                      - value: Dental care policy
+                      - value: Dental program
+                      - value: Disability insurance policy
+                      - value: Disease specific policy
+                      - value: Drug policy
+                      - value: Employee assistance program
+                      - value: Employee welfare benefit plan policy
+                      - value: End renal program
+                      - value: Extended healthcare
+                      - value: Flexible benefit plan policy
+                      - value: Government employee health program
+                      - value: Health insurance plan policy
+                      - value: Health maintenance organization policy
+                      - value: Health spending account
+                      - value: High risk pool program
+                      - value: HIV-AIDS program
+                      - value: Indigenous peoples health program
+                      - value: Life insurance policy
+                      - value: Long term care policy
+                      - value: Managed care policy
+                      - value: Mandatory health program
+                      - value: Mental health policy
+                      - value: Mental health program
+                      - value: Military health program
+                      - value: Pay
+                      - value: Point of service policy
+                      - value: Preferred provider organization policy
+                      - value: Property and casualty insurance policy
+                      - value: Public health program
+                      - value: Public healthcare
+                      - value: Reinsurance policy
+                      - value: Retiree health program
+                      - value: Safety net clinic program
+                      - value: Social service program
+                      - value: Subsidized health program
+                      - value: Subsidized managed care program
+                      - value: Subsidized supplemental health program
+                      - value: Substance use policy
+                      - value: Substance use program
+                      - value: Surplus line insurance policy
+                      - value: Term life insurance policy
+                      - value: Umbrella liability insurance policy
+                      - value: Uninsured motorist policy
+                      - value: Universal life insurance policy
+                      - value: Veteran health program
+                      - value: Vision care policy
+                      - value: Women's cancer detection program
+                      - value: Worker's compensation
+              - name: text
+                exclude_in: create, update
+                type: string
+                description: The 2 character code that represents the patient relationship to the insured as defined by CMS.
+                enum_options:
           - name: subscriber
-            description: >-
-              Who was signed up for or 'owns' the Coverage<br><br>
-              Supported resource types: **Patient**
+            description: Who was signed up for or 'owns' the Coverage.
             type: json
             required_in: create,update
+            attributes:
+              - name: reference
+                type: string
+                required_in: create, update
+                description: The reference string of the patient subscriber in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: subscriberId
-            description: >-
-              The insurer assigned ID for the subscriber
+            description: The insurer-assigned ID for the subscriber.
             type: string
             required_in: create,update
           - name: beneficiary
             description: >-
-              Who benefits from the coverage; the patient when products or services are provided.<br><br>
-              Supported resource types for create interactions are: **Patient**
+              Who benefits from the coverage; the patient when products or services are provided.
             type: json
             required_in: create,update
+            attributes:
+              - name: reference
+                type: string
+                required_in: create, update
+                description: The reference string of the patient beneficiary in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: relationship
             type: json
-            description: >-
-              The relationship of beneficiary (patient) to the subscriber<br><br>
-              Supported codes for create interactions are: **child**, **spouse**, **other**, **self**, **injured** with a system of **http://hl7.org/fhir/ValueSet/subscriber-relationship**<br><br>
-              A single iteration is supported.
+            description: The relationship of beneficiary (patient) to the subscriber.
             required_in: create,update
+            attributes:
+              - name: coding
+                description: Code defined by a terminology system.
+                type: array[json]
+                required_in: create,update
+                attributes: 
+                  - name: system
+                    description: The system url of the coding.
+                    required_in: create,update
+                    enum_options: 
+                      - value: http://hl7.org/fhir/ValueSet/subscriber-relationship
+                    type: string
+                  - name: code
+                    description: The code of the relationship.
+                    type: string
+                    enum_options:
+                      - value: child
+                      - value: spouse
+                      - value: other
+                      - value: self
+                      - value: injured
+                      - value: parent
+                        exclude_in: create,update
+                      - value: common
+                        exclude_in: create,update
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
+              - name: text
+                exclude_in: create, update
+                type: string
+                description: The 2 character code that represents the patient relationship to the insured as defined by CMS.
+                enum_options:
+                   - value: 18  (Self)
+                   - value: 01  (Spouse)
+                   - value: 19  (Natural Child, insured has financial responsibility)
+                   - value: 43  (Natural Child, insured does not have financial responsibility),
+                   - value: 17  (Step Child)
+                   - value: 10  (Foster Child)
+                   - value: 15  (Ward of the Court)
+                   - value: 20  (Employee)
+                   - value: 21  (Unknown)
+                   - value: 22  (Handicapped Dependent)
+                   - value: 39  (Organ donor)
+                   - value: 40  (Cadaver donor)
+                   - value: 05  (Grandchild)
+                   - value: 07  (Niece/Nephew)
+                   - value: 41  (Injured Plaintiff)
+                   - value: 23  (Sponsored Dependent)
+                   - value: 24  (Minor Dependent of a Minor Dependent)
+                   - value: 32  (Mother)
+                   - value: 33  (Father)
+                   - value: 04  (Grandparent)
+                   - value: 53  (Life Partner)
+                   - value: 29  (Significant Other)
+                   - value: G8  (Other)
           - name: period
             description: >-
               The period during which the Coverage is in force.<br><br>
-              A missing start date indicates the start date isn't known - for a create interaction, this will be set to the current date.<br><br>
               A missing end date means the coverage continues to be in force.
+            create_and_update_description:
+              If the start date is missing for a create/update interaction, it will be set to the current date of ingestion.
             type: json
+            attributes:
+              - name: start
+                type: date
+                description: Starting time with inclusive boundary
+              - name: end
+                type: date
+                description: End time with inclusive boundary, if not ongoing.
           - name: payor
             type: array[json]
-            description: >-
-              Issuer of the policy<br><br>
-              Two methods for creating this data are supported:
+            description_for_all_endpoints: Issuer of the policy.
+            create_and_update_description: >-
+              Two methods for specifying this data are supported:
                - sending an [**Organization**](/api/organization) reference in `payor[0].reference`
                ```json
-              "payor": [
-                    {
-                        "reference": "Organization/6741b035-2846-45b3-b7a3-251f7b7fc728",
-                        "type": "Organization",
-                        "display": "Medicare Advantage"
-                    }
-                  ],
+                "payor": [
+                      {
+                          "reference": "Organization/6741b035-2846-45b3-b7a3-251f7b7fc728",
+                          "type": "Organization",
+                          "display": "Medicare Advantage"
+                      }
+                    ],
                ```
-               For **Read/Search**, this **Organization** reference will always be returned.
               <br>
                - sending a `payor[0].identifier.value` corresponding to the Coverage's payor id.  For now, these values can only be found and updated in the [Insurers Admin view](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers) in Canvas.
                ```json
@@ -85,31 +290,91 @@ sections:
                   ],
                ```
                <br>
-
+               A `reference` or `identifier.value` is required in a Create/Update.
             required_in: create,update
+            attributes:
+              - name: reference
+                type: string
+                description: The Organization reference to the Coverage's payor in the format "Organization/6741b035-2846-45b3-b7a3-251f7b7fc728"
+              - name: type
+                description: Type the reference refers to (e.g. "Organization").
+                type: string
+              - name: display
+                description: The display name of the payor.
+                type: string
+              - name: identifier
+                exclude_in: read,search
+                type: json
+                description: Logical reference, when literal reference is not known. 
+                attributes:
+                  - name: value
+                    type: string
+                    required_in: create, update
+                    description: The value that is unique. These values can only be found and updated in the [Insurers Admin view](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers) in Canvas. 
+                  - name: system
+                    type: string
+                    description: The namespace for the identifier value. 
+                    enum_options: 
+                      - value: https://www.claim.md/services/era/
           - name: class
             type: json
             description: >-
               Additional coverage classifications.<br><br>
-              Supported class types supported for create interactions: **plan**, **subplan**, **group**, **subgroup** with a system of **http://hl7.org/fhir/ValueSet/coverage-class**<br><br>
-              Only plan and group are visible in the Canvas UI.
+              Only plan and group will be visible in the Canvas UI.
+            attributes:
+              - name: type
+                type: json
+                required_in: create, update
+                description: Type of class such as 'group' or 'plan'.
+                attributes:
+                  - name: coding
+                    description: Code defined by a terminology system.
+                    type: array[json]
+                    required_in: create,update
+                    attributes: 
+                      - name: system
+                        description: The system url of the coding.
+                        required_in: create,update
+                        enum_options: 
+                          - value: http://hl7.org/fhir/ValueSet/coverage-class
+                        type: string
+                      - name: code
+                        description: The code of the class. 
+                        type: string
+                        required_in: create,update
+                        enum_options:
+                          - value: plan
+                          - value: subplan
+                          - value: group
+                          - value: subgroup
+                  - name: value
+                    type: string
+                    description: Value associated with the type.
           - name: order
-            type: number
-            description: >-
-              The order in which coverages should be used when adjudicating claims.<br><br>
-                For create interactions, this must between 1 and 5, inclusive.<br><br>
-                If multiple coverages are created with the same order number, the older one will be bumped down in rank, and the new one will take that rank.<br><br>
-                If this leads to multiple coverages being incremented to 5, the oldest (first to be input) of the coverages at this rank will be displayed on the Canvas UI.
+            type: number [ 1-5 ]
+            required_in: create,update
+            description_for_all_endpoints: >-
+              The order in which coverages should be used when adjudicating claims.
+            create_and_update_description:
+                The order must between 1 and 5, inclusive.<br><br>
+                If multiple coverages for a patient are created with the same order number, the older one will be bumped down in rank, and the new one will take that rank.<br><br>
+                If this leads to multiple coverages being incremented to 5, the oldest (first to be inputted into Canvas) of the coverages at this rank will be displayed on the Canvas UI.
         search_parameters:
           - name: _id
             type: string
-            description: The Canvas resource identifier of the Coverage
+            description: The Canvas resource identifier of the Coverage.
           - name: patient
             type: string
-            description: Retrieve coverages for a patient
+            description: Retrieve coverages for a patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
           - name: subscriberid
             type: string
             description: Retrieve all coverages with a specific subscriberID
+          - name: status
+            type: string
+            description: Retrieve coverages by a specific status.
+            search_options:
+              - value: active
+              - value: cancelled
         endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]

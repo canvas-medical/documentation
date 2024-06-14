@@ -240,7 +240,9 @@ sections:
                     type: date
           - name: photo
             type: array[json]
-            description: Returns the static image URL of the patient, which is then used to generate a new S3 presigned URL. This URL is later utilized in the second request called for a presigned URL for the patient photo.
+            description: >- 
+                Image of the patient. This image shows on the patient avatar in the Canvas UI.<br><br>
+                **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             create_and_update_description: >-
               When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
           - name: contact
@@ -300,7 +302,7 @@ sections:
           - name: active
             type: boolean
             description: By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false) patients.
-          - name: birthdate
+          - name: birthDate
             type: date
             description: The patient's birthdate
           - name: email
@@ -1186,7 +1188,13 @@ print(response.text)
     "photo":
     [
         {
-            "url": "http://canvasmedical.com/Patient/d6ac88753e1e4fc4b664db0c9aa9cde5/files/photo"
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                    "valueUri": "https://d3hn0m4rbsz438.cloudfront.net/avatar1.png"
+                }
+            ],
+            "url": "https://canvas-client-media.s3.amazonaws.com/local/patient-avatars/20230928_213831_7162fd82487e4dc8aa2581ddbca91892.unknown_image?AWSAccessKeyId=AKIAQB7SIDR7IJXXMF47&Signature=kG1YseB%2FjSd7UMErYFVst8%2B3yHY%3D&Expires=1695938081"
         }
     ],
     "contact":

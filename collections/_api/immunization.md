@@ -26,7 +26,7 @@ sections:
             description: A coding for reason not given, if recorded - omitted otherwise.
             attributes:
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes: 
                   - name: system
@@ -45,7 +45,7 @@ sections:
             description: Coding for the administered vaccine.
             attributes:
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes: 
                   - name: system
