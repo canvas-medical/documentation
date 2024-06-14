@@ -68,12 +68,6 @@
 </script>
 <div class="apidoc">
     <div class="apidoc__gridrow">
-        <!-- This is a hack for files routes -->
-        {% if block.name == 'Patient' %}
-            {% assign document = 'photo' %}
-        {% elsif block.name == 'Practitioner' %}
-            {% assign document = 'document' %}
-        {% endif %}
         <div class="apidoc__gridcol">
             <div class="apidoc__info">
                 {% if block.name %}
@@ -111,12 +105,7 @@
                     <a href="#{{ endpoint }}" class="apidoc__endpoint__list__item">
                         <span class="apidoc__endpoint__method apidoc__endpoint__method__{{ method }}">{{ method
                             }}</span>
-                        <!-- This is a hack for files routes -->
-                        {% if endpoint == 'files' %}
-                            <div class="apidoc__endpoint__url">/{{ block.name }}/{id}/{{endpoint}}/{{document}}</div>
-                        {% else %}
-                            <div class="apidoc__endpoint__url">/{{ block.name }}{{ url }}</div>
-                        {% endif %}
+                        <div class="apidoc__endpoint__url">/{{ block.name }}{{ url }}</div>
                     </a>
                     {% endfor %}
                 </div>
@@ -132,30 +121,12 @@
     {% include blocks/block-apidoc-endpoints.html %}
     <div class="apidoc__gridrow">
         <div class="apidoc__gridcol">
-            <div id="{{ endpoint }}" class="apidoc__info">
-                <span class="apidoc__info__method apidoc__info__method__{{ method }}">
-                    {{ method }}
-                </span>
-                <div class="apidoc__info__url">
-                    <!-- This is a hack for files routes -->
-                    {% if block.endpoints %}
-                        {{ block.name }}/{id}/files/{{document}}
-                    {% else %}
-                        {{ block.name }}{{ url }}
-                    {% endif %}
-                </div>
-                <h4 class="apidoc__info__summary">
-                    {{ block.name }} {{ endpoint }}
-                </h4>
-                <div class="apidoc__info__description">
-                    {{ block[endpoint].description | markdownify }}
-                </div>
-            </div>
+            <div id="{{ endpoint }}" class="apidoc__info"><span class="apidoc__info__method apidoc__info__method__{{ method }}">{{ method }}</span><div class="apidoc__info__url">/{{ block.name }}{{ url }}</div><h4 class="apidoc__info__summary">{{ block.name }} {{ endpoint }}</h4><div class="apidoc__info__description">{{ block[endpoint].description | markdownify }}</div></div>
         </div>
         <div class="apidoc__gridcol">
         </div>
     </div>
-    {% if endpoint == 'read'%}
+    {% if endpoint == 'read' %}
     <div class="apidoc__gridrow">
         <div class="apidoc__gridcol">
             <h3>Path Parameters</h3>
@@ -216,37 +187,6 @@
         </div>
     </div>
     {% endif %}
-    {% endif %}
-    {% if endpoint == 'files' %}
-        {% if block.files.responses %}
-        <div class="apidoc__gridcol">
-            <h3>Path Parameters</h3>
-            <div class="apidoc__object">
-                <div class="apidoc__object__name">
-                    id
-                    <span class="apidoc__object__required">required</span>
-                </div>
-                <div class="apidoc__object__type">
-                    string
-                </div>
-                <div class="apidoc__object__description">
-                    The unique identifier for the {{ block.name }}
-                </div>
-            </div>
-        </div>
-        <div class="apidoc__gridrow">
-            <div class="apidoc__gridcol">
-                <h3>Responses</h3>
-                {% for response in block.files.responses %}
-                {% include blocks/block-apidoc-responses-ok.html %}
-                {% endfor %}
-                <h3>Errors</h3>
-                {% for response in block.files.responses %}
-                {% include blocks/block-apidoc-responses-errors.html %}
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
     {% endif %}
     {% if endpoint == 'search' %}
     <div class="apidoc__gridrow">

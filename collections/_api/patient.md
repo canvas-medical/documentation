@@ -335,7 +335,7 @@ sections:
           - name: phone
             type: string
             description: Patient phone number. Expected to be 10 digits.
-        endpoints: [create, read, update, search, files]
+        endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: patient-create-request
@@ -358,12 +358,6 @@ sections:
           example_response: patient-search-response
           description: >-
             Search for patient resources.
-        files:
-          responses: [307, 400, 401, 403, 404]
-          example_request: patient-read-file-request
-          example_response: patient-read-file-response
-          description: >-
-            Upon calling this endpoint, it will generate and redirect to the presigned S3 URL.
 ---
 
 <div id="patient-create-request">

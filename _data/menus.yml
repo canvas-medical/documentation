@@ -325,8 +325,6 @@ api_patient:
    url: /api/patient/#update
  - title: "Patient Search"
    url: /api/patient/#search
- - title: "Patient Files"
-   url: /api/patient/#files
 api_paymentnotice:
  - title: "PaymentNotice Create"
    url: /api/paymentnotice/#create
