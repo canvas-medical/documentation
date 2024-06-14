@@ -119,7 +119,7 @@ sections:
         create:
           description: >-
             Create a Group resource.<br><br>
-            **Note:** The Canvas implementation of Group create/update assigns responsibilities to pracitioner Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
+            **Note:** The Canvas implementation of Group create/update assigns responsibilities to practitioner Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: group-create-request
           example_response: group-create-response
@@ -131,7 +131,7 @@ sections:
         update:
           description: >-
             Update a Group resource.<br><br>
-            **Note:** The Canvas implementation of Group create/update assigns responsibilities to pracitioner Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
+            **Note:** The Canvas implementation of Group create/update assigns responsibilities to practitioner Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: group-update-request
           example_response: group-update-response
