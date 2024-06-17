@@ -231,7 +231,7 @@ print(response.text)
               }
         ],
         "contentType": "image/jpeg",
-        "url": "https://canvas-client-media.s3.amazonaws.com/example/20231004_154853_07a4ecdae69d4870b6f60398b28e2839.jpg?AWSAccessKeyId=AKIAQB7SIDR7G73XKHCY&Signature=l3gnPv9wgYhdaZ2ba5RlZYrFCu0%3D&Expires=1696473402",
+        "url": "http://schemas.canvasmedical.com/Media/resource_key/files/content",
         "title": "Image title"
     },
     "note": [
@@ -359,7 +359,7 @@ print(response.text)
                         }
                     ],
                     "contentType": "image/jpeg",
-                    "url": "https://canvas-client-media.s3.amazonaws.com/example/20231004_154853_07a4ecdae69d4870b6f60398b28e2839.jpg?AWSAccessKeyId=AKIAQB7SIDR7G73XKHCY&Signature=l3gnPv9wgYhdaZ2ba5RlZYrFCu0%3D&Expires=1696473402",
+                    "url": "http://schemas.canvasmedical.com/Media/resource_key/files/content",
                     "title": "Image title"
                 },
                 "note": [

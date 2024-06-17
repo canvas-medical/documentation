@@ -319,7 +319,7 @@ print(response.text)
                   "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
               }
       ],
-      "url": "https://canvas-client-media.s3.amazonaws.com/training/20220330_211811_60.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=h68Xavx0JLoA7zUhBA4bnSeVCvQ%3D&Expires=1693416882"
+      "url": "http://schemas.canvasmedical.com/Consent/resource_key/files/sourceAttachment"
   },
   "provision": {
       "period": {
@@ -444,7 +444,7 @@ print(response.text)
                       "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
                   }
               ],
-              "url": "https://canvas-client-media.s3.amazonaws.com/training/20220330_211811_60.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=2xQC7mNbJ36CzRkC%2FmlqynHDW%2FU%3D&Expires=1694808853"
+              "url": "http://schemas.canvasmedical.com/Consent/resource_key/files/sourceAttachment"
           },
           "provision": {
               "period": {

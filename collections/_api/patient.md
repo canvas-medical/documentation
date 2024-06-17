@@ -1188,7 +1188,7 @@ print(response.text)
                     "valueUri": "https://d3hn0m4rbsz438.cloudfront.net/avatar1.png"
                 }
             ],
-            "url": "https://canvas-client-media.s3.amazonaws.com/local/patient-avatars/20230928_213831_7162fd82487e4dc8aa2581ddbca91892.unknown_image?AWSAccessKeyId=AKIAQB7SIDR7IJXXMF47&Signature=kG1YseB%2FjSd7UMErYFVst8%2B3yHY%3D&Expires=1695938081"
+            "url": "http://schemas.canvasmedical.com/Patient/resource_key/files/photo"
         }
     ],
     "contact":
