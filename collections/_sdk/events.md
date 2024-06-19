@@ -85,28 +85,22 @@ The following Canvas events are able to trigger a plugin to execute.
 | TASK_UPDATED | Occurs when a task is updated. |
 | VITAL_SIGN_CREATED | Occurs when a vitals entry is created for a patient using the Vitals command. Additional details for the vitals become available with subsequent VITAL_SIGN_UPDATED events. |
 | VITAL_SIGN_UPDATED | Occurs when a vitals entry is updated for a patient. |
-| MEDICATION_STATEMENT__MEDICATION__POST_SEARCH | Occurs after a medication statement search for a medication. |
-
-
-The following events are on the roadmap to be available in the near future.
-
-| Event | Description |
-| ----- | ----------- |
 | PRE_COMMAND_ORIGINATE | Occurs before any command is entered into a note. |
 | POST_COMMAND_ORIGINATE | Occurs after any command is entered into a note. |
 | PRE_COMMAND_UPDATE | Occurs before the data in any command is updated. |
-| POST_COMMAND_UPDATE | Occurs after the data in any command is updated.  |
+| POST_COMMAND_UPDATE | Occurs after the data in any command is updated. |
 | PRE_COMMAND_COMMIT | Occurs before any command is committed. |
 | POST_COMMAND_COMMIT | Occurs after any command is committed. |
 | PRE_COMMAND_DELETE | Occurs before any command is deleted. |
-| POST_COMMAND_DELETE | Occurs after any command is deleted.  |
+| POST_COMMAND_DELETE | Occurs after any command is deleted. |
 | PRE_COMMAND_ENTER_IN_ERROR | Occurs before any command is marked as entered in error. |
-| POST_COMMAND_ENTER_IN_ERROR | Occurs after any command is marked as entered in error.  |
+| POST_COMMAND_ENTER_IN_ERROR | Occurs after any command is marked as entered in error. |
 | PRE_COMMAND_EXECUTE_ACTION | Occurs before an action is executed on any command. |
 | POST_COMMAND_EXECUTE_ACTION | Occurs after an action is executed on any command. |
 | ASSESS_COMMAND__CONDITION_SELECTED | Occurs after a condition is selected in the Assess command. |
 | MEDICATION_STATEMENT__MEDICATION__PRE_SEARCH | Occurs before a medication statement search for a medication. |
-| MEDICATION_STATEMENT__MEDICATION__SELECTED | Occurs when a medication is selected from medication statement search results. |
+| MEDICATION_STATEMENT__MEDICATION__POST_SEARCH | Occurs after the initial results are fetched for the medication search in the medication statement command. |
+| MEDICATION_STATEMENT__MEDICATION__SELECTED | Occurs when a medication is selected from Medication Statement search results. |
 | ASSESS_COMMAND__PRE_ORIGINATE | Occurs before the Assess command is first entered into a note. |
 | ASSESS_COMMAND__POST_ORIGINATE | Occurs after the Assess command is first entered into a note. |
 | ASSESS_COMMAND__PRE_UPDATE | Occurs before data for the Assess command is updated. |
@@ -119,6 +113,8 @@ The following events are on the roadmap to be available in the near future.
 | ASSESS_COMMAND__POST_ENTER_IN_ERROR | Occurs after the Assess command is marked as entered in error. |
 | ASSESS_COMMAND__PRE_EXECUTE_ACTION | Occurs before an action is executed on the Assess command. |
 | ASSESS_COMMAND__POST_EXECUTE_ACTION | Occurs after an action is executed on the Assess command. |
+| ASSESS__CONDITION__POST_SEARCH | Occurs after the initial results are fetched for the condition search in the Assess command. |
+| DIAGNOSE__DIAGNOSE__POST_SEARCH | Occurs after the initial results are fetched for the diagnosis search in the Diagnose command. |
 | GOAL_COMMAND__PRE_ORIGINATE | Occurs before the Goal command is first entered into a note. |
 | GOAL_COMMAND__POST_ORIGINATE | Occurs after the Goal command is first entered into a note. |
 | GOAL_COMMAND__PRE_UPDATE | Occurs before data for the Goal command is updated. |
@@ -179,6 +175,7 @@ The following events are on the roadmap to be available in the near future.
 | PRESCRIBE_COMMAND__POST_ENTER_IN_ERROR | Occurs after the Prescribe command is marked as entered in error. |
 | PRESCRIBE_COMMAND__PRE_EXECUTE_ACTION | Occurs before an action is executed on the Prescribe command. |
 | PRESCRIBE_COMMAND__POST_EXECUTE_ACTION | Occurs after an action is executed on the Prescribe command. |
+| PRESCRIBE__PRESCRIBE__POST_SEARCH | Occurs after the initial results are fetched for the medication search in the Prescribe command. |
 | QUESTIONNAIRE_COMMAND__PRE_ORIGINATE | Occurs before the Questionnaire command is first entered into a note. |
 | QUESTIONNAIRE_COMMAND__POST_ORIGINATE | Occurs after the Questionnaire command is first entered into a note. |
 | QUESTIONNAIRE_COMMAND__PRE_UPDATE | Occurs before data for the Questionnaire command is updated. |
@@ -191,6 +188,7 @@ The following events are on the roadmap to be available in the near future.
 | QUESTIONNAIRE_COMMAND__POST_ENTER_IN_ERROR | Occurs after the Questionnaire command is marked as entered in error. |
 | QUESTIONNAIRE_COMMAND__PRE_EXECUTE_ACTION | Occurs before an action is executed on the Questionnaire command. |
 | QUESTIONNAIRE_COMMAND__POST_EXECUTE_ACTION | Occurs after an action is executed on the Questionnaire command. |
+| QUESTIONNAIRE__QUESTIONNAIRE__POST_SEARCH | Occurs after the initial results are fetched for the questionnaire search in the Questionnaire command. |
 | REASON_FOR_VISIT_COMMAND__PRE_ORIGINATE | Occurs before the Reason for Visit command is first entered into a note. |
 | REASON_FOR_VISIT_COMMAND__POST_ORIGINATE | Occurs after the Reason for Visit command is first entered into a note. |
 | REASON_FOR_VISIT_COMMAND__PRE_UPDATE | Occurs before data for the Reason for Visit command is updated. |
@@ -203,6 +201,7 @@ The following events are on the roadmap to be available in the near future.
 | REASON_FOR_VISIT_COMMAND__POST_ENTER_IN_ERROR | Occurs after the Reason for Visit command is marked as entered in error. |
 | REASON_FOR_VISIT_COMMAND__PRE_EXECUTE_ACTION | Occurs before an action is executed on the Reason for Visit command. |
 | REASON_FOR_VISIT_COMMAND__POST_EXECUTE_ACTION | Occurs after an action is executed on the Reason for Visit command. |
+| REASON_FOR_VISIT__CODING__POST_SEARCH | Occurs after the initial results are fetched for the reason search in the Reason for Visit command. |
 | STOP_MEDICATION_COMMAND__PRE_ORIGINATE | Occurs before the Stop Medication command is first entered into a note. |
 | STOP_MEDICATION_COMMAND__POST_ORIGINATE | Occurs after the Stop Medication command is first entered into a note. |
 | STOP_MEDICATION_COMMAND__PRE_UPDATE | Occurs before data for the Stop Medication command is updated. |
@@ -215,6 +214,7 @@ The following events are on the roadmap to be available in the near future.
 | STOP_MEDICATION_COMMAND__POST_ENTER_IN_ERROR | Occurs after the Stop Medication command is marked as entered in error. |
 | STOP_MEDICATION_COMMAND__PRE_EXECUTE_ACTION | Occurs before an action is executed on the Stop Medication command. |
 | STOP_MEDICATION_COMMAND__POST_EXECUTE_ACTION | Occurs after an action is executed on the Stop Medication command. |
+| STOP_MEDICATION__MEDICATION__POST_SEARCH | Occurs after the initial results are fetched for the medication search in the Stop Medication command. |
 | TASK_COMMAND__PRE_ORIGINATE | Occurs before the Task command is first entered into a note. |
 | TASK_COMMAND__POST_ORIGINATE | Occurs after the Task command is first entered into a note. |
 | TASK_COMMAND__PRE_UPDATE | Occurs before data for the Task command is updated. |
@@ -239,3 +239,4 @@ The following events are on the roadmap to be available in the near future.
 | UPDATE_GOAL_COMMAND__POST_ENTER_IN_ERROR | Occurs after the Update Goal command is marked as entered in error. |
 | UPDATE_GOAL_COMMAND__PRE_EXECUTE_ACTION | Occurs before an action is executed on the Update Goal command. |
 | UPDATE_GOAL_COMMAND__POST_EXECUTE_ACTION | Occurs after an action is executed on the Update Goal command. |
+| UPDATE_GOAL__GOAL_STATEMENT__POST_SEARCH | Occurs after the initial results are fetched for the goal search in the Update Goal command. |
