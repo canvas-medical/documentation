@@ -47,7 +47,10 @@ The following effects are available to be applied in Canvas.
 
 | Effect | Description |
 | ----- | ----------- |
-| AUTOCOMPLETE_SEARCH_RESULTS | Can be used to modify search results by re-ordering or adding text annotations to individual result records. |
+| AUTOCOMPLETE_SEARCH_RESULTS | Can be used to modify search results by re-ordering or adding text annotations to individual result records. To see how you can put this to use, check out [this guide](/guides/customize-search-results/). |
+| ADD_PLAN_COMMAND | Can be used to insert a plan command into a note. |
+| ADD_BANNER_ALERT | Can be used to add a banner alert to a patient's chart. |
+| REMOVE_BANNER_ALERT | Can be used to remove a banner alert from a patient's chart. |
 
 <br/>
 <br/>
