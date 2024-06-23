@@ -3,7 +3,7 @@ title: "Recommendation Types"
 
 ---
 
-We saw in our [last example](/sdk/sdk-quickstart/#expanding-a-protocol) that instead of adding an instance of a generic `Recommendation` to be passed to the `add_recommendation` method, we used an instance of the more specific `InterviewRecommendation` class. The Canvas Workflow Kit contains many built-in Recommendation classes that can be used to add different types of recommendations to a Protocol. These are used in order to provide guidance to a course of action for a patient.
+We saw in our [last example](/sdk/workflow-sdk-quickstart/#expanding-a-protocol) that instead of adding an instance of a generic `Recommendation` to be passed to the `add_recommendation` method, we used an instance of the more specific `InterviewRecommendation` class. The Canvas Workflow Kit contains many built-in Recommendation classes that can be used to add different types of recommendations to a Protocol. These are used in order to provide guidance to a course of action for a patient.
 
 To get you started using these recommendations, we have written out some example protocol code for you. Please see our [Open Source SDK repo](https://github.com/canvas-medical/open-source-sdk/tree/main/canvas_workflow_helpers/protocols/recommendations).
 <br>

@@ -85,7 +85,7 @@ class MessageNotification(ClinicalQualityMeasure):
 ### Write patient messages to Canvas
 
 Patient responses can be written to Canvas using the [FHIR Communication Create ](/api/communication/#create)endpoint. They can be assigned to a user through the `recipient` attribute using a practitioner ID. They will appear in the messages inbox in Canvas. 
-<br><br> All users in Canvas have a practitioner ID, not just clinicians. By default the [FHIR Practitioner Search](/api/practitioner/#search) endpoint will return clinician's that can be scheduled, however, you can include the `includes non-schedulable practitioners` query param to return all staff members.
+<br><br> All users in Canvas have a practitioner ID, not just clinicians. By default the [FHIR Practitioner Search](/api/practitioner/#search) endpoint will return clinicians that can be scheduled, however, you can include the `includes non-schedulable practitioners` query param to return all staff members.
 <br><br>
 * * *
 

@@ -11,27 +11,54 @@ sections:
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-procedure.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-procedure.html)<br><br>
           See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360055626874-Perform-Command-for-In-Office-Procedures) for information on creating procedures with the `Perform` command.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
-            description: The identifier of the Procedure
+            description: The identifier of the Procedure.
             type: string
-          - name: status
-            description: A code specifying the state of the procedure
-            type: string
+          - name: status 
+            type: enum [ in-progress | stopped | completed | unknown | entered-in-error ]
+            description: A code specifying the state of the procedure.
           - name: code
-            description: Identification of the procedure
+            description: Identification of the procedure.
             type: json
+            attributes:
+              - name: coding
+                description: Code defined by a terminology system.
+                type: array[json]
+                attributes: 
+                  - name: system
+                    description: The system url of the coding.
+                    enum_options: 
+                      - value: http://www.ama-assn.org/go/cpt
+                      - value: unstructured
+                    type: string
+                  - name: code
+                    description: The code of the procedure.
+                    type: string
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
           - name: subject
             description: Who the procedure was performed on
             type: json
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: performedDateTime
-            description: When the procedure was performed
+            description: When the procedure was performed. <br><br>In Canvas, this will be the datetime of service of the note the Perform command is committed to.
             type: datetime
         search_parameters:
           - name: _id
-            description: The identifier of the Procedure
+            description: The identifier of the Procedure.
             type: string
           - name: patient
-            description: Who the procedure was performed on
+            description: The patient reference of whom the procedure was performed on in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
         endpoints: [read, search]
         read:
@@ -134,7 +161,7 @@ sections:
 </div>
 
 <div id="procedure-search-request">
-{% include search-request.html resource_type="Procedure" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="Procedure" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="procedure-search-response">

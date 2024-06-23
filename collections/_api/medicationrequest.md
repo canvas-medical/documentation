@@ -31,7 +31,7 @@ sections:
             type: json
             attributes:
                 - name: coding
-                  description: Identifies where the definition of the code comes from.
+                  description: Code defined by a terminology system.
                   type: array[json]
                   attributes: 
                     - name: system
@@ -89,7 +89,7 @@ sections:
             type: array[json]
             attributes:
                 - name: coding
-                  description: Identifies where the definition of the code comes from.
+                  description: Code defined by a terminology system.
                   type: array[json]
                   attributes: 
                     - name: system
@@ -180,6 +180,9 @@ sections:
             type: string
           - name: patient
             description: The patient reference associated to the Medication Request in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            type: string
+          - name: requester
+            description: The Practitioner reference associated to the MedicationRequest.requester attribute in the format `Practitioner/6c20b7152cf7421791c5ab4113060b3f`.
             type: string
           - name: status
             description: Search Medication Requests by a specific status.

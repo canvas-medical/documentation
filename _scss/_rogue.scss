@@ -24,6 +24,11 @@ $font-family-monospace: 'Ubuntu Mono', 'SFMono-Regular', 'Menlo', 'Monaco', 'Con
     }
 }
 
+.language-plaintext.highlighter-rouge {
+  background-color: #eee;
+  padding: 1px;
+}
+
 /* Add CSS styles for the modal window */
 .rogue__modal {
     position: fixed;

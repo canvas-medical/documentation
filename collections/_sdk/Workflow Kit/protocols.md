@@ -1,6 +1,6 @@
 ---
 title: "Protocols"
-slug: "protocols"
+slug: "workflow-sdk-protocols"
 hidden: true
 createdAt: "2021-10-08T13:44:40.503Z"
 updatedAt: "2021-10-08T13:44:40.503Z"

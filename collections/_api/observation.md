@@ -52,7 +52,7 @@ sections:
             description: Classifies the general type of observation being made.
             attributes: 
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes: 
                   - name: system
@@ -97,7 +97,7 @@ sections:
             required_in: create
             attributes: 
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 required_in: create
                 attributes: 
@@ -149,7 +149,7 @@ sections:
                         - value: unsupported
                         - value: unknown
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes: 
                   - name: system
@@ -260,7 +260,7 @@ sections:
             description: Actual result.<br><br>Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.
             attributes:
               - name: coding
-                description: Identifies where the definition of the code comes from. Codings are used when the Observation comes from a QuestionnaireResponse.
+                description: Code defined by a terminology system. Codings are used when the Observation comes from a QuestionnaireResponse.
                 type: array[json]
                 attributes: 
                   - name: system
@@ -278,7 +278,7 @@ sections:
             description: Why the result is missing (if there is no `value[x]` section)
             attributes: 
               - name: coding
-                description: Identifies where the definition of the code comes from.
+                description: Code defined by a terminology system.
                 type: array[json]
                 attributes: 
                   - name: system
@@ -353,7 +353,7 @@ sections:
                 attributes: 
                   - name: coding
                     required_in: create
-                    description: Identifies where the definition of the code comes from.
+                    description: Code defined by a terminology system.
                     type: array[json]
                     attributes: 
                       - name: system
@@ -414,7 +414,7 @@ sections:
                 description: Why the result is missing (if there is no `Component[x].value[y]` section)
                 attributes: 
                   - name: coding
-                    description: Identifies where the definition of the code comes from.
+                    description: Code defined by a terminology system.
                     type: array[json]
                     attributes: 
                       - name: system
