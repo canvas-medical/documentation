@@ -9,28 +9,97 @@ sections:
         description: >-
           A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action. Includes companies, institutions, corporations, departments, community groups, healthcare practice groups, payer/insurer, etc.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-organization.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-organization.html)
+          <br><br>Organizations come from three different Canvas data types: Organizations, Vendors, and Insurers. You can manage these resources in Canvas Settings. FHIR Organizations created by Insurers in Canvas are useful in the [FHIR Coverage](/api/coverage) payor attribute.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
-            description: The identifier of the Organization
+            description: The identifier of the Organization.
             type: string
           - name: identifier
             description: >-
                Identifies this organization across multiple systems.<br><br>
-               When relevant, group NPI values, taxonomy ids, and tax ids will be found for relevant organizations .  Identifiers for vendors and transactors, such as
-               insurance payor values, are not yet supported.<br><br>
+               When relevant, group NPI values, taxonomy ids, and tax ids will be found for relevant organizations.  Identifiers for vendors and transactors, such as
+               insurance payor values, are not yet supported.
             type: array[json]
+            attributes:
+                - name: type
+                  type: array
+                  description: Description of identifier. <br><br>Currently only type will appear for Organizations with a Tax ID.
+                  attributes:
+                    - name: coding
+                      type: array[json]
+                      description:  Code defined by a terminology system.
+                      attributes: 
+                        - name: system
+                          description: The system url of the coding.
+                          enum_options: 
+                            - value: http://terminology.hl7.org/CodeSystem/v2-0203
+                          type: string
+                        - name: code
+                          description: The code of the clinical status.
+                          type: string
+                          enum_options: 
+                            - value: TAX
+                        - name: display
+                          description: The display name of the coding.
+                          type: string
+                          enum_options: 
+                            - value: Tax ID number
+                - name: system
+                  type: string
+                  description:  The namespace for the identifier value.
+                  enum_options: 
+                    - value: urn:oid:2.16.840.1.113883.4.4 (for Tax ID)
+                    - value: http://hl7.org/fhir/sid/us-npi (for NPI)
+                - name: value
+                  type: string
+                  description: The value that is unique.
           - name: active
-            description: Whether the organization's record is still in active use
+            description: Whether the organization's record is still in active use. 
             type: boolean
           - name: name
-            description: Name used for the organization
+            description: Name used for the organization.
             type: string
           - name: telecom
-            description: A contact detail for the organization
+            description: A contact detail for the organization (phone / email / fax).
             type: array[json]
+            attributes:
+              - name: system
+                type: enum [ phone | fax | email | pager | other ]
+                description: Telecommunications form for contact point - what communications system is required to make use of the contact.
+              - name: value
+                type: string
+                description: The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).
+              - name: use
+                type: enum [ work | temp | old | mobile ]
+                description: Identifies the purpose for the contact point.
           - name: address
             description: An address for the organization.  This will include both physical and billing addresses, when available.
             type: array[json]
+            attributes:
+                - name: use
+                  type: enum [ work | temp | old | billing ]
+                  description: Defines the purpose of this address.
+                - name: type
+                  type: enum [ both | physical | postal ] 
+                  description: Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses).
+                - name: line
+                  type: array[string]
+                  description: This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.<br><br> The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
+                - name: city
+                  type: string
+                  description: The name of the city, town, suburb, village or other community or delivery center.
+                - name: state
+                  type: string
+                  description: Two-letter state abbreviation of the address.
+                - name: postalCode
+                  type: string
+                  description: The 5-digit postal code of the address.
+                - name: country
+                  type: string
+                  description: Specifies the country in which the organization's address is located.
         search_parameters:
           - name: _id
             description: The identifier of the Organization
