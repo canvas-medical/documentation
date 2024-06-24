@@ -20,7 +20,9 @@ sections:
             type: string
           - name: status
             type: enum [ active | cancelled ]
-            description: The status of the Coverage. <br><br>In Canvas, the status of `active` means it appears in the Patient's Profile page, while a status of `cancelled` means it was removed and no longer appears on the page. Of note, an expired coverage will still show as `active`, so be sure to set/read the `period.end` attribute.
+            description_for_all_endpoints: The status of the Coverage. <br><br>In Canvas, the status of `active` means it appears in the Patient's Profile page either under the main or other coverage sections, while a status of `cancelled` means it was removed and no longer appears on the page. An expired coverage will still show as `active`, so be sure to set/read the `period.end` attribute.
+            create_description: Currently there is no way to create a coverage that appears under the "Other Coverages" section on the Patient Profile. All coverages created with `active` will appear as the primary, secondary, tertiary, etc coverage depending on the order number. Coverages created with a `cancelled` status will not appear on the UI, but can still be read out.
+            update_description: If a coverage in the Canvas UI is in the "Other coverages" section, on an update if the status stays `active`, it will remain in the "Other coverages" section.
             required_in: create,update
           - name: type
             type: json
