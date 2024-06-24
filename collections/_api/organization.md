@@ -20,8 +20,7 @@ sections:
           - name: identifier
             description: >-
                Identifies this organization across multiple systems.<br><br>
-               When relevant, group NPI values, taxonomy ids, and tax ids will be found for relevant organizations.  Identifiers for vendors and transactors, such as
-               insurance payor values, are not yet supported.
+               When relevant, group NPI values, taxonomy ids, and tax ids will be found for relevant organizations.  Identifiers for vendors and transactors, such as insurance payor values, are not yet supported.
             type: array[json]
             attributes:
                 - name: type
