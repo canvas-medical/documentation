@@ -47,17 +47,17 @@ sections:
                     - value: CarePlan
                     - value: CareTeam
                     - value: Condition
-                    - value: Immunization
                     - value: Device
                     - value: DiagnosticReport
                     - value: DocumentReference
                     - value: Goal
+                    - value: Immunization
+                    - value: MedicationRequest
                     - value: Observation
                     - value: Organization
                     - value: Patient
-                    - value: MedicationRequest
-                    - value: Procedure
                     - value: Practitioner
+                    - value: Procedure
                 - name: display
                   type: string
                   description: Text alternative for the resource.
