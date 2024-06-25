@@ -58,7 +58,6 @@ sections:
                     - value: MedicationRequest
                     - value: Procedure
                     - value: Practitioner
-                    - value: Goal
                 - name: display
                   type: string
                   description: Text alternative for the resource.
