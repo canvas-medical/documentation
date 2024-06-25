@@ -19,7 +19,7 @@ sections:
           `"type": "choice", "repeats": true`<br><br>  
           2. Single select response questions are denoted with:<br>
           `"type": "choice", "repeats": false`<br><br>  
-          3. Free text responses questions are denoted with:<br>
+          3. Free text response questions are denoted with:<br>
           `"type": "text", "repeats": false`<br><br>
           Questions can be reused in multiple questionnaires, but any given question code should only appear once within a particular questionnaire.
         attributes:
