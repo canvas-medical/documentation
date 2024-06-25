@@ -161,7 +161,7 @@ sections:
             description: Search by the agent of the Provenance record in the format `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"` or `Organization/00000000-0000-0000-0002-000000000000`.
             type: string
           - name: patient
-            description: Search by records where the target is a specific patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            description: Search by provenance records associated to a specific patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
           - name: target
             description: Search by records where the target is a specific patient or observation in the format `Patient/a39cafb9d1b445be95a2e2548e12a787` or `"Observation/920807d3-034b-4423-a65b-980068cb4bd1"`.
