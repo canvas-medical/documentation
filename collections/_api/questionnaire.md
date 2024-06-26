@@ -15,39 +15,113 @@ sections:
           All questionnaires must have coding, and all response options within a question on a questionnaire must have codings.<br><br>
           *Question Types*<br><br>
           Canvas supports 3 different type of questions:<br><br>
-          1. Multi select responses allowed questions are denoted with:<br><br>
-          `"type": "choice", "repeats": true`<br><br>
-          2. Single select response questions are denoted with:<br><br>
-          `"type": "choice", "repeats": false`<br><br>
-          3. Free text responses questions are denoted with:<br><br>
+          1. Multi select response questions are denoted with:<br>
+          `"type": "choice", "repeats": true`<br><br>  
+          2. Single select response questions are denoted with:<br>
+          `"type": "choice", "repeats": false`<br><br>  
+          3. Free text response questions are denoted with:<br>
           `"type": "text", "repeats": false`<br><br>
           Questions can be reused in multiple questionnaires, but any given question code should only appear once within a particular questionnaire.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
-            description: The identifier of the Questionnaire
+            description: The identifier of the Questionnaire.
             type: string
           - name: name
-            description: Name for this questionnaire (computer friendly)
-            type: 
+            description: Name for this questionnaire (computer friendly).<br><br>Canvas automatically versions questionnaires based on the name. Once a questionnaire is retired, you will see a version number next to the name (e.g `PHQ-9 (v7)`)
+            type: string
           - name: status
             description: The status of this questionnaire. Enables tracking the life-cycle of the content.
-            type: string
+            type: enum [ active | retired ]
           - name: description
             description: Natural language description of the questionnaire. May contain markdown syntax.
             type: string
           - name: code
-            description: Concept that represents the overall questionnaire
+            description: Concept that represents the overall questionnaire.
             type: array[json]
+            attributes:
+                - name: system
+                  description: The system url of the coding.
+                  type: string
+                  enum_options:
+                     - value: http://loinc.org
+                     - value: http://snomed.info/sct
+                     - value: http://canvasmedical.com
+                     - value: http://www.ama-assn.org/go/cpt
+                     - value: http://hl7.org/fhir/sid/icd-10
+                     - value: http://schemas.{customer_identifier}.canvasmedical.com/fhir/systems/internal
+                - name: code
+                  description: The code of the questionnaire.
+                  type: string
           - name: item
-            description: Questions and sections within the Questionnaire
+            description: Questions and sections within the Questionnaire.
             type: array[json]
+            attributes:
+                - name: linkId
+                  type: string
+                  description: Unique id for item in questionnaire.
+                - name: code
+                  type: array[json]
+                  description: Corresponding concept for this item in a terminology.
+                  attributes:
+                    - name: system
+                      description: The system url of the coding.
+                      type: string
+                      enum_options:
+                        - value: http://loinc.org
+                        - value: http://snomed.info/sct
+                        - value: http://canvasmedical.com
+                        - value: http://www.ama-assn.org/go/cpt
+                        - value: http://hl7.org/fhir/sid/icd-10
+                        - value: http://schemas.{customer_identifier}.canvasmedical.com/fhir/systems/internal
+                    - name: code
+                      description: The code of the question.
+                      type: string
+                - name: text
+                  type: string
+                  description: Primary text for the item.
+                - name: type
+                  type: string
+                  description: The type of questionnaire item this is.
+                  enum_options:
+                    - value: choice (for multiple or single choice questions)
+                    - value: text (for free text questions)
+                - name: repeats
+                  type: boolean
+                  description: Whether the item may repeat. This value will be true for multiple choice questions and false for single select questions.
+                - name: answerOptions
+                  type: array[json]
+                  description: Permitted answers
+                  attributes:
+                    - name: valueCoding
+                      type: json
+                      description: Answer value.
+                      attributes:
+                        - name: system
+                          description: The system url of the coding.
+                          enum_options:
+                             - value: http://loinc.org
+                             - value: http://snomed.info/sct
+                             - value: http://canvasmedical.com
+                             - value: http://www.ama-assn.org/go/cpt
+                             - value: http://hl7.org/fhir/sid/icd-10
+                             - value: http://schemas.{customer_identifier}.canvasmedical.com/fhir/systems/internal
+                          type: string
+                        - name: code
+                          description: The code of the answer.
+                          type: string
+                        - name: display
+                          description: The display name of the coding.
+                          type: string
         search_parameters:
           - name: _id
-            description: The identifier of the Questionnaire
+            description: The identifier of the Questionnaire.
             type: string
           - name: code
             description: >-
-              A code that corresponds to one of its items in the questionnaire<br><br>
+              A code that corresponds to one of its items in the questionnaire.<br><br>
               A Questionnaire search of the form `/Questionnaire?code=456789` will return Questionnaire resources uploaded to Canvas that have a question with the code **456789**.
             type: string
           - name: name
@@ -55,13 +129,15 @@ sections:
             type: string
           - name: questionnaire-code
             description: >-
-              The questionnaire the answers are provided for<br><br>
+              The questionnaire the answers are provided for.<br><br>
               A Questionnaire search of of the form `/Questionnaire?questionnaire-code=711013002` will return Questionnaire resources uploaded to Canvas that have the code **711013002**.
             type: string
           - name: status
             description: >-
               The current status of the questionnaire<br><br>
-              Supported codes for search interactions are: **active**, **retired
+            search_parameters:
+                - value: active
+                - value: retired
             type: string
         endpoints: [read, search]
         read:
