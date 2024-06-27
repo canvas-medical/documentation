@@ -8,6 +8,7 @@ PDF annotations allow users to interact directly with any uploaded document with
 - Highlighting or underlining critical information within a document for users to easily spot before the document is added to a patient’s chart.
 - Including important comments or symbols on a specific type of document for future reference by all members of the organization.
 - Allowing providers to directly sign a lab report, imaging report, specialty consult report, or uncategorized clinical document within Canvas prior to delegating the review to another team member or attaching to the patient chart.
+- Splitting document packets into multiple specific pages to be associated to different document types and patients 
 - Removing unnecessary pages from an uploaded packet, rotating pages for easy review, and redacting information with solid boxes when such changes are needed by document
 
 {:refdef: style="text-align: center;"}
@@ -103,6 +104,28 @@ User can also forward the saved document with the `Forward by Fax` functionality
 {:refdef: style="text-align: center;"}
 ![annotations forward by fax](/assets/images/annotations-forward-by-fax.gif){:width="100%"}
 {: refdef} 
+
+### Extracting specific pages from a multi-page packet
+
+When selecting to annotate and modify a document, users are able to select specific pages from the thumbnail sidebar to be associated to a specific patient and document type. Users select pages by using the checkbox at the top right corner of each page thumbnail. If a user wants to associate a full packet to 1 document type for 1 patient, there is no need to select any pages. Users can annotate pages as they select them for extraction.
+
+{:refdef: style="text-align: center;"}
+![splitting documents](/assets/images/Split_Doc_Gif_1.gif){:width="100%"}
+{: refdef} 
+
+Any remaining pages can be submitted as a new document type to a patient, ensure that you are reselecting a patient name and document type to complete these steps.
+Users also have the ability to delete any specific pages from a packet if the page does not need to be included.
+
+{:refdef: style="text-align: center;"}
+![splitting documents](/assets/images/Split_Doc_Gif_2.gif){:width="100%"}
+{: refdef} 
+
+For any last document association to a patient, there is no need to select any pages as all remaining page(s) will be automatically associated. If attempting to select the last remaining page thumbnails, a warning will appear. Simply uncheck the pages and submit the remaining pages without any checked boxes.
+
+{:refdef: style="text-align: center;"}
+![splitting documents](/assets/images/Split_Doc_Gif_3.gif){:width="100%"}
+{: refdef} 
+
 
 ## Annotating in Clinical Review Workflow
 
