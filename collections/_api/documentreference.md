@@ -27,7 +27,7 @@ sections:
           - name: resourceType
             description: The FHIR Resource name.
             type: string
-            required_in: create
+            exclude_in: create
           - name: id
             description: The identifier of the document reference.
             type: string
@@ -45,8 +45,8 @@ sections:
                 description: The identifier value that is unique.
           - name: extension
             type: array[json]
-            description: Canvas supports specific FHIR extensions on this resource. 
-            create_description: Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.
+            description_for_all_endpoints: Specific FHIR extensions on this resource are supported to be able to map some Canvas specific attributes for a comment, clinical date, review mode, reviewer, priority, and if it requires a signature. 
+            create_and_update_description: In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.
             attributes:
               - name: url
                 type: string
@@ -63,8 +63,7 @@ sections:
                 type: string
                 description: Value of extensions for Comment and Review Mode.<br><br> The `valueString` attribute is needed for the Comment's extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-comment` and for the Review Mode extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-review-mode`. <br><br> Comment is a comment on the underlying Canvas document that is related to this DocumentReference resource, while the Review Mode is also a field on the underlying Canvas document record which determines the review mode values (`RR` for Review Required, `AR` for Already Reviewed and `RN` for Review Not Required).
               - name: valueDate
-                type: string
-                required_in: create
+                type: date
                 description: Value of extension.<br><br> The `valueDate` attribute is needed for the Clinical Date extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-clinical-date`. This attribute determines the Clinical Date on the underlying document record related to this DocumentReference resource. It's the `original_date` field on the related Canvas document record. Expected date value format for this field is `YYYY-MM-DD`.
               - name: valueReference
                 type: json
@@ -81,7 +80,7 @@ sections:
                     description: Type the reference refers to (e.g. "Practitioner").
               - name: valueBoolean
                 type: string
-                description: Value of extensions for Priority and Requires Signature.<br><br> The `valueBoolean` attribute is needed for the Priority extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-priority` and for the Requires Signature where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-requires-signature`. <br><br> Priority is a field on the underlying Canvas document that is related to this DocumentReference resource and determines the priority of the document, while Requires Signature is also a field on the underlying Canva document that determines where the related document requires Practitioner's signature.
+                description: Value of extensions for Priority and Requires Signature.<br><br> The `valueBoolean` attribute is needed for the Priority extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-priority` and for the Requires Signature where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-requires-signature`. <br><br> Priority is a field on the underlying Canvas document that is related to this DocumentReference resource and determines if the document should be prioritized, while Requires Signature is also a field on the underlying Canva document that determines where the related document requires Practitioner's signature.
           - name: status
             description: >-
               The status of the document reference. <br><br>
@@ -146,12 +145,27 @@ sections:
                     type: string
                     required_in: create
                     enum_options: 
+                      - value: clinical-note
+                        exclude_in: create
+                      - value: correspondence
+                        exclude_in: create
+                      - value: educationalmaterial
+                        exclude_in: create
+                      - value: imagingreport
+                        exclude_in: create
+                      - value: invoicefull
+                        exclude_in: create
+                      - value: labreport
+                        exclude_in: create
                       - value: patientadministrativedocument
+                      - value: referralreport
+                        exclude_in: create
                       - value: uncategorizedclinicaldocument
             type: array[json]
           - name: subject
             description: Who/what is the subject of the document.
             type: json
+            required_in: create
             attributes:
               - name: reference
                 type: string
@@ -162,6 +176,7 @@ sections:
           - name: date
             description: When this document reference was created.
             type: date
+            exclude_in: create
           - name: author
             description: >-
               Who and/or what authored the document. 
@@ -180,10 +195,18 @@ sections:
 
               - There are no authors on Imaging Reports or Clinical Notes.
             type: array[json]
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the author in the format of `"Practitioner/0e46396e-9cbc-48c6-94cc-f75f08b66c80"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Practitioner").
           - name: custodian
             description: >-
               Organization which maintains the document.
             type: json
+            exclude_in: create
             attributes:
               - name: reference
                 type: string
@@ -194,8 +217,8 @@ sections:
           - name: description
             type: string
             required_in: create
-            description: The title of the underlying Canvas Document related to this DocumentReference resource. 
-            create_description: The title of the underlying Canvas Document related to this DocumentReference resource. It requires standard Document titles that must be matched to the Document provided in the coding type attribute.
+            description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource. 
+            create_and_update_description: It requires standard Document titles that must be matched to the Document provided in the coding type attribute.
           - name: content
             type: array[json]
             required_in: create
@@ -210,16 +233,20 @@ sections:
                     description: Mime type of the content, with charset etc.
                     type: string
                     required_in: create
+                    exclude_in: create
                   - name: url
                     description: URI where the data can be found. Please note that urls may have an AWSAccessKeyId and an Expires attribute. By default documents stored in AWS S3 will expire 10 minutes after the response payload is returned.
+                    exclude_in: create
                     type: string
                   - name: data
                     type: string
                     required_in: create
                     description: Base64 encoded document file as a string.
+                    exclude_in: read, search
               - name: format
                 type: json
                 description: Format/content rules for the document
+                exclude_in: create
                 attributes:
                   - name: system
                     description: The system url of the coding.
@@ -239,6 +266,7 @@ sections:
                       - value: mimeType Sufficient
           - name: context
             type: json
+            exclude_in: create
             description: >-
               Clinical context of document. <br><br>
 
