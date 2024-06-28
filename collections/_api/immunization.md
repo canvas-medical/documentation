@@ -143,7 +143,7 @@ sections:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: immunization-update-request
           example_response: immunization-update-response
-          description: This Canvas FHIR resource only allows the `status` field to be updated.
+          description: Update an Immunization resource.<br><br>The only type of Immunization update interaction that is supported by Canvas is to mark an existing Immunization as **entered-in-error** using the `status` attribute. No changes to other fields will be processed; however, required fields still need to be supplied.
         search:
           responses: [200, 400, 401, 403]
           example_response: immunization-search-response
