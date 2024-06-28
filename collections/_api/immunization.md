@@ -19,9 +19,11 @@ sections:
             type: string
             description: The Canvas identifier of the immunization.
             required_in: update
+            exclude_in: create
           - name: extension
             type: array[json]
-            description: Canvas supports specific FHIR extensions on this resource. 
+            description_for_all_endpoints: Canvas supports a note identifier extension on this resource. The note identifier can be used with the [Canvas Note API](/api/note).
+            create_description: Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note. If neither is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.
             attributes:
               - name: url
                 type: string
@@ -31,10 +33,17 @@ sections:
               - name: valueId
                 type: string
                 description: The valueId field is used for the Note extension and will be the note's unique identifier.
+                required_in: create, update
           - name: status
             type: enum [ completed | entered-in-error | not-done ]
             description: The status of the immunization.
-            update_description: Value of the `status` field can only be set to **entered-in-error** during update operations.
+            enum_options:
+              - value: completed
+                exclude_in: update
+              - value: entered-in-error
+                exclude_in: create
+              - value: not-done
+                exclude_in: create, update
             required_in: create, update
           - name: statusReason
             type: json
@@ -93,10 +102,13 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
-                required_in: create, update
           - name: encounter
             type: json
             description: The encounter related to the provided Note in the extension of this resource.
+            create_description: >-
+              Supply an encounter reference to be able to insert the command into a specific note on the patient's timeline. If no encounter is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.
+              <br><br>
+              **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters. 
             attributes:
               - name: reference
                 type: string
@@ -105,7 +117,6 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Encounter").
-                required_in: create, update
           - name: occurrenceDateTime
             type: date
             description: The date or datetime the immunization was administered or reported to have been administered.
