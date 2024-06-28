@@ -15,7 +15,6 @@ sections:
           - name: resourceType
             description: The FHIR Resource name.
             type: string
-            required_in: create, update
           - name: id
             type: string
             description: The Canvas identifier of the immunization.
