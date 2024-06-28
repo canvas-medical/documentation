@@ -195,7 +195,7 @@ sections:
             type: string
             required_in: create
             description: The title of the underlying Canvas Document related to this DocumentReference resource. 
-            create_description: The title of the underlying Canvas Document related to this DocumentReference resource. It requires standard Document titles.
+            create_description: The title of the underlying Canvas Document related to this DocumentReference resource. It requires standard Document titles that must be matched to the Document provided in the coding type attribute.
           - name: content
             type: array[json]
             required_in: create
