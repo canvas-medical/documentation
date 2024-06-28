@@ -114,15 +114,11 @@ sections:
           - name: primarySource
             type: boolean
             required_in: create, update
-            description: >-
-              Whether the immunization was administered by a primary source.<br><br>
+            description_for_all_endpoints: Whether the immunization was administered by a primary source.
+            read_and_search_description: >-
               - **true** indicates that the immunization was administered within the clinic. To document immunizations like these, use an [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293).<br><br>
               - **false** indicates that the immunization was administered outside the clinic. To document this immunizations like these, use an [Immunization Statement Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
-            create_description: >-
-              Whether the immunization was administered by a primary source.<br><br>
-              On create accepts only **false**.<br><br>
-              - **true** indicates that the immunization was administered within the clinic. To document immunizations like these, use an [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293).<br><br>
-              - **false** indicates that the immunization was administered outside the clinic. To document this immunizations like these, use an [Immunization Statement Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
+            create_description: On create accepts only **false**.
         search_parameters:
           - name: _id
             type: string
