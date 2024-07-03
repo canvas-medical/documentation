@@ -122,8 +122,8 @@ sections:
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
           - name: date
-            description: When this document reference was created.
-            type: date
+            description: When this document reference was created in Canvas.
+            type: datetime
           - name: author
             description: >-
               Who and/or what authored the document. 
@@ -235,8 +235,8 @@ sections:
             description: >-
               Categorization of document. Filters by the code and/or system under `category.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code` (e.g  `http://schemas.canvasmedical.com/fhir/document-reference-category|labreport`).
           - name: date
-            type: date
-            description: Filter by the date the document was created. See [Date Filtering](/api/date-filtering) for more information.
+            type: datetime
+            description: Filter by the datetime the document was created. See [Date Filtering](/api/date-filtering) for more information.
           - name: patient
             type: string
             description: The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.

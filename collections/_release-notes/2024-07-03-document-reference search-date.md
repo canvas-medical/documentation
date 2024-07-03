@@ -1,7 +1,7 @@
 ---
-title: DocumentReference Search Date
+title: FHIR DocumentReference Search Date
 tags: api bugfix
 date: 2024-07-03 20:00:00
 layout: productupdates
 ---
-DocumentReference search by date only accepts a datetime format.
+FHIR DocumentReference search by date only accepts a datetime format.
