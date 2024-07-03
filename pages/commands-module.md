@@ -119,12 +119,12 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><ul><li>The command now restricts adding duplicate diagnoses. Users will be prevented from committing the command and warned to add an assess command if the condition already exists.</li></ul> </td>
     </tr>
     <tr> 
-      <td>Task</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
+      <td>Lab Order</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>The indications drop down defaults with active conditions as quick picks.</li><li>Validation will prevent sending orders if a patient does not have an address or if the provider does not have an NPI.</li></ul> </td>
     </tr>
     <tr> 
-      <td>Lab Order</td>
+      <td>Task</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
@@ -158,13 +158,13 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
-     <tr> 
-      <td>Image</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
-      <td></td>
-    </tr>
     <tr> 
       <td>Immunization Statement</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+     <tr> 
+      <td>Image</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
