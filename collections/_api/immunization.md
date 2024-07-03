@@ -10,7 +10,7 @@ sections:
           Describes the event of a patient being administered a vaccine or a record of an immunization as reported by a patient, a clinician or another party.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html)<br><br>
 
-          In Canvas, Immunization records can be created using either the [Immunization Statement Commmand](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293) or the [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
+          In Canvas, Immunization records are record using either the [Immunization Statement Commmand](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293) or the [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -30,6 +30,7 @@ sections:
                 description: Identifies the meaning of the extension
                 enum_options:
                   - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
+                required_in: create, update
               - name: valueId
                 type: string
                 description: The valueId field is used for the Note extension and will be the note's unique identifier.
@@ -141,6 +142,7 @@ sections:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: immunization-create-request
           example_response: immunization-create-response
+          description: Immunization records created through this endpoint will be stored in an Immunization Statement command on the patient's chart. There currently is no support to create an Immunize command with this endpoint.
         read:
           responses: [200, 401, 403, 404]
           example_request: immunization-read-request
@@ -149,7 +151,7 @@ sections:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: immunization-update-request
           example_response: immunization-update-response
-          description: Update an Immunization resource.<br><br>The only type of Immunization update interaction that is supported by Canvas is to mark an existing Immunization as **entered-in-error** using the `status` attribute. No changes to other fields will be processed; however, required fields still need to be supplied.
+          description: Update an Immunization resource.<br><br>The only type of Immunization update interaction that is supported by Canvas is to mark an existing Immunization Statement as **entered-in-error** using the `status` attribute. No changes to other fields will be processed; however, required fields still need to be supplied.
         search:
           responses: [200, 400, 401, 403]
           example_response: immunization-search-response
