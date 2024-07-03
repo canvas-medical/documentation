@@ -65,6 +65,7 @@ sections:
               - name: valueDate
                 type: date
                 description: Value of extension.<br><br> The `valueDate` attribute is needed for the Clinical Date extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-clinical-date`. This attribute determines the Clinical Date on the underlying document record related to this DocumentReference resource. It's the `original_date` field on the related Canvas document record. Expected date value format for this field is `YYYY-MM-DD`.
+                required_in: create
               - name: valueReference
                 type: json
                 required_in: create
@@ -103,15 +104,18 @@ sections:
               - name: coding
                 description: Identifies where the definition of the code comes from.
                 type: array[json]
+                required_in: create
                 attributes: 
                   - name: system
                     description: The system url of the coding.
                     enum_options: 
                       - value: http://loinc.org
                     type: string
+                    required_in: create
                   - name: code
                     description: The code value.
                     type: string
+                    required_in: create
                     enum_options: 
                       - value: codes supported in Data Integration (see link at top of page).
                       - value: 51852-2 (Letters)
@@ -121,9 +125,11 @@ sections:
                     description: >-
                       The display name of the coding.
                     type: string
+                    exclude_in: create
               - name: text
                 type: string
                 description: Plain text representation of the type of document.
+                exclude_in: create
           - name: category
             type: array[json]
             required_in: create
@@ -313,10 +319,18 @@ sections:
           - name: status
             type: string
             description: The status of the document reference
+            create_description: The "status" field is required by FHIR to indicate the current state of the document. This ensures consistent and accurate document tracking across Canvas healthcare systems.
+            enum_options: 
+              - value: current
+              - value: superseded
+                exclude_in: create
+              - value: entered-in-error
+                exclude_in: create
             search_options: 
               - value: current
               - value: superseded
               - value: entered-in-error
+            create_description: 
           - name: subject
             description: The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`. Can be used interchangeably with the patient parameter.
             type: string
