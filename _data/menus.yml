@@ -283,6 +283,10 @@ api_location:
 api_media:
  - title: "Media Create"
    url: /api/media/#create
+ - title: "Media Read"
+   url: /api/media/#read
+ - title: "Media Search"
+   url: /api/media/#search
 api_medication:
  - title: "Medication Read"
    url: /api/medication/#read
@@ -331,10 +335,16 @@ api_paymentnotice:
  - title: "PaymentNotice Search"
    url: /api/paymentnotice/#search
 api_practitioner:
+ - title: "Practitioner Create"
+   url: /api/practitioner/#create
  - title: "Practitioner Read"
    url: /api/practitioner/#read
+ - title: "Practitioner Update"
+   url: /api/practitioner/#update
  - title: "Practitioner Search"
    url: /api/practitioner/#search
+ - title: "Practitioner Operations"
+   url: /api/practitioner-operations
 api_procedure:
  - title: "Procedure Read"
    url: /api/procedure/#read
@@ -377,10 +387,12 @@ api_task:
 
 
 api_custom_apis:
- - title: "Note"
-   url: /api/note
  - title: "CCDA"
-   url: /api/ccda   
+   url: /api/ccda
+ - title: "Letter"
+   url: /api/letter
+ - title: "Note"
+   url: /api/note   
 
 documentation:
  - title: "Click here to learn about our transition plan for our knowledge center"
@@ -412,6 +424,8 @@ guides_list:
    url: /guides/submit-vitals-via-fhir/
  - title: "Team Based Care"
    url: /guides/team-based-care/
+ - title: "Your First Plugin"
+   url: /guides/your-first-plugin/
 
 guides_templates:
  - title: "Behavioral Health"
@@ -425,16 +439,32 @@ guides_care-models-bh:
 sdk:
  - title: "SDK Overview"
    identifier: sdk_overview
- - title: "Workflow Kit"
+ - title: "Workflow Kit (To Be Deprecated)"
    identifier: sdk_workflow_kit
 
 sdk_overview:
  - title: "Introduction"
    url: /sdk/
+ - title: "Command Line Interface"
+   url: /sdk/canvas_cli/
+ - title: "Commands Module"
+   url: /sdk/commands/
+ - title: "Data Module"
+   url: /sdk/data/
+ - title: "Effects Module"
+   url: /sdk/effects/
+ - title: "Events Module"
+   url: /sdk/events/
+ - title: "Protocols Module"
+   url: /sdk/protocols/
+ - title: "Utils Module"
+   url: /sdk/utils/
+ - title: "Views Module"
+   url: /sdk/views/
 
 sdk_workflow_kit:
  - title: "Quickstart"
-   url: /sdk/sdk-quickstart/
+   url: /sdk/workflow-sdk-quickstart/
  - title: "Change Types"
    url: /sdk/change-types
  - title: "Patient Recordsets"
@@ -456,7 +486,7 @@ sdk_workflow_kit:
  - title: "Making FHIR Requests"
    url: /sdk/making-fhir-requests
  - title: "Canvas CLI Additional Commands"
-   url: /sdk/canvas-cli
+   url: /sdk/canvas-cli-additional-commands
  - title: "Protocol Logging Tool"
    url: /sdk/protocol-logging-tool
  - title: "Managing Protocols in Settings"

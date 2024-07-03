@@ -10,37 +10,64 @@ sections:
          The CoverageEligibilityResponse resource provides eligibility and plan details from processing a CoverageEligibilityRequest resource. It combines key information from a payor as to whether a Coverage is in-force, and optionally the nature of the Policy benefit details as well as the ability for the insurer to indicate whether the insurance provides benefits for requested types of services or requires preauthorization and if so what supporting information may be required.<br><br>
          [https://hl7.org/fhir/R4/coverageeligibilityresponse.html](https://hl7.org/fhir/R4/coverageeligibilityresponse.html)
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
             type: string
-            description: >-
-              The identifier of the coverage eligibility response
+            description: The identifier of the CoverageEligibilityResponse.
           - name: status
             type: string
-            description: >-
-              Status of the resource<br><br>One of: **active**, **draft**, **entered-in-error**
+            description: Status of the resource.
+            enum_options:
+              - value: active
+              - value: entered-in-error
           - name: purpose
             type: array[string]
             description: Reason for the request, will always be **["benefits"]**
           - name: patient
             type: json
-            description: Patient resource the eligibility response is for
+            description: Patient resource the CoverageEligibilityResponse is for.
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the patient in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: created
             type: datetime
-            description: Response creation date
+            description: Response creation date.
           - name: request
             type: json
-            description: CoverageEligibilityRequest reference the elibibility response is for
+            description: CoverageEligibilityRequest reference the elibibility response is for.
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the request in the format of `"CoverageEligibilityRequest/cd98975b-6cd4-413d-ab65-1fc5eec76762"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "CoverageEligibilityRequest").
           - name: outcome
             type: string
-            description: Outcome of the request processing, if an error occurs it will be marked as **"error"** othervise it will be marked as **"complete"**
+            description: Outcome of the request processing, if an error occurs it will be marked as **"error"** othervise it will be marked as **"complete"**.
+            enum_options: 
+              - value: error
+              - value: complete
           - name: insurer
             type: json
-            description: >-
-              Payor Id for the Coverage issuer
+            description:  Coverage issuer.
+            attributes:
+              - value: identifier
+                type: string
+                description: Payor ID for the Coverage issuer.
+              - value: display
+                type: string
+                description: Text alternative for the resource.
           - name: insurance
             type: array[json]
             description: >-
-              Includes the **Coverage** reference, extension for plan name and an array of items containing benefits and authorization details<br><br>
+              Patient insurance information. This includes the **Coverage** reference, extension for plan name and an array of items containing benefits and authorization details returned from Claim.MD.<br><br>
               The amount of information surfaced here depends on the what the payor supports. Our clearinghouse (Claim.md) performs these eligibility checks, but not all coverages will support real-time eligibility checks. For more information on coverages within Canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4408206355603-Patient-Coverages-2-0).
             attributes:
                 - name: coverage 
@@ -53,9 +80,6 @@ sections:
                       - name: type
                         type: string
                         description: Type the reference refers to (e.g. "Coverage").
-                - name: item
-                  description: Array of items containing benefits and authorization details.
-                  type: array[json]
                 - name: extension
                   type: array[json]
                   read_and_search_description: Canvas supports a plan name extension on this resource for read and search interactions.
@@ -68,16 +92,130 @@ sections:
                       - name: valueString
                         type: string
                         description: The plan name of the insurance.
+                - name: item
+                  description: Array of items containing benefits and authorization details.
+                  type: array[json]
+                  attributes:
+                    - name: name
+                      type: string
+                      description: Short name for the benefit
+                    - name: unit
+                      type: json
+                      description: Individual or family.
+                      attributes:
+                        - name: coding
+                          description: Code defined by a terminology system.
+                          type: array[json]
+                          attributes: 
+                            - name: system
+                              description: The system url of the coding.
+                              enum_options: 
+                                - value: http://terminology.hl7.org/CodeSystem/benefit-unit
+                              type: string
+                            - name: code
+                              description: The code of the benefit unit.
+                              type: string
+                              enum_options:
+                                - value: individual
+                                - value: family
+                            - name: display
+                              description: The display name of the coding.
+                              type: string
+                              enum_options:
+                                - value: Individual
+                                - value: Family
+                        - name: text
+                          type: string
+                          description: Plain text representation of the concept.
+                          enum_options:
+                            - value: Individual
+                            - value: Family
+                    - name: network
+                      type: json
+                      description: In or out of network.
+                      attributes:
+                        - name: coding
+                          description: Code defined by a terminology system.
+                          type: array[json]
+                          attributes: 
+                            - name: system
+                              description: The system url of the coding.
+                              enum_options: 
+                                - value: http://terminology.hl7.org/CodeSystem/benefit-unit
+                              type: string
+                            - name: code
+                              description: The code of the benefit network.
+                              type: string
+                              enum_options:
+                                - value: in
+                                - value: out
+                            - name: display
+                              description: The display name of the coding.
+                              type: string
+                              enum_options:
+                                - value: In Network
+                                - value: Out of Network
+                        - name: text
+                          type: string
+                          description: Plain text representation of the concept.
+                          enum_options:
+                            - value: In Network
+                            - value: Out of Network
+                    - name: benefit
+                      type: array[json]
+                      description: Benefit Summary.
+                      attributes:
+                        - name: type
+                          type: json
+                          description: Benefit classification.
+                          attributes:
+                            - name: text
+                              type: string
+                              description: Plain text representation of the concept.
+                              enum_options:
+                                - value: 'Co-Insurance'
+                                - value: 'Co-Payment'
+                                - value: 'Active Coverage'
+                                - value: 'Deductible'
+                                - value: 'Out of Pocket (Stop Loss)'
+                                - value: 'Limitations'
+                                - value: 'Contact following entity for eligibility or benefit information'
+                                - value: '<information_type> (Incomplete Information)'
+                            - name: allowedString
+                              type: string
+                              description: Benefits allowed. <br><br>Used for Co-Insurance benefit types.
+                            - name: allowedMoney
+                              type: json
+                              description: Benefits allowed. <br><br>Used for Co-Payment, Deductible, or Out of Pocket benefit types.
+                              attributes: 
+                                - name: value
+                                  type: decimal
+                                  description: Numerical value (with implicit precision)
+                            - name: allowedUnsignedInt
+                              type: unsignedInt
+                              description: Benefits allowed. <br><br>Used for Limitations benefit types.
+                            - name: usedMoney
+                              type: json
+                              description: Benefits used. <br><br>Used for Deductible or Out of Pocket benefit types.
+                              attributes: 
+                                - name: value
+                                  type: decimal
+                                  description: Numerical value (with implicit precision)
+                            - name: usedUnsignedInt
+                              type: unsignedInt
+                              description: Benefits used. <br><br>Used for Limitations benefit types.
+
+
         search_parameters:
           - name: _id
             type: string
-            description: The Canvas resource identifier of the CoverageEligibilityResponse
+            description: The Canvas resource identifier of the CoverageEligibilityResponse.
           - name: patient
             type: string
-            description: The reference to the patient
+            description: The patient reference associated with the CoverageEligibilityResponse in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
           - name: request
             type: string
-            description: The EligibilityRequest reference
+            description: The coverage eligibility request reference associated with the CoverageEligibilityResponse in the format `"CoverageEligibilityRequest/cd98975b-6cd4-413d-ab65-1fc5eec76762"`.
         endpoints: [read, search]
         read:
           responses: [200, 401, 403, 404]

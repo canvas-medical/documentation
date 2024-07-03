@@ -2,7 +2,7 @@
 layout: landingpage
 title: Documentation
 permalink: "/"
---- 
+---
 
 <div class="cardSectionFullWidthContainer cardSectionBackground">
     <div class="cardSectionInnerContainer">
@@ -20,7 +20,7 @@ permalink: "/"
                     <div class="anchorContainer">
                     <a href="/documentation">Transition Overview</a><br>
                     <a href="https://canvas-medical.zendesk.com/hc/en-us">Knowledge Center ↗</a><br>
-                    <a href="/product-updates/release-notes">Release Notes</a> 
+                    <a href="/product-updates/release-notes">Release Notes</a>
                     </div>
                 </div>
             </div>
@@ -30,18 +30,41 @@ permalink: "/"
                 </div>
                 <div class="cardBody">
                      <span>
-                        Customize the clinical experience with our SDK, and extend it with our API
+                        Customize the Canvas experience with our SDK, and extend it with our API
                     </span>
                      <div class="anchorContainer">
-                    <a href="/api/quickstart">API Quickstart</a><br/>
-                    <a href="/sdk/sdk-quickstart/">SDK: Workflow Kit Quickstart</a><br/>
-                    <a href="https://v1docs.canvasmedical.com/docs/">V1 Docs ↗</a>
+                        <dl>
+                          <dt>
+                            <strong>SDK</strong>
+                          </dt>
+                          <dd>
+                            <a href="/sdk/">Introduction</a><br/>
+                          </dd>
+                          <dd>
+                            <a href="/guides/your-first-plugin/">Your First Plugin</a><br/>
+                          </dd>
+                          <dt>
+                            <strong>API</strong>
+                          </dt>
+                          <dd>
+                            <a href="/api/">Introduction</a><br/>
+                          </dd>
+                          <dd>
+                            <a href="/api/quickstart">Quickstart</a><br/>
+                          </dd>
+                          <dt>
+                            <strong>Workflow Kit <a href="/product-updates/important-dates/#:~:text=07/02/2024-,Workflow%20SDK,-New%20Version">(To Be Deprecated)</a></strong>
+                          </dt>
+                          <dd>
+                            <a href="/sdk/workflow-sdk-quickstart/">Quickstart</a><br/>
+                          </dd>
+                        </dl>
                     </div>
                 </div>
             </div>
             <div class="cardContainer">
                 <div class="cardHeading">
-                    <img class="cardIcon" src="{{ "/assets/images/guides.svg" | relative_url }}"><span>&nbsp;&nbsp;Guides</span>
+                    <img class="cardIcon" src="{{ "/assets/images/font-awesome/fa-book.svg" | relative_url }}"><span>&nbsp;&nbsp;Guides</span>
                 </div>
                 <div class="cardBody">
                     <span>
