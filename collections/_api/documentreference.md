@@ -261,6 +261,7 @@ sections:
                   - name: extension
                     description: Extension for backward-compatible URLs 
                     type: json
+                    exclude_in: create
               - name: format
                 type: json
                 description: Format/content rules for the document
