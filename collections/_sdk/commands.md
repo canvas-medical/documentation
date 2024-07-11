@@ -29,7 +29,7 @@ All commands share the following init kwarg parameters:
 | Name           | Type     | Required                               | Description                                                             |
 | :------------- | :------- | :------------------------------------- | :---------------------------------------------------------------------- |
 | `user_id`      | _string_ | `true`                                 | The externally exposable id of the user performing the command action.  |
-| `note_id`      | _string_ | `true` if creating a new command       | The externally exposable id of the note in which to insert the command. |
+| `note_uuid`      | _string_ | `true` if creating a new command       | The externally exposable id of the note in which to insert the command. |
 | `command_uuid` | _string_ | `true` if updating an existing command | The externally exposable id of the command which is being referenced.   |
 
 All parameters can be set upon initialization, and also updated on the class instance.
@@ -66,7 +66,7 @@ from canvas.commands import PlanCommand
 def compute():
 
     existing_plan = PlanCommand(user_id='fg787uu', command_uuid='63hdik', narrative='something new')
-    new_plan = PlanCommand(user_id='fg787uu', note_id='rk786p', narrative='new')
+    new_plan = PlanCommand(user_id='fg787uu', note_uuid='rk786p', narrative='new')
     new_plan.narrative = 'newer'
 
     return [existing_plan.edit(), new_plan.originate()]
@@ -99,7 +99,7 @@ from canvas.commands import AssessCommand
 
 assess = AssessCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     condition_id='hu38rlo',
     background='started in 2012',
     status=AssessCommand.Status.STABLE,
@@ -127,7 +127,7 @@ from datetime import datetime
 
 diagnose = DiagnoseCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     icd10_code='M54.50',
     background='lifted heavy box',
     approximate_date_of_onset=datetime(2012, 1, 1),
@@ -175,7 +175,7 @@ from datetime import datetime
 
 goal = GoalCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     goal_statement='Eat more healthy vegetables.',
     start_date=datetime(2024, 1, 1),
     due_date=datetime(2024, 12, 31),
@@ -201,7 +201,7 @@ from canvas.commands import HistoryOfPresentIllnessCommand
 
 hpi = HistoryOfPresentIllnessCommand(
         user_id='fg787uu',
-        note_id='rk786p',
+        note_uuid='rk786p',
         narrative='presents with chronic back pain and headaches'
     )
 ```
@@ -223,7 +223,7 @@ from canvas.commands import MedicationStatementCommand
 
 medication_statement = MedicationStatementCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     fdb_code='198698',
     sig='two pills taken orally'
 )
@@ -245,7 +245,7 @@ from canvas.commands import PlanCommand
 
 plan = PlanCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     narrative='will return in 2 weeks to check on pain management'
 )
 ```
@@ -282,7 +282,7 @@ from decimal import Decimal
 
 prescribe = PrescribeCommand(
         user_id='fg787uu',
-        note_id='rk786p',
+        note_uuid='rk786p',
         fdb_code='198698',
         icd10_codes=['M54.50'],
         sig='1 po bid pc',
@@ -314,7 +314,7 @@ from canvas.commands import QuestionnaireCommand
 
 questionnaire = QuestionnaireCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     questionnaire_id='g73hd9',
     result='The patient is feeling average today.'
 )
@@ -338,14 +338,14 @@ from canvas.commands import ReasonForVisitCommand
 
 structured_rfv = ReasonForVisitCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     structured=True,
     coding={'code': '', 'system': '', 'display': ''},
     comment='also wants to discuss treament options'
 )
 unstructured_rfv = ReasonForVisitCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     comment='also wants to discuss treatment options'
 )
 ```
@@ -367,7 +367,7 @@ from canvas.commands import StopMedicationCommand
 
 stop_medication = StopMedicationCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     medication_id='2u309j',
     rationale='In remission'
 )
@@ -418,7 +418,7 @@ from datetime import datetime
 
 update_goal = UpdateGoalCommand(
     user_id='fg787uu',
-    note_id='rk786p',
+    note_uuid='rk786p',
     goal_id='0j9whjjk',
     due_date=datetime(2025, 3, 31),
     achievement_status=GoalCommand.AchievementStatus.WORSENING,

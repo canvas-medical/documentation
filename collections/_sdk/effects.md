@@ -48,9 +48,19 @@ The following effects are available to be applied in Canvas.
 | Effect | Description |
 | ----- | ----------- |
 | AUTOCOMPLETE_SEARCH_RESULTS | Can be used to modify search results by re-ordering or adding text annotations to individual result records. To see how you can put this to use, check out [this guide](/guides/customize-search-results/). |
-| ADD_PLAN_COMMAND | Can be used to insert a plan command into a note. |
 | ADD_BANNER_ALERT | Can be used to add a banner alert to a patient's chart. |
 | REMOVE_BANNER_ALERT | Can be used to remove a banner alert from a patient's chart. |
+| ORIGINATE_ASSESS_COMMAND | Can be used to originate an assess command in a note. |
+| ORIGINATE_DIAGNOSE_COMMAND | Can be used to originate a diagnose command in a note. |
+| ORIGINATE_GOAL_COMMAND | Can be used to originate a goal command in a note. |
+| ORIGINATE_HPI_COMMAND | Can be used to originate a history of present illness command in a note. |
+| ORIGINATE_MEDICATION_STATEMENT_COMMAND | Can be used to originate a medication statement command in a note. |
+| ORIGINATE_PLAN_COMMAND | Can be used to originate a plan command in a note. |
+| ORIGINATE_PRESCRIBE_COMMAND | Can be used to originate a prescribe command in a note. |
+| ORIGINATE_QUESTIONNAIRE_COMMAND | Can be used to originate a questionnaire command in a note. |
+| ORIGINATE_REASON_FOR_VISIT_COMMAND | Can be used to originate a reason for visit command in a note. |
+| ORIGINATE_STOP_MEDICATION_COMMAND | Can be used to originate a stop medication command in a note. |
+| ORIGINATE_UPDATE_GOAL_COMMAND | Can be used to originate an update goal command in a note. |
 
 <br/>
 <br/>
