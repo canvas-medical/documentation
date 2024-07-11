@@ -95,7 +95,7 @@ sections:
               - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
 
               - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
-            create_description: The "status" field is required by FHIR to indicate the current state of the document. This ensures consistent and accurate document tracking across Canvas healthcare systems.
+            create_description: The "status" field is required by FHIR to indicate the current state of the document; however, the value is ignored by Canvas on creation.
             enum_options: 
               - value: current
               - value: superseded
