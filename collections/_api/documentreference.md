@@ -27,10 +27,10 @@ sections:
           - name: resourceType
             description: The FHIR Resource name.
             type: string
-            exclude_in: create
           - name: id
             description: The identifier of the document reference.
             type: string
+            exclude_in: create
           - name: identifier
             type: array[json]
             description: Other identifiers for the document.
@@ -77,7 +77,6 @@ sections:
                     description: The reference string of the Practitioner in the format of `"Practitioner/95b9ac2d-e963-4d7a-b165-7901870f1663"`.
                   - name: type
                     type: string
-                    required_in: create
                     description: Type the reference refers to (e.g. "Practitioner").
               - name: valueBoolean
                 type: string
@@ -211,6 +210,7 @@ sections:
               - name: reference
                 type: string
                 description: The reference string of the author in the format of `"Practitioner/0e46396e-9cbc-48c6-94cc-f75f08b66c80"`.
+                required_in: create
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Practitioner").
