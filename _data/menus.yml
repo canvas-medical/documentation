@@ -5,7 +5,7 @@ main:
     url: /sdk/
   - title: Guides
     url: /guides/
-  - title: Product Updates  
+  - title: Product Updates
     url: /product-updates/release-notes
 api:
  - title: "Canvas FHIR"
@@ -390,7 +390,7 @@ api_custom_apis:
  - title: "Letter"
    url: /api/letter
  - title: "Note"
-   url: /api/note   
+   url: /api/note
 
 documentation:
  - title: "Click here to learn about our transition plan for our knowledge center"
@@ -459,6 +459,12 @@ sdk_overview:
    url: /sdk/utils/
  - title: "Views Module"
    url: /sdk/views/
+ - title: "Models"
+   identifier: plugin_models
+
+plugin_models:
+ - title: "Task"
+   url: /sdk/task/
 
 sdk_workflow_kit:
  - title: "Quickstart"
@@ -532,7 +538,7 @@ sdk_workflow_kit_value_sets:
  - title: "Result"
    url: /sdk/result
 
-releasenotes: 
+releasenotes:
  - title: "Product Updates"
    identifier: releasenotes_product_updates
  - title: "Beta Programs"
@@ -549,9 +555,9 @@ releasenotes_product_updates:
 
 releasenotes_betas:
  - title: "Commands API"
-   url: /product-updates/commands-api 
+   url: /product-updates/commands-api
  - title: "Commands Module"
-   url: /product-updates/commands-module 
+   url: /product-updates/commands-module
  - title: "Note API"
-   url: /product-updates/note-api 
+   url: /product-updates/note-api
 
