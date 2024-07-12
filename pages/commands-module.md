@@ -124,17 +124,27 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><ul><li>The indications drop down defaults with active conditions as quick picks.</li><li>Validation will prevent sending orders if a patient does not have an address or if the provider does not have an NPI.</li></ul> </td>
     </tr>
     <tr> 
+      <td>Family History</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Allergy</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>       
+    <tr> 
+      <td>Remove Allergy</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
       <td>Task</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
     <tr> 
       <td>Refill</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr>
-    <tr> 
-      <td>Family History</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
@@ -149,17 +159,17 @@ Commands migrated to the new framework will function similarly if not identicall
       <td></td>
     </tr> 
     <tr> 
-      <td>Allergy</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr>       
-    <tr> 
-      <td>Remove Allergy</td>
+      <td>Immunization Statement</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
-    <tr> 
-      <td>Immunization Statement</td>
+     <tr> 
+      <td>Vitals</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+     <tr> 
+      <td>Immunize</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
