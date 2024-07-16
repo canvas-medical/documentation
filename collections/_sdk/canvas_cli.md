@@ -9,6 +9,7 @@ title: "Canvas CLI"
 To install the Canvas CLI, simply `pip install canvas`. Python 3.11 or 3.12 is required.
 
 ### Configuration and Authenticating to Your Canvas Instance
+
 Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas instance subdomains, and add client_id and client_secret credentials to each section. For example, if your Canvas instance url is `https://buttered-popcorn.canvasmedical.com/`, you would have a section `[buttered-popcorn]` with key-value pairs for `client_id` and `client_secret`.
 
 {% include alert.html type="info" content= "<b>Getting Credentials: </b>Learn how to get register a client_id and client_secret <a href='/api/customer-authentication/#registering-a-third-party-application-on-canvas'>here</a>.<br/>The Canvas CLI uses OAuth, just like the FHIR API."  %}
@@ -50,6 +51,8 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `init`: Create a new plugin
 - `install`: Install a plugin into a Canvas instance
 - `uninstall`: Uninstall a plugin from a Canvas instance
+- `enable`: Enable a plugin from a Canvas instance
+- `disable`: Disable a plugin from a Canvas instance
 - `list`: List all plugins from a Canvas instance
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
@@ -100,6 +103,44 @@ $ canvas uninstall [OPTIONS] NAME
 **Arguments**:
 
 - `NAME`: Plugin name to delete [required]
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+## `canvas enable`
+
+Enable a plugin from a Canvas instance..
+
+**Usage**:
+
+```console
+$ canvas enable [OPTIONS] NAME
+```
+
+**Arguments**:
+
+- `NAME`: Plugin name to enable [required]
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+## `canvas disable`
+
+Disable a plugin from a Canvas instance..
+
+**Usage**:
+
+```console
+$ canvas disable [OPTIONS] NAME
+```
+
+**Arguments**:
+
+- `NAME`: Plugin name to disable [required]
 
 **Options**:
 
