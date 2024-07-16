@@ -219,7 +219,7 @@ instance.
 ## 7. Deploy and use your plugin
 
 When your plugin is just the way you'd like it, deploying is simple. Simply
-run `canvas install <path/to/plugin_root>` and your plugin will be packaged,
+run `canvas install <path/to/plugin>` and your plugin will be packaged,
 uploaded, installed, and enabled. As you make changes to your plugin, run the
 same command to update the code of the installed plugin.
 
