@@ -1,6 +1,6 @@
 ---
 title: "Task"
-slug: "task"
+slug: "data-task"
 excerpt: "Canvas SDK Task"
 hidden: false
 ---

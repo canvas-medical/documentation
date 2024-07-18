@@ -449,6 +449,7 @@ sdk_overview:
    url: /sdk/commands/
  - title: "Data Module"
    url: /sdk/data/
+   identifier: data_module
  - title: "Effects Module"
    url: /sdk/effects/
  - title: "Events Module"
@@ -459,12 +460,10 @@ sdk_overview:
    url: /sdk/utils/
  - title: "Views Module"
    url: /sdk/views/
- - title: "Models"
-   identifier: plugin_models
 
-plugin_models:
+data_module:
  - title: "Task"
-   url: /sdk/task/
+   url: /sdk/data-task/
 
 sdk_workflow_kit:
  - title: "Quickstart"
