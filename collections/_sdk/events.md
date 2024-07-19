@@ -28,12 +28,13 @@ The plugin author can enter custom workflow code into the `compute` method that 
 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
-### Event Types
+## Event Types
 
 The following Canvas events are able to trigger a plugin to execute.
 
 | Event | Description |
 | ----- | ----------- |
+| CRON  | This event fires regularly and can be used for scheduled tasks. See [CronTask](/sdk/handlers-crontask/). |
 | ALLERGY_INTOLERANCE_CREATED | Occurs when an allergy is created for a patient. Additional details for the allergy may become available with subsequent ALLERGY_INTOLERANCE_UPDATED events. |
 | ALLERGY_INTOLERANCE_UPDATED | Occurs when an allergy is updated for a patient. |
 | APPOINTMENT_CANCELED | Occurs when an appointment is cancelled. |
