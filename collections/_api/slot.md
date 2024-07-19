@@ -7,20 +7,34 @@ sections:
         name: Slot
         article: "a"
         description: >-
-          A slot of time on a schedule that may be available for booking appointments.<br><br>[http://hl7.org/fhir/R4/slot.html](http://hl7.org/fhir/R4/slot.html)
+          A slot of time on a schedule that may be available for booking appointments.<br><br>[http://hl7.org/fhir/R4/slot.html](http://hl7.org/fhir/R4/slot.html)<br><br>
+          All slots are determined through our google calendar integration. Find out how to set this up [here](/documentation/provider-availability).
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: schedule
             type: json
-            description: The [Schedule](/api/schedule) resource that this slot belongs to
+            description: The [Schedule](/api/schedule) resource that this slot belongs to.
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the schedule in the format of `"Schedule/Location.<location_id>-Staff.<staff_id>"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Schedule").
           - name: status
             type: string
             description: The status of the available slot. Canvas only returns slots that are available for booking, so this field will always be returned as **free**.
+            enum_options:
+              - value: free
           - name: start
             type: datetime
-            description: Date/Time that the slot is to begin
+            description: Date/Time that the slot is to begin.
           - name: end
             type: datetime
             description: Date/Time that the slot is to conclude
+        search_requirements_description: A Slot Search requires a schedule search parameter.
         search_parameters:
           - name: duration
             type: integer
