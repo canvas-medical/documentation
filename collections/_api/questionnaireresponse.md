@@ -10,7 +10,13 @@ sections:
           A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.<br><br>
           [https://hl7.org/fhir/R4/questionnaireresponse.html](https://hl7.org/fhir/R4/questionnaireresponse.html)<br><br>
           See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4403561447827-Creating-a-New-Questionnaire) for information about how to build questionnaires in Canvas.<br><br>
-          See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057544593-Command-Questionnaire) for information about how to fill out a questionnaire for a patient via the `Questionnaire` command.
+          Questionnaires can map to four different commands in the Canvas UI depending on what the use case in charting is set to: 
+
+            - [Questionnaire](https://canvas-medical.zendesk.com/hc/en-us/articles/360057544593-Command-Questionnaire)
+            - [Structured Assessment](https://canvas-medical.zendesk.com/hc/en-us/articles/4415631833875-Structured-Assessment)
+            - [Review of Systems](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339413-Command-Review-of-Systems)
+            - [Physical Exam](https://canvas-medical.zendesk.com/hc/en-us/articles/360055628474-Documenting-a-Patient-Physical-Exam)
+
           QuestionnaireResponse resources contain answers to questions in a Questionnaire resource. Use the [Questionnaire search endpoint](/api/questionnaire/#search) to find Questionnaire resources.
         attributes:
           - name: id
@@ -167,24 +173,18 @@ sections:
         endpoints: [create, read, update, search]
         create:
           description: >-
-            Create an QuestionnaireResponse resource.<br><br>
-            If `encounter` is provided, the QuestionnaireResponse will be added to the existing encounter (note). If it is not provided, a new data import note will be created. It will be inserted into the timeline using the timestamp passed in `authored`.<br><br>
-            **Validation**<br><br>
+            Create an QuestionnaireResponse resource.
+          validation_errors: >-
+            **Validation Errors**<br><br>
             *Beware of ambiguous choices!*<br><br>
-            If the questionnaire contains a question with identical codings for different choices, Canvas will not know which of the choices were selected. In this case, Canvas will reject the request. For the request to succeed, each question must have a uniquely coded set of choices. Choice codings can be reused across questions, but not within them.<br><br>
-            If this scenario occurs, the following error message will be returned:<br><br>
-            `Question received a response option code: {code} that belongs to more than one option response`<br><br>
+            If the questionnaire contains a question with identical codings for different choices, Canvas will not know which of the choices were selected. In this case, Canvas will reject the request. For the request to succeed, each question must have a uniquely coded set of choices. Choice codings can be reused across questions, but not within them.If this scenario occurs, you will get the error message: `Question received a response option code: {code} that belongs to more than one option response`<br><br>
             *More Coding Validation*<br><br>
-            The system is the `valueCoding` answer needs to match the system that the question specified in the Questionnaire Search Response. If it does not, the following error message will be returned:<br><br>
-            `Question expects answer of code system {system} but {system} was given`<br><br>
-            If a code is passed that does not exist for that question in Canvas, the following error message will be returned:<br><br>
-            `Question received an invalid response option code: {code}`<br><br>
+            The system is the `valueCoding` answer needs to match the system that the question specified in the Questionnaire Search Response. If it does not, you will get the error: `Question expects answer of code system {system} but {system} was given`<br><br>
+            If a code is passed that does not exist for that question in Canvas, you will get the error: `Question received an invalid response option code: {code}`<br><br>
             *Answer Validation*<br><br>
-            For single or free text questions, if more than one answer is provided, the following error message will be returned:<br><br>
-            `Question of type {type} is expecting at most one answer`<br><br>
-            For free text questions, the answer object must include a `valueString` or the following error message will be returned:<br><br>
-            `Question of type TXT expects a valueString answer`<br><br>
-            For single or multiple choice questions, the answer objects must include a `valueCoding` or one of the following error messages will be returned:<br><br>
+            For single or free text questions, if more than one answer is provided, you will get the error: `Question of type {type} is expecting at most one answer`<br><br>
+            For free text questions, the answer object must include a `valueString` or you will get the error: `Question of type TXT expects a valueString answer`<br><br>
+            For single or multiple choice questions, the answer objects must include a `valueCoding` or you will see one of these errors:<br>
             `Question of type SING expects a valueCoding answer`<br>
             `Question of type MULT expects a valueCoding answer`
           responses: [201, 400, 401, 403, 405, 422]
