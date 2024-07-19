@@ -9,7 +9,7 @@ hidden: false
 
 | Name           | Type     | Required                               | Description                                                             |
 | :------------- | :------- | :------------------------------------- | :---------------------------------------------------------------------- |
-| `id`      | _string_ | `true` if updating a `Task`. | The externally exposable id of the `Task`.  |
+| `id`      | _string_ | if updating | The id of the `Task`.  |
 | `assignee` | `Staff` | `false` | The `Staff` member assigned to the task. |
 | `patient` | `Patient` | `false` | The `Patient` that the task pertains to. |
 | `title` | _string_ | `true` | The title of the task. This shows in the task header in the Canvas UI. |

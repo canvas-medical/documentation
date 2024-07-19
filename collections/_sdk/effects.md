@@ -41,7 +41,7 @@ class Protocol(BaseProtocol):
 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
-### Effect Types
+## Effect Types
 
 The following effects are available to be applied in Canvas.
 
@@ -61,6 +61,9 @@ The following effects are available to be applied in Canvas.
 | ORIGINATE_REASON_FOR_VISIT_COMMAND | Can be used to originate a reason for visit command in a note. |
 | ORIGINATE_STOP_MEDICATION_COMMAND | Can be used to originate a stop medication command in a note. |
 | ORIGINATE_UPDATE_GOAL_COMMAND | Can be used to originate an update goal command in a note. |
+| CREATE_TASK | Cause a task you define in a plugin to be created. Use the [Task class](/sdk/data-task/) in the data module. |
+| UPDATE_TASK | Cause a task to be updated. Use the [Task class](/sdk/data-task/) in the data module. |
+| CREATE_TASK_COMMENT | Add a comment to an existing task. Use the [Task class](/sdk/data-task/) in the data module. |
 
 <br/>
 <br/>

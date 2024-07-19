@@ -454,12 +454,19 @@ sdk_overview:
    url: /sdk/effects/
  - title: "Events Module"
    url: /sdk/events/
+ - title: "Handlers Module"
+   url: /sdk/handlers/
+   identifier: sdk_handlers
  - title: "Protocols Module"
    url: /sdk/protocols/
  - title: "Utils Module"
    url: /sdk/utils/
  - title: "Views Module"
    url: /sdk/views/
+
+sdk_handlers:
+  - title: "CronTask"
+    url: /sdk/handlers-crontask/
 
 data_module:
  - title: "Task"
