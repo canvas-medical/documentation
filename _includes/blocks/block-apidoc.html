@@ -299,6 +299,7 @@
             {% for response in block.create.responses %}
             {% include blocks/block-apidoc-responses-errors.html %}
             {% endfor %}
+            {{ block.create.validation_errors | markdownify }}
         </div>
         <div class="apidoc__gridcol">
             {% if block.create.example_response %}
