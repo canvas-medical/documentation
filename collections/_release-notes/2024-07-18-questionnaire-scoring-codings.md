@@ -1,7 +1,7 @@
 ---
 title: Updates Questionnaire Scoring Results Codings
 layout: productupdates
-tags: fhir
+tags: api
 date: 2024-07-18
 ---
 
