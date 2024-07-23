@@ -96,7 +96,7 @@ sections:
                 type: string
                 exclude_in: read, search
                 required_in: create
-                description: Data inline, base64ed.
+                description: Inline data in Base64 format.
               - name: title
                 type: string
                 description: Label to display in place of the data. This will appear on the Visual Exam Finding Command in the patient's chart.
