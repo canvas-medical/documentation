@@ -1,8 +1,8 @@
 ---
-title: Optimize Claim Scrubber
+title: Optimizes Claim Scrubber
 layout: productupdates
-tags: config
-date: 2024-07-23
+tags: ui
+date: 2024-07-23 18:00:00
 ---
 
 When viewing claims for patients with many coverage eligibility responses, the user may experience a delay.
