@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           A slot of time on a schedule that may be available for booking appointments.<br><br>[http://hl7.org/fhir/R4/slot.html](http://hl7.org/fhir/R4/slot.html)<br><br>
-          All slots are determined through our google calendar integration. Find out how to set this up [here](/documentation/provider-availability).
+          All slots are determined through our Google Calendar integration. Find out how to set this up [here](/documentation/provider-availability).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
