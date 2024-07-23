@@ -25,7 +25,7 @@ sections:
             attributes:
                 - name: url
                   type: string
-                  description: Reference that defines the content of this object.
+                  description: Source that defines the content of this object.
                   enum_options:
                     - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
                 - name: valueId
