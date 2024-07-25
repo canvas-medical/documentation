@@ -31,7 +31,9 @@ class Protocol(BaseProtocol):
   
     def compute(self):
         patient_id = self.target
+
         patient = Patient.get(patient_id)
+
         log.info(f"First name: %s", patient.first_name)
         log.info(f"Last name: %s", patient.last_name)
         log.info(f"Birth date: %s", patient.birth_date.isoformat())
