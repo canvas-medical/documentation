@@ -469,6 +469,8 @@ sdk_handlers:
     url: /sdk/handlers-crontask/
 
 data_module:
+ - title: "Patient"
+   url: /sdk/data-patient/
  - title: "Task"
    url: /sdk/data-task/
 
