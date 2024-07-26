@@ -231,6 +231,7 @@ sections:
                 description: The 5 digit postal code of the address.
               - name: country
                 type: string
+                description: The ISO 3166 2 letter country code. If not provided, will default to "us".
               - name: period
                 type: json
                 attributes:
@@ -240,7 +241,7 @@ sections:
                     type: date
           - name: photo
             type: array[json]
-            description: >- 
+            description: >-
                 Image of the patient. This image shows on the patient avatar in the Canvas UI.<br><br>
                 **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             create_and_update_description: >-
