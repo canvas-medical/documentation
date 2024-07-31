@@ -23,7 +23,6 @@ sections:
           - Any [Educational Material](https://canvas-medical.zendesk.com/hc/en-us/articles/4999882305939-Educational-Material-Command) committed on a patient's chart.
           
           - Any [Invoices](https://canvas-medical.zendesk.com/hc/en-us/articles/4406239284499-Statements-and-Invoicing) generated for a patient.
-
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -31,6 +30,7 @@ sections:
           - name: id
             description: The identifier of the document reference.
             type: string
+            exclude_in: create
           - name: identifier
             type: array[json]
             description: Other identifiers for the document.
@@ -43,6 +43,44 @@ sections:
               - name: value
                 type: string
                 description: The identifier value that is unique.
+          - name: extension
+            type: array[json]
+            description_for_all_endpoints: Specific FHIR extensions on this resource are supported to be able to map some Canvas specific attributes for a comment, clinical date, review mode, reviewer, priority, and if it requires a signature. 
+            create_and_update_description: In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.
+            attributes:
+              - name: url
+                type: string
+                required_in: create
+                description: Identifies the meaning of the extension
+                enum_options:
+                  - value: http://schemas.canvasmedical.com/fhir/document-reference-comment
+                  - value: http://schemas.canvasmedical.com/fhir/document-reference-clinical-date
+                  - value: http://schemas.canvasmedical.com/fhir/document-reference-review-mode
+                  - value: http://schemas.canvasmedical.com/fhir/document-reference-reviewer
+                  - value: http://schemas.canvasmedical.com/fhir/document-reference-priority
+                  - value: http://schemas.canvasmedical.com/fhir/document-reference-requires-signature
+              - name: valueString
+                type: string
+                description: Value of extensions for Comment and Review Mode.<br><br> The `valueString` attribute is needed for the Comment's extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-comment` and for the Review Mode extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-review-mode`. <br><br> Comment is a comment on the underlying Canvas document that is related to this DocumentReference resource, while the Review Mode is also a field on the underlying Canvas document record which determines the review mode values (`RR` for Review Required, `AR` for Already Reviewed and `RN` for Review Not Required).
+              - name: valueDate
+                type: date
+                description: Value of extension.<br><br> The `valueDate` attribute is needed for the Clinical Date extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-clinical-date`. This attribute determines the Clinical Date on the underlying document record related to this DocumentReference resource. It's the `original_date` field on the related Canvas document record. Expected date value format for this field is `YYYY-MM-DD`.
+                required_in: create
+              - name: valueReference
+                type: json
+                required_in: create
+                description: Value of extension.<br><br> The `valueReference` attribute is needed for expressing the Reviewer of the document where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-reviewer`. This attribute will be the reference to the Practitioner (Canvas Staff) that's assigned as the reviewer of this document.
+                attributes:
+                  - name: reference
+                    type: string
+                    required_in: create
+                    description: The reference string of the Practitioner in the format of `"Practitioner/95b9ac2d-e963-4d7a-b165-7901870f1663"`.
+                  - name: type
+                    type: string
+                    description: Type the reference refers to (e.g. "Practitioner").
+              - name: valueBoolean
+                type: string
+                description: Value of extensions for Priority and Requires Signature.<br><br> The `valueBoolean` attribute is needed for the Priority extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-priority` and for the Requires Signature where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-requires-signature`. <br><br> Priority is a field on the underlying Canvas document that is related to this DocumentReference resource and determines if the document should be prioritized, while Requires Signature is also a field on the underlying Canva document that determines where the related document requires Practitioner's signature.
           - name: status
             description: >-
               The status of the document reference. <br><br>
@@ -56,23 +94,33 @@ sections:
               - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
 
               - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
-            type: enum [ current | superseded | entered-in-error]
+            create_description: The "status" field is required by FHIR to indicate the current state of the document; however, the value is ignored by Canvas on creation.
+            enum_options: 
+              - value: current
+              - value: superseded
+                exclude_in: create
+              - value: entered-in-error
+                exclude_in: create
           - name: type
             description: A coding for the type of document.
             type: json
+            required_in: create
             attributes:
               - name: coding
                 description: Code defined by a terminology system.
                 type: array[json]
+                required_in: create
                 attributes: 
                   - name: system
                     description: The system url of the coding.
                     enum_options: 
                       - value: http://loinc.org
                     type: string
+                    required_in: create
                   - name: code
                     description: The code value.
                     type: string
+                    required_in: create
                     enum_options: 
                       - value: codes supported in Data Integration (see link at top of page).
                       - value: 51852-2 (Letters)
@@ -82,38 +130,53 @@ sections:
                     description: >-
                       The display name of the coding.
                     type: string
+                    exclude_in: create
               - name: text
                 type: string
                 description: Plain text representation of the type of document.
+                exclude_in: create
           - name: category
+            type: array[json]
+            required_in: create
             description: The categorization of the document.
             attributes:
               - name: coding
                 description: Code defined by a terminology system.
                 type: array[json]
+                required_in: create
                 attributes: 
                   - name: system
                     description: The system url of the coding.
                     enum_options: 
                       - value: http://schemas.canvasmedical.com/fhir/document-reference-category
                     type: string
+                    required_in: create
                   - name: code
                     description: The code value.
                     type: string
+                    required_in: create
                     enum_options: 
                       - value: clinical-note
+                        exclude_in: create
                       - value: correspondence
+                        exclude_in: create
                       - value: educationalmaterial
+                        exclude_in: create
                       - value: imagingreport
+                        exclude_in: create
                       - value: invoicefull
+                        exclude_in: create
                       - value: labreport
+                        exclude_in: create
                       - value: patientadministrativedocument
                       - value: referralreport
+                        exclude_in: create
                       - value: uncategorizedclinicaldocument
             type: array[json]
           - name: subject
             description: Who/what is the subject of the document.
             type: json
+            required_in: create
             attributes:
               - name: reference
                 type: string
@@ -141,12 +204,20 @@ sections:
               - For Invoices, the author will either be the practitioner who asked for the invoice when invoice was created adhoc or it will be Canvas Bot if the invoice was automtically generated.
 
               - There are no authors on Imaging Reports or Clinical Notes.
-
             type: array[json]
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the author in the format of `"Practitioner/0e46396e-9cbc-48c6-94cc-f75f08b66c80"`.
+                required_in: create
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Practitioner").
           - name: custodian
             description: >-
               Organization which maintains the document.
             type: json
+            exclude_in: create
             attributes:
               - name: reference
                 type: string
@@ -154,8 +225,14 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Organization").
+          - name: description
+            type: string
+            required_in: create
+            description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource. 
+            create_and_update_description: It requires standard Document titles that must be matched to the Document provided in the coding type attribute.
           - name: content
             type: array[json]
+            required_in: create
             description: >-
               Document referenced<br><br>
               **Note: There is a temporary extension on Attachment that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
@@ -164,19 +241,30 @@ sections:
                 description: >-
                     Where to access the document.<br><br>
                 type: json
+                required_in: create
                 attributes: 
                   - name: contentType
                     description: Mime type of the content, with charset etc.
                     type: string
+                    required_in: create
+                    exclude_in: create
                   - name: url
                     description: URI where the data can be found. Please note that urls may have an AWSAccessKeyId and an Expires attribute. By default documents stored in AWS S3 will expire 10 minutes after the response payload is returned.
+                    exclude_in: create
                     type: string
+                  - name: data
+                    type: string
+                    required_in: create
+                    description: Base64 encoded document file as a string.
+                    exclude_in: read, search
                   - name: extension
                     description: Extension for backward-compatible URLs 
                     type: json
+                    exclude_in: create
               - name: format
                 type: json
                 description: Format/content rules for the document
+                exclude_in: create
                 attributes:
                   - name: system
                     description: The system url of the coding.
@@ -196,6 +284,7 @@ sections:
                       - value: mimeType Sufficient
           - name: context
             type: json
+            exclude_in: create
             description: >-
               Clinical context of document. <br><br>
 
@@ -204,7 +293,6 @@ sections:
               - For POC Lab Reports or Educational Material documents, the context will contain information about the encounter of the note the commands were committed with if applicable. 
 
               - For Lab Reports that have a Lab Review committed in a note, the context will have information about any encounter associated with that note.
-
             attributes: 
               - name: encounter
                 type: array[json]
@@ -247,25 +335,210 @@ sections:
               - value: current
               - value: superseded
               - value: entered-in-error
+            create_description: 
           - name: subject
             description: The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`. Can be used interchangeably with the patient parameter.
             type: string
           - name: type
             type: string
             description: Kind of document (LOINC if possible). Filters by the code and/or system under `type.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code` (e.g `http://loinc.org|11502-2`).
-        endpoints: [read, search]
+        endpoints: [create, read, search]
+        create:
+          responses: [201, 400, 401, 403, 405, 422]
+          example_request: documentreference-create-request
+          example_response: documentreference-create-response
+          description: Create DocumentReference with provided fields and values.
         read:
           responses: [200, 401, 403, 404]
           example_request: documentreference-read-request
           example_response: documentreference-read-response
+          description: Read DocumentReference resource.
         search:
           responses: [200, 400, 401, 403]
           example_request: documentreference-search-request
           example_response: documentreference-search-response
+          description: Search for DocumentReference resources.
 ---
 
+<div id="documentreference-create-request">
+
+  {% tabs documentreference-create-request %}
+
+    {% tab documentreference-create-request curl %}
+```shell
+curl --request POST \
+     --url 'https://fumage-example.canvasmedical.com/DocumentReference' \
+     --header 'Authorization: Bearer <token>' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+  {
+    "resourceType": "DocumentReference",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+            "valueString": "Some comment on Document"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+            "valueDate": "2024-04-01"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+            "valueString": "RN"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+            "valueReference": {
+                "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
+                "type": "Practitioner"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
+            "valueBoolean": true
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-requires-signature",
+            "valueBoolean": true
+        }
+    ],
+    "status": "current",
+    "type": {
+        "coding": [
+            {
+                "system": "http://loinc.org",
+                "code": "34105-7"
+            }
+        ]
+    },
+    "category": [
+        {
+            "coding": [
+                {
+                    "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
+                    "code": "uncategorizedclinicaldocument"
+                }
+            ]
+        }
+    ],
+    "subject": {
+        "reference": "Patient/aabcf98215eb4356ad773a0ec9cd3369",
+        "type": "Patient"
+    },
+    "author": [
+        {
+            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+            "type": "Practitioner"
+        }
+    ],
+    "description": "Hospital Discharge Summary",
+    "content": [
+        {
+            "attachment": {
+                "contentType": "application/pdf",
+                "data": "JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
+            }
+        }
+    ]
+  }
+}'
+```
+    {% endtab %}
+    {% tab documentreference-create-request python %}
+```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/DocumentReference"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json",
+}
+
+payload = {
+    "resourceType": "DocumentReference",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+            "valueString": "Some comment on Document",
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+            "valueDate": "2024-04-01",
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+            "valueString": "RN",
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+            "valueReference": {
+                "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
+                "type": "Practitioner",
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
+            "valueBoolean": true,
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-requires-signature",
+            "valueBoolean": true,
+        }
+    ],
+    "status": "current",
+    "type": {
+        "coding": [
+            {
+                "system": "http://loinc.org",
+                "code": "34105-7",
+            }
+        ]
+    },
+    "category": [
+        {
+            "coding": [
+                {
+                    "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
+                    "code": "uncategorizedclinicaldocument",
+                }
+            ]
+        }
+    ],
+    "subject": {
+        "reference": "Patient/aabcf98215eb4356ad773a0ec9cd3369",
+        "type": "Patient",
+    },
+    "author": [
+        {
+            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+            "type": "Practitioner",
+        }
+    ],
+    "description": "Hospital Discharge Summary",
+    "content": [
+        {
+            "attachment": {
+                "contentType": "application/pdf",
+                "data": "JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G",
+            }
+        }
+    ]
+}
+```
+    {% endtab %}
+
+  {% endtabs %}
+</div>
+
+<div id="documentreference-create-response">
+{% include create-response.html %}
+</div>
+
 <div id="documentreference-read-request">
-{%  include read-request.html resource_type="DocumentReference" %}
+{% include read-request.html resource_type="DocumentReference" %}
 </div>
 
 <div id="documentreference-read-response">
@@ -275,13 +548,42 @@ sections:
 {
     "resourceType": "DocumentReference",
     "id": "6f60ed1c-a6b3-4791-99f0-f618704e33d1",
+    "extension": [
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+            "valueString": "Some comment on Document"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+            "valueDate": "2024-04-01"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+            "valueString": "RN"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+            "valueReference": {
+                "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
+                "type": "Practitioner"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
+            "valueBoolean": true
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-requires-signature",
+            "valueBoolean": true
+        }
+    ],
     "status": "current",
     "type": {
         "coding": [
             {
                 "system": "http://loinc.org",
-                "code": "94093-2",
-                "display": "Itemized bill"
+                "code": "34105-7",
+                "display": "Hospital Discharge summary"
             }
         ]
     },
@@ -290,16 +592,16 @@ sections:
             "coding": [
                 {
                     "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
-                    "code": "invoicefull"
+                    "code": "uncategorizedclinicaldocument"
                 }
             ]
         }
     ],
     "subject": {
-        "reference": "Patient/f3d750f5d77d403c96baef6a6055c6e7",
+        "reference": "Patient/aabcf98215eb4356ad773a0ec9cd3369",
         "type": "Patient"
     },
-    "date": "2021-10-27T00:00:00+00:00",
+    "date": "2024-04-22T00:00:00+00:00",
     "author": [
         {
             "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
@@ -310,6 +612,7 @@ sections:
         "reference": "Organization/00000000-0000-0000-0002-000000000000",
         "type": "Organization"
     },
+    "description": "Hospital Discharge Summary",
     "content": [
         {
             "attachment": {
@@ -320,7 +623,7 @@ sections:
                     }
                 ],
                 "contentType": "application/pdf",
-                "url": "https://canvas-client-media.s3.amazonaws.com/training/invoices/f3d750f5d77d403c96baef6a6055c6e7_20211027_193132.pdf?AWSAccessKeyId=xxxx&Signature=xxxx&Expires=xxxx"
+                "url": "https://canvas-client-media.s3.amazonaws.com/training/invoices//Hospital_Discharge_Summary_2024-04-22_18-27-45_7aeadd4496b34f86a78c26223cdabbf4_YQiesv8.pdf?AWSAccessKeyId=xxxx&Signature=xxxx&Expires=xxxx"
             },
             "format": {
                 "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -450,6 +753,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Itemized bill",
                 "content": [
                     {
                         "attachment": {
@@ -475,6 +779,31 @@ sections:
             "resource": {
                 "resourceType": "DocumentReference",
                 "id": "5a0cf7ae-bd88-4f04-bd7e-60a33e5e2824",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+                        "valueString": "Some comment on LabReport Document"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+                        "valueDate": "2024-04-02"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+                        "valueString": "AR"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+                        "valueReference": {
+                            "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
+                            "type": "Practitioner"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-requires-signature",
+                        "valueBoolean": true
+                    }
+                ],
                 "status": "current",
                 "type": {
                     "coding": [
@@ -500,7 +829,7 @@ sections:
                     "reference": "Patient/c0df2c04a0e64b46ba7fe3f836068e49",
                     "type": "Patient"
                 },
-                "date": "2024-02-22T00:00:00+00:00",
+                "date": "2024-04-22T00:00:00+00:00",
                 "author": [
                     {
                         "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
@@ -511,6 +840,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Lab Report",
                 "content": [
                     {
                         "attachment": {
@@ -547,6 +877,31 @@ sections:
             "resource": {
                 "resourceType": "DocumentReference",
                 "id": "b9f82cd0-6644-4b3f-a9d1-7585c3e71498",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+                        "valueString": "Some comment on ImagingReport Document"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+                        "valueDate": "2024-04-03"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+                        "valueString": "RN"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+                        "valueReference": {
+                            "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
+                            "type": "Practitioner"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-requires-signature",
+                        "valueBoolean": true
+                    }
+                ],
                 "status": "entered-in-error",
                 "type": {
                     "coding": [
@@ -572,11 +927,12 @@ sections:
                     "reference": "Patient/c0df2c04a0e64b46ba7fe3f836068e49",
                     "type": "Patient"
                 },
-                "date": "2024-02-21T00:00:00+00:00",
+                "date": "2024-04-21T00:00:00+00:00",
                 "custodian": {
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Imaging Report",
                 "content": [
                     {
                         "attachment": {
@@ -638,6 +994,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Letter",
                 "content": [
                     {
                         "attachment": {
@@ -702,6 +1059,7 @@ sections:
                         }
                     }
                 ],
+                "description": "Lab visit",
                 "context": {
                     "encounter": [
                         {
@@ -756,6 +1114,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Consultancy Report",
                 "content": [
                     {
                         "attachment": {
@@ -781,6 +1140,31 @@ sections:
             "resource": {
                 "resourceType": "DocumentReference",
                 "id": "d9a1304d-159d-4518-be88-3f9a1ea93cd1",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+                        "valueString": "Disability form comment"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+                        "valueDate": "2023-12-12"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+                        "valueString": "RN"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+                        "valueReference": {
+                            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                            "type": "Practitioner"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
+                        "valueBoolean": false
+                    }
+                ],
                 "status": "current",
                 "type": {
                     "text": "Disability Form"
@@ -810,6 +1194,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Disability Form",
                 "content": [
                     {
                         "attachment": {
@@ -835,6 +1220,35 @@ sections:
             "resource": {
                 "resourceType": "DocumentReference",
                 "id": "bce56cc4-268a-4562-a699-16e8869415ad",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+                        "valueString": "Hospital discharge summary comment"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+                        "valueDate": "2024-01-14"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+                        "valueString": "AR"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+                        "valueReference": {
+                            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                            "type": "Practitioner"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
+                        "valueBoolean": true
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-requires-signature",
+                        "valueBoolean": false
+                    }
+                ],
                 "status": "current",
                 "type": {
                     "coding": [
@@ -871,6 +1285,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Hospital Discharge Summary",
                 "content": [
                     {
                         "attachment": {
@@ -896,6 +1311,31 @@ sections:
             "resource": {
                 "resourceType": "DocumentReference",
                 "id": "d220fa24-2b2f-44cf-9843-5a1b681f0805",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+                        "valueString": "Advance beneficiary comment"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+                        "valueDate": "2024-02-13"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+                        "valueString": "RN"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+                        "valueReference": {
+                            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                            "type": "Practitioner"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
+                        "valueBoolean": true
+                    }
+                ],
                 "status": "current",
                 "type": {
                     "coding": [
@@ -932,6 +1372,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Advanced Beneficiary Notice",
                 "content": [
                     {
                         "attachment": {
@@ -957,6 +1398,31 @@ sections:
             "resource": {
                 "resourceType": "DocumentReference",
                 "id": "04a71b54-89b0-49bf-96be-60b5bdfa6450",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+                        "valueString": "Handicap Parking Permit comment"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+                        "valueDate": "2024-04-01"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+                        "valueString": "RN"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+                        "valueReference": {
+                            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                            "type": "Practitioner"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
+                        "valueBoolean": true
+                    }
+                ],
                 "status": "current",
                 "type": {
                     "text": "Handicap Parking Permit"
@@ -986,6 +1452,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Handicap Parking Permit",
                 "content": [
                     {
                         "attachment": {
@@ -1011,6 +1478,31 @@ sections:
             "resource": {
                 "resourceType": "DocumentReference",
                 "id": "efe6c0d6-97c0-42a6-91ba-926a2dc3c66f",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+                        "valueString": "Disability form comment"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+                        "valueDate": "2024-01-15"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+                        "valueString": "RN"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+                        "valueReference": {
+                            "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
+                            "type": "Practitioner"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
+                        "valueBoolean": false
+                    }
+                ],
                 "status": "current",
                 "type": {
                     "text": "Disability Form"
@@ -1040,6 +1532,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Disability Form",
                 "content": [
                     {
                         "attachment": {
@@ -1101,6 +1594,7 @@ sections:
                     "reference": "Organization/00000000-0000-0000-0002-000000000000",
                     "type": "Organization"
                 },
+                "description": "Making a birth plan",
                 "content": [
                     {
                         "attachment": {
