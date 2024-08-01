@@ -34,6 +34,7 @@ sections:
           - name: identifier
             type: array[json]
             description: Other identifiers for the document.
+            exclude_in: create
             attributes:
               - name: system
                 type: string
