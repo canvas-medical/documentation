@@ -116,12 +116,12 @@ Commands migrated to the new framework will function similarly if not identicall
     <tr> 
       <td>Diagnose</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
-      <td><ul><li>The command now restricts adding duplicate diagnoses. Users will be prevented from committing the command and warned to add an assess command if the condition already exists.</li></ul> </td>
+      <td><ul><li>The command now restricts adding duplicate diagnoses. Users will be prevented from committing the command and warned to add an assess command if the condition already exists</li></ul> </td>
     </tr>
     <tr> 
       <td>Lab Order</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
-      <td><ul><li>The indications drop down defaults with active conditions as quick picks.</li><li>Validation will prevent sending orders if a patient does not have an address or if the provider does not have an NPI.</li></ul> </td>
+      <td><ul><li>The indications drop down defaults with active conditions as quick picks</li><li>Validation will prevent sending orders if a patient does not have an address or if the provider does not have an NPI</li></ul> </td>
     </tr>
     <tr> 
       <td>Family History</td>
@@ -150,21 +150,27 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr> 
     <tr> 
       <td>Task</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>Attachments are added through a modal</li></ul></td>
     </tr>
     <tr> 
       <td>Refill</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>Adds max refill validation for epcs</li> <li>Limits to 2 indications</li></ul> </td>
+    </tr>
+     <tr> 
+      <td>Vitals</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td><ul><li>Updated layout</li></ul> </td>
+    </tr>
     </tr>
     <tr> 
       <td>Immunization Statement</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
-     <tr> 
-      <td>Vitals</td>
+    <tr> 
+      <td>Close Goal</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
@@ -174,12 +180,17 @@ Commands migrated to the new framework will function similarly if not identicall
       <td></td>
     </tr>
      <tr> 
-      <td>Image</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td>Update Diagnosis</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
      <tr> 
-      <td>Update Diagnosis</td>
+      <td>Snooze Protocol</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+     <tr> 
+      <td>Image</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
