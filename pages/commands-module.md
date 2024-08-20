@@ -164,23 +164,23 @@ Commands migrated to the new framework will function similarly if not identicall
        <td><ul><li>Updated layout</li></ul> </td>
     </tr>
     </tr>
+     <tr> 
+      <td>Change Diagnosis</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Close Goal</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
     <tr> 
       <td>Immunization Statement</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
-    <tr> 
-      <td>Close Goal</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr>
      <tr> 
       <td>Immunize</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr>
-     <tr> 
-      <td>Update Diagnosis</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
