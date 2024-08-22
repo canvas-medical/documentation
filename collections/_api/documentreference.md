@@ -145,10 +145,33 @@ sections:
                     type: string
                     required_in: create
                     enum_options: 
-                      - value: codes supported in Data Integration (see link at top of page).
-                      - value: 51852-2 (Letters)
-                      - value: 34895-3 (Educational Material)
-                      - value: 94093-2 (Invoices/Itemized Bill)
+                      - value: 51852-2 (Letters) (read-only)
+                      - value: 34895-3 (Educational Material) (read-only)
+                      - value: 94093-2 (Invoices/Itemized Bill) (read-only)
+                      - value: 53243-2 (Advance Beneficiary Notice)
+                      - value: 42348-3 (Advance Directive / Living Will)
+                      - value: 91983-7 (Care Management)
+                      - value: 53245-7 (CDL (Commercial Driver License))
+                      - value: 96335-5 (Emergency Department Report)
+                      - value: 11503-0 (External Medical Records)
+                      - value: 75503-3 (Home Care Report)
+                      - value: 34105-7 (Hospital Discharge Summary)
+                      - value: 47039-3 (Hospital History & Physical)
+                      - value: 64290-0 (Insurance Card)
+                      - value: 52034-6  (Insurer Prior Authorization)
+                      - value: 34113-1 (Nursing Home)
+                      - value: 11504-8 (Operative Report)
+                      - value: 80570-5 (Patient Agreement)
+                      - value: 64285-0 (Patient Clinical Intake Form)
+                      - value: 51848-0 (Physical Exams)
+                      - value: 46209-3  (POLST (Provider Order for Life Sustaining-Treatment))
+                      - value: 64298-3 (Power of Attorney)
+                      - value: 57833-6 (Prescription Refill Request)
+                      - value: 34823-5 (Rehabilitation Report)
+                      - value: 101904-1 (Release of Information Request)
+                      - value: 34109-9 (Uncategorized Clinical Document)
+                      - value: 51851-4 (Uncategorized Administrative Document)
+                      - value: 52070-0  (Worker's Compensation Documents)
                   - name: display
                     description: >-
                       The display name of the coding.
@@ -254,7 +277,7 @@ sections:
             type: string
             required_in: create
             description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource. 
-            create_and_update_description: It requires standard Document titles that must be matched to the Document provided in the coding type attribute.
+            create_and_update_description: It requires standard document titles that must be matched to the document provided in the coding type attribute. See the table above with the available loinc codes and their associated description. 
           - name: content
             type: array[json]
             required_in: create
