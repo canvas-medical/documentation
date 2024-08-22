@@ -46,8 +46,16 @@ sections:
                 description: The identifier value that is unique.
           - name: extension
             type: array[json]
+            required_in: create
             description_for_all_endpoints: Specific FHIR extensions on this resource are supported to be able to map some Canvas specific attributes for a comment, clinical date, review mode, reviewer, priority, and if it requires a signature. 
-            create_and_update_description: In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.
+            create_and_update_description: "In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.<br><br><b>A few of the extensions are required:<b> 
+
+              - clinical-date  
+
+              - reviewer  
+
+              - requires-signature
+              "
             attributes:
               - name: url
                 type: string
@@ -62,15 +70,26 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-requires-signature
               - name: valueString
                 type: string
-                description: Value of extensions for Comment and Review Mode.<br><br> The `valueString` attribute is needed for the Comment's extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-comment` and for the Review Mode extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-review-mode`. <br><br> Comment is a comment on the underlying Canvas document that is related to this DocumentReference resource, while the Review Mode is also a field on the underlying Canvas document record which determines the review mode values (`RR` for Review Required, `AR` for Already Reviewed and `RN` for Review Not Required).
+                description_for_all_endpoints: Value of extensions for Comment.
+                create_description: The `valueString` attribute is needed for the Comment's extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-comment`.<br><br> Comment is a comment on the underlying Canvas document that is related to this DocumentReference resource.
+              - name: valueCode
+                type: string
+                description_for_all_endpoints: Value of extensions for Review Mode.
+                create_description: The `valueCode` attribute is needed for the Review Mode extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-review-mode`. <br><br> Review Mode is a field on the underlying Canvas document record which determines the review mode values (`RR` for Review Required, `AR` for Already Reviewed and `RN` for Review Not Required).
+                enum_options:
+                  - value: RR
+                  - value: AR
+                  - value: RN
               - name: valueDate
                 type: date
-                description: Value of extension.<br><br> The `valueDate` attribute is needed for the Clinical Date extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-clinical-date`. This attribute determines the Clinical Date on the underlying document record related to this DocumentReference resource. It's the `original_date` field on the related Canvas document record. Expected date value format for this field is `YYYY-MM-DD`.
+                description_for_all_endpoints: Value of extension for Clinical Date.
+                create_description: The `valueDate` attribute is needed for the Clinical Date extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-clinical-date`. This attribute is required and determines the Clinical Date on the underlying document record related to this DocumentReference resource. It's the `original_date` field on the related Canvas document record. Expected date value format for this field is `YYYY-MM-DD`.
                 required_in: create
               - name: valueReference
                 type: json
                 required_in: create
-                description: Value of extension.<br><br> The `valueReference` attribute is needed for expressing the Reviewer of the document where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-reviewer`. This attribute will be the reference to the Practitioner (Canvas Staff) that's assigned as the reviewer of this document.
+                description_for_all_endpoints: Value of extension for Reviewer.
+                create_description: The `valueReference` attribute is needed for expressing the Reviewer of the document where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-reviewer`. This attribute is required and will be the reference to the Practitioner (Canvas Staff) that's assigned as the reviewer of this document.
                 attributes:
                   - name: reference
                     type: string
@@ -81,9 +100,12 @@ sections:
                     description: Type the reference refers to (e.g. "Practitioner").
               - name: valueBoolean
                 type: string
-                description: Value of extensions for Priority and Requires Signature.<br><br> The `valueBoolean` attribute is needed for the Priority extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-priority` and for the Requires Signature where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-requires-signature`. <br><br> Priority is a field on the underlying Canvas document that is related to this DocumentReference resource and determines if the document should be prioritized, while Requires Signature is also a field on the underlying Canva document that determines where the related document requires Practitioner's signature.
+                required_in: create
+                description_for_all_endpoints: Value of extensions for Priority and Requires Signature.
+                create_description: The `valueBoolean` attribute is needed for the Priority extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-priority` and for the Requires Signature where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-requires-signature`. <br><br> Priority is a field on the underlying Canvas document that is related to this DocumentReference resource and determines if the document should be prioritized. If the priority is omitted from the request, it will default to False. <br><br> Requires Signature is also a field on the underlying Canva document that determines where the related document requires Practitioner's signature. The requires-signature extension is required on create.
           - name: status
-            description: >-
+            required_in: create
+            read_and_search_description: >-
               The status of the document reference. <br><br>
 
               - Letters and POC Lab Reports will always have a status of `current`.
@@ -123,10 +145,33 @@ sections:
                     type: string
                     required_in: create
                     enum_options: 
-                      - value: codes supported in Data Integration (see link at top of page).
-                      - value: 51852-2 (Letters)
-                      - value: 34895-3 (Educational Material)
-                      - value: 94093-2 (Invoices/Itemized Bill)
+                      - value: 51852-2 (Letters) (read-only)
+                      - value: 34895-3 (Educational Material) (read-only)
+                      - value: 94093-2 (Invoices/Itemized Bill) (read-only)
+                      - value: 53243-2 (Advance Beneficiary Notice)
+                      - value: 42348-3 (Advance Directive / Living Will)
+                      - value: 91983-7 (Care Management)
+                      - value: 53245-7 (CDL (Commercial Driver License))
+                      - value: 96335-5 (Emergency Department Report)
+                      - value: 11503-0 (External Medical Records)
+                      - value: 75503-3 (Home Care Report)
+                      - value: 34105-7 (Hospital Discharge Summary)
+                      - value: 47039-3 (Hospital History & Physical)
+                      - value: 64290-0 (Insurance Card)
+                      - value: 52034-6  (Insurer Prior Authorization)
+                      - value: 34113-1 (Nursing Home)
+                      - value: 11504-8 (Operative Report)
+                      - value: 80570-5 (Patient Agreement)
+                      - value: 64285-0 (Patient Clinical Intake Form)
+                      - value: 51848-0 (Physical Exams)
+                      - value: 46209-3  (POLST (Provider Order for Life Sustaining-Treatment))
+                      - value: 64298-3 (Power of Attorney)
+                      - value: 57833-6 (Prescription Refill Request)
+                      - value: 34823-5 (Rehabilitation Report)
+                      - value: 101904-1 (Release of Information Request)
+                      - value: 34109-9 (Uncategorized Clinical Document)
+                      - value: 51851-4 (Uncategorized Administrative Document)
+                      - value: 52070-0  (Worker's Compensation Documents)
                   - name: display
                     description: >-
                       The display name of the coding.
@@ -188,9 +233,11 @@ sections:
           - name: date
             description: When this document reference was created in Canvas.
             type: datetime
+            exclude_in: create
           - name: author
-            description: >-
+            description_for_all_endpoints: >-
               Who and/or what authored the document. 
+            read_and_search_description: >-
 
               - For letters, it is the practitioner who signed the letter determined by the practitioner dropdown in the UI when creating the letter.
 
@@ -230,7 +277,7 @@ sections:
             type: string
             required_in: create
             description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource. 
-            create_and_update_description: It requires standard Document titles that must be matched to the Document provided in the coding type attribute.
+            create_and_update_description: It requires standard document titles that must be matched to the document provided in the coding type attribute. See the table above with the available loinc codes and their associated description. 
           - name: content
             type: array[json]
             required_in: create
@@ -386,7 +433,7 @@ curl --request POST \
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-            "valueString": "RN"
+            "valueCode": "RN"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
@@ -471,7 +518,7 @@ payload = {
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-            "valueString": "RN",
+            "valueCode": "RN",
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
@@ -560,7 +607,7 @@ payload = {
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-            "valueString": "RN"
+            "valueCode": "RN"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
@@ -791,7 +838,7 @@ payload = {
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-                        "valueString": "AR"
+                        "valueCode": "AR"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
@@ -889,7 +936,7 @@ payload = {
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-                        "valueString": "RN"
+                        "valueCode": "RN"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
@@ -1152,7 +1199,7 @@ payload = {
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-                        "valueString": "RN"
+                        "valueCode": "RN"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
@@ -1232,7 +1279,7 @@ payload = {
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-                        "valueString": "AR"
+                        "valueCode": "AR"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
@@ -1323,7 +1370,7 @@ payload = {
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-                        "valueString": "RN"
+                        "valueCode": "RN"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
@@ -1410,7 +1457,7 @@ payload = {
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-                        "valueString": "RN"
+                        "valueCode": "RN"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
@@ -1490,7 +1537,7 @@ payload = {
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
-                        "valueString": "RN"
+                        "valueCode": "RN"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
