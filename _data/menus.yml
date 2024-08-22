@@ -271,8 +271,12 @@ api_group:
  - title: "Group Search"
    url: /api/group/#search
 api_immunization:
+ - title: "Immunization Create"
+   url: /api/immunization/#create
  - title: "Immunization Read"
    url: /api/immunization/#read
+ - title: "Immunization Update"
+   url: /api/immunization/#update
  - title: "Immunization Search"
    url: /api/immunization/#search
 api_location:
