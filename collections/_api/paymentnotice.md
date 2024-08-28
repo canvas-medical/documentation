@@ -19,7 +19,8 @@ sections:
             required_in: create,update
           - name: extension
             type: array[json]
-            description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. For now, the extension array of this resource supports `copayments`. Use the below matching `url` field for the copayment extension.
+            description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The copayment extensions contains references to claims used for copayments.
+            create_description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The extension array of this resource supports a `copayments` extension to denote Claims referenced with copayments. Use the below matching `url` field for the copayment extension and the appropriate `valueReference` extension if you aim to use PaymentNotice for producing copayments. Else, use PaymentNotice without the copayment extension for other processements.
             attributes:
               - name: url
                 type: string
@@ -27,16 +28,25 @@ sections:
                 description: Identifies the meaning of the extension
                 enum_options:
                   - value: http://schemas.canvasmedical.com/fhir/copayment-claims
-              - name: valueReference
-                type: json
+              - name: extension
+                type: array[json]
+                description: A nested extension that contains references to Claims related to copayments.
+                create_description: Use this extension to denote and reference a Claim targeted for a copayment. For producing copayments, only a single Claim is accepted.
                 attributes:
-                  - name: reference
+                  - name: url
                     type: string
                     required_in: create
-                    description: The reference string of the Claim used for copayments in the format of `"Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"`.
-                  - name: type
-                    type: string
-                    description: Type the reference refers to (e.g. "Claim").
+                    description: Identifies the meaning of the extension.
+                    enum_options:
+                      - value: claim
+                  - name: valueReference
+                    type: json
+                    required_in: create
+                    attributes:
+                      - name: reference
+                        type: string
+                        required_in: create
+                        description: The reference string of the Claim used for copayments in the format of `"Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"`.
           - name: status
             type: string
             required_in: create,update
