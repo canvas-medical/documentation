@@ -15,11 +15,11 @@ terminologies like ICD-10, SNOMED-CT, CPT, and the like.
 
 Data on your Canvas instance is accessible in plugins through GraphQL. A built-in GraphQL client is included.
 
-A primer on GraphQL can be found here: https://graphql.org
+A primer on GraphQL can be found here: [https://graphql.org](https://graphql.org)
 
 # Canvas GraphQL schema
 
-An interactive version of Canvas's GraphQL schema is located on your instance: [https://<customer-subdomain>.canvasmedical.com/graphql-schema](https://<customer-subdomain>.canvasmedical.com/graphql-schema)
+An interactive version of Canvas's GraphQL schema is located on your instance: [https://customer-subdomain.canvasmedical.com/graphql-schema](https://customer-subdomain.canvasmedical.com/graphql-schema)
 
 # Example usage
 
@@ -72,4 +72,5 @@ very easy.
 Canvas recommends writing queries that accept variables in order to facilitate easy reuse of queries. As can be seen in
 the example above, variables can be renamed to allow for consistency across different types of queries.
 
-Once your query is ready, it can be added to your plugin and executed in order to obtain data from your Canvas instance.
+Once your query is ready, it can be added to your plugin and executed as shown above in order to obtain data from your
+Canvas instance.
