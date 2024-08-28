@@ -66,11 +66,11 @@ class Protocol(BaseProtocol):
 # Crafting GraphQL queries
 
 The most efficient way to craft GraphQL queries is to use an interactive tool like [Postman](https://www.postman.com) or
-Canvas's GraphQL schema (referenced above). These tools provide autocompletion of fields, which makes crafting queries
-very easy.
+Canvas's GraphQL schema (referenced above). These tools provide field autocompletion, which makes crafting queries very
+easy.
 
-Canvas recommends writing queries that accept variables in order to facilitate easy reuse of queries. As can be seen in
+Canvas recommends writing queries that accept variables in order to encourage reuse and consistency. As can be seen in
 the example above, variables can be renamed to allow for consistency across different types of queries.
 
-Once your query is ready, it can be added to your plugin and executed as shown above in order to obtain data from your
-Canvas instance.
+Once you are happy with your query, it can be added to your plugin and executed as shown above in order to obtain data
+from your Canvas instance.
