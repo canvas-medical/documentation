@@ -20,7 +20,7 @@ sections:
           - name: extension
             type: array[json]
             description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The copayment extensions contains references to claims used for copayments.
-            create_description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The extension array of this resource supports a `copayments` extension to denote Claims referenced with copayments. Use the below matching `url` field for the copayment extension and the appropriate `valueReference` extension if you aim to use PaymentNotice for producing copayments. Else, use PaymentNotice without the copayment extension for other processements.
+            create_description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The extension array of this resource supports a `copayments` extension to denote Claims referenced with copayments. Use the below matching `url` field for the copayment extension and the appropriate `valueReference` extension if you aim to use PaymentNotice for producing copayments. If you are not denoting a copayment, then use PaymentNotice without the copayment extension for other type of payments.
             attributes:
               - name: url
                 type: string
