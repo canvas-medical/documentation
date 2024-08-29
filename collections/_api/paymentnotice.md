@@ -17,6 +17,36 @@ sections:
               The identifier of the payment notice
             type: string
             required_in: create,update
+          - name: extension
+            type: array[json]
+            description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The copayment extensions contains references to claims used for copayments.
+            create_description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The extension array of this resource supports a `copayments` extension to denote Claims referenced with copayments. Use the below matching `url` field for the copayment extension and the appropriate `valueReference` extension if you aim to use PaymentNotice for producing copayments. If you are not denoting a copayment, then use PaymentNotice without the copayment extension for other type of payments.
+            attributes:
+              - name: url
+                type: string
+                required_in: create
+                description: Identifies the meaning of the extension
+                enum_options:
+                  - value: http://schemas.canvasmedical.com/fhir/copayment-claims
+              - name: extension
+                type: array[json]
+                description: A nested extension that contains references to Claims related to copayments.
+                create_description: Use this extension to denote and reference a Claim targeted for a copayment. For producing copayments, only a single Claim is accepted.
+                attributes:
+                  - name: url
+                    type: string
+                    required_in: create
+                    description: Identifies the meaning of the extension.
+                    enum_options:
+                      - value: claim
+                  - name: valueReference
+                    type: json
+                    required_in: create
+                    attributes:
+                      - name: reference
+                        type: string
+                        required_in: create
+                        description: The reference string of the Claim used for copayments in the format of `"Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"`.
           - name: status
             type: string
             required_in: create,update
@@ -85,7 +115,8 @@ sections:
           description: >-
             Create a PaymentNotice resource.<br><br>
             This endpoint can be used to note a payment that has been collected from a patient and deduct the amount from their balance.<br><br>
-            **Don't overpay!** Requests that would bring the account balance negative will be rejected. Example: If a patient owes $5, Canvas would reject a PaymentNotice with a value that is greater than $5.<br><br>
+            Moreover, this endpoint can be used to denote copayments as well. For that purpose, use the valueReference extension to link the associated Claim for which the copayment is being processed. Adding that extension determines the purpose of action for this endpoint, meaning that it would be treated as a copayment transaction if the Claim reference extension is present.<br><br>
+            **Don't overpay!** Requests that would bring the account balance negative will be rejected. Example: If a patient owes $5, Canvas would reject a PaymentNotice with a value that is greater than $5. Balance can only go negative if performing copayments as customers could be charged prior to recieveing a medical service.<br><br>
             A created payment notice can be found in Canvas by going to the patient's chart, and clicking the paper icon in the top right corner. The created payment notice will be displayed under receipts. The "Originator" will be automatically set to Canvas Bot.<br><br>
             As payment notices are created, they will be applied to charges in chronological order of creation date, from oldest to newest.
           responses: [201, 400, 401, 403, 405, 422]
@@ -117,6 +148,19 @@ curl --request POST \
      --data '
 {
     "resourceType": "PaymentNotice",
+    "extension": [
+        {
+            "extension": [
+                {
+                    "url": "claim",
+                    "valueReference": {
+                        "reference": "Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"
+                    }
+                }
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/copayment-claims"
+        }
+    ],
     "status": "active",
     "request": {
         "reference": "Patient/bc4ec998a49745b488f552bebddf7261"
@@ -146,6 +190,19 @@ headers = {
 
 payload = {
     "resourceType": "PaymentNotice",
+    "extension": [
+        {
+            "extension": [
+                {
+                    "url": "claim",
+                    "valueReference": {
+                        "reference": "Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"
+                    }
+                }
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/copayment-claims"
+        }
+    ],
     "status": "active",
     "request": {
         "reference": "Patient/bc4ec998a49745b488f552bebddf7261"
@@ -185,6 +242,19 @@ print(response.text)
 {
     "resourceType": "PaymentNotice",
     "id": "297e160c-8246-4054-8023-554d8e14c8c8",
+    "extension": [
+        {
+            "extension": [
+                {
+                    "url": "claim",
+                    "valueReference": {
+                        "reference": "Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"
+                    }
+                }
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/copayment-claims"
+        }
+    ],
     "status": "active",
     "request": {
         "reference": "Patient/3f688bb915d04e168dbfa635da4ab259",
@@ -331,6 +401,19 @@ print(response.text)
             "resource": {
                 "resourceType": "PaymentNotice",
                 "id": "3a2f4045-0591-460c-9bee-592ae7e8eef7",
+                "extension": [
+                    {
+                        "extension": [
+                            {
+                                "url": "claim",
+                                "valueReference": {
+                                    "reference": "Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"
+                                }
+                            }
+                        ],
+                        "url": "http://schemas.canvasmedical.com/fhir/copayment-claims"
+                    }
+                ],
                 "status": "active",
                 "request": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
