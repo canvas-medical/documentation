@@ -112,7 +112,7 @@ sections:
           <br><br>
           http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider
           <br><br>
-          This extension determines the default Provider (Practitioner) for the Patient.
+          This extension determines the default Provider (Practitioner) for the Patient that is used for eligibility checks.
           <br><br>
           For create and update actions, the `url` attribute must be equal to *http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider*. The `valueReference` is a JSON object that contains the **required** `reference` attribute pointing to the respective reference Canvas resource, in this case, the Practitioner resource.<br><br>
 
@@ -120,7 +120,7 @@ sections:
           <br><br>
           http://schemas.canvasmedical.com/fhir/extensions/patient-default-location
           <br><br>
-          This extension determines the default Provider (Practitioner) for the Patient.
+          This extension determines the default Provider (Practitioner) for the Patient  that is used for eligibility checks.
           <br><br>
           For create and update actions, the `url` attribute must be equal to *http://schemas.canvasmedical.com/fhir/extensions/patient-default-location*. The `valueReference` is a JSON object that contains the **required** `reference` attribute pointing to the respective reference Canvas resource, in this case, the Location resource.<br><br>
 
