@@ -19,7 +19,7 @@ A primer on GraphQL can be found here: [https://graphql.org](https://graphql.org
 
 # Canvas GraphQL schema
 
-An interactive version of Canvas's GraphQL schema is located on your instance: [https://customer-subdomain.canvasmedical.com/graphql-schema](https://customer-subdomain.canvasmedical.com/graphql-schema)
+An interactive version of Canvas's GraphQL schema is located on your instance: [https://customer-subdomain.canvasmedical.com/plugins/graphql](https://customer-subdomain.canvasmedical.com/plugins/graphql)
 
 # Example usage
 
