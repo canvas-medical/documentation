@@ -6,14 +6,10 @@ title: "Data"
 
 # Introduction
 
-The data module provides you with data to compute on. It provides curated,
-secure access to both PHI (e.g. patient data) and non-PHI (e.g. staff and
-practice-level data), representing the current state of your target Canvas
-instance. The module offers convenience methods and operators that
-make business logic and clinical logic easy to express with standard
-terminologies like ICD-10, SNOMED-CT, CPT, and the like.
-
-Data on your Canvas instance is accessible in plugins through GraphQL. A built-in GraphQL client is included.
+Each Protocol has a method on it that can execute GraphQL queries, which allows you to obtain data to compute on. This
+method provides ccurated, secure access to both PHI (e.g. patient data) and non-PHI (e.g. staff and practice-level
+data), representing the current state of your target Canvas instance. There are filters available on select fields that
+make business logic and clinical logic easy to express with standard terminologies like ICD-10, SNOMED-CT, CPT, etc.
 
 A primer on GraphQL can be found here: [https://graphql.org](https://graphql.org)
 
@@ -26,7 +22,6 @@ An interactive version of Canvas's GraphQL schema is located on your instance: [
 ```python
 import json
 
-from canvas_sdk.data import GQL_CLIENT
 from canvas_sdk.events import EventType
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.protocols import BaseProtocol
@@ -45,15 +40,15 @@ class Protocol(BaseProtocol):
             }
         """
 
-        # Execute the query using the provided GQL client
-        response = GQL_CLIENT.query(
-            gql_query=gql_query,
+        # Execute the query
+        response = self.run_gql_query(
+            query=gql_query,
             variables={
                 "key": self.target
             }
         )
 
-        # Pull the patient from the response
+        # Get the patient from the response
         patient = response["patient"]
 
         ...
