@@ -6,10 +6,11 @@ title: "Data"
 
 # Introduction
 
-Each Protocol has a method on it that can execute GraphQL queries, which allows you to obtain data to compute on. This
-method provides ccurated, secure access to both PHI (e.g. patient data) and non-PHI (e.g. staff and practice-level
-data), representing the current state of your target Canvas instance. There are filters available on select fields that
-make business logic and clinical logic easy to express with standard terminologies like ICD-10, SNOMED-CT, CPT, etc.
+A Protocol can execute GraphQL queries in order to obtain data to compute on. There is a method on each Protocol,
+`run_gql_query`, that can execute GraphQL queries against your Canvas instance. This method provides curated, secure
+access to both PHI (e.g. patient data) and non-PHI (e.g. staff and practice-level data), representing the current state
+of your target Canvas instance. There are filters available on select fields that make business logic and clinical logic
+easy to express with standard terminologies like ICD-10, SNOMED-CT, CPT, etc.
 
 A primer on GraphQL can be found here: [https://graphql.org](https://graphql.org)
 
