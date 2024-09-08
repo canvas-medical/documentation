@@ -158,20 +158,20 @@ sections:
                       - value: 34105-7 (Hospital Discharge Summary)
                       - value: 47039-3 (Hospital History & Physical)
                       - value: 64290-0 (Insurance Card)
-                      - value: 52034-6  (Insurer Prior Authorization)
+                      - value: 52034-6 (Insurer Prior Authorization)
                       - value: 34113-1 (Nursing Home)
                       - value: 11504-8 (Operative Report)
                       - value: 80570-5 (Patient Agreement)
                       - value: 64285-0 (Patient Clinical Intake Form)
                       - value: 51848-0 (Physical Exams)
-                      - value: 46209-3  (POLST (Provider Order for Life Sustaining-Treatment))
+                      - value: 46209-3 (POLST (Provider Order for Life Sustaining-Treatment))
                       - value: 64298-3 (Power of Attorney)
                       - value: 57833-6 (Prescription Refill Request)
                       - value: 34823-5 (Rehabilitation Report)
                       - value: 101904-1 (Release of Information Request)
                       - value: 34109-9 (Uncategorized Clinical Document)
                       - value: 51851-4 (Uncategorized Administrative Document)
-                      - value: 52070-0  (Worker's Compensation Documents)
+                      - value: 52070-0 (Worker's Compensation Documents)
                   - name: display
                     description: >-
                       The display name of the coding.
@@ -275,9 +275,8 @@ sections:
                 description: Type the reference refers to (e.g. "Organization").
           - name: description
             type: string
-            required_in: create
             description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource. 
-            create_and_update_description: It requires standard document titles that must be matched to the document provided in the coding type attribute. See the table above with the available loinc codes and their associated description. 
+            create_and_update_description: It requires standard document titles that must be matched to the document provided in the coding type attribute. See the table above with the available loinc codes and their associated description.
           - name: content
             type: array[json]
             required_in: create
