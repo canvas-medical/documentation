@@ -9,7 +9,7 @@ The new Canvas SDK takes the validated capabilities of the existing Canvas Workf
 
 With the Canvas SDK, organizations will be able to not only implement and continuously improve clinical protocols, but also a wide variety of different use cases across operational and financial objectives.
 
-{% include alert.html type="warning" content="The Canvas SDK is currently in Alpha release." %}
+{% include alert.html type="warning" content="The Canvas SDK is currently in closed Beta release." %}
 
 Ready to get started right away? Check out this [guide](/guides/your-first-plugin/).
 
