@@ -1,7 +1,7 @@
 ---
 title: Improves Admin experience
 date: 2024-09-09
-tags: bugfix
+tags: config
 layout: productupdates
 ---
 
