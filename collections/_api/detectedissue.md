@@ -22,19 +22,28 @@ sections:
             type: array[json]
             description_for_all_endpoints: External identifiers associated with this DetectedIssue.
             create_and_update_description: >-
-              External identifiers associated with this DetectedIssue. <br><br>
               The `identifier` field allows for one external identifier to be stored for each DetectedIssue. 
               This identifier may help users identify the issue in their own systems, particularly if the DetectedIssue was added from an external system or source.
             attributes:
               - name: system
                 type: string
                 description: The namespace for the identifier value.
+                required_in: create, update
               - name: value
                 type: string
                 description: The unique value for the identifier within the specified `system`.
+                required_in: create, update
           - name: status
             type: enum
-            description: The status of the DetectedIssue. 
+            description_for_all_endpoints: The status of the DetectedIssue. 
+            create_and_update_description: >-
+              There is some extra validation when creating/updating depending on what is supplied in the `mitigation` attribute<br><br>
+              - The status must be `registered` if no `mitigation` is supplied. <br>
+              - If there is only one `mitigation` supplied and the action of that mitigation is `valid`, the status must be `preliminary`. <br>
+              - If there is only one `mitigation` supplied and the action of that mitigation is `invalid`, the status must be `cancelled`. <br>
+              - If there are more than one mitigation and the one with the latest date has an action of `deferred`, the status must be `amended`.<br>
+              - If there are more than one mitigation and the one with the latest date has an action of `accepted` or `refuted`, the status must be `final`.<br>
+              - If there are more than one mitigation and the one with the latest date has an action of `corrected`, the status must be `corrected`. 
             enum_options:
               - value: registered
               - value: preliminary
@@ -60,6 +69,8 @@ sections:
                     required_in: create, update
                   - name: code
                     description: The code that identifies the general type of issue identified.
+                    enum_options: 
+                      - value: CODINGGAP
                     type: string
                     required_in: create, update
                   - name: display
@@ -67,6 +78,9 @@ sections:
                     type: string
                     exclude_in: create, update
                 required_in: create, update
+              - name: text
+                description: Plain text representation of the coding.
+                type: string
             required_in: create, update
           - name: severity
             type: enum
@@ -87,7 +101,6 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
-                required_in: create, update
           - name: identifiedDateTime
             type: datetime
             description: The datetime when the detected issue was identified.
@@ -104,17 +117,18 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Practitioner").
-                required_in: create, update
           - name: evidence
             type: array[json]
             description_for_all_endpoints: Supporting evidence or manifestations that provide the basis for identifying the detected issue.
-            create_and_update_description: >-
-              Supporting evidence or manifestations that provide the basis for identifying the detected issue. 
-              There must be at least one evidence element with system "http://hl7.org/fhir/sid/icd-10-cm".
+            create_description: >-
+              Remember, there must be at least one evidence element with system "http://hl7.org/fhir/sid/icd-10-cm".
+            update_description: >-
+              When updating attributes, make sure to supply the `id` field for the evidences that already exist in Canvas so they are not duplicated or removed. <br><br>
+              Remember, there must be at least one evidence element with system "http://hl7.org/fhir/sid/icd-10-cm".
             attributes:
               - name: code
                 description: A manifestation that led to the recording of this detected issue.
-                type: json
+                type: array[json]
                 attributes: 
                   - name: coding
                     description: Code defined by a terminology system.
@@ -131,7 +145,7 @@ sections:
                         description: 	The code of the Evidence.
                         required_in: create, update
                       - name: display
-                        description: The display name of the coding
+                        description: The display name of the coding.
                         type: string
                         required_in: create, update
                     required_in: create, update
@@ -142,10 +156,11 @@ sections:
             description: A textual explanation of the detected issue.
           - name: reference
             type: string
-            description: The literature, knowledge-base or similar reference that describes the propensity for the detected issue identified.
+            description: The literature, knowledge base, or similar reference that describes the propensity for the detected issue identified. This field requires a valid URL representing the reference.
           - name: mitigation
             type: array[json]
             description: Indicates an action that has been taken or is committed to reduce or eliminate the likelihood of the risk identified by the detected issue from manifesting.
+            update_description: When updating attributes, make sure to supply the `id` field for the mitigations that already exist in Canvas so they are not duplicated or removed. 
             attributes:
               - name: id
                 type: string
@@ -167,7 +182,12 @@ sections:
                         required_in: create, update
                       - name: code
                         type: enum
-                        description: Describes the action that was taken or the observation that was made that reduces/eliminates the risk associated with the identified issue.
+                        description_for_all_endpoints: Describes the action that was taken or the observation that was made that reduces/eliminates the risk associated with the identified issue.
+                        create_and_update_description: >-
+                          If only one mitigation is supplied, the `action` must be either `valid` or `invalid`. <br><br>
+                          If there are more than one mitigation, the one with the earliest date must be `valid`. 
+                          The rest of the mitigations that are not the last date will need to have an action of `deferred`. 
+                          While the final mitigation can have a status of `deferred`, `accepted`, `refuted` or `corrected`.
                         enum_options:
                           - value: valid
                           - value: invalid
@@ -197,7 +217,6 @@ sections:
                   - name: type
                     type: string
                     description: Type the reference refers to (e.g. "Practitioner").
-                    required_in: create, update
                 required_in: create, update
         search_parameters:
           - name: _id
