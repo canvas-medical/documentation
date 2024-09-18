@@ -20,18 +20,18 @@ sections:
             exclude_in: create
           - name: identifier
             type: array[json]
-            description_for_all_endpoints: >-
-              External Ids for this item. <br><br>
-              The identifier defines additional identifiers that are able to be stored for an DetectedIssue.
-              We can have one external identifier per DetectedIssue.
-              <br><br>These identifiers will not be surfaced, but they may help you identify the DetectedIssue in your system if that DetectedIssue was added by external source.
+            description_for_all_endpoints: External identifiers associated with this DetectedIssue.
+            create_and_update_description: >-
+              External identifiers associated with this DetectedIssue. <br><br>
+              The `identifier` field allows for one external identifier to be stored for each DetectedIssue. 
+              This identifier may help users identify the issue in their own systems, particularly if the DetectedIssue was added from an external system or source.
             attributes:
               - name: system
                 type: string
                 description: The namespace for the identifier value.
               - name: value
                 type: string
-                description: The value that is unique in the related system.
+                description: The unique value for the identifier within the specified `system`.
           - name: status
             type: enum
             description: The status of the DetectedIssue. 
@@ -53,20 +53,17 @@ sections:
                 type: array[json]
                 attributes: 
                   - name: system
-                    description: >-
-                      The system url of the coding.
+                    description: The system url of the coding.
                     enum_options: 
                       - value: https://terminology.hl7.org/CodeSystem/v3-ActCode
                     type: string
                     required_in: create, update
                   - name: code
-                    description: >-
-                      The code that identifies the general type of issue identified.
+                    description: The code that identifies the general type of issue identified.
                     type: string
                     required_in: create, update
                   - name: display
-                    description: >-
-                      The display name of the coding
+                    description: The display name of the coding.
                     type: string
                     exclude_in: create, update
                 required_in: create, update
@@ -92,12 +89,12 @@ sections:
                 description: Type the reference refers to (e.g. "Patient").
                 required_in: create, update
           - name: identifiedDateTime
-            type: date
-            description: The date or datetime when the detected issue was identified.
+            type: datetime
+            description: The datetime when the detected issue was identified.
             required_in: create, update
           - name: author
             type: json
-            description: Individual or device responsible for the issue being raised. For example, a decision support system or a pharmacist conducting a medication review.
+            description: Individual or device responsible for the issue being raised.
             required_in: create, update
             attributes:
               - name: reference
@@ -110,10 +107,13 @@ sections:
                 required_in: create, update
           - name: evidence
             type: array[json]
-            description: Supporting evidence or manifestations that provide the basis for identifying the detected issue. There must be at least one evidence element with system "http://hl7.org/fhir/sid/icd-10-cm".
+            description_for_all_endpoints: Supporting evidence or manifestations that provide the basis for identifying the detected issue.
+            create_and_update_description: >-
+              Supporting evidence or manifestations that provide the basis for identifying the detected issue. 
+              There must be at least one evidence element with system "http://hl7.org/fhir/sid/icd-10-cm".
             attributes:
               - name: code
-                description: "A manifestation that led to the recording of this detected issue."
+                description: A manifestation that led to the recording of this detected issue.
                 type: json
                 attributes: 
                   - name: coding
@@ -121,19 +121,17 @@ sections:
                     type: array[json]
                     attributes: 
                       - name: system
-                        description: >-
-                          The system url of the coding.
+                        description: The system url of the coding.
                         enum_options: 
                           - value: http://hl7.org/fhir/sid/icd-10-cm
                         type: string
                         required_in: create, update
                       - name: code
                         type: string
-                        description: 	The code of the Evidence
+                        description: 	The code of the Evidence.
                         required_in: create, update
                       - name: display
-                        description: >-
-                          The display name of the coding
+                        description: The display name of the coding
                         type: string
                         required_in: create, update
                     required_in: create, update
@@ -154,7 +152,7 @@ sections:
                 description: The Canvas identifier of the DetectedIssueMitigation.
                 exclude_in: create
               - name: action
-                description: "The type of action that has been taken or is committed to reduce or eliminate the likelihood of the risk identified by the detected issue from manifesting."
+                description: The type of action that has been taken or is committed to reduce or eliminate the likelihood of the risk identified by the detected issue from manifesting.
                 type: json
                 attributes: 
                   - name: coding
@@ -162,15 +160,14 @@ sections:
                     type: array[json]
                     attributes: 
                       - name: system
-                        description: >-
-                          The system url of the coding.
+                        description: The system url of the coding.
                         enum_options: 
                           - value: https://schemas.canvasmedical.com/fhir/detectedissue-mitigation-action
                         type: string
                         required_in: create, update
                       - name: code
                         type: enum
-                        description: 	Describes the action that was taken or the observation that was made that reduces/eliminates the risk associated with the identified issue.
+                        description: Describes the action that was taken or the observation that was made that reduces/eliminates the risk associated with the identified issue.
                         enum_options:
                           - value: valid
                           - value: invalid
@@ -180,19 +177,18 @@ sections:
                           - value: corrected
                         required_in: create, update
                       - name: display
-                        description: >-
-                          The display name of the coding
+                        description: The display name of the coding
                         type: string
                         exclude_in: create, update
                     required_in: create, update
                 required_in: create, update
               - name: date
-                type: date
-                description: The date or datetime when the mitigation action was taken or committed to be taken.
+                type: datetime
+                description: The datetime when the mitigation action was taken or committed to be taken.
                 required_in: create, update
               - name: author
                 type: json
-                description: Individual or device responsible for the mitigation action. For example, a decision support system or a pharmacist conducting a medication review.
+                description: Individual or device responsible for the mitigation action.
                 attributes:
                   - name: reference
                     type: string
@@ -222,7 +218,7 @@ sections:
               - value: cancelled
               - value: entered-in-error
           - name: identified
-            type: string
+            type: date
             description: Filter by identifiedDateTime. See [Date Filtering](/api/date-filtering) for more information.
         endpoints: [create, read, update, search]
         create:
