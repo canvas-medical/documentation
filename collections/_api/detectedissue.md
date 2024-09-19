@@ -81,6 +81,7 @@ sections:
               - name: text
                 description: Plain text representation of the coding.
                 type: string
+                exclude_in: create, update
             required_in: create, update
           - name: severity
             type: enum
