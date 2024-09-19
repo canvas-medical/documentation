@@ -122,10 +122,10 @@ sections:
             type: array[json]
             description_for_all_endpoints: Supporting evidence or manifestations that provide the basis for identifying the detected issue.
             create_description: >-
-              Remember, there must be at least one evidence element with system "http://hl7.org/fhir/sid/icd-10-cm".
+              There must be at least one evidence element with system "http://hl7.org/fhir/sid/icd-10-cm".
             update_description: >-
               When updating attributes, make sure to supply the `id` field for the evidences that already exist in Canvas so they are not duplicated or removed. <br><br>
-              Remember, there must be at least one evidence element with system "http://hl7.org/fhir/sid/icd-10-cm".
+              There must be at least one evidence element with system "http://hl7.org/fhir/sid/icd-10-cm".
             attributes:
               - name: code
                 description: A manifestation that led to the recording of this detected issue.
@@ -279,8 +279,8 @@ curl --request POST \
     "resourceType": "DetectedIssue",
     "identifier": [
         {
-            "system": "Canvas",
-            "value": "d9aefede-da05-4bef-bbf9-63bcf83c806a"
+            "system": "http://external.identifier.system/url",
+            "value": "080abebd"
         }
     ],
     "status": "preliminary",
@@ -355,8 +355,8 @@ payload = {
     "resourceType": "DetectedIssue",
     "identifier": [
         {
-            "system": "Canvas",
-            "value": "d9aefede-da05-4bef-bbf9-63bcf83c806a"
+            "system": "http://external.identifier.system/url",
+            "value": "080abebd"
         }
     ],
     "status": "preliminary",
@@ -436,8 +436,8 @@ payload = {
     "id": "d9aefede-da05-4bef-bbf9-63bcf83c806a",
     "identifier": [
         {
-            "system": "Canvas",
-            "value": "d9aefede-da05-4bef-bbf9-63bcf83c806a"
+            "system": "http://external.identifier.system/url",
+            "value": "080abebd"
         }
     ],
     "status": "preliminary",
@@ -568,8 +568,8 @@ curl --request POST \
     "id": "d9aefede-da05-4bef-bbf9-63bcf83c806a",
     "identifier": [
         {
-            "system": "Canvas",
-            "value": "d9aefede-da05-4bef-bbf9-63bcf83c806a"
+            "system": "http://external.identifier.system/url",
+            "value": "080abebd"
         }
     ],
     "status": "preliminary",
@@ -646,8 +646,8 @@ payload = {
     "id": "d9aefede-da05-4bef-bbf9-63bcf83c806a",
     "identifier": [
         {
-            "system": "Canvas",
-            "value": "d9aefede-da05-4bef-bbf9-63bcf83c806a"
+            "system": "http://external.identifier.system/url",
+            "value": "080abebd"
         }
     ],
     "status": "preliminary",
@@ -748,8 +748,8 @@ payload = {
                 "id": "d9aefede-da05-4bef-bbf9-63bcf83c806a",
                 "identifier": [
                     {
-                        "system": "Canvas",
-                        "value": "d9aefede-da05-4bef-bbf9-63bcf83c806a"
+                        "system": "http://external.identifier.system/url",
+                        "value": "080abebd"
                     }
                 ],
                 "status": "preliminary",
