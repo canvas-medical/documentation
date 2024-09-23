@@ -76,7 +76,7 @@ sections:
             description: Search by description
           - name: due
             type: string
-            description: Filter by the tasks' due date and time. See [Date Filtering](/api/date-filtering) for more information.
+            description: Filter by the task's due date and time. See [Date Filtering](/api/date-filtering) for more information.
           - name: label
             type: string
             description: Search for a task with an associated label
