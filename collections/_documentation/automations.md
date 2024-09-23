@@ -33,7 +33,7 @@ Once created, you can choose to share an automation across the organization. To 
 <br>
 <br>
 ## Updating an Automation:
-To update an automation, navigate to your admin menu and select "Automations" under the Practice heading. Locate the desired automation and click on the name to open the "Change Automation" form. From here, you can delete specific commands, or reorder them as desired. 
+To modify an existing automation, begin by accessing a test patient created in Canvas. Open an empty note and add the desired automation. Next, navigate to Canvas Admin and **delete the existing automation**. Return to the test patient and refresh the page. Make any necessary changes to the commands and resave the automation under the same name.
 <br>
 <br>
 ## Deleting an Automation:
