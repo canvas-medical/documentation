@@ -64,6 +64,7 @@ The following effects are available to be applied in Canvas.
 | CREATE_TASK | Cause a task you define in a plugin to be created. Use the [Task class](/sdk/data-task/) in the data module. |
 | UPDATE_TASK | Cause a task to be updated. Use the [Task class](/sdk/data-task/) in the data module. |
 | CREATE_TASK_COMMENT | Add a comment to an existing task. Use the [Task class](/sdk/data-task/) in the data module. |
+| ANNOTATE_PATIENT_CHART_CONDITION_RESULTS| Add an annotation to a condition within the patient summary |
 
 <br/>
 <br/>

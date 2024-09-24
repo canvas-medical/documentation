@@ -241,3 +241,4 @@ The following Canvas events are able to trigger a plugin to execute.
 | UPDATE_GOAL_COMMAND__PRE_EXECUTE_ACTION | Occurs before an action is executed on the Update Goal command. |
 | UPDATE_GOAL_COMMAND__POST_EXECUTE_ACTION | Occurs after an action is executed on the Update Goal command. |
 | UPDATE_GOAL__GOAL_STATEMENT__POST_SEARCH | Occurs after the initial results are fetched for the goal search in the Update Goal command. |
+| PATIENT_CHART__CONDITIONS | Occurs when the conditions are loaded within the patient summary |

@@ -175,6 +175,11 @@ Commands migrated to the new framework will function similarly if not identicall
       <td></td>
     </tr>
     <tr> 
+      <td>Educational Material</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td><ul><li>The preview of the article is now located in the triple dot menu</li></ul> </td>
+    </tr>
+    <tr> 
       <td>Immunization Statement</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
@@ -189,12 +194,27 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
-     <tr> 
-      <td>Image</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+    <tr> 
+      <td>Physical Exam</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Review of Systems</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Structured Assessment</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
      <tr> 
+      <td>Image</td>
+      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
       <td>Refer</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
