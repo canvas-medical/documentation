@@ -25,6 +25,17 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
+        <a href="/guides/creating-webhooks-with-the-canvas-sdk">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Creating Webhooks</span>
+                </div>
+                <div class="cardBody">
+                    Make automatic API requests based on Canvas events
+                </div>
+            </div>
+        </a>
         <a href="/guides/optimize-patient-intake">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
