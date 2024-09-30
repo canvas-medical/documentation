@@ -218,7 +218,9 @@ The new note state to be set. Allowed transitions in v1 include:
 Locking an unlocked note (excluding DATA notes)<br>
 “ULK” → “LKD”, “NEW” → “LKD”, “CVD” → “LKD”<br><br>
 Unlocking a locked note (excluding DATA notes)<br>
-“LKD” → “ULK”
+“LKD” → “ULK”<br><br>
+Marking an appointment as a no show <br>
+"BKD" → "NSW" & "RVT" → "NSW"
 
 ### Example
 
