@@ -9,8 +9,11 @@ sections:
         description: >-
          A record of a medication that is being consumed by a patient. A MedicationStatement may indicate that the patient may be taking the medication now or has taken the medication in the past or will be taking the medication in the future. The source of this information can be the patient, significant other (such as a family member or spouse), or a clinician. A common scenario where this information is captured is during the history taking process during a patient visit or stay. The medication information may come from sources such as the patient's memory, from a prescription bottle, or from a list of medications the patient, clinician or other party maintains.<br><br>
           [https://hl7.org/fhir/R4/medicationstatement.html](https://hl7.org/fhir/R4/medicationstatement.html)<br><br>
-          MedicationStatement resources can be created in several ways. Canvas [Prescribe](https://canvas-medical.zendesk.com/hc/en-us/articles/360063523313-Prescribing-a-Medication) commands create [MedicationRequest](http://localhost:3000/api/medicationrequest/) resources, but these `Prescribe` commands are also represented as MedicationStatement resources. MedicationStatement resources that were created with a `Prescribe` command will contain a reference to the related MedicationRequest resource in the `derivedFrom` attribute.<br><br>
-          MedicationStatement resources can also be created with the `Medication Statement` command. See our [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/1500004007942-Documenting-a-Historical-Medication) for more information.
+          MedicationStatement resources can be created in two ways in the Canvas UI:
+
+          - [Prescribe commands](https://canvas-medical.zendesk.com/hc/en-us/articles/360063523313-Prescribing-a-Medication) create [MedicationRequest](/api/medicationrequest/) resources, but these `Prescribe` commands are also represented as MedicationStatement resources. MedicationStatement resources that were created with a `Prescribe` command will contain a reference to the related MedicationRequest resource in the `derivedFrom` attribute.
+
+          - MedicationStatement resources can also be created with the [Medication Statement command](https://canvas-medical.zendesk.com/hc/en-us/articles/1500004007942-Documenting-a-Historical-Medication)
         attributes:
           - name: id
             description: The identifier of the MedicationStatement
