@@ -220,7 +220,9 @@ Locking an unlocked note (excluding DATA notes)<br>
 Unlocking a locked note (excluding DATA notes)<br>
 “LKD” → “ULK”<br><br>
 Marking an appointment as a no show <br>
-"BKD" → "NSW" & "RVT" → "NSW"
+"BKD" → "NSW" & "RVT" → "NSW"<br><br>
+Checking in an appointment<br>
+"BKD" → "CVD", "NSW" → "CVD", "RVT" → "CVD"
 
 ### Example
 
