@@ -477,6 +477,8 @@ sdk_handlers:
     url: /sdk/handlers-crontask/
 
 data_module:
+ - title: "Allergy Intolerance"
+   url: /sdk/data-allergy-intolerance/
  - title: "Task"
    url: /sdk/data-task/
  - title: "Value Sets"
