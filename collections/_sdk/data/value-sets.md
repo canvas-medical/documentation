@@ -9,13 +9,15 @@ hidden: false
 
 The Canvas SDK includes a library of built-in Value Sets that can be used within plugins to assist with finding conditions or medications related to Electronic Clinical Quality Measures. Plugin developers can also create their own Value Sets and use them in the same manner as the Canvas built-in `ValueSet` classes.
 
+Built-in Value Sets that can be imported into plugins can be found in the Canvas SDK open source repo [here](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/value_set/).
+
 #### Usage
 
 **Filtering Conditions by Value Set**
 
 Value Set classes can be used directly in the data module to query for conditions that are included within them. For example, to find if a patient has been diagnosed with a condition whose coding falls under a particular Value Set, the `find` method can be used as follows:
 
-```
+```python
 from logger import log
 
 from canvas_sdk.v1.data.patient import Patient
@@ -34,7 +36,7 @@ if patient_essential_hypertension_conditions:
 
 Similar to the `Condition` example above, the `find` method can also utilize Value Set classes to filter `Medication` records that fall under a value set:
 
-```
+```python
 from canvas_sdk.v1.data.patient import Patient
 from canvas_sdk.value_set.v2022.medication import DementiaMedications
 
@@ -51,7 +53,7 @@ if patient_dementia_medications:
 
 Sometimes it may be desirable to filter using more than one Value Set. For example, finding all of a patient's conditions that belong within `EssentialHypertension` *or* `DiagnosisOfHypertension`. In this case, the `find` supports the pipe (`|`) operator to filter conditions that match the codings in either Value Set:
 
-```
+```python
 from canvas_sdk.v1.data.patient import Patient
 from canvas_sdk.value_set.v2022.condition import EssentialHypertension, DiagnosisOfHypertension
 
@@ -67,13 +69,13 @@ if patient_hypertension_conditions:
 
 The Canvas SDK allows plugin developers to create their own ValueSet classes that can be used in the same manner as the examples above. To do so, one can import and inherit the base `ValueSet` class:
 
-```
+```python
 from canvas_sdk.value_set.value_set import ValueSet
 ```
 
 A new class containing Python sets of coding values can be defined like so:
 
-```
+```python
 class MyCustomValueSet(ValueSet):
     VALUE_SET_NAME = "My Custom Value Set"
 
@@ -105,7 +107,7 @@ The valid code system constants that can be used to define sets of codes in Valu
 
 The following code is an example of a custom `ValueSet` in use within a plugin:
 
-```
+```python
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 from logger import log
