@@ -479,6 +479,8 @@ sdk_handlers:
 data_module:
  - title: "Task"
    url: /sdk/data-task/
+ - title: "Value Sets"
+   url: /sdk/data-value-sets/
 
 sdk_workflow_kit:
  - title: "Quickstart"
