@@ -89,7 +89,7 @@ class Protocol(BaseProtocol):
         medication = Medication.objects.get(id=self.target)
         patient_id = medication.patient.id
 
-		 # Fetch the allergies for the patient by ID
+   	    # Fetch the allergies for the patient by ID
         allergies = AllergyIntolerance.objects.filter(patient_id=patient_id)
 
         log.info(f"Allergy intolerances for patient {patient_id}: {allergies}")
