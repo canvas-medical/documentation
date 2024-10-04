@@ -477,6 +477,8 @@ sdk_handlers:
     url: /sdk/handlers-crontask/
 
 data_module:
+ - title: "Labs"
+   url: /sdk/data-labs/
  - title: "Task"
    url: /sdk/data-task/
  - title: "Value Sets"
