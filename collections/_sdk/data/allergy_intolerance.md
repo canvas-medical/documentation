@@ -23,8 +23,6 @@ from logger import log
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)
 
-    NARRATIVE_STRING = "Narrative string"
-
     def compute(self):
         allergy = AllergyIntolerance.objects.get(id=self.target)
 
@@ -56,8 +54,6 @@ from logger import log
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.PRESCRIPTION_CREATED)
 
-    NARRATIVE_STRING = "Narrative string"
-
     def compute(self):
         medication = Medication.objects.get(id=self.target)
         patient = medication.patient
@@ -82,8 +78,6 @@ from logger import log
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.PRESCRIPTION_CREATED)
-
-    NARRATIVE_STRING = "Narrative string"
 
     def compute(self):
         medication = Medication.objects.get(id=self.target)
@@ -111,8 +105,6 @@ from logger import log
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.PRESCRIPTION_CREATED)
-
-    NARRATIVE_STRING = "Narrative string"
 
     def compute(self):
         medication = Medication.objects.get(id=self.target)
@@ -143,8 +135,6 @@ from logger import log
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.IMMUNIZATION_CREATED)
-
-    NARRATIVE_STRING = "Narrative string"
 
     def compute(self):
         # NOTE: The Immunization model is not yet available
