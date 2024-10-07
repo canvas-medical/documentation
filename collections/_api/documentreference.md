@@ -361,6 +361,28 @@ sections:
                   - name: end
                     type: datetime
                     description: End time with inclusive boundary, if not ongoing of the encounter
+              - name: practiceSetting
+                type: json
+                description: Specialty coding
+                create_description: Specialty coding. Use to determine the Specialty on the documents of the category type 'referralreport'.
+                attributes:
+                  - name: coding
+                    type: array[json]
+                    attributes:
+                      - name: system
+                        description: The system url of the specialty coding.
+                        required_in: create
+                        enum_options: 
+                          - value: http://snomed.info/sct
+                        type: string
+                      - name: code
+                        description: The code of the specialty.
+                        required_in: create
+                        type: string
+                      - name: display
+                        description: Title of the specialty as a display text value.
+                        required_in: create
+                        type: string
         search_parameters:
           - name: _id
             type: string
@@ -487,7 +509,18 @@ curl --request POST \
                 "data": "JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
             }
         }
-    ]
+    ],
+    "context": {
+        "practiceSetting": {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "394802001",
+                    "display": "General Medicine"
+                }
+            ]
+        }
+    }
   }
 }'
 ```
@@ -572,7 +605,18 @@ payload = {
                 "data": "JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G",
             }
         }
-    ]
+    ],
+    "context": {
+        "practiceSetting": {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "394802001",
+                    "display": "General Medicine"
+                }
+            ]
+        }
+    }
 }
 ```
     {% endtab %}
@@ -678,7 +722,27 @@ payload = {
                 "display": "mimeType Sufficient"
             }
         }
-    ]
+    ],
+    "context": {
+        "encounter": [
+            {
+                "reference": "Encounter/879b35fd-3bc2-4ccd-98d7-954dd9b6d0a9",
+                "type": "Encounter"
+            }
+        ],
+        "period": {
+            "start": "2024-02-22T23:10:12.409838+00:00"
+        },
+        "practiceSetting": {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "394802001",
+                    "display": "General Medicine"
+                }
+            ]
+        }
+    }
 }
 ```
 {% endtab %}
