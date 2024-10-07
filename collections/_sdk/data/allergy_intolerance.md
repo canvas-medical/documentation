@@ -21,7 +21,7 @@ allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f3
 
 # Codings
 
-The codings for an allergy intolerance can be accessed by the `codings` attribute on an `AllergyIntolerance` object:
+The codings for an allergy intolerance can be accessed with the `codings` attribute on an `AllergyIntolerance` object:
 
 ```python
 from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
