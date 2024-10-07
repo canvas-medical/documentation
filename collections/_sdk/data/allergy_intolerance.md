@@ -19,6 +19,23 @@ from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
 allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 ```
 
+# Codings
+
+The codings for an allergy intolerance can be accessed by the `codings` attribute on an `AllergyIntolerance` object:
+
+```python
+from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
+from logger import log
+
+allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+codings = allergy.codings
+
+for coding in allergy.codings:
+    log.info(f"system: {coding.system}")
+    log.info(f"system: {coding.code}")
+    log.info(f"system: {coding.display}")
+```
+
 # Filtering
 
 Allergy intolerances can be filtered by any attribute that exists on the model.
