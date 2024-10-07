@@ -28,7 +28,6 @@ from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
 from logger import log
 
 allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
-codings = allergy.codings
 
 for coding in allergy.codings:
     log.info(f"system: {coding.system}")
