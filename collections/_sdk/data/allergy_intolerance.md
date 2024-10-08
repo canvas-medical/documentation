@@ -19,13 +19,22 @@ from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
 allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 ```
 
-The allergy intolerances for a patient can be accessed with the `allergy_intolerances` attribute on a `Patient` object:
+If you have a patient object, the allergy intolerances for a patient can be accessed with the `allergy_intolerances` attribute on a `Patient` object:
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
 
 patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 allergies = patient.allergy_intolerances.all()
+```
+
+If you have a patient ID, you can get the allergies for the patient with the `for_patient` method on the `AllergyIntolerance` model.
+
+```python
+from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
+
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+allergies = AllergyIntolerance.objects.for_patient(patient_id)
 ```
 
 # Codings
