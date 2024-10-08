@@ -38,7 +38,7 @@ from logger import log
 
 allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 
-for coding in allergy.codings:
+for coding in allergy.codings.all():
     log.info(f"system:  {coding.system}")
     log.info(f"code:    {coding.code}")
     log.info(f"display: {coding.display}")
