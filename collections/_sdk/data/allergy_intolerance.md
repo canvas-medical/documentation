@@ -59,27 +59,6 @@ Allergy intolerances can be filtered by any attribute that exists on the model.
 
 Filtering for allergy intolerances is done with the `filter` method on the `AllergyIntolerance` model manager.
 
-## By patient
-
-Specify the `patient` or `patient_id` attribute when calling `filter` to filter by patient.
-
-To filter by patient:
-
-```python
-from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
-
-patient = Patient.objects.get(id="f1b1ace27b0645ae98c988019c328223")
-allergies = AllergyIntolerance.objects.filter(patient=patient)
-```
-
-To filter by patient ID:
-
-```python
-from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
-
-allergies = AllergyIntolerance.objects.filter(patient__id="f1b1ace27b0645ae98c988019c328223")
-```
-
 ## By attribute
 
 Specify an attribute calling `filter` to filter by that attribute.
