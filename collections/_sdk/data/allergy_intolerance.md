@@ -25,7 +25,7 @@ The allergy intolerances for a patient can be accessed with the `allergy_intoler
 from canvas_sdk.v1.data.patient import Patient
 
 patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
-allergies = patient.allergy_intolerances
+allergies = patient.allergy_intolerances.all()
 ```
 
 # Codings
