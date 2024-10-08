@@ -28,7 +28,7 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 allergies = patient.allergy_intolerances.all()
 ```
 
-If you have a patient ID, you can get the allergies for the patient with the `for_patient` method on the `AllergyIntolerance` model.
+If you have a patient ID, you can get the allergies for the patient with the `for_patient` method on the `AllergyIntolerance` model:
 
 ```python
 from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
@@ -61,7 +61,7 @@ Filtering for allergy intolerances is done with the `filter` method on the `Alle
 
 ## By attribute
 
-Specify an attribute calling `filter` to filter by that attribute.
+Specify an attribute calling `filter` to filter by that attribute:
 
 ```python
 from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
@@ -71,7 +71,7 @@ allergies = AllergyIntolerance.objects.filter(status="active")
 
 ## By ValueSet
 
-Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering.
+Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 
 ```python
 from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
