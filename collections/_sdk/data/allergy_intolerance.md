@@ -19,6 +19,15 @@ from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
 allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 ```
 
+The allergy intolerances for a patient can be access with the `allergy_intolerances` attribute on a `Patient` object:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+allergies = patient.allergy_intolerances
+```
+
 # Codings
 
 The codings for an allergy intolerance can be accessed with the `codings` attribute on an `AllergyIntolerance` object:
