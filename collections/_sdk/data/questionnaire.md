@@ -59,7 +59,7 @@ for question in questionnaire.questions.all():
 
 # Interview responses
 
-The interview responses for an interview can be accessed with the `interview_responses` attribute on an `Intervivew` object:
+The interview responses for an interview can be accessed with the `interview_responses` attribute on an `Interview` object:
 
 ```python
 from canvas_sdk.v1.data.interview import Interview
