@@ -53,8 +53,8 @@ questionnaire = Questionnaire.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f
 
 for question in questionnaire.questions.all():
     log.info(f"system: {question.code_system}")
-    log.info(f"system: {question.code}")
-    log.info(f"system: {question.name}")
+    log.info(f"code: {question.code}")
+    log.info(f"name: {question.name}")
 ```
 
 # Interview responses
