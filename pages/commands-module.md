@@ -180,6 +180,17 @@ Commands migrated to the new framework will function similarly if not identicall
       <td> <span class="tag-complete"> Released - GA </span> </td>
        <td><ul><li>The preview of the article is now located in the triple dot menu</li></ul> </td>
     </tr>
+    </tr>
+     <tr> 
+      <td>Image</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>Attachments are added through a modal</li></ul></td>
+    </tr>
+     <tr> 
+      <td>Snooze Protocol</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
     <tr> 
       <td>Immunization Statement</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
@@ -187,11 +198,6 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
      <tr> 
       <td>Immunize</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr>
-     <tr> 
-      <td>Snooze Protocol</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
     </tr>
@@ -209,12 +215,6 @@ Commands migrated to the new framework will function similarly if not identicall
       <td>Structured Assessment</td>
       <td><span class="tag-in-progress"> In Progress </span> </td>
       <td></td>
-    </tr>
-     <tr> 
-      <td>Image</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr>
     <tr> 
       <td>Refer</td>
       <td><span class="tag-next-up"> Next up </span> </td>
