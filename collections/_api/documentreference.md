@@ -331,7 +331,6 @@ sections:
                       - value: mimeType Sufficient
           - name: context
             type: json
-            exclude_in: create
             description: >-
               Clinical context of document. <br><br>
 
@@ -344,6 +343,7 @@ sections:
               - name: encounter
                 type: array[json]
                 description: Context of the document content
+                exclude_in: create
                 attributes: 
                   - name: reference
                     type: string
@@ -354,6 +354,7 @@ sections:
               - name: period
                 type: json
                 description: Time of service that is being documented
+                exclude_in: create
                 attributes: 
                   - name: start
                     type: datetime
@@ -364,7 +365,7 @@ sections:
               - name: practiceSetting
                 type: json
                 description: Specialty coding
-                create_description: Specialty coding. Use to determine the Specialty on the documents of the category type 'referralreport'.
+                create_description: Specialty coding. Use to determine the Specialty on the documents of the category type 'referralreport'. Use the following value set for reference - <a href="https://hl7.org/fhir/R4/valueset-c80-practice-codes.html" target="_blank">https://hl7.org/fhir/R4/valueset-c80-practice-codes.html</a>
                 attributes:
                   - name: coding
                     type: array[json]
