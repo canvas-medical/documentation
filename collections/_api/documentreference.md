@@ -216,7 +216,6 @@ sections:
                         exclude_in: create
                       - value: patientadministrativedocument
                       - value: referralreport
-                        exclude_in: create
                       - value: uncategorizedclinicaldocument
             type: array[json]
           - name: subject
@@ -339,6 +338,8 @@ sections:
               - For POC Lab Reports or Educational Material documents, the context will contain information about the encounter of the note the commands were committed with if applicable. 
 
               - For Lab Reports that have a Lab Review committed in a note, the context will have information about any encounter associated with that note.
+
+              - For Referral Reports, the context will include practiceSettings that include any specialty codings of the referral.
             attributes: 
               - name: encounter
                 type: array[json]
@@ -365,7 +366,10 @@ sections:
               - name: practiceSetting
                 type: json
                 description: Specialty coding
-                create_description: Specialty coding. Use to determine the Specialty on the documents of the category type 'referralreport'. Use the following value set for reference - <a href="https://hl7.org/fhir/R4/valueset-c80-practice-codes.html" target="_blank">https://hl7.org/fhir/R4/valueset-c80-practice-codes.html</a>
+                create_description: >- 
+                  Specialty coding.
+                  <br><br>
+                  **Required** for DocumentReferences of **referralreprt** for `category -> 0 -> coding -> 0 -> code`. Use to determine the Specialty on the documents of the category type 'referralreport'. Use the following value set for reference - <a href="https://hl7.org/fhir/R4/valueset-c80-practice-codes.html" target="_blank">https://hl7.org/fhir/R4/valueset-c80-practice-codes.html</a>
                 attributes:
                   - name: coding
                     type: array[json]
@@ -510,18 +514,7 @@ curl --request POST \
                 "data": "JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
             }
         }
-    ],
-    "context": {
-        "practiceSetting": {
-            "coding": [
-                {
-                    "system": "http://snomed.info/sct",
-                    "code": "394802001",
-                    "display": "General Medicine"
-                }
-            ]
-        }
-    }
+    ]
   }
 }'
 ```
@@ -606,18 +599,7 @@ payload = {
                 "data": "JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G",
             }
         }
-    ],
-    "context": {
-        "practiceSetting": {
-            "coding": [
-                {
-                    "system": "http://snomed.info/sct",
-                    "code": "394802001",
-                    "display": "General Medicine"
-                }
-            ]
-        }
-    }
+    ]
 }
 ```
     {% endtab %}
@@ -733,15 +715,6 @@ payload = {
         ],
         "period": {
             "start": "2024-02-22T23:10:12.409838+00:00"
-        },
-        "practiceSetting": {
-            "coding": [
-                {
-                    "system": "http://snomed.info/sct",
-                    "code": "394802001",
-                    "display": "General Medicine"
-                }
-            ]
         }
     }
 }
@@ -1190,6 +1163,27 @@ payload = {
             "resource": {
                 "resourceType": "DocumentReference",
                 "id": "6ebf590d-ff90-412e-a5e7-9be30d6e4c35",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+                        "valueString": "A comment on Consult note"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+                        "valueDate": "2024-10-10"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+                        "valueCode": "RN"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+                        "valueReference": {
+                            "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
+                            "type": "Practitioner"
+                        }
+                    },
+                ],
                 "status": "current",
                 "type": {
                     "coding": [
@@ -1245,7 +1239,18 @@ payload = {
                             "display": "mimeType Sufficient"
                         }
                     }
-                ]
+                ],
+                "context": {
+                    "practiceSetting": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "394580004",
+                                "display": "Clinical genetics"
+                            }
+                        ]
+                    }
+                }
             }
         },
         {
