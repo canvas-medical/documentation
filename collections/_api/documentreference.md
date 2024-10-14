@@ -369,7 +369,7 @@ sections:
                 create_description: >- 
                   Specialty coding.
                   <br><br>
-                  **Required** for DocumentReferences of **referralreprt** for `category -> 0 -> coding -> 0 -> code`. Use to determine the Specialty on the documents of the category type 'referralreport'. Use the following value set for reference - <a href="https://hl7.org/fhir/R4/valueset-c80-practice-codes.html" target="_blank">https://hl7.org/fhir/R4/valueset-c80-practice-codes.html</a>
+                  **Required** for DocumentReferences with a `category.coding.code` of **referralreprt**. Use to determine the Specialty on the documents of the category type 'referralreport'. Use [this value set for reference](https://hl7.org/fhir/R4/valueset-c80-practice-codes.html).
                 attributes:
                   - name: coding
                     type: array[json]
