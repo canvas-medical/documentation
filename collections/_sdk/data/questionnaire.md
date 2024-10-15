@@ -32,7 +32,7 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 interviews = patient.interviews.all()
 ```
 
-If you have a patient ID, you can get the interviews for the patient with the `for_patient` method on the `Interview` model:
+If you have a patient ID, you can get the interviews for the patient with the `for_patient` method on the `Interview` model manager:
 
 ```python
 from canvas_sdk.v1.data.interview import Interview
