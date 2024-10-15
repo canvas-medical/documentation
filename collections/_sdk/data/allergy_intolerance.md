@@ -61,7 +61,7 @@ Filtering for allergy intolerances is done with the `filter` method on the `Alle
 
 ## By attribute
 
-Specify an attribute calling `filter` to filter by that attribute:
+Specify an attribute with `filter` to filter by that attribute:
 
 ```python
 from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
