@@ -42,7 +42,7 @@ condition = Condition.objects.for_patient(patient_id)
 The codings for a condition can be accessed with the `codings` attribute on an `Condition` object:
 
 ```python
-from canvas_sdk.v1.data.condiiton import Condition
+from canvas_sdk.v1.data.condition import Condition
 from logger import log
 
 condition = Condition.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
