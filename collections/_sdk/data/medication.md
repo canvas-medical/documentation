@@ -28,7 +28,7 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 medications = patient.medications.all()
 ```
 
-If you have a patient ID, you can get the medications for the patient with the `for_patient` method on the `Medication` model:
+If you have a patient ID, you can get the medications for the patient with the `for_patient` method on the `Medication` model manager:
 
 ```python
 from canvas_sdk.v1.data.medication import Medication
