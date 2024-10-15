@@ -477,6 +477,8 @@ sdk_handlers:
     url: /sdk/handlers-crontask/
 
 data_module:
+ - title: "Condition"
+   url: /sdk/data-condition/
  - title: "Labs"
    url: /sdk/data-labs/
  - title: "Task"
