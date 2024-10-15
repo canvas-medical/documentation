@@ -79,7 +79,7 @@ Filtering for questionnaires and interviews is done with the `filter` method on 
 
 ## By attribute
 
-Specify an attribute calling `filter` to filter by that attribute:
+Specify an attribute with `filter` to filter by that attribute:
 
 ```python
 from canvas_sdk.v1.data.questionnaire import Questionnaire
