@@ -28,7 +28,7 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 allergies = patient.allergy_intolerances.all()
 ```
 
-If you have a patient ID, you can get the allergies for the patient with the `for_patient` method on the `AllergyIntolerance` model:
+If you have a patient ID, you can get the allergies for the patient with the `for_patient` method on the `AllergyIntolerance` model manager:
 
 ```python
 from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance

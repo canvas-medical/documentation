@@ -28,7 +28,7 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 conditions = patient.conditions.all()
 ```
 
-If you have a patient ID, you can get the conditions for the patient with the `for_patient` method on the `Condition` model:
+If you have a patient ID, you can get the conditions for the patient with the `for_patient` method on the `Condition` model manager:
 
 ```python
 from canvas_sdk.v1.data.condition import Condition
@@ -42,7 +42,7 @@ condition = Condition.objects.for_patient(patient_id)
 The codings for a condition can be accessed with the `codings` attribute on an `Condition` object:
 
 ```python
-from canvas_sdk.v1.data.condiiton import Condition
+from canvas_sdk.v1.data.condition import Condition
 from logger import log
 
 condition = Condition.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
