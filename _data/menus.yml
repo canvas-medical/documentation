@@ -479,6 +479,8 @@ sdk_handlers:
 data_module:
  - title: "Allergy Intolerance"
    url: /sdk/data-allergy-intolerance/
+ - title: "Condition"
+   url: /sdk/data-condition/
  - title: "Labs"
    url: /sdk/data-labs/
  - title: "Task"
