@@ -32,5 +32,5 @@ Specify attributes with `filter` to filter by those attributes:
 ```python
 from canvas_sdk.v1.data.patient import Patient
 
-patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_date="1961-07-24")
+patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_date="1960-09-22")
 ```
