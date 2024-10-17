@@ -75,7 +75,10 @@ The following effects are available to be applied in Canvas.
 
 Protocol cards appear on the right-hand-side of a patient's chart, and can be accessed by clicking on the Protocols filter button in the filter menu. 
 
-![protocol card](/assets/images/protocol-card.png)
+{:refdef: style="text-align: center;"}
+![protocol card](/assets/images/protocol-card.png){:width="95%"}
+{: refdef}
+
 
 A Protocol card consists of three main parts:
 - A title, which appears at the top in bold
