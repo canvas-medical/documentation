@@ -4,7 +4,7 @@ layout: apipage
 ---
 ## Authentication
 
-To get you started quickly, the Canvas sandbox APIs authenticate requests using a long-lived Bearer token explained in our [Create a Sandbox Environment Doc](/guides/sandbox)  
+To get you started quickly, the Canvas sandbox APIs authenticate requests using a long-lived Bearer token explained in our [Create a Sandbox Environment Doc](/guides/sandbox)  - KC
 
 If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) and [Authentication Best Practices](/api/authentication-best-practices) to get you set up.
 
