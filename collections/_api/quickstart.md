@@ -4,7 +4,7 @@ layout: apipage
 ---
 ## Authentication
 
-To get you started quickly, the Canvas sandbox APIs authenticate requests using a long-lived Bearer token explained in our [Create a Sandbox Environment Doc](/guides/sandbox)  
+To help you get started quickly, the Canvas sandbox APIs use a long-lived Bearer token for authentication. This token is securely provided via a 1Password link shared with your organization upon sandbox provisioning. For any additional assistance, feel free to contact us at [info@canvasmedical.com](mailto:info@canvasmedical.com).
 
 If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) and [Authentication Best Practices](/api/authentication-best-practices) to get you set up.
 
