@@ -283,19 +283,47 @@ Upon clicking the Follow up button, the `Follow Up` command will be populated:
 **Example**:
 
 ```python
+from canvas_workflow_kit.constants import CHANGE_TYPE
+from canvas_workflow_kit.protocol import ClinicalQualityMeasure
+from canvas_workflow_kit.protocol import ProtocolResult
+from canvas_workflow_kit.protocol import STATUS_DUE
 from canvas_workflow_kit.recommendation import HyperlinkRecommendation
 
-hyperlink_recommendation = HyperlinkRecommendation(
-    key='PROTOCOL_DOCUMENTATION_LINK',
-    rank=1,
-    button='Documentation',
-    href='https://canvas-medical.zendesk.com/hc/en-us/articles/360057232994-Care-Protocols',
-    title='Canvas Care Protocols Documentation'
-)
 
-result = ProtocolResult()
-result.add_recommendation(hyperlink_recommendation)
-result.add_narrative(f'{self.patient.first_name} should be provided with further reading on Healthy Eating Habits')
+class HyperlinkExample(ClinicalQualityMeasure):
+
+    class Meta:
+        title = 'Hyperlink Example Title'
+        description = 'Hyperlink Example Description'
+        version = '2024-10-08'
+        information = 'https://docs.canvasmedical.com'
+        identifiers = ['CNV178']
+        types = ['WWW']
+        compute_on_change_types = [CHANGE_TYPE.ENCOUNTER, CHANGE_TYPE.PATIENT]
+        references = ['Protocol Reference https://www.canvasmedical.com/protocols']
+
+    def in_denominator(self):
+        return True
+
+    def in_numerator(self):
+        return False
+
+    def compute_results(self):
+        result = ProtocolResult()        
+        hyperlink_recommendation = HyperlinkRecommendation(
+            key='PROTOCOL_DOCUMENTATION_LINK',
+            rank=1,
+            button='Custom Button Text',
+            href='https://www.canvasmedical.com/',
+            title='Hyperlink Example'
+        )
+        
+        result = ProtocolResult()
+        result.status = STATUS_DUE
+        result.add_recommendation(hyperlink_recommendation)
+        result.add_narrative(f'{self.patient.first_name} should refer to the linked resource.')
+
+        return result
 ```
 
 A recommendation that contains the link will appear in the list of Protocols for applicable patients:
