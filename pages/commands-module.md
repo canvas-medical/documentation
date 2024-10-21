@@ -208,12 +208,12 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>Review of Systems</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr> 
       <td>Structured Assessment</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     <tr> 
       <td>Refer</td>

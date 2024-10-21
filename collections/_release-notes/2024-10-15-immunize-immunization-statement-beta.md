@@ -1,5 +1,5 @@
 ---
-title: SDK Immunize and Immunization Statement Available for Beta Testing
+title: SDK Immunize and Immunization Statement Commands Available for Beta Testing
 tags: beta sdk
 date: 2024-10-15 
 layout: productupdates
