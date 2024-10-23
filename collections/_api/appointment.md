@@ -8,7 +8,8 @@ sections:
         article: "a"
         description: >-
           A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more Encounter(s).<br><br>
-          [https://hl7.org/fhir/R4/appointment.html](https://hl7.org/fhir/R4/appointment.html<br><br>)<br><br>
+          [https://hl7.org/fhir/R4/appointment.html](https://hl7.org/fhir/R4/appointment.html)
+          <br><br>
           This may result in one or more [Encounters](/api/encounter).<br><br>
           The appointment resource maps to both [patient appointments](https://canvas-medical.zendesk.com/hc/en-us/articles/11714510225427-Multi-provider-Scheduling) as well as [other events](https://canvas-medical.zendesk.com/hc/en-us/articles/15704289792659-Scheduling-Other-Events-) in Canvas. Instructions for configuring appointment and note types can be found [here](/documentation/appointment-and-note-types).
         attributes:
