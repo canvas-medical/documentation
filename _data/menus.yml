@@ -489,8 +489,6 @@ data_module:
    url: /sdk/data-patient/
  - title: "Questionnaire"
    url: /sdk/data-questionnaire
- - title: "Task"
-   url: /sdk/data-task/
  - title: "Value Sets"
    url: /sdk/data-value-sets/
 
