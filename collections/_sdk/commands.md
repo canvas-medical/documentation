@@ -8,17 +8,30 @@ The commands module lets you define commands within a specific note in Canvas, w
 
 The following commands are available for use in this module:
 
+- Allergy (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
 - [Assess](#assess)
+- CloseGoal (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
 - [Diagnose](#diagnose)
+- FamilyHistory (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
 - [Goal](#goal)
 - [HistoryOfPresentIllness](#historyofpresentillness)
+- Instruct (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
+- LabOrder (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
+- MedicalHistory (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
 - [MedicationStatement](#medicationstatement)
+- SurgicalHistory (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
+- Perform (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
 - [Plan](#plan)
 - [Prescribe](#prescribe)
 - [Questionnaire](#questionnaire)
 - [ReasonForVisit](#reasonforvisit)
+- Refill (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
+- RemoveAllergy (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
 - [StopMedication](#stopmedication)
+- Task (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
+- UpdateDiagnosis (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
 - [UpdateGoal](#updategoal)
+- Vitals (see [source](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/commands/commands))
 
 ## Common Attributes
 
