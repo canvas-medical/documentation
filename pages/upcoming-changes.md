@@ -87,7 +87,7 @@ Stay up to date on the latest important dates for the Canvas platform.
     <tr>
       <td>FHIR API: Task note field append/replace behavior phase 2</td>
       <td style="color: red;">Breaking Change</td>
-      <td>On the release date, the FHIR Task update endpoint no longer supports the <code>Prefer: note-append</code> header.</td>
+      <td>On the release date, the FHIR Task update endpoint will no longer support the <code>Prefer: note-append</code> header.</td>
       <td>TBD</td>
       <td></td>
     </tr>
