@@ -1,5 +1,6 @@
 ---
 title: "Data"
+disable_anchorlist: true
 ---
 
 The data module provides you with data to compute on. It provides curated,
@@ -9,10 +10,22 @@ instance. The module's classes offer convenience methods and operators that
 make business logic and clinical logic easy to express with standard
 terminologies like ICD-10, SNOMED-CT, CPT, and the like.
 
-For more detail, choose one of the data types below:
+Data module classes are Django ORM models, which allow easy retrieval of data
+at runtime through Django's expressive [QuerySet API](https://docs.djangoproject.com/en/5.1/ref/models/querysets/).
 
-<ul>
-    {% for item in site.menus.data_module %}
-        <li><a href="{{ item.url }}">{{ item.title }}</a></li>
-    {% endfor %}
-</ul>
+The pages below provide listings of the models, their attributes, and examples of usage.
+
+<div>
+{% for item in site.menus.data_module %}
+    <a href="{{ item.url }}">
+        <div style="padding-left: 20px; padding-bottom: 20px; margin: 0px 2px 40px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
+            <h2 style="padding-top: 10px;">{{ item.title }}</h2>
+            <span>{{ item.description }}</span>
+        </div>
+    </a>
+{% endfor %}
+</div>
+
+<br/>
+<br/>
+<br/>
