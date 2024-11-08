@@ -2,9 +2,9 @@
 title: "Commands"
 ---
 
-{% include alert.html type="info" content= "<b>Work in progress: </b> The effects returned by these objects will be of limited value until commands update live in the note. We are working on this in order to enable you to create co-charting plugins."  %}
+The commands module lets you create and update commands within a specific note in Canvas. Commands are the building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation, like HPIs and questionnaires, as well as orders like prescriptions, labs, and referrals. Each Command class can be instantiated in your plugin and used to build a new command instance within a specific note or update an existing instance. The commands are then displayed in real time within the end user's workflow.
 
-The commands module lets you define commands within a specific note in Canvas, which capture and display data. Each command can be imported into a plugin and used to build a new, or reference an existing, command instance within a specific note.
+Common objectives that can be met by using Command classes include dynamic note templates, clinical decision support, order set composition, care gap closure, and care coordination automation.
 
 The following commands are available for use in this module:
 
