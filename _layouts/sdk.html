@@ -17,9 +17,11 @@ layout: default
       <div class="sidepanels__sidepanel">
         {% include panel-guides.html %}
       </div>
+      {% unless page.disable_anchorlist %}
       <div class="sidepanels__sidepanel">
         {% include panel-anchorlist.html %}
       </div>
+      {% endunless %}
     </div>
   </div>
 </div>
