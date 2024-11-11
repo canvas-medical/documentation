@@ -5,13 +5,13 @@ excerpt: "Canvas SDK Questionnaire"
 hidden: false
 ---
 
-# Introduction
+## Introduction
 
 The `Questionnaire` model represents a structured set of questions intended to guide the collection of answers from end-users.
 
 The `Interview` model represents answers to a structured set of questions represented by a `Questionnaire`.
 
-# Basic usage
+## Basic usage
 
 To get a questionnaire or interview by identifier, use the `get` method on the `Questionnaire` or `Interview` model managers:
 
@@ -41,7 +41,7 @@ patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 interviews = Interview.objects.for_patient(patient_id)
 ```
 
-# Questionnaire questions
+## Questionnaire questions
 
 The questions for a questionnaire can be accessed with the `questions` attribute on an `Questionnaire` object:
 
@@ -57,7 +57,7 @@ for question in questionnaire.questions.all():
     log.info(f"name: {question.name}")
 ```
 
-# Interview responses
+## Interview responses
 
 The interview responses for an interview can be accessed with the `interview_responses` attribute on an `Interview` object:
 
@@ -71,13 +71,13 @@ for interview_response in interview.interview_responses.all():
     log.info(f"response option: {interview_response.response_option_value}")
 ```
 
-# Filtering
+## Filtering
 
 Questionnaires and interviews can be filtered by any attribute that exists on the models.
 
 Filtering for questionnaires and interviews is done with the `filter` method on the `Questionnaire` and `Interview` model managers.
 
-## By attribute
+### By attribute
 
 Specify an attribute with `filter` to filter by that attribute:
 
@@ -89,7 +89,7 @@ questionnaires = Questionnaire.objects.filter(name="Tobacco")
 interviews = Interview.objects.filter(progress_status="F")
 ```
 
-## By ValueSet
+### By ValueSet
 
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 

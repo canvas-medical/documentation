@@ -5,11 +5,11 @@ excerpt: "Canvas SDK Condition"
 hidden: false
 ---
 
-# Introduction
+## Introduction
 
 The `Condition` model represents a clinical condition, problem, diagnosis, or other event, situation, issue, or clinical concept that has risen to a level of concern.
 
-# Basic usage
+## Basic usage
 
 To get a condition by identifier, use the `get` method on the `Condition` model manager:
 
@@ -37,7 +37,7 @@ patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 condition = Condition.objects.for_patient(patient_id)
 ```
 
-# Codings
+## Codings
 
 The codings for a condition can be accessed with the `codings` attribute on an `Condition` object:
 
@@ -53,13 +53,13 @@ for coding in condition.codings.all():
     log.info(f"display: {coding.display}")
 ```
 
-# Filtering
+## Filtering
 
 Conditions can be filtered by any attribute that exists on the model.
 
 Filtering for conditions is done with the `filter` method on the `Condition` model manager.
 
-## By attribute
+### By attribute
 
 Specify an attribute with `filter` to filter by that attribute:
 
@@ -69,7 +69,7 @@ from canvas_sdk.v1.data.condition import Condition
 conditions = Condition.objects.filter(onset_date__gte="2024-10-15")
 ```
 
-## By ValueSet
+### By ValueSet
 
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 

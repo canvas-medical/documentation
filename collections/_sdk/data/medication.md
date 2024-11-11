@@ -5,11 +5,11 @@ excerpt: "Canvas SDK Medication"
 hidden: false
 ---
 
-# Introduction
+## Introduction
 
 The `Medication` model represents a record of a medication that is being consumed by a patient, either now, in the past, or in the future. `Medication` records can represent both prescriptions and medication statements for a patient.
 
-# Basic usage
+## Basic usage
 
 To get a medication by identifier, use the `get` method on the `Medication` model manager:
 
@@ -53,13 +53,13 @@ for coding in medication.codings.all():
     log.info(f"display: {coding.display}")
 ```
 
-# Filtering
+## Filtering
 
 Medications can be filtered by any attribute that exists on the model.
 
 Filtering for medications is done with the `filter` method on the `Medication` model manager.
 
-## By attribute
+### By attribute
 
 Specify an attribute with `filter` to filter by that attribute:
 
@@ -69,7 +69,7 @@ from canvas_sdk.v1.data.medication import Medication
 medications = Medication.objects.filter(status="active")
 ```
 
-## By ValueSet
+### By ValueSet
 
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 

@@ -5,11 +5,11 @@ excerpt: "Canvas SDK Labs"
 hidden: false
 ---
 
-# Introduction
+## Introduction
 
 The `LabReport`, `LabValue` and `LabReview` models represent diagnostic clinical laboratory results.
 
-# Basic Usage
+## Basic Usage
 
 To retrieve a `LabReport` model by id, use the `objects.get` method on the model. For example:
 
@@ -19,7 +19,7 @@ from canvas_sdk.v1.data.lab import LabReport
 lab_report = LabReport.objects.get(id="bcd287b7-8b04-4540-a1ea-6529eb576565")
 ```
 
-# Filtering
+## Filtering
 
 To retrieve the `LabValue` instances that are associated with the `LabReport`, you can either call the `values` on the `LabReport` instance:
 
@@ -75,7 +75,7 @@ patient = Patient.objects.get(id="6cbc40b408294a5f9b41f57ba1b2b487")
 lab_report = LabReport.objects.filter(patient=patient)
 ```
 
-# Example
+## Example
 
 A common plugin use case may be for a plugin to run every time a new Lab Report is created in Canvas. The following plugin code will run every time a new Lab Report is created and log the patient it is for, along with the values and codings from the report's results:
 

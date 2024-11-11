@@ -5,13 +5,13 @@ excerpt: "Canvas SDK Value Sets"
 hidden: false
 ---
 
-#### Introduction
+## Introduction
 
 The Canvas SDK includes a library of built-in Value Sets that can be used within plugins to assist with finding conditions or medications related to Electronic Clinical Quality Measures. Plugin developers can also create their own Value Sets and use them in the same manner as the Canvas built-in `ValueSet` classes.
 
 Built-in Value Sets that can be imported into plugins can be found in the Canvas SDK open source repo [here](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/value_set/).
 
-#### Usage
+## Usage
 
 **Filtering Conditions by Value Set**
 
@@ -65,7 +65,7 @@ if patient_hypertension_conditions:
         log.info(condition.codings.all().values())
 ```
 
-#### Creating Custom Value Sets
+## Creating Custom Value Sets
 
 The Canvas SDK allows plugin developers to create their own ValueSet classes that can be used in the same manner as the examples above. To do so, one can import and inherit the base `ValueSet` class:
 
