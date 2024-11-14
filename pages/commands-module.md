@@ -203,7 +203,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>Physical Exam</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr> 
