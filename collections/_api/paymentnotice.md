@@ -67,7 +67,7 @@ sections:
                   type: string
                   description: Type the reference refers to (e.g. "Patient").
           - name: created
-            type: date
+            type: datetime
             required_in: create,update
             description: >-
               Required by the FHIR spec. Canvas recommends sending the current date on create; however, the value returned by the search interaction will be the creation timestamp of the actual database record in Canvas.
