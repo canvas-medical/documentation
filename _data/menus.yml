@@ -494,10 +494,13 @@ data_module:
    description: Harmful or undesired physiological responses associated with exposure to a substance.
  - title: "Command"
    url: /sdk/data-command/
-   description:
+   description: Building blocks of many end-user workflows in Canvas.
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
+ - title: "Device"
+   url: /sdk/data-device/
+   description: Type of a manufactured item that is used in the provision of healthcare.
  - title: "Labs"
    url: /sdk/data-labs/
    description: Analysis of clinical specimens to obtain information about the health of a patient.
