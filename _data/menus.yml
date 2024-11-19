@@ -492,6 +492,9 @@ data_module:
  - title: "Allergy Intolerance"
    url: /sdk/data-allergy-intolerance/
    description: Harmful or undesired physiological responses associated with exposure to a substance.
+ - title: "Command"
+   url: /sdk/data-command/
+   description:
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
