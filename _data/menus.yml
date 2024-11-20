@@ -489,6 +489,9 @@ data_module:
  - title: "Device"
    url: /sdk/data-device/
    description: Type of a manufactured item that is used in the provision of healthcare.
+ - title: "Imaging"
+   url: /sdk/data-imaging/
+   description: Analysis of imaging tests to obtain information about the health of a patient.
  - title: "Labs"
    url: /sdk/data-labs/
    description: Analysis of clinical specimens to obtain information about the health of a patient.
