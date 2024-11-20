@@ -430,6 +430,8 @@ guides_list:
    url: /guides/team-based-care/
  - title: "Your First Plugin"
    url: /guides/your-first-plugin/
+ - title: "Scribe Parser Plugin"
+   url: /guides/scribe-ai-parser/
  - title: "Creating Webhooks"
    url: /guides/creating-webhooks-with-the-canvas-sdk/
 

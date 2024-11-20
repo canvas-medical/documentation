@@ -890,54 +890,60 @@ These events fire during the command lifecycle.
   <tbody>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_COMMIT</td>
-      <td></td>
+      <td>Occurs after the command has been committed.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_DELETE</td>
-      <td></td>
+      <td>Occurs after the command has been deleted.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
+      <td>Occurs after the command has been marked as entered in error.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
+      <td>Occurs after a command action has been executed.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ORIGINATE</td>
-      <td></td>
+      <td>Occurs after the command has been originated.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_UPDATE</td>
-      <td></td>
+      <td>Occurs after the command has been updated.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_COMMIT</td>
-      <td></td>
+      <td>Occurs before the command is committed.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_DELETE</td>
-      <td></td>
+      <td>Occurs before the command is deleted.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
+      <td>Occurs before the command is marked as entered in error.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
+      <td>Occurs before a command action is executed.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
+      <td>Occurs before the command is originated.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_UPDATE</td>
-      <td></td>
+      <td>Occurs before the command is updated.	</td>
     </tr>
   </tbody>
 </table>
+
+| Context       | Description                                                      |
+|---------------|------------------------------------------------------------------|
+| `note.uuid`   | The UUID of the note where the command is (e.g., `"note-1234"`). |
+| `fields.text` | The text content of the command.                                 |
+
 
 #### Close Goal Command
 
