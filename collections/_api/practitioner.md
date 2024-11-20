@@ -13,6 +13,7 @@ sections:
           - name: id
             type: string
             required_in: update
+            exclude_in: create
             description: >-
               Unique Canvas identifier for this resource.
           - name: extension
@@ -116,9 +117,15 @@ sections:
             description: The name associated with the practitioner.
             attributes:
               - name: use
-                type: enum [ ususal ]
-                description: The 'use' attribute specifies the context in which the name is used. For this API, the only permitted value is 'usual,' which indicates that the name provided is the name typically used to identify the practitioner in daily practice.
+                type: enum
+                description_for_all_endpoints: The `use` attribute specifies the context in which the name is used. The only permitted value is `usual`, which indicates that the name provided is the name typically used to identify the practitioner in daily practice.
                 required_in: create, update
+                enum_options: 
+                  - value: usual
+              - name: text
+                type: string
+                description: Practitioner's credentialed name in Canvas. 
+                exclude_in: create,update
               - name: family
                 type: string
                 description: Practitioner's last name.
@@ -127,22 +134,29 @@ sections:
                 type: array[string]
                 required_in: create, update
                 description: Practitioner's first name. Only one first name is allowed.
+              - name: prefix
+                type: array[string]
+                exclude_in: create, update
+                description: Parts that come before the name.
+              - name: suffix
+                type: array[string]
+                exclude_in: create, update
+                description: Parts that come after the name.
           - name: telecom
             type: array[json]
             required_in: create, update
-            description: Practitioner contact point(s) (email / phone / fax).
+            description_for_all_endpoints: Practitioner contact point(s) (email / phone / fax).
             create_description: >-
-              Practitioner contact point(s) (email / phone / fax).
-              <br><br>
-              At least one contact point with the specifications `system`: **phone** and `use`: **work** is required and it is designated as the primary phone for the Practitioner.
-              <br><br>
-              There must be exactly one contact point with the specifications `system`: **email** and `rank`: **1**. An error will be triggered if there is more than one `email` with `rank` set to **1**, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed.
+              
+              - At least one contact point with the specifications `system`: **phone** and `use`: **work** is required and it is designated as the primary phone for the Practitioner.
+
+              - There must be exactly one contact point with the specifications `system`: **email** and `rank`: **1**. An error will be triggered if there is more than one `email` with `rank` set to **1**, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed.
             update_description: >-
-              Practitioner contact point(s) (email / phone / fax).
-              <br><br>
-              At least one contact point with the specifications `system`: **phone** and `use`: **work** is required as the primary phone for the Practitioner.
-              <br><br>
-              There must be exactly one contact point with the specifications `system`: **email** and `rank`: **1**. An error will be triggered if there is more than one `email` with `rank` set to **1**, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed.
+
+              - At least one contact point with the specifications `system`: **phone** and `use`: **work** is required and it is designated as the primary phone for the Practitioner.
+
+              - There must be exactly one contact point with the specifications `system`: **email** and `rank`: **1**. An error will be triggered if there is more than one `email` with `rank` set to **1**, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed.
+              
               <br><br>
               **IMPORTANT**: Updating email contact points is not permitted. During updates, the values must remain unchanged from the original creation or retrieval.
             attributes:
