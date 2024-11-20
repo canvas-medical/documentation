@@ -504,6 +504,9 @@ data_module:
  - title: "Patient"
    url: /sdk/data-patient/
    description: Data used to categorize individuals for identification, records matching, and other purposes.
+ - title: "ProtocolOverride"
+   url: /sdk/data-protocol-override/
+   description: A record of a protocol being snoozed for a patient.
  - title: "Questionnaire"
    url: /sdk/data-questionnaire
    description: Groups of coded questions and the coded patient responses.
