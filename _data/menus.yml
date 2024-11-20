@@ -510,6 +510,9 @@ data_module:
  - title: "Medication"
    url: /sdk/data-medication/
    description: Pharmacologic agents used in the diagnosis, cure, mitigation, treatment, or prevention of disease.
+ - title: "Observation"
+   url: /sdk/data-observation/
+   description: Measurements and simple assertions made about a patient.
  - title: "Patient"
    url: /sdk/data-patient/
    description: Data used to categorize individuals for identification, records matching, and other purposes.
