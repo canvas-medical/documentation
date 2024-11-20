@@ -75,6 +75,9 @@ api_resources:
  - title: "CoverageEligibilityResponse"
    url: /api/coverageeligibilityresponse/
    identifier: api_coverageeligibilityresponse
+ - title: "DetectedIssue"
+   url: /api/detectedissue/
+   identifier: api_detectedissue
  - title: "Device"
    url: /api/device/
    identifier: api_device
@@ -234,6 +237,15 @@ api_coverageeligibilityresponse:
    url: /api/coverageeligibilityresponse/#read
  - title: "CoverageEligibilityResponse Search"
    url: /api/coverageeligibilityresponse/#search
+api_detectedissue:
+ - title: "DetectedIssue Create"
+   url: /api/detectedissue/#create
+ - title: "DetectedIssue Read"
+   url: /api/detectedissue/#read
+ - title: "DetectedIssue Update"
+   url: /api/detectedissue/#update
+ - title: "DetectedIssue Search"
+   url: /api/detectedissue/#search
 api_device:
  - title: "Device Read"
    url: /api/device/#read
