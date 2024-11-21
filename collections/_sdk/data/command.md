@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Command` model represents a [command](https://docs.canvasmedical.com/sdk/commands/) in a note.
+The `Command` model represents a [command](/sdk/commands/) in a note.
 
 ## Basic usage
 
