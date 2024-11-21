@@ -730,6 +730,38 @@ These events fire during the command lifecycle.
   </tbody>
 </table>
 
+
+##### Context Overview
+
+Each command lifecycle event provides specific context to the handler, depending on the stage of the command lifecycle.
+
+**Base Context (All Events Except `PRE_COMMAND_ORIGINATE`)**:
+  
+```json
+  {
+    "note": {"uuid": "note-123"},
+    "patient": {"id": "patient-123"},
+    "fields": {"key": "value"}
+  }
+```
+
+  - `note.uuid`: The unique identifier of the note associated with the command.
+  - `patient.id`: The unique identifier of the patient associated with the note.
+  - `fields`: A dictionary containing command-specific details. See examples for each command.
+
+
+**`PRE_COMMAND_ORIGINATE` Context**:
+  Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` event context only includes:
+  
+```json
+  {
+   "fields": {"key": "value"}
+  }
+```
+  - `fields`: Contains details specific to the command being originated.
+
+---
+
 #### Allergy Command
 
 <table>
@@ -939,11 +971,27 @@ These events fire during the command lifecycle.
   </tbody>
 </table>
 
-| Context       | Description                                                      |
-|---------------|------------------------------------------------------------------|
-| `note.uuid`   | The UUID of the note where the command is (e.g., `"note-1234"`). |
-| `fields.text` | The text content of the command.                                 |
+##### Clipboard Fields Context
 
+The Clipboard Command provides the following fields in its context:
+
+| Field  | Type     | Description                                   |
+|--------|----------|-----------------------------------------------|
+| `text` | _string_ | The raw text content copied to the clipboard. |
+
+Refer to the [base context documentation](#context-overview) for additional details about the full context structure.
+
+```json
+{
+  "note": {"uuid": "note-123"},
+  "patient": {"id": "patient-123"},
+  "fields": {
+    "text": "Patient complains of persistent headaches for the past two weeks."
+  }
+}
+```
+
+---
 
 #### Close Goal Command
 
