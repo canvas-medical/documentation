@@ -46,6 +46,6 @@ Specify an attribute with `filter` to filter by that attribute:
 from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview, ImagingReport
 
 orders = ImagingOrder.objects.filter(status="completed")
-reviews = ImagingReview.objects.filter(is_released_to_patinet=False)
+reviews = ImagingReview.objects.filter(is_released_to_patient=False)
 reports = ImagingReport.objects.filter(requires_signature=True)
 ```
