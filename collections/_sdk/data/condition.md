@@ -79,3 +79,40 @@ from canvas_sdk.value_set.v022.condition import Diabetes
 
 conditions = Condition.objects.find(Diabetes)
 ```
+
+## Attributes
+
+### Condition
+| Field Name       | Type                              |
+|------------------|-----------------------------------|
+| id               | UUID                              |
+| dbid             | Integer                           |
+| deleted          | Boolean                           |
+| entered_in_error | CanvasUser                        |
+| committer        | CanvasUser                        |
+| patient          | [Patient](/sdk/data-patient/)     |
+| onset_date       | Date                              |
+| resolution_date  | Date                              |
+| clinical_status  | [ClinicalStatus](#clinicalstatus) |
+
+### ConditionCoding
+| Field Name    | Type                              |
+|---------------|-----------------------------------|
+| dbid          | Integer                           |
+| system        | String                            |
+| version       | String                            |
+| code          | String                            |
+| display       | String                            |
+| user_selected | Boolean                           |
+| condition     | [Condition](/sdk/data-condition/) |
+
+## Enumeration types
+
+### ClinicalStatus
+| Value         | Label         |
+|---------------|---------------|
+| active        | active        |
+| relapse       | relapse       |
+| remission     | remission     |
+| resolved      | resolved      |
+| investigative | investigative |

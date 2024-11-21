@@ -34,3 +34,22 @@ from canvas_sdk.v1.data.command import Command
 
 commands = Command.objects.filter(state="committed")
 ```
+
+## Attributes
+
+### Command
+| Field Name         | Type                          |
+|--------------------|-------------------------------|
+| id                 | UUID                          |
+| dbid               | Integer                       |
+| created            | DateTime                      |
+| modified           | DateTime                      |
+| originator         | CanvasUser                    |
+| committer          | CanvasUser                    |
+| entered_in_error   | CanvasUser                    |
+| state              | String                        |
+| patient            | [Patient](/sdk/data-patient/) |
+| note_id            | Integer                       |
+| schema_key         | Text                          |
+| data               | JSON                          |
+| origination_source | String                        |

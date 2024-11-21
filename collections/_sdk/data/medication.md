@@ -79,3 +79,34 @@ from canvas_sdk.value_set.v022.medication import AdhdMedications
 
 medications = Medication.objects.find(AdhdMedications)
 ```
+
+## Attributes
+
+### Medication
+| Field Name                     | Type                          |
+|--------------------------------|-------------------------------|
+| id                             | UUID                          |
+| dbid                           | Integer                       |
+| patient                        | [Patient](/sdk/data-patient/) |
+| deleted                        | Boolean                       |
+| entered_in_error               | CanvasUser                    |
+| committer                      | CanvasUser                    |
+| status                         | String                        |
+| start_date                     | Date                          |
+| end_date                       | Date                          |
+| quantity_qualifier_description | String                        |
+| clinical_quantity_description  | String                        |
+| potency_unit_code              | String                        |
+| national_drug_code             | String                        |
+| erx_quantity                   | String                        |
+
+### MedicationCoding
+| Field Name    | Type                                |
+|---------------|-------------------------------------|
+| dbid          | Integer                             |
+| system        | String                              |
+| version       | String                              |
+| code          | String                              |
+| display       | String                              |
+| user_selected | Boolean                             |
+| medication    | [Medication](/sdk/data-medication/) |

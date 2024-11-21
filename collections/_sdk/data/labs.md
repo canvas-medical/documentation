@@ -104,3 +104,170 @@ class Protocol(BaseProtocol):
 ```
 
 Each value and coding are instances of `LabValue` and `LabValueCoding`, respectively. To view the fields available for each of these models, they are available in the [Canvas SDK open source repository](https://github.com/canvas-medical/canvas-plugins/blob/main/canvas_sdk/v1/data/lab.py).
+
+## Attributes
+
+### LabReport
+| Field Name           | Type                                  |
+|----------------------|---------------------------------------|
+| id                   | UUID                                  |
+| dbid                 | Integer                               |
+| created              | DateTime                              |
+| modified             | DateTime                              |
+| review_mode          | String                                |
+| junked               | Boolean                               |
+| requires_signature   | Boolean                               |
+| assigned_date        | DateTime                              |
+| patient              | [Patient](/sdk/data-patient/)         |
+| transmission_type    | [TransmissionType](#transmissiontype) |
+| for_test_only        | Boolean                               |
+| external_id          | String                                |
+| version              | Integer                               |
+| requisition_number   | String                                |
+| review               | [LabReview](/sdk/data-labs/)          |
+| original_date        | DateTime                              |
+| date_performed       | DateTime                              |
+| custom_document_name | String                                |
+| originator           | CanvasUser                            |
+| committer            | CanvasUser                            |
+| entered_in_error     | CanvasUser                            |
+| deleted              | Boolean                               |
+
+### LabReview
+| Field Name                   | Type                          |
+|------------------------------|-------------------------------|
+| id                           | UUID                          |
+| dbid                         | Integer                       |
+| created                      | DateTime                      |
+| modified                     | DateTime                      |
+| originator                   | CanvasUser                    |
+| deleted                      | Boolean                       |
+| committer                    | CanvasUser                    |
+| entered_in_error             | CanvasUser                    |
+| internal_comment             | Text                          |
+| message_to_patient           | String                        |
+| status                       | String                        |
+| patient                      | [Patient](/sdk/data-patient/) |
+| patient_communication_method | String                        |
+
+### LabValue
+| Field Name         | Type                         |
+|--------------------|------------------------------|
+| id                 | UUID                         |
+| dbid               | Integer                      |
+| created            | DateTime                     |
+| modified           | DateTime                     |
+| report             | [LabReport](/sdk/data-labs/) |
+| value              | Text                         |
+| units              | String                       |
+| abnormal_flag      | String                       |
+| reference_range    | String                       |
+| low_threshold      | String                       |
+| high_threshold     | String                       |
+| comment            | Text                         |
+| observation_status | String                       |
+
+### LabValueCoding
+| Field Name | Type                        |
+|------------|-----------------------------|
+| dbid       | Integer                     |
+| created    | DateTime                    |
+| modified   | DateTime                    |
+| value      | [LabValue](/sdk/data-labs/) |
+| code       | String                      |
+| name       | String                      |
+| system     | String                      |
+
+### LabOrder
+| Field Name                | Type                                              |
+|---------------------------|---------------------------------------------------|
+| id                        | UUID                                              |
+| dbid                      | Integer                                           |
+| created                   | DateTime                                          |
+| modified                  | DateTime                                          |
+| originator                | CanvasUser                                        |
+| deleted                   | Boolean                                           |
+| committer                 | CanvasUser                                        |
+| entered_in_error          | CanvasUser                                        |
+| patient                   | [Patient](/sdk/data-patient/)                     |
+| ontology_lab_partner      | String                                            |
+| comment                   | String                                            |
+| requisition_number        | String                                            |
+| is_patient_bill           | Boolean                                           |
+| date_ordered              | DateTime                                          |
+| fasting_status            | Boolean                                           |
+| specimen_collection_type  | [SpecimenCollectionType](#specimencollectiontype) |
+| transmission_type         | [TransmissionType](#transmissiontype)             |
+| courtesy_copy_type        | [CourtesyCopyType](#courtesycopytype)             |
+| courtesy_copy_number      | String                                            |
+| courtesy_copy_text        | String                                            |
+| parent_order              | [LabOrder](/sdk/data-labs/)                       |
+| healthgorilla_id          | String                                            |
+| manual_processing_status  | [ManualProcessingStatus](#manualprocessingstatus) |
+| manual_processing_comment | String                                            |
+| labcorp_abn_url           | URL                                               |
+
+### LabOrderReason
+| Field Name       | Type                            |
+|------------------|---------------------------------|
+| dbid             | Integer                         |
+| created          | DateTime                        |
+| modified         | DateTime                        |
+| originator       | CanvasUser                      |
+| deleted          | Boolean                         |
+| committer        | CanvasUser                      |
+| entered_in_error | CanvasUser                      |
+| order            | [LabOrder](/sdk/data-labs/)     |
+| mode             | [LabReasonMode](#labreasonmode) |
+
+## Enumeration types
+
+### TransmissionType
+| Value | Label  |
+|-------|--------|
+| F     | fax    |
+| H     | hl7    |
+| M     | manual |
+
+### SpecimenCollectionType
+| Value | Label                  |
+|-------|------------------------|
+| L     | on location            |
+| P     | patient service center |
+| O     | other                  |
+
+### CourtesyCopyType
+| Value | Label  |
+|-------|--------|
+| A     | account|
+| F     | fax    |
+| P     | patient|
+
+### ManualProcessingStatus
+| Value        | Label        |
+|--------------|--------------|
+| NEEDS_REVIEW | Needs Review |
+| IN_PROGRESS  | In Progress  |
+| PROCESSED    | Processed    |
+| FLAGGED      | Flagged      |
+
+### LabReasonMode
+| Value | Label       |
+|-------|-------------|
+| MO    | monitor     |
+| IN    | investigate |
+| SF    | screen for  |
+| UNK   | unknown     |
+
+### LabTestOrderStatus
+| Value | Label                  |
+|-------|------------------------|
+| NE    | new                    |
+| SR    | staged for requisition |
+| SE    | sending                |
+| SF    | sending failed         |
+| PR    | processing             |
+| PF    | processing failed      |
+| RE    | received               |
+| RV    | reviewed               |
+| IN    | inactive               |

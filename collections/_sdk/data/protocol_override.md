@@ -50,3 +50,44 @@ from canvas_sdk.v1.data.protocol_override import ProtocolOverride
 
 overrides = ProtocolOverride.objects.filter(status="active")
 ```
+
+## Attributes
+
+### ProtocolOverride
+| Field Name       | Type                          |
+|------------------|-------------------------------|
+| id               | UUID                          |
+| dbid             | Integer                       |
+| created          | DateTime                      |
+| modified         | DateTime                      |
+| deleted          | Boolean                       |
+| committer        | CanvasUser                    |
+| entered_in_error | CanvasUser                    |
+| patient          | [Patient](/sdk/data-patient/) |
+| protocol_key     | String                        |
+| is_adjustment    | Boolean                       |
+| reference_date   | DateTime                      |
+| cycle_in_days    | Integer                       |
+| is_snooze        | Boolean                       |
+| snooze_date      | Date                          |
+| snoozed_days     | Integer                       |
+| snooze_comment   | Text                          |
+| narrative        | String                        |
+| cycle_quantity   | Integer                       |
+| cycle_unit       | [IntervalUnit](#intervalunit) |
+| status           | [Status](#status)             |
+
+## Enumeration types
+
+### IntervalUnit
+| Value  | Label  |
+|--------|--------|
+| days   | days   |
+| months | months |
+| years  | years  |
+
+### Status
+| Value    | Label    |
+|----------|----------|
+| active   | active   |
+| inactive | inactive |
