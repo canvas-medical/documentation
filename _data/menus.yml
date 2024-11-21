@@ -494,7 +494,7 @@ data_module:
    description: Harmful or undesired physiological responses associated with exposure to a substance.
  - title: "Command"
    url: /sdk/data-command/
-   description: Building blocks of many end-user workflows in Canvas.
+   description: Structured units of documentation in a patient's chart.
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
