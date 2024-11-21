@@ -451,7 +451,7 @@ PastSurgicalHistoryCommand(
 
 ---
 
-### Perform
+## Perform
 
 **Command-specific parameters**:
 
