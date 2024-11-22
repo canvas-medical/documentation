@@ -36,6 +36,17 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
+        <a href="/guides/tailoring-the-chart-to-the-patient">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Tailoring to the Patient</span>
+                </div>
+                <div class="cardBody">
+                    Customize a patient's chart so the features most relevant to them are front-and-center
+                </div>
+            </div>
+        </a>
         <a href="/guides/optimize-patient-intake">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
