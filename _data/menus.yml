@@ -522,6 +522,12 @@ data_module:
  - title: "Questionnaire"
    url: /sdk/data-questionnaire
    description: Groups of coded questions and the coded patient responses.
+ - title: "Staff"
+   url: /sdk/data-staff
+   description: Data associated with Staff members.
+ - title: "Task"
+   url: /sdk/data-task
+   description: Data associated with Tasks.
  - title: "Value Sets"
    url: /sdk/data-value-sets/
    description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
