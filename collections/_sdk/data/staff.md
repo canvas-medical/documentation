@@ -31,3 +31,67 @@ staff.assignee_tasks.all()
 staff.creator_tasks.all()
 # <QuerySet [<Task: Task object (7)>]>
 ```
+
+## Attributes
+
+### Staff
+
+| Field Name                   | Type                      |
+|------------------------------|---------------------------|
+| id                           | UUID                      |
+| dbid                         | Integer                   |
+| created                      | DateTime                  |
+| modified                     | DateTime                  |
+| created                      | DateTime                  |
+| modified                     | DateTime                  |
+| prefix                       | String                    |
+| suffix                       | String                    |
+| first_name                   | String                    |
+| middle_name                  | String                    |
+| last_name                    | String                    |
+| maiden_name                  | String                    |
+| nickname                     | String                    |
+| previous_names               | JSON                      |
+| birth_date                   | Date                      |
+| sex_at_birth                 | [PersonSex](#personsex)   |
+| sexual_orientation_term      | String                    |
+| sexual_orientation_code      | String                    |
+| gender_identity_term         | String                    |
+| gender_identity_code         | String                    |
+| preferred_pronouns           | String                    |
+| biological_race_codes        | Array[String]             |
+| biological_race_terms        | Array[String]             |
+| cultural_ethnicity_codes     | Array[String]             |
+| cultural_ethnicity_terms     | Array[String]             |
+| last_known_timezone          | TimeZone                  |
+| active                       | Boolean                   |
+| npi_number                   | String                    |
+| nadean_number                | String                    |
+| group_npi_number             | String                    |
+| bill_through_organization    | Boolean                   |
+| tax_id                       | String                    |
+| tax_id_type                  | [TaxIDType](#taxidtype)   |
+| spi_number                   | String                    |
+| personal_meeting_room_link   | URL                       |
+| state                        | JSON                      |
+| user                         | CanvasUser                |
+| schedule_column_ordering     | String                    |
+| default_supervising_provider | [Staff](/sdk/data-staff/) |
+
+## Enumeration types
+
+### PersonSex
+
+| Value | Label     |
+|-------|-----------|
+| "F"   | "female   |
+| "M"   | "male"    |
+| "O"   | "other"   |
+| "UNK" | "unknown" |
+
+### TaxIDType
+
+| Value | Label      |
+|-------|------------|
+| "E"   | "EIN text" |
+| "S"   | "SSN"      |
