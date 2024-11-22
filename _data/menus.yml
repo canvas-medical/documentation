@@ -492,18 +492,33 @@ data_module:
  - title: "Allergy Intolerance"
    url: /sdk/data-allergy-intolerance/
    description: Harmful or undesired physiological responses associated with exposure to a substance.
+ - title: "Command"
+   url: /sdk/data-command/
+   description: Structured units of documentation in a patient's chart.
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
+ - title: "Device"
+   url: /sdk/data-device/
+   description: Type of a manufactured item that is used in the provision of healthcare.
+ - title: "Imaging"
+   url: /sdk/data-imaging/
+   description: Analysis of imaging tests to obtain information about the health of a patient.
  - title: "Labs"
    url: /sdk/data-labs/
    description: Analysis of clinical specimens to obtain information about the health of a patient.
  - title: "Medication"
    url: /sdk/data-medication/
    description: Pharmacologic agents used in the diagnosis, cure, mitigation, treatment, or prevention of disease.
+ - title: "Observation"
+   url: /sdk/data-observation/
+   description: Measurements and simple assertions made about a patient.
  - title: "Patient"
    url: /sdk/data-patient/
    description: Data used to categorize individuals for identification, records matching, and other purposes.
+ - title: "ProtocolOverride"
+   url: /sdk/data-protocol-override/
+   description: A record of a protocol being snoozed for a patient.
  - title: "Questionnaire"
    url: /sdk/data-questionnaire
    description: Groups of coded questions and the coded patient responses.
