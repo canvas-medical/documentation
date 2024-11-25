@@ -472,6 +472,7 @@ sdk_overview:
    identifier: data_module
  - title: "Effects Module"
    url: /sdk/effects/
+   identifier: effects_module
  - title: "Events Module"
    url: /sdk/events/
  - title: "Handlers Module"
@@ -487,6 +488,17 @@ sdk_overview:
 sdk_handlers:
   - title: "CronTask"
     url: /sdk/handlers-crontask/
+
+effects_module:
+ - title: "Protocol Cards"
+   url: /sdk/effect-protocol-cards/
+   description: Calls to action in a patient's chart, commonly used for decision support intervention.
+ - title: "Banner Alerts"
+   url: /sdk/effect-banner-alerts/
+   description: Contextual information in a patient's chart.
+ - title: "Chart Summary Configuration"
+   url: /sdk/effect-chart-summary-configuration/
+   description: Rearrange or hide summary sections in a patient's chart.
 
 data_module:
  - title: "Allergy Intolerance"
