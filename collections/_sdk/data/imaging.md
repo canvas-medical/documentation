@@ -46,31 +46,31 @@ Specify an attribute with `filter` to filter by that attribute:
 from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview, ImagingReport
 
 orders = ImagingOrder.objects.filter(status="completed")
-reviews = ImagingReview.objects.filter(is_released_to_patinet=False)
+reviews = ImagingReview.objects.filter(is_released_to_patient=False)
 reports = ImagingReport.objects.filter(requires_signature=True)
 ```
 
 ## Attributes
 
 ### ImagingOrder
-| Field Name          | Type                          |
-|---------------------|-------------------------------|
-| id                  | UUID                          |
-| dbid                | Integer                       |
-| created             | DateTime                      |
-| modified            | DateTime                      |
-| originator          | CanvasUser                    |
-| deleted             | Boolean                       |
-| committer           | CanvasUser                    |
-| entered_in_error    | CanvasUser                    |
-| patient             | [Patient](/sdk/data-patient/) |
-| imaging             | String                        |
-| note_to_radiologist | String                        |
-| internal_comment    | String                        |
-| status              | [OrderStatus](#orderstatus)   |
-| date_time_ordered   | DateTime                      |
-| priority            | String                        |
-| delegated           | Boolean                       |
+| Field Name          | Type                                  |
+|---------------------|---------------------------------------|
+| id                  | UUID                                  |
+| dbid                | Integer                               |
+| created             | DateTime                              |
+| modified            | DateTime                              |
+| originator          | CanvasUser                            |
+| deleted             | Boolean                               |
+| committer           | CanvasUser                            |
+| entered_in_error    | CanvasUser                            |
+| patient             | [Patient](/sdk/data-patient/#patient) |
+| imaging             | String                                |
+| note_to_radiologist | String                                |
+| internal_comment    | String                                |
+| status              | [OrderStatus](#orderstatus)           |
+| date_time_ordered   | DateTime                              |
+| priority            | String                                |
+| delegated           | Boolean                               |
 
 ### ImagingReview
 | Field Name                   | Type                                                                  |
@@ -87,7 +87,7 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | message_to_patient           | String                                                                |
 | is_released_to_patient       | Boolean                                                               |
 | status                       | [ReviewStatus](#reviewstatus)                                         |
-| patient                      | [Patient](/sdk/data-patient/)                                         |
+| patient                      | [Patient](/sdk/data-patient/#patient)                                 |
 
 ### ImagingReport
 | Field Name         | Type                                        |
@@ -100,13 +100,13 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | junked             | Boolean                                     |
 | requires_signature | Boolean                                     |
 | assigned_date      | DateTime                                    |
-| patient            | [Patient](/sdk/data-patient/)               |
-| order              | [ImagingOrder](/sdk/data-imaging/)          |
+| patient            | [Patient](/sdk/data-patient/#patient)       |
+| order              | [ImagingOrder](#imagingorder)               |
 | source             | [ImagingReportSource](#imagingreportsource) |
 | name               | String                                      |
 | result_date        | Date                                        |
 | original_date      | Date                                        |
-| review             | [ImagingReview](/sdk/data-imaging/)         |
+| review             | [ImagingReview](#imagingreview)             |
 
 ## Enumeration types
 
@@ -157,7 +157,4 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | RADIOLOGY_PATIENT  | Radiology Report From Patient |
 | VERBAL_PATIENT     | Verbal Report From Patient    |
 | DIRECTLY_RADIOLOGY | Directly Radiology Report     |
-=======
-reviews = ImagingReview.objects.filter(is_released_to_patient=False)
-reports = ImagingReport.objects.filter(requires_signature=True)
 ```

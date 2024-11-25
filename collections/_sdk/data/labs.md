@@ -118,13 +118,13 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | junked               | Boolean                               |
 | requires_signature   | Boolean                               |
 | assigned_date        | DateTime                              |
-| patient              | [Patient](/sdk/data-patient/)         |
+| patient              | [Patient](/sdk/data-patient/#patient) |
 | transmission_type    | [TransmissionType](#transmissiontype) |
 | for_test_only        | Boolean                               |
 | external_id          | String                                |
 | version              | Integer                               |
 | requisition_number   | String                                |
-| review               | [LabReview](/sdk/data-labs/)          |
+| review               | [LabReview](#labreview)               |
 | original_date        | DateTime                              |
 | date_performed       | DateTime                              |
 | custom_document_name | String                                |
@@ -134,49 +134,49 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | deleted              | Boolean                               |
 
 ### LabReview
-| Field Name                   | Type                          |
-|------------------------------|-------------------------------|
-| id                           | UUID                          |
-| dbid                         | Integer                       |
-| created                      | DateTime                      |
-| modified                     | DateTime                      |
-| originator                   | CanvasUser                    |
-| deleted                      | Boolean                       |
-| committer                    | CanvasUser                    |
-| entered_in_error             | CanvasUser                    |
-| internal_comment             | Text                          |
-| message_to_patient           | String                        |
-| status                       | String                        |
-| patient                      | [Patient](/sdk/data-patient/) |
-| patient_communication_method | String                        |
+| Field Name                   | Type                                  |
+|------------------------------|---------------------------------------|
+| id                           | UUID                                  |
+| dbid                         | Integer                               |
+| created                      | DateTime                              |
+| modified                     | DateTime                              |
+| originator                   | CanvasUser                            |
+| deleted                      | Boolean                               |
+| committer                    | CanvasUser                            |
+| entered_in_error             | CanvasUser                            |
+| internal_comment             | Text                                  |
+| message_to_patient           | String                                |
+| status                       | String                                |
+| patient                      | [Patient](/sdk/data-patient/#patient) |
+| patient_communication_method | String                                |
 
 ### LabValue
-| Field Name         | Type                         |
-|--------------------|------------------------------|
-| id                 | UUID                         |
-| dbid               | Integer                      |
-| created            | DateTime                     |
-| modified           | DateTime                     |
-| report             | [LabReport](/sdk/data-labs/) |
-| value              | Text                         |
-| units              | String                       |
-| abnormal_flag      | String                       |
-| reference_range    | String                       |
-| low_threshold      | String                       |
-| high_threshold     | String                       |
-| comment            | Text                         |
-| observation_status | String                       |
+| Field Name         | Type                    |
+|--------------------|-------------------------|
+| id                 | UUID                    |
+| dbid               | Integer                 |
+| created            | DateTime                |
+| modified           | DateTime                |
+| report             | [LabReport](#labreport) |
+| value              | Text                    |
+| units              | String                  |
+| abnormal_flag      | String                  |
+| reference_range    | String                  |
+| low_threshold      | String                  |
+| high_threshold     | String                  |
+| comment            | Text                    |
+| observation_status | String                  |
 
 ### LabValueCoding
-| Field Name | Type                        |
-|------------|-----------------------------|
-| dbid       | Integer                     |
-| created    | DateTime                    |
-| modified   | DateTime                    |
-| value      | [LabValue](/sdk/data-labs/) |
-| code       | String                      |
-| name       | String                      |
-| system     | String                      |
+| Field Name | Type                  |
+|------------|-----------------------|
+| dbid       | Integer               |
+| created    | DateTime              |
+| modified   | DateTime              |
+| value      | [LabValue](#labvalue) |
+| code       | String                |
+| name       | String                |
+| system     | String                |
 
 ### LabOrder
 | Field Name                | Type                                              |
@@ -189,7 +189,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | deleted                   | Boolean                                           |
 | committer                 | CanvasUser                                        |
 | entered_in_error          | CanvasUser                                        |
-| patient                   | [Patient](/sdk/data-patient/)                     |
+| patient                   | [Patient](/sdk/data-patient/#patient)             |
 | ontology_lab_partner      | String                                            |
 | comment                   | String                                            |
 | requisition_number        | String                                            |
@@ -201,7 +201,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | courtesy_copy_type        | [CourtesyCopyType](#courtesycopytype)             |
 | courtesy_copy_number      | String                                            |
 | courtesy_copy_text        | String                                            |
-| parent_order              | [LabOrder](/sdk/data-labs/)                       |
+| parent_order              | [LabOrder](#laborder)                             |
 | healthgorilla_id          | String                                            |
 | manual_processing_status  | [ManualProcessingStatus](#manualprocessingstatus) |
 | manual_processing_comment | String                                            |
@@ -217,7 +217,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | deleted          | Boolean                         |
 | committer        | CanvasUser                      |
 | entered_in_error | CanvasUser                      |
-| order            | [LabOrder](/sdk/data-labs/)     |
+| order            | [LabOrder](#laborder)           |
 | mode             | [LabReasonMode](#labreasonmode) |
 
 ## Enumeration types

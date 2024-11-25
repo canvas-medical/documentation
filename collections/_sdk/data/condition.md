@@ -83,28 +83,28 @@ conditions = Condition.objects.find(Diabetes)
 ## Attributes
 
 ### Condition
-| Field Name       | Type                              |
-|------------------|-----------------------------------|
-| id               | UUID                              |
-| dbid             | Integer                           |
-| deleted          | Boolean                           |
-| entered_in_error | CanvasUser                        |
-| committer        | CanvasUser                        |
-| patient          | [Patient](/sdk/data-patient/)     |
-| onset_date       | Date                              |
-| resolution_date  | Date                              |
-| clinical_status  | [ClinicalStatus](#clinicalstatus) |
+| Field Name       | Type                                  |
+|------------------|---------------------------------------|
+| id               | UUID                                  |
+| dbid             | Integer                               |
+| deleted          | Boolean                               |
+| entered_in_error | CanvasUser                            |
+| committer        | CanvasUser                            |
+| patient          | [Patient](/sdk/data-patient/#patient) |
+| onset_date       | Date                                  |
+| resolution_date  | Date                                  |
+| clinical_status  | [ClinicalStatus](#clinicalstatus)     |
 
 ### ConditionCoding
-| Field Name    | Type                              |
-|---------------|-----------------------------------|
-| dbid          | Integer                           |
-| system        | String                            |
-| version       | String                            |
-| code          | String                            |
-| display       | String                            |
-| user_selected | Boolean                           |
-| condition     | [Condition](/sdk/data-condition/) |
+| Field Name    | Type                                        |
+|---------------|---------------------------------------------|
+| dbid          | Integer                                     |
+| system        | String                                      |
+| version       | String                                      |
+| code          | String                                      |
+| display       | String                                      |
+| user_selected | Boolean                                     |
+| condition     | [Condition](/sdk/data-condition/#condition) |
 
 ## Enumeration types
 

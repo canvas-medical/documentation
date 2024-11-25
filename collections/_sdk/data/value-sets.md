@@ -90,20 +90,20 @@ class MyCustomValueSet(ValueSet):
 
 The valid code system constants that can be used to define sets of codes in Value Sets are:
 
-| Name           | URL     |
-| :------------- | :------- |
-|`CPT`| `http://www.ama-assn.org/go/cpt`|
-| `HCPCSLEVELII` | `https://coder.aapc.com/hcpcs-codes` |
-| `CVX` | `http://hl7.org/fhir/sid/cvx` |
-| `LOINC` | `http://loinc.org` |
-| `SNOMEDCT` | `http://snomed.info/sct` |
-| `FDB` | `http://www.fdbhealth.com/` |
-| `RXNORM` | `http://www.nlm.nih.gov/research/umls/rxnorm` |
-| `ICD10` | `ICD-10` |
-| `NUCC` | `http://www.nucc.org/` |
-| `CANVAS` | `CANVAS` |
-| `INTERNAL` | `INTERNAL` |
-| `NDC` | `http://hl7.org/fhir/sid/ndc` |
+| Name           | URL                                           |
+|:---------------|:----------------------------------------------|
+| `CPT`          |  `http://www.ama-assn.org/go/cpt`             |
+| `HCPCSLEVELII` | `https://coder.aapc.com/hcpcs-codes`          |
+| `CVX`          | `http://hl7.org/fhir/sid/cvx`                 |
+| `LOINC`        | `http://loinc.org`                            |
+| `SNOMEDCT`     | `http://snomed.info/sct`                      |
+| `FDB`          | `http://www.fdbhealth.com/`                   |
+| `RXNORM`       | `http://www.nlm.nih.gov/research/umls/rxnorm` |
+| `ICD10`        | `ICD-10`                                      |
+| `NUCC`         | `http://www.nucc.org/`                        |
+| `CANVAS`       | `CANVAS`                                      |
+| `INTERNAL`     | `INTERNAL`                                    |
+| `NDC`          | `http://hl7.org/fhir/sid/ndc`                 |
 
 The following code is an example of a custom `ValueSet` in use within a plugin:
 

@@ -111,8 +111,8 @@ observations = Observation.objects.find(Weight)
 | committer          | CanvasUser                            |
 | entered_in_error   | CanvasUser                            |
 | deleted            | Boolean                               |
-| patient            | [Patient](/sdk/data-patient/)         |
-| is_member_of       | [Observation](/sdk/data-observation/) |
+| patient            | [Patient](/sdk/data-patient/#patient) |
+| is_member_of       | [Observation](#observation)           |
 | category           | String                                |
 | units              | Text                                  |
 | value              | Text                                  |
@@ -121,45 +121,45 @@ observations = Observation.objects.find(Weight)
 | effective_datetime | DateTime                              |
 
 ### ObservationCoding
-| Field Name    | Type                                  |
-|---------------|---------------------------------------|
-| dbid          | Integer                               |
-| system        | String                                |
-| version       | String                                |
-| code          | String                                |
-| display       | String                                |
-| user_selected | Boolean                               |
-| observation   | [Observation](/sdk/data-observation/) |
+| Field Name    | Type                       |
+|---------------|----------------------------|
+| dbid          | Integer                    |
+| system        | String                     |
+| version       | String                     |
+| code          | String                     |
+| display       | String                     |
+| user_selected | Boolean                    |
+| observation   | [Observation](#observation) |
 
 ### ObservationComponent
-| Field Name          | Type                                  |
-|---------------------|---------------------------------------|
-| dbid                | Integer                               |
-| created             | DateTime                              |
-| modified            | DateTime                              |
-| observation         | [Observation](/sdk/data-observation/) |
-| value_quantity      | Text                                  |
-| value_quantity_unit | Text                                  |
-| name                | Text                                  |
+| Field Name          | Type                       |
+|---------------------|----------------------------|
+| dbid                | Integer                    |
+| created             | DateTime                   |
+| modified            | DateTime                   |
+| observation         | [Observation](#observation) |
+| value_quantity      | Text                       |
+| value_quantity_unit | Text                       |
+| name                | Text                       |
 
 ### ObservationComponentCoding
-| Field Name            | Type                                           |
-|-----------------------|------------------------------------------------|
-| dbid                  | Integer                                        |
-| system                | String                                         |
-| version               | String                                         |
-| code                  | String                                         |
-| display               | String                                         |
-| user_selected         | Boolean                                        |
-| observation_component | [ObservationComponent](/sdk/data-observation/) |
+| Field Name            | Type                                |
+|-----------------------|-------------------------------------|
+| dbid                  | Integer                             |
+| system                | String                              |
+| version               | String                              |
+| code                  | String                              |
+| display               | String                              |
+| user_selected         | Boolean                             |
+| observation_component | [ObservationComponent](#observation) |
 
 ### ObservationValueCoding
-| Field Name    | Type                                  |
-|---------------|---------------------------------------|
-| dbid          | Integer                               |
-| system        | String                                |
-| version       | String                                |
-| code          | String                                |
-| display       | String                                |
-| user_selected | Boolean                               |
-| observation   | [Observation](/sdk/data-observation/) |
+| Field Name    | Type                       |
+|---------------|----------------------------|
+| dbid          | Integer                    |
+| system        | String                     |
+| version       | String                     |
+| code          | String                     |
+| display       | String                     |
+| user_selected | Boolean                    |
+| observation   | [Observation](#observation) |

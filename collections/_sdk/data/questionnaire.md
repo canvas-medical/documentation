@@ -116,33 +116,33 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | use_in_shx  | Boolean  |
 
 ### ResponseOption
-| Field Name          | Type                                          |
-|---------------------|-----------------------------------------------|
-| dbid                | Integer                                       |
-| created             | DateTime                                      |
-| modified            | DateTime                                      |
-| status              | String                                        |
-| name                | String                                        |
-| code                | String                                        |
-| code_description    | String                                        |
-| value               | String                                        |
-| response_option_set | [ResponseOptionSet](/sdk/data-questionnaire/) |
-| ordering            | Integer                                       |
+| Field Name          | Type                                    |
+|---------------------|-----------------------------------------|
+| dbid                | Integer                                 |
+| created             | DateTime                                |
+| modified            | DateTime                                |
+| status              | String                                  |
+| name                | String                                  |
+| code                | String                                  |
+| code_description    | String                                  |
+| value               | String                                  |
+| response_option_set | [ResponseOptionSet](#responseoptionset) |
+| ordering            | Integer                                 |
 
 ### Question
-| Field Name          | Type                                          |
-|---------------------|-----------------------------------------------|
-| id                  | UUID                                          |
-| dbid                | Integer                                       |
-| created             | DateTime                                      |
-| modified            | DateTime                                      |
-| status              | String                                        |
-| name                | String                                        |
-| response_option_set | [ResponseOptionSet](/sdk/data-questionnaire/) |
-| acknowledge_only    | Boolean                                       |
-| show_prologue       | Boolean                                       |
-| code_system         | String                                        |
-| code                | String                                        |
+| Field Name          | Type                                    |
+|---------------------|-----------------------------------------|
+| id                  | UUID                                    |
+| dbid                | Integer                                 |
+| created             | DateTime                                |
+| modified            | DateTime                                |
+| status              | String                                  |
+| name                | String                                  |
+| response_option_set | [ResponseOptionSet](#responseoptionset) |
+| acknowledge_only    | Boolean                                 |
+| show_prologue       | Boolean                                 |
+| code_system         | String                                  |
+| code                | String                                  |
 
 ### Questionnaire
 | Field Name                | Type     |
@@ -167,47 +167,47 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | carry_forward             | Text     |
 
 ### QuestionnaireQuestionMap
-| Field Name    | Type                                      |
-|---------------|-------------------------------------------|
-| dbid          | Integer                                   |
-| created       | DateTime                                  |
-| modified      | DateTime                                  |
-| status        | String                                    |
-| questionnaire | [Questionnaire](/sdk/data-questionnaire/) |
-| question      | [Question](/sdk/data-questionnaire/)      |
+| Field Name    | Type                            |
+|---------------|---------------------------------|
+| dbid          | Integer                         |
+| created       | DateTime                        |
+| modified      | DateTime                        |
+| status        | String                          |
+| questionnaire | [Questionnaire](#questionnaire) |
+| question      | [Question](#question)           |
 
 ### Interview
-| Field Name           | Type                          |
-|----------------------|-------------------------------|
-| id                   | UUID                          |
-| dbid                 | Integer                       |
-| deleted              | Boolean                       |
-| committer            | CanvasUser                    |
-| entered_in_error     | CanvasUser                    |
-| status               | String                        |
-| name                 | String                        |
-| language_id          | Integer                       |
-| use_case_in_charting | String                        |
-| patient              | [Patient](/sdk/data-patient/) |
-| note_id              | Integer                       |
-| appointment_id       | Integer                       |
-| questionnaires       | Questionnaire                 |
-| progress_status      | String                        |
-| created              | DateTime                      |
-| modified             | DateTime                      |
+| Field Name           | Type                                  |
+|----------------------|---------------------------------------|
+| id                   | UUID                                  |
+| dbid                 | Integer                               |
+| deleted              | Boolean                               |
+| committer            | CanvasUser                            |
+| entered_in_error     | CanvasUser                            |
+| status               | String                                |
+| name                 | String                                |
+| language_id          | Integer                               |
+| use_case_in_charting | String                                |
+| patient              | [Patient](/sdk/data-patient/#patient) |
+| note_id              | Integer                               |
+| appointment_id       | Integer                               |
+| questionnaires       | Questionnaire                         |
+| progress_status      | String                                |
+| created              | DateTime                              |
+| modified             | DateTime                              |
 
 ### InterviewQuestionResponse
-| Field Name            | Type                                       |
-|-----------------------|--------------------------------------------|
-| dbid                  | Integer                                    |
-| created               | DateTime                                   |
-| modified              | DateTime                                   |
-| status                | String                                     |
-| interview             | [Interview](/sdk/data-questionnaire/)      |
-| questionnaire         | [Questionnaire](/sdk/data-questionnaire/)  |
-| question              | [Question](/sdk/data-questionnaire/)       |
-| response_option       | [ResponseOption](/sdk/data-questionnaire/) |
-| response_option_value | Text                                       |
-| questionnaire_state   | Text                                       |
-| interview_state       | Text                                       |
-| comment               | String                                     |
+| Field Name            | Type                              |
+|-----------------------|-----------------------------------|
+| dbid                  | Integer                           |
+| created               | DateTime                          |
+| modified              | DateTime                          |
+| status                | String                            |
+| interview             | [Interview](#interview)           |
+| questionnaire         | [Questionnaire](#questionnaire)   |
+| question              | [Question](#question)             |
+| response_option       | [ResponseOption](#responseoption) |
+| response_option_value | Text                              |
+| questionnaire_state   | Text                              |
+| interview_state       | Text                              |
+| comment               | String                            |
