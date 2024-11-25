@@ -83,6 +83,7 @@ conditions = Condition.objects.find(Diabetes)
 ## Attributes
 
 ### Condition
+
 | Field Name       | Type                                  |
 |------------------|---------------------------------------|
 | id               | UUID                                  |
@@ -96,6 +97,7 @@ conditions = Condition.objects.find(Diabetes)
 | clinical_status  | [ClinicalStatus](#clinicalstatus)     |
 
 ### ConditionCoding
+
 | Field Name    | Type                                        |
 |---------------|---------------------------------------------|
 | dbid          | Integer                                     |
@@ -109,6 +111,7 @@ conditions = Condition.objects.find(Diabetes)
 ## Enumeration types
 
 ### ClinicalStatus
+
 | Value         | Label         |
 |---------------|---------------|
 | active        | active        |
@@ -116,3 +119,7 @@ conditions = Condition.objects.find(Diabetes)
 | remission     | remission     |
 | resolved      | resolved      |
 | investigative | investigative |
+
+<br/>
+<br/>
+<br/>

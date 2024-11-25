@@ -108,6 +108,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 ## Attributes
 
 ### LabReport
+
 | Field Name           | Type                                  |
 |----------------------|---------------------------------------|
 | id                   | UUID                                  |
@@ -134,6 +135,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | deleted              | Boolean                               |
 
 ### LabReview
+
 | Field Name                   | Type                                  |
 |------------------------------|---------------------------------------|
 | id                           | UUID                                  |
@@ -151,6 +153,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | patient_communication_method | String                                |
 
 ### LabValue
+
 | Field Name         | Type                    |
 |--------------------|-------------------------|
 | id                 | UUID                    |
@@ -168,6 +171,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | observation_status | String                  |
 
 ### LabValueCoding
+
 | Field Name | Type                  |
 |------------|-----------------------|
 | dbid       | Integer               |
@@ -179,6 +183,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | system     | String                |
 
 ### LabOrder
+
 | Field Name                | Type                                              |
 |---------------------------|---------------------------------------------------|
 | id                        | UUID                                              |
@@ -208,6 +213,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | labcorp_abn_url           | URL                                               |
 
 ### LabOrderReason
+
 | Field Name       | Type                            |
 |------------------|---------------------------------|
 | dbid             | Integer                         |
@@ -223,6 +229,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 ## Enumeration types
 
 ### TransmissionType
+
 | Value | Label  |
 |-------|--------|
 | F     | fax    |
@@ -230,6 +237,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | M     | manual |
 
 ### SpecimenCollectionType
+
 | Value | Label                  |
 |-------|------------------------|
 | L     | on location            |
@@ -237,6 +245,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | O     | other                  |
 
 ### CourtesyCopyType
+
 | Value | Label  |
 |-------|--------|
 | A     | account|
@@ -244,6 +253,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | P     | patient|
 
 ### ManualProcessingStatus
+
 | Value        | Label        |
 |--------------|--------------|
 | NEEDS_REVIEW | Needs Review |
@@ -252,6 +262,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | FLAGGED      | Flagged      |
 
 ### LabReasonMode
+
 | Value | Label       |
 |-------|-------------|
 | MO    | monitor     |
@@ -260,6 +271,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | UNK   | unknown     |
 
 ### LabTestOrderStatus
+
 | Value | Label                  |
 |-------|------------------------|
 | NE    | new                    |
@@ -271,3 +283,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | RE    | received               |
 | RV    | reviewed               |
 | IN    | inactive               |
+
+<br/>
+<br/>
+<br/>

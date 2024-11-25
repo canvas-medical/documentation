@@ -53,6 +53,7 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 ## Attributes
 
 ### ImagingOrder
+
 | Field Name          | Type                                  |
 |---------------------|---------------------------------------|
 | id                  | UUID                                  |
@@ -73,6 +74,7 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | delegated           | Boolean                               |
 
 ### ImagingReview
+
 | Field Name                   | Type                                                                  |
 |------------------------------|-----------------------------------------------------------------------|
 | id                           | UUID                                                                  |
@@ -90,6 +92,7 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | patient                      | [Patient](/sdk/data-patient/#patient)                                 |
 
 ### ImagingReport
+
 | Field Name         | Type                                        |
 |--------------------|---------------------------------------------|
 | id                 | UUID                                        |
@@ -111,6 +114,7 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 ## Enumeration types
 
 ### OrderStatus
+
 | Value       | Description      |
 |-------------|------------------|
 | proposed    | Proposed         |
@@ -129,6 +133,7 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | EIE         | Entered in Error |
 
 ### ReviewPatientCommunicationMethod
+
 | Value | Description                           |
 |-------|---------------------------------------|
 | DM    | delegate call, can leave message      |
@@ -139,12 +144,14 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | AR    | already reviewed with patient         |
 
 ### ReviewStatus
+
 | Value     | Label     |
 |-----------|-----------|
 | reviewing | reviewing |
 | reviewed  | reviewed  |
 
 ### DocumentReviewMode
+
 | Value | Label                    |
 |-------|--------------------------|
 | RR    | Review required          |
@@ -152,9 +159,13 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | RN    | Review not required      |
 
 ### ImagingReportSource
+
 | Value              | Label                         |
 |--------------------|-------------------------------|
 | RADIOLOGY_PATIENT  | Radiology Report From Patient |
 | VERBAL_PATIENT     | Verbal Report From Patient    |
 | DIRECTLY_RADIOLOGY | Directly Radiology Report     |
-```
+
+<br/>
+<br/>
+<br/>
