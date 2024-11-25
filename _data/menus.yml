@@ -75,6 +75,9 @@ api_resources:
  - title: "CoverageEligibilityResponse"
    url: /api/coverageeligibilityresponse/
    identifier: api_coverageeligibilityresponse
+ - title: "DetectedIssue"
+   url: /api/detectedissue/
+   identifier: api_detectedissue
  - title: "Device"
    url: /api/device/
    identifier: api_device
@@ -234,6 +237,15 @@ api_coverageeligibilityresponse:
    url: /api/coverageeligibilityresponse/#read
  - title: "CoverageEligibilityResponse Search"
    url: /api/coverageeligibilityresponse/#search
+api_detectedissue:
+ - title: "DetectedIssue Create"
+   url: /api/detectedissue/#create
+ - title: "DetectedIssue Read"
+   url: /api/detectedissue/#read
+ - title: "DetectedIssue Update"
+   url: /api/detectedissue/#update
+ - title: "DetectedIssue Search"
+   url: /api/detectedissue/#search
 api_device:
  - title: "Device Read"
    url: /api/device/#read
@@ -460,6 +472,7 @@ sdk_overview:
    identifier: data_module
  - title: "Effects Module"
    url: /sdk/effects/
+   identifier: effects_module
  - title: "Events Module"
    url: /sdk/events/
  - title: "Handlers Module"
@@ -476,13 +489,24 @@ sdk_handlers:
   - title: "CronTask"
     url: /sdk/handlers-crontask/
 
+effects_module:
+ - title: "Protocol Cards"
+   url: /sdk/effect-protocol-cards/
+   description: Calls to action in a patient's chart, commonly used for decision support intervention.
+ - title: "Banner Alerts"
+   url: /sdk/effect-banner-alerts/
+   description: Contextual information in a patient's chart.
+ - title: "Chart Summary Configuration"
+   url: /sdk/effect-chart-summary-configuration/
+   description: Rearrange or hide summary sections in a patient's chart.
+
 data_module:
  - title: "Allergy Intolerance"
    url: /sdk/data-allergy-intolerance/
    description: Harmful or undesired physiological responses associated with exposure to a substance.
  - title: "Command"
    url: /sdk/data-command/
-   description: Building blocks of many end-user workflows in Canvas.
+   description: Structured units of documentation in a patient's chart.
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
@@ -510,6 +534,12 @@ data_module:
  - title: "Questionnaire"
    url: /sdk/data-questionnaire
    description: Groups of coded questions and the coded patient responses.
+ - title: "Staff"
+   url: /sdk/data-staff
+   description: Data associated with Staff members.
+ - title: "Task"
+   url: /sdk/data-task
+   description: Data associated with Tasks.
  - title: "Value Sets"
    url: /sdk/data-value-sets/
    description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.

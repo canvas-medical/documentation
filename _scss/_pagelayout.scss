@@ -31,20 +31,24 @@
             grid-column-gap: 14px;
         }
         &__wrapper {
-            margin-left: auto;
-            margin-right: auto;
-            @media (min-width: $breakpoint-xl) {
-                display: grid;
-                grid-template-columns: minmax(600px, 800px) 250px;
-                grid-column-gap: $container-padding;
-            }
-        }
-        &__content {
+            display: flex;
+            justify-content: center;
             max-height: var(--body-height);
             overflow-y: auto;
+        }
+        &__content {
+            min-width: 600px;
+            max-width: 800px;
             @media (max-width: $breakpoint-md) {
                 padding: 20px;
             }
+        }
+        .sidepanels {
+            min-width: 250px;
+            position: sticky;
+            top: 20px; /* Adjust the top spacing */
+            margin-left: 20px;
+            transition: top 0.1s ease-out; /* Smooth transition for the sticky sidebar scrolling */
         }
     }
     // Large docs layout with ToC 
@@ -59,12 +63,9 @@
             grid-template-columns: 280px 1fr;
             grid-column-gap: 14px;
         }
-        &__wrapper {
-            max-width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-        }
         &__content {
+            display: flex;
+            justify-content: center;
             max-height: var(--body-height);
             overflow-y: auto;
         }

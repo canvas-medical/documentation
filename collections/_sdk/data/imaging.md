@@ -157,3 +157,7 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | RADIOLOGY_PATIENT  | Radiology Report From Patient |
 | VERBAL_PATIENT     | Verbal Report From Patient    |
 | DIRECTLY_RADIOLOGY | Directly Radiology Report     |
+=======
+reviews = ImagingReview.objects.filter(is_released_to_patient=False)
+reports = ImagingReport.objects.filter(requires_signature=True)
+```
