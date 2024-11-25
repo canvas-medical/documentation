@@ -83,6 +83,7 @@ medications = Medication.objects.find(AdhdMedications)
 ## Attributes
 
 ### Medication
+
 | Field Name                     | Type                                  |
 |--------------------------------|---------------------------------------|
 | id                             | UUID                                  |
@@ -101,6 +102,7 @@ medications = Medication.objects.find(AdhdMedications)
 | erx_quantity                   | String                                |
 
 ### MedicationCoding
+
 | Field Name    | Type                      |
 |---------------|---------------------------|
 | dbid          | Integer                   |
@@ -110,3 +112,7 @@ medications = Medication.objects.find(AdhdMedications)
 | display       | String                    |
 | user_selected | Boolean                   |
 | medication    | [Medication](#medication) |
+
+<br/>
+<br/>
+<br/>

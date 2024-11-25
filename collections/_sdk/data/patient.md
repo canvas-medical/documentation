@@ -38,6 +38,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ## Attributes
 
 ### Patient
+
 | Field Name               | Type                      |
 |--------------------------|---------------------------|
 | id                       | String                    |
@@ -79,6 +80,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ## Enumeration types
 
 ### SexAtBirth
+
 | Value             | Label  |
 |-------------------|--------|
 | F                 | female |
@@ -86,3 +88,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | O                 | other  |
 | UNK               | unknown |
 | "" (empty string) | ""      |
+
+<br/>
+<br/>
+<br/>

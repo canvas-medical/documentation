@@ -63,6 +63,7 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 ## Attributes
 
 ### DetectedIssue
+
 | Field Name              | Type                                  |
 |-------------------------|---------------------------------------|
 | id                      | UUID                                  |
@@ -84,6 +85,7 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 | detail                  | String                                |
 
 ### DetectedIssueEvidence
+
 | Field Name     | Type                                                    |
 |----------------|---------------------------------------------------------|
 | dbid           | Integer                                                 |
@@ -93,3 +95,7 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 | display        | String                                                  |
 | user_selected  | Boolean                                                 |
 | detected_issue | [DetectedIssue](/sdk/data-detectedissue/#detectedissue) |
+
+<br/>
+<br/>
+<br/>

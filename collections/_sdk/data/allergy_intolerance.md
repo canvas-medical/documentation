@@ -117,3 +117,7 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 | display             | String                                                                  |
 | user_selected       | Boolean                                                                 |
 | allergy_intolerance | [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance) |
+
+<br/>
+<br/>
+<br/>

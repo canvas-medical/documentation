@@ -47,6 +47,7 @@ devices = Devices.objects.filter(manufacturer="ACME Biomedical", lot_number="M32
 ## Attributes
 
 ### Device
+
 | Field Name                  | Type                                  |
 |-----------------------------|---------------------------------------|
 | id                          | UUID                                  |
@@ -79,3 +80,7 @@ devices = Devices.objects.filter(manufacturer="ACME Biomedical", lot_number="M32
 | manufacturing_date          | Date                                  |
 | manufacturer                | String                                |
 | procedure_id                | Integer                               |
+
+<br/>
+<br/>
+<br/>
