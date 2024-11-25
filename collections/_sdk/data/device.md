@@ -70,7 +70,7 @@ devices = Devices.objects.filter(manufacturer="ACME Biomedical", lot_number="M32
 | mri_safety_status           | String                                |
 | version_model_number        | String                                |
 | company_name                | String                                |
-| gmdnPTName                  | Text                                  |
+| gmdnPTName                  | String                                |
 | status                      | String                                |
 | expiration_date             | Date                                  |
 | expiration_date_original    | String                                |

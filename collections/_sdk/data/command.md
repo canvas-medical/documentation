@@ -50,6 +50,6 @@ commands = Command.objects.filter(state="committed")
 | state              | String                                |
 | patient            | [Patient](/sdk/data-patient/#patient) |
 | note_id            | Integer                               |
-| schema_key         | Text                                  |
+| schema_key         | String                                |
 | data               | JSON                                  |
 | origination_source | String                                |

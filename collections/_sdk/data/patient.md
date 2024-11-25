@@ -64,12 +64,12 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | active                   | Boolean                   |
 | deceased                 | Boolean                   |
 | deceased_datetime        | DateTime                  |
-| deceased_cause           | Text                      |
-| deceased_comment         | Text                      |
+| deceased_cause           | String                    |
+| deceased_comment         | String                    |
 | other_gender_description | String                    |
 | social_security_number   | String                    |
-| administrative_note      | Text                      |
-| clinical_note            | Text                      |
+| administrative_note      | String                    |
+| clinical_note            | String                    |
 | mothers_maiden_name      | String                    |
 | multiple_birth_indicator | Boolean                   |
 | birth_order              | Integer                   |

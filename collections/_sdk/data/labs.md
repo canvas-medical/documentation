@@ -144,7 +144,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | deleted                      | Boolean                               |
 | committer                    | CanvasUser                            |
 | entered_in_error             | CanvasUser                            |
-| internal_comment             | Text                                  |
+| internal_comment             | String                                |
 | message_to_patient           | String                                |
 | status                       | String                                |
 | patient                      | [Patient](/sdk/data-patient/#patient) |
@@ -158,13 +158,13 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | created            | DateTime                |
 | modified           | DateTime                |
 | report             | [LabReport](#labreport) |
-| value              | Text                    |
+| value              | String                  |
 | units              | String                  |
 | abnormal_flag      | String                  |
 | reference_range    | String                  |
 | low_threshold      | String                  |
 | high_threshold     | String                  |
-| comment            | Text                    |
+| comment            | String                  |
 | observation_status | String                  |
 
 ### LabValueCoding

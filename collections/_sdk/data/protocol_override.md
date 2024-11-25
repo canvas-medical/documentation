@@ -71,7 +71,7 @@ overrides = ProtocolOverride.objects.filter(status="active")
 | is_snooze        | Boolean                               |
 | snooze_date      | Date                                  |
 | snoozed_days     | Integer                               |
-| snooze_comment   | Text                                  |
+| snooze_comment   | String                                |
 | narrative        | String                                |
 | cycle_quantity   | Integer                               |
 | cycle_unit       | [IntervalUnit](#intervalunit)         |

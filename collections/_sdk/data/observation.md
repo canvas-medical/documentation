@@ -114,10 +114,10 @@ observations = Observation.objects.find(Weight)
 | patient            | [Patient](/sdk/data-patient/#patient) |
 | is_member_of       | [Observation](#observation)           |
 | category           | String                                |
-| units              | Text                                  |
-| value              | Text                                  |
+| units              | String                                |
+| value              | String                                |
 | note_id            | Integer                               |
-| name               | Text                                  |
+| name               | String                                |
 | effective_datetime | DateTime                              |
 
 ### ObservationCoding
@@ -132,15 +132,15 @@ observations = Observation.objects.find(Weight)
 | observation   | [Observation](#observation) |
 
 ### ObservationComponent
-| Field Name          | Type                       |
-|---------------------|----------------------------|
-| dbid                | Integer                    |
-| created             | DateTime                   |
-| modified            | DateTime                   |
+| Field Name          | Type                        |
+|---------------------|-----------------------------|
+| dbid                | Integer                     |
+| created             | DateTime                    |
+| modified            | DateTime                    |
 | observation         | [Observation](#observation) |
-| value_quantity      | Text                       |
-| value_quantity_unit | Text                       |
-| name                | Text                       |
+| value_quantity      | String                      |
+| value_quantity_unit | String                      |
+| name                | String                      |
 
 ### ObservationComponentCoding
 | Field Name            | Type                                |

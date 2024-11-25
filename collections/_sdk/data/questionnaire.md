@@ -156,7 +156,7 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | expected_completion_time  | Float    |
 | can_originate_in_charting | Boolean  |
 | use_case_in_charting      | String   |
-| scoring_function_name     | Text     |
+| scoring_function_name     | String   |
 | scoring_code_system       | String   |
 | scoring_code              | String   |
 | code_system               | String   |
@@ -164,7 +164,7 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | search_tags               | String   |
 | questions                 | Question |
 | use_in_shx                | Boolean  |
-| carry_forward             | Text     |
+| carry_forward             | String   |
 
 ### QuestionnaireQuestionMap
 | Field Name    | Type                            |
@@ -207,7 +207,7 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | questionnaire         | [Questionnaire](#questionnaire)   |
 | question              | [Question](#question)             |
 | response_option       | [ResponseOption](#responseoption) |
-| response_option_value | Text                              |
-| questionnaire_state   | Text                              |
-| interview_state       | Text                              |
+| response_option_value | String                            |
+| questionnaire_state   | String                            |
+| interview_state       | String                            |
 | comment               | String                            |

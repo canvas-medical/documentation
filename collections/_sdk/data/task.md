@@ -88,7 +88,7 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 | modified         | DateTime                        |
 | creator          | [Staff](/sdk/data-staff/#staff) |
 | task             | [Task](/sdk/data-task/#task)    |
-| body             | Text                            |
+| body             | String                          |
 
 ### TaskLabel
 
