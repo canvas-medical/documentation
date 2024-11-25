@@ -43,3 +43,39 @@ from canvas_sdk.v1.data.device import Device
 
 devices = Devices.objects.filter(manufacturer="ACME Biomedical", lot_number="M320")
 ```
+
+## Attributes
+
+### Device
+| Field Name                  | Type                                  |
+|-----------------------------|---------------------------------------|
+| id                          | UUID                                  |
+| dbid                        | Integer                               |
+| created                     | DateTime                              |
+| modified                    | DateTime                              |
+| originator                  | CanvasUser                            |
+| committer                   | CanvasUser                            |
+| entered_in_error            | CanvasUser                            |
+| patient                     | [Patient](/sdk/data-patient/#patient) |
+| note_id                     | Integer                               |
+| deleted                     | Boolean                               |
+| labeled_contains_NRL        | Boolean                               |
+| assigning_authority         | String                                |
+| scoping_entity              | String                                |
+| udi                         | String                                |
+| di                          | String                                |
+| issuing_agency              | String                                |
+| lot_number                  | String                                |
+| brand_name                  | String                                |
+| mri_safety_status           | String                                |
+| version_model_number        | String                                |
+| company_name                | String                                |
+| gmdnPTName                  | String                                |
+| status                      | String                                |
+| expiration_date             | Date                                  |
+| expiration_date_original    | String                                |
+| serial_number               | String                                |
+| manufacturing_date_original | String                                |
+| manufacturing_date          | Date                                  |
+| manufacturer                | String                                |
+| procedure_id                | Integer                               |

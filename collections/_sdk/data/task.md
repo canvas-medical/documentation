@@ -62,33 +62,33 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 
 ### Task
 
-| Field Name       | Type                              |
-|------------------|-----------------------------------|
-| id               | UUID                              |
-| dbid             | Integer                           |
-| created          | DateTime                          |
-| modified         | DateTime                          |
-| creator          | [Staff](/sdk/data-staff/)         |
-| assignee         | [Staff](/sdk/data-staff/)         |
-| patient          | [Patient](/sdk/data-patient/)     |
-| task_type        | [TaskType](#tasktype)             |
-| tag              | String                            |
-| title            | String                            |
-| due              | DateTime                          |
-| due_event        | [EventType](#eventtype)           |
-| status           | [TaskStatus](#taskstatus)         |
+| Field Name       | Type                                  |
+|------------------|---------------------------------------|
+| id               | UUID                                  |
+| dbid             | Integer                               |
+| created          | DateTime                              |
+| modified         | DateTime                              |
+| creator          | [Staff](/sdk/data-staff/#staff)       |
+| assignee         | [Staff](/sdk/data-staff/#staff)       |
+| patient          | [Patient](/sdk/data-patient/#patient) |
+| task_type        | [TaskType](#tasktype)                 |
+| tag              | String                                |
+| title            | String                                |
+| due              | DateTime                              |
+| due_event        | [EventType](#eventtype)               |
+| status           | [TaskStatus](#taskstatus)             |
 
 ### TaskComment
 
-| Field Name       | Type                              |
-|------------------|-----------------------------------|
-| id               | UUID                              |
-| dbid             | Integer                           |
-| created          | DateTime                          |
-| modified         | DateTime                          |
-| creator          | [Staff](/sdk/data-staff/)         |
-| task             | [Task](/sdk/data-task/)           |
-| body             | Text                              |
+| Field Name       | Type                            |
+|------------------|---------------------------------|
+| id               | UUID                            |
+| dbid             | Integer                         |
+| created          | DateTime                        |
+| modified         | DateTime                        |
+| creator          | [Staff](/sdk/data-staff/#staff) |
+| task             | [Task](/sdk/data-task/#task)    |
+| body             | String                          |
 
 ### TaskLabel
 

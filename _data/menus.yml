@@ -510,6 +510,9 @@ data_module:
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
+ - title: "Detected Issue"
+   url: /sdk/data-detected-issue/
+   description: Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient.
  - title: "Device"
    url: /sdk/data-device/
    description: Type of a manufactured item that is used in the provision of healthcare.

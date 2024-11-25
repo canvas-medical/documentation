@@ -99,3 +99,115 @@ from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
 
 questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 ```
+
+## Attributes
+
+### ResponseOptionSet
+| Field Name  | Type     |
+|-------------|----------|
+| dbid        | Integer  |
+| created     | DateTime |
+| modified    | DateTime |
+| status      | String   |
+| name        | String   |
+| code_system | String   |
+| code        | String   |
+| type        | String   |
+| use_in_shx  | Boolean  |
+
+### ResponseOption
+| Field Name          | Type                                    |
+|---------------------|-----------------------------------------|
+| dbid                | Integer                                 |
+| created             | DateTime                                |
+| modified            | DateTime                                |
+| status              | String                                  |
+| name                | String                                  |
+| code                | String                                  |
+| code_description    | String                                  |
+| value               | String                                  |
+| response_option_set | [ResponseOptionSet](#responseoptionset) |
+| ordering            | Integer                                 |
+
+### Question
+| Field Name          | Type                                    |
+|---------------------|-----------------------------------------|
+| id                  | UUID                                    |
+| dbid                | Integer                                 |
+| created             | DateTime                                |
+| modified            | DateTime                                |
+| status              | String                                  |
+| name                | String                                  |
+| response_option_set | [ResponseOptionSet](#responseoptionset) |
+| acknowledge_only    | Boolean                                 |
+| show_prologue       | Boolean                                 |
+| code_system         | String                                  |
+| code                | String                                  |
+
+### Questionnaire
+| Field Name                | Type     |
+|---------------------------|----------|
+| id                        | UUID     |
+| dbid                      | Integer  |
+| created                   | DateTime |
+| modified                  | DateTime |
+| status                    | String   |
+| name                      | String   |
+| expected_completion_time  | Float    |
+| can_originate_in_charting | Boolean  |
+| use_case_in_charting      | String   |
+| scoring_function_name     | String   |
+| scoring_code_system       | String   |
+| scoring_code              | String   |
+| code_system               | String   |
+| code                      | String   |
+| search_tags               | String   |
+| questions                 | Question |
+| use_in_shx                | Boolean  |
+| carry_forward             | String   |
+
+### QuestionnaireQuestionMap
+| Field Name    | Type                            |
+|---------------|---------------------------------|
+| dbid          | Integer                         |
+| created       | DateTime                        |
+| modified      | DateTime                        |
+| status        | String                          |
+| questionnaire | [Questionnaire](#questionnaire) |
+| question      | [Question](#question)           |
+
+### Interview
+| Field Name           | Type                                  |
+|----------------------|---------------------------------------|
+| id                   | UUID                                  |
+| dbid                 | Integer                               |
+| deleted              | Boolean                               |
+| committer            | CanvasUser                            |
+| entered_in_error     | CanvasUser                            |
+| status               | String                                |
+| name                 | String                                |
+| language_id          | Integer                               |
+| use_case_in_charting | String                                |
+| patient              | [Patient](/sdk/data-patient/#patient) |
+| note_id              | Integer                               |
+| appointment_id       | Integer                               |
+| questionnaires       | Questionnaire                         |
+| progress_status      | String                                |
+| created              | DateTime                              |
+| modified             | DateTime                              |
+
+### InterviewQuestionResponse
+| Field Name            | Type                              |
+|-----------------------|-----------------------------------|
+| dbid                  | Integer                           |
+| created               | DateTime                          |
+| modified              | DateTime                          |
+| status                | String                            |
+| interview             | [Interview](#interview)           |
+| questionnaire         | [Questionnaire](#questionnaire)   |
+| question              | [Question](#question)             |
+| response_option       | [ResponseOption](#responseoption) |
+| response_option_value | String                            |
+| questionnaire_state   | String                            |
+| interview_state       | String                            |
+| comment               | String                            |

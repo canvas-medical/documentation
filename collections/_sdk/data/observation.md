@@ -97,3 +97,69 @@ from canvas_sdk.value_set.v2022.physical_exam import Weight
 
 observations = Observation.objects.find(Weight)
 ```
+
+## Attributes
+
+### Observation
+| Field Name         | Type                                  |
+|--------------------|---------------------------------------|
+| id                 | UUID                                  |
+| dbid               | Integer                               |
+| created            | DateTime                              |
+| modified           | DateTime                              |
+| originator         | CanvasUser                            |
+| committer          | CanvasUser                            |
+| entered_in_error   | CanvasUser                            |
+| deleted            | Boolean                               |
+| patient            | [Patient](/sdk/data-patient/#patient) |
+| is_member_of       | [Observation](#observation)           |
+| category           | String                                |
+| units              | String                                |
+| value              | String                                |
+| note_id            | Integer                               |
+| name               | String                                |
+| effective_datetime | DateTime                              |
+
+### ObservationCoding
+| Field Name    | Type                       |
+|---------------|----------------------------|
+| dbid          | Integer                    |
+| system        | String                     |
+| version       | String                     |
+| code          | String                     |
+| display       | String                     |
+| user_selected | Boolean                    |
+| observation   | [Observation](#observation) |
+
+### ObservationComponent
+| Field Name          | Type                        |
+|---------------------|-----------------------------|
+| dbid                | Integer                     |
+| created             | DateTime                    |
+| modified            | DateTime                    |
+| observation         | [Observation](#observation) |
+| value_quantity      | String                      |
+| value_quantity_unit | String                      |
+| name                | String                      |
+
+### ObservationComponentCoding
+| Field Name            | Type                                |
+|-----------------------|-------------------------------------|
+| dbid                  | Integer                             |
+| system                | String                              |
+| version               | String                              |
+| code                  | String                              |
+| display               | String                              |
+| user_selected         | Boolean                             |
+| observation_component | [ObservationComponent](#observation) |
+
+### ObservationValueCoding
+| Field Name    | Type                       |
+|---------------|----------------------------|
+| dbid          | Integer                    |
+| system        | String                     |
+| version       | String                     |
+| code          | String                     |
+| display       | String                     |
+| user_selected | Boolean                    |
+| observation   | [Observation](#observation) |
