@@ -499,6 +499,9 @@ effects_module:
  - title: "Chart Summary Configuration"
    url: /sdk/effect-chart-summary-configuration/
    description: Rearrange or hide summary sections in a patient's chart.
+ - title: "Tasks"
+   url: /sdk/effect-tasks/
+   description: Create or update tasks.
 
 data_module:
  - title: "Allergy Intolerance"
