@@ -47,6 +47,17 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
+        <a href="/guides/staying-on-top-of-tasks">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Staying on Top of Tasks</span>
+                </div>
+                <div class="cardBody">
+                    Create tasks via API? Listen for completion with a plugin!
+                </div>
+            </div>
+        </a>
         <a href="/guides/optimize-patient-intake">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
