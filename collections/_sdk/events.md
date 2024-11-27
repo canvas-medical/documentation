@@ -738,6 +738,38 @@ These events fire during the command lifecycle.
   </tbody>
 </table>
 
+
+##### Context Overview
+
+Each command lifecycle event provides specific context to the handler, depending on the stage of the command lifecycle.
+
+**Base Context (All Events Except `PRE_COMMAND_ORIGINATE`)**:
+  
+```json
+  {
+    "note": {"uuid": "note-123"},
+    "patient": {"id": "patient-123"},
+    "fields": {"key": "value"}
+  }
+```
+
+  - `note.uuid`: The unique identifier of the note associated with the command.
+  - `patient.id`: The unique identifier of the patient associated with the note.
+  - `fields`: A dictionary containing command-specific details. See examples for each command.
+
+
+**`PRE_COMMAND_ORIGINATE` Context**:
+  Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` event context only includes:
+  
+```json
+  {
+   "fields": {"key": "value"}
+  }
+```
+  - `fields`: Contains details specific to the command being originated.
+
+---
+
 #### Allergy Command
 
 <table>
@@ -898,54 +930,76 @@ These events fire during the command lifecycle.
   <tbody>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_COMMIT</td>
-      <td></td>
+      <td>Occurs after the command has been committed.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_DELETE</td>
-      <td></td>
+      <td>Occurs after the command has been deleted.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
+      <td>Occurs after the command has been marked as entered in error.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
+      <td>Occurs after a command action has been executed.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ORIGINATE</td>
-      <td></td>
+      <td>Occurs after the command has been originated.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_UPDATE</td>
-      <td></td>
+      <td>Occurs after the command has been updated.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_COMMIT</td>
-      <td></td>
+      <td>Occurs before the command is committed.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_DELETE</td>
-      <td></td>
+      <td>Occurs before the command is deleted.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
+      <td>Occurs before the command is marked as entered in error.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
+      <td>Occurs before a command action is executed.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
+      <td>Occurs before the command is originated.</td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_UPDATE</td>
-      <td></td>
+      <td>Occurs before the command is updated.	</td>
     </tr>
   </tbody>
 </table>
+
+##### Clipboard Fields Context
+
+The Clipboard Command provides the following fields in its context:
+
+| Field  | Type     | Description                                   |
+|--------|----------|-----------------------------------------------|
+| `text` | _string_ | The raw text content copied to the clipboard. |
+
+Refer to the [base context documentation](#context-overview) for additional details about the full context structure.
+
+```json
+{
+  "note": {"uuid": "note-123"},
+  "patient": {"id": "patient-123"},
+  "fields": {
+    "text": "Patient complains of persistent headaches for the past two weeks."
+  }
+}
+```
+
+---
 
 #### Close Goal Command
 

@@ -25,6 +25,17 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
+         <a href="/guides/scribe-ai-parser">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Scribe Parser Plugin</span>
+                </div>
+                <div class="cardBody">
+                    Creating, Implementing, and Extending a Scribe Parser
+                </div>
+            </div>
+        </a>
         <a href="/guides/creating-webhooks-with-the-canvas-sdk">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
