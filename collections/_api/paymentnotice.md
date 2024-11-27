@@ -50,7 +50,7 @@ sections:
           - name: status
             type: string
             required_in: create,update
-            description: Required by the FHIR spec.
+            description: The status of the resource instance.
             enum_options: 
                 - value: active
           - name: request
