@@ -138,7 +138,7 @@ sections:
             type: string
           - name: request
             type: string
-            description: The patient reference associated to the PaymentNotice in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            description: The patient reference associated with the PaymentNotice in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
         endpoints: [create, read, search]
         create:
           description: >-
