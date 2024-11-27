@@ -636,6 +636,14 @@ These events fire as a result of records being created, updated, or deleted.
       <td>TASK_LABELS_ADJUSTED</td>
       <td>Occurs when a task's labels are changed.</td>
     </tr>
+    <tr>
+      <td>TASK_COMPLETED</td>
+      <td>Occurs when a task is set to completed.</td>
+    </tr>
+    <tr>
+      <td>TASK_CLOSED</td>
+      <td>Occurs when a task is set to closed.</td>
+    </tr>
   </tbody>
 </table>
 
