@@ -161,7 +161,7 @@ class NablaPlanParser(CommandParser):
     def parse(self, content: ParsedContent, context: Any = None) -> Sequence[PlanCommand]:
         """Parses the plan section of a Nabla transcript."""
         return [PlanCommand(narrative=line) for line in content["arguments"]]
-````
+```
 ---
 
 ## Extending the Parser
