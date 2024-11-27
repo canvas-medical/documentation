@@ -41,7 +41,7 @@ There are 4 commands for clinicans and staff to manage coding gaps"
 - Create Coding Gap serves as a manual way to add coding gaps to the chart. Staff have the ability to create and validate in the same step. 
 - Validate Coding Gap allows the care team (often CDI Reviewers) to review the external date and confirm that the gap should be surfaced to a clinican. 
 - Assess Coding Gap allows clinicians to accept or refute the diagnose and choose the appropiate diagnosis to add to the visit. 
-- Defer Coding Gap allows clinicians to acknowledge the gap and snooze it for a period of time so that they can return to it at a later date. This may be necessary if the patient is unable to provide enought detail or they run out of time during a visit. When recapture rate is an important metric, this allow reporting to reflect an action was taken. 
+- Defer Coding Gap allows clinicians to acknowledge the gap and snooze it for a period of time so that they can return to it at a later date. This may be necessary if the patient is unable to provide enough detail or they run out of time during a visit. When recapture rate is an important metric, this allows reporting to reflect an action was taken. 
 
 By leveraging intuitive tools and streamlined workflows, you can simplify HCC coding and focus on delivering patient-centered care. This approach ensures accuracy, efficiency, and confidence in addressing risk adjustment challenges.
 
