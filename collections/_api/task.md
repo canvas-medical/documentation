@@ -9,7 +9,7 @@ sections:
         description: >-
           A task to be performed.<br><br>[http://hl7.org/fhir/R4/task.html](http://hl7.org/fhir/R4/task.html)
           <br><br>
-          To read more about tasks in Canvas see [this zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List).
+          To read more about tasks in Canvas see [this article](https://canvas-medical.help.usepylon.com/articles/8460447495-task-management).
         attributes:
           - name: id
             description: The identifier of the task.
@@ -24,7 +24,7 @@ sections:
 
               - Canvas supports assigning a task to a group/team. This optional field requires a reference to the team from the [FHIR Group](/api/group) endpoint. In the Canvas UI, this will display under the field **team** in the task card.
             read_and_search_description: >-
-              - When reading our a FHIR Task objects, a [permalink](https://canvas-medical.zendesk.com/hc/en-us/articles/13341828094227-Linking-Resources-to-Tasks) URL to the task may be supplied. This link will take you directly to the task in the Canvas UI.
+              - When reading our a FHIR Task objects, a permalink URL to the task may be supplied. This link will take you directly to the task in the Canvas UI.
             attributes:
                 - name: url
                   type: string
@@ -217,7 +217,7 @@ sections:
           example_response: task-create-response
           description: >-
             Create a task.<br><br>
-            Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). Open tasks will also display in the [Task Panel](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List).
+            Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.help.usepylon.com/articles/8460447495-task-management#tasks-in-the-patient-chart-12). Open tasks will also display in the [Task Panel](https://canvas-medical.help.usepylon.com/articles/8460447495-task-management#task-list-16).
         read:
           description: Read a Task resource.
           responses: [200, 401, 403, 404]

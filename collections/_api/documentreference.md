@@ -12,17 +12,18 @@ sections:
           A Document Reference can represent many different PDFs generated in Canvas:
           
 
-          - A [Letter](https://canvas-medical.zendesk.com/hc/en-us/articles/360057339634-Letters) that has been faxed or printed from the patient's chart.
+          - A [Letter](https://canvas-medical.help.usepylon.com/articles/8181146406-letters) that has been faxed or printed from the patient's chart.
           
-          - All documents uploaded via [Data Integration](https://canvas-medical.zendesk.com/hc/en-us/articles/360056078034-Data-Integration-Overview) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
+          - All documents uploaded via [Data Integration](exclude_attribtues_in
+https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
           
-          - [POC Lab Command's](https://canvas-medical.zendesk.com/hc/en-us/articles/360055629214-Point-of-Care-POC-Tests) committed on the Patient's chart
+          - [POC Lab Command's](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests) committed on the Patient's chart
           
-          - [Clinical Notes](https://canvas-medical.zendesk.com/hc/en-us/articles/360057949073-Printing-a-Chart-Note) representing a PDF of each locked note. This also includes superseded versions on notes.
+          - [Clinical Notes](https://canvas-medical.help.usepylon.com/articles/1679996479-print-patient-chart) representing a PDF of each locked note. This also includes superseded versions on notes.
           
-          - Any [Educational Material](https://canvas-medical.zendesk.com/hc/en-us/articles/4999882305939-Educational-Material-Command) committed on a patient's chart.
+          - Any [Educational Material](https://canvas-medical.help.usepylon.com/articles/4966226408-educational-material-command) committed on a patient's chart.
           
-          - Any [Invoices](https://canvas-medical.zendesk.com/hc/en-us/articles/4406239284499-Statements-and-Invoicing) generated for a patient.
+          - Any [Invoices](https://canvas-medical.help.usepylon.com/articles/5985827257-statements-and-invoicing) generated for a patient.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

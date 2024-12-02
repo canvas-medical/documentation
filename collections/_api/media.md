@@ -9,7 +9,7 @@ sections:
         description: >-
           A photo, video, or audio recording acquired or used in healthcare.<br><br>
           [https://hl7.org/fhir/R4/media.html](https://hl7.org/fhir/R4/media.html)<br><br>
-          FHIR Media maps to a [Visual Exam Finding Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057916493-Command-Visual-Exam-Finding) in Canvas.
+          FHIR Media maps to a [Visual Exam Finding Command](https://canvas-medical.help.usepylon.com/articles/4119751144-command-visual-exam-finding) in Canvas.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

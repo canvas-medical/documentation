@@ -11,9 +11,9 @@ sections:
           [https://hl7.org/fhir/R4/medicationstatement.html](https://hl7.org/fhir/R4/medicationstatement.html)<br><br>
           MedicationStatement resources can be created in two ways in the Canvas UI:
 
-          - [Prescribe commands](https://canvas-medical.zendesk.com/hc/en-us/articles/360063523313-Prescribing-a-Medication) create [MedicationRequest](/api/medicationrequest/) resources, but these `Prescribe` commands are also represented as MedicationStatement resources. MedicationStatement resources that were created with a `Prescribe` command will contain a reference to the related MedicationRequest resource in the `derivedFrom` attribute.
+          - [Prescribe commands](https://canvas-medical.help.usepylon.com/articles/5128727084-managing-medication-commands#prescribe-command-7) create [MedicationRequest](/api/medicationrequest/) resources, but these `Prescribe` commands are also represented as MedicationStatement resources. MedicationStatement resources that were created with a `Prescribe` command will contain a reference to the related MedicationRequest resource in the `derivedFrom` attribute.
 
-          - MedicationStatement resources can also be created with the [Medication Statement command](https://canvas-medical.zendesk.com/hc/en-us/articles/1500004007942-Documenting-a-Historical-Medication)
+          - MedicationStatement resources can also be created with the [Medication Statement command](https://canvas-medical.help.usepylon.com/articles/5128727084-managing-medication-commands#medication-statement-command-1)
         attributes:
           - name: id
             description: The identifier of the MedicationStatement.

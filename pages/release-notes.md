@@ -5,7 +5,7 @@ title: "Release Notes"
 ---
 # Release Notes
 
-Check out the latest features and fixes for Canvas. This page covers releases beginning in December of 2023. Prior releases can be found in our legacy [knowledge center](https://canvas-medical.zendesk.com/hc/en-us/sections/360010471754-Release-Documents). 
+Check out the latest features and fixes for Canvas. This page covers releases beginning in December of 2023. 
 <br>
 <br>
 
