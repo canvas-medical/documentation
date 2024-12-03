@@ -13,14 +13,14 @@ sections:
           See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/1500001122421-Collect-a-payment) for information about how to collect payments.
         attributes:
           - name: id
-            description: >-
-              The identifier of the payment notice
+            description: The identifier of the payment notice.
             type: string
-            required_in: create,update
+            required_in: update
+            exclude_in: create
           - name: extension
             type: array[json]
-            description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The copayment extensions contains references to claims used for copayments.
-            create_description: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The extension array of this resource supports a `copayments` extension to denote Claims referenced with copayments. Use the below matching `url` field for the copayment extension and the appropriate `valueReference` extension if you aim to use PaymentNotice for producing copayments. If you are not denoting a copayment, then use PaymentNotice without the copayment extension for other type of payments.
+            description_for_all_endpoints: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The copayment extensions contains references to claims used for copayments.
+            create_description: If you are not denoting a copayment, then use PaymentNotice without the copayment extension for other type of payments.
             attributes:
               - name: url
                 type: string
@@ -46,32 +46,57 @@ sections:
                       - name: reference
                         type: string
                         required_in: create
-                        description: The reference string of the Claim used for copayments in the format of `"Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"`.
+                        description: The reference string of the [Claim](/api/claim) used for copayments in the format of `"Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"`.
           - name: status
             type: string
             required_in: create,update
-            description: >-
-              Required by the FHIR spec. Canvas only supports payments with a status of **active**.
+            description: The status of the resource instance.
+            enum_options: 
+                - value: active
           - name: request
             type: json
             required_in: create,update
             description: >-
               A reference to the patient whose balance this payment is being applied to.
+            attributes:
+                - name: reference
+                  type: string
+                  required_in: create,update
+                  description: The reference string of the patient in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+                - name: type
+                  type: string
+                  description: Type the reference refers to (e.g. "Patient").
           - name: created
             type: datetime
             required_in: create,update
             description: >-
-              Required by the FHIR spec. Canvas recommends sending the current datetime on create; however, the value returned by the search interaction will be the creation timestamp of the actual database record.
+              Required by the FHIR spec. Canvas recommends sending the current date on create; however, the value returned by the search interaction will be the creation timestamp of the actual database record in Canvas.
           - name: payment
             type: json
             required_in: create,update
-            description: >-
-              The `payment` field is required by FHIR, but is not used by Canvas. Canvas recommends sending an empty JSON object.
+            description_for_all_endpoints: >-
+              The `payment` field is required by FHIR, but is not used by Canvas. 
+            create_description: Canvas recommends sending an empty JSON object.
+            exclude_attributes_in: create,update
+            attributes:
+                - name: display
+                  exclude_in: create,update
+                  description: Text alternative for the resource.
+                  enum_options: 
+                    - value: unused
           - name: recipient
             type: json
             required_in: create,update
-            description: >-
-              The `recipient` field is required by FHIR, but is not used by Canvas. Canvas recommends sending an empty JSON object.
+            description_for_all_endpoints: >-
+              The `recipient` field is required by FHIR, but is not used by Canvas. 
+            create_description: Canvas recommends sending an empty JSON object.
+            exclude_attributes_in: create,update
+            attributes:
+                - name: display
+                  exclude_in: create,update
+                  description: Text alternative for the resource.
+                  enum_options: 
+                    - value: unused
           - name: amount
             type: json
             required_in: create,update
@@ -84,32 +109,36 @@ sections:
                     The amount of USD to apply to the patient's balance.
                 - name: currency
                   type: code
-                  description: >-
-                    Only **USD** is supported, and **USD** will be used regardless of what is provided.
+                  exclude_in: create
+                  description: ISO 4217 Currency Code. Only **USD** is supported, and **USD** will be used regardless of what is provided.
+                  enum_options:
+                    - value: USD
           - name: paymentStatus
             type: json
-            required: false
-            description: >-
-              Status of the payment
+            exclude_in: create
+            description: Issued or cleared Status of the payment.
             attributes:
               - name: coding
-                type: array
-                description: >-
-                  In search responses, there will be a single coding of **paid**.
+                type: array[json]
+                description: Code defined by a terminology system. There will be a single coding of **paid**.
                 attributes:
                   - name: system
                     type: string
+                    enum_options:
+                        - value: http://terminology.hl7.org/CodeSystem/paymentstatus
                   - name: code
                     type: string
                     description: >-
                       In search responses, the code of **paid** will be noted.
+                    enum_options: 
+                        - value: paid
         search_parameters:
           - name: _id
             description: The Canvas-issued unique identifier of the PaymentNotice
             type: string
           - name: request
             type: string
-            description: A reference to the patient whose balance the payment was applied to.
+            description: The patient reference associated with the PaymentNotice in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
         endpoints: [create, read, search]
         create:
           description: >-
@@ -339,7 +368,7 @@ print(response.text)
 </div>
 
 <div id="paymentnotice-search-request">
-{% include search-request.html resource_type="PaymentNotice" search_string="request=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="PaymentNotice" search_string="request=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="paymentnotice-search-response">

@@ -22,7 +22,8 @@
                 </ul>
             {% endif %}
         </div>
-        {% if attribute.attributes %}
+        {% if attribute.exclude_attributes_in contains include.context %}
+        {% elsif attribute.attributes %}
             {% include blocks/block-apidoc-child-attributes.html context=include.context attribute=attribute.attributes%}
         {% endif %}
     </div>
