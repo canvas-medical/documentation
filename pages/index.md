@@ -19,7 +19,7 @@ permalink: "/"
                     <span>Learn more about the migration of our knowledge center</span>
                     <div class="anchorContainer">
                     <a href="/documentation">Transition Overview</a><br>
-                    <a href="https://canvas-medical.zendesk.com/hc/en-us">Knowledge Center ↗</a><br>
+                    <a href="https://canvas-medical.help.usepylon.com/">Knowledge Center ↗</a><br>
                     <a href="/product-updates/release-notes">Release Notes</a>
                     </div>
                 </div>

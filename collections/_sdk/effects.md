@@ -1,34 +1,34 @@
 ---
 title: "Effects"
+disable_anchorlist: true
 ---
 
-**What is an Effect?**
+Effects are instructions that plugins can return in order to perform an action
+in the Canvas EMR. This makes it possible to define workflows that create
+commands, show notifications, modify search results, etc.
 
-Effects are sent from plugins back to Canvas in order to perform an action. Effects can be used to react to events that are received in plugins and then send Canvas instructions to 'do something'.
+Effects have a `type` and a `payload`. The `type` determines the action that
+will be performed with the data provided in the `payload`.
 
-**Why should I use them?**
+## Using Effects
 
-Effects are useful because they can perform pre-determined actions in the Canvas EMR. This makes it possible to define workflows that, for example, create elements, show notifications or modify search results.
-
-**How do I use them?**
-
-Effects can be returned as a list from the `compute` method of a plugin that inherits from `BaseProtocol`. For example:
+Effects are returned as a list from the `compute` method of a plugin that inherits from `BaseHandler`. For example:
 
 ```python
 import json
 
 from canvas_sdk.events import EventType
 from canvas_sdk.effects import Effect, EffectType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers.base import BaseHandler
 
-class Protocol(BaseProtocol):
+class Protocol(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
     def compute(self):
         results = self.context.get("results")
 
         post_processed_results = []
-        ## custom results modifying code here
+        ## custom results-modifying code here
         ...
 
         return [
@@ -39,7 +39,61 @@ class Protocol(BaseProtocol):
         ]
 ```
 
-For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
+In the above example, the `Effect` object is constructed manually, with the
+`type` and `payload` set directly.
+
+Some effects have helper classes that assist you by providing payload validation
+and constructing the effect object for you. The example below shows the
+[`PatientChartSummaryConfiguration`](/sdk/effect-chart-summary-configuration/) class in use:
+
+
+```python
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.effects.patient_chart_summary_configuration import PatientChartSummaryConfiguration
+
+
+class CustomChartLayout(BaseHandler):
+    """
+    This event handler rearranges the patient summary section and hides those
+    not used by the installation's organization.
+    """
+
+    # This event fires when a patient's chart summary section is loading.
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION)
+
+    def compute(self):
+        layout = PatientChartSummaryConfiguration(sections=[
+          PatientChartSummaryConfiguration.Section.SOCIAL_DETERMINANTS,
+          PatientChartSummaryConfiguration.Section.ALLERGIES,
+          PatientChartSummaryConfiguration.Section.VITALS,
+          PatientChartSummaryConfiguration.Section.MEDICATIONS,
+          PatientChartSummaryConfiguration.Section.CONDITIONS,
+          PatientChartSummaryConfiguration.Section.IMMUNIZATIONS,
+        ])
+
+        return [layout.apply()]
+```
+
+## Effect Classes
+
+<div>
+{% for item in site.menus.effects_module %}
+    <a href="{{ item.url }}">
+        <div style="padding-left: 20px; padding-bottom: 20px; margin: 0px 2px 40px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
+            <h2 style="padding-top: 10px;">{{ item.title }}</h2>
+            <span>{{ item.description }}</span>
+        </div>
+    </a>
+
+{% endfor %}
+    <a href="/sdk/commands/">
+        <div style="padding-left: 20px; padding-bottom: 20px; margin: 0px 2px 40px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
+            <h2 style="padding-top: 10px;">Commands</h2>
+            <span>The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation.</span>
+        </div>
+    </a>
+</div>
 
 ## Effect Types
 
@@ -47,24 +101,42 @@ The following effects are available to be applied in Canvas.
 
 | Effect | Description |
 | ----- | ----------- |
+| ADD_BANNER_ALERT | Can be used to [add a banner alert](/sdk/effect-banner-alerts/#adding-a-banner-alert) to a patient's chart. |
+| REMOVE_BANNER_ALERT | Can be used to [remove a banner alert](/sdk/effect-banner-alerts/#removing-a-banner-alert) from a patient's chart. |
+| SHOW_PATIENT_CHART_SUMMARY_SECTIONS | Can be used to reorder or hide the summary sections in a patient chart. Check out [this effect class](/sdk/effect-chart-summary-configuration/). |
+| ADD_OR_UPDATE_PROTOCOL_CARD | Can be used to generate a ProtocolCard in the Canvas UI. Use the [ProtocolCard](/sdk/effect-protocol-cards/) class in the effects module. 
+| ANNOTATE_CLAIM_CONDITION_RESULTS | Can be used to add annotations to the conditions appearing in a claim's detail view. |
+| ANNOTATE_PATIENT_CHART_CONDITION_RESULTS| Add an annotation to a condition within the patient summary. |
 | AUTOCOMPLETE_SEARCH_RESULTS | Can be used to modify search results by re-ordering or adding text annotations to individual result records. To see how you can put this to use, check out [this guide](/guides/customize-search-results/). |
-| ADD_BANNER_ALERT | Can be used to add a banner alert to a patient's chart. |
-| REMOVE_BANNER_ALERT | Can be used to remove a banner alert from a patient's chart. |
-| ORIGINATE_ASSESS_COMMAND | Can be used to originate an assess command in a note. |
-| ORIGINATE_DIAGNOSE_COMMAND | Can be used to originate a diagnose command in a note. |
+| CREATE_TASK | Cause a task you define in a plugin to be created. |
+| UPDATE_TASK | Cause a task to be updated. |
+| CREATE_TASK_COMMENT | Add a comment to an existing task. |
+| ORIGINATE_ALLERGY_COMMAND | Can be used to originate an allergy command in a note. |
+| ORIGINATE_REMOVE_ALLERGY_COMMAND | Can be used to originate a remove allergy command in a note. |
 | ORIGINATE_GOAL_COMMAND | Can be used to originate a goal command in a note. |
-| ORIGINATE_HPI_COMMAND | Can be used to originate a history of present illness command in a note. |
-| ORIGINATE_MEDICATION_STATEMENT_COMMAND | Can be used to originate a medication statement command in a note. |
-| ORIGINATE_PLAN_COMMAND | Can be used to originate a plan command in a note. |
+| ORIGINATE_UPDATE_GOAL_COMMAND | Can be used to originate an update goal command in a note. |
+| ORIGINATE_CLOSE_GOAL_COMMAND | Can be used to originate a close goal command in a note. |
+| ORIGINATE_DIAGNOSE_COMMAND | Can be used to originate a diagnose command in a note. |
+| ORIGINATE_UPDATE_DIAGNOSIS_COMMAND | Can be used to originate an update diagnosis command in a note. |
+| ORIGINATE_ASSESS_COMMAND | Can be used to originate an assess command in a note. |
 | ORIGINATE_PRESCRIBE_COMMAND | Can be used to originate a prescribe command in a note. |
+| ORIGINATE_REFILL_COMMAND | Can be used to originate a refill command in a note. |
+| ORIGINATE_MEDICATION_STATEMENT_COMMAND | Can be used to originate a medication statement command in a note. |
+| ORIGINATE_STOP_MEDICATION_COMMAND | Can be used to originate a stop medication command in a note. |
+| ORIGINATE_PLAN_COMMAND | Can be used to originate a plan command in a note. |
+| ORIGINATE_HPI_COMMAND | Can be used to originate a history of present illness command in a note. |
+| ORIGINATE_FAMILY_HISTORY_COMMAND | Can be used to originate a family history command in a note. |
+| ORIGINATE_MEDICAL_HISTORY_COMMAND | Can be used to originate a medical history command in a note. |
+| ORIGINATE_SURGICAL_HISTORY_COMMAND | Can be used to originate a surgical history command in a note. |
+| ORIGINATE_INSTRUCT_COMMAND | Can be used to originate an instruct command in a note. |
+| ORIGINATE_LAB_ORDER_COMMAND | Can be used to originate a lab order command in a note. |
+| ORIGINATE_PERFORM_COMMAND | Can be used to originate a perform command in a note. |
 | ORIGINATE_QUESTIONNAIRE_COMMAND | Can be used to originate a questionnaire command in a note. |
 | ORIGINATE_REASON_FOR_VISIT_COMMAND | Can be used to originate a reason for visit command in a note. |
-| ORIGINATE_STOP_MEDICATION_COMMAND | Can be used to originate a stop medication command in a note. |
-| ORIGINATE_UPDATE_GOAL_COMMAND | Can be used to originate an update goal command in a note. |
-| CREATE_TASK | Cause a task you define in a plugin to be created. Use the [Task class](/sdk/data-task/) in the data module. |
-| UPDATE_TASK | Cause a task to be updated. Use the [Task class](/sdk/data-task/) in the data module. |
-| CREATE_TASK_COMMENT | Add a comment to an existing task. Use the [Task class](/sdk/data-task/) in the data module. |
+| ORIGINATE_TASK_COMMAND | Can be used to originate a task command in a note. |
+| ORIGINATE_VITALS_COMMAND | Can be used to originate a vitals command in a note. |
 
 <br/>
 <br/>
 <br/>
+

@@ -267,7 +267,6 @@ sections:
             description: The verification status to support the clinical status of the condition.
             type: string
             search_options: 
-              - value: confirmed
               - value: entered-in-error
               - value: provisional
         endpoints: [create, read, update, search]

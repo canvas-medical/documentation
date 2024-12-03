@@ -10,7 +10,7 @@ sections:
           Describes the event of a patient being administered a vaccine or a record of an immunization as reported by a patient, a clinician or another party.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html)<br><br>
 
-          In Canvas, Immunization records are recorded using either the [Immunization Statement Commmand](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293) or the [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
+          In Canvas, Immunization records are recorded using either the [Immunization Statement Commmand](https://canvas-medical.help.usepylon.com/articles/1379672479-command-immunization-statement) or the [Immunize Command](https://canvas-medical.help.usepylon.com/articles/4155771468-command-immunize).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -127,9 +127,17 @@ sections:
             required_in: create, update
             description_for_all_endpoints: Whether the immunization was administered by a primary source.
             read_and_search_description: >-
-              - **true** indicates that the immunization was administered within the clinic. To document immunizations like these, use an [Immunize Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293).<br><br>
-              - **false** indicates that the immunization was administered outside the clinic. To document this immunizations like these, use an [Immunization Statement Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057139673).
+              - **true** indicates that the immunization was administered within the clinic. To document immunizations like these, use an [Immunize Command](https://canvas-medical.help.usepylon.com/articles/4155771468-command-immunize).<br><br>
+              - **false** indicates that the immunization was administered outside the clinic. To document this immunizations like these, use an [Immunization Statement Command](https://canvas-medical.help.usepylon.com/articles/1379672479-command-immunization-statement).
             create_description: On create accepts only **false**.
+          - name: note
+            description: >-
+              Additional text not captured in other fields. <br><br>Canvas will display this in the `comment` field of the immunization statement command. If there are multiple objects given, they will be separeted by a new line on the UI.
+            type: array[json]
+            attributes:
+                - name: text
+                  type: string
+                  description: The annotation - text content. 
         search_parameters:
           - name: _id
             type: string
@@ -199,7 +207,12 @@ curl --request POST \
         "reference": "Encounter/76028e14-e77a-47f4-b951-49bf5b7400bb"
     },
     "occurrenceDateTime": "2024-10-04",
-    "primarySource": false
+    "primarySource": false,
+    "note": [
+      {
+        "text": "First Dose"
+      }
+    ]
   }'
 ```
     {% endtab %}
@@ -244,7 +257,12 @@ payload = {
         "reference": "Encounter/76028e14-e77a-47f4-b951-49bf5b7400bb"
     },
     "occurrenceDateTime": "2024-10-04",
-    "primarySource": False
+    "primarySource": False,
+    "note": [
+      {
+        "text": "First Dose"
+      }
+    ]
 }
 ```
     {% endtab %}
@@ -296,7 +314,12 @@ payload = {
     "reference": "Encounter/76028e14-e77a-47f4-b951-49bf5b7400bb"
   },
   "occurrenceDateTime": "2022-05-26T18:55:34.629659+00:00",
-  "primarySource": false
+  "primarySource": false,
+  "note": [
+    {
+      "text": "First Dose"
+    }
+  ]
 }
 ```
     {% endtab %}
@@ -397,7 +420,12 @@ curl --request POST \
         "reference": "Encounter/76028e14-e77a-47f4-b951-49bf5b7400bb"
     },
     "occurrenceDateTime": "2024-10-04",
-    "primarySource": False
+    "primarySource": False,
+    "note": [
+      {
+        "text": "First Dose"
+      }
+    ]
   }'
 ```
     {% endtab %}
@@ -445,7 +473,12 @@ payload = {
         "reference": "Encounter/76028e14-e77a-47f4-b951-49bf5b7400bb"
     },
     "occurrenceDateTime": "2024-10-04",
-    "primarySource": False
+    "primarySource": False,
+    "note": [
+      {
+        "text": "First Dose"
+      }
+    ]
 }
 ```
     {% endtab %}
@@ -553,7 +586,12 @@ payload = {
             "reference": "Encounter/76028e14-e77a-47f4-b951-49bf5b7400bb"
           },
           "occurrenceDateTime": "2021-12-01",
-          "primarySource": false
+          "primarySource": false,
+          "note": [
+            {
+              "text": "First Dose"
+            }
+          ]
         }
       }
     ]

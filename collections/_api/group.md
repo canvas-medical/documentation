@@ -10,8 +10,8 @@ sections:
           Represents a defined collection of entities that may be discussed or acted upon collectively but which are not expected to act collectively, and are not formally or legally recognized; i.e. a collection of entities that isn't an Organization.<br><br>
           [https://hl7.org/fhir/R4/group.html](https://hl7.org/fhir/R4/group.html)<br><br>
           In Canvas Teams and Patient Groups are mapped to the FHIR Group resource. <br>
-          See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams) for information about creating teams in Canvas.<br>
-          See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/14701005818515-Patient-groups) for information about patient groups in Canvas.
+          See this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/5123845479-teams) for information about creating teams in Canvas.<br>
+          See this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/9728314628-patient-groups) for information about patient groups in Canvas.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

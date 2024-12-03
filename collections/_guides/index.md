@@ -25,6 +25,50 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
+         <a href="/guides/scribe-ai-parser">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Scribe Parser Plugin</span>
+                </div>
+                <div class="cardBody">
+                    Creating, Implementing, and Extending a Scribe Parser
+                </div>
+            </div>
+        </a>
+        <a href="/guides/creating-webhooks-with-the-canvas-sdk">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Creating Webhooks</span>
+                </div>
+                <div class="cardBody">
+                    Make automatic API requests based on Canvas events
+                </div>
+            </div>
+        </a>
+        <a href="/guides/tailoring-the-chart-to-the-patient">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Tailoring to the Patient</span>
+                </div>
+                <div class="cardBody">
+                    Customize a patient's chart so the features most relevant to them are front-and-center
+                </div>
+            </div>
+        </a>
+        <a href="/guides/staying-on-top-of-tasks">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Staying on Top of Tasks</span>
+                </div>
+                <div class="cardBody">
+                    Create tasks via API? Listen for completion with a plugin!
+                </div>
+            </div>
+        </a>
         <a href="/guides/optimize-patient-intake">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">

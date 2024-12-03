@@ -9,7 +9,7 @@ sections:
         description: >-
           A type of a manufactured item that is used in the provision of healthcare without being substantially changed through that activity. The device may be a medical or non-medical device.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-implantable-device.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-implantable-device.html)<br><br>
-          For information about creating Device resources for a patient, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4413855312147-Implantable-Device-List). Devices are not currently used by the Canvas UI, but any devices that are created can be accessed with the Device read and search endpoints, In order to generate the type attribute, a device code must be created and linked to the device via the admin settings on Canvas.
+          For information about creating Device resources for a patient, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/8311513697-implantable-devices). Devices are not currently used by the Canvas UI, but any devices that are created can be accessed with the Device read and search endpoints, In order to generate the type attribute, a device code must be created and linked to the device via the admin settings on Canvas.
 
         attributes:
           - name: resourceType

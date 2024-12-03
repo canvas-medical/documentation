@@ -9,13 +9,13 @@ sections:
         description: >-
           A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.<br><br>
           [https://hl7.org/fhir/R4/questionnaireresponse.html](https://hl7.org/fhir/R4/questionnaireresponse.html)<br><br>
-          See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4403561447827-Creating-a-New-Questionnaire) for information about how to build questionnaires in Canvas.<br><br>
+          See this [article](https://canvas-medical.help.usepylon.com/articles/7418371785-creating-a-new-questionnaire) for information about how to build questionnaires in Canvas.<br><br>
           Questionnaires can map to four different commands in the Canvas UI depending on what the use case in charting is set to: 
 
-            - [Questionnaire](https://canvas-medical.zendesk.com/hc/en-us/articles/360057544593-Command-Questionnaire)
-            - [Structured Assessment](https://canvas-medical.zendesk.com/hc/en-us/articles/4415631833875-Structured-Assessment)
-            - [Review of Systems](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339413-Command-Review-of-Systems)
-            - [Physical Exam](https://canvas-medical.zendesk.com/hc/en-us/articles/360055628474-Documenting-a-Patient-Physical-Exam)
+            - [Questionnaire](https://canvas-medical.help.usepylon.com/articles/5651999344-command-questionnaire)
+            - [Structured Assessment](https://canvas-medical.help.usepylon.com/articles/8805008571-command-structured-assessment)
+            - [Review of Systems](https://canvas-medical.help.usepylon.com/articles/9046024531-command-review-of-systems)
+            - [Physical Exam](https://canvas-medical.help.usepylon.com/articles/1745103290-command-physical-exam)
 
           QuestionnaireResponse resources contain answers to questions in a Questionnaire resource. Use the [Questionnaire search endpoint](/api/questionnaire/#search) to find Questionnaire resources.
         attributes:

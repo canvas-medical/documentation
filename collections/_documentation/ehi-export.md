@@ -24,7 +24,7 @@ You can initiate a single patient export by issuing a request like the one below
 
 <br>
 ## Creating a Population Export
-Canvas also supports exporting EHI for a group of patients or all patients. To request an export, please contact [support](https://canvas-medical.zendesk.com/hc/en-us/requests/new){:target="_blank"} and provide the following information:
+Canvas also supports exporting EHI for a group of patients or all patients. To request an export, please contact [support](https://portal.usepylon.com/canvas-medical/forms/standard){:target="_blank"} and provide the following information:
 - Your instance name (the url of your instance)
 - Your username
 - Your role
