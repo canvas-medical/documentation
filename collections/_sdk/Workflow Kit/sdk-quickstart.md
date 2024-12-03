@@ -424,8 +424,7 @@ Let's step through the example above:
 <br><br>
 ### Uploading Your Protocol
 
-Canvas instances have a number of [built-in Protocols](exclude_attribtues_in
-https://canvas-medical.help.usepylon.com/articles/4408606761-care-protocols). The Protocols that are developed using the SDK, such as our example above, can be uploaded and run on the Canvas backend in the same manner that the built-in Protocols are.
+Canvas instances have a number of [built-in Protocols](https://canvas-medical.help.usepylon.com/articles/4408606761-care-protocols). The Protocols that are developed using the SDK, such as our example above, can be uploaded and run on the Canvas backend in the same manner that the built-in Protocols are.
 
 At this point, you will have a completed Protocol with all of the `Meta` attributes populated, as well as a `compute_results` method that returns an instance of `ProtocolResult`. While this is a very basic example, it is enough to upload to your Canvas development instance in order to test with and to see what appears in the UI.
 

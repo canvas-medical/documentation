@@ -11,8 +11,7 @@ To get you started using these recommendations, we have written out some example
 * * *
 ## AllergyRecommendation
 
-**Description**: A recommendation specifying that a patient may have an allergy that should be recorded via the [allergy command](exclude_attribtues_in
-https://canvas-medical.help.usepylon.com/articles/9964004914-document-allergies).
+**Description**: A recommendation specifying that a patient may have an allergy that should be recorded via the [allergy command](https://canvas-medical.help.usepylon.com/articles/9964004914-document-allergies).
 
 **Parameters**:
 
@@ -168,8 +167,7 @@ When the "Assess" button is clicked, it will generate an Assess command:
 * * *
 ## DiagnoseRecommendation
 
-**Description**: A recommendation specifying that a patient may require a condition to be diagnosed. A Diagnose Recommendation allows providers the ability to create a [Diagnose Command](exclude_attribtues_in
-https://canvas-medical.help.usepylon.com/articles/7998893827-managing-conditions#diagnosing-a-condition-2) with the click of a button directly in a patient's chart.
+**Description**: A recommendation specifying that a patient may require a condition to be diagnosed. A Diagnose Recommendation allows providers the ability to create a [Diagnose Command](https://canvas-medical.help.usepylon.com/articles/7998893827-managing-conditions#diagnosing-a-condition-2) with the click of a button directly in a patient's chart.
 
 **Parameters:**
 
@@ -407,8 +405,7 @@ After pressing the _Order_ button, a Note Command to order imaging will be popul
 * * *
 ## ImmunizationRecommendation
 
-**Description**: A recommendation specifying that a patient may be due for an immunization. Use this to guide the user to the [immunization command](exclude_attribtues_in
-https://canvas-medical.help.usepylon.com/articles/4155771468-command-immunize).
+**Description**: A recommendation specifying that a patient may be due for an immunization. Use this to guide the user to the [immunization command](https://canvas-medical.help.usepylon.com/articles/4155771468-command-immunize).
 
 **Parameters**:
 
@@ -595,8 +592,7 @@ Additional notes:
 
 - If multiple codings from the ValueSet are found within the Canvas database, it will use the first coding entered into the system. 
 
-- Currently when a `Lab Order` command is committed, it will not appear in the `self.patient` object. For a lab recommendation to be satisfied, a lab report must be attached to this patient using our [Data Integrations](exclude_attribtues_in
-https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) feature and the report must be reviewed by a practitioner. So, a Lab Report Template must exist that contains the coding for the lab ValueSet that is being recommended. To learn more about importing lab report templates, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/5081934202-custom-lab-report-templates).
+- Currently when a `Lab Order` command is committed, it will not appear in the `self.patient` object. For a lab recommendation to be satisfied, a lab report must be attached to this patient using our [Data Integrations](https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) feature and the report must be reviewed by a practitioner. So, a Lab Report Template must exist that contains the coding for the lab ValueSet that is being recommended. To learn more about importing lab report templates, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/5081934202-custom-lab-report-templates).
 
 **Example**:
 
@@ -855,8 +851,7 @@ A Prescribe command will appear after clicking the prescribe button:
       - If condition is included, the narrative will be set to "`patient.name` has `condition.name` and should be referred for `referral.name`".  
       - If condition is not included, the narrative will be set to "`patient.name` should be referred for `referral.name`"
 
-- Currently when a `Refer` command is committed, it will not appear in the `self.patient` object. For a refer recommendation to be satisfied, a Specialist Consult Report must be attached to this patient using our [Data Integrations](exclude_attribtues_in
-https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) feature with the document type set to "[Specialist Consult Report](https://canvas-medical.help.usepylon.com/articles/8163023191-data-integration-specialist-consult-reports)". The specialty should be set to the same name as what was inputted in the referral name. The report must then be reviewed by a practitioner through the patient's chart.  A Specialist Consult Report Template must exist that contains the coding for the refer ValueSet that is being recommended. 
+- Currently when a `Refer` command is committed, it will not appear in the `self.patient` object. For a refer recommendation to be satisfied, a Specialist Consult Report must be attached to this patient using our [Data Integrations](https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) feature with the document type set to "[Specialist Consult Report](https://canvas-medical.help.usepylon.com/articles/8163023191-data-integration-specialist-consult-reports)". The specialty should be set to the same name as what was inputted in the referral name. The report must then be reviewed by a practitioner through the patient's chart.  A Specialist Consult Report Template must exist that contains the coding for the refer ValueSet that is being recommended. 
 
 - The referral command should autofill the "Refer to" title with the string that was passed in within context['specialties'], followed by "(TBD)". 
 
