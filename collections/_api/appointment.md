@@ -11,7 +11,7 @@ sections:
           [https://hl7.org/fhir/R4/appointment.html](https://hl7.org/fhir/R4/appointment.html)
           <br><br>
           This may result in one or more [Encounters](/api/encounter).<br><br>
-          The appointment resource maps to both [patient appointments](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-mangement) as well as [other events](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-mangement#scheduling-other-events-30) in Canvas. Instructions for configuring appointment and note types can be found [here](/documentation/appointment-and-note-types).
+          The appointment resource maps to both [patient appointments](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management) as well as [other events](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management#scheduling-other-events-30) in Canvas. Instructions for configuring appointment and note types can be found [here](/documentation/appointment-and-note-types).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
