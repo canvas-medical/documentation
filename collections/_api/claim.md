@@ -21,7 +21,7 @@ sections:
           - name: extension
             type: array[json]
             description_for_all_endpoints: >-
-              Canvas supports a single extension iteration on a claim to represent the current queue the given claim is in on the Canvas instance. Learn more about navigating claim queues [here](https://canvas-medical.zendesk.com/hc/en-us/articles/1500000932761-Navigating-the-Queues-in-Revenue).<br><br>
+              Canvas supports a single extension iteration on a claim to represent the current queue the given claim is in on the Canvas instance. Learn more about navigating claim queues [here](https://canvas-medical.help.usepylon.com/articles/3240845520-queues).<br><br>
 
               **Canvas Claim Queues**
 

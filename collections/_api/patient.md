@@ -130,7 +130,7 @@ sections:
           <br><br>
           The business line that the patient belongs to.
           <br><br>
-          Not all Canvas instances have Business Line functionality enabled. See [here](https://canvas-medical.zendesk.com/hc/en-us/articles/16777163916307-Customized-Patient-Communication#h_01H0T0Z79XFX215GRSABFC91JZ) for information on Business Lines.<br><br>
+          Not all Canvas instances have Business Line functionality enabled. See [here](https://canvas-medical.help.usepylon.com/articles/1392971282-customized-patient-communication#h_01H0T0Z79XFX215GRSABFC91JZ) for information on Business Lines.<br><br>
           If using business line functionality, create and update actions should include a json object with the `url` attribute equal to **http://schemas.canvasmedical.com/fhir/extensions/business-line** and the `valueId` set to the externallyExposableId of the business line in Canvas.
 
         attributes:
@@ -279,7 +279,7 @@ sections:
                     type: string
               - name: relationship
                 type: array[json]
-                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry can contain a text string attribute and a coding list. The text attribute is a free text string representing the relationship to the patient. The coding list can specify the [configurable contact category codings](https://canvas-medical.zendesk.com/hc/en-us/articles/360056528294-Patient-Contact-Information) this contact has to the patient.
+                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry can contain a text string attribute and a coding list. The text attribute is a free text string representing the relationship to the patient. The coding list can specify the [configurable contact category codings](https://canvas-medical.help.usepylon.com/articles/4371968359-patient-contact-information) this contact has to the patient.
                 attributes:
                   - name: text
                     type: string

@@ -6,7 +6,7 @@ lastupdated: 2024-04-23
 
 Commands are the building blocks of the note in Canvas and support narrative charting. You will use them for both documentation and orders. Each command has been built to support a specific documentation need or workflow. Although each command in unique, they have been built using a shared framework - thus making each easy to learn and use. 
 
-{% include alert.html type="warning" content="The functionality on this page is specific to SDK commands that have been migrated. Please refer to zendesk for documentation on our legacy commands." %}
+{% include alert.html type="warning" content="The functionality on this page is specific to SDK commands that have been migrated. Please refer to pylon for documentation on our legacy commands." %}
 
 <br>
 

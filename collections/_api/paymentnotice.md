@@ -10,7 +10,7 @@ sections:
           This resource provides the status of the payment for goods and services rendered, and the request and response resource references.<br><br>
           [https://hl7.org/fhir/R4/paymentnotice.html](https://hl7.org/fhir/R4/paymentnotice.html)<br><br>
           In Canvas, FHIR PaymentNotice records payments made toward a patient's balance.<br><br>
-          See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/1500001122421-Collect-a-payment) for information about how to collect payments.
+          See this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/3813109228-collect-payment) for information about how to collect payments.
         attributes:
           - name: id
             description: The identifier of the payment notice.

@@ -18,7 +18,7 @@ sections:
           - Home Visit <br>
           - In-patient Visit <br><br>
 
-          With our [Configurable Note Types Feature](https://canvas-medical.zendesk.com/hc/en-us/articles/6623684024083) all custom note types will be associated with an encounter by default.<br><br>
+          With our [Configurable Note Types Feature](https://canvas-medical.help.usepylon.com/articles/9237060452-note-types) all custom note types will be associated with an encounter by default.<br><br>
 
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-encounter.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-encounter.html)
         attributes:
