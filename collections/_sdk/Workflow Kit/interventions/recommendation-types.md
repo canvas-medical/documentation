@@ -217,7 +217,7 @@ When the "Diagnose" button is clicked, it will generate a Diagnose command and p
 * * *
 ## FollowUpRecommendation
 
-**Description**: A recommendation specifying that a patient may require a Follow Up appointment, which can be indicated using the [Follow Up](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-mangement#scheduling-follow-up-appointment-84) command.
+**Description**: A recommendation specifying that a patient may require a Follow Up appointment, which can be indicated using the [Follow Up](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management#scheduling-follow-up-appointment-84) command.
 
 **Parameters:**
 
