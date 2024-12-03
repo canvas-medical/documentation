@@ -14,10 +14,9 @@ sections:
 
           - A [Letter](https://canvas-medical.help.usepylon.com/articles/8181146406-letters) that has been faxed or printed from the patient's chart.
           
-          - All documents uploaded via [Data Integration](exclude_attribtues_in
-https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
+          - All documents uploaded via [Data Integration](https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
           
-          - [POC Lab Command's](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests) committed on the Patient's chart
+          - [POC Lab Commands](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests) committed on the Patient's chart
           
           - [Clinical Notes](https://canvas-medical.help.usepylon.com/articles/1679996479-print-patient-chart) representing a PDF of each locked note. This also includes superseded versions on notes.
           
