@@ -63,8 +63,7 @@ class SurfaceNonvalidatedCodingGaps(ClinicalQualityMeasure):
         identifiers = ["HCCCapturev1"]
         description = "Surfaces registered coding gaps within a protocol card with the recommendation to validate"
         information = "https://canvasmedical.com"
-        references = ["None"]
-        types = ["None"]
+        references = ["Canvas Medical. https://docs.canvasmedical.com/guides/improve-hcc-coding-accuracy/"]
         authors = ["Canvas Medical"]
 
     RESPONDS_TO = [
