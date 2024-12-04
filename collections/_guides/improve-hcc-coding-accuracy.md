@@ -6,7 +6,7 @@ Different patients present unique challenges, and your tools should adapt to mee
 
 Hierarchical condition category (HCC) coding is a critical component of value-based care, especially for organizations serving Medicare Advantage patients. Accurate risk adjustment ensures patients receive appropriate coverage while aligning reimbursement with the complexity of their care needs. However, navigating HCC coding can feel overwhelming with so many diagnoses to consider, guidelines to follow, and tools to use.
 
-This guide will walk you through practical steps to make HCC coding more intuitive and efficient in Canvas. You'll learn how to leverage our [HCC capture plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/hcc_capture) to do the following: 
+This guide will walk you through practical steps to use HCC codings in Canvas for more efficient and effective care delivery. You'll learn how to leverage our [HCC capture plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/hcc_capture) to do the following: 
 
 
 - Create coding gaps from external data using the FHIR DetectedIssue endpoint
