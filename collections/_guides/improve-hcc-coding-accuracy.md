@@ -54,13 +54,9 @@ from canvas_sdk.protocols.clinical_quality_measure import ClinicalQualityMeasure
 from canvas_sdk.events import EventType
 from canvas_sdk.effects.protocol_card import ProtocolCard
 from canvas_sdk.v1.data.detected_issue import DetectedIssue
-from logger import log
 
 
 class SurfaceNonvalidatedCodingGaps(ClinicalQualityMeasure):
-    """
-
-    """
 
     class Meta:
         title = "Validate Coding Gaps"
@@ -92,9 +88,7 @@ class SurfaceNonvalidatedCodingGaps(ClinicalQualityMeasure):
         for coding_gap in nonvalidated_coding_gaps:
             coding_gap_title_strings = []
 
-            log.info(str(coding_gap.id))
             for evidence in coding_gap.evidence.all():
-                log.info(f"{evidence.display} ({evidence.code})")
                 coding_gap_title_strings.append(f"{evidence.display} ({evidence.code})")
             card.add_recommendation(
                 title="\n".join(coding_gap_title_strings),
@@ -145,10 +139,10 @@ class SurfaceNonvalidatedCodingGaps(ClinicalQualityMeasure):
 
 The API can be leveraged to create coding gaps in various states. There are also 4 commands for clinicians and staff to manage coding gaps. 
 
-- Create Coding Gap serves as a manual way to add coding gaps to the chart. Staff have the ability to create and validate in the same step. 
-- Validate Coding Gap allows the care team (often CDI Reviewers) to review the external date and confirm that the gap should be surfaced to a clinician. 
-- Assess Coding Gap allows clinicians to accept or refute the diagnose and choose the appropriate diagnosis to add to the visit. 
-- Defer Coding Gap allows clinicians to acknowledge the gap and snooze it for a period of time so that they can return to it at a later date. This may be necessary if the patient is unable to provide enough detail or they run out of time during a visit. When recapture rate is an important metric, this allow reporting to reflect an action was taken. 
+- **Create Coding Gap** serves as a manual way to add coding gaps to the chart. Staff have the ability to create and validate in the same step. 
+- **Validate Coding Gap** allows the care team (often CDI Reviewers) to review the external date and confirm that the gap should be surfaced to a clinician. 
+- **Assess Coding Gap** allows clinicians to accept or refute the diagnose and choose the appropriate diagnosis to add to the visit. 
+- **Defer Coding Gap** allows clinicians to acknowledge the gap and snooze it for a period of time so that they can return to it at a later date. This may be necessary if the patient is unable to provide enough detail or they run out of time during a visit. When recapture rate is an important metric, this allow reporting to reflect an action was taken. 
 
 ## Annotate ICD-10 Codes
 
@@ -164,19 +158,13 @@ import json
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
-from logger import log
 
 ICD_CODES = {
     "HCC": {"A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202","ADDMORECODES..."}
 }
 
-from logger import log
-
 
 class AnnotateSearchResults(BaseProtocol):
-    """
-    You should put a helpful description of this protocol's behavior here.
-    """
 
     RESPONDS_TO = [
         EventType.Name(EventType.DIAGNOSE__DIAGNOSE__POST_SEARCH),
@@ -230,7 +218,6 @@ import json
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
-from logger import log
 
 
 ICD_CODES = {
