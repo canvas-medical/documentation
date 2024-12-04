@@ -410,59 +410,43 @@ api_custom_apis:
  - title: "Note"
    url: /api/note
 
-documentation:
- - title: "Click here to learn about our transition plan for our knowledge center"
-   url: /documentation/
-   identifier: documentation_transition
-
 guides:
  - title: "Guides"
    identifier: guides_list
- - title: "Templates"
-   identifier: guides_templates
 
 guides_list:
- - title: "Asynchronous Care"
-   url: /guides/asynchronous-care/
- - title: "Build a Safety Framework"
-   url: /guides/build-a-safety-framework/
- - title: "Capture Charges"
-   url: /guides/capture-charges/
- - title: "Customize Search Results"
-   url: /guides/customize-search-results/
- - title: "External Scheduling"
-   url: /guides/external-scheduling/
- - title: "Optimize Patient Intake"
-   url: /guides/optimize-patient-intake/
- - title: "Patient Messaging"
-   url: /guides/patient-messaging/
- - title: "Submit a Full Vital Panel via FHIR"
-   url: /guides/submit-vitals-via-fhir/
- - title: "Team Based Care"
-   url: /guides/team-based-care/
  - title: "Your First Plugin"
    url: /guides/your-first-plugin/
- - title: "Scribe Parser Plugin"
-   url: /guides/scribe-ai-parser/
+
  - title: "Creating Webhooks"
    url: /guides/creating-webhooks-with-the-canvas-sdk/
+
+ - title: "Customize Search Results"
+   url: /guides/customize-search-results/
+
+ - title: "Creating, Implementing, and Extending a Scribe Parser"
+   url: /guides/scribe-ai-parser/
+
+ - title: "Improve HCC Coding Accuracy"
+   url: /guides/improving-hcc-coding-accuracy/
+
  - title: "Staying on Top of Tasks"
    url: /guides/staying-on-top-of-tasks/
+
+ - title: "Submit a Full Vital Panel via FHIR"
+   url: /guides/submit-vitals-via-fhir/
+
+ - title: "Tailoring the Chart to Your Patient"
+   url: /guides/tailoring-the-chart-to-the-patient/
 
 guides_templates:
  - title: "Behavioral Health"
    url: /guides/bh
    identifier: guides_care-models-bh
 
-guides_care-models-bh:
- - title: "Configuration Guide"
-   url: /guides/bh-configuration/
-
 sdk:
  - title: "SDK Overview"
    identifier: sdk_overview
- - title: "Workflow Kit (To Be Deprecated)"
-   identifier: sdk_workflow_kit
 
 sdk_overview:
  - title: "Introduction"
@@ -553,78 +537,6 @@ data_module:
  - title: "Value Sets"
    url: /sdk/data-value-sets/
    description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
-
-sdk_workflow_kit:
- - title: "Quickstart"
-   url: /sdk/workflow-sdk-quickstart/
- - title: "Change Types"
-   url: /sdk/change-types
- - title: "Patient Recordsets"
-   url: /sdk/patient-recordsets
- - title: "Settings/Secret Store"
-   url: /sdk/secret-store
- - title: "Sandboxing and Allowed Imports"
-   url: /sdk/sandboxing-and-allowed-imports
- - title: "Field Changes"
-   url: /sdk/field-changes
- - title: "Recommendation Types"
-   url: /sdk/recommendation-types
- - title: "Banner Alerts"
-   url: /sdk/banner-alerts
- - title: "Create/Update Canvas Resources"
-   url: /sdk/create-update-canvas-resources
- - title: "Notification Protocol"
-   url: /sdk/notification-protocol
- - title: "Making FHIR Requests"
-   url: /sdk/making-fhir-requests
- - title: "Canvas CLI Additional Commands"
-   url: /sdk/canvas-cli-additional-commands
- - title: "Protocol Logging Tool"
-   url: /sdk/protocol-logging-tool
- - title: "Managing Protocols in Settings"
-   url: /sdk/managing-protocols-in-settings
- - title: "Value Sets"
-   identifier: sdk_workflow_kit_value_sets
-   url: /sdk/value-sets
-
-
-sdk_workflow_kit_value_sets:
- - title: "Allergy"
-   url: /sdk/allergy
- - title: "Assessment"
-   url: /sdk/assessment
- - title: "Assessment Performed"
-   url: /sdk/assessment-performed
- - title: "Encounter"
-   url: /sdk/encounter
- - title: "Encounter Performed"
-   url: /sdk/encounter-performed
- - title: "Communication"
-   url: /sdk/communication
- - title: "Device"
-   url: /sdk/device
- - title: "Diagnosis"
-   url: /sdk/diagnosis
- - title: "Immunization"
-   url: /sdk/immunization
- - title: "Lab Test"
-   url: /sdk/lab-test
- - title: "Medication"
-   url: /sdk/medication
- - title: "Other"
-   url: /sdk/other
- - title: "Patient Characteristic"
-   url: /sdk/patient-characteristic
- - title: "Physican Exam"
-   url: /sdk/physical-exam
- - title: "Procedure"
-   url: /sdk/procedure
- - title: "Procedure Performed"
-   url: /sdk/procedure-performed
- - title: "Rationale"
-   url: /sdk/rationale
- - title: "Result"
-   url: /sdk/result
 
 releasenotes:
  - title: "Product Updates"
