@@ -47,7 +47,7 @@ Checkout our full FHIR DetectedIssue documentation [here](/api/detectedissue).
 
 Clinical Documentation Improvement (CDI) staff often play a crucial role in reviewing potential coding gaps, especially those added via the API using external data. 
 
-To avoid clutter in the record, there is no out of the box UI in Canvas that surfaces coding gaps that have yet to be reviewed for accuracy by staff members. Instead, we haven chosen to leverage plugins to allow for customization within your workflow. The example protocol below creates a [protocol card](/sdk/effect-protocol-cards/) when a new DetectedIssue is created for a coding gap in the `registered` status. It then recommends that a staff member validates the information before presenting it to a clinician in the summary. 
+There is no built in UI feature in Canvas that surfaces coding gaps that have yet to be reviewed for accuracy by staff members. Instead, We haven chosen to leverage plugins to allow for customization within your workflow for surfacing . The example protocol below creates a [protocol card](/sdk/effect-protocol-cards/) when a new DetectedIssue is created for a coding gap with a `registered` status. It then recommends that a staff member validates the information before presenting it to a clinician in the summary. 
 
 The protocol will surface in each patient's chart and staff can also leverage the population page as a work list. 
 
