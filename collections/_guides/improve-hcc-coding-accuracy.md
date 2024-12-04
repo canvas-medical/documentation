@@ -38,7 +38,7 @@ The workflow within Canvas is centered around issues created with the `DetectedI
 
 The ICD-10 code can be added to `DetectedIssue.evidence` attribute.
 
-Validated coding gaps (`status` = `preliminary`) will appear in the patient summary if the coding gap commands are enabled in your environment (see more below).
+Validated coding gaps (where `DetectedIssue.status` = `preliminary`) will appear in the patient summary if the coding gap commands are enabled in your environment (see more below).
 
 Checkout our full FHIR DetectedIssue documentation [here](/api/detectedissue).
 
