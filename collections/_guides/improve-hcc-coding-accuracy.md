@@ -4,7 +4,7 @@ title: "Improve HCC Coding Accurarcy"
 
 Different patients present unique challenges, and your tools should adapt to meet their specific needs.
 
-HCC coding is a critical component of value-based care, especially for organizations serving Medicare Advantage patients. Accurate risk adjustment ensures patients receive appropriate coverage while aligning reimbursement with the complexity of their care needs. However, navigating HCC coding can feel overwhelming with so many diagnoses to consider, guidelines to follow, and tools to use.
+Hierarchical condition category (HCC) coding is a critical component of value-based care, especially for organizations serving Medicare Advantage patients. Accurate risk adjustment ensures patients receive appropriate coverage while aligning reimbursement with the complexity of their care needs. However, navigating HCC coding can feel overwhelming with so many diagnoses to consider, guidelines to follow, and tools to use.
 
 This guide will walk you through practical steps to make HCC coding more intuitive and efficient in Canvas. You'll learn how to leverage our [HCC capture plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/hcc_capture) to do the following: 
 
