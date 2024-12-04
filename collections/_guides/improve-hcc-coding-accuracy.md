@@ -36,7 +36,7 @@ The workflow within Canvas is centered around issues created with the `DetectedI
     },
 ```
 
-The actual ICD-10 code can be added to `DetectedIssue.evidence` 
+The ICD-10 code can be added to `DetectedIssue.evidence` attribute.
 
 Validated coding gaps (`status` = `preliminary`) will appear in the patient summary if the coding gap commands are enabled in your environment (see more below).
 
