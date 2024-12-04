@@ -1,5 +1,5 @@
 ---
-title: "Creating, Implementing, and Extending a Scribe Parser"
+title: "Creating, Implementing, and Extending an AI Scribe Parser"
 guide_for:
 - /sdk/quickstart/
 - /sdk/canvas_cli/
@@ -7,7 +7,7 @@ guide_for:
 - /sdk/effects/
 ---
 
-This guide explains how to work with the [Nabla Transcript Parser Plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/protocols/nabla-ai-parser) to parse structured transcripts, like the provided example, and generate commands from their sections. It also demonstrates how to create and integrate custom parsers to handle alternate transcript formats.
+This guide explains how to work with the [AI Scribe Parser Plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/protocols/ai-scribe) to parse structured transcripts, like the provided example, and generate commands from their sections. It also demonstrates how to create and integrate custom parsers to handle alternate transcript formats.
 
 ---
 
@@ -94,7 +94,7 @@ Each section contains specific information that can be parsed into commands. For
 
 ---
 
-## Nabla Transcript Parser Plugin Architecture
+## AI Scribe Plugin Architecture
 
 ### 1. Protocol Class
 
@@ -102,14 +102,14 @@ The `Protocol` class intercepts events and processes the transcript using a pars
 
 ```python
 class Protocol(BaseProtocol):
-    """A Plugin for interpreting Nabla transcripts."""
+    """A Plugin for interpreting transcripts."""
 
-    RESPONDS_TO = EventType.Name(EventType.CLIPBOARD_COMMAND__POST_ORIGINATE)
+    RESPONDS_TO = EventType.Name(EventType.CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE)
 
     def compute(self) -> list[Effect]:
         """Parse the transcript and generate effects to originate commands."""
         transcript = self.context["fields"]["text"]
-        parser = NablaParser()
+        parser = ScribeParser()
         parsed_transcript = parser.parse(transcript, self.context)
         note_uuid = self.context["note"]["uuid"]
 
@@ -123,13 +123,13 @@ class Protocol(BaseProtocol):
         return effects
 ```
 
-### 2. NablaParser
+### 2. ScribeParser
 
-The `NablaParser` delegates the parsing of each transcript section to specific section parsers.
+The `ScribeParser` delegates the parsing of each transcript section to specific section parsers.
 
 ```python
-class NablaParser(TranscriptParser):
-    """A parser for Nabla transcripts."""
+class ScribeParser(TranscriptParser):
+    """A parser for scribe transcripts."""
 
     section_parsers = {
         "chief_complaint": ChiefComplaintParser(),
@@ -152,14 +152,14 @@ class NablaParser(TranscriptParser):
 Each section parser extracts relevant information from its section and produces commands.
 ```python
 from typing import Any, Sequence
-from nabla_ai_parser.parsers.base import CommandParser, ParsedContent
+from ai_scribe.parsers.base import CommandParser, ParsedContent
 from canvas_sdk.commands.commands.plan import PlanCommand
 
-class NablaPlanParser(CommandParser):
-    """Parses the plan section of a Nabla transcript."""
+class PlanParser(CommandParser):
+    """Parses the plan section of a transcript."""
 
     def parse(self, content: ParsedContent, context: Any = None) -> Sequence[PlanCommand]:
-        """Parses the plan section of a Nabla transcript."""
+        """Parses the plan section of a transcript."""
         return [PlanCommand(narrative=line) for line in content["arguments"]]
 ```
 ---
@@ -175,11 +175,11 @@ Suppose you want to parse the "Appointments" section into a `TaskCommand` for fo
 ```python
 from typing import Sequence, Any
 from canvas_sdk.commands import TaskCommand
-from nabla_ai_parser.parsers.base import CommandParser, ParsedContent
+from ai_scribe.parsers.base import CommandParser, ParsedContent
 
 
 class AppointmentsParser(CommandParser):
-    """Parses the 'Appointments' section of a Nabla transcript."""
+    """Parses the 'Appointments' section of a transcript."""
 
     def parse(self, content: ParsedContent, context: Any = None) -> Sequence[TaskCommand]:
         """Parses the Appointments section and generates TaskCommands."""
@@ -194,15 +194,15 @@ class AppointmentsParser(CommandParser):
 Add the `AppointmentsParser` to the `section_parsers` dictionary.
 
 ```python
-class NablaParser:
-    """A parser for Nabla transcripts."""
+class ScribeParser:
+    """A parser for transcripts."""
     
     section_parsers = {
-        "plan": NablaPlanParser(),
-        "vitals": NablaVitalsParser(),
-        "chief_complaint": NablaReasonForVisitParser(),
-        "history_of_present_illness": NablaHistoryPresentIllnessParser(),
-        "past_medical_history": NablaPastMedicalHistoryParser(),
+        "plan": PlanParser(),
+        "vitals": VitalsParser(),
+        "chief_complaint": ReasonForVisitParser(),
+        "history_of_present_illness": HistoryPresentIllnessParser(),
+        "past_medical_history": PastMedicalHistoryParser(),
         "assessment": AssessmentParser(),
         "appointments": AppointmentsParser()
     }
@@ -212,10 +212,10 @@ class NablaParser:
 
 ### 2. Customizing the Entire Parser
 
-To replace `NablaParser`, define your custom parser.
+To replace `ScribeParser`, define your custom parser.
 
 ```python
-from nabla_ai_parser.parsers.base import (
+from ai_scribe.parsers.base import (
     ParsedContent,
     TranscriptParser,
     TranscriptParserOutput,
@@ -257,8 +257,8 @@ class Protocol(BaseProtocol):
 ## Summary
 
 - **Parsing Workflow**:
-  - Intercept [`CLIPBOARD_COMMAND__POST_ORIGINATE`](/sdk/events/#clipboard-command).
-  - Use `NablaParser` (or custom parsers) to process transcripts.
+  - Intercept [`CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE`](/sdk/events/#clipboard-command).
+  - Use `ScribeParser` (or custom parsers) to process transcripts.
   - Generate commands for each section.
 
 - **Extensibility**:
