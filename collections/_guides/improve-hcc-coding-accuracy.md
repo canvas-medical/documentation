@@ -1,5 +1,5 @@
 ---
-title: "Improve HCC Coding Accurarcy"
+title: "Improve HCC Coding Accuracy"
 ---
 
 Different patients present unique challenges, and your tools should adapt to meet their specific needs.
@@ -61,7 +61,7 @@ class SurfaceNonvalidatedCodingGaps(ClinicalQualityMeasure):
     class Meta:
         title = "Validate Coding Gaps"
         identifiers = ["HCCCapturev1"]
-        description = "..."
+        description = "Surfaces registered coding gaps within a protocol card with the recommendation to validate"
         information = "https://canvasmedical.com"
         references = ["None"]
         types = ["None"]
