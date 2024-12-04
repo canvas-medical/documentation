@@ -145,9 +145,7 @@ The API can be leveraged to create coding gaps in various states. There are also
 
 ## Annotate ICD-10 Codes
 
-Adding an HCC tag as an annotation to ICD-10 is an easy way to increase awareness for clinicians. The example protocols below leverage a static list of ICD-codes. Depending on which [HCC model](/https://www.cms.gov/medicare/payment/medicare-advantage-rates-statistics/risk-adjustment) you follow, you can swap out the codes accordingly. 
-
-{% include alert.html type="info" content=" Add a note about reference a file" %}
+Adding an HCC tag as an annotation to ICD-10 is an easy way to increase awareness for clinicians. The example protocols below leverage a static list of ICD-codes. You could also reference a file contained within the plugin pacakge. Depending on which [HCC model](/https://www.cms.gov/medicare/payment/medicare-advantage-rates-statistics/risk-adjustment) you follow, you can swap out the codes accordingly. 
 
 ### Adding "HCC" to Command Search Results
 
