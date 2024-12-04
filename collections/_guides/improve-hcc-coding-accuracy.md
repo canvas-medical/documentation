@@ -19,7 +19,7 @@ By surfacing relevant data when and where it's needed, you can eliminate unneces
 
 ## Create Coding Gaps via FHIR Detected Issue
 
-The [DetectedIssue FHIR resource](/https://hl7.org/fhir/R4/detectedissue.html) can be used to surface an actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient; e.g. Drug-drug interaction, ineffective treatment frequency, procedure-condition conflict, gaps in care, etc. 
+The [DetectedIssue FHIR resource](/api/detectedissue)) can be used to surface an actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient; e.g. Drug-drug interaction, ineffective treatment frequency, procedure-condition conflict, gaps in care, etc. 
 
 A key use case is surfacing potential codings gaps that come from external sources. 
 
@@ -39,8 +39,6 @@ The workflow within Canvas is centered around issues created with the `DetectedI
 The ICD-10 code can be added to `DetectedIssue.evidence` attribute.
 
 Validated coding gaps (where `DetectedIssue.status` = `preliminary`) will appear in the patient summary if the coding gap commands are enabled in your environment (see more below).
-
-Checkout our full FHIR DetectedIssue documentation [here](/api/detectedissue).
 
 
 ## Surface New Coding Gaps as Protocol Cards
@@ -79,6 +77,9 @@ class SurfaceNonvalidatedCodingGaps(ClinicalQualityMeasure):
     ]
 
     def surface_non_validated_coding_gaps(self, patient, nonvalidated_coding_gaps):
+        """
+        Craft a protocol card with the list of coding gaps and return an add protocol card effect
+        """
         card = ProtocolCard(
             patient_id=patient.id,
             key="hcccapturev1",
@@ -105,6 +106,9 @@ class SurfaceNonvalidatedCodingGaps(ClinicalQualityMeasure):
         return [card.apply()]
 
     def resolve_coding_gaps_protocol_card(self, patient):
+        """
+        Craft and return a remove protocol card effect
+        """
         card = ProtocolCard(
             patient_id=patient.id,
             key="hcccapturev1",
@@ -118,6 +122,9 @@ class SurfaceNonvalidatedCodingGaps(ClinicalQualityMeasure):
 
 
     def compute(self) -> list:
+        """
+        When a new detectedissue is created or updated, reevaluate (create/update/remove) a protocol card based on the associated evidence
+        """
         detected_issue_from_the_event = DetectedIssue.objects.get(id=self.target)
         if detected_issue_from_the_event.code != "CODINGGAP":
             # This detected issue has no impact on the protocol card, so we
@@ -145,7 +152,7 @@ The API can be leveraged to create coding gaps in various states. There are also
 
 ## Annotate ICD-10 Codes
 
-Adding an HCC tag as an annotation to ICD-10 is an easy way to increase awareness for clinicians. The example protocols below leverage a static list of ICD-codes. You could also reference a file contained within the plugin pacakge. Depending on which [HCC model](/https://www.cms.gov/medicare/payment/medicare-advantage-rates-statistics/risk-adjustment) you follow, you can swap out the codes accordingly. 
+Adding an HCC tag as an annotation to ICD-10 is an easy way to increase awareness for clinicians. The example protocols below leverage a static list of ICD-codes. You could also reference a file contained within the plugin pacakge. Depending on which [HCC model](https://www.cms.gov/medicare/payment/medicare-advantage-rates-statistics/risk-adjustment) you follow, you can swap out the codes accordingly. 
 
 ### Adding "HCC" to Command Search Results
 
@@ -245,6 +252,9 @@ class PatientChartConditionAnnotation(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__CONDITIONS)
 
     def compute(self):
+        """
+        Annotate patient summary conditions if they match the provided set of HCC codes
+        """
 
         hcc_codes = ICD_CODES[HCC]
 
@@ -257,7 +267,6 @@ class PatientChartConditionAnnotation(BaseProtocol):
             if icd10_code in hcc_codes:
                 payload[condition["id"]] = [HCC]
 
-        # Return zero, one, or many effects.
         return [Effect(type=EffectType.ANNOTATE_PATIENT_CHART_CONDITION_RESULTS, payload=json.dumps(payload))]
 
 
@@ -269,6 +278,9 @@ class ClaimConditionAnnotation(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.CLAIM__CONDITIONS)]
 
     def compute(self):
+        """
+        Annotate claim conditions if they match the provided set of HCC codes
+        """
 
         hcc_codes = ICD_CODES[HCC]
 
@@ -281,7 +293,6 @@ class ClaimConditionAnnotation(BaseProtocol):
             if icd10_code in hcc_codes:
                 payload[condition["id"]] = [HCC]
 
-        # Return zero, one, or many effects.
         return [Effect(type=EffectType.ANNOTATE_CLAIM_CONDITION_RESULTS, payload=json.dumps(payload))]
 
 
