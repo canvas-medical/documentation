@@ -16,7 +16,6 @@ This search modification can help clinicians:
 
 Canvas supports modifying search results in [all refactored commands](/product-updates/commands-module/#progress).
 
-{% include alert.html type="info" content=" <b>Plugins are new.</b> If you are interested in enabling plugins for your Canvas instance, please reach out to <a href='mailto:support@canvasmedical.com'>support@canvasmedical.com</a>)." %}
 
 First, we'll show you a complete example of customizing the search results for
 choosing a medication in a Medication Statement command, then we'll break it

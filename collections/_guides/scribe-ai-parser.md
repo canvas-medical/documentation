@@ -7,7 +7,7 @@ guide_for:
 - /sdk/effects/
 ---
 
-The [AI Scribe Parser Plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/protocols/ai-scribe) was designed to help streamline clinical documentation by parsing structured transcripts into commands. With healthcare providers increasingly adopting AI-driven solutions, this guide provides developers with the insights and instructions needed to integrate and extend our example plugin to meet diverse documentation needs. In this guide, you'll learn how to:
+The [AI Scribe Parser Plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/ai-scribe) was designed to help streamline clinical documentation by parsing structured transcripts into commands. With healthcare providers increasingly adopting AI-driven solutions, this guide provides developers with the insights and instructions needed to integrate and extend our example plugin to meet diverse documentation needs. In this guide, you'll learn how to:
 
   - Intercept [`CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE`](/sdk/events/#clipboard-command).
   - Use `ScribeParser` (or custom parsers) to process transcripts.
