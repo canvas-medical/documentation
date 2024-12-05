@@ -94,7 +94,7 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 | code           | String                                                  |
 | display        | String                                                  |
 | user_selected  | Boolean                                                 |
-| detected_issue | [DetectedIssue](/sdk/data-detectedissue/#detectedissue) |
+| detected_issue | [DetectedIssue](sdk/data-detected-issue/#detectedissue) |
 
 <br/>
 <br/>
