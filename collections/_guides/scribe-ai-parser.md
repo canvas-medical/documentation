@@ -7,22 +7,28 @@ guide_for:
 - /sdk/effects/
 ---
 
-This guide explains how to work with the [AI Scribe Parser Plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/protocols/ai-scribe) to parse structured transcripts, like the provided example, and generate commands from their sections. It also demonstrates how to create and integrate custom parsers to handle alternate transcript formats.
+The [AI Scribe Parser Plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/protocols/ai-scribe) was designed to help streamline clinical documentation by parsing structured transcripts into commands. With healthcare providers increasingly adopting AI-driven solutions, this guide provides developers with the insights and instructions needed to integrate and extend our example plugin to meet diverse documentation needs. In this guide, you'll learn how to:
 
----
+  - Intercept [`CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE`](/sdk/events/#clipboard-command).
+  - Use `ScribeParser` (or custom parsers) to process transcripts.
+  - Generate commands for each section.
+  - Add or replace section parsers for custom sections.
+  - Implement a fully custom parser for alternate formats.
 
-## Understanding the Transcript Parsing Flow
+## Understanding the Transcript Parsing Flow. 
+The workflow is triggered by pasting a transcript into a note. Doing so will automatically insert the content in the form of a clipboard command. We can then respond to that event and transform the content into the appropriate commands. 
 
 ### Input Transcript Example
 
-The transcript is structured into sections such as:
-- **Chief complaint**
-- **History of present illness**
-- **Past medical history**
-- **Vitals**
-- **Plan**
+Our example transcript includes many structured sections. The sections listed below were flagged as being formatted in a way that makes them easy to translate into Canvas commands.
 
-Each section contains specific information that can be parsed into commands. For example:
+- Chief complaint
+- History of present illness
+- Past medical history
+- Vitals
+- Plan
+
+Each section contains specific information that can be parsed. For example:
 - The **Vitals** section includes data like weight, heart rate, and blood pressure, which can be converted into a `VitalsCommand`.
 - The **Assessment** section provides diagnoses and clinical impressions, which can be mapped to an `AssessCommand`.
 
@@ -92,11 +98,11 @@ Each section contains specific information that can be parsed into commands. For
     - Essential (primary) hypertension [I10]
 </details>
 
----
 
-## AI Scribe Plugin Architecture
+### AI Scribe Plugin Architecture
+Once the content is pasted in, the plugin does the rest. Here's how. 
 
-### 1. Protocol Class
+#### 1. Protocol Class
 
 The `Protocol` class intercepts events and processes the transcript using a parser.
 
@@ -123,7 +129,7 @@ class Protocol(BaseProtocol):
         return effects
 ```
 
-### 2. ScribeParser
+#### 2. ScribeParser
 
 The `ScribeParser` delegates the parsing of each transcript section to specific section parsers.
 
@@ -147,7 +153,7 @@ class ScribeParser(TranscriptParser):
         return parsed_sections
 ```
 
-### 3. Section Parsers
+#### 3. Section Parsers
 
 Each section parser extracts relevant information from its section and produces commands.
 ```python
@@ -162,10 +168,8 @@ class PlanParser(CommandParser):
         """Parses the plan section of a transcript."""
         return [PlanCommand(narrative=line) for line in content["arguments"]]
 ```
----
 
 ## Extending the Parser
-
 ### 1. Adding a New Section Parser
 
 Suppose you want to parse the "Appointments" section into a `TaskCommand` for follow-up tasks.
@@ -208,8 +212,6 @@ class ScribeParser:
     }
 ```
 
----
-
 ### 2. Customizing the Entire Parser
 
 To replace `ScribeParser`, define your custom parser.
@@ -251,17 +253,15 @@ class Protocol(BaseProtocol):
         effects.reverse()
         return effects
 ```
+## Watch the Workflow in Action
 
----
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/fd129849fc784bb0850b93977d76ce07?sid=f0ccbd1b-5687-4f8a-baa5-2efe9494f18d" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
-## Summary
+## Conclusion
 
-- **Parsing Workflow**:
-  - Intercept [`CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE`](/sdk/events/#clipboard-command).
-  - Use `ScribeParser` (or custom parsers) to process transcripts.
-  - Generate commands for each section.
+With robust parsing capabilities and extensibility, this example plugin equips developers to support clinicians in reclaiming their time for what matters most: patient care. By following the steps in this guide, developers can ensure seamless integration into clinical workflows, while also tailoring the tool to suit specific needs.
 
-- **Extensibility**:
-  - Add or replace section parsers for custom sections.
-  - Implement a fully custom parser for alternate formats.
+
+
+
 
