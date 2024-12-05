@@ -470,8 +470,6 @@ sdk_overview:
    url: /sdk/protocols/
  - title: "Utils Module"
    url: /sdk/utils/
- - title: "Views Module"
-   url: /sdk/views/
 
 sdk_handlers:
   - title: "CronTask"
