@@ -534,8 +534,11 @@ Once installed, certain diagnosis codes will not clutter up search results
 in commands for pediatric patients, but will continue to show as expected for
 patients over the age of 15.
 
+## Watch the Workflow in Action
 
-### Conclusion
+<div style="position: relative; padding-bottom: 62.5%; height: 0;"><iframe src="https://www.loom.com/embed/ab4a7517b1e846f981d9a3f86b157910?sid=a1a2c26c-13c7-40f5-842c-7fde52b20762" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+## Conclusion
 
 Age is one differentiator that changes the relevance of EMR features, but
 there are many, many others. Using the Canvas SDK can help keep clinicians
