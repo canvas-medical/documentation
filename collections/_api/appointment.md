@@ -8,9 +8,10 @@ sections:
         article: "a"
         description: >-
           A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more Encounter(s).<br><br>
-          [https://hl7.org/fhir/R4/appointment.html](https://hl7.org/fhir/R4/appointment.html<br><br>)<br><br>
+          [https://hl7.org/fhir/R4/appointment.html](https://hl7.org/fhir/R4/appointment.html)
+          <br><br>
           This may result in one or more [Encounters](/api/encounter).<br><br>
-          The appointment resource maps to both [patient appointments](https://canvas-medical.zendesk.com/hc/en-us/articles/11714510225427-Multi-provider-Scheduling) as well as [other events](https://canvas-medical.zendesk.com/hc/en-us/articles/15704289792659-Scheduling-Other-Events-) in Canvas. Instructions for configuring appointment and note types can be found [here](/documentation/appointment-and-note-types).
+          The appointment resource maps to both [patient appointments](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management) as well as [other events](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management#scheduling-other-events-30) in Canvas. Instructions for configuring appointment and note types can be found [here](/documentation/appointment-and-note-types).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -154,9 +155,10 @@ sections:
             update_description: >-
               There are a few things to note with this attribute: <br><br>
 
-                1.If the `appointmentType` attribute is omitted from the body completely on an update, the note type will stay as it already is in the Canvas.<br><br>
-                2.If the code / system pair does not exist, you will see a 422 error status with error message `Appointment Type does not exist with code: {code} and system: {system}` <br><br>
-                3.If the code / system pair passed is not marked as `Is Scheduleable` in Canvas, you will get a 422 error status with error message `Note type: {name} is not scheduleable`.
+                1. If the `appointmentType` is an Other Event that does not require a patient, you must provide the `appointmentType` in the upload payload to pass validation. <br><br>
+                2. For all appointments that require a patient, if the `appointmentType` attribute is omitted from the body completely on an update, the note type will stay as it already is in Canvas.<br><br>
+                3. If the code / system pair does not exist, you will see a 422 error status with error message `Appointment Type does not exist with code: {code} and system: {system}` <br><br>
+                4. If the code / system pair passed is not marked as `Is Scheduleable` in Canvas, you will get a 422 error status with error message `Note type: {name} is not scheduleable`.
             attributes:
               - name: coding
                 type: array[json]
@@ -228,7 +230,7 @@ sections:
                 1. `Location`: A reference to a Location captures what Practice Location in Canvas the appointment will take place at.<br>
                 2. `Meeting Link`: For appointments that are telehealth in Canvas, there will be a reference to an endpoint in this list. The reference attribute will match an `id` in the `Appointment.contained` attribute list. That element will display the url address of the virtual meeting link. <br>
                 3. `Appointment`: If an appointment has been rescheduled, this list could display an associated Appointment reference. If you see a display of `Previously Rescheduled Appointment`, it means that the appointment you are currently looking at was created after rescheduling the appointment in that Reference. If you see a display of `Rescheduled Replacement Appointment`, it means that the appointment you are currently looking at is now outdated by a new appointment. If you see a display of `Co-scheduled Appointment`, it means that the appointment you are currently looking at was scheduled with other additional associated appointments for which the appointment reference ID is noted. <br>
-                4. `Encounter`: If there is any encounter associated with the appointment made in Canvas, the refence will appear in this list.
+                4. `Encounter`: If there is any encounter associated with the appointment made in Canvas, the reference will appear in this list.
             create_and_update_description: >-
               Additional information to support the appointment. Currently, Canvas supports the ability to write 2 different types of references: <br>
 

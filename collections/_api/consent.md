@@ -10,7 +10,7 @@ sections:
           A record of a healthcare consumer’s choices, which permits or denies identified recipient(s) or recipient role(s) to perform one or more actions within a given policy context, for specific purposes and periods of time.<br><br>
           [https://hl7.org/fhir/R4/consent.html](https://hl7.org/fhir/R4/consent.html)
           <br><br>
-          For more information on consents in canvas, see this [article](https://canvas-medical.zendesk.com/hc/en-us/articles/5524511564947-Patient-Consents).
+          For more information on consents in canvas, see this [article](https://canvas-medical.help.usepylon.com/articles/8727821967-patient-consents).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

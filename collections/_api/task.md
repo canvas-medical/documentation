@@ -8,30 +8,80 @@ sections:
         article: "a"
         description: >-
           A task to be performed.<br><br>[http://hl7.org/fhir/R4/task.html](http://hl7.org/fhir/R4/task.html)
+          <br><br>
+          To read more about tasks in Canvas see [this article](https://canvas-medical.help.usepylon.com/articles/8460447495-task-management).
         attributes:
           - name: id
-            description: >-
-              The identifier of the task
+            description: The identifier of the task.
             type: string
+            exclude_in: create
+            required_in: update
           - name: extension
             type: array[json]
-            description: >-
-              An extension that optionally includes the following:<br><br>
-              - The team that the task is assigned to. This optional field requires a reference to the team from the [Group](/api/group) endpoint. In the Canvas UI, this will display under the field **team** in the task card.
-              <br><br>
-              - A [permalink](https://canvas-medical.zendesk.com/hc/en-us/articles/13341828094227-Linking-Resources-to-Tasks) URL to the task.
+            description_for_all_endpoints: >-
+              Additional content defined by implementations<br><br>
+              
+
+              - Canvas supports assigning a task to a group/team. This optional field requires a reference to the team from the [FHIR Group](/api/group) endpoint. In the Canvas UI, this will display under the field **team** in the task card.
+            read_and_search_description: >-
+              - When reading our a FHIR Task objects, a permalink URL to the task may be supplied. This link will take you directly to the task in the Canvas UI.
+            attributes:
+                - name: url
+                  type: string
+                  required_in: create,update
+                  description: Reference that defines the content of this object. 
+                  enum_options:
+                    - value: http://schemas.canvasmedical.com/fhir/extensions/task-permalink
+                      description: This url will have an associated valueString with a url that will directly link to the task in the Canvas UI. 
+                      exclude_in: create, update
+                    - value: http://schemas.canvasmedical.com/fhir/extensions/task-group
+                      description: This url will have an associated valueReference for the FHIR Group that this task is assigned to.  
+                - name: valueString
+                  type: string
+                  exclude_in: create, update
+                  description: Supplied in the extensions associated to the permalink. This string will represent a URL to the task in the Canvas UI.
+                - name: valueReference
+                  type: json
+                  description: A reference to a FHIR Group resource that represents the canvas team assigned to the task. 
+                  attributes: 
+                    - name: reference
+                      type: string
+                      required_in: create,update
+                      description: The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e`.
+                    - name: type
+                      type: string
+                      exclude_in: create, update
+                      description: Type the reference refers to (e.g. "Group").
+                    - name: display
+                      type: string
+                      exclude_in: create, update
+                      description: Display name of the FHIR Group.
           - name: status
             type: string
-            description: >- # TODO - enter status mapping table from README. Having rendering issues with the table
-              The current status of the task. Supported values are **requested**, **cancelled** and **completed**.
+            description: The current status of the task.
             required_in: create,update
+            enum_options:
+                - value: requested
+                  description: In canvas this maps to a status of open.
+                - value: completed
+                - value: cancelled
+                  description: In canvas this maps to a status of closed.
           - name: description
             type: string
             required_in: create,update
-            description: Human-readable explanation of task
+            description: Human-readable explanation of task.
           - name: for
             type: json
-            description: Beneficiary of the Task. This must be a [Patient](/api/patient) reference.
+            description: Beneficiary of the Task. This must be a [Patient](/api/patient) reference. If this attribute is supplied, the task will be visible on the patient's chart.
+            attributes:
+                - name: reference
+                  type: string
+                  required_in: create,update
+                  description: The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f`.
+                - name: type
+                  type: string
+                  exclude_in: create, update
+                  description: Type the reference refers to (e.g. "Patient").
           - name: authoredOn
             type: datetime
             description: Task Creation Date. If omitted from the message, it will default to the current timestamp at the time of ingestion.
@@ -39,52 +89,127 @@ sections:
             type: json
             required_in: create,update
             description: Who is asking for task to be done. This must be a [Practitioner](/api/practitioner) reference.
+            attributes:
+              - name: reference
+                type: string
+                required_in: create,update
+                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+              - name: type
+                type: string
+                exclude_in: create, update
+                description: Type the reference refers to (e.g. "Practitioner").
           - name: owner
             type: json
-            description: Responsible individual. This must be a [Practitioner](/api/practitioner) reference.
+            description: Responsible individual. If supplied, this must be a [Practitioner](/api/practitioner) reference. In canvas this practitioner will become the staff member assignee. 
+            attributes:
+              - name: reference
+                type: string
+                required_in: create,update
+                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+              - name: type
+                type: string
+                exclude_in: create, update
+                description: Type the reference refers to (e.g. "Practitioner").
           - name: intent
-            type: string
+            type: enum [unknown]
             required_in: create,update
             description: Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
           - name: restriction
             type: json
             description: Constraints on fulfillment tasks. In Canvas, this field is used to represent the due date for a task.
+            attributes: 
+                - name: period
+                  type: json
+                  description: When fulfillment sought.
+                  attributes:
+                    - name: end
+                      type: datetime
+                      description: Due date for the task to be performed by.
           - name: note
             type: array[json]
-            description: >-
-              Comments made about the task. For each comment, the following values can be specified:<br>
-              - The comment's text<br>
-              - Timestamp the comment was left. If omitted, this will default to current timestamp at data ingestion.<br>
-              - Reference to the practitioner that left the specific comment<br>
+            description_for_all_endpoints: Comments made about the task. 
+            create_and_update_description: >-
+              For each comment, the following values can be specified:
+
+              - The comment's text  
+
+              - Timestamp the comment was left. If omitted, this will default to current timestamp at data ingestion.  
+
+              - Reference to the practitioner that left the specific comment
+            attributes:
+                - name: text
+                  type: string
+                  required_in: create, update
+                  description: The text of the task comment.
+                - name: time
+                  type: datetime
+                  description: The timestamp the comment was left on the task. If omitted, this will default to current timestamp at data ingestion.  
+                - name: authorReference
+                  type: json
+                  required_in: create, update
+                  description: A reference to the Canvas Practitioner who authored the task comment.
+                  attributes:
+                    - name: reference
+                      type: string
+                      required_in: create,update
+                      description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+                    - name: type
+                      type: string
+                      exclude_in: create, update
+                      description: Type the reference refers to (e.g. "Practitioner").
           - name: input
             type: array[json]
-            description: >-
-              Information used to perform the task. This field will add labels to the task in the Canvas UI. If the label doesn't exist in Canvas already, it will be created.
+            description_for_all_endpoints: Information used to perform the task. In Canvas this translates to added labels on a Task. 
+            create_and_update_description: If the label doesn't exist in Canvas already, it will be created.
+            attributes: 
+                - name: type
+                  type: json
+                  required_in: create, update
+                  description: Label for the input.
+                  attributes: 
+                    - name: text
+                      type: string
+                      required_in: create, update
+                      enum_options: 
+                        - value: label
+                    - name: valueString
+                      type: string
+                      required_in: create, update
+                      description: Name of the label. If the label doesn't exist in Canvas already, it will be created.
         search_parameters:
           - name: _id
             type: string
-            description: Search by a task id
+            description: Search by a task id.
           - name: _sort
             type: string
-            description: Triggers sorting of the results by a specific criteria. Accepted values are **_id** and **due-date**. Use **-_id** or **-due-date** to sort in descending order.
+            description: Triggers sorting of the results by a specific criteria. 
+            search_options:
+                - value: _id (sort in ascending order)
+                - value: due-date (sort in ascending order)
+                - value: -_id (sort in descending order)
+                - value: -due-date (sort in descending order)
           - name: description
             type: string
-            description: Search by description
+            description: Search by description.
           - name: label
             type: string
             description: Search for a task with an associated label
           - name: owner
             type: string
-            description: Search by task owner
+            description: Search by task owner in the format `Practitioner/3a9cafb9d1b445be95a2e2548e12a787`.
           - name: patient
             type: string
-            description: Search by patient
+            description: Search by patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
           - name: requester
             type: string
-            description: Search by task requester
+            description: Search by task requester in the format `Practitioner/3a9cafb9d1b445be95a2e2548e12a787`.
           - name: status
             type: string
             description: Search by task status
+            search_options:
+                - value: requested
+                - value: completed
+                - value: cancelled
         endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
@@ -92,7 +217,7 @@ sections:
           example_response: task-create-response
           description: >-
             Create a task.<br><br>
-            Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks). Open tasks will also display in the [Task Panel](https://canvas-medical.zendesk.com/hc/en-us/articles/360059339433-Task-List).
+            Tasks created through this FHIR Endpoint will display in the [patient chart via the tasks icon](https://canvas-medical.help.usepylon.com/articles/8460447495-task-management#tasks-in-the-patient-chart-12). Open tasks will also display in the [Task Panel](https://canvas-medical.help.usepylon.com/articles/8460447495-task-management#task-list-16).
         read:
           description: Read a Task resource.
           responses: [200, 401, 403, 404]
@@ -462,7 +587,7 @@ print(response.text)
 </div>
 
 <div id="task-search-request">
-{% include search-request.html resource_type="Task" search_string="owner=Practitioner%2Fa02cbf2403e140f7bc9a355c6ed420f3&label=Urgent" %}
+{% include search-request.html resource_type="Task" search_string="owner=Practitioner/a02cbf2403e140f7bc9a355c6ed420f3&label=Urgent" %}
 </div>
 
 <div id="task-search-response">

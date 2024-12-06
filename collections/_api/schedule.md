@@ -11,21 +11,36 @@ sections:
           [http://hl7.org/fhir/R4/schedule.html](http://hl7.org/fhir/R4/schedule.html)<br><br>
           Staff availability is denoted separately at each practice location associated with the organization record. The schedule **id** obtained from a Schedule search is used to search for bookable time slots for appointments.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
-            description: >-
-              The identifier of the schedule
+            description: The identifier of the schedule.
             type: string
           - name: text
             type: json
-            description: Descriptive and status information about the schedule
+            description: Text summary of the resource, for human interpretation.
+            type: json
+            attributes:
+              - name: status
+                description: The status of the narrative.
+                enum_options:
+                    - value: generated
+              - name: div
+                description: Limited xhtml content that contains the human readable text of the Schedule.
           - name: actor
             type: array[json]
-            description: >-
-              Resource(s) (practitioner or location) that availability information is being provided for
+            description: Resource(s) that availability information is being provided for.
+            attributes:
+                - name: reference
+                  type: string
+                  description: The reference string of the practitioner in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`.
+                - name: type
+                  type: string
+                  description: Type the reference refers to (e.g. "Practitioner").
           - name: comment
             type: string
-            description: >-
-              Comments on availability
+            description: Comments on availability. Currently the format for this comment will be `Schedule for <practitioner credentialed name> at <location>`
         endpoints: [search]
         search:
           responses: [200, 400, 401, 403]

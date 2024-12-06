@@ -108,13 +108,29 @@ sections:
           <br><br>
           For create and update actions, the `url` attribute must be equal to *http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy*. For each object in `extension`, a `url` attribute with the value **ncpdp-id** should be included along with a `valueIdentifier` object including the NCPDP number of the pharmacy under `value` and the url **http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber** under `system`.<br><br>
 
+          **`default-provider`**
+          <br><br>
+          http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider
+          <br><br>
+          This extension determines the default Provider (Practitioner) for the Patient that is used for eligibility checks.
+          <br><br>
+          For create and update actions, the `url` attribute must be equal to *http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider*. The `valueReference` is a JSON object that contains the **required** `reference` attribute pointing to the respective reference Canvas resource, in this case, the Practitioner resource.<br><br>
+
+          **`default-location`**
+          <br><br>
+          http://schemas.canvasmedical.com/fhir/extensions/patient-default-location
+          <br><br>
+          This extension determines the default Provider (Practitioner) for the Patient  that is used for eligibility checks.
+          <br><br>
+          For create and update actions, the `url` attribute must be equal to *http://schemas.canvasmedical.com/fhir/extensions/patient-default-location*. The `valueReference` is a JSON object that contains the **required** `reference` attribute pointing to the respective reference Canvas resource, in this case, the Location resource.<br><br>
+
           **`business-line`**
           <br><br>
           http://schemas.canvasmedical.com/fhir/extensions/business-line
           <br><br>
           The business line that the patient belongs to.
           <br><br>
-          Not all Canvas instances have Business Line functionality enabled. See [here](https://canvas-medical.zendesk.com/hc/en-us/articles/16777163916307-Customized-Patient-Communication#h_01H0T0Z79XFX215GRSABFC91JZ) for information on Business Lines.<br><br>
+          Not all Canvas instances have Business Line functionality enabled. See [here](https://canvas-medical.help.usepylon.com/articles/1392971282-customized-patient-communication#h_01H0T0Z79XFX215GRSABFC91JZ) for information on Business Lines.<br><br>
           If using business line functionality, create and update actions should include a json object with the `url` attribute equal to **http://schemas.canvasmedical.com/fhir/extensions/business-line** and the `valueId` set to the externallyExposableId of the business line in Canvas.
 
         attributes:
@@ -231,6 +247,7 @@ sections:
                 description: The 5 digit postal code of the address.
               - name: country
                 type: string
+                description: The ISO 3166 2 letter country code. If not provided, will default to "us".
               - name: period
                 type: json
                 attributes:
@@ -240,7 +257,7 @@ sections:
                     type: date
           - name: photo
             type: array[json]
-            description: >- 
+            description: >-
                 Image of the patient. This image shows on the patient avatar in the Canvas UI.<br><br>
                 **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             create_and_update_description: >-
@@ -262,7 +279,7 @@ sections:
                     type: string
               - name: relationship
                 type: array[json]
-                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry can contain a text string attribute and a coding list. The text attribute is a free text string representing the relationship to the patient. The coding list can specify the [configurable contact category codings](https://canvas-medical.zendesk.com/hc/en-us/articles/360056528294-Patient-Contact-Information) this contact has to the patient.
+                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry can contain a text string attribute and a coding list. The text attribute is a free text string representing the relationship to the patient. The coding list can specify the [configurable contact category codings](https://canvas-medical.help.usepylon.com/articles/4371968359-patient-contact-information) this contact has to the patient.
                 attributes:
                   - name: text
                     type: string
@@ -351,7 +368,7 @@ sections:
           example_request: patient-update-request
           example_response: patient-update-response
           description: >-
-            <b>How updates/deletions to the identifier, telecom, address, and contact fields are handled:</b><br><br> Patient Search/Read will include an <code>id</code>  value for these fields.<br><br>If the <code>id</code>  field is included in the iteration, then Canvas will attempt to match to an existing value for that field.<br><br> If the <code>id</code> field is <b>not</b> included in the iteration, then Canvas will attempt to create a new entry in the database for that field.<br><br> If a <code>telecom</code>, <code>address</code>, or <code>contact</code> iteration returned via Search/Read is <b>not</b> included in the Update message, then it will be deleted.<br><br><b>Other Fields</b><br><br>If a field is required according to Patient Create, it is also required in the update. If the field is not required and is not added to the update request, the saved data will not be changed.
+            <b>How updates/deletions to the identifier, telecom, address, and contact fields are handled:</b><br><br> Patient Search/Read will include an <code>id</code>  value for these fields.<br><br>If the <code>id</code> field is included in the iteration, then Canvas will attempt to match to an existing value for that field.<br><br> If the <code>id</code> field is <b>not</b> included in the iteration, then Canvas will attempt to create a new entry in the database for that field.<br><br> If a <code>telecom</code>, <code>address</code>, or <code>contact</code> iteration returned via Search/Read is <b>not</b> included in the Update message, then it will be deleted. The same delete behaviour occurs with <code>preferred-pharmacy</code>, <code>default-provider</code> and <code>default-location</code> extensions - their respective values get dropped from the Canvas if those extensions are not present during update. <br><br><b>Other Fields</b><br><br>If a field is required according to Patient Create, it is also required in the update. If the field is not required and is not added to the update request, the saved data will not be changed.
         search:
           responses: [200, 400, 401, 403]
           example_request: patient-search-request
@@ -410,6 +427,20 @@ curl --request POST \
                     }
                 }
             ]
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
+            "valueReference": {
+                "reference": "Practitioner/55096fbcdfb240fd8c999c325304de03",
+                "type": "Practitioner"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-location",
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location"
+            }
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
@@ -702,6 +733,20 @@ payload = {
                     }
                 }
             ]
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
+            "valueReference": {
+                "reference": "Practitioner/55096fbcdfb240fd8c999c325304de03",
+                "type": "Practitioner"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-location",
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location"
+            }
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
@@ -1064,6 +1109,22 @@ print(response.text)
                 }
             ],
             "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
+            "valueReference": {
+                "reference": "Practitioner/55096fbcdfb240fd8c999c325304de03",
+                "type": "Practitioner",
+                "display": "Steven Magee"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-location",
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location",
+                "display": "Canvas Clinic San Francisco"
+            }
         }
     ],
     "identifier":
@@ -1428,6 +1489,20 @@ curl --request PUT \
             ]
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
+            "valueReference": {
+                "reference": "Practitioner/55096fbcdfb240fd8c999c325304de03",
+                "type": "Practitioner"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-location",
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location"
+            }
+        },
+        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
             "extension":
             [
@@ -1717,6 +1792,20 @@ payload = {
                     }
                 }
             ]
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
+            "valueReference": {
+                "reference": "Practitioner/55096fbcdfb240fd8c999c325304de03",
+                "type": "Practitioner"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-location",
+            "valueReference": {
+                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                "type": "Location"
+            }
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
@@ -2105,6 +2194,22 @@ print(response.text)
                             }
                         ],
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
+                        "valueReference": {
+                            "reference": "Practitioner/55096fbcdfb240fd8c999c325304de03",
+                            "type": "Practitioner",
+                            "display": "Steven Magee"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-location",
+                        "valueReference": {
+                            "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                            "type": "Location",
+                            "display": "Canvas Clinic San Francisco"
+                        }
                     }
                 ],
                 "identifier":

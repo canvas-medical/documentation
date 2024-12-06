@@ -13,12 +13,15 @@ layout: default
       {% include article.html %}
     </div>
     <div class="sidepanels">
+      <a href="https://github.com/canvas-medical/canvas-plugins/issues/new"><img style="height: 20px; width: auto; padding-right: 5px;" src="{{ "/assets/images/font-awesome/fa-github.svg" }}">Questions? Create an issue.</a>
       <div class="sidepanels__sidepanel">
         {% include panel-guides.html %}
       </div>
+      {% unless page.disable_anchorlist %}
       <div class="sidepanels__sidepanel">
         {% include panel-anchorlist.html %}
       </div>
+      {% endunless %}
     </div>
   </div>
 </div>

@@ -20,13 +20,15 @@ sections:
             type: string
           - name: status
             type: enum [ active | cancelled ]
-            description: The status of the Coverage. <br><br>In Canvas, the status of `active` means it appears in the Patient's Profile page, while a status of `cancelled` means it was removed and no longer appears on the page. Of note, an expired coverage will still show as `active`, so be sure to set/read the `period.end` attribute.
+            description_for_all_endpoints: The status of the Coverage. <br><br>In Canvas, the status of `active` means it appears in the Patient's Profile page either under the main or other coverage sections, while a status of `cancelled` means it was removed and no longer appears on the page. An expired coverage will still show as `active`, so be sure to set/read the `period.end` attribute.
+            create_description: Currently there is no way to create a coverage that appears under the "Other Coverages" section on the Patient Profile. All coverages created with `active` will appear as the primary, secondary, tertiary, etc coverage depending on the order number. Coverages created with a `cancelled` status will not appear on the UI, but can still be read out.
+            update_description: If a coverage in the Canvas UI is in the "Other coverages" section, on an update if the status stays `active`, it will remain in the "Other coverages" section.
             required_in: create,update
           - name: type
             type: json
             description: >-
               Type of coverage, such as medical, workers compensation, self pay, etc.<br><br>
-              In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers).
+              In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers).
             attributes:
               - name: coding
                 description: Code defined by a terminology system.
@@ -277,7 +279,7 @@ sections:
                     ],
                ```
               <br>
-               - sending a `payor[0].identifier.value` corresponding to the Coverage's payor id.  For now, these values can only be found and updated in the [Insurers Admin view](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers) in Canvas.
+               - sending a `payor[0].identifier.value` corresponding to the Coverage's payor id.  For now, these values can only be found and updated in the [Insurers Admin view](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers) in Canvas.
                ```json
                 "payor": [
                     {
@@ -310,7 +312,7 @@ sections:
                   - name: value
                     type: string
                     required_in: create, update
-                    description: The value that is unique. These values can only be found and updated in the [Insurers Admin view](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers) in Canvas. 
+                    description: The value that is unique. These values can only be found and updated in the [Insurers Admin view](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers) in Canvas. 
                   - name: system
                     type: string
                     description: The namespace for the identifier value. 

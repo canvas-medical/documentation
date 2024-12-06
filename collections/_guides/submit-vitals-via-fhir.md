@@ -4,7 +4,7 @@ guide_for:
 - /api/observation/
 ---
 
-Inside of the Canvas' [Vital Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360056077654-Logging-Vital-Signs) there are many vital signs supported to document. 
+Inside of the Canvas' [Vital Command](https://canvas-medical.help.usepylon.com/articles/9426091672-command-vitals) there are many vital signs supported to document. 
 
 {:refdef: style="text-align: center;"}
 ![Protocol framework](/assets/images/vitals/vital-empty.png){:width="70%"}

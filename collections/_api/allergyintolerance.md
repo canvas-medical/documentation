@@ -10,7 +10,7 @@ sections:
           Risk of harmful or undesirable, physiological response which is unique to an individual and associated with exposure to a substance.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html)
           <br><br>
-          To learn more about documenting allergies in Canvas see [here](https://canvas-medical.zendesk.com/hc/en-us/articles/360056920593-Document-Allergies).
+          To learn more about documenting allergies in Canvas see [here](https://canvas-medical.help.usepylon.com/articles/9964004914-document-allergies).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

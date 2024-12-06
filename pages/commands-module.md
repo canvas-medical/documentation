@@ -28,12 +28,13 @@ Commands migrated to the new framework will function similarly if not identicall
 - **Consistent keyboard controls.** The framework uses built-in browser accessibility features to provide a first-class keyboard navigation experience across all commands.
 - **Carry forward previous respones** The ability to pull forward the last recorded response will be available more widely across commands. 
 - **Add partially complete commands to automations.** Migrated commands can be added to automations before they are committed, allowing users to include commands that are not fully filled out.
+- **A fully-auditable command lifecycle.** The framework tracks all changes to a command over time, allowing for detailed auditing and the ability to revert to previous changes.
+
 
 [Read more about SDK commands.](/documentation/commands-overview) 
 
 
 ### Future State
-- **A fully-auditable command lifecycle.** The framework tracks all changes to a command over time, which will enable detailed auditing, as well as version control features in the future.
 - **Customizable commands.** The framework will enable customers to customize existing commands and create new ones by implementing a simple interface consisting of a form and one or more event handlers (roughly outlined above).
 - **Editing committed commands.** In order to maintain a complete audit trail, current commands cannot be edited after they have been committed. Instead, they must be entered-in-error and re-created, which is cumbersome and often annoying. The framework abstracts this requirement away, allowing commands to be edited after they are committed by handling the enter-in-error and re-creation lifecycle seamlessly behind the scenes.
 
@@ -116,60 +117,111 @@ Commands migrated to the new framework will function similarly if not identicall
     <tr> 
       <td>Diagnose</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
-      <td><ul><li>The command now restricts adding duplicate diagnoses. Users will be prevented from committing the command and warned to add an assess command if the condition already exists.</li></ul> </td>
-    </tr>
-    <tr> 
-      <td>Task</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
+      <td><ul><li>The command now restricts adding duplicate diagnoses. Users will be prevented from committing the command and warned to add an assess command if the condition already exists</li></ul> </td>
     </tr>
     <tr> 
       <td>Lab Order</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr>
-    <tr> 
-      <td>Refill</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>The indications drop down defaults with active conditions as quick picks</li><li>Validation will prevent sending orders if a patient does not have an address or if the provider does not have an NPI</li></ul> </td>
     </tr>
     <tr> 
       <td>Family History</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
-      <td>Surgical History</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr>
-    <tr> 
-      <td>Medical History</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
-      <td></td>
-    </tr> 
     <tr> 
       <td>Allergy</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>       
     <tr> 
       <td>Remove Allergy</td>
-      <td><span class="tag-in-progress"> In Progress </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
+    </tr>
+    <tr> 
+      <td>Surgical History</td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Medical History</td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr> 
+    <tr> 
+      <td>Task</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>Attachments are added through a modal</li></ul></td>
+    </tr>
+    <tr> 
+      <td>Refill</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>Adds max refill validation for epcs</li> <li>Limits to 2 indications</li></ul> </td>
+    </tr>
+     <tr> 
+      <td>Vitals</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td><ul><li>Updated layout</li></ul> </td>
+    </tr>
+    </tr>
+     <tr> 
+      <td>Change Diagnosis</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Close Goal</td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Educational Material</td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
+       <td><ul><li>The preview of the article is now located in the triple dot menu</li></ul> </td>
+    </tr>
     </tr>
      <tr> 
       <td>Image</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>Attachments are added through a modal</li></ul></td>
+    </tr>
+     <tr> 
+      <td>Snooze Protocol</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr> 
       <td>Immunization Statement</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
      <tr> 
+      <td>Immunize</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Physical Exam</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Review of Systems</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Structured Assessment</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    <tr> 
       <td>Refer</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Follow Up</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>

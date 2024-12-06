@@ -25,47 +25,47 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
-        <a href="/guides/optimize-patient-intake">
+         <a href="/guides/scribe-ai-parser">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
-                    <span font color = navy >Optimize Patient Intake</span>
+                    <span font color = navy >Scribe Parser Plugin</span>
                 </div>
                 <div class="cardBody">
-                    Ensure your providers have the information they need for their visit
+                    Creating, Implementing, and Extending a Scribe Parser
                 </div>
             </div>
         </a>
-        <a href="/guides/external-scheduling">
+        <a href="/guides/creating-webhooks-with-the-canvas-sdk">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
-                    <span>External Scheduling</span>
+                    <span font color = navy >Creating Webhooks</span>
                 </div>
                 <div class="cardBody">
-                 Enable external systems to takeover or supplement scheduling in Canvas
+                    Make automatic API requests based on Canvas events
                 </div>
             </div>
         </a>
-        <a href="/guides/asynchronous-care">
-                        <div class="cardContainer">
+        <a href="/guides/tailoring-the-chart-to-the-patient">
+            <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
-                    <span>Asynchronous Care</span>
+                    <span font color = navy >Tailoring to the Patient</span>
                 </div>
                 <div class="cardBody">
-                    Extend access to patients by providing care at any time, from anywhere
+                    Customize a patient's chart so the features most relevant to them are front-and-center
                 </div>
             </div>
         </a>
-        <a href="/guides/patient-messaging">
-                        <div class="cardContainer">
+        <a href="/guides/staying-on-top-of-tasks">
+            <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
                 <div class="cardHeading">
-                    <span>Patient Messaging</span>
+                    <span font color = navy >Staying on Top of Tasks</span>
                 </div>
                 <div class="cardBody">
-                    Customize the patient messaging experience to support your care model
+                    Create tasks via API? Listen for completion with a plugin!
                 </div>
             </div>
         </a>
@@ -80,50 +80,6 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
-        <a href="/guides/build-a-safety-framework">
-            <div class="cardContainer">
-                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
-                <div class="cardHeading">
-                    <span>Build a Safety Framework</span>
-                </div>
-                <div class="cardBody">
-                    Leverage data to build safer workflows and care pathways
-                </div>
-            </div>
-        </a>
-        <a href="/guides/team-based-care">
-            <div class="cardContainer">
-                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
-                <div class="cardHeading">
-                    <span>Team Based Care</span>
-                </div>
-                <div class="cardBody">
-                    Support efficient, multi-disciplinary team-based delivery
-                </div>
-            </div>
-        </a>
-        <a href="/guides/capture-charges">
-            <div class="cardContainer">
-                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
-                <div class="cardHeading">
-                    <span>Capture Charges</span>
-                </div>
-                <div class="cardBody">
-                    Set charges and capture them through documentation
-                </div>
-            </div>
-        </a>
-        <a href="/guides/bh">
-            <div class="cardContainer">
-                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}"><img src="/assets/images/template-pill.png" style="width: 24%;">
-                <div class="cardHeading">
-                    <span>Behavioral Health </span>
-                </div>
-                <div class="cardBody">
-                Implement these workflows tailored to your behavioral health care model
-            </div>
-            </div>
-        </a>
         <a href="/guides/submit-vitals-via-fhir">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
@@ -132,6 +88,17 @@ layout: "landingpage"
                 </div>
                 <div class="cardBody">
                 Learn how to document a full vitals panel via FHIR
+            </div>
+            </div>
+        </a>
+        <a href="/guides/improve-hcc-coding-accuracy">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span>Improve HCC Accuracy</span>
+                </div>
+                <div class="cardBody">
+                Make HCC coding more intuitive and efficient in Canvas
             </div>
             </div>
         </a>

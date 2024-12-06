@@ -9,65 +9,114 @@ sections:
         description: >-
           A photo, video, or audio recording acquired or used in healthcare.<br><br>
           [https://hl7.org/fhir/R4/media.html](https://hl7.org/fhir/R4/media.html)<br><br>
-          FHIR Media maps to a Visual Exam Finding in Canvas.
+          FHIR Media maps to a [Visual Exam Finding Command](https://canvas-medical.help.usepylon.com/articles/4119751144-command-visual-exam-finding) in Canvas.
         attributes:
-          - name: id
-            description: >-
-              The identifier of the Media
+          - name: resourceType
+            description: The FHIR Resource name.
             type: string
+          - name: id
+            description: The identifier of the Media.
+            type: string
+            exclude_in: create
           - name: extension
             type: array[json]
-            description: >-
-              Canvas supports a note identifier extension on this resource for create, read, update, and search interactions. The note identifier can be used with the [Canvas Note API](/api/note).<br>
-              <br>
-              **Important:** For create interactions, Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note.<br>
-              <br>
-              The `url` for the extension is: **http://schemas.canvasmedical.com/fhir/extensions/note-id**<br>
-              <br>
-              The `valueId` contains the note identifier.<br>
-              <br>
-              See the request and response examples for more information.
+            description_for_all_endpoints: Canvas supports a note identifier extension on this resource. The note identifier can be used with the [Canvas Note API](/api/note).
+            create_description: Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note. If neither is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.
+            attributes:
+                - name: url
+                  type: string
+                  description: Source that defines the content of this object.
+                  enum_options:
+                    - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
+                - name: valueId
+                  type: string
+                  description: The valueId field is used for the Note extension and will be the note's unique identifier.
           - name: status
-            description: >-
-              The current state of the media<br><br>Supported codes for create interactions are: **completed**, **entered-in-error**
+            required_in: create
+            description: The current state of the media.
+            enum_options:
+              - value: completed
+              - value: entered-in-error
             type: string
           - name: subject
-            description: Who/What this Media is a record of
+            required_in: create
+            description: Who/What this Media is a record of.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                required_in: create
+                description: The reference string of the subject in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Patient").
           - name: encounter
-            description: >-
-              Encounter associated with media<br><br>
-              The encounter attribute contains a reference to the encounter that is associated with the media. If an encounter is provided, the media will be inserted into the existing note for the encounter. If an encounter is not provided, then a new data import note will be created and the media will be inserted this new note.<br><br>
-              **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
+            description_for_all_endpoints: Encounter associated with media.
+            create_description: >-
+                Supply an encounter reference to be able to insert the allergy command into a specific note on the patient's timeline. If no encounter is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.
+                <br><br>
+                **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the encounter in the format of `"Encounter/086cd6fe-2c94-455d-a53e-6ff1c2652cae"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Encounter").
           - name: operator
             description: >-
-              The person who generated the image<br><br>
-              The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up.
+              The person who generated the image.<br><br>
+              The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.
             type: json
+            attributes:
+              - name: reference
+                type: string
+                required_in: create
+                description: The reference string of the operator in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Practitioner").
           - name: content
-            description: >-
-              Actual Media<br><br>
-              The content attribute is a JSON object that contains metadata about the content and the content itself. This is a required value. The content object contains three attributes:<br><br>
-              • `contentType`: Supported MIME content types are **image/heic**, **image/jpeg**, **image/png**<br>
-              • `content`: Base64 string of the media content<br>
-              • `title`: title of the content file<br><br>
+            required_in: create
+            description_for_all_endpoints: Actual Media.
+            read_and_search_description: >-
               **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
-            create_and_update_description: >-
-              Actual Media<br><br>
-              The content attribute is a JSON object that contains metadata about the content and the content itself. This is a required value. The content object contains three attributes:<br><br>
-              • `contentType`: Supported MIME content types are **image/heic**, **image/jpeg**, **image/png**<br>
-              • `content`: Base64 string of the media content<br>
-              • `title`: title of the content file<br><br>
             type: json
+            attributes:
+              - name: contentType
+                type: string
+                required_in: create
+                description: Mime type of the content, with charset etc.
+                enum_options:
+                  - value: image/heic
+                  - value: image/jpeg
+                  - value: image/png
+              - name: data
+                type: string
+                exclude_in: read, search
+                required_in: create
+                description: Inline data in Base64 format.
+              - name: title
+                type: string
+                description: Label to display in place of the data. This will appear on the Visual Exam Finding Command in the patient's chart.
+              - name: url
+                type: string
+                exclude_in: create
+                description: Uri where the data can be found.
           - name: note
             description: >-
               Comments made about the media<br><br>
               The note attribute is an array of JSON objects, each of which contains a text attribute that contains the text of a comment that will be attached to the inserted media on the UI.
             type: array[json]
+            attributes:
+              - name: text
+                type: string
+                required_in: create
+                description: The annotation - text content.
         endpoints: [create, read, search]
         create:
-          description: Create a Media resource.<br><br>Media resources that are created will appear as a [Visual Exam Finding](https://canvas-medical.zendesk.com/hc/en-us/articles/360057916493-Command-Visual-Exam-Finding) in a patient's chart.
+          description: Create a Media resource.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: media-create-request
           example_response: media-create-response
@@ -86,6 +135,12 @@ sections:
           responses: [200, 400, 401, 403]
           example_request: media-search-request
           example_response: media-search-response
+        search_parameters:
+          - name: _id
+            description: The identifier of the Media.
+            type: string
+          - name: patient
+            description: The patient the media is associated with in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
 ---
 
 <div id="media-create-request">
@@ -302,7 +357,7 @@ print(response.text)
 </div>
 
 <div id="media-search-request">
-{% include search-request.html resource_type="Media" search_string="patient=Patient%2Fb8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="Media" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
 </div>
 
 <div id="media-search-response">

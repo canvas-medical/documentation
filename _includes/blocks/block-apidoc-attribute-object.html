@@ -16,13 +16,14 @@
                     {% for option in attribute.enum_options %}
                         {% if option.exclude_in contains include.context %}
                         {% else %}
-                            <li>{{ option.value }}</li>
+                            <li>{{ option.value }} {% if option.description %}({{ option.description }}){% endif %}</li>
                         {% endif %}
                     {% endfor %}
                 </ul>
             {% endif %}
         </div>
-        {% if attribute.attributes %}
+        {% if attribute.exclude_attributes_in contains include.context %}
+        {% elsif attribute.attributes %}
             {% include blocks/block-apidoc-child-attributes.html context=include.context attribute=attribute.attributes%}
         {% endif %}
     </div>

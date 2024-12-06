@@ -5,7 +5,7 @@ main:
     url: /sdk/
   - title: Guides
     url: /guides/
-  - title: Product Updates  
+  - title: Product Updates
     url: /product-updates/release-notes
 api:
  - title: "Canvas FHIR"
@@ -75,6 +75,9 @@ api_resources:
  - title: "CoverageEligibilityResponse"
    url: /api/coverageeligibilityresponse/
    identifier: api_coverageeligibilityresponse
+ - title: "DetectedIssue"
+   url: /api/detectedissue/
+   identifier: api_detectedissue
  - title: "Device"
    url: /api/device/
    identifier: api_device
@@ -234,6 +237,15 @@ api_coverageeligibilityresponse:
    url: /api/coverageeligibilityresponse/#read
  - title: "CoverageEligibilityResponse Search"
    url: /api/coverageeligibilityresponse/#search
+api_detectedissue:
+ - title: "DetectedIssue Create"
+   url: /api/detectedissue/#create
+ - title: "DetectedIssue Read"
+   url: /api/detectedissue/#read
+ - title: "DetectedIssue Update"
+   url: /api/detectedissue/#update
+ - title: "DetectedIssue Search"
+   url: /api/detectedissue/#search
 api_device:
  - title: "Device Read"
    url: /api/device/#read
@@ -245,6 +257,8 @@ api_diagnosticreport:
  - title: "DiagnosticReport Search"
    url: /api/diagnosticreport/#search
 api_documentreference:
+ - title: "DocumentReference Create"
+   url: /api/documentreference/#create
  - title: "DocumentReference Read"
    url: /api/documentreference/#read
  - title: "DocumentReference Search"
@@ -269,8 +283,12 @@ api_group:
  - title: "Group Search"
    url: /api/group/#search
 api_immunization:
+ - title: "Immunization Create"
+   url: /api/immunization/#create
  - title: "Immunization Read"
    url: /api/immunization/#read
+ - title: "Immunization Update"
+   url: /api/immunization/#update
  - title: "Immunization Search"
    url: /api/immunization/#search
 api_location:
@@ -385,58 +403,50 @@ api_task:
 
 
 api_custom_apis:
+ - title: "CCDA"
+   url: /api/ccda
+ - title: "Letter"
+   url: /api/letter
  - title: "Note"
    url: /api/note
- - title: "CCDA"
-   url: /api/ccda   
-
-documentation:
- - title: "Click here to learn about our transition plan for our knowledge center"
-   url: /documentation/
-   identifier: documentation_transition
 
 guides:
  - title: "Guides"
    identifier: guides_list
- - title: "Templates"
-   identifier: guides_templates
 
 guides_list:
- - title: "Asynchronous Care"
-   url: /guides/asynchronous-care/
- - title: "Build a Safety Framework"
-   url: /guides/build-a-safety-framework/
- - title: "Capture Charges"
-   url: /guides/capture-charges/
- - title: "Customize Search Results"
-   url: /guides/customize-search-results/
- - title: "External Scheduling"
-   url: /guides/external-scheduling/
- - title: "Optimize Patient Intake"
-   url: /guides/optimize-patient-intake/
- - title: "Patient Messaging"
-   url: /guides/patient-messaging/
- - title: "Submit a Full Vital Panel via FHIR"
-   url: /guides/submit-vitals-via-fhir/
- - title: "Team Based Care"
-   url: /guides/team-based-care/
  - title: "Your First Plugin"
    url: /guides/your-first-plugin/
+
+ - title: "Creating Webhooks"
+   url: /guides/creating-webhooks-with-the-canvas-sdk/
+
+ - title: "Customize Search Results"
+   url: /guides/customize-search-results/
+
+ - title: "Creating, Implementing, and Extending a Scribe Parser"
+   url: /guides/scribe-ai-parser/
+
+ - title: "Improve HCC Coding Accuracy"
+   url: /guides/improve-hcc-coding-accuracy/
+
+ - title: "Staying on Top of Tasks"
+   url: /guides/staying-on-top-of-tasks/
+
+ - title: "Submit a Full Vital Panel via FHIR"
+   url: /guides/submit-vitals-via-fhir/
+
+ - title: "Tailoring the Chart to Your Patient"
+   url: /guides/tailoring-the-chart-to-the-patient/
 
 guides_templates:
  - title: "Behavioral Health"
    url: /guides/bh
    identifier: guides_care-models-bh
 
-guides_care-models-bh:
- - title: "Configuration Guide"
-   url: /guides/bh-configuration/
-
 sdk:
  - title: "SDK Overview"
    identifier: sdk_overview
- - title: "Workflow Kit (To Be Deprecated)"
-   identifier: sdk_workflow_kit
 
 sdk_overview:
  - title: "Introduction"
@@ -447,90 +457,86 @@ sdk_overview:
    url: /sdk/commands/
  - title: "Data Module"
    url: /sdk/data/
+   identifier: data_module
  - title: "Effects Module"
    url: /sdk/effects/
+   identifier: effects_module
  - title: "Events Module"
    url: /sdk/events/
+ - title: "Handlers Module"
+   url: /sdk/handlers/
+   identifier: sdk_handlers
  - title: "Protocols Module"
    url: /sdk/protocols/
  - title: "Utils Module"
    url: /sdk/utils/
- - title: "Views Module"
-   url: /sdk/views/
 
-sdk_workflow_kit:
- - title: "Quickstart"
-   url: /sdk/workflow-sdk-quickstart/
- - title: "Change Types"
-   url: /sdk/change-types
- - title: "Patient Recordsets"
-   url: /sdk/patient-recordsets
- - title: "Settings/Secret Store"
-   url: /sdk/secret-store
- - title: "Sandboxing and Allowed Imports"
-   url: /sdk/sandboxing-and-allowed-imports
- - title: "Field Changes"
-   url: /sdk/field-changes
- - title: "Recommendation Types"
-   url: /sdk/recommendation-types
+sdk_handlers:
+  - title: "CronTask"
+    url: /sdk/handlers-crontask/
+
+effects_module:
+ - title: "Protocol Cards"
+   url: /sdk/effect-protocol-cards/
+   description: Calls to action in a patient's chart, commonly used for decision support intervention.
  - title: "Banner Alerts"
-   url: /sdk/banner-alerts
- - title: "Create/Update Canvas Resources"
-   url: /sdk/create-update-canvas-resources
- - title: "Notification Protocol"
-   url: /sdk/notification-protocol
- - title: "Making FHIR Requests"
-   url: /sdk/making-fhir-requests
- - title: "Canvas CLI Additional Commands"
-   url: /sdk/canvas-cli-additional-commands
- - title: "Protocol Logging Tool"
-   url: /sdk/protocol-logging-tool
- - title: "Managing Protocols in Settings"
-   url: /sdk/managing-protocols-in-settings
- - title: "Value Sets"
-   identifier: sdk_workflow_kit_value_sets
-   url: /sdk/value-sets
+   url: /sdk/effect-banner-alerts/
+   description: Contextual information in a patient's chart.
+ - title: "Chart Summary Configuration"
+   url: /sdk/effect-chart-summary-configuration/
+   description: Rearrange or hide summary sections in a patient's chart.
+ - title: "Tasks"
+   url: /sdk/effect-tasks/
+   description: Create or update tasks.
 
-
-sdk_workflow_kit_value_sets:
- - title: "Allergy"
-   url: /sdk/allergy
- - title: "Assessment"
-   url: /sdk/assessment
- - title: "Assessment Performed"
-   url: /sdk/assessment-performed
- - title: "Encounter"
-   url: /sdk/encounter
- - title: "Encounter Performed"
-   url: /sdk/encounter-performed
- - title: "Communication"
-   url: /sdk/communication
+data_module:
+ - title: "Allergy Intolerance"
+   url: /sdk/data-allergy-intolerance/
+   description: Harmful or undesired physiological responses associated with exposure to a substance.
+ - title: "Command"
+   url: /sdk/data-command/
+   description: Structured units of documentation in a patient's chart.
+ - title: "Condition"
+   url: /sdk/data-condition/
+   description: Condition, diagnosis, or reason for seeking medical attention.
+ - title: "Detected Issue"
+   url: /sdk/data-detected-issue/
+   description: Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient.
  - title: "Device"
-   url: /sdk/device
- - title: "Diagnosis"
-   url: /sdk/diagnosis
- - title: "Immunization"
-   url: /sdk/immunization
- - title: "Lab Test"
-   url: /sdk/lab-test
+   url: /sdk/data-device/
+   description: Type of a manufactured item that is used in the provision of healthcare.
+ - title: "Imaging"
+   url: /sdk/data-imaging/
+   description: Analysis of imaging tests to obtain information about the health of a patient.
+ - title: "Labs"
+   url: /sdk/data-labs/
+   description: Analysis of clinical specimens to obtain information about the health of a patient.
  - title: "Medication"
-   url: /sdk/medication
- - title: "Other"
-   url: /sdk/other
- - title: "Patient Characteristic"
-   url: /sdk/patient-characteristic
- - title: "Physican Exam"
-   url: /sdk/physical-exam
- - title: "Procedure"
-   url: /sdk/procedure
- - title: "Procedure Performed"
-   url: /sdk/procedure-performed
- - title: "Rationale"
-   url: /sdk/rationale
- - title: "Result"
-   url: /sdk/result
+   url: /sdk/data-medication/
+   description: Pharmacologic agents used in the diagnosis, cure, mitigation, treatment, or prevention of disease.
+ - title: "Observation"
+   url: /sdk/data-observation/
+   description: Measurements and simple assertions made about a patient.
+ - title: "Patient"
+   url: /sdk/data-patient/
+   description: Data used to categorize individuals for identification, records matching, and other purposes.
+ - title: "ProtocolOverride"
+   url: /sdk/data-protocol-override/
+   description: A record of a protocol being snoozed for a patient.
+ - title: "Questionnaire"
+   url: /sdk/data-questionnaire
+   description: Groups of coded questions and the coded patient responses.
+ - title: "Staff"
+   url: /sdk/data-staff
+   description: Data associated with Staff members.
+ - title: "Task"
+   url: /sdk/data-task
+   description: Data associated with Tasks.
+ - title: "Value Sets"
+   url: /sdk/data-value-sets/
+   description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
 
-releasenotes: 
+releasenotes:
  - title: "Product Updates"
    identifier: releasenotes_product_updates
  - title: "Beta Programs"
@@ -547,9 +553,9 @@ releasenotes_product_updates:
 
 releasenotes_betas:
  - title: "Commands API"
-   url: /product-updates/commands-api 
+   url: /product-updates/commands-api
  - title: "Commands Module"
-   url: /product-updates/commands-module 
+   url: /product-updates/commands-module
  - title: "Note API"
-   url: /product-updates/note-api 
+   url: /product-updates/note-api
 

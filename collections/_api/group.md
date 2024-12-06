@@ -9,43 +9,117 @@ sections:
         description: >-
           Represents a defined collection of entities that may be discussed or acted upon collectively but which are not expected to act collectively, and are not formally or legally recognized; i.e. a collection of entities that isn't an Organization.<br><br>
           [https://hl7.org/fhir/R4/group.html](https://hl7.org/fhir/R4/group.html)<br><br>
-          In Canvas a Team is mapped to the FHIR Group resource. See our [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360057499933-Admin-Teams) for information about creating teams in Canvas.
+          In Canvas Teams and Patient Groups are mapped to the FHIR Group resource. <br>
+          See this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/5123845479-teams) for information about creating teams in Canvas.<br>
+          See this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/9728314628-patient-groups) for information about patient groups in Canvas.
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
-            description: The identifier of the Group
+            required_in: update
+            exclude_in: create
+            description: The identifier of the Group.
             type: string
           - name: type
-            description: Identifies the broad classification of the kind of resources the group includes
+            description: Identifies the broad classification of the kind of resources the group includes. <br><br> A group with type `person` refers to a Patient Group in canvas, while a group of type `practitioner` refers to a Team in Canvas. 
             type: string
+            required_in: create,update
+            enum_options: 
+                - value: person
+                - value: practitioner
           - name: actual
-            description: If true, indicates that the resource refers to a specific group of real individuals. If false, the group defines a set of intended individuals
+            required_in: create,update
+            description: If true, indicates that the resource refers to a specific group of real individuals. If false, the group defines a set of intended individuals. <br><br>
+                While this is a required field in FHIR, Canvas assumes all groups are made up of real individuals, so this will be assumed True for all interactions.
             type: boolean
           - name: name
-            description: Label for Group
+            description: Label for Group.
             type: string
+            required_in: create,update
           - name: quantity
-            description: Number of members
+            description: Number of members.
             type: integer
+            exclude_in: create,update
           - name: characteristic
-            description: >-
+            description_for_all_endpoints: >-
               Identifies traits whose presence or absence is shared by members of the group<br><br>
-              The `text` attribute on the `valueCodeableConcept` for each `characteristic` represents responsibilities held by the Group. Supported values are:<br><br>**COLLECT_SPECIMENS_FROM_PATIENT**<br>**COMMUNICATE_DIAGNOSTIC_RESULTS_TO_PATIENT**<br>**COORDINATE_REFERRALS_FOR_PATIENT**<br>**PROCESS_REFILL_REQUESTS**<br>**PROCESS_CHANGE_REQUESTS**<br>**SCHEDULE_LAB_VISITS_FOR_PATIENT**<br>**POPULATION_HEALTH_CAMPAIGN_OUTREACH**<br>**COLLECT_PATIENT_PAYMENTS**<br>**COMPLETE_OPEN_LAB_ORDERS**<br>**REVIEW_ERA_POSTING_EXCEPTIONS**<br>**REVIEW_COVERAGES**
+              The `text` attribute on the `valueCodeableConcept` for each `characteristic` represents responsibilities held by the Group (in Canvas a Team). Responsibilities may not be shared by more than one team. 
+            create_and_update_description: If a group of practitioners is created/updated with a responsibility that another group is assigned, the endpoint will return an error dictating the responsibilities have already been assigned.
             type: array[json]
+            attributes:
+                - name: code
+                  type: json
+                  required_in: create, update
+                  description: Kind of characteristic
+                  attributes:
+                    - name: text
+                      type: string
+                      required_in: create, update
+                      description: Plain text representation of the concept.
+                      enum_options: 
+                        - value: responsibility
+                - name: exclude
+                  type: boolean
+                  exclude_in: create,update
+                  description: Group includes or excludes
+                  enum_options: 
+                    - value: False
+                - name: valueCodeableConcept
+                  type: json
+                  required_in: create, update
+                  description: Value held by characteristic.
+                  attributes: 
+                    - name: text
+                      description: Plain text representation of the concept. <br><br>These responsibilities represent the responsibilities of a Canvas Team. They are not applicable for a Patient Group.
+                      type: string
+                      enum_options:
+                        - value: COLLECT_SPECIMENS_FROM_PATIENT
+                        - value: COMMUNICATE_DIAGNOSTIC_RESULTS_TO_PATIENT
+                        - value: COORDINATE_REFERRALS_FOR_PATIENT
+                        - value: PROCESS_REFILL_REQUESTS
+                        - value: PROCESS_CHANGE_REQUESTS
+                        - value: SCHEDULE_LAB_VISITS_FOR_PATIENT
+                        - value: POPULATION_HEALTH_CAMPAIGN_OUTREACH
+                        - value: COLLECT_PATIENT_PAYMENTS
+                        - value: COMPLETE_OPEN_LAB_ORDERS
+                        - value: REVIEW_ERA_POSTING_EXCEPTIONS
+                        - value: REVIEW_COVERAGES
           - name: member
-            description: Who or what is in group
+            description: Who or what is in group.
             type: array[json]
+            attributes:
+                - name: entity
+                  type: json
+                  required_in: create, update
+                  description: Reference to the group member.
+                  attributes:
+                    - name: reference
+                      type: string
+                      required_in: create,update
+                      description: The reference string of the member in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"` or `"Practitioner/a09946c97cb04f44bc36f1c08f6d1b76"`.
+                    - name: type
+                      type: string
+                      description: Type the reference refers to (e.g. "Patient", "Practitioner").
+                    - name: display
+                      type: string
+                      exclude_in: create,update
+                      description: Text alternative for the resource.
         search_parameters:
           - name: _id
-            description: The identifier of the Group
+            description: The identifier of the Group.
             type: string
           - name: type
-            description: The type of resources the group contains
+            description: The type of resources the group contains.
             type: string
+            search_options:
+                - value: person
+                - value: practitioner
         endpoints: [create, read, update, search]
         create:
           description: >-
             Create a Group resource.<br><br>
-            **Note:** The Canvas implementation of Group create/update assigns responsibilities to Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
+            **Note:** The Canvas implementation of Group create/update assigns responsibilities to practitioner Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: group-create-request
           example_response: group-create-response
@@ -57,7 +131,7 @@ sections:
         update:
           description: >-
             Update a Group resource.<br><br>
-            **Note:** The Canvas implementation of Group create/update assigns responsibilities to Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
+            **Note:** The Canvas implementation of Group create/update assigns responsibilities to practitioner Groups using the `characteristic` attribute, rather than using the `characteristic` attribute to establish membership.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: group-update-request
           example_response: group-update-response
