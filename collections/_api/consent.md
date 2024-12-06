@@ -319,7 +319,7 @@ print(response.text)
                   "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
               }
       ],
-      "url": "http://schemas.canvasmedical.com/Consent/resource_key/files/sourceAttachment"
+      "url": "https://fumage-example.canvasmedical.com/Consent/a9d3c0d9-e87a-4737-b909-ac81ee62f9a0/files/sourceAttachment"
   },
   "provision": {
       "period": {
@@ -444,7 +444,7 @@ print(response.text)
                       "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
                   }
               ],
-              "url": "http://schemas.canvasmedical.com/Consent/resource_key/files/sourceAttachment"
+              "url": "https://fumage-example.canvasmedical.com/Consent/a9d3c0d9-e87a-4737-b909-ac81ee62f9a0/files/sourceAttachment"
           },
           "provision": {
               "period": {

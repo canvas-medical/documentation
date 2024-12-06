@@ -1249,7 +1249,7 @@ print(response.text)
                     "valueUri": "https://d3hn0m4rbsz438.cloudfront.net/avatar1.png"
                 }
             ],
-            "url": "http://schemas.canvasmedical.com/Patient/resource_key/files/photo"
+            "url": "https://fumage-example.canvasmedical.com/Patient/7162fd82487e4dc8aa2581ddbca91892/files/photo"
         }
     ],
     "contact":

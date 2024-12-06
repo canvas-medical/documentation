@@ -670,7 +670,7 @@ payload = {
                     }
                 ],
                 "contentType": "application/pdf",
-                "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                "url": "https://fumage-example.canvasmedical.com/DocumentReference/6f60ed1c-a6b3-4791-99f0-f618704e33d1/files/content"
             },
             "format": {
                 "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -811,7 +811,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/4b640065-ae64-4775-b5a8-8264314cf5fc/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -898,7 +898,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/5a0cf7ae-bd88-4f04-bd7e-60a33e5e2824/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -990,7 +990,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/b9f82cd0-6644-4b3f-a9d1-7585c3e71498/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1052,7 +1052,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/51a49fef-eb67-4b8d-a992-b3dd9e754dea/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1097,7 +1097,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/713394da-f250-4c59-8b47-96458155f687/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1172,7 +1172,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/6ebf590d-ff90-412e-a5e7-9be30d6e4c35/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1252,7 +1252,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/d9a1304d-159d-4518-be88-3f9a1ea93cd1/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1343,7 +1343,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/bce56cc4-268a-4562-a699-16e8869415ad/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1430,7 +1430,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/d220fa24-2b2f-44cf-9843-5a1b681f0805/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1510,7 +1510,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/04a71b54-89b0-49bf-96be-60b5bdfa6450/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1590,7 +1590,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/efe6c0d6-97c0-42a6-91ba-926a2dc3c66f/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1652,7 +1652,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "http://schemas.canvasmedical.com/DocumentReference/resource_key/files/content"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/380ad499-ec8f-4f1f-b1f0-5f25b04fd574/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",

@@ -286,7 +286,7 @@ print(response.text)
               }
         ],
         "contentType": "image/jpeg",
-        "url": "http://schemas.canvasmedical.com/Media/resource_key/files/content",
+        "url": "https://fumage-example.canvasmedical.com/Media/729e5242-bad6-4bd7-905d-9716ae262971/files/content",
         "title": "Image title"
     },
     "note": [
@@ -414,7 +414,7 @@ print(response.text)
                         }
                     ],
                     "contentType": "image/jpeg",
-                    "url": "http://schemas.canvasmedical.com/Media/resource_key/files/content",
+                    "url": "https://fumage-example.canvasmedical.com/Media/729e5242-bad6-4bd7-905d-9716ae262971/files/content",
                     "title": "Image title"
                 },
                 "note": [

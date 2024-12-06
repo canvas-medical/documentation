@@ -249,7 +249,7 @@ sections:
                     "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/Screenshot_2024-02-21_at_15.26.42.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=Ns%2BLQ5z5XXWH4WMOXWczuMQ7s0A%3D&Expires=1714138104"
                 }
             ],
-            "url": "http://schemas.canvasmedical.com/DiagnosticReport/resource_key/files/presentedForm"
+            "url": "https://fumage-example.canvasmedical.com/DiagnosticReport/9b90621b-059f-4f6e-9ef5-58171098e424/files/presentedForm"
         }
     ]
 }
@@ -400,7 +400,7 @@ sections:
                                 "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/Screenshot_2024-02-21_at_15.26.42.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=Ns%2BLQ5z5XXWH4WMOXWczuMQ7s0A%3D&Expires=1714138104"
                             }
                         ],
-                        "url": "http://schemas.canvasmedical.com/DiagnosticReport/resource_key/files/presentedForm"
+                        "url": "https://fumage-example.canvasmedical.com/DiagnosticReport/197d1b7a-374e-4aa8-82b2-6960a62ecf7a/files/presentedForm"
                     }
                 ]
             }
