@@ -670,7 +670,6 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
-
 ### Command lifecycle events
 
 These events fire during the command lifecycle.
@@ -738,35 +737,34 @@ These events fire during the command lifecycle.
   </tbody>
 </table>
 
-
 ##### Context Overview
 
 Each command lifecycle event provides specific context to the handler, depending on the stage of the command lifecycle.
 
 **Base Context (All Events Except `PRE_COMMAND_ORIGINATE`)**:
-  
+
 ```json
-  {
-    "note": {"uuid": "note-123"},
-    "patient": {"id": "patient-123"},
-    "fields": {"key": "value"}
-  }
+{
+  "note": { "uuid": "note-123" },
+  "patient": { "id": "patient-123" },
+  "fields": { "key": "value" }
+}
 ```
 
-  - `note.uuid`: The unique identifier of the note associated with the command.
-  - `patient.id`: The unique identifier of the patient associated with the note.
-  - `fields`: A dictionary containing command-specific details. See examples for each command.
-
+- `note.uuid`: The unique identifier of the note associated with the command.
+- `patient.id`: The unique identifier of the patient associated with the note.
+- `fields`: A dictionary containing command-specific details. See examples for each command.
 
 **`PRE_COMMAND_ORIGINATE` Context**:
-  Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` event context only includes:
-  
+Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` event context only includes:
+
 ```json
-  {
-   "fields": {"key": "value"}
-  }
+{
+  "fields": { "key": "value" }
+}
 ```
-  - `fields`: Contains details specific to the command being originated.
+
+- `fields`: Contains details specific to the command being originated.
 
 ---
 
@@ -984,15 +982,15 @@ Each command lifecycle event provides specific context to the handler, depending
 The Clipboard Command provides the following fields in its context:
 
 | Field  | Type     | Description                                   |
-|--------|----------|-----------------------------------------------|
+| ------ | -------- | --------------------------------------------- |
 | `text` | _string_ | The raw text content copied to the clipboard. |
 
 Refer to the [base context documentation](#context-overview) for additional details about the full context structure.
 
 ```json
 {
-  "note": {"uuid": "note-123"},
-  "patient": {"id": "patient-123"},
+  "note": { "uuid": "note-123" },
+  "patient": { "id": "patient-123" },
   "fields": {
     "text": "Patient complains of persistent headaches for the past two weeks."
   }
@@ -3097,9 +3095,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
-
 ### Other Events
-
 
 <table>
   <colgroup>
@@ -3130,6 +3126,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
       <td>Occurs when a patient chart's summary section is loading.</td>
+    </tr>
+    <tr>
+      <td>PLUGIN_CREATED</td>
+      <td>Occurs when a plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
+    </tr>
+    <tr>
+      <td>PLUGIN_UPDATED</td>
+      <td>Occurs when a plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
     </tr>
   </tbody>
 </table>
