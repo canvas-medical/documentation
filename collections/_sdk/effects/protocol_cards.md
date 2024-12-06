@@ -123,7 +123,7 @@ class Protocol(BaseProtocol):
         )
         p.recommendations.append(diagnose.recommend(title="this inserts a diagnose command"))
 
-        if self.event_type in [EventType.PLUGIN_CREATED, EventType.PLUGIN_UPDATED]:
+        if self.event.type in [EventType.PLUGIN_CREATED, EventType.PLUGIN_UPDATED]:
             p.patient_filter = {"active": True}
         else:
             p.patient_id = self.target
