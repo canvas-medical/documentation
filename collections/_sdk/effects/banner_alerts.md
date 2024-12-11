@@ -52,7 +52,7 @@ class Protocol(BaseProtocol):
 
 ```
 
-To apply the effect to all active patients on plugin create and plugin update, you would include the plugin create and update events in `RESPONDS_TO`. And when responding to one of the plugin events you would use `patient_filter` instead of `patient_id` for the AddBannerAlert.
+To apply the effect to all active patients when a plugin is created or updated, include the `PLUGIN_CREATED` and/or `PLUGIN_UPDATED` events in the `RESPONDS_TO` list. Additionally, `patient_filter` can be used (instead of `patient_id`) on the `AddBannerAlert` class.
 
 ```python
 from canvas_sdk.events import EventType
