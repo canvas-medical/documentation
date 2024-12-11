@@ -12,15 +12,15 @@ The Canvas SDK allows you to place Banners on the Canvas UI.
 To add a banner alert, import the `AddBannerAlert` class and create an
 instance of it.
 
-| Attribute      |                                              | Type                          | Description                                                                      |
-| -------------- | -------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------- |
-| patient_id     | required (if patient_filter is not provided) | String                        | The id of the [patient](/sdk/data-patient/) the alert should be associated with. |
-| patient_filter | required (if patient_id is not provided)     | String                        | Patient queryset filters to apply the effect to multiple patients.               |
-| key            | required                                     | String                        | An identifier that categorizes the alert.                                        |
-| narrative      | required                                     | String                        | The content of the alert.                                                        |
-| placement      | required                                     | list[[Placement](#placement)] | List of areas the alert should show.                                             |
-| intent         | optional                                     | [Intent](#intent)             | Affects the styling of the alert.                                                |
-| href           | optional                                     | String                        | If given, the alert will appear as a link to this URL.                           |
+| Attribute      |                                              | Type                          | Description                                                                                                                                        |
+| -------------- | -------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| patient_id     | required (if patient_filter is not provided) | String                        | The id of the [patient](/sdk/data-patient/) the alert should be associated with.                                                                   |
+| patient_filter | required (if patient_id is not provided)     | String                        | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients |
+| key            | required                                     | String                        | An identifier that categorizes the alert.                                                                                                          |
+| narrative      | required                                     | String                        | The content of the alert.                                                                                                                          |
+| placement      | required                                     | list[[Placement](#placement)] | List of areas the alert should show.                                                                                                               |
+| intent         | optional                                     | [Intent](#intent)             | Affects the styling of the alert.                                                                                                                  |
+| href           | optional                                     | String                        | If given, the alert will appear as a link to this URL.                                                                                             |
 
 ```python
 from canvas_sdk.events import EventType

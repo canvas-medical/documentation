@@ -21,15 +21,15 @@ A Protocol card consists of three main parts:
   - open a new tab and navigate to another site
   - insert a command into a note
 
-| Name              | Type                   | Required                                     | Description                                                             |
-| :---------------- | :--------------------- | :------------------------------------------- | :---------------------------------------------------------------------- |
-| `patient_id`      | _string_               | `true` (if `patient_filter` is not included) | The id of the [patient](/sdk/data-patient/)                             |
-| `patient_filter`  | _dict_                 | `true` (if `patient_id` is not included)     | Patient queryset filters to apply the effect to multiple patients       |
-| `key`             | _string_               | `true`                                       | A unique identifier for the protocol card                               |
-| `title`           | _string_               | `true`                                       | The title for the protocol card, which appears at the top in bold       |
-| `narrative`       | _string_               | `false`                                      | The narrative for the protocol card, which appears just below the title |
-| `recommendations` | list[_Recommendation_] | `false`                                      | The recommendations to appear in the protocol card                      |
-|                   |                        |                                              |                                                                         |
+| Name              | Type                   | Required                                     | Description                                                                                                                                        |
+| :---------------- | :--------------------- | :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `patient_id`      | _string_               | `true` (if `patient_filter` is not included) | The id of the [patient](/sdk/data-patient/)                                                                                                        |
+| `patient_filter`  | _dict_                 | `true` (if `patient_id` is not included)     | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients |
+| `key`             | _string_               | `true`                                       | A unique identifier for the protocol card                                                                                                          |
+| `title`           | _string_               | `true`                                       | The title for the protocol card, which appears at the top in bold                                                                                  |
+| `narrative`       | _string_               | `false`                                      | The narrative for the protocol card, which appears just below the title                                                                            |
+| `recommendations` | list[_Recommendation_] | `false`                                      | The recommendations to appear in the protocol card                                                                                                 |
+|                   |                        |                                              |                                                                                                                                                    |
 
 | `Recommendation` |          |         |                                       |
 | :--------------- | :------- | :------ | :------------------------------------ |
