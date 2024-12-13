@@ -482,8 +482,8 @@ effects_module:
  - title: "Banner Alerts"
    url: /sdk/effect-banner-alerts/
    description: Contextual information in a patient's chart.
- - title: "Chart Summary Configuration"
-   url: /sdk/effect-chart-summary-configuration/
+ - title: "Layout Effects"
+   url: /sdk/layout-effect/
    description: Rearrange or hide summary sections in a patient's chart.
  - title: "Tasks"
    url: /sdk/effect-tasks/
