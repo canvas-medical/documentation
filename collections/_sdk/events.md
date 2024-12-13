@@ -3139,5 +3139,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
       <td>Occurs when a patient chart's summary section is loading.</td>
     </tr>
+    <tr>
+      <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</td>
+      <td>Occurs when adding a pharmacy for a patient in their profile.</td>
   </tbody>
 </table>

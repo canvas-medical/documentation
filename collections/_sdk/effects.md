@@ -108,6 +108,7 @@ The following effects are available to be applied in Canvas.
 | ANNOTATE_CLAIM_CONDITION_RESULTS | Can be used to add annotations to the conditions appearing in a claim's detail view. |
 | ANNOTATE_PATIENT_CHART_CONDITION_RESULTS| Add an annotation to a condition within the patient summary. |
 | AUTOCOMPLETE_SEARCH_RESULTS | Can be used to modify search results by re-ordering or adding text annotations to individual result records. To see how you can put this to use, check out [this guide](/guides/customize-search-results/). |
+| PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS | Can be used to modify pharmacy results when adding pharmacies in the patient profile. |
 | CREATE_TASK | Cause a task you define in a plugin to be created. |
 | UPDATE_TASK | Cause a task to be updated. |
 | CREATE_TASK_COMMENT | Add a comment to an existing task. |
