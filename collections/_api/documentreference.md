@@ -12,17 +12,17 @@ sections:
           A Document Reference can represent many different PDFs generated in Canvas:
           
 
-          - A [Letter](https://canvas-medical.zendesk.com/hc/en-us/articles/360057339634-Letters) that has been faxed or printed from the patient's chart.
+          - A [Letter](https://canvas-medical.help.usepylon.com/articles/8181146406-letters) that has been faxed or printed from the patient's chart.
           
-          - All documents uploaded via [Data Integration](https://canvas-medical.zendesk.com/hc/en-us/articles/360056078034-Data-Integration-Overview) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
+          - All documents uploaded via [Data Integration](https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
           
-          - [POC Lab Command's](https://canvas-medical.zendesk.com/hc/en-us/articles/360055629214-Point-of-Care-POC-Tests) committed on the Patient's chart
+          - [POC Lab Commands](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests) committed on the Patient's chart
           
-          - [Clinical Notes](https://canvas-medical.zendesk.com/hc/en-us/articles/360057949073-Printing-a-Chart-Note) representing a PDF of each locked note. This also includes superseded versions on notes.
+          - [Clinical Notes](https://canvas-medical.help.usepylon.com/articles/1679996479-print-patient-chart) representing a PDF of each locked note. This also includes superseded versions on notes.
           
-          - Any [Educational Material](https://canvas-medical.zendesk.com/hc/en-us/articles/4999882305939-Educational-Material-Command) committed on a patient's chart.
+          - Any [Educational Material](https://canvas-medical.help.usepylon.com/articles/4966226408-educational-material-command) committed on a patient's chart.
           
-          - Any [Invoices](https://canvas-medical.zendesk.com/hc/en-us/articles/4406239284499-Statements-and-Invoicing) generated for a patient.
+          - Any [Invoices](https://canvas-medical.help.usepylon.com/articles/5985827257-statements-and-invoicing) generated for a patient.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -670,7 +670,7 @@ payload = {
                     }
                 ],
                 "contentType": "application/pdf",
-                "url": "https://canvas-client-media.s3.amazonaws.com/training/invoices//Hospital_Discharge_Summary_2024-04-22_18-27-45_7aeadd4496b34f86a78c26223cdabbf4_YQiesv8.pdf?AWSAccessKeyId=xxxx&Signature=xxxx&Expires=xxxx"
+                "url": "https://fumage-example.canvasmedical.com/DocumentReference/6f60ed1c-a6b3-4791-99f0-f618704e33d1/files/content"
             },
             "format": {
                 "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -811,7 +811,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/invoices/c0df2c04a0e64b46ba7fe3f836068e49_20240224_124702.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=WtfvJWbBgc50VgekeqrUDTPsyHk%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/4b640065-ae64-4775-b5a8-8264314cf5fc/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -898,7 +898,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/5a0cf7ae-bd88-4f04-bd7e-60a33e5e2824/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -990,7 +990,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/document_annotations/blob_FeMcbYv?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=7V8KwSeZlPCCJiiarAHK55IW4pI%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/b9f82cd0-6644-4b3f-a9d1-7585c3e71498/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1052,7 +1052,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/generic_documents/letter_494.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=K4d67C%2FNj9PtLIjY9by5qLwYiK4%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/51a49fef-eb67-4b8d-a992-b3dd9e754dea/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1097,7 +1097,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/note_history/training_note_state_document_232604_1708628478?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=yangPOcYiWvr48s6VhvQIBSw0fs%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/713394da-f250-4c59-8b47-96458155f687/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1172,7 +1172,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/6ebf590d-ff90-412e-a5e7-9be30d6e4c35/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1252,7 +1252,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/d9a1304d-159d-4518-be88-3f9a1ea93cd1/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1343,7 +1343,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/bce56cc4-268a-4562-a699-16e8869415ad/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1430,7 +1430,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/d220fa24-2b2f-44cf-9843-5a1b681f0805/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1510,7 +1510,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/04a71b54-89b0-49bf-96be-60b5bdfa6450/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1590,7 +1590,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/efe6c0d6-97c0-42a6-91ba-926a2dc3c66f/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
@@ -1652,7 +1652,7 @@ payload = {
                                 }
                             ],
                             "contentType": "application/pdf",
-                            "url": "https://canvas-client-media.s3.amazonaws.com/training/generic_documents/Glaucoma_Screening_lFimBWS.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=2IfdGPA%2FOMFdRf3p75oYhY6QJ%2Bs%3D&Expires=1709072109"
+                            "url": "https://fumage-example.canvasmedical.com/DocumentReference/380ad499-ec8f-4f1f-b1f0-5f25b04fd574/files/content"
                         },
                         "format": {
                             "system": "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",

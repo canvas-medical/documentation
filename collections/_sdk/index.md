@@ -8,26 +8,28 @@ layout: sdk
 
 Here are some step-by-step guides to get you started:
 
+
 <div>
     <a href="/guides/your-first-plugin">
-        <div style="padding-top: 20px; padding-left: 20px; padding-bottom: 20px; margin: 0px 2px 40px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
+        <div style="padding-top: 20px; padding-left: 20px; padding-bottom: 10px; margin: 0px 2px 20px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
             <span class="cardHeading">Your First Plugin</span>
             <p>This guide steps you through installing the Canvas SDK, creating a plugin, and deploying it to a Canvas instance.</p>
         </div>
     </a>
     <a href="/guides/creating-webhooks-with-the-canvas-sdk">
-        <div style="padding-top: 20px; padding-left: 20px; padding-bottom: 20px; margin: 0px 2px 40px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
+        <div style="padding-top: 20px; padding-left: 20px; padding-bottom: 10px; margin: 0px 2px 20px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
             <span class="cardHeading">Creating Webhooks</span>
             <p>Make automatic API requests based on Canvas events</p>
         </div>
     </a>
     <a href="/guides/customize-search-results">
-        <div style="padding-top: 20px; padding-left: 20px; padding-bottom: 20px; margin: 0px 2px 40px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
+        <div style="padding-top: 20px; padding-left: 20px; padding-bottom: 10px; margin: 0px 2px 20px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
             <span class="cardHeading">Customize Search Results</span>
             <p>Add your own logic to surface the right options with the appropriate context</p>
         </div>
     </a>
 </div>
+And here are some other [guides](/guides)
 
 ## What is the Canvas SDK?
 

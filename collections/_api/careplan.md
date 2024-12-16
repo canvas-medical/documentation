@@ -9,7 +9,7 @@ sections:
         description: >-
           Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions.<br><br>
           [https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careplan.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careplan.html)<br><br>
-          A CarePlan in Canvas translates to the [Integrated Care Plan PDF](https://canvas-medical.zendesk.com/hc/en-us/articles/4535429811091-Integrated-Care-Plan) you can print on the patient's chart. This endpoint will return either one or zero care plans for each patient. If no care plan was returned for a given patient, then that patient has never had a Goal command committed on their chart. 
+          A CarePlan in Canvas translates to the [Integrated Care Plan PDF](https://canvas-medical.help.usepylon.com/articles/8547508751-administrative-menu-integrated-care-plan) you can print on the patient's chart. This endpoint will return either one or zero care plans for each patient. If no care plan was returned for a given patient, then that patient has never had a Goal command committed on their chart. 
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

@@ -18,8 +18,7 @@ permalink: "/"
                 <div class="cardBody">
                     <span>Learn more about the migration of our knowledge center</span>
                     <div class="anchorContainer">
-                    <a href="/documentation">Transition Overview</a><br>
-                    <a href="https://canvas-medical.zendesk.com/hc/en-us">Knowledge Center ↗</a><br>
+                    <a href="https://canvas-medical.help.usepylon.com/">Knowledge Center ↗</a><br>
                     <a href="/product-updates/release-notes">Release Notes</a>
                     </div>
                 </div>
@@ -52,12 +51,6 @@ permalink: "/"
                           <dd>
                             <a href="/api/quickstart">Quickstart</a><br/>
                           </dd>
-                          <dt>
-                            <strong>Workflow Kit <a href="/product-updates/important-dates/#:~:text=07/02/2024-,Workflow%20SDK,-New%20Version">(To Be Deprecated)</a></strong>
-                          </dt>
-                          <dd>
-                            <a href="/sdk/workflow-sdk-quickstart/">Quickstart</a><br/>
-                          </dd>
                         </dl>
                     </div>
                 </div>
@@ -71,10 +64,10 @@ permalink: "/"
                         Implement workflows leveraging our newest guides
                     </span>
                     <div class="anchorContainer">
-                        <a href="/guides/team-based-care">Team Based Care</a><br/>
-                        <a href="/guides/optimize-patient-intake">Optimize Patient Intake</a><br/>
-                        <a href="/guides/external-scheduling">External Scheduling</a><br/>
-                        <a href="/guides">... and more</a><br/>
+                        <a href="/guides/scribe-ai-parser">Implementing a Scribe Parser</a><br/>
+                        <a href="/guides/staying-on-top-of-tasks">Staying on Top of Tasks</a><br/>
+                        <a href="/guides/tailoring-the-chart-to-the-patient">Tailoring the Chart to the Patient</a><br/>
+                        <a href="/guides">Other Guides</a><br/>
                     </div>
                 </div>
             </div>

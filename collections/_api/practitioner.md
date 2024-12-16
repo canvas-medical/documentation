@@ -7,7 +7,7 @@ sections:
         name: Practitioner
         article: "a"
         description: >-
-         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member manually in the Canvas UI, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360058232193-Add-a-new-staff-member).<br><br>
+         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).<br><br>
           
         attributes:
           - name: id
@@ -90,7 +90,7 @@ sections:
                           - value: http://schemas.canvasmedical.com/fhir/roles
                       - name: code
                         required_in: create, update
-                        description: The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/12851926883859-Creating-and-modifying-roles) for more information.
+                        description: The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
                         type: string
                       - name: display
                         description: The display name of the coding.
@@ -703,7 +703,7 @@ print(response.text)
                         "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
                     }
                 ],
-                "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+                "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
             }
         },
         {
@@ -1290,7 +1290,7 @@ print(response.text)
                         "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
                     }
                 ],
-                "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+                "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
             }
         },
         {

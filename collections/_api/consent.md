@@ -10,7 +10,7 @@ sections:
           A record of a healthcare consumer’s choices, which permits or denies identified recipient(s) or recipient role(s) to perform one or more actions within a given policy context, for specific purposes and periods of time.<br><br>
           [https://hl7.org/fhir/R4/consent.html](https://hl7.org/fhir/R4/consent.html)
           <br><br>
-          For more information on consents in canvas, see this [article](https://canvas-medical.zendesk.com/hc/en-us/articles/5524511564947-Patient-Consents).
+          For more information on consents in canvas, see this [article](https://canvas-medical.help.usepylon.com/articles/8727821967-patient-consents).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -319,7 +319,7 @@ print(response.text)
                   "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
               }
       ],
-      "url": "https://canvas-client-media.s3.amazonaws.com/training/20220330_211811_60.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=h68Xavx0JLoA7zUhBA4bnSeVCvQ%3D&Expires=1693416882"
+      "url": "https://fumage-example.canvasmedical.com/Consent/a9d3c0d9-e87a-4737-b909-ac81ee62f9a0/files/sourceAttachment"
   },
   "provision": {
       "period": {
@@ -444,7 +444,7 @@ print(response.text)
                       "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
                   }
               ],
-              "url": "https://canvas-client-media.s3.amazonaws.com/training/20220330_211811_60.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=2xQC7mNbJ36CzRkC%2FmlqynHDW%2FU%3D&Expires=1694808853"
+              "url": "https://fumage-example.canvasmedical.com/Consent/a9d3c0d9-e87a-4737-b909-ac81ee62f9a0/files/sourceAttachment"
           },
           "provision": {
               "period": {

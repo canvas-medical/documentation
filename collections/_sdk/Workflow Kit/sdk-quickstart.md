@@ -158,7 +158,7 @@ The data shown in this URL will match the data fetched using the `fixture-from-p
 
 The SDK allows developers to create customized Protocols that will be utilized within a Canvas instance. Protocols are recommendations of care, screenings or actions for patients that fit certain criteria, such as age, medical history or a combination of factors.
 
-More information about Protocols can be found [in the Canvas Knowledge Center](https://canvas-medical.zendesk.com/hc/en-us/articles/360057232994-Care-Protocols).
+More information about Protocols can be found [in the Canvas Knowledge Center](https://canvas-medical.help.usepylon.com/articles/4408606761-care-protocols).
 
 There are two places within the Canvas UI that Protocols can be found:
 
@@ -169,7 +169,7 @@ Once the icon is clicked, the Protocols are displayed on the right-hand side of 
 ![Image](https://files.readme.io/bb32062-protocol_sidebar.png){:width="60%"}
 
 <b>In the Populations section of the UI:</b> 
-The Populations section shows all active Protocols, a listing of patients that are recommended for that Protocol, as well as the ability to create a Campaign. For more information on Populations and Campaigns, see [this article in the Canvas Knowledge Center](https://canvas-medical.zendesk.com/hc/en-us/articles/4405414136595-Population-Module#h_01FDXMBTC6RECGN3MNP3KZAAXB).
+The Populations section shows all active Protocols, a listing of patients that are recommended for that Protocol, as well as the ability to create a Campaign. For more information on Populations and Campaigns, see [this article in the Canvas Knowledge Center](https://canvas-medical.help.usepylon.com/articles/3316466244-population-module).
 ![Image](https://files.readme.io/df1c096-canvas_hamburger_menu.png){:width="60%"}
 
 ![Image](https://files.readme.io/eae99f2-canvas_protocols_page.png){:width="60%"}
@@ -253,7 +253,7 @@ class MyFirstProtocol(ClinicalQualityMeasure):
         ]
 
         references = [
-            'Protocol Reference https://canvas-medical.zendesk.com/hc/en-us/articles/360057232994-Care-Protocols'
+            'Protocol Reference https://canvas-medical.help.usepylon.com/articles/4408606761-care-protocols'
         ]
 
 
@@ -424,7 +424,7 @@ Let's step through the example above:
 <br><br>
 ### Uploading Your Protocol
 
-Canvas instances have a number of [built-in Protocols](https://canvas-medical.zendesk.com/hc/en-us/sections/4404352708115-Population-Management-Protocols). The Protocols that are developed using the SDK, such as our example above, can be uploaded and run on the Canvas backend in the same manner that the built-in Protocols are.
+Canvas instances have a number of [built-in Protocols](https://canvas-medical.help.usepylon.com/articles/4408606761-care-protocols). The Protocols that are developed using the SDK, such as our example above, can be uploaded and run on the Canvas backend in the same manner that the built-in Protocols are.
 
 At this point, you will have a completed Protocol with all of the `Meta` attributes populated, as well as a `compute_results` method that returns an instance of `ProtocolResult`. While this is a very basic example, it is enough to upload to your Canvas development instance in order to test with and to see what appears in the UI.
 
@@ -485,7 +485,7 @@ As recommended, John's physician can then complete the Fall Questionnaire in his
 <img src="https://files.readme.io/e4d8fa2-fall_screening_questionnaire.png" alt="Fall Screening Questionnaire" width="60%">
 
 
-{% include alert.html type="info" content="For more information on creating Questionnaires in Canvas, see [Creating a New Questionnaire](https://canvas-medical.zendesk.com/hc/en-us/articles/4403561447827-Creating-a-New-Questionnaire)." %}
+{% include alert.html type="info" content="For more information on creating Questionnaires in Canvas, see [Creating a New Questionnaire](https://canvas-medical.help.usepylon.com/articles/7418371785-creating-a-new-questionnaire)." %}
 
 Once the recommended Fall Screening Questionnaire has been completed, the Protocol is considered to have been satisfied. It is now moved to the _Inactive_ tab in John's chart:
 

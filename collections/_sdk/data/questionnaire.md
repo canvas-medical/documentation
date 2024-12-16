@@ -16,8 +16,7 @@ The `Interview` model represents answers to a structured set of questions repres
 To get a questionnaire or interview by identifier, use the `get` method on the `Questionnaire` or `Interview` model managers:
 
 ```python
-from canvas_sdk.v1.data.questionnaire import Questionnaire
-from canvas_sdk.v1.data.interview import Interview
+from canvas_sdk.v1.data.questionnaire import Interview, Questionnaire
 
 questionnaire = Questionnaire.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 interview = Interview.objects.get(id="75df6d7f-d58d-443b-9fa0-ce43b4d7b2a0")
@@ -35,7 +34,7 @@ interviews = patient.interviews.all()
 If you have a patient ID, you can get the interviews for the patient with the `for_patient` method on the `Interview` model manager:
 
 ```python
-from canvas_sdk.v1.data.interview import Interview
+from canvas_sdk.v1.data.questionnaire import Interview
 
 patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 interviews = Interview.objects.for_patient(patient_id)
@@ -62,7 +61,7 @@ for question in questionnaire.questions.all():
 The interview responses for an interview can be accessed with the `interview_responses` attribute on an `Interview` object:
 
 ```python
-from canvas_sdk.v1.data.interview import Interview
+from canvas_sdk.v1.data.questionnaire import Interview
 from logger import log
 
 interview = Interview.objects.get(id="75df6d7f-d58d-443b-9fa0-ce43b4d7b2a0")
@@ -82,8 +81,7 @@ Filtering for questionnaires and interviews is done with the `filter` method on 
 Specify an attribute with `filter` to filter by that attribute:
 
 ```python
-from canvas_sdk.v1.data.questionnaire import Questionnaire
-from canvas_sdk.v1.data.interview import Interview
+from canvas_sdk.v1.data.questionnaire import Interview, Questionnaire
 
 questionnaires = Questionnaire.objects.filter(name="Tobacco")
 interviews = Interview.objects.filter(progress_status="F")

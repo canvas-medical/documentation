@@ -11,7 +11,7 @@ To get you started using these recommendations, we have written out some example
 * * *
 ## AllergyRecommendation
 
-**Description**: A recommendation specifying that a patient may have an allergy that should be recorded via the [allergy command](https://canvas-medical.zendesk.com/hc/en-us/articles/360056920593-Document-an-Allergy).
+**Description**: A recommendation specifying that a patient may have an allergy that should be recorded via the [allergy command](https://canvas-medical.help.usepylon.com/articles/9964004914-document-allergies).
 
 **Parameters**:
 
@@ -66,7 +66,7 @@ When the "Allergy" button is clicked, it will generate an Allergy command:
 * * *
 ## AssessRecommendation
 
-**Description**: A recommendation specifying that a patient may need to have an active condition assessed that should be recorded via the [assess condition command](https://canvas-medical.zendesk.com/hc/en-us/articles/360055230394-Assess-a-Patient-Condition).
+**Description**: A recommendation specifying that a patient may need to have an active condition assessed that should be recorded via the [assess condition command](https://canvas-medical.help.usepylon.com/articles/7998893827-managing-conditions#assessing-a-condition-8).
 
 **Parameters**:
 
@@ -167,7 +167,7 @@ When the "Assess" button is clicked, it will generate an Assess command:
 * * *
 ## DiagnoseRecommendation
 
-**Description**: A recommendation specifying that a patient may require a condition to be diagnosed. A Diagnose Recommendation allows providers the ability to create a [Diagnose Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057089133-Making-a-Diagnosis) with the click of a button directly in a patient's chart.
+**Description**: A recommendation specifying that a patient may require a condition to be diagnosed. A Diagnose Recommendation allows providers the ability to create a [Diagnose Command](https://canvas-medical.help.usepylon.com/articles/7998893827-managing-conditions#diagnosing-a-condition-2) with the click of a button directly in a patient's chart.
 
 **Parameters:**
 
@@ -217,7 +217,7 @@ When the "Diagnose" button is clicked, it will generate a Diagnose command and p
 * * *
 ## FollowUpRecommendation
 
-**Description**: A recommendation specifying that a patient may require a Follow Up appointment, which can be indicated using the [Follow Up](https://canvas-medical.zendesk.com/hc/en-us/articles/360055261874-Follow-Up-Command) command.
+**Description**: A recommendation specifying that a patient may require a Follow Up appointment, which can be indicated using the [Follow Up](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management#scheduling-follow-up-appointment-84) command.
 
 **Parameters:**
 
@@ -334,7 +334,7 @@ A recommendation that contains the link will appear in the list of Protocols for
 * * *
 ## ImagingRecommendation
 
-**Description**: A recommendation specifying that a patient may be due for an imaging order. An Imaging Recommendation allows providers the ability to create an [Image command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057918193) with the click of a button directly in a patient's chart.
+**Description**: A recommendation specifying that a patient may be due for an imaging order. An Imaging Recommendation allows providers the ability to create an [Image command](https://canvas-medical.help.usepylon.com/articles/2615916315-order-an-imaging-study) with the click of a button directly in a patient's chart.
 
 **Parameters:**
 
@@ -405,7 +405,7 @@ After pressing the _Order_ button, a Note Command to order imaging will be popul
 * * *
 ## ImmunizationRecommendation
 
-**Description**: A recommendation specifying that a patient may be due for an immunization. Use this to guide the user to the [immunization command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057140293-Documenting-an-Immunization).
+**Description**: A recommendation specifying that a patient may be due for an immunization. Use this to guide the user to the [immunization command](https://canvas-medical.help.usepylon.com/articles/4155771468-command-immunize).
 
 **Parameters**:
 
@@ -461,7 +461,7 @@ Upon clicking the _Immunize_ button, the _Immunize_ command will be populated in
 * * *
 ## InstructionRecommendation
 
-**Description**: A recommendation specifying that a provider may need to provide a set of instructions to a patient. An Instruction Recommendation allows providers the ability to create an [Instruct command](https://canvas-medical.zendesk.com/hc/en-us/articles/360055309574) with the click of a button directly in a patient's chart.
+**Description**: A recommendation specifying that a provider may need to provide a set of instructions to a patient. An Instruction Recommendation allows providers the ability to create an [Instruct command](https://canvas-medical.help.usepylon.com/articles/4244748724-command-instruct) with the click of a button directly in a patient's chart.
 
 **Parameters**:
 
@@ -516,7 +516,7 @@ Upon clicking the _Instruct_ button, the _Instruct_ command will be populated in
 ## InterviewRecommendation
 
 **Description**: A recommendation specifying that a patient may need to complete one or more questionnaires.  
-An Interview Recommendation allows providers the ability to create a [Questionnaire command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057544593-Command-Questionnaire) with the click of a button directly in a patient's chart.
+An Interview Recommendation allows providers the ability to create a [Questionnaire command](https://canvas-medical.help.usepylon.com/articles/5651999344-command-questionnaire) with the click of a button directly in a patient's chart.
 
 **Parameters**:
 
@@ -566,7 +566,7 @@ Upon pressing the _Interview_ button, the _Questionnaire_ command will populate 
 * * *
 ## LabRecommendation
 
-**Description**: A recommendation specifying that a patient may be due for a Lab order. A Lab Recommendation allows providers the ability to create a [Lab Order](https://canvas-medical.zendesk.com/hc/en-us/articles/360056890753) with the click of a button directly in a patient's chart.
+**Description**: A recommendation specifying that a patient may be due for a Lab order. A Lab Recommendation allows providers the ability to create a [Lab Order](https://canvas-medical.help.usepylon.com/articles/3065191197-placing-a-lab-order) with the click of a button directly in a patient's chart.
 
 **Parameters**:
 
@@ -592,7 +592,7 @@ Additional notes:
 
 - If multiple codings from the ValueSet are found within the Canvas database, it will use the first coding entered into the system. 
 
-- Currently when a `Lab Order` command is committed, it will not appear in the `self.patient` object. For a lab recommendation to be satisfied, a lab report must be attached to this patient using our [Data Integrations](https://canvas-medical.zendesk.com/hc/en-us/articles/360056078034-Data-Integration-Overview) feature and the report must be reviewed by a practitioner. So, a Lab Report Template must exist that contains the coding for the lab ValueSet that is being recommended. To learn more about importing lab report templates, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/5466345363219-Custom-Lab-Report-Templates).
+- Currently when a `Lab Order` command is committed, it will not appear in the `self.patient` object. For a lab recommendation to be satisfied, a lab report must be attached to this patient using our [Data Integrations](https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) feature and the report must be reviewed by a practitioner. So, a Lab Report Template must exist that contains the coding for the lab ValueSet that is being recommended. To learn more about importing lab report templates, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/5081934202-custom-lab-report-templates).
 
 **Example**:
 
@@ -636,7 +636,7 @@ Upon pressing the _Order_ button, the _Lab Order_ command will populate the pati
 * * *
 ## PerformRecommendation
 
-**Description**: A recommendation specifying that a provider may need to [perform an In-Office Procedure](https://canvas-medical.zendesk.com/hc/en-us/articles/360055626874-Perform-Command-for-In-Office-Procedures) for a patient. A Perform Recommendation allows providers the ability to create an Instruction command with the click of a button directly in a patient's chart.
+**Description**: A recommendation specifying that a provider may need to [perform an In-Office Procedure](https://canvas-medical.help.usepylon.com/articles/5988007695-command-perform) for a patient. A Perform Recommendation allows providers the ability to create an Instruction command with the click of a button directly in a patient's chart.
 
 **Parameters**:
 
@@ -653,7 +653,7 @@ Upon pressing the _Order_ button, the _Lab Order_ command will populate the pati
 
 **Notes**:
 
-- In order for the autofill functionality to work correctly, the procedure must include at least one code that exists in the fee schedule. To learn more about how to enter procedures into the fee schedule, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360056365574). Currently, the fee schedule only accepts CPT codes. 
+- In order for the autofill functionality to work correctly, the procedure must include at least one code that exists in the fee schedule. To learn more about how to enter procedures into the fee schedule, see this [article](https://canvas-medical.help.usepylon.com/articles/6307219926-fee-schedule). Currently, the fee schedule only accepts CPT codes. 
 - If none of the codes in the procedure ValueSet are in the fee schedule, the perform command will not auto-populate with a procedure. 
 - If multiple codes in the procedure ValueSet are in the fee schedule, the perform command will be autofilled with the one that was most recently added to the fee schedule. To ensure expected behavior, it is recommended that only a single code is entered in the procedure ValueSet. 
 - If a title is not included, both the title and narrative will be autogenerated. The title will be set to "Perform procedure.name" and the narrative will be set to "`patient.first_name` has `condition.name` and a `procedure.name` is recommended". 
@@ -696,7 +696,7 @@ Upon pressing the _Perform_ button, the _Perform_ command will populate the pati
 * * *
 ## PlanRecommendation
 
-**Description**: A recommendation specifying that a provider may need to document a Plan. A Plan Recommendation allows providers the ability to create a [Plan Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057457013) with the click of a button directly in a patient's chart.
+**Description**: A recommendation specifying that a provider may need to document a Plan. A Plan Recommendation allows providers the ability to create a [Plan Command](https://canvas-medical.help.usepylon.com/articles/7699598664-command-plan) with the click of a button directly in a patient's chart.
 
 **Parameters**:
 
@@ -830,7 +830,7 @@ A Prescribe command will appear after clicking the prescribe button:
 * * *
 ## ReferRecommendation
 
-**Description**: A recommendation advising a provider to create a referral for a patient. A Refer Recommendation allows providers the ability to create an [Refer Command](https://canvas-medical.zendesk.com/hc/en-us/articles/360055709494) with the click of a button directly in a patient's chart.
+**Description**: A recommendation advising a provider to create a referral for a patient. A Refer Recommendation allows providers the ability to create an [Refer Command](https://canvas-medical.help.usepylon.com/articles/8339414277-command-referrals) with the click of a button directly in a patient's chart.
 
 **Parameters**:
 
@@ -851,7 +851,7 @@ A Prescribe command will appear after clicking the prescribe button:
       - If condition is included, the narrative will be set to "`patient.name` has `condition.name` and should be referred for `referral.name`".  
       - If condition is not included, the narrative will be set to "`patient.name` should be referred for `referral.name`"
 
-- Currently when a `Refer` command is committed, it will not appear in the `self.patient` object. For a refer recommendation to be satisfied, a Specialist Consult Report must be attached to this patient using our [Data Integrations](https://canvas-medical.zendesk.com/hc/en-us/articles/360056078034-Data-Integration-Overview) feature with the document type set to "[Specialist Consult Report](https://canvas-medical.zendesk.com/hc/en-us/articles/360057919273-Specialist-Consult-Reports)". The specialty should be set to the same name as what was inputted in the referral name. The report must then be reviewed by a practitioner through the patient's chart.  A Specialist Consult Report Template must exist that contains the coding for the refer ValueSet that is being recommended. 
+- Currently when a `Refer` command is committed, it will not appear in the `self.patient` object. For a refer recommendation to be satisfied, a Specialist Consult Report must be attached to this patient using our [Data Integrations](https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) feature with the document type set to "[Specialist Consult Report](https://canvas-medical.help.usepylon.com/articles/8163023191-data-integration-specialist-consult-reports)". The specialty should be set to the same name as what was inputted in the referral name. The report must then be reviewed by a practitioner through the patient's chart.  A Specialist Consult Report Template must exist that contains the coding for the refer ValueSet that is being recommended. 
 
 - The referral command should autofill the "Refer to" title with the string that was passed in within context['specialties'], followed by "(TBD)". 
 
@@ -901,7 +901,7 @@ A Refer command will appear after clicking the refer button:
 * * *
 ## StructuredAssessmentRecommendation
 
-**Description**: A recommendation specifying that one or more Structured Assessments should be completed for a patient.  An Assess Recommendation allows providers the ability to create an [Assess command](https://canvas-medical.zendesk.com/hc/en-us/articles/4415631833875-Structured-Assessment) with the click of a button directly in a patient's chart.
+**Description**: A recommendation specifying that one or more Structured Assessments should be completed for a patient.  A Structured Assess Recommendation allows providers the ability to create an [Structured Assessment command](https://canvas-medical.help.usepylon.com/articles/8805008571-command-structured-assessment) with the click of a button directly in a patient's chart.
 
 **Parameters**:
 
@@ -917,7 +917,7 @@ A Refer command will appear after clicking the refer button:
 
 **Notes:**
 
-- For this feature to work as expected, each assessment loaded into Canvas should have a unique coding. If two assessments share the same coding, the first item found in Canvas will be used. If two assessment codings are included in the ValueSet, the first item in the list will be used to autogenerate the Structured Assessment command. To learn more about importing structured assessments to canvas, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/4415631833875-Structured-Assessment). 
+- For this feature to work as expected, each assessment loaded into Canvas should have a unique coding. If two assessments share the same coding, the first item found in Canvas will be used. If two assessment codings are included in the ValueSet, the first item in the list will be used to autogenerate the Structured Assessment command. To learn more about importing structured assessments to canvas, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/8805008571-command-structured-assessment). 
 
 **Example**:
 
@@ -955,7 +955,7 @@ Upon pressing the _Assess_ button, the _Structured Assessment_ command will popu
 * * *
 ## TaskRecommendation
 
-**Description**: A recommendation advising the provider to set up a task for another staff member. A provider can use the [Task command](https://canvas-medical.zendesk.com/hc/en-us/articles/360057545873-Tasks) to fulfill this recommendation.
+**Description**: A recommendation advising the provider to set up a task for another staff member. A provider can use the [Task command](https://canvas-medical.help.usepylon.com/articles/8460447495-task-management) to fulfill this recommendation.
 
 **Parameters**:
 
@@ -1002,7 +1002,7 @@ Once the task button is selected, it will generate a task command that has been 
 * * *
 ## VitalSignRecommendation
 
-**Description**: A recommendation specifying a vital sign reading should be taken. This recommendation can be fulfilled with the [Vitals command](https://canvas-medical.zendesk.com/hc/en-us/articles/360056077654-Logging-Vital-Signs).
+**Description**: A recommendation specifying a vital sign reading should be taken. This recommendation can be fulfilled with the [Vitals command](https://canvas-medical.help.usepylon.com/articles/9426091672-command-vitals).
 
 **Parameters**:
 

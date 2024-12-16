@@ -215,7 +215,7 @@ The unique key of the PracticeLocation for which this Note is written.
 <b>`stateChange`</b> text <br>
 The new note state to be set. Allowed transitions in v1 include:
 
-Locking an unlocked note (excluding DATA notes)<br>
+Locking an unlocked note (excluding DATA notes). Locking a note will result in the Note PDF being generated along with it associated FHIR DocumentReference record. <br>
 “ULK” → “LKD”, “NEW” → “LKD”, “CVD” → “LKD”<br><br>
 Unlocking a locked note (excluding DATA notes)<br>
 “LKD” → “ULK”<br><br>

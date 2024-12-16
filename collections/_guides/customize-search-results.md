@@ -16,7 +16,6 @@ This search modification can help clinicians:
 
 Canvas supports modifying search results in [all refactored commands](/product-updates/commands-module/#progress).
 
-{% include alert.html type="info" content=" <b>Plugins are new.</b> If you are interested in enabling plugins for your Canvas instance, please reach out to <a href='mailto:support@canvasmedical.com'>support@canvasmedical.com</a>)." %}
 
 First, we'll show you a complete example of customizing the search results for
 choosing a medication in a Medication Statement command, then we'll break it
@@ -172,6 +171,10 @@ With our list of modified results in place, we just need to return an effect
 of type `AUTOCOMPLETE_SEARCH_RESULTS` with our modified list as the payload.
 
 The dropdown of options presented to the user now reflects our modifications!
+
+## Watch Me Build It
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/d3b696bdb482401c82aad2a2347c11ea?sid=07417cab-cb22-4165-ba16-2a2dcc2b3ce5" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div> 
 
 <br />
 <br />

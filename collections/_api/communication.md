@@ -9,7 +9,7 @@ sections:
         description: >-
           An occurrence of information being transmitted; e.g. a message that was sent to a responsible provider<br><br>
           [https://hl7.org/fhir/R4/communication.html](https://hl7.org/fhir/R4/communication.html)<br><br>
-          The Communication resource maps to messages in Canvas between a patient and practitioner. Click [here](https://canvas-medical.zendesk.com/hc/en-us/articles/1500001593221-Patient-Message-Inbox-) to learn more.<br><br>
+          The Communication resource maps to messages in Canvas between a patient and practitioner. Click [here](https://canvas-medical.help.usepylon.com/articles/6255444430-patient-message-inbox) to learn more.<br><br>
           **Additional HTML formatting**<br> With the release of Advanced Letter Templates, Messages are now saved in the database in HTML format. Customers using the Communication endpoint for their own patient applications will need to take this into account either by embedding the html directly using a library like Interweave or extracting the text. **Messages sent before this update (10/26/2022 @ 17:00 PST) will remain in plain text format.**<br><br>
         attributes:
           - name: resourceType

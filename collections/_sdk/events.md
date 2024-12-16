@@ -734,6 +734,10 @@ These events fire during the command lifecycle.
       <td>POST_COMMAND_EXECUTE_ACTION</td>
       <td>Occurs after an action is executed on any command.</td>
     </tr>
+    <tr>
+      <td>POST_COMMAND_INSERTED_INTO_NOTE</td>
+      <td>Occurs after a command is added to a note in the UI.</td>
+    </tr>
   </tbody>
 </table>
 
@@ -973,6 +977,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_UPDATE</td>
       <td>Occurs before the command is updated.	</td>
+    </tr>
+    <tr>
+      <td>CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE</td>
+      <td>Occurs after the command is added to a note in the UI.</td>
     </tr>
   </tbody>
 </table>
@@ -3134,6 +3142,10 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLUGIN_UPDATED</td>
       <td>Occurs when a plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</td>
+      <td>Occurs when adding a pharmacy for a patient in their profile.</td>
     </tr>
   </tbody>
 </table>

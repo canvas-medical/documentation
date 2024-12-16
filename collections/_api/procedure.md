@@ -9,7 +9,7 @@ sections:
         description: >-
           An action that is or was performed on or for a patient. This can be a physical intervention like an operation, or less invasive like long term services, counseling, or hypnotherapy.<br><br>
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-procedure.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-procedure.html)<br><br>
-          See this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360055626874-Perform-Command-for-In-Office-Procedures) for information on creating procedures with the `Perform` command.
+          See this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/5988007695-command-perform) for information on creating procedures with the `Perform` command.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

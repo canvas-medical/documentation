@@ -28,7 +28,7 @@ sections:
             type: json
             description: >-
               Type of coverage, such as medical, workers compensation, self pay, etc.<br><br>
-              In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Zendesk article](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers).
+              In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers).
             attributes:
               - name: coding
                 description: Code defined by a terminology system.
@@ -279,7 +279,7 @@ sections:
                     ],
                ```
               <br>
-               - sending a `payor[0].identifier.value` corresponding to the Coverage's payor id.  For now, these values can only be found and updated in the [Insurers Admin view](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers) in Canvas.
+               - sending a `payor[0].identifier.value` corresponding to the Coverage's payor id.  For now, these values can only be found and updated in the [Insurers Admin view](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers) in Canvas.
                ```json
                 "payor": [
                     {
@@ -312,7 +312,7 @@ sections:
                   - name: value
                     type: string
                     required_in: create, update
-                    description: The value that is unique. These values can only be found and updated in the [Insurers Admin view](https://canvas-medical.zendesk.com/hc/en-us/articles/360062281054-Managing-Insurers) in Canvas. 
+                    description: The value that is unique. These values can only be found and updated in the [Insurers Admin view](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers) in Canvas. 
                   - name: system
                     type: string
                     description: The namespace for the identifier value. 
