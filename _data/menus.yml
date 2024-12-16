@@ -535,9 +535,15 @@ data_module:
  - title: "Observation"
    url: /sdk/data-observation/
    description: Measurements and simple assertions made about a patient.
+ - title: "Organization"
+   url: /sdk/data-organization/
+   description: The clinical organization present in the Canvas EMR.
  - title: "Patient"
    url: /sdk/data-patient/
    description: Data used to categorize individuals for identification, records matching, and other purposes.
+ - title: "PracticeLocation"
+   url: /sdk/data-practicelocation/
+   description: The practice locations present in the Canvas EMR.
  - title: "ProtocolOverride"
    url: /sdk/data-protocol-override/
    description: A record of a protocol being snoozed for a patient.

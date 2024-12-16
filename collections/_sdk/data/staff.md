@@ -84,17 +84,17 @@ staff.creator_tasks.all()
 
 | Value | Label     |
 |-------|-----------|
-| "F"   | "female   |
-| "M"   | "male"    |
-| "O"   | "other"   |
-| "UNK" | "unknown" |
+| F"  | female      |
+| M   | male        |
+| O   | other       |
+| UNK | unknown     |
 
 ### TaxIDType
 
 | Value | Label      |
 |-------|------------|
-| "E"   | "EIN text" |
-| "S"   | "SSN"      |
+| E  | EIN text |
+| S   | SSN      |
 
 <br/>
 <br/>
