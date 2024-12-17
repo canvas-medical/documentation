@@ -137,9 +137,9 @@ sections:
                 description: Type the reference refers to (e.g. "Patient").
           - name: created
             description: |-
-              The date this resource was created.<br>
+              The date this resource was created. If only a date is specified, it will default to midnight UTC. If a timezone is not supplied, it will default to use UTC.<br>
               This maps to the date of service for note in Canvas the claims is associated with.
-            type: date [ YYYY-MM-DD ]
+            type: datetime [ YYYY-MM-DDTHH:mm:ssZZ | YYYY-MM-DD ]
             required_in: create,update
           - name: provider
             description: Party responsible for the claim. This will be a reference to a Practitioner.
