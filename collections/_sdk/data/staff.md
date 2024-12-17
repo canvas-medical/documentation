@@ -84,7 +84,7 @@ staff.creator_tasks.all()
 
 | Value | Label     |
 |-------|-----------|
-| F"  | female      |
+| F   | female      |
 | M   | male        |
 | O   | other       |
 | UNK | unknown     |
