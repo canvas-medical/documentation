@@ -113,29 +113,50 @@ The following effects are available to be applied in Canvas.
 | UPDATE_TASK | Cause a task to be updated. |
 | CREATE_TASK_COMMENT | Add a comment to an existing task. |
 | ORIGINATE_ALLERGY_COMMAND | Can be used to originate an allergy command in a note. |
+| COMMIT_ALLERGY_COMMAND | Can be used to commit an allergy command in a note. |
 | ORIGINATE_REMOVE_ALLERGY_COMMAND | Can be used to originate a remove allergy command in a note. |
+| COMMIT_REMOVE_ALLERGY_COMMAND | Can be used to commit a remove allergy command in a note. |
 | ORIGINATE_GOAL_COMMAND | Can be used to originate a goal command in a note. |
+| COMMIT_GOAL_COMMAND | Can be used to commit a goal command in a note. |
 | ORIGINATE_UPDATE_GOAL_COMMAND | Can be used to originate an update goal command in a note. |
+| COMMIT_UPDATE_GOAL_COMMAND | Can be used to commit an update goal command in a note. |
 | ORIGINATE_CLOSE_GOAL_COMMAND | Can be used to originate a close goal command in a note. |
+| COMMIT_CLOSE_GOAL_COMMAND | Can be used to commit a close goal command in a note. |
 | ORIGINATE_DIAGNOSE_COMMAND | Can be used to originate a diagnose command in a note. |
+| COMMIT_DIAGNOSE_COMMAND | Can be used to commit a diagnose command in a note. |
 | ORIGINATE_UPDATE_DIAGNOSIS_COMMAND | Can be used to originate an update diagnosis command in a note. |
+| COMMIT_UPDATE_DIAGNOSIS_COMMAND | Can be used to commit an update diagnosis command in a note. |
 | ORIGINATE_ASSESS_COMMAND | Can be used to originate an assess command in a note. |
+| COMMIT_ASSESS_COMMAND | Can be used to commit an assess command in a note. |
 | ORIGINATE_PRESCRIBE_COMMAND | Can be used to originate a prescribe command in a note. |
 | ORIGINATE_REFILL_COMMAND | Can be used to originate a refill command in a note. |
 | ORIGINATE_MEDICATION_STATEMENT_COMMAND | Can be used to originate a medication statement command in a note. |
+| COMMIT_MEDICATION_STATEMENT_COMMAND | Can be used to commit a medication statement command in a note. |
 | ORIGINATE_STOP_MEDICATION_COMMAND | Can be used to originate a stop medication command in a note. |
+| COMMIT_STOP_MEDICATION_COMMAND | Can be used to commit a stop medication command in a note. |
 | ORIGINATE_PLAN_COMMAND | Can be used to originate a plan command in a note. |
+| COMMIT_PLAN_COMMAND | Can be used to commit a plan command in a note. |
 | ORIGINATE_HPI_COMMAND | Can be used to originate a history of present illness command in a note. |
+| COMMIT_HPI_COMMAND | Can be used to commit a history of present illness command in a note. |
 | ORIGINATE_FAMILY_HISTORY_COMMAND | Can be used to originate a family history command in a note. |
+| COMMIT_FAMILY_HISTORY_COMMAND | Can be used to commit a family history command in a note. |
 | ORIGINATE_MEDICAL_HISTORY_COMMAND | Can be used to originate a medical history command in a note. |
+| COMMIT_MEDICAL_HISTORY_COMMAND | Can be used to commit a medical history command in a note. |
 | ORIGINATE_SURGICAL_HISTORY_COMMAND | Can be used to originate a surgical history command in a note. |
+| COMMIT_SURGICAL_HISTORY_COMMAND | Can be used to commit a surgical history command in a note. |
 | ORIGINATE_INSTRUCT_COMMAND | Can be used to originate an instruct command in a note. |
+| COMMIT_INSTRUCT_COMMAND | Can be used to commit an instruct command in a note. |
 | ORIGINATE_LAB_ORDER_COMMAND | Can be used to originate a lab order command in a note. |
 | ORIGINATE_PERFORM_COMMAND | Can be used to originate a perform command in a note. |
+| COMMIT_PERFORM_COMMAND | Can be used to commit a perform command in a note. |
 | ORIGINATE_QUESTIONNAIRE_COMMAND | Can be used to originate a questionnaire command in a note. |
+| COMMIT_QUESTIONNAIRE_COMMAND | Can be used to commit a questionnaire command in a note. |
 | ORIGINATE_REASON_FOR_VISIT_COMMAND | Can be used to originate a reason for visit command in a note. |
+| COMMIT_REASON_FOR_VISIT_COMMAND | Can be used to commit a reason for visit command in a note. |
 | ORIGINATE_TASK_COMMAND | Can be used to originate a task command in a note. |
+| COMMIT_TASK_COMMAND | Can be used to commit a task command in a note. |
 | ORIGINATE_VITALS_COMMAND | Can be used to originate a vitals command in a note. |
+| COMMIT_VITALS_COMMAND | Can be used to commit a vitals command in a note. |
 
 <br/>
 <br/>

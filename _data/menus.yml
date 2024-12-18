@@ -488,6 +488,9 @@ effects_module:
  - title: "Tasks"
    url: /sdk/effect-tasks/
    description: Create or update tasks.
+ - title: "Visual"
+   url: /sdk/visual-effect/
+   description: Display visual information in a patient's chart.
 
 data_module:
  - title: "Allergy Intolerance"
