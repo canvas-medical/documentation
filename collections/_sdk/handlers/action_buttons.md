@@ -1,6 +1,6 @@
 ---
-title: "Visual Effects"
-slug: "visual-effect"
+title: "Action Buttons"
+slug: "handlers-action-buttons"
 excerpt: "Create and modify views in the Canvas UI."
 hidden: false
 ---

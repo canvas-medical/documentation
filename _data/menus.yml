@@ -474,6 +474,8 @@ sdk_overview:
 sdk_handlers:
   - title: "CronTask"
     url: /sdk/handlers-crontask/
+  - title: "Action Buttons"
+    url: /sdk/handlers-action-buttons/
 
 effects_module:
  - title: "Protocol Cards"
@@ -488,9 +490,6 @@ effects_module:
  - title: "Tasks"
    url: /sdk/effect-tasks/
    description: Create or update tasks.
- - title: "Visual"
-   url: /sdk/visual-effect/
-   description: Display visual information in a patient's chart.
 
 data_module:
  - title: "Allergy Intolerance"
