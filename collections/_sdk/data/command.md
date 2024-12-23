@@ -50,7 +50,7 @@ commands = Command.objects.filter(state="committed")
 | entered_in_error   | CanvasUser                            |
 | state              | String                                |
 | patient            | [Patient](/sdk/data-patient/#patient) |
-| note_id            | Integer                               |
+| note               | [Note](/sdk/data-note/#note)          |
 | schema_key         | String                                |
 | data               | JSON                                  |
 | origination_source | String                                |
