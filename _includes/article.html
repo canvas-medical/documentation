@@ -3,16 +3,17 @@
     <div class="article__container__inner">
       <header class="article__header">
         <h1 class="article__title" itemprop="name headline">{{ page.title | escape }}</h1>
-        <p class="article__meta">
-          <time datetime="{{ page.last_modified_at | date_to_xmlschema }}" itemprop="datePublished">
-            {% assign date_format = site.minima.date_format | default: '%-d %b %Y' %}
-            Last updated: {{ page.last_modified_at | date: date_format }}
-          </time>
-          {% if page.author %}
-          by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ page.author
-              }}</span></span>
-          {% endif %}
-        </p>
+<p class="article__meta">
+  {% unless page.hidden_last_updated %}
+  <time datetime="{{ page.last_modified_at | date_to_xmlschema }}" itemprop="datePublished">
+    {% assign date_format = site.minima.date_format | default: '%-d %b %Y' %}
+    Last updated: {{ page.last_modified_at | date: date_format }}
+  </time>
+  {% endunless %}
+  {% if page.author %}
+  by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ page.author }}</span></span>
+  {% endif %}
+</p>
       </header>
 
       <div class="article__content" itemprop="articleBody">
