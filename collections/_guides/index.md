@@ -25,6 +25,17 @@ layout: "landingpage"
                 </div>
             </div>
         </a>
+        <a href="/guides/your-first-application">
+            <div class="cardContainer">
+                <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
+                <div class="cardHeading">
+                    <span font color = navy >Your First Application</span>
+                </div>
+                <div class="cardBody">
+                    Install and customize embeddable applications in Canvas
+                </div>
+            </div>
+        </a>
          <a href="/guides/scribe-ai-parser">
             <div class="cardContainer">
                 <img class="cardIcon" src="{{ "/assets/images/icon.svg" | relative_url }}">
