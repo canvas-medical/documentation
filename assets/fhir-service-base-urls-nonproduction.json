@@ -1,0 +1,2022 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "2a376aaa-90fc-4de2-886e-a1b101ffe65f",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-marleymedical-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:2a376aaa-90fc-4de2-886e-a1b101ffe65f"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "0d04cdd3-9410-40a7-ad39-97f26f6c0df9",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "4"
+          }
+        ],
+        "name": "Marley Medical",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "11111"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:2a376aaa-90fc-4de2-886e-a1b101ffe65f"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:0d04cdd3-9410-40a7-ad39-97f26f6c0df9"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "270fe60d-4bc2-405d-af13-afc2f389a93a",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-dev-fellahealth.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:270fe60d-4bc2-405d-af13-afc2f389a93a"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "18e64f0c-c961-45e4-983b-989f574b2e49",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "7"
+          }
+        ],
+        "name": "Demo Clinic",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "11111"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:270fe60d-4bc2-405d-af13-afc2f389a93a"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:18e64f0c-c961-45e4-983b-989f574b2e49"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "91f2d495-7040-4dec-b184-bfda27f4be1b",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-patina-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:91f2d495-7040-4dec-b184-bfda27f4be1b"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "5cc37fb2-35fe-4231-87fa-a47459534e7e",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "12"
+          }
+        ],
+        "name": "Patina Medical Group",
+        "address": [
+          {
+            "line": [
+              "150 Monument Road"
+            ],
+            "city": "Bala Cynwyd",
+            "state": "PA",
+            "postalCode": "19004"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:91f2d495-7040-4dec-b184-bfda27f4be1b"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:5cc37fb2-35fe-4231-87fa-a47459534e7e"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "775373c0-61d3-4e50-a6de-89047f9e6840",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-patina-staging.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:775373c0-61d3-4e50-a6de-89047f9e6840"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "748a3171-2c26-48d6-b9ce-cda65d667f76",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "17"
+          }
+        ],
+        "name": "Patina",
+        "address": [
+          {
+            "line": [
+              "150 Monument Road"
+            ],
+            "city": "Bala Cynwyd",
+            "state": "PA",
+            "postalCode": "19004"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:775373c0-61d3-4e50-a6de-89047f9e6840"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:748a3171-2c26-48d6-b9ce-cda65d667f76"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "3764c2e9-74e9-4527-91ff-ddfb2c9fa816",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-drb-staging.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:3764c2e9-74e9-4527-91ff-ddfb2c9fa816"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "96b62349-c21a-4a4c-8647-d836a6540067",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "18"
+          }
+        ],
+        "name": "Dr. B Medical Group",
+        "address": [
+          {
+            "line": [
+              "228 Park Ave S"
+            ],
+            "city": "New York",
+            "state": "NY",
+            "postalCode": "10003"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:3764c2e9-74e9-4527-91ff-ddfb2c9fa816"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:96b62349-c21a-4a4c-8647-d836a6540067"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "b66983fc-67f8-4d0e-b497-52465ba65b5c",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-synapticure-staging.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:b66983fc-67f8-4d0e-b497-52465ba65b5c"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "cbaa56d5-1a2e-4074-9b8d-f9f0ef97da80",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "27"
+          }
+        ],
+        "name": "Synapticure",
+        "address": [
+          {
+            "line": [
+              "382 NE 191St"
+            ],
+            "city": "Miami",
+            "state": "FL",
+            "postalCode": "33179"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:b66983fc-67f8-4d0e-b497-52465ba65b5c"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:cbaa56d5-1a2e-4074-9b8d-f9f0ef97da80"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "93c9dd1b-56fc-43e8-a16e-6e5510f96b6a",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-remo-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:93c9dd1b-56fc-43e8-a16e-6e5510f96b6a"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "19ff5e13-78cc-4729-833e-a2d6fa551917",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "39"
+          }
+        ],
+        "name": "Remo Medical Group",
+        "address": [
+          {
+            "line": [
+              "330 N Brand Blvd"
+            ],
+            "city": "Glendale",
+            "state": "CA",
+            "postalCode": "91203"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:93c9dd1b-56fc-43e8-a16e-6e5510f96b6a"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:19ff5e13-78cc-4729-833e-a2d6fa551917"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "0114eae2-4936-4eb1-8281-28fb434b7dbb",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-orchestra-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:0114eae2-4936-4eb1-8281-28fb434b7dbb"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "f9f8be1d-ad1b-46d8-812c-0556dc512527",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "42"
+          }
+        ],
+        "name": "Orchestra Health",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "11111"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:0114eae2-4936-4eb1-8281-28fb434b7dbb"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:f9f8be1d-ad1b-46d8-812c-0556dc512527"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "48279eb3-5859-46c4-9c32-d743caec454b",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-drb-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:48279eb3-5859-46c4-9c32-d743caec454b"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "a1c0c97b-54b5-4b36-a443-1b5b1020c445",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "43"
+          }
+        ],
+        "name": "Demo Clinic",
+        "address": [
+          {
+            "line": [
+              "228 Park Ave S"
+            ],
+            "city": "New York",
+            "state": "NY",
+            "postalCode": "10003"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:48279eb3-5859-46c4-9c32-d743caec454b"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:a1c0c97b-54b5-4b36-a443-1b5b1020c445"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "a7580c99-1e90-4fda-bfdc-394a824ebbc2",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-peppyhealth-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:a7580c99-1e90-4fda-bfdc-394a824ebbc2"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "9f2089ec-4872-416f-bf7a-aee8615b15a6",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "44"
+          }
+        ],
+        "name": "Peppy Health Corporation",
+        "address": [
+          {
+            "line": [
+              "1209 N Orange Street"
+            ],
+            "city": "Wilmington",
+            "state": "DE",
+            "postalCode": "19801"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:a7580c99-1e90-4fda-bfdc-394a824ebbc2"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:9f2089ec-4872-416f-bf7a-aee8615b15a6"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "67990d5c-0484-48dc-beb8-9b146357b1f3",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-duohealth-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:67990d5c-0484-48dc-beb8-9b146357b1f3"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "082eea4f-491f-4561-a71c-00596704064f",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "47"
+          }
+        ],
+        "name": "Duo Health",
+        "address": [
+          {
+            "line": [
+              "2030 W Baseline Rd #182-5671"
+            ],
+            "city": "Phoenix",
+            "state": "AZ",
+            "postalCode": "85041"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:67990d5c-0484-48dc-beb8-9b146357b1f3"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:082eea4f-491f-4561-a71c-00596704064f"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "cb755f76-125f-43b9-96e4-4f2280326299",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-duohealth-staging.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:cb755f76-125f-43b9-96e4-4f2280326299"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "650db61f-63f3-4070-97fc-a214817d3187",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "48"
+          }
+        ],
+        "name": "Duo Health",
+        "address": [
+          {
+            "line": [
+              "2030 W Baseline Rd #182-5671"
+            ],
+            "city": "Phoenix",
+            "state": "AZ",
+            "postalCode": "85041"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:cb755f76-125f-43b9-96e4-4f2280326299"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:650db61f-63f3-4070-97fc-a214817d3187"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "e9af5f93-3a48-42a6-bbad-849bce0dc09c",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-heartbeat-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:e9af5f93-3a48-42a6-bbad-849bce0dc09c"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "5386be72-aa8d-4f72-98d0-b6621bd50675",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "50"
+          }
+        ],
+        "name": "Heartbeat Health",
+        "address": [
+          {
+            "line": [
+              "156 W 56TH"
+            ],
+            "city": "New York",
+            "state": "NY",
+            "postalCode": "10019"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:e9af5f93-3a48-42a6-bbad-849bce0dc09c"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:5386be72-aa8d-4f72-98d0-b6621bd50675"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "f0d8930c-4477-4dbf-86d6-e0ede7eb20e8",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-storyhealth-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:f0d8930c-4477-4dbf-86d6-e0ede7eb20e8"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "18255c45-72b7-42bb-bfd4-adcc0a443ed8",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "54"
+          }
+        ],
+        "name": "Story Health Partners, LLC",
+        "address": [
+          {
+            "line": [
+              "20823 Stevens Creek Blvd"
+            ],
+            "city": "Cupertino",
+            "state": "CA",
+            "postalCode": "95014"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:f0d8930c-4477-4dbf-86d6-e0ede7eb20e8"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:18255c45-72b7-42bb-bfd4-adcc0a443ed8"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "ce6ccfb9-e8bf-484b-aa69-8464f8c9172b",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-opalrx-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:ce6ccfb9-e8bf-484b-aa69-8464f8c9172b"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "beeeb283-88cb-4107-8abd-f5e76cab7762",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "59"
+          }
+        ],
+        "name": "OpalRx, LLC",
+        "address": [
+          {
+            "line": [
+              "2542 Johns Pl"
+            ],
+            "city": "Jamestown",
+            "state": "NY",
+            "postalCode": "14701"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:ce6ccfb9-e8bf-484b-aa69-8464f8c9172b"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:beeeb283-88cb-4107-8abd-f5e76cab7762"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "0922e982-addb-489e-ae9a-6569bef03aed",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-dreem-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:0922e982-addb-489e-ae9a-6569bef03aed"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "963f9170-8e07-4c11-b82d-f5ef6329a4a1",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "61"
+          }
+        ],
+        "name": "Dreem Health Sleep Clinic",
+        "address": [
+          {
+            "line": [
+              "825 Pollard Road STE 100"
+            ],
+            "city": "Los Gatos",
+            "state": "CA",
+            "postalCode": "95032"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:0922e982-addb-489e-ae9a-6569bef03aed"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:963f9170-8e07-4c11-b82d-f5ef6329a4a1"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "e83f6567-bd46-4003-825c-3fc2d44c42ce",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-stepwellcare-staging.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:e83f6567-bd46-4003-825c-3fc2d44c42ce"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "055f0dfc-f530-4940-953b-c6028bcc213b",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "62"
+          }
+        ],
+        "name": "Stepwell Care",
+        "address": [
+          {
+            "line": [
+              "10770 N 46th St"
+            ],
+            "city": "Tampa",
+            "state": "FL",
+            "postalCode": "33617"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:e83f6567-bd46-4003-825c-3fc2d44c42ce"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:055f0dfc-f530-4940-953b-c6028bcc213b"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "425379cd-c4fe-4308-b462-974d2ae071cf",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-sanusommedical-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:425379cd-c4fe-4308-b462-974d2ae071cf"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "c2caebbf-ff32-46a1-acfd-2938507f0bd7",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "65"
+          }
+        ],
+        "name": "Sanusom PC",
+        "address": [
+          {
+            "line": [
+              "1570 The Alameda"
+            ],
+            "city": "San Jose",
+            "state": "CA",
+            "postalCode": "95126"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:425379cd-c4fe-4308-b462-974d2ae071cf"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:c2caebbf-ff32-46a1-acfd-2938507f0bd7"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "64f2160f-ee55-46cc-afe7-773bcd001480",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-sundayhealth-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:64f2160f-ee55-46cc-afe7-773bcd001480"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "918644bb-53b9-4425-8661-ebac56b0854b",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "69"
+          }
+        ],
+        "name": "Sunday Cares, PC",
+        "address": [
+          {
+            "line": [
+              "102 S Union St"
+            ],
+            "city": "Alexandria",
+            "state": "VA",
+            "postalCode": "22314"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:64f2160f-ee55-46cc-afe7-773bcd001480"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:918644bb-53b9-4425-8661-ebac56b0854b"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "53543ed1-ac55-44f5-b8bc-b309f780b10a",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-dreem-staging.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:53543ed1-ac55-44f5-b8bc-b309f780b10a"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "560f0f0f-2d86-481e-88d4-e9754130e9d5",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "70"
+          }
+        ],
+        "name": "Dreem Health Sleep Clinic",
+        "address": [
+          {
+            "line": [
+              "825 Pollard Road STE 100"
+            ],
+            "city": "Los Gatos",
+            "state": "CA",
+            "postalCode": "95032"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:53543ed1-ac55-44f5-b8bc-b309f780b10a"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:560f0f0f-2d86-481e-88d4-e9754130e9d5"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "6d3718e2-668b-4510-b19a-03ac5e2c8529",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-drhouse-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:6d3718e2-668b-4510-b19a-03ac5e2c8529"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "0e6f2f6c-4457-40f5-8362-5ce9c1f285d0",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "78"
+          }
+        ],
+        "name": "DRH Medical Group",
+        "address": [
+          {
+            "line": [
+              "400 30th St"
+            ],
+            "city": "Oakland",
+            "state": "CA",
+            "postalCode": "94609"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:6d3718e2-668b-4510-b19a-03ac5e2c8529"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:0e6f2f6c-4457-40f5-8362-5ce9c1f285d0"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "100ed20a-abaa-45a7-84d8-170f27b5e98e",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-tellescope-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:100ed20a-abaa-45a7-84d8-170f27b5e98e"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "4be991bb-b2b9-4c8d-933c-baa37689ff3f",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "80"
+          }
+        ],
+        "name": "Example Organization",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "11111"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:100ed20a-abaa-45a7-84d8-170f27b5e98e"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:4be991bb-b2b9-4c8d-933c-baa37689ff3f"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "42ec7dc2-dd66-423a-96ac-8b19521b1fe2",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-kanduhealth-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:42ec7dc2-dd66-423a-96ac-8b19521b1fe2"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "39527441-8439-471f-893a-a90f9b1a8714",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "85"
+          }
+        ],
+        "name": "Kandu Health, Inc.",
+        "address": [
+          {
+            "line": [
+              "210 E Hacienda Ave"
+            ],
+            "city": "Campbell",
+            "state": "CA",
+            "postalCode": "95008"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:42ec7dc2-dd66-423a-96ac-8b19521b1fe2"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:39527441-8439-471f-893a-a90f9b1a8714"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "032a81e6-bc12-42d7-a3f2-505348ff6e76",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-doromind-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:032a81e6-bc12-42d7-a3f2-505348ff6e76"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "84730725-b17e-45ac-a4ba-6e725e995da3",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "86"
+          }
+        ],
+        "name": "Doro Mind",
+        "address": [
+          {
+            "line": [
+              "274 Madison Ave"
+            ],
+            "city": "New York",
+            "state": "NY",
+            "postalCode": "10016"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:032a81e6-bc12-42d7-a3f2-505348ff6e76"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:84730725-b17e-45ac-a4ba-6e725e995da3"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "f0e97cea-1845-4529-9c7c-caab2eafcd2d",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-fullcircle-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:f0e97cea-1845-4529-9c7c-caab2eafcd2d"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "1a5e0214-cd6c-4f4e-a439-556bc27423dc",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "90"
+          }
+        ],
+        "name": "Example Organization",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "11111"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:f0e97cea-1845-4529-9c7c-caab2eafcd2d"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:1a5e0214-cd6c-4f4e-a439-556bc27423dc"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "97c3f7c4-95b3-4883-9a99-e26c22270d48",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-reach7-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:97c3f7c4-95b3-4883-9a99-e26c22270d48"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "9e4408f3-2852-4705-ace8-d07cd1731bb9",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "97"
+          }
+        ],
+        "name": "Novela Health LLC",
+        "address": [
+          {
+            "line": [
+              "6901 Ray Wright Rd"
+            ],
+            "city": "Columbus",
+            "state": "GA",
+            "postalCode": "31906"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:97c3f7c4-95b3-4883-9a99-e26c22270d48"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:9e4408f3-2852-4705-ace8-d07cd1731bb9"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "3f906af0-3414-4d4e-8beb-0dcc41f2f133",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-renew-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:3f906af0-3414-4d4e-8beb-0dcc41f2f133"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "517c94a6-2a64-44d9-b2fb-0d46b6bd3f36",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "98"
+          }
+        ],
+        "name": "Renew Hope And Healing",
+        "address": [
+          {
+            "line": [
+              "6539 Anthony Dr"
+            ],
+            "city": "Victor",
+            "state": "NY",
+            "postalCode": "14564"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:3f906af0-3414-4d4e-8beb-0dcc41f2f133"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:517c94a6-2a64-44d9-b2fb-0d46b6bd3f36"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "9825ead4-317c-4bf1-8943-ccf6eb5b7335",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-modern-age-development.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:9825ead4-317c-4bf1-8943-ccf6eb5b7335"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "f88b0704-7a55-419a-9876-ecdb2d3a23a1",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "102"
+          }
+        ],
+        "name": "Demo Clinic",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "11111"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:9825ead4-317c-4bf1-8943-ccf6eb5b7335"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:f88b0704-7a55-419a-9876-ecdb2d3a23a1"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "ec13fabc-053f-45a2-80ed-171680a555b4",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-juno-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:ec13fabc-053f-45a2-80ed-171680a555b4"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "12a35feb-8bdf-48f4-8808-5ab7f496acce",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "105"
+          }
+        ],
+        "name": "Juno Medical Practice PLLC",
+        "address": [
+          {
+            "line": [
+              "228 Park Ave S 34199"
+            ],
+            "city": "New York",
+            "state": "NY",
+            "postalCode": "10003"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:ec13fabc-053f-45a2-80ed-171680a555b4"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:12a35feb-8bdf-48f4-8808-5ab7f496acce"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "d7210705-7d98-47c8-8be4-caa89e95dbe9",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-originstory-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:d7210705-7d98-47c8-8be4-caa89e95dbe9"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "b96cc266-77af-4601-9aef-e193495c1793",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "110"
+          }
+        ],
+        "name": "Origin Story Health",
+        "address": [
+          {
+            "line": [
+              "2413 Nashville Rd."
+            ],
+            "city": "Bowling Green",
+            "state": "KY",
+            "postalCode": "42101"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:d7210705-7d98-47c8-8be4-caa89e95dbe9"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:b96cc266-77af-4601-9aef-e193495c1793"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "0613e5ce-a97b-43ee-87aa-dae115126049",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-sleephappy-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:0613e5ce-a97b-43ee-87aa-dae115126049"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "40c8f12a-e4ab-47a5-bda5-ca5d62e94edb",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "111"
+          }
+        ],
+        "name": "Example Organization",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "11111"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:0613e5ce-a97b-43ee-87aa-dae115126049"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:40c8f12a-e4ab-47a5-bda5-ca5d62e94edb"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "68be11f3-1b2d-4d99-933f-806835e281ec",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-delfinamed-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:68be11f3-1b2d-4d99-933f-806835e281ec"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "4d33d4e6-8f42-4d4b-91ae-b9d3394e967d",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "112"
+          }
+        ],
+        "name": "Delfina Medical Group",
+        "address": [
+          {
+            "line": [
+              "440 N Barranca Ave #4488"
+            ],
+            "city": "Covina",
+            "state": "CA",
+            "postalCode": "91723"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:68be11f3-1b2d-4d99-933f-806835e281ec"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:4d33d4e6-8f42-4d4b-91ae-b9d3394e967d"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "34c0e340-a149-411f-bb53-a193cbe634bc",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-rovr-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:34c0e340-a149-411f-bb53-a193cbe634bc"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "154c6ae8-6592-4936-bcd0-517b4366817c",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "115"
+          }
+        ],
+        "name": "RoVR PC",
+        "address": [
+          {
+            "line": [
+              "447 Broadway"
+            ],
+            "city": "New York",
+            "state": "NY",
+            "postalCode": "10013"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:34c0e340-a149-411f-bb53-a193cbe634bc"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:154c6ae8-6592-4936-bcd0-517b4366817c"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "e2ab2ef4-4893-4934-bc48-49ea6c31818e",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-rovr-retinagroupny-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:e2ab2ef4-4893-4934-bc48-49ea6c31818e"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "cae34c2f-9221-4c79-bd24-179642184744",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "116"
+          }
+        ],
+        "name": "Retina Group of New York",
+        "address": [
+          {
+            "line": [
+              "400 S Oyster Bay Rd"
+            ],
+            "city": "Hicksville",
+            "state": "NY",
+            "postalCode": "11801"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:e2ab2ef4-4893-4934-bc48-49ea6c31818e"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:cae34c2f-9221-4c79-bd24-179642184744"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "0c51c534-0b27-4978-9b1a-fda5c38bc551",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-jasperhealth-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:0c51c534-0b27-4978-9b1a-fda5c38bc551"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "51244540-cd1a-42ca-b416-5fa9c2cdba51",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "117"
+          }
+        ],
+        "name": "Jasper Health Inc",
+        "address": [
+          {
+            "line": [
+              "950 W Bannock Street"
+            ],
+            "city": "Boise",
+            "state": "ID",
+            "postalCode": "83702"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:0c51c534-0b27-4978-9b1a-fda5c38bc551"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:51244540-cd1a-42ca-b416-5fa9c2cdba51"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "53965200-a872-4749-bbd2-630d6c76b17e",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-vineyard-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:53965200-a872-4749-bbd2-630d6c76b17e"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "ecf2af49-e30d-45d8-b5d1-e88f396e5de3",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "146"
+          }
+        ],
+        "name": "Vineyard",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "Portage",
+            "state": "MI",
+            "postalCode": "49024"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:53965200-a872-4749-bbd2-630d6c76b17e"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:ecf2af49-e30d-45d8-b5d1-e88f396e5de3"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "f9f74cc3-42e3-454f-abbc-50f10ff5bffe",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-xpc-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:f9f74cc3-42e3-454f-abbc-50f10ff5bffe"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "2f207cc1-1e75-467f-b047-15fb5921310b",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "152"
+          }
+        ],
+        "name": "XPC Clinic",
+        "address": [
+          {
+            "line": [
+              "1 XPC Drive"
+            ],
+            "city": "Houston",
+            "state": "TX",
+            "postalCode": "77098"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:f9f74cc3-42e3-454f-abbc-50f10ff5bffe"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:2f207cc1-1e75-467f-b047-15fb5921310b"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "7e1787db-374a-46ef-ba68-47f259871b4d",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-remissionmedical-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:7e1787db-374a-46ef-ba68-47f259871b4d"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "56bf58cc-115d-44dc-b9bd-1996194071dd",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "153"
+          }
+        ],
+        "name": "Remission Medical",
+        "address": [
+          {
+            "line": [
+              "1010 Borden Rd"
+            ],
+            "city": "Richmond",
+            "state": "VA",
+            "postalCode": "23229"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:7e1787db-374a-46ef-ba68-47f259871b4d"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:56bf58cc-115d-44dc-b9bd-1996194071dd"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "470fecab-4ca6-4808-aeb1-00c16e954265",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-integralhealth-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:470fecab-4ca6-4808-aeb1-00c16e954265"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "c99e1b2f-4638-4d5f-b65d-229c98df897d",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "156"
+          }
+        ],
+        "name": "Integral Health",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "11111"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:470fecab-4ca6-4808-aeb1-00c16e954265"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:c99e1b2f-4638-4d5f-b65d-229c98df897d"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "ca4eacd6-edb9-491e-90e5-c2efa90b59f0",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-goldenscript-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:ca4eacd6-edb9-491e-90e5-c2efa90b59f0"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "732d4990-019e-408b-9fa6-8b8cb1169355",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "158"
+          }
+        ],
+        "name": "GoldenScript",
+        "address": [
+          {
+            "line": [
+              "123 Test Lane"
+            ],
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "11111"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:ca4eacd6-edb9-491e-90e5-c2efa90b59f0"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:732d4990-019e-408b-9fa6-8b8cb1169355"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "4078216d-ae98-45c8-be9c-2a8bf34d4d52",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-iconhealth-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:4078216d-ae98-45c8-be9c-2a8bf34d4d52"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "cfa1f1fd-04fb-497c-998a-f0444d02d6f2",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "166"
+          }
+        ],
+        "name": "Icon Health",
+        "address": [
+          {
+            "line": [
+              "201 Broad St."
+            ],
+            "city": "Stanford",
+            "state": "CT",
+            "postalCode": "6901"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:4078216d-ae98-45c8-be9c-2a8bf34d4d52"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:cfa1f1fd-04fb-497c-998a-f0444d02d6f2"
+    },
+    {
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "591519b5-bbdf-466d-a3a9-7e54b3b49305",
+        "status": "active",
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR"
+        },
+        "payloadType": [
+          {
+            "text": "Canvas FHIR Service Base URL"
+          }
+        ],
+        "address": "https://fumage-prefercare-dev.canvasmedical.com"
+      },
+      "fullUrl": "urn:uuid:591519b5-bbdf-466d-a3a9-7e54b3b49305"
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "83650054-2708-4fad-806b-324a00730db5",
+        "identifier": [
+          {
+            "system": "http://canvasmedical.com",
+            "value": "168"
+          }
+        ],
+        "name": "PreferCare Medical Services, PLLC",
+        "address": [
+          {
+            "line": [
+              "201 Jordan Rd"
+            ],
+            "city": "Franklin",
+            "state": "TN",
+            "postalCode": "37067"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "urn:uuid:591519b5-bbdf-466d-a3a9-7e54b3b49305"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:83650054-2708-4fad-806b-324a00730db5"
+    }
+  ]
+}
