@@ -87,6 +87,7 @@ exclude:
   - Gemfile.lock
   - README.md
   - _images
+  - _static
   - _src
   - amplify.yml
   - config
