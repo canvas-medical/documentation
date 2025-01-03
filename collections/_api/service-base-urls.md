@@ -19,8 +19,8 @@ We leverage the following format.
 
 The global base URLs for our supported Canvas environments can be found using the links below. They are in FHIR R4 Bundle format conformant to the requirements specified in ASTP/ONC's HTI-1 Final Rule (g)(10) criterion. 
 
-<b>Non Production:</b> [http://docs.canvasmedical.com/api/non-prod-service-base-urls](/api/non-prod-service-base-urls)<br>
-<b>Production:</b> [http://docs.canvasmedical.com/api/prod-service-base-urls](/api/prod-service-base-urls)
+<b>Non Production:</b> [https://docs.canvasmedical.com/assets/static/fhir-service-base-urls-nonproduction.json](/assets/static/fhir-service-base-urls-nonproduction.json)<br>
+<b>Production:</b> [https://docs.canvasmedical.com/assets/static/fhir-service-base-urls-production.json](/assets/static/fhir-service-base-urls-production.json)
 
 
 
