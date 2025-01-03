@@ -44,7 +44,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:33ca2fe8-f2d0-4e6a-8d4e-1311a4f7f0e4"
+            "reference": "Endpoint/33ca2fe8-f2d0-4e6a-8d4e-1311a4f7f0e4"
           }
         ]
       },
@@ -92,7 +92,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:8ed18c9a-1455-4f17-ad94-b47a1b7e6c22"
+            "reference": "Endpoint/8ed18c9a-1455-4f17-ad94-b47a1b7e6c22"
           }
         ]
       },
@@ -140,7 +140,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:87d0cb56-f063-4eaf-8d12-c686c2a8285b"
+            "reference": "Endpoint/87d0cb56-f063-4eaf-8d12-c686c2a8285b"
           }
         ]
       },
@@ -188,7 +188,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:bfd61dd7-21cd-4f40-adf9-d04d2ff99b63"
+            "reference": "Endpoint/bfd61dd7-21cd-4f40-adf9-d04d2ff99b63"
           }
         ]
       },
@@ -236,7 +236,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:d45bf707-a092-446c-90a0-7557ca2a9d31"
+            "reference": "Endpoint/d45bf707-a092-446c-90a0-7557ca2a9d31"
           }
         ]
       },
@@ -284,7 +284,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:31e61656-3b0d-4553-a6d9-155647648199"
+            "reference": "Endpoint/31e61656-3b0d-4553-a6d9-155647648199"
           }
         ]
       },
@@ -332,7 +332,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:2008685a-517c-473d-8898-a4ed5c09d2c6"
+            "reference": "Endpoint/2008685a-517c-473d-8898-a4ed5c09d2c6"
           }
         ]
       },
@@ -380,7 +380,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:bf4743fe-e07d-4d57-bdc3-40dcba264122"
+            "reference": "Endpoint/bf4743fe-e07d-4d57-bdc3-40dcba264122"
           }
         ]
       },
@@ -428,7 +428,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:4f65c92c-7711-497a-aad3-00e420ce7c10"
+            "reference": "Endpoint/4f65c92c-7711-497a-aad3-00e420ce7c10"
           }
         ]
       },
@@ -476,7 +476,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:d4ecb853-91e0-4c52-bbcc-a11f697cdcba"
+            "reference": "Endpoint/d4ecb853-91e0-4c52-bbcc-a11f697cdcba"
           }
         ]
       },
@@ -524,7 +524,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:2e442c8b-0094-48eb-a8d8-f608de12b141"
+            "reference": "Endpoint/2e442c8b-0094-48eb-a8d8-f608de12b141"
           }
         ]
       },
@@ -572,7 +572,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:455b54cd-b808-4cc6-9707-3cb598b3964f"
+            "reference": "Endpoint/455b54cd-b808-4cc6-9707-3cb598b3964f"
           }
         ]
       },
@@ -620,7 +620,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:d893be18-0890-49f9-8077-dd81317ae9bf"
+            "reference": "Endpoint/d893be18-0890-49f9-8077-dd81317ae9bf"
           }
         ]
       },
@@ -668,7 +668,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:1dfd45a9-7435-4b85-8a1a-2ff44aae9b38"
+            "reference": "Endpoint/1dfd45a9-7435-4b85-8a1a-2ff44aae9b38"
           }
         ]
       },
@@ -716,7 +716,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:95dabb7d-bb24-4610-a7eb-2da24854f228"
+            "reference": "Endpoint/95dabb7d-bb24-4610-a7eb-2da24854f228"
           }
         ]
       },
@@ -764,7 +764,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:9f7af55d-4c46-45b3-8feb-b025b3c349e3"
+            "reference": "Endpoint/9f7af55d-4c46-45b3-8feb-b025b3c349e3"
           }
         ]
       },
@@ -812,7 +812,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:410fde90-b84d-48f8-9241-23320677bc4f"
+            "reference": "Endpoint/410fde90-b84d-48f8-9241-23320677bc4f"
           }
         ]
       },
@@ -860,7 +860,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:c59363cb-b9c5-42e2-885e-8ab6ab12c5ce"
+            "reference": "Endpoint/c59363cb-b9c5-42e2-885e-8ab6ab12c5ce"
           }
         ]
       },
@@ -908,7 +908,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:0dfa2861-b52a-40df-99e5-7f35caf1b757"
+            "reference": "Endpoint/0dfa2861-b52a-40df-99e5-7f35caf1b757"
           }
         ]
       },
@@ -956,7 +956,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:07d29121-3333-4c40-9613-fceebb0b17bb"
+            "reference": "Endpoint/07d29121-3333-4c40-9613-fceebb0b17bb"
           }
         ]
       },
@@ -1004,7 +1004,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:0289ffb7-72fb-4e5d-8445-66cb5c452c51"
+            "reference": "Endpoint/0289ffb7-72fb-4e5d-8445-66cb5c452c51"
           }
         ]
       },
@@ -1052,7 +1052,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:f8c938f4-4196-4176-bdf5-30ea368723df"
+            "reference": "Endpoint/f8c938f4-4196-4176-bdf5-30ea368723df"
           }
         ]
       },
@@ -1100,7 +1100,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:bcd10d9d-4c72-4056-9447-a9b6c9400fcf"
+            "reference": "Endpoint/bcd10d9d-4c72-4056-9447-a9b6c9400fcf"
           }
         ]
       },
@@ -1148,7 +1148,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:e7b84d76-93c6-44ea-88c8-32b6c7cb11ce"
+            "reference": "Endpoint/e7b84d76-93c6-44ea-88c8-32b6c7cb11ce"
           }
         ]
       },
@@ -1196,7 +1196,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:bf6a0774-5409-4ddb-8f39-9dd8465c97cf"
+            "reference": "Endpoint/bf6a0774-5409-4ddb-8f39-9dd8465c97cf"
           }
         ]
       },
@@ -1244,7 +1244,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:20e95799-2c03-4fba-9a2a-fa39039e3bd7"
+            "reference": "Endpoint/20e95799-2c03-4fba-9a2a-fa39039e3bd7"
           }
         ]
       },
@@ -1292,7 +1292,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:f91c26ae-ad04-4d02-af1d-f9e367f6f876"
+            "reference": "Endpoint/f91c26ae-ad04-4d02-af1d-f9e367f6f876"
           }
         ]
       },
@@ -1340,7 +1340,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:4edc392e-6d4d-46f8-92e6-26ba24dbfa8f"
+            "reference": "Endpoint/4edc392e-6d4d-46f8-92e6-26ba24dbfa8f"
           }
         ]
       },
@@ -1388,7 +1388,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:93607f2f-2b94-4f64-8391-8de220603b07"
+            "reference": "Endpoint/93607f2f-2b94-4f64-8391-8de220603b07"
           }
         ]
       },
@@ -1436,7 +1436,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:7d5cdb45-bcb5-4ef1-ae24-f1886c2bae83"
+            "reference": "Endpoint/7d5cdb45-bcb5-4ef1-ae24-f1886c2bae83"
           }
         ]
       },
@@ -1484,7 +1484,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:661b71f3-92c5-4daf-a32d-09a4f1504dc8"
+            "reference": "Endpoint/661b71f3-92c5-4daf-a32d-09a4f1504dc8"
           }
         ]
       },
@@ -1532,7 +1532,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:e4746874-ecc5-4f6d-b952-9a215db8d6d2"
+            "reference": "Endpoint/e4746874-ecc5-4f6d-b952-9a215db8d6d2"
           }
         ]
       },
@@ -1580,7 +1580,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:0c70c0eb-ea5c-49d6-ae37-1b04f77715e3"
+            "reference": "Endpoint/0c70c0eb-ea5c-49d6-ae37-1b04f77715e3"
           }
         ]
       },
@@ -1628,7 +1628,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:3734e7f7-aba3-4c2f-bc05-ba6a73cf6330"
+            "reference": "Endpoint/3734e7f7-aba3-4c2f-bc05-ba6a73cf6330"
           }
         ]
       },
@@ -1676,7 +1676,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:d6ea069b-37cd-4e01-a603-bfa5092ef25d"
+            "reference": "Endpoint/d6ea069b-37cd-4e01-a603-bfa5092ef25d"
           }
         ]
       },
@@ -1724,7 +1724,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:80f1badc-e37a-4a28-b2db-748386121528"
+            "reference": "Endpoint/80f1badc-e37a-4a28-b2db-748386121528"
           }
         ]
       },
@@ -1772,7 +1772,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:b9c73afd-e8ce-4192-bcb9-aac73bebd17f"
+            "reference": "Endpoint/b9c73afd-e8ce-4192-bcb9-aac73bebd17f"
           }
         ]
       },
@@ -1820,7 +1820,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:30e71cd5-bbba-4426-ad68-6285ba3d93c2"
+            "reference": "Endpoint/30e71cd5-bbba-4426-ad68-6285ba3d93c2"
           }
         ]
       },
@@ -1868,7 +1868,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:b25903a8-979d-444d-b495-4e6ff7dec3dd"
+            "reference": "Endpoint/b25903a8-979d-444d-b495-4e6ff7dec3dd"
           }
         ]
       },
@@ -1916,7 +1916,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:9039b8c2-4dcc-41c0-8122-1ecd75920a05"
+            "reference": "Endpoint/9039b8c2-4dcc-41c0-8122-1ecd75920a05"
           }
         ]
       },
@@ -1964,7 +1964,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:b1b17ebe-0178-4d9a-b77e-aad05805b815"
+            "reference": "Endpoint/b1b17ebe-0178-4d9a-b77e-aad05805b815"
           }
         ]
       },
@@ -2012,7 +2012,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:36bbe8b8-e718-4b59-9397-07bfaa2e9a15"
+            "reference": "Endpoint/36bbe8b8-e718-4b59-9397-07bfaa2e9a15"
           }
         ]
       },
@@ -2060,7 +2060,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:c81f6dac-330e-4ed3-b11f-7d2f99ac9bf6"
+            "reference": "Endpoint/c81f6dac-330e-4ed3-b11f-7d2f99ac9bf6"
           }
         ]
       },
@@ -2108,7 +2108,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:c5aef30a-f54a-48ba-a30e-5c2e1414c056"
+            "reference": "Endpoint/c5aef30a-f54a-48ba-a30e-5c2e1414c056"
           }
         ]
       },
@@ -2156,7 +2156,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:8ff1322f-4ac2-41c9-940a-8aaebcd213c2"
+            "reference": "Endpoint/8ff1322f-4ac2-41c9-940a-8aaebcd213c2"
           }
         ]
       },
@@ -2204,7 +2204,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:30b354c1-58b0-452e-9765-70e0f3324c5a"
+            "reference": "Endpoint/30b354c1-58b0-452e-9765-70e0f3324c5a"
           }
         ]
       },
@@ -2252,7 +2252,7 @@
         ],
         "endpoint": [
           {
-            "reference": "urn:uuid:0b095a27-541f-451d-a167-377b9441c525"
+            "reference": "Endpoint/0b095a27-541f-451d-a167-377b9441c525"
           }
         ]
       },
