@@ -84,13 +84,13 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | imaging_orders           | QuerySet[[ImagingOrder](/sdk/data-imaging/#imagingorder)]                         |
 | imaging_reports          | QuerySet[[ImagingReport](/sdk/data-imaging/#imagingreport)]                       |
 | imaging_reviews          | QuerySet[[ImagingReview](/sdk/data-imaging/#imagingreview)]                       |
+| interviews               | QuerySet[[Interview](/sdk/data-questionnaire/#interview)]                         |
 | lab_orders               | QuerySet[[LabOrder](/sdk/data-labs/#laborder)]                                    |
 | lab_reports              | QuerySet[[LabReport](/sdk/data-labs/#labreport)]                                  |
 | lab_reviews              | QuerySet[[LabReview](/sdk/data-labs/#labreview)]                                  |
 | medications              | QuerySet[[Medication](/sdk/data-medication/#medication)]                          |
 | observations             | QuerySet[[Observation](/sdk/data-observation/#observation)]                       |
 | protocol_overrides       | QuerySet[[ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)]       |
-| interviews               | QuerySet[[Interview](/sdk/data-questionnaire/#interview)]                         |
 | tasks                    | QuerySet[[Task](/sdk/data-task/#task)]                                            |
 
 ## Enumeration types
