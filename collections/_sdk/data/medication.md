@@ -84,22 +84,23 @@ medications = Medication.objects.find(AdhdMedications)
 
 ### Medication
 
-| Field Name                     | Type                                  |
-|--------------------------------|---------------------------------------|
-| id                             | UUID                                  |
-| dbid                           | Integer                               |
-| patient                        | [Patient](/sdk/data-patient/#patient) |
-| deleted                        | Boolean                               |
-| entered_in_error               | CanvasUser                            |
-| committer                      | CanvasUser                            |
-| status                         | String                                |
-| start_date                     | Date                                  |
-| end_date                       | Date                                  |
-| quantity_qualifier_description | String                                |
-| clinical_quantity_description  | String                                |
-| potency_unit_code              | String                                |
-| national_drug_code             | String                                |
-| erx_quantity                   | String                                |
+| Field Name                     | Type                                            |
+|--------------------------------|-------------------------------------------------|
+| id                             | UUID                                            |
+| dbid                           | Integer                                         |
+| patient                        | [Patient](/sdk/data-patient/#patient)           |
+| deleted                        | Boolean                                         |
+| entered_in_error               | CanvasUser                                      |
+| committer                      | CanvasUser                                      |
+| status                         | String                                          |
+| start_date                     | Date                                            |
+| end_date                       | Date                                            |
+| quantity_qualifier_description | String                                          |
+| clinical_quantity_description  | String                                          |
+| potency_unit_code              | String                                          |
+| national_drug_code             | String                                          |
+| erx_quantity                   | String                                          |
+| codings                        | QuerySet[[MedicationCoding](#medicationcoding)] |
 
 ### MedicationCoding
 

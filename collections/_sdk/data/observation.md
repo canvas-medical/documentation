@@ -102,24 +102,28 @@ observations = Observation.objects.find(Weight)
 
 ### Observation
 
-| Field Name         | Type                                  |
-|--------------------|---------------------------------------|
-| id                 | UUID                                  |
-| dbid               | Integer                               |
-| created            | DateTime                              |
-| modified           | DateTime                              |
-| originator         | CanvasUser                            |
-| committer          | CanvasUser                            |
-| entered_in_error   | CanvasUser                            |
-| deleted            | Boolean                               |
-| patient            | [Patient](/sdk/data-patient/#patient) |
-| is_member_of       | [Observation](#observation)           |
-| category           | String                                |
-| units              | String                                |
-| value              | String                                |
-| note_id            | Integer                               |
-| name               | String                                |
-| effective_datetime | DateTime                              |
+| Field Name         | Type                                                        |
+|--------------------|-------------------------------------------------------------|
+| id                 | UUID                                                        |
+| dbid               | Integer                                                     |
+| created            | DateTime                                                    |
+| modified           | DateTime                                                    |
+| originator         | CanvasUser                                                  |
+| committer          | CanvasUser                                                  |
+| entered_in_error   | CanvasUser                                                  |
+| deleted            | Boolean                                                     |
+| patient            | [Patient](/sdk/data-patient/#patient)                       |
+| is_member_of       | [Observation]( #observation)                                |
+| category           | String                                                      |
+| units              | String                                                      |
+| value              | String                                                      |
+| note_id            | Integer                                                     |
+| name               | String                                                      |
+| effective_datetime | DateTime                                                    |
+| codings            | QuerySet[[ObservationCoding](#observationcoding)]           |
+| members            | QuerySet[[Observation](#observation)]                       |
+| components         | QuerySet[[ObservationComponent](#observationcomponent)]     |
+| value_codings      | QuerySet[[ObservationValueCoding](#observationvaluecoding)] |
 
 ### ObservationCoding
 
@@ -135,15 +139,16 @@ observations = Observation.objects.find(Weight)
 
 ### ObservationComponent
 
-| Field Name          | Type                        |
-|---------------------|-----------------------------|
-| dbid                | Integer                     |
-| created             | DateTime                    |
-| modified            | DateTime                    |
-| observation         | [Observation](#observation) |
-| value_quantity      | String                      |
-| value_quantity_unit | String                      |
-| name                | String                      |
+| Field Name          | Type                                                                |
+|---------------------|---------------------------------------------------------------------|
+| dbid                | Integer                                                             |
+| created             | DateTime                                                            |
+| modified            | DateTime                                                            |
+| observation         | [Observation](#observation)                                         |
+| value_quantity      | String                                                              |
+| value_quantity_unit | String                                                              |
+| name                | String                                                              |
+| codings             | QuerySet[[ObservationComponentCoding](#observationcomponentcoding)] |
 
 ### ObservationComponentCoding
 

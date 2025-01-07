@@ -39,43 +39,59 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 
 ### Patient
 
-| Field Name               | Type                      |
-|--------------------------|---------------------------|
-| id                       | String                    |
-| dbid                     | Integer                   |
-| first_name               | String                    |
-| last_name                | String                    |
-| birth_date               | Date                      |
-| sex_at_birth             | [SexAtBirth](#sexatbirth) |
-| created                  | DateTime                  |
-| modified                 | DateTime                  |
-| prefix                   | String                    |
-| suffix                   | String                    |
-| middle_name              | String                    |
-| maiden_name              | String                    |
-| nickname                 | String                    |
-| sexual_orientation_term  | String                    |
-| sexual_orientation_code  | String                    |
-| gender_identity_term     | String                    |
-| gender_identity_code     | String                    |
-| preferred_pronouns       | String                    |
-| biological_race_codes    | Array[String]             |
-| last_known_timezone      | String                    |
-| mrn                      | String                    |
-| active                   | Boolean                   |
-| deceased                 | Boolean                   |
-| deceased_datetime        | DateTime                  |
-| deceased_cause           | String                    |
-| deceased_comment         | String                    |
-| other_gender_description | String                    |
-| social_security_number   | String                    |
-| administrative_note      | String                    |
-| clinical_note            | String                    |
-| mothers_maiden_name      | String                    |
-| multiple_birth_indicator | Boolean                   |
-| birth_order              | Integer                   |
-| default_location_id      | Integer                   |
-| default_provider_id      | Integer                   |
+| Field Name               | Type                                                                              |
+|--------------------------|-----------------------------------------------------------------------------------|
+| id                       | String                                                                            |
+| dbid                     | Integer                                                                           |
+| first_name               | String                                                                            |
+| last_name                | String                                                                            |
+| birth_date               | Date                                                                              |
+| sex_at_birth             | [SexAtBirth](#sexatbirth)                                                         |
+| created                  | DateTime                                                                          |
+| modified                 | DateTime                                                                          |
+| prefix                   | String                                                                            |
+| suffix                   | String                                                                            |
+| middle_name              | String                                                                            |
+| maiden_name              | String                                                                            |
+| nickname                 | String                                                                            |
+| sexual_orientation_term  | String                                                                            |
+| sexual_orientation_code  | String                                                                            |
+| gender_identity_term     | String                                                                            |
+| gender_identity_code     | String                                                                            |
+| preferred_pronouns       | String                                                                            |
+| biological_race_codes    | Array[String]                                                                     |
+| last_known_timezone      | String                                                                            |
+| mrn                      | String                                                                            |
+| active                   | Boolean                                                                           |
+| deceased                 | Boolean                                                                           |
+| deceased_datetime        | DateTime                                                                          |
+| deceased_cause           | String                                                                            |
+| deceased_comment         | String                                                                            |
+| other_gender_description | String                                                                            |
+| social_security_number   | String                                                                            |
+| administrative_note      | String                                                                            |
+| clinical_note            | String                                                                            |
+| mothers_maiden_name      | String                                                                            |
+| multiple_birth_indicator | Boolean                                                                           |
+| birth_order              | Integer                                                                           |
+| default_location_id      | Integer                                                                           |
+| default_provider_id      | Integer                                                                           |
+| allergy_intolerances     | QuerySet[[AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance)] |
+| billing_line_items       | QuerySet[BillingLineItem]                                                         |
+| conditions               | QuerySet[[Condition](/sdk/data-condition/#condition)]                             |
+| detected_issues          | QuerySet[[DetectedIssue](/sdk/data-detected-issue/#detectedissue)]                |
+| devices                  | QuerySet[[Device](/sdk/data-device/#device)]                                      |
+| imaging_orders           | QuerySet[[ImagingOrder](/sdk/data-imaging/#imagingorder)]                         |
+| imaging_reports          | QuerySet[[ImagingReport](/sdk/data-imaging/#imagingreport)]                       |
+| imaging_reviews          | QuerySet[[ImagingReview](/sdk/data-imaging/#imagingreview)]                       |
+| lab_orders               | QuerySet[[LabOrder](/sdk/data-labs/#laborder)]                                    |
+| lab_reports              | QuerySet[[LabReport](/sdk/data-labs/#labreport)]                                  |
+| lab_reviews              | QuerySet[[LabReview](/sdk/data-labs/#labreview)]                                  |
+| medications              | QuerySet[[Medication](/sdk/data-medication/#medication)]                          |
+| observations             | QuerySet[[Observation](/sdk/data-observation/#observation)]                       |
+| protocol_overrides       | QuerySet[[ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)]       |
+| interviews               | QuerySet[[Interview](/sdk/data-questionnaire/#interview)]                         |
+| tasks                    | QuerySet[[Task](/sdk/data-task/#task)]                                            |
 
 ## Enumeration types
 

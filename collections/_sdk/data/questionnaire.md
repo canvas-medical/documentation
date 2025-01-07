@@ -102,71 +102,76 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 
 ### ResponseOptionSet
 
-| Field Name  | Type     |
-|-------------|----------|
-| dbid        | Integer  |
-| created     | DateTime |
-| modified    | DateTime |
-| status      | String   |
-| name        | String   |
-| code_system | String   |
-| code        | String   |
-| type        | String   |
-| use_in_shx  | Boolean  |
+| Field Name  | Type                                        |
+|-------------|---------------------------------------------|
+| dbid        | Integer                                     |
+| created     | DateTime                                    |
+| modified    | DateTime                                    |
+| status      | String                                      |
+| name        | String                                      |
+| code_system | String                                      |
+| code        | String                                      |
+| type        | String                                      |
+| use_in_shx  | Boolean                                     |
+| options     | QuerySet[[ResponseOption](#responseoption)] |
+| questions   | QuerySet[[Question](#question)]             |
 
 ### ResponseOption
 
-| Field Name          | Type                                    |
-|---------------------|-----------------------------------------|
-| dbid                | Integer                                 |
-| created             | DateTime                                |
-| modified            | DateTime                                |
-| status              | String                                  |
-| name                | String                                  |
-| code                | String                                  |
-| code_description    | String                                  |
-| value               | String                                  |
-| response_option_set | [ResponseOptionSet](#responseoptionset) |
-| ordering            | Integer                                 |
+| Field Name          | Type                                                                   |
+|---------------------|------------------------------------------------------------------------|
+| dbid                | Integer                                                                |
+| created             | DateTime                                                               |
+| modified            | DateTime                                                               |
+| status              | String                                                                 |
+| name                | String                                                                 |
+| code                | String                                                                 |
+| code_description    | String                                                                 |
+| value               | String                                                                 |
+| response_option_set | [ResponseOptionSet](#responseoptionset)                                |
+| ordering            | Integer                                                                |
+| interview_responses | QuerySet[[InterviewQuestionResponse](#interviewquestionnaireresponse)] |
 
 ### Question
 
-| Field Name          | Type                                    |
-|---------------------|-----------------------------------------|
-| id                  | UUID                                    |
-| dbid                | Integer                                 |
-| created             | DateTime                                |
-| modified            | DateTime                                |
-| status              | String                                  |
-| name                | String                                  |
-| response_option_set | [ResponseOptionSet](#responseoptionset) |
-| acknowledge_only    | Boolean                                 |
-| show_prologue       | Boolean                                 |
-| code_system         | String                                  |
-| code                | String                                  |
+| Field Name          | Type                                                                   |
+|---------------------|------------------------------------------------------------------------|
+| id                  | UUID                                                                   |
+| dbid                | Integer                                                                |
+| created             | DateTime                                                               |
+| modified            | DateTime                                                               |
+| status              | String                                                                 |
+| name                | String                                                                 |
+| response_option_set | [ResponseOptionSet](#responseoptionset)                                |
+| acknowledge_only    | Boolean                                                                |
+| show_prologue       | Boolean                                                                |
+| code_system         | String                                                                 |
+| code                | String                                                                 |
+| interview_responses | QuerySet[[InterviewQuestionResponse](#interviewquestionnaireresponse)] |
 
 ### Questionnaire
 
-| Field Name                | Type     |
-|---------------------------|----------|
-| id                        | UUID     |
-| dbid                      | Integer  |
-| created                   | DateTime |
-| modified                  | DateTime |
-| status                    | String   |
-| name                      | String   |
-| expected_completion_time  | Float    |
-| can_originate_in_charting | Boolean  |
-| use_case_in_charting      | String   |
-| scoring_function_name     | String   |
-| scoring_code_system       | String   |
-| scoring_code              | String   |
-| code_system               | String   |
-| code                      | String   |
-| search_tags               | String   |
-| questions                 | Question |
-| use_in_shx                | Boolean  |
-| carry_forward             | String   |
+| Field Name                | Type                                                                   |
+|---------------------------|------------------------------------------------------------------------|
+| id                        | UUID                                                                   |
+| dbid                      | Integer                                                                |
+| created                   | DateTime                                                               |
+| modified                  | DateTime                                                               |
+| status                    | String                                                                 |
+| name                      | String                                                                 |
+| expected_completion_time  | Float                                                                  |
+| can_originate_in_charting | Boolean                                                                |
+| use_case_in_charting      | String                                                                 |
+| scoring_function_name     | String                                                                 |
+| scoring_code_system       | String                                                                 |
+| scoring_code              | String                                                                 |
+| code_system               | String                                                                 |
+| code                      | String                                                                 |
+| search_tags               | String                                                                 |
+| questions                 | Question                                                               |
+| use_in_shx                | Boolean                                                                |
+| carry_forward             | String                                                                 |
+| interview_responses       | QuerySet[[InterviewQuestionResponse](#interviewquestionnaireresponse)] |
 
 ### QuestionnaireQuestionMap
 
@@ -181,24 +186,25 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 
 ### Interview
 
-| Field Name           | Type                                  |
-|----------------------|---------------------------------------|
-| id                   | UUID                                  |
-| dbid                 | Integer                               |
-| deleted              | Boolean                               |
-| committer            | CanvasUser                            |
-| entered_in_error     | CanvasUser                            |
-| status               | String                                |
-| name                 | String                                |
-| language_id          | Integer                               |
-| use_case_in_charting | String                                |
-| patient              | [Patient](/sdk/data-patient/#patient) |
-| note_id              | Integer                               |
-| appointment_id       | Integer                               |
-| questionnaires       | Questionnaire                         |
-| progress_status      | String                                |
-| created              | DateTime                              |
-| modified             | DateTime                              |
+| Field Name           | Type                                                                   |
+|----------------------|------------------------------------------------------------------------|
+| id                   | UUID                                                                   |
+| dbid                 | Integer                                                                |
+| deleted              | Boolean                                                                |
+| committer            | CanvasUser                                                             |
+| entered_in_error     | CanvasUser                                                             |
+| status               | String                                                                 |
+| name                 | String                                                                 |
+| language_id          | Integer                                                                |
+| use_case_in_charting | String                                                                 |
+| patient              | [Patient](/sdk/data-patient/#patient)                                  |
+| note_id              | Integer                                                                |
+| appointment_id       | Integer                                                                |
+| questionnaires       | Questionnaire                                                          |
+| progress_status      | String                                                                 |
+| created              | DateTime                                                               |
+| modified             | DateTime                                                               |
+| interview_responses  | QuerySet[[InterviewQuestionResponse](#interviewquestionnaireresponse)] |
 
 ### InterviewQuestionResponse
 
