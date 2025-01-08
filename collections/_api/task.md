@@ -85,6 +85,10 @@ sections:
           - name: authoredOn
             type: datetime
             description: Task Creation Date. If omitted from the message, it will default to the current timestamp at the time of ingestion.
+          - name: lastModified
+            type: datetime
+            exclude_in: create, update
+            description: Task Update Date. Whenever the task receieves any updates, including comments, this field will be updated accordingly.
           - name: requester
             type: json
             required_in: create,update
@@ -191,9 +195,15 @@ sections:
           - name: description
             type: string
             description: Search by description.
+          - name: due
+            type: string
+            description: Filter by due date and time. See [Date Filtering](/api/date-filtering) for more information.
           - name: label
             type: string
             description: Search for a task with an associated label
+          - name: modified
+            type: string
+            description: Filter by modified date and time. See [Date Filtering](/api/date-filtering) for more information.
           - name: owner
             type: string
             description: Search by task owner in the format `Practitioner/3a9cafb9d1b445be95a2e2548e12a787`.
@@ -379,6 +389,7 @@ print(response.text)
         "type": "Patient"
     },
     "authoredOn": "2023-09-22T14:00:00+00:00",
+    "lastModified": "2023-10-22T21:06:27.893521+00:00",
     "requester":
     {
         "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
@@ -644,6 +655,7 @@ print(response.text)
                     "type": "Patient"
                 },
                 "authoredOn": "2023-09-22T14:00:00+00:00",
+                "lastModified": "2023-10-22T21:06:27.893521+00:00",
                 "requester":
                 {
                     "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
