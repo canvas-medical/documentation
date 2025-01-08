@@ -1,0 +1,45 @@
+.handler-cards {
+  display: flex;
+  flex-direction: horizontal;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  
+  a {
+    color: unset;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  .handler-card {
+    background-color: #24292e;
+    border-radius: 3px;
+    box-shadow: 0px 0px 1px 2px #e5eaec;
+    max-width: 350px;
+    height: 325px;
+    margin: 0px 10px 20px 10px;
+  
+    .handler-card-header {
+      background-color: #ffffff;
+      padding-top: 2px;
+      padding-left: 10px;
+      padding-right: 10px;
+      padding-bottom: 5px;
+    
+      h2 {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  
+    img {
+      max-width: 350px;
+    }
+  }
+
+  .handler-card:hover {
+      box-shadow: 0px 0px 1px 5px #e5eaec;
+  }
+}
+
