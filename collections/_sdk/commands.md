@@ -23,11 +23,14 @@ The following commands are available for use in this module:
 - [Perform](#perform)
 - [Plan](#plan)
 - [Prescribe](#prescribe)
+- [PhysicalExam](#physicalexam)
 - [Questionnaire](#questionnaire)
 - [ReasonForVisit](#reasonforvisit)
 - [Refill](#refill)
 - [RemoveAllergy](#removeallergy)
+- [ReviewOfSystems](#review-of-systems)
 - [StopMedication](#stopmedication)
+- [StructuredAssessment](#structuredassessment)
 - [Task](#task)
 - [UpdateDiagnosis](#updatediagnosis)
 - [UpdateGoal](#updategoal)
@@ -555,6 +558,30 @@ prescription = PrescribeCommand(
 
 ---
 
+## PhysicalExam
+
+**Command-specific parameters**:
+
+| Name               | Type     | Required | Description                                                                     |
+|:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
+| `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
+| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PhysicalExamCommand
+
+questionnaire = PhysicalExamCommand(
+    note_uuid='rk786p',
+    questionnaire_id='g73hd9',
+    result='The patient is feeling average today.'
+)
+```
+
+---
+
+
 ## Questionnaire
 
 **Command-specific parameters**:
@@ -661,6 +688,30 @@ RemoveAllergyCommand(
 
 ---
 
+## Review of Systems
+
+**Command-specific parameters**:
+
+| Name               | Type     | Required | Description                                                                     |
+|:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
+| `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
+| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReviewOfSystemsCommand
+
+questionnaire = ReviewOfSystemsCommand(
+    note_uuid='rk786p',
+    questionnaire_id='g73hd9',
+    result='The patient is feeling average today.'
+)
+```
+
+---
+
+
 ## StopMedication
 
 **Command-specific parameters**:
@@ -679,6 +730,29 @@ stop_medication = StopMedicationCommand(
     note_uuid='rk786p',
     medication_id='2u309j',
     rationale='In remission'
+)
+```
+
+---
+
+## StructuredAssessment
+
+**Command-specific parameters**:
+
+| Name               | Type     | Required | Description                                                                     |
+|:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
+| `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
+| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import StructuredAssessmentCommand
+
+questionnaire = StructuredAssessmentCommand(
+    note_uuid='rk786p',
+    questionnaire_id='g73hd9',
+    result='The patient is feeling average today.'
 )
 ```
 
