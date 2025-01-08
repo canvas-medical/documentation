@@ -1,5 +1,5 @@
 ---
-title: Adds Organizations, and Locations to the Data Module
+title: Adds Organizations and Locations to the Data Module
 layout: productupdates
 date: 2025-01-07
 tags: plugins sdk
