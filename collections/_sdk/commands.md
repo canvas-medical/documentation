@@ -511,8 +511,8 @@ plan = PlanCommand(
 | `type_to_dispense`     | _ClinicalQuantity_            | `true`   | Information about the form or unit of the medication to dispense.  |
 | `refills`              | _integer_                     | `true`   | Number of refills allowed for the prescription.                    |
 | `substitutions`        | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed. |
-| `pharmacy`             | _string_                      | `false`  | The name of the pharmacy where the prescription should be sent.    |
-| `prescriber_id`        | _string_                      | `true`   | The externally exposable ID of the prescriber.                     |
+| `pharmacy`             | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent.    |
+| `prescriber_id`        | _string_                      | `true`   | The key of the prescriber.                     |
 | `note_to_pharmacist`   | _string_                      | `false`  | Additional notes or instructions for the pharmacist.               |
 
 **Enums and Types**
