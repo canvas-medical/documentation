@@ -88,6 +88,7 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 
 | Field Name     | Type                                                    |
 |----------------|---------------------------------------------------------|
+| id             | UUID                                                    |
 | dbid           | Integer                                                 |
 | system         | String                                                  |
 | version        | String                                                  |
