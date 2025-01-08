@@ -474,6 +474,8 @@ sdk_overview:
 sdk_handlers:
   - title: "CronTask"
     url: /sdk/handlers-crontask/
+  - title: "Action Buttons"
+    url: /sdk/handlers-action-buttons/
 
 effects_module:
  - title: "Protocol Cards"
