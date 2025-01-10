@@ -487,6 +487,9 @@ effects_module:
  - title: "Layout Effects"
    url: /sdk/layout-effect/
    description: Rearrange or hide summary sections in a patient's chart.
+ - title: "Questionnaires"
+   url: /sdk/effect-questionnaires/
+   description: Handle Questionnaire events.
  - title: "Tasks"
    url: /sdk/effect-tasks/
    description: Create or update tasks.
