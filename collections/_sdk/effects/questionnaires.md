@@ -13,7 +13,7 @@ When a questionnaire is committed, a questionnaire result can be created using t
 
 This effect will cause a new entry to appear in the Social Determinants section of the left side of the chart.
 
-The `CreateQuestionnairResult` effect enables custom scoring of questionnaires in Canvas.
+The `CreateQuestionnaireResult` effect enables custom scoring of questionnaires in Canvas.
 
 ### Example
 

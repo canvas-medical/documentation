@@ -489,7 +489,7 @@ effects_module:
    description: Rearrange or hide summary sections in a patient's chart.
  - title: "Questionnaires"
    url: /sdk/effect-questionnaires/
-   description: Handle Questionnaire events.
+   description: Interact with questionnaires and interviews.
  - title: "Tasks"
    url: /sdk/effect-tasks/
    description: Create or update tasks.
