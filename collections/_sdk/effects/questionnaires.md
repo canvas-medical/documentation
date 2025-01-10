@@ -9,11 +9,10 @@ The Canvas SDK includes functionality for handling questionnaire-related events.
 
 ## Creating a questionnaire result
 
-When a questionnaire is committed, a questionnaire result can be created using the `CreateQuestionnaireResult` effect.
+The `CreateQuestionnaireResult` effect causes a new entry to appear in the Social Determinants section of the left side
+of the chart.
 
-This effect will cause a new entry to appear in the Social Determinants section of the left side of the chart.
-
-The `CreateQuestionnaireResult` effect enables custom scoring of questionnaires in Canvas.
+This effect enables custom scoring of questionnaires in Canvas.
 
 ### Example
 
