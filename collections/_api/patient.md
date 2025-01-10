@@ -667,7 +667,7 @@ curl --request POST \
                 "coding":
                 [
                     {
-                        "system": "http://hl7.org/fhir/ValueSet/all-languages",
+                        "system": "urn:ietf:bcp:47",
                         "code": "en",
                         "display": "English"
                     }
@@ -973,7 +973,7 @@ payload = {
                 "coding":
                 [
                     {
-                        "system": "http://hl7.org/fhir/ValueSet/all-languages",
+                        "system": "urn:ietf:bcp:47",
                         "code": "en",
                         "display": "English"
                     }
@@ -1730,7 +1730,7 @@ curl --request PUT \
                 "coding":
                 [
                     {
-                        "system": "http://hl7.org/fhir/ValueSet/all-languages",
+                        "system": "urn:ietf:bcp:47",
                         "code": "en",
                         "display": "English"
                     }
@@ -2035,7 +2035,7 @@ payload = {
                 "coding":
                 [
                     {
-                        "system": "http://hl7.org/fhir/ValueSet/all-languages",
+                        "system": "urn:ietf:bcp:47",
                         "code": "en",
                         "display": "English"
                     }
