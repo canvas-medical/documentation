@@ -146,6 +146,5 @@ Only the following commands from the [commands module](/sdk/commands/) are curre
 - MedicationStatement
 - Perform
 - Plan
-- Prescribe
 - Questionnaire
 - ReasonForVisit
