@@ -64,37 +64,38 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 
 ### DetectedIssue
 
-| Field Name              | Type                                  |
-|-------------------------|---------------------------------------|
-| id                      | UUID                                  |
-| dbid                    | Integer                               |
-| created                 | DateTime                              |
-| modified                | DateTime                              |
-| identified              | DateTime                              |
-| deleted                 | Boolean                               |
-| originator              | CanvasUser                            |
-| committer               | CanvasUser                            |
-| entered_in_error        | CanvasUser                            |
-| patient                 | [Patient](/sdk/data-patient/#patient) |
-| code                    | String                                |
-| status                  | String                                |
-| severity                | String                                |
-| reference               | String                                |
-| issue_identifier        | String                                |
-| issue_identifier_system | String                                |
-| detail                  | String                                |
+| Field Name              | Type                                              |
+|-------------------------|---------------------------------------------------|
+| id                      | UUID                                              |
+| dbid                    | Integer                                           |
+| created                 | DateTime                                          |
+| modified                | DateTime                                          |
+| identified              | DateTime                                          |
+| deleted                 | Boolean                                           |
+| originator              | CanvasUser                                        |
+| committer               | CanvasUser                                        |
+| entered_in_error        | CanvasUser                                        |
+| patient                 | [Patient](/sdk/data-patient/#patient)             |
+| code                    | String                                            |
+| status                  | String                                            |
+| severity                | String                                            |
+| reference               | String                                            |
+| issue_identifier        | String                                            |
+| issue_identifier_system | String                                            |
+| detail                  | String                                            |
+| evidence                | [DetectedIssueEvidence](#detectedissueevidence)[] |
 
 ### DetectedIssueEvidence
 
-| Field Name     | Type                                                    |
-|----------------|---------------------------------------------------------|
-| dbid           | Integer                                                 |
-| system         | String                                                  |
-| version        | String                                                  |
-| code           | String                                                  |
-| display        | String                                                  |
-| user_selected  | Boolean                                                 |
-| detected_issue | [DetectedIssue](/sdk/data-detected-issue/#detectedissue) |
+| Field Name     | Type                            |
+|----------------|---------------------------------|
+| dbid           | Integer                         |
+| system         | String                          |
+| version        | String                          |
+| code           | String                          |
+| display        | String                          |
+| user_selected  | Boolean                         |
+| detected_issue | [DetectedIssue](#detectedissue) |
 
 <br/>
 <br/>
