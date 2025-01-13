@@ -77,8 +77,8 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 | due        | DateTime                              |
 | due_event  | [EventType](#eventtype)               |
 | status     | [TaskStatus](#taskstatus)             |
-| comments   | QuerySet[[TaskComment](#taskcomment)] |
-| labels     | QuerySet[[TaskLabel](#tasklabel)]     |
+| comments   | [TaskComment](#taskcomment)[]         |
+| labels     | [TaskLabel](#tasklabel)[]             |
 
 ### TaskComment
 

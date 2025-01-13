@@ -64,26 +64,26 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 
 ### DetectedIssue
 
-| Field Name              | Type                                                      |
-|-------------------------|-----------------------------------------------------------|
-| id                      | UUID                                                      |
-| dbid                    | Integer                                                   |
-| created                 | DateTime                                                  |
-| modified                | DateTime                                                  |
-| identified              | DateTime                                                  |
-| deleted                 | Boolean                                                   |
-| originator              | CanvasUser                                                |
-| committer               | CanvasUser                                                |
-| entered_in_error        | CanvasUser                                                |
-| patient                 | [Patient](/sdk/data-patient/#patient)                     |
-| code                    | String                                                    |
-| status                  | String                                                    |
-| severity                | String                                                    |
-| reference               | String                                                    |
-| issue_identifier        | String                                                    |
-| issue_identifier_system | String                                                    |
-| detail                  | String                                                    |
-| evidence                | QuerySet[[DetectedIssueEvidence](#detectedissueevidence)] |
+| Field Name              | Type                                              |
+|-------------------------|---------------------------------------------------|
+| id                      | UUID                                              |
+| dbid                    | Integer                                           |
+| created                 | DateTime                                          |
+| modified                | DateTime                                          |
+| identified              | DateTime                                          |
+| deleted                 | Boolean                                           |
+| originator              | CanvasUser                                        |
+| committer               | CanvasUser                                        |
+| entered_in_error        | CanvasUser                                        |
+| patient                 | [Patient](/sdk/data-patient/#patient)             |
+| code                    | String                                            |
+| status                  | String                                            |
+| severity                | String                                            |
+| reference               | String                                            |
+| issue_identifier        | String                                            |
+| issue_identifier_system | String                                            |
+| detail                  | String                                            |
+| evidence                | [DetectedIssueEvidence](#detectedissueevidence)[] |
 
 ### DetectedIssueEvidence
 

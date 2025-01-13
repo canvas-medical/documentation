@@ -133,7 +133,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | committer            | CanvasUser                            |
 | entered_in_error     | CanvasUser                            |
 | deleted              | Boolean                               |
-| values               | QuerySet[[LabValue](#labvalue)]       |
+| values               | [LabValue](#labvalue)[]               |
 
 ### LabReview
 
@@ -152,27 +152,27 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | status                       | String                                |
 | patient                      | [Patient](/sdk/data-patient/#patient) |
 | patient_communication_method | String                                |
-| reports                      | QuerySet[[LabReport](#labreport)]     |
-| tests                        | QuerySet[[LabTest](#labtest)]         |
+| reports                      | [LabReport](#labreport)[]             |
+| tests                        | [LabTest](#labtest)[]                 |
 
 ### LabValue
 
-| Field Name         | Type                                        |
-|--------------------|---------------------------------------------|
-| id                 | UUID                                        |
-| dbid               | Integer                                     |
-| created            | DateTime                                    |
-| modified           | DateTime                                    |
-| report             | [LabReport](#labreport)                     |
-| value              | String                                      |
-| units              | String                                      |
-| abnormal_flag      | String                                      |
-| reference_range    | String                                      |
-| low_threshold      | String                                      |
-| high_threshold     | String                                      |
-| comment            | String                                      |
-| observation_status | String                                      |
-| codings            | QuerySet[[LabValueCoding](#labvaluecoding)] |
+| Field Name         | Type                                |
+|--------------------|-------------------------------------|
+| id                 | UUID                                |
+| dbid               | Integer                             |
+| created            | DateTime                            |
+| modified           | DateTime                            |
+| report             | [LabReport](#labreport)             |
+| value              | String                              |
+| units              | String                              |
+| abnormal_flag      | String                              |
+| reference_range    | String                              |
+| low_threshold      | String                              |
+| high_threshold     | String                              |
+| comment            | String                              |
+| observation_status | String                              |
+| codings            | [LabValueCoding](#labvaluecoding)[] |
 
 ### LabValueCoding
 
@@ -215,23 +215,23 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | manual_processing_status  | [ManualProcessingStatus](#manualprocessingstatus) |
 | manual_processing_comment | String                                            |
 | labcorp_abn_url           | URL                                               |
-| reasons                   | QuerySet[[LabOrderReason](#laborderreason)]       |
-| tests                     | QuerySet[[LabTest](#labtest)]                     |
+| reasons                   | [LabOrderReason](#laborderreason)[]               |
+| tests                     | [LabTest](#labtest)[]                             |
 
 ### LabOrderReason
 
-| Field Name        | Type                                                          |
-|-------------------|---------------------------------------------------------------|
-| dbid              | Integer                                                       |
-| created           | DateTime                                                      |
-| modified          | DateTime                                                      |
-| originator        | CanvasUser                                                    |
-| deleted           | Boolean                                                       |
-| committer         | CanvasUser                                                    |
-| entered_in_error  | CanvasUser                                                    |
-| order             | [LabOrder](#laborder)                                         |
-| mode              | [LabReasonMode](#labreasonmode)                               |
-| reason_conditions | QuerySet[[LabOrderReasonCondition](#laborderreasoncondition)] |
+| Field Name        | Type                                                  |
+|-------------------|-------------------------------------------------------|
+| dbid              | Integer                                               |
+| created           | DateTime                                              |
+| modified          | DateTime                                              |
+| originator        | CanvasUser                                            |
+| deleted           | Boolean                                               |
+| committer         | CanvasUser                                            |
+| entered_in_error  | CanvasUser                                            |
+| order             | [LabOrder](#laborder)                                 |
+| mode              | [LabReasonMode](#labreasonmode)                       |
+| reason_conditions | [LabOrderReasonCondition](#laborderreasoncondition)[] |
 
 ## Enumeration types
 

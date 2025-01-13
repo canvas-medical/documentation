@@ -84,28 +84,28 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 
 ### AllergyIntolerance
 
-| Field Name                     | Type                                                            |
-|--------------------------------|-----------------------------------------------------------------|
-| id                             | UUID                                                            |
-| dbid                           | Integer                                                         |
-| created                        | DateTime                                                        |
-| modified                       | DateTime                                                        |
-| deleted                        | Boolean                                                         |
-| committer                      | CanvasUser                                                      |
-| entered_in_error               | CanvasUser                                                      |
-| patient                        | [Patient](/sdk/data-patient/#patient)                           |
-| note_id                        | Integer                                                         |
-| allergy_intolerance_type       | String                                                          |
-| category                       | Integer                                                         |
-| status                         | String                                                          |
-| severity                       | String                                                          |
-| onset_date                     | Date                                                            |
-| onset_date_original_input      | String                                                          |
-| last_occurrence                | Date                                                            |
-| last_occurrence_original_input | String                                                          |
-| recorded_date                  | DateTime                                                        |
-| narrative                      | String                                                          |
-| codings                        | QuerySet[[AllergyIntoleranceCoding](#allergyintolerancecoding)] |
+| Field Name                     | Type                                                    |
+|--------------------------------|---------------------------------------------------------|
+| id                             | UUID                                                    |
+| dbid                           | Integer                                                 |
+| created                        | DateTime                                                |
+| modified                       | DateTime                                                |
+| deleted                        | Boolean                                                 |
+| committer                      | CanvasUser                                              |
+| entered_in_error               | CanvasUser                                              |
+| patient                        | [Patient](/sdk/data-patient/#patient)                   |
+| note_id                        | Integer                                                 |
+| allergy_intolerance_type       | String                                                  |
+| category                       | Integer                                                 |
+| status                         | String                                                  |
+| severity                       | String                                                  |
+| onset_date                     | Date                                                    |
+| onset_date_original_input      | String                                                  |
+| last_occurrence                | Date                                                    |
+| last_occurrence_original_input | String                                                  |
+| recorded_date                  | DateTime                                                |
+| narrative                      | String                                                  |
+| codings                        | [AllergyIntoleranceCoding](#allergyintolerancecoding)[] |
 
 ### AllergyIntoleranceCoding
 
