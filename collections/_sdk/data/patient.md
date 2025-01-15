@@ -93,6 +93,14 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | protocol_overrides       | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]       |
 | tasks                    | [Task](/sdk/data-task/#task)[]                                            |
 
+### PatientAddress
+
+### PatientContactPoint
+
+### PatientExternalIdentifier
+
+
+
 ## Enumeration types
 
 ### SexAtBirth
