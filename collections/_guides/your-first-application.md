@@ -88,7 +88,7 @@ Developers must extend the `Application` class and override the `on_open` method
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModelEffect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import Application
 
 class MyApplication(Application):
@@ -97,9 +97,9 @@ class MyApplication(Application):
     def on_open(self) -> Effect:
         """Handle the on_open event."""
         # Implement this method to handle the application on_open event.
-        return LaunchModelEffect(
+        return LaunchModalEffect(
             url="http://localhost:8000",
-            target=LaunchModelEffect.TargetType.DEFAULT_MODAL
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL
         ).apply()
 ```
 
@@ -107,7 +107,7 @@ class MyApplication(Application):
 
 - **`on_open` Method**:
   - Called when the user clicks on the app icon.
-  - Should return a `LaunchModelEffect` that specifies:
+  - Should return a `LaunchModalEffect` that specifies:
     - **url**: The URL to open.
     - **target**: The display target.
 
