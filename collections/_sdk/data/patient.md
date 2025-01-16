@@ -159,14 +159,15 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 
 ### PatientSetting
 
-| Field Name | Type     |
-|------------|----------|
-| dbid       | Integer  |
-| created    | DateTime |
-| modified   | DateTime |
-| patient    | Patient  |
-| name       | String   |
-| value      | JSON     |
+| Field Name | Type                |
+|------------|---------------------|
+| dbid       | Integer             |
+| created    | DateTime            |
+| modified   | DateTime            |
+| patient    | [Patient](#patient) |
+| name       | String              |
+| value      | JSON                |
+
 
 ## Enumeration types
 

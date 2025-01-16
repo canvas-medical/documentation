@@ -117,7 +117,7 @@ __Find All Expired Coverages__
 | use_provider_for_eligibility | Boolean                                             |
 | use_for_submission           | [Transactor](#transactor)                           |
 | used_for_submission_by       | [Transactor](#transactor)[]                         |
-| coverage_types               | [[TransactorCoverageType](#transactorcoveragetype)] |
+| coverage_types               | [TransactorCoverageType](#transactorcoveragetype)[] |
 | addresses                    | [TransactorAddress](#transactoraddress)[]           |
 | coverages                    | [Coverage](#coverage)[]                             |
 | phones                       | [TransactorPhone](#transactorphone)[]               |
