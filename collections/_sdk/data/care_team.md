@@ -62,7 +62,42 @@ __Find all Patients that have a Certain Staff Member on their Care Team__
 
 ### CareTeamRole
 
+| Field Name    | Type                                                            |
+|---------------|-----------------------------------------------------------------|
+| dbid          | Integer                                                         |
+| system        | String                                                          |
+| version       | String                                                          |
+| code          | String                                                          |
+| display       | String                                                          |
+| user_selected | BooleanField                                                    |
+| active        | Boolean                                                         |
+| care_teams    | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[] |
+
 ### CareTeamMembership
 
+| Field Name   | Type                                                  |
+|--------------|-------------------------------------------------------|
+| id           | UUID                                                  |
+| dbid         | Integer                                               |
+| created      | DateTime                                              |
+| modified     | DateTime                                              |
+| patient      | [Patient](/sdk/data-patient/#patient)                 |
+| staff        | [Staff](/sdk/data-staff#staff)                        |
+| role         | [CareTeamRole](#careteamrole)                         |
+| status       | [CareTeamMembershipStatus](#careteammembershipstatus) |
+| lead         | Boolean                                               |
+| role_code    | String                                                |
+| role_system  | String                                                |
+| role_display | String                                                |
 
 ## Enumeration types
+
+### CareTeamMembershipStatus
+
+| Value            | Label            |
+|------------------|------------------|
+| proposed         | Proposed         |
+| active           | Active           |
+| suspended        | Suspended        |
+| inactive         | Inactive         |
+| entered-in-error | Entered in Error |

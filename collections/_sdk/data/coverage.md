@@ -61,11 +61,283 @@ __Find All Expired Coverages__
 
 ### Coverage
 
+| Field Name                         | Type                                                  |
+|------------------------------------|-------------------------------------------------------|
+| id                                 | UUID                                                  |
+| dbid                               | Integer                                               |
+| created                            | DateTime                                              |
+| modified                           | DateTime                                              |
+| patient                            | [Patient](/sdk/data-patient/#patient)                 |
+| guarantor                          | [Patient](/sdk/data-patient/#patient)                 |
+| subscriber                         | [Patient](/sdk/data-patient/#patient)                 |
+| patient_relationship_to_subscriber | [CoverageRelationshipCode](#coveragerelationshipcode) |
+| issuer                             | [Transactor](#transactor)                             |
+| id_number                          | String                                                |
+| plan                               | String                                                |
+| sub_plan                           | String                                                |
+| group                              | String                                                |
+| sub_group                          | String                                                |
+| employer                           | String                                                |
+| coverage_start_date                | Date                                                  |
+| coverage_end_date                  | Date                                                  |
+| coverage_rank                      | Integer                                               |
+| state                              | [CoverageState](#coveragestate)                       |
+| plan_type                          | [CoverageType](#coveragetype)                         |
+| coverage_type                      | [TransactorCoverageType](#transactorcoveragetype)     |
+| issuer_address                     | [TransactorAddress](#transactoraddress)               |
+| issuer_phone                       | [TransactorPhone](#transactorphone)                   |
+| comments                           | Text                                                  |
+| stack                              | [CoverageStack](#coveragestack)                       |
+
 ### Transactor
+
+| Field Name                   | Type                                                |
+|------------------------------|-----------------------------------------------------|
+| dbid                         | Integer                                             |
+| payer_id                     | String                                              |
+| name                         | String                                              |
+| type                         | String                                              |
+| transactor_type              | [TransactorType](#transactortype)                   |
+| clearinghouse_payer          | Boolean                                             |
+| institutional                | Boolean                                             |
+| institutional_enrollment_req | Boolean                                             |
+| professional                 | Boolean                                             |
+| professional_enrollment_req  | Boolean                                             |
+| era                          | Boolean                                             |
+| era_enrollment_req           | Boolean                                             |
+| eligibility                  | Boolean                                             |
+| eligibility_enrollment_req   | Boolean                                             |
+| workers_comp                 | Boolean                                             |
+| secondary_support            | Boolean                                             |
+| claim_fee                    | Boolean                                             |
+| remit_fee                    | Boolean                                             |
+| state                        | String                                              |
+| description                  | String                                              |
+| active                       | Boolean                                             |
+| use_provider_for_eligibility | Boolean                                             |
+| use_for_submission           | [Transactor](#transactor)                           |
+| used_for_submission_by       | [Transactor](#transactor)[]                         |
+| coverage_types               | [[TransactorCoverageType](#transactorcoveragetype)] |
+| addresses                    | [TransactorAddress](#transactoraddress)[]           |
+| coverages                    | [Coverage](#coverage)[]                             |
+| phones                       | [TransactorPhone](#transactorphone)[]               |
 
 ### TransactorAddress
 
+| Field Name  | Type                                       |
+|-------------|--------------------------------------------|
+| id          | UUID                                       |
+| dbid        | Integer                                    |
+| created     | DateTime                                   |
+| modified    | DateTime                                   |
+| line1       | String                                     |
+| line2       | String                                     |
+| city        | String                                     |
+| district    | String                                     |
+| state_code  | String                                     |
+| postal_code | String                                     |
+| use         | [AddressUse](#addressuse)                  |
+| type        | [AddressType](#addresstype)                |
+| longitude   | Float                                      |
+| latitude    | Float                                      |
+| start       | Date                                       |
+| end         | Date                                       |
+| country     | String                                     |
+| state       | [AddressState](#addressstate)              |
+| transactor  | [Transactor](#transactor)                  |
+| coverages   | [Coverage](/sdk/data-coverage/#coverage)[] |
+
 ### TransactorPhone
 
+| Field Name | Type                                       |
+|------------|--------------------------------------------|
+| id         | UUIDField                                  |
+| dbid       | Integer                                    |
+| created    | DateTime                                   |
+| modified   | DateTime                                   |
+| system     | String                                     |
+| value      | String                                     |
+| use        | [ContactPointUse](#contactpointuse)        |
+| use_notes  | String                                     |
+| rank       | Integer                                    |
+| state      | [ContactPointState](#contactpointstate)    |
+| transactor | [Transactor](#transactor)                  |
+| coverages  | [Coverage](/sdk/data-coverage/#coverage)[] |
 
 ## Enumeration types
+
+### AddressState
+
+| Value      | Label   |
+|------------|---------|
+| active     | Active  |
+| deleted    | Deleted |
+
+### AddressType
+
+| Value      | Label    |
+|------------|----------|
+| postal     | Postal   |
+| physical   | Physical |
+| both       | Both     |
+
+### AddressUse
+
+| Value      | Label |
+|------------|-------|
+| home       | Home  |
+| work       | Work  |
+| temp       | Temp  |
+| old        | Old   |
+
+### ContactPointState
+
+| Value      | Label   |
+|------------|---------|
+| active     | Active  |
+| deleted    | Deleted |
+
+### ContactPointUse
+
+| Value      | Label      |
+|------------|------------|
+| home       | Home       |
+| work       | Work       |
+| temp       | Temp       |
+| old        | Old        |
+| other      | Other      |
+| mobile     | Mobile     |
+| automation | Automation |
+
+### CoverageStack
+
+| Value   | Label   |
+|---------|---------|
+| IN_USE  | In use  |
+| OTHER   | Other   |
+| REMOVED | Removed |
+
+### CoverageState
+
+| Value      | Label   |
+|------------|---------|
+| active     | Active  |
+| deleted    | Deleted |
+
+### CoverageType
+
+| Value        | Label                     |
+|--------------|---------------------------|
+| commercial   | Commercial                |
+| workerscomp  | Workers Comp              |
+| bcbs         | Blue Cross Blue Shield    |
+| champus      | Tricare/Champus           |
+| medicaid     | Medicaid                  |
+| medicare     | Medicare                  |
+| other        | Other                     |
+| tpa          | Third Party Administrator |
+| motorvehicle | Motor Vehicle             |
+| lien         | Attorney/Lien             |
+| pip          | Personal Injury           |
+
+### CoverageRelationshipCode
+
+| Value | Label                                                         |
+|-------|---------------------------------------------------------------|
+| 18    | Self                                                          |
+| 01    | Spouse                                                        |
+| 19    | Natural Child, insured has financial responsibility           |
+| 43    | Natural Child, insured does not have financial responsibility |
+| 17    | Step Child                                                    |
+| 10    | Foster Child                                                  |
+| 15    | Ward of the Court                                             |
+| 20    | Employee                                                      |
+| 21    | Unknown                                                       |
+| 22    | Handicapped Dependent                                         |
+| 39    | Organ donor                                                   |
+| 40    | Cadaver donor                                                 |
+| 05    | Grandchild                                                    |
+| 07    | Niece/Nephew                                                  |
+| 41    | Injured Plaintiff                                             |
+| 23    | Sponsored Dependent                                           |
+| 24    | Minor Dependent of a Minor Dependent                          |
+| 32    | Mother                                                        |
+| 33    | Father                                                        |
+| 04    | Grandparent                                                   |
+| 53    | Life Partner                                                  |
+| 29    | Significant Other                                             |
+| G8    | Other                                                         |
+
+### TransactorCoverageType
+
+| Value      | Label                                  |
+|------------|----------------------------------------|
+| ANNU       | annuity policy                         |
+| AUTOPOL    | automobile                             |
+| CHAR       | charity program                        |
+| COL        | collision coverage policy              |
+| CRIME      | crime victim program                   |
+| DENTAL     | dental care policy                     |
+| DENTPRG    | dental program                         |
+| DIS        | disability insurance policy            |
+| DISEASE    | disease specific policy                |
+| DRUGPOL    | drug policy                            |
+| EAP        | employee assistance program            |
+| EWB        | employee welfare benefit plan policy   |
+| ENDRENAL   | end renal program                      |
+| EHCPOL     | extended healthcare                    |
+| FLEXP      | flexible benefit plan policy           |
+| GOVEMP     | government employee health program     |
+| HIP        | health insurance plan policy           |
+| HMO        | health maintenance organization policy |
+| HSAPOL     | health spending account                |
+| HIRISK     | high risk pool program                 |
+| HIVAIDS    | HIV-AIDS program                       |
+| IND        | indigenous peoples health program      |
+| LIFE       | life insurance policy                  |
+| LTC        | long term care policy                  |
+| MCPOL      | managed care policy                    |
+| MANDPOL    | mandatory health program               |
+| MENTPOL    | mental health policy                   |
+| MENTPRG    | mental health program                  |
+| MILITARY   | military health program                |
+| pay        | Pay                                    |
+| POS        | point of service policy                |
+| PPO        | preferred provider organization policy |
+| PNC        | property and casualty insurance policy |
+| DISEASEPRG | public health program                  |
+| PUBLICPOL  | public healthcare                      |
+| REI        | reinsurance policy                     |
+| RETIRE     | retiree health program                 |
+| SAFNET     | safety net clinic program              |
+| SOCIAL     | social service program                 |
+| SUBSIDIZ   | subsidized health program              |
+| SUBSIDMC   | subsidized managed care program        |
+| SUBSUPP    | subsidized supplemental health program |
+| SUBPOL     | substance use policy                   |
+| SUBPRG     | substance use program                  |
+| SURPL      | surplus line insurance policy          |
+| TLIFE      | term life insurance policy             |
+| UMBRL      | umbrella liability insurance policy    |
+| UNINSMOT   | uninsured motorist policy              |
+| ULIFE      | universal life insurance policy        |
+| VET        | veteran health program                 |
+| VISPOL     | vision care policy                     |
+| CANPRG     | women's cancer detection program       |
+| WCBPOL     | worker's compensation                  |
+
+### TransactorType
+
+| Value              | Label                  |
+|--------------------|------------------------|
+| commercial         | Commercial             |
+| workerscomp        | Workers Comp           |
+| champus            | Tricare/Champus        |
+| medicaid           | Medicaid               |
+| medicare           | Medicare               |
+| medicare_advantage | Medicare Advantage     |
+| CHIP               | CHIP                   |
+| automobile         | Automobile             |
+| employer           | Employer               |
+| direct_care        | Direct Care            |
+| bcbs               | Blue Cross Blue Shield |

@@ -78,7 +78,10 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | default_provider_id      | Integer                                                                   |
 | allergy_intolerances     | [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance)[] |
 | billing_line_items       | BillingLineItem[]                                                         |
+| care_team_memberships    | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]           |
 | conditions               | [Condition](/sdk/data-condition/#condition)[]                             |
+| coverages                | [Coverage](/sdk/data-coverage/#coverage)[]                                |
+| dependent_coverages      | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | detected_issues          | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[]                |
 | devices                  | [Device](/sdk/data-device/#device)[]                                      |
 | imaging_orders           | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                         |
@@ -90,18 +93,116 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | lab_reviews              | [LabReview](/sdk/data-labs/#labreview)[]                                  |
 | medications              | [Medication](/sdk/data-medication/#medication)[]                          |
 | observations             | [Observation](/sdk/data-observation/#observation)[]                       |
+| external_identifiers     | [PatientExternalIdentifier](#patientexternalidentifier)[]                 |
+| preferred_pharmacy       | JSON                                                                      |
 | protocol_overrides       | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]       |
+| settings                 | [PatientSetting](#patientsetting)                                         |
+| subscribed_coverages     | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | tasks                    | [Task](/sdk/data-task/#task)[]                                            |
+| telecom                  | [PatientContactPoint](#patientcontactpoint)[]                             |
 
 ### PatientAddress
 
+| Field Name  | Type                        |
+|-------------|-----------------------------|
+| id          | UUID                        |
+| dbid        | Integer                     |
+| line1       | String                      |
+| line2       | String                      |
+| city        | String                      |
+| district    | String                      |
+| state_code  | String                      |
+| postal_code | String                      |
+| use         | [AddressUse](#addressuse)   |
+| type        | [AddressType](#addresstype) |
+| longitude   | Float                       |
+| latitude    | Float                       |
+| start       | Date                        |
+| end         | Date                        |
+| country     | String                      |
+| state       | String                      |
+| patient     | [Patient](#patient)         |
+
 ### PatientContactPoint
+
+| Field Name         | Type                                      |
+|--------------------|-------------------------------------------|
+| id                 | UUID                                      |
+| dbid               | Integer                                   |
+| system             | [ContactPointSystem](#contactpointsystem) |
+| value              | String                                    |
+| use                | String                                    |
+| use_notes          | String                                    |
+| rank               | Integer                                   |
+| state              | [ContactPointState](#contactpointstate)   |
+| patient            | Patient                                   |
+| has_consent        | Boolean                                   |
+| last_verified      | DateTime                                  |
+| verification_token | String                                    |
+| opted_out          | Boolean                                   |
 
 ### PatientExternalIdentifier
 
+| Field Name      | Type                |
+|-----------------|---------------------|
+| id              | UUID                |
+| dbid            | Integer             |
+| created         | DateTime            |
+| modified        | DateTime            |
+| patient         | [Patient](#patient) |
+| use             | String              |
+| identifier_type | String              |
+| system          | String              |
+| value           | String              |
+| issued_date     | Date                |
+| expiration_date | Date                |
 
+### PatientSetting
+
+| Field Name | Type     |
+|------------|----------|
+| dbid       | Integer  |
+| created    | DateTime |
+| modified   | DateTime |
+| patient    | Patient  |
+| name       | String   |
+| value      | JSON     |
 
 ## Enumeration types
+
+### AddressType
+
+| Value      | Label    |
+|------------|----------|
+| postal     | Postal   |
+| physical   | Physical |
+| both       | Both     |
+
+### AddressUse
+
+| Value      | Label |
+|------------|-------|
+| home       | Home  |
+| work       | Work  |
+| temp       | Temp  |
+| old        | Old   |
+
+### ContactPointState
+
+| Value      | Label   |
+|------------|---------|
+| active     | Active  |
+| deleted    | Deleted |
+
+### ContactPointSystem
+
+| Value | Label |
+|-------|-------|
+| phone | phone |
+| fax   | fax   |
+| email | email |
+| pager | pager |
+| other | other |
 
 ### SexAtBirth
 
