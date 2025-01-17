@@ -21,7 +21,7 @@ sections:
           - name: extension
             type: array[json]
             description_for_all_endpoints: >-
-              Canvas supports a single extension iteration on a claim to represent the current queue the given claim is in on the Canvas instance. Learn more about navigating claim queues [here](https://canvas-medical.help.usepylon.com/articles/3240845520-queues).<br><br>
+              Canvas supports a current queue extension representing the current queue the given claim is in on the Canvas instance. Learn more about navigating claim queues [here](https://canvas-medical.help.usepylon.com/articles/3240845520-queues).<br><br>
 
               **Canvas Claim Queues**
 
@@ -44,19 +44,12 @@ sections:
             attributes:
               - name: url
                 type: string
-                exclude_in: read,search
                 required_in: create,update
                 description: Reference that defines the content of this object.
                 enum_options:
                   - value: http://schemas.canvasmedical.com/fhir/extensions/claim-queue
-              - name: url
-                type: string
-                exclude_in: create,update
-                required_in: read,search
-                description: Reference that defines the content of this object.
-                enum_options:
-                  - value: http://schemas.canvasmedical.com/fhir/extensions/claim-queue
                   - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
+                    exclude_in: create,update
               - name: valueCoding
                 type: json
                 required_in: create,update
@@ -362,7 +355,7 @@ sections:
               - name: encounter
                 type: array[json]
                 exclude_in: create, update
-                description: The Encounters during which this Claim was created or to which the creation of this record is tightly associated.
+                description: Encounters related to this billed item.
                 attributes: 
                   - name: reference
                     type: string
