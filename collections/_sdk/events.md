@@ -30,7 +30,9 @@ For more information on writing plugins, see the guide [here](/guides/your-first
 
 ## Event Types
 
-The following Canvas events are able to trigger a plugin to execute.
+The following Canvas events are able to trigger a plugin to execute. <br><br>
+The event `target` object can be accessed within the compute method of the plugin by `self.event.target`. If `self.event.target.type` exists, it provides the same type that would be imported from the Data module. For example, a type of `Condition` would be the same as what you can import from `canvas_sdk.v1.data.condition`. <br><br>
+The event `context` object can be accessed via `self.event.context`.
 
 ### Record lifecycle events
 
@@ -40,70 +42,357 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>PATIENT_CREATED</td>
-      <td>Occurs when a patient is created.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_UPDATED</td>
-      <td>Occurs when a patient's data is updated.</td>
-    </tr>
-    <tr>
-      <td>CARE_TEAM_MEMBERSHIP_CREATED</td>
-      <td>Occurs when a new care team member is added for a patient.</td>
-    </tr>
-    <tr>
-      <td>CARE_TEAM_MEMBERSHIP_UPDATED</td>
-      <td>Occurs when a care team member is adjusted for a patient.</td>
-    </tr>
-    <tr>
-      <td>CARE_TEAM_MEMBERSHIP_DELETED</td>
-      <td>Occurs when a care team member is removed for a patient.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_ADDRESS_CREATED</td>
-      <td>Occurs when an address is added for a patient.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_ADDRESS_UPDATED</td>
-      <td>Occurs when one of a patient's addresses are updated.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_ADDRESS_DELETED</td>
-      <td>Occurs when one of a patient's addresses are removed.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_PERSON_CREATED</td>
-      <td>Occurs when a contact is added for a patient.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_PERSON_UPDATED</td>
-      <td>Occurs when one of a patient's contacts is updated.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_PERSON_DELETED</td>
-      <td>Occurs when one of a patient's contacts is removed.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_POINT_CREATED</td>
-      <td>Occurs when a contact method for a patient is added.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_POINT_UPDATED</td>
-      <td>Occurs when a contact method for a patient is updated.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_POINT_DELETED</td>
-      <td>Occurs when a contact method for a patient is removed.</td>
-    </tr>
+      <td>Patient is created.</td>
+      <td>
+
+```json
+{
+  "id": <pt_key>,
+  "type": Patient
+}
+```
+
+</td>
+<td>
+
+`{}` empty
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_UPDATED</td>
+<td>Patient's data is updated.</td>
+      <td>
+
+```json
+{
+  "id": <pt_key>,
+  "type": Patient
+}
+```
+
+</td>
+<td>
+
+`{}` empty
+
+</td>
+</tr>
+<tr>
+<td>CARE_TEAM_MEMBERSHIP_CREATED</td>
+<td>New care team member is added for a patient.</td>
+      <td>
+
+```json
+{
+  "id": <care_team_member_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>CARE_TEAM_MEMBERSHIP_UPDATED</td>
+<td>Care team member is adjusted for a patient.</td>
+      <td>
+
+```json
+{
+  "id": <care_team_member_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>CARE_TEAM_MEMBERSHIP_DELETED</td>
+<td>Care team member is removed for a patient.</td>
+      <td>
+
+```json
+{
+  "id": <care_team_member_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_ADDRESS_CREATED</td>
+<td>Address is added for a patient.</td>
+      <td>
+
+```json
+{
+  "id": <address_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_ADDRESS_UPDATED</td>
+<td>One of a patient's addresses is updated.</td>
+      <td>
+
+```json
+{
+  "id": <address_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_ADDRESS_DELETED</td>
+<td>One of a patient's addresses is removed.</td>
+      <td>
+
+```json
+{
+  "id": <address_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_CONTACT_PERSON_CREATED</td>
+<td>Contact is added for a patient.</td>
+      <td>
+
+```json
+{
+  "id": <contact_person_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_CONTACT_PERSON_UPDATED</td>
+<td>One of a patient's contacts is updated.</td>
+      <td>
+
+```json
+{
+  "id": <contact_person_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_CONTACT_PERSON_DELETED</td>
+<td>One of a patient's contacts is removed.</td>
+      <td>
+
+```json
+{
+  "id": <contact_person_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_CONTACT_POINT_CREATED</td>
+<td>Contact method for a patient is added.</td>
+      <td>
+
+```json
+{
+  "id": <contact_point_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_CONTACT_POINT_UPDATED</td>
+<td>Contact method for a patient is updated.</td>
+      <td>
+
+```json
+{
+  "id": <contact_point_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+<tr>
+<td>PATIENT_CONTACT_POINT_DELETED</td>
+<td>Contact method for a patient is removed.</td>
+      <td>
+
+```json
+{
+  "id": <contact_point_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
+</tr>
+
   </tbody>
 </table>
 
@@ -111,21 +400,67 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>ALLERGY_INTOLERANCE_CREATED</td>
-      <td>Occurs when an allergy is created for a patient. Additional details for the allergy may become available with subsequent ALLERGY_INTOLERANCE_UPDATED events.</td>
+      <td>An allergy is created for a patient. Additional details for the allergy may become available with subsequent ALLERGY_INTOLERANCE_UPDATED events.</td>
+      <td>
+
+```json
+{
+  "id": <allergy_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>ALLERGY_INTOLERANCE_UPDATED</td>
-      <td>Occurs when an allergy is updated for a patient.</td>
+      <td>An allergy is updated for a patient.</td>
+      <td>
+
+```json
+{
+  "id": <allergy_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
   </tbody>
 </table>
@@ -134,42 +469,194 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>APPOINTMENT_CREATED</td>
-      <td>Occurs when an appointment is first created/booked.</td>
+      <td>An appointment is first created/booked.</td>
+      <td>
+
+```json
+{
+  "id": <appointment_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>APPOINTMENT_UPDATED</td>
-      <td>Occurs when details of an appointment are updated.</td>
+      <td>Details of an appointment are updated.</td>
+      <td>
+
+```json
+{
+  "id": <appointment_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>APPOINTMENT_CHECKED_IN</td>
-      <td>Occurs when a patient has arrived and been checked in for their appointment.</td>
+      <td>A patient has arrived and been checked in for their appointment.</td>
+      <td>
+
+```json
+{
+  "id": <appointment_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>APPOINTMENT_RESCHEDULED</td>
-      <td>Occurs when an appointment is rescheduled. In this case, a new appointment is created that is linked to the appointment it was rescheduled from.</td>
+      <td>An appointment is rescheduled. In this case, a new appointment is created that is linked to the appointment it was rescheduled from.</td>
+      <td>
+
+```json
+{
+  "id": <appointment_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>APPOINTMENT_RESTORED</td>
-      <td>Occurs when a cancelled appointment is restored to a non-cancelled status.</td>
+      <td>A cancelled appointment is restored to a non-cancelled status.</td>
+      <td>
+
+```json
+{
+  "id": <appointment_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>APPOINTMENT_CANCELED</td>
-      <td>Occurs when an appointment is cancelled.</td>
+      <td>An appointment is cancelled.</td>
+      <td>
+
+```json
+{
+  "id": <appointment_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>APPOINTMENT_NO_SHOWED</td>
-      <td>Occurs when an appointment is marked as a no-show.</td>
+      <td>An appointment is marked as a no-show.</td>
+      <td>
+
+```json
+{
+  "id": <appointment_id>,
+  "type": None
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
+
   </tbody>
 </table>
 
@@ -177,21 +664,67 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>BILLING_LINE_ITEM_CREATED</td>
-      <td>Occurs when a billing line item is created from adding a CPT code to a note.</td>
+      <td>A billing line item is created from adding a CPT code to a note.</td>
+      <td>
+
+```json
+{
+  "id": <billing_line_item_id>,
+  "type": BillingLineItem
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>BILLING_LINE_ITEM_UPDATED</td>
-      <td>Occurs when a billing line item is modified.</td>
+      <td>A billing line item is modified.</td>
+      <td>
+
+```json
+{
+  "id": <billing_line_item_id>,
+  "type": BillingLineItem
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
   </tbody>
 </table>
@@ -200,29 +733,117 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>CONDITION_ASSESSED</td>
-      <td>Occurs when a condition is assessed through the Assess Condition command.</td>
+      <td>A condition is assessed through the Assess Condition command.</td>
+      <td>
+
+```json
+{
+  "id": <condition_id>,
+  "type": Condition
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>CONDITION_CREATED</td>
-      <td>Occurs when a condition is diagnosed for a patient. Additional details for the condition may become available with subsequent CONDITION_UPDATED events.</td>
+      <td>A condition is diagnosed for a patient. Additional details for the condition may become available with subsequent CONDITION_UPDATED events.</td>
+      <td>
+
+```json
+{
+  "id": <condition_id>,
+  "type": Condition
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>CONDITION_RESOLVED</td>
-      <td>Occurs when a condition is resolved through the Resolve Condition command.</td>
+      <td>A condition is resolved through the Resolve Condition command.</td>
+      <td>
+
+```json
+{
+  "id": <condition_id>,
+  "type": Condition
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
     <tr>
       <td>CONDITION_UPDATED</td>
-      <td>Occurs when a condition is updated for a patient.</td>
+      <td>A condition is updated for a patient.</td>
+      <td>
+
+```json
+{
+  "id": <condition_id>,
+  "type": Condition
+}
+```
+
+</td>
+      <td>
+
+```json
+{
+  "patient": {
+    "id": <pt_key>
+  }
+}
+```
+
+</td>
     </tr>
   </tbody>
 </table>
