@@ -5,23 +5,89 @@ excerpt: "Create and modify views in the Canvas UI."
 hidden: false
 ---
 
-# Action Buttons
+Action buttons appear in the Canvas UI and execute your provided code when
+clicked. They can be added to the note header or the note footer.
 
-Action buttons are buttons that appear in the Canvas UI that can be clicked to perform a custom action,
-and can be added to the note header or footer.
+## Implementing an Action Button
 
+To add an action button, your handler class should inherit from  the `ActionButton` class.
 
-## Adding an Action Button
+Your class must specify the constants `BUTTON_TITLE`, `BUTTON_KEY`, and `BUTTON_LOCATION`,
+as well as implement the `handle()` method. Your class can optionally
+implement the `visible()` method, which allows you to make the button
+conditionally appear.
 
-To add an action button, import the `ActionButton` class and create an instance of it.
-It must specify the `BUTTON_TITLE`, `BUTTON_KEY`, and `BUTTON_LOCATION` constants.
+### Setting the Required Constants
 
-`BUTTON_LOCATION` can be one of the following:
+The `BUTTON_TITLE` constant sets the text that appears on your button in the
+Canvas UI.
+
+`BUTTON_KEY` is an identifier for your button used to route click events to
+your `handle()` method.
+
+`BUTTON_LOCATION` determines the placement of your button, and can be one of
+the following:
 
 - `ActionButton.ButtonLocation.NOTE_HEADER`
+  - The button will appear in the header of each note.
 - `ActionButton.ButtonLocation.NOTE_FOOTER`
+  - The button will appear in the footer of each note.
 
-An example of adding an action button to the note footer, that commits all commands in a note:
+### Implement the `handle()` method
+
+When an action button is clicked, the `handle()` method is called. You have
+access to runtime information like `self.event`, `self.context`, and
+`self.secrets`. Your method must return a list of [Effect](/sdk/effects/)
+objects, but that list can be empty of course.
+
+### (Optional) Implement the `visible()` method
+
+The `ActionButton` base class implements the `visible()` as `return True`,
+meaning "always visible". If you want your button to appear conditionally, you
+can implement the `visible()` method and return `True` or `False` based on
+your criteria. You have access to runtime information like `self.event`,
+`self.context`, and `self.secrets` to help make your determination. Your
+method must return a boolean value.
+
+## Examples
+
+### Log When You Click
+
+This example is concise to serve as an easy to interpret visual of the anatomy
+of an action button. The button only shows during the month of January, and
+when clicked it logs some information. This isn't particularly useful, but it
+does show you how to control the visibility of the button, and some of the
+data you have access to in your `handle()` method.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.handlers.action_button import ActionButton
+from datetime import datetime
+from logger import log
+
+
+class MyButton(ActionButton):
+    BUTTON_TITLE = "🪵"
+    BUTTON_KEY = "LOG_STUFF"
+    BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_HEADER
+
+    def visible(self) -> bool:
+        # Only show this button in January
+        return datetime.now().month == 1
+
+    def handle(self) -> list[Effect]:
+        log.info("You clicked the button!!")
+        log.info(self.event.context)
+        log.info(self.event.target)
+
+        return []
+```
+
+### Commit All Commands in a Note
+
+This example may actually be useful. It adds an action button to the note footer
+which commits all commands in a note. It shows on every note (default behavior
+since `visible()` is not overridden in this class).
   
 ```python
 import json
@@ -79,3 +145,8 @@ class CommitButtonHandler(ActionButton):
 
         return effects
 ```
+
+<br/>
+<br/>
+<br/>
+<br/>
