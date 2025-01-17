@@ -3103,6 +3103,67 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+### Action Buttons Events
+
+For more information on handling these events, see <a href="/sdk/layout-effect/#action-buttons" target="_blank">Action Buttons</a>.
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SOCIAL_DETERMINANTS_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for social determinants section.</td>
+    </tr>
+    <tr>
+      <td>GOALS_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for goals section.</td>
+    </tr>
+    <tr>
+      <td>CONDITIONS_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for conditions section.</td>
+    </tr>
+    <tr>
+      <td>MEDICATIONS_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for medications section.</td>
+    </tr>
+    <tr>
+      <td>ALLERGIES_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for allergies section.</td>
+    </tr>
+    <tr>
+      <td>CARE_TEAMS_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for care teams section.</td>
+    </tr>
+    <tr>
+      <td>VITALS_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for vitals section.</td>
+    </tr>
+    <tr>
+      <td>IMMUNIZATIONS_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for immunizations section.</td>
+    </tr>
+    <tr>
+      <td>SURGICAL_HISTORY_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for surgical history section.</td>
+    </tr>
+    <tr>
+      <td>FAMILY_HISTORY_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for family history section.</td>
+    </tr>
+    <tr>
+      <td>CODING_GAPS_ACTION_BUTTONS</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for coding gaps section.</td>
+    </tr>
+  </tbody>
+</table>
+
 ### Other Events
 
 <table>
@@ -3137,11 +3198,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLUGIN_CREATED</td>
-      <td>Occurs when a plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
+      <td>Occurs when a plugin is uploaded for the first time. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PLUGIN_UPDATED</td>
-      <td>Occurs when a plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
+      <td>Occurs when a plugin is enabled or when the plugin code has changed. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</td>
