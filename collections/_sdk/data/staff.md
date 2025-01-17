@@ -36,47 +36,50 @@ staff.creator_tasks.all()
 
 ### Staff
 
-| Field Name                   | Type                    |
-|------------------------------|-------------------------|
-| id                           | UUID                    |
-| dbid                         | Integer                 |
-| created                      | DateTime                |
-| modified                     | DateTime                |
-| created                      | DateTime                |
-| modified                     | DateTime                |
-| prefix                       | String                  |
-| suffix                       | String                  |
-| first_name                   | String                  |
-| middle_name                  | String                  |
-| last_name                    | String                  |
-| maiden_name                  | String                  |
-| nickname                     | String                  |
-| previous_names               | JSON                    |
-| birth_date                   | Date                    |
-| sex_at_birth                 | [PersonSex](#personsex) |
-| sexual_orientation_term      | String                  |
-| sexual_orientation_code      | String                  |
-| gender_identity_term         | String                  |
-| gender_identity_code         | String                  |
-| preferred_pronouns           | String                  |
-| biological_race_codes        | Array[String]           |
-| biological_race_terms        | Array[String]           |
-| cultural_ethnicity_codes     | Array[String]           |
-| cultural_ethnicity_terms     | Array[String]           |
-| last_known_timezone          | TimeZone                |
-| active                       | Boolean                 |
-| npi_number                   | String                  |
-| nadean_number                | String                  |
-| group_npi_number             | String                  |
-| bill_through_organization    | Boolean                 |
-| tax_id                       | String                  |
-| tax_id_type                  | [TaxIDType](#taxidtype) |
-| spi_number                   | String                  |
-| personal_meeting_room_link   | URL                     |
-| state                        | JSON                    |
-| user                         | CanvasUser              |
-| schedule_column_ordering     | String                  |
-| default_supervising_provider | [Staff](#staff)         |
+| Field Name                 | Type                                         |
+|----------------------------|----------------------------------------------|
+| id                         | UUID                                         |
+| dbid                       | Integer                                      |
+| created                    | DateTime                                     |
+| modified                   | DateTime                                     |
+| created                    | DateTime                                     |
+| modified                   | DateTime                                     |
+| prefix                     | String                                       |
+| suffix                     | String                                       |
+| first_name                 | String                                       |
+| middle_name                | String                                       |
+| last_name                  | String                                       |
+| maiden_name                | String                                       |
+| nickname                   | String                                       |
+| previous_names             | JSON                                         |
+| birth_date                 | Date                                         |
+| sex_at_birth               | [PersonSex](#personsex)                      |
+| sexual_orientation_term    | String                                       |
+| sexual_orientation_code    | String                                       |
+| gender_identity_term       | String                                       |
+| gender_identity_code       | String                                       |
+| preferred_pronouns         | String                                       |
+| biological_race_codes      | Array[String]                                |
+| biological_race_terms      | Array[String]                                |
+| cultural_ethnicity_codes   | Array[String]                                |
+| cultural_ethnicity_terms   | Array[String]                                |
+| last_known_timezone        | TimeZone                                     |
+| active                     | Boolean                                      |
+| npi_number                 | String                                       |
+| nadean_number              | String                                       |
+| group_npi_number           | String                                       |
+| bill_through_organization  | Boolean                                      |
+| tax_id                     | String                                       |
+| tax_id_type                | [TaxIDType](#taxidtype)                      |
+| spi_number                 | String                                       |
+| personal_meeting_room_link | URL                                          |
+| state                      | JSON                                         |
+| user                       | CanvasUser                                   |
+| supervising_team           | [Staff](#staff)[]                            |
+| notes                      | Note[]                                       |
+| creator_tasks              | [Task](/sdk/data-task/#task)[]               |
+| assignee_tasks             | [Task](/sdk/data-task/#task)[]               |
+| comments                   | [TaskComment](/sdk/data-task/#taskcomment)[] |
 
 ## Enumeration types
 
@@ -84,17 +87,17 @@ staff.creator_tasks.all()
 
 | Value | Label     |
 |-------|-----------|
-| "F"   | "female   |
-| "M"   | "male"    |
-| "O"   | "other"   |
-| "UNK" | "unknown" |
+| F   | female      |
+| M   | male        |
+| O   | other       |
+| UNK | unknown     |
 
 ### TaxIDType
 
 | Value | Label      |
 |-------|------------|
-| "E"   | "EIN text" |
-| "S"   | "SSN"      |
+| E  | EIN text |
+| S   | SSN      |
 
 <br/>
 <br/>
