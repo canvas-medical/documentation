@@ -1,6 +1,5 @@
 ---
 title: "Effects"
-disable_anchorlist: true
 ---
 
 Effects are instructions that plugins can return in order to perform an action
@@ -77,20 +76,20 @@ class CustomChartLayout(BaseHandler):
 
 ## Effect Classes
 
-<div>
+<div class="sdk-card-list">
 {% for item in site.menus.effects_module %}
     <a href="{{ item.url }}">
-        <div style="padding-left: 20px; padding-bottom: 20px; margin: 0px 2px 40px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
-            <h2 style="padding-top: 10px;">{{ item.title }}</h2>
-            <span>{{ item.description }}</span>
+        <div class="sdk-card">
+            <span class="cardHeading">{{ item.title }}</span>
+            <p>{{ item.description }}</p>
         </div>
     </a>
 
 {% endfor %}
     <a href="/sdk/commands/">
-        <div style="padding-left: 20px; padding-bottom: 20px; margin: 0px 2px 40px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
-            <h2 style="padding-top: 10px;">Commands</h2>
-            <span>The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation.</span>
+        <div class="sdk-card">
+            <span class="cardHeading">Commands</span>
+            <p>The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation.</p>
         </div>
     </a>
 </div>
