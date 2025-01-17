@@ -1,0 +1,84 @@
+.handler-cards {
+  display: flex;
+  flex-direction: horizontal;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  
+  a {
+    color: unset;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  .handler-card {
+    background-color: #24292e;
+    border-radius: 3px;
+    box-shadow: 0px 0px 1px 2px #e5eaec;
+    max-width: 350px;
+    height: 325px;
+    margin: 0px 10px 20px 10px;
+  
+    .handler-card-header {
+      background-color: #ffffff;
+      padding-top: 2px;
+      padding-left: 10px;
+      padding-right: 10px;
+      padding-bottom: 5px;
+    
+      h2 {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  
+    img {
+      max-width: 350px;
+    }
+
+    img.hover-secondary {
+      display: none;
+    }
+  }
+
+  .handler-card:hover {
+    box-shadow: 0px 0px 1px 5px #e0f1f4;
+
+    img.hover-secondary {
+      display: block;
+    }
+
+    img.hover-primary {
+      display: none;
+    }
+  }
+}
+
+.sdk-card-list {
+  a {
+    color: unset;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  .sdk-card {
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    margin: 0px 2px 20px 2px;
+    box-shadow: 0 0 1px 2px #e5eaec;
+    border-radius: 3px;
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  .sdk-card:hover {
+    box-shadow: 0px 0px 1px 5px #e0f1f4;
+  }
+}
