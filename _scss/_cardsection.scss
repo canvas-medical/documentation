@@ -59,18 +59,32 @@
 
 .cardWrapper {
   padding-top: 20px;
+  padding-bottom: 40px;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   gap: 16px;
+
+  a {
+    color: unset;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
 }
 
 .cardContainer {
-  width: 309px;
   padding: 20px 20px 60px 20px;
   box-shadow: 0px 0px 1px 2px #e5eaec;
   background-color: white;
   border-radius: 3px;
+  width: 300px;
+  height: 128px;
+}
+
+.cardContainer:hover {
+  box-shadow: 0px 0px 1px 5px #e0f1f4;
 }
 
 .cardTitleIcon {
