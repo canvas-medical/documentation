@@ -3105,7 +3105,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 ### Action Buttons Events
 
-For more information on handling these events, see <a href="/sdk/layout-effect/#action-buttons" target="_blank">Action Buttons</a>.
+For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
 
 <table>
   <colgroup>
@@ -3118,47 +3118,55 @@ For more information on handling these events, see <a href="/sdk/layout-effect/#
   </thead>
   <tbody>
     <tr>
-      <td>SOCIAL_DETERMINANTS_ACTION_BUTTONS</td>
+      <td>SHOW_NOTE_HEADER_BUTTON</td>
+      <td>Occurs when patient notes are being loaded.</td>
+    </tr>
+    <tr>
+      <td>SHOW_NOTE_FOOTER_BUTTON</td>
+      <td>Occurs when patient notes are being loaded.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for social determinants section.</td>
     </tr>
     <tr>
-      <td>GOALS_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_GOALS_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for goals section.</td>
     </tr>
     <tr>
-      <td>CONDITIONS_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_CONDITIONS_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for conditions section.</td>
     </tr>
     <tr>
-      <td>MEDICATIONS_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_MEDICATIONS_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for medications section.</td>
     </tr>
     <tr>
-      <td>ALLERGIES_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_ALLERGIES_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for allergies section.</td>
     </tr>
     <tr>
-      <td>CARE_TEAMS_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_CARE_TEAMS_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for care teams section.</td>
     </tr>
     <tr>
-      <td>VITALS_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_VITALS_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for vitals section.</td>
     </tr>
     <tr>
-      <td>IMMUNIZATIONS_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_IMMUNIZATIONS_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for immunizations section.</td>
     </tr>
     <tr>
-      <td>SURGICAL_HISTORY_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_SURGICAL_HISTORY_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for surgical history section.</td>
     </tr>
     <tr>
-      <td>FAMILY_HISTORY_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_FAMILY_HISTORY_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for family history section.</td>
     </tr>
     <tr>
-      <td>CODING_GAPS_ACTION_BUTTONS</td>
+      <td>SHOW_CHART_SUMMARY_CODING_GAPS_SECTION_BUTTON</td>
       <td>Occurs when patient chart summary is being loaded, specifically for coding gaps section.</td>
     </tr>
   </tbody>

@@ -49,36 +49,23 @@ other context.
 
 Values in the `PatientChartSummaryConfiguration.Section` enum are:
 
-| Constant | Description |
-| -------- | ----------- |
+| Constant            | Description         |
+|---------------------|---------------------|
 | SOCIAL_DETERMINANTS | social_determinants |
-| GOALS | goals |
-| CONDITIONS | conditions |
-| MEDICATIONS | medications |
-| ALLERGIES | allergies |
-| CARE_TEAMS | care_teams |
-| VITALS | vitals |
-| IMMUNIZATIONS | immunizations |
-| SURGICAL_HISTORY | surgical_history |
-| FAMILY_HISTORY | family_history |
-| CODING_GAPS | coding_gaps |
+| GOALS               | goals               |
+| CONDITIONS          | conditions          |
+| MEDICATIONS         | medications         |
+| ALLERGIES           | allergies           |
+| CARE_TEAMS          | care_teams          |
+| VITALS              | vitals              |
+| IMMUNIZATIONS       | immunizations       |
+| SURGICAL_HISTORY    | surgical_history    |
+| FAMILY_HISTORY      | family_history      |
+| CODING_GAPS         | coding_gaps         |
 
 ### Action Buttons
-Each section of the patient chart can also be customized with action buttons. The `ShowButtonEffect` class enables you to define an action button and configure its properties for a specific section of the patient chart summary.
+Each section of the patient chart can also be customized with action buttons. Please refer to the [Action Buttons](/sdk/handlers-action-buttons/) documentation for more information.
 
-```python
-class Protocol(BaseProtocol):
-    RESPONDS_TO = [EventType.Name(EventType.VITALS_ACTION_BUTTONS)]
-
-    def compute(self) -> list[Effect]:
-        return [ShowButtonEffect(key="vitals_growth_chart", title="Growth Chart").apply()]
-```
-
-The `ShowButtonEffect` takes the following arguments:
-- **key**: A unique string identifier for the button. Must be at least 1 character long.
-- **title**: The text displayed on the button. Must be at least 1 character long.
-
-Refer to the [Action Buttons events](/sdk/events/#action-buttons-events) documentation for the relevant action button events for each section.
 
 ## Patient Profile
 
@@ -197,7 +184,7 @@ The `LaunchModalEffect` class has the following properties:
 
 ### Custom HTML and Django Templates
 
-To facilitate the use of custom HTML, you can utilize the `render_to_string` utility to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect`.
+To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect`.
 
 ```python
 def render_to_string(template_name: str, context: dict[str, Any] | None = None) -> str | None:
