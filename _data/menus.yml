@@ -559,6 +559,9 @@ data_module:
  - title: "Task"
    url: /sdk/data-task
    description: Data associated with Tasks.
+ - title: "Team"
+   url: /sdk/data-team
+   description: Data associated with Teams.
  - title: "Value Sets"
    url: /sdk/data-value-sets/
    description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
