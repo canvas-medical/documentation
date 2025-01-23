@@ -42,10 +42,10 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="10%"/>
+    <col width="5%"/>
     <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="30%"/>
   </colgroup>
   <thead>
     <th>Event</th>
@@ -57,341 +57,113 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>PATIENT_CREATED</td>
       <td>Patient is created.</td>
-      <td>
-
-```json
-{
-  "id": <pt_key>,
-  "type": Patient
-}
-```
-
-</td>
-<td>
-
-`{}` empty
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_UPDATED</td>
-<td>Patient's data is updated.</td>
-      <td>
-
-```json
-{
-  "id": <pt_key>,
-  "type": Patient
-}
-```
-
-</td>
-<td>
-
-`{}` empty
-
-</td>
-</tr>
-<tr>
-<td>CARE_TEAM_MEMBERSHIP_CREATED</td>
-<td>New care team member is added for a patient.</td>
-      <td>
-
-```json
-{
-  "id": <care_team_member_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>CARE_TEAM_MEMBERSHIP_UPDATED</td>
-<td>Care team member is adjusted for a patient.</td>
-      <td>
-
-```json
-{
-  "id": <care_team_member_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>CARE_TEAM_MEMBERSHIP_DELETED</td>
-<td>Care team member is removed for a patient.</td>
-      <td>
-
-```json
-{
-  "id": <care_team_member_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_ADDRESS_CREATED</td>
-<td>Address is added for a patient.</td>
-      <td>
-
-```json
-{
-  "id": <address_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_ADDRESS_UPDATED</td>
-<td>One of a patient's addresses is updated.</td>
-      <td>
-
-```json
-{
-  "id": <address_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_ADDRESS_DELETED</td>
-<td>One of a patient's addresses is removed.</td>
-      <td>
-
-```json
-{
-  "id": <address_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_CONTACT_PERSON_CREATED</td>
-<td>Contact is added for a patient.</td>
-      <td>
-
-```json
-{
-  "id": <contact_person_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_CONTACT_PERSON_UPDATED</td>
-<td>One of a patient's contacts is updated.</td>
-      <td>
-
-```json
-{
-  "id": <contact_person_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_CONTACT_PERSON_DELETED</td>
-<td>One of a patient's contacts is removed.</td>
-      <td>
-
-```json
-{
-  "id": <contact_person_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_CONTACT_POINT_CREATED</td>
-<td>Contact method for a patient is added.</td>
-      <td>
-
-```json
-{
-  "id": <contact_point_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_CONTACT_POINT_UPDATED</td>
-<td>Contact method for a patient is updated.</td>
-      <td>
-
-```json
-{
-  "id": <contact_point_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
-<tr>
-<td>PATIENT_CONTACT_POINT_DELETED</td>
-<td>Contact method for a patient is removed.</td>
-      <td>
-
-```json
-{
-  "id": <contact_point_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
-</tr>
+      <td><pre>"id": pt_key
+"type": Patient</pre></td>
+      <td><pre>{} empty</pre></td>
+    </tr>
+    <tr>
+    <td>PATIENT_UPDATED</td>
+    <td>Patient's data is updated.</td>
+    <td><pre>"id": pt_key
+"type": Patient</pre></td>
+    <td><pre>{} empty</pre></td>
+  </tr>
+  <tr>
+  <td>CARE_TEAM_MEMBERSHIP_CREATED</td>
+  <td>New care team member is added for a patient.</td>
+  <td><pre>"id": care_team_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>CARE_TEAM_MEMBERSHIP_UPDATED</td>
+  <td>Care team member is adjusted for a patient.</td>
+  <td><pre>"id": care_team_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>CARE_TEAM_MEMBERSHIP_DELETED</td>
+  <td>Care team member is removed for a patient.</td>
+  <td><pre>"id": care_team_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>PATIENT_ADDRESS_CREATED</td>
+  <td>Address is added for a patient.</td>
+  <td><pre>"id": address_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>PATIENT_ADDRESS_UPDATED</td>
+  <td>One of a patient's addresses is updated.</td>
+  <td><pre>"id": address_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>PATIENT_ADDRESS_DELETED</td>
+  <td>One of a patient's addresses is removed.</td>
+  <td><pre>"id": address_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>PATIENT_CONTACT_PERSON_CREATED</td>
+  <td>Contact is added for a patient.</td>
+  <td><pre>"id": contact_person_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>PATIENT_CONTACT_PERSON_UPDATED</td>
+  <td>One of a patient's contacts is updated.</td>
+    <td><pre>"id": contact_person_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>PATIENT_CONTACT_PERSON_DELETED</td>
+  <td>One of a patient's contacts is removed.</td>
+    <td><pre>"id": contact_person_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>PATIENT_CONTACT_POINT_CREATED</td>
+  <td>Contact method for a patient is added.</td>
+    <td><pre>"id": contact_point_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>PATIENT_CONTACT_POINT_UPDATED</td>
+  <td>Contact method for a patient is updated.</td>
+    <td><pre>"id": contact_point_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
+  <tr>
+  <td>PATIENT_CONTACT_POINT_DELETED</td>
+  <td>Contact method for a patient is removed.</td>
+    <td><pre>"id": contact_point_id
+"type": None</pre></td>
+  <td><pre>"patient":
+    "id": pt_key</pre></td>
+  </tr>
 
   </tbody>
 </table>
