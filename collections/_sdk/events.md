@@ -42,10 +42,10 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="5%"/>
+    <col width="10%"/>
     <col width="30%"/>
     <col width="35%"/>
-    <col width="30%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
@@ -59,112 +59,111 @@ These events fire as a result of records being created, updated, or deleted.
       <td>Patient is created.</td>
       <td><pre>"id": pt_key
 "type": Patient</pre></td>
-      <td><pre>{} empty</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
     <tr>
-    <td>PATIENT_UPDATED</td>
-    <td>Patient's data is updated.</td>
-    <td><pre>"id": pt_key
+      <td>PATIENT_UPDATED</td>
+      <td>Patient's data is updated.</td>
+      <td><pre>"id": pt_key
 "type": Patient</pre></td>
-    <td><pre>{} empty</pre></td>
-  </tr>
-  <tr>
-  <td>CARE_TEAM_MEMBERSHIP_CREATED</td>
-  <td>New care team member is added for a patient.</td>
-  <td><pre>"id": care_team_id
+      <td><pre>empty</pre></td>
+    </tr>
+    <tr>
+      <td>CARE_TEAM_MEMBERSHIP_CREATED</td>
+      <td>New care team member is added for a patient.</td>
+      <td><pre>"id": care_team_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>CARE_TEAM_MEMBERSHIP_UPDATED</td>
-  <td>Care team member is adjusted for a patient.</td>
-  <td><pre>"id": care_team_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>CARE_TEAM_MEMBERSHIP_UPDATED</td>
+      <td>Care team member is adjusted for a patient.</td>
+      <td><pre>"id": care_team_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>CARE_TEAM_MEMBERSHIP_DELETED</td>
-  <td>Care team member is removed for a patient.</td>
-  <td><pre>"id": care_team_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>CARE_TEAM_MEMBERSHIP_DELETED</td>
+      <td>Care team member is removed for a patient.</td>
+      <td><pre>"id": care_team_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>PATIENT_ADDRESS_CREATED</td>
-  <td>Address is added for a patient.</td>
-  <td><pre>"id": address_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_ADDRESS_CREATED</td>
+      <td>Address is added for a patient.</td>
+      <td><pre>"id": address_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>PATIENT_ADDRESS_UPDATED</td>
-  <td>One of a patient's addresses is updated.</td>
-  <td><pre>"id": address_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_ADDRESS_UPDATED</td>
+      <td>One of a patient's addresses is updated.</td>
+      <td><pre>"id": address_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>PATIENT_ADDRESS_DELETED</td>
-  <td>One of a patient's addresses is removed.</td>
-  <td><pre>"id": address_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_ADDRESS_DELETED</td>
+      <td>One of a patient's addresses is removed.</td>
+      <td><pre>"id": address_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>PATIENT_CONTACT_PERSON_CREATED</td>
-  <td>Contact is added for a patient.</td>
-  <td><pre>"id": contact_person_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_PERSON_CREATED</td>
+      <td>Contact is added for a patient.</td>
+      <td><pre>"id": contact_person_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>PATIENT_CONTACT_PERSON_UPDATED</td>
-  <td>One of a patient's contacts is updated.</td>
-    <td><pre>"id": contact_person_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_PERSON_UPDATED</td>
+      <td>One of a patient's contacts is updated.</td>
+      <td><pre>"id": contact_person_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>PATIENT_CONTACT_PERSON_DELETED</td>
-  <td>One of a patient's contacts is removed.</td>
-    <td><pre>"id": contact_person_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_PERSON_DELETED</td>
+      <td>One of a patient's contacts is removed.</td>
+      <td><pre>"id": contact_person_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>PATIENT_CONTACT_POINT_CREATED</td>
-  <td>Contact method for a patient is added.</td>
-    <td><pre>"id": contact_point_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+    <td>PATIENT_CONTACT_POINT_CREATED</td>
+    <td>Contact method for a patient is added.</td>
+      <td><pre>"id": contact_point_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>PATIENT_CONTACT_POINT_UPDATED</td>
-  <td>Contact method for a patient is updated.</td>
-    <td><pre>"id": contact_point_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_POINT_UPDATED</td>
+      <td>Contact method for a patient is updated.</td>
+      <td><pre>"id": contact_point_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-  <tr>
-  <td>PATIENT_CONTACT_POINT_DELETED</td>
-  <td>Contact method for a patient is removed.</td>
-    <td><pre>"id": contact_point_id
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_POINT_DELETED</td>
+      <td>Contact method for a patient is removed.</td>
+      <td><pre>"id": contact_point_id
 "type": None</pre></td>
-  <td><pre>"patient":
-    "id": pt_key</pre></td>
-  </tr>
-
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
   </tbody>
 </table>
 
@@ -187,52 +186,18 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>ALLERGY_INTOLERANCE_CREATED</td>
       <td>An allergy is created for a patient. Additional details for the allergy may become available with subsequent ALLERGY_INTOLERANCE_UPDATED events.</td>
-      <td>
-
-```json
-{
-  "id": <allergy_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": allergy_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_INTOLERANCE_UPDATED</td>
       <td>An allergy is updated for a patient.</td>
-      <td>
-
-```json
-{
-  "id": <allergy_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": allergy_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -256,177 +221,58 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>APPOINTMENT_CREATED</td>
       <td>An appointment is first created/booked.</td>
-      <td>
-
-```json
-{
-  "id": <appointment_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</td>
     </tr>
     <tr>
       <td>APPOINTMENT_UPDATED</td>
       <td>Details of an appointment are updated.</td>
-      <td>
-
-```json
-{
-  "id": <appointment_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</td>
     </tr>
     <tr>
       <td>APPOINTMENT_CHECKED_IN</td>
       <td>A patient has arrived and been checked in for their appointment.</td>
-      <td>
-
-```json
-{
-  "id": <appointment_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</td>
     </tr>
     <tr>
       <td>APPOINTMENT_RESCHEDULED</td>
       <td>An appointment is rescheduled. In this case, a new appointment is created that is linked to the appointment it was rescheduled from.</td>
-      <td>
-
-```json
-{
-  "id": <appointment_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</td>
     </tr>
     <tr>
       <td>APPOINTMENT_RESTORED</td>
       <td>A cancelled appointment is restored to a non-cancelled status.</td>
-      <td>
-
-```json
-{
-  "id": <appointment_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</td>
     </tr>
     <tr>
       <td>APPOINTMENT_CANCELED</td>
       <td>An appointment is cancelled.</td>
-      <td>
-
-```json
-{
-  "id": <appointment_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</td>
     </tr>
     <tr>
       <td>APPOINTMENT_NO_SHOWED</td>
       <td>An appointment is marked as a no-show.</td>
-      <td>
-
-```json
-{
-  "id": <appointment_id>,
-  "type": None
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</td>
     </tr>
 
   </tbody>
@@ -451,52 +297,18 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>BILLING_LINE_ITEM_CREATED</td>
       <td>A billing line item is created from adding a CPT code to a note.</td>
-      <td>
-
-```json
-{
-  "id": <billing_line_item_id>,
-  "type": BillingLineItem
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": billing_line_item_id
+"type": BillingLineItem</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>BILLING_LINE_ITEM_UPDATED</td>
       <td>A billing line item is modified.</td>
-      <td>
-
-```json
-{
-  "id": <billing_line_item_id>,
-  "type": BillingLineItem
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": billing_line_item_id
+"type": BillingLineItem</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -520,102 +332,34 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>CONDITION_ASSESSED</td>
       <td>A condition is assessed through the Assess Condition command.</td>
-      <td>
-
-```json
-{
-  "id": <condition_id>,
-  "type": Condition
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": condition_id
+"type": Condition</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CONDITION_CREATED</td>
       <td>A condition is diagnosed for a patient. Additional details for the condition may become available with subsequent CONDITION_UPDATED events.</td>
-      <td>
-
-```json
-{
-  "id": <condition_id>,
-  "type": Condition
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": condition_id
+"type": Condition</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CONDITION_RESOLVED</td>
       <td>A condition is resolved through the Resolve Condition command.</td>
-      <td>
-
-```json
-{
-  "id": <condition_id>,
-  "type": Condition
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": condition_id
+"type": Condition</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CONDITION_UPDATED</td>
       <td>A condition is updated for a patient.</td>
-      <td>
-
-```json
-{
-  "id": <condition_id>,
-  "type": Condition
-}
-```
-
-</td>
-      <td>
-
-```json
-{
-  "patient": {
-    "id": <pt_key>
-  }
-}
-```
-
-</td>
+      <td><pre>"id": condition_id
+"type": Condition</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -624,25 +368,41 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>CONSENT_CREATED</td>
-      <td>Occurs when a patient consent is created.</td>
+      <td>A patient consent is created.</td>
+      <td><pre>"id": consent_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CONSENT_DELETED</td>
-      <td>Occurs when a patient consent is removed/deleted.</td>
+      <td>A patient consent is removed/deleted.</td>
+      <td><pre>"id": consent_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CONSENT_UPDATED</td>
-      <td>Occurs when a patient consent is updated.</td>
+      <td>A patient consent is updated.</td>
+      <td><pre>"id": consent_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -651,21 +411,33 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>COVERAGE_CREATED</td>
-      <td>Occurs when a coverage for a patient is created.</td>
+      <td>A coverage for a patient is created.</td>
+      <td><pre>"id": coverage_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>COVERAGE_UPDATED</td>
-      <td>Occurs when a coverage for a patient is updated.</td>
+      <td>A coverage for a patient is updated.</td>
+      <td><pre>"id": coverage_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -674,21 +446,33 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>DEVICE_CREATED</td>
-      <td>Occurs when a device is created.</td>
+      <td>A device is created.</td>
+      <td><pre>"id": device_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DEVICE_UPDATED</td>
-      <td>Occurs when a device is updated.</td>
+      <td>A device is updated.</td>
+      <td><pre>"id": device_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -697,21 +481,31 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>ENCOUNTER_CREATED</td>
-      <td>Occurs when an encounter is created.</td>
+      <td>An encounter is created.</td>
+      <td><pre>"id": encounter_id
+"type": None</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>ENCOUNTER_UPDATED</td>
-      <td>Occurs when an encounter is updated.</td>
+      <td>An encounter is updated.</td>
+      <td><pre>"id": encounter_id
+"type": None</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -720,21 +514,33 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>IMAGING_REPORT_CREATED</td>
-      <td>Occurs when an imaging report is entered into the Data Integration section of Canvas.</td>
+      <td>An imaging report is entered into the Data Integration section of Canvas.</td>
+      <td><pre>"id": report_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>IMAGING_REPORT_UPDATED</td>
-      <td>Occurs when an imaging report is updated.</td>
+      <td>An imaging report is updated.</td>
+      <td><pre>"id": report_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -743,29 +549,49 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>IMMUNIZATION_CREATED</td>
-      <td>Occurs when an immunization is created. Additional details for the immunization may become available with subsequent IMMUNIZATION_UPDATED events.</td>
-    </tr>
-    <tr>
-      <td>IMMUNIZATION_STATEMENT_CREATED</td>
-      <td>Occurs when an immunization statement is created. Additional details for the immunization statement may become available with subsequent IMMUNIZATION_STATEMENT_UPDATED events.</td>
-    </tr>
-    <tr>
-      <td>IMMUNIZATION_STATEMENT_UPDATED</td>
-      <td>Occurs when an immunization statement is updated.</td>
+      <td>An immunization is created. Additional details for the immunization may become available with subsequent IMMUNIZATION_UPDATED events.</td>
+      <td><pre>"id": immun_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_UPDATED</td>
-      <td>Occurs when an immunization is updated.</td>
+      <td>An immunization is updated.</td>
+      <td><pre>"id": immun_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>IMMUNIZATION_STATEMENT_CREATED</td>
+      <td>An immunization statement is created. Additional details for the immunization statement may become available with subsequent IMMUNIZATION_STATEMENT_UPDATED events.</td>
+      <td><pre>"id": immun_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
+    </tr>
+    <tr>
+      <td>IMMUNIZATION_STATEMENT_UPDATED</td>
+      <td>An immunization statement is updated.</td>
+      <td><pre>"id": immun_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -774,21 +600,25 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>INSTRUCTION_CREATED</td>
-      <td>Occurs when an instruction is created using the Instruct command. Additional details for the instruction may become available with subsequent INSTRUCTION_UPDATED events.</td>
+      <td>An instruction is created using the Instruct command. Additional details for the instruction may become available with subsequent INSTRUCTION_UPDATED events.</td>
     </tr>
     <tr>
       <td>INSTRUCTION_UPDATED</td>
-      <td>Occurs when an instruction is updated.</td>
+      <td>An instruction is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -797,21 +627,25 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>INTERVIEW_CREATED</td>
-      <td>Occurs when an interview is created using the Questionnaire command or through the Questionnaire endpoint in the FHIR API. Additional details for the interview may become available with subsequent INTERVIEW_UPDATED events.</td>
+      <td>An interview is created using the Questionnaire command or through the Questionnaire endpoint in the FHIR API. Additional details for the interview may become available with subsequent INTERVIEW_UPDATED events.</td>
     </tr>
     <tr>
       <td>INTERVIEW_UPDATED</td>
-      <td>Occurs when an interview is updated.</td>
+      <td>An interview is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -820,29 +654,33 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>LAB_ORDER_CREATED</td>
-      <td>Occurs when a lab order is created via the Lab Order command. Additional details for the lab order may become available with subsequent LAB_ORDER_UPDATED events.</td>
+      <td>A lab order is created via the Lab Order command. Additional details for the lab order may become available with subsequent LAB_ORDER_UPDATED events.</td>
     </tr>
     <tr>
       <td>LAB_ORDER_UPDATED</td>
-      <td>Occurs when a lab order is updated.</td>
+      <td>A lab order is updated.</td>
     </tr>
     <tr>
       <td>LAB_REPORT_CREATED</td>
-      <td>Occurs when a lab report is created either through Data Integration, electronic ingestion or the FHIR API.</td>
+      <td>A lab report is created either through Data Integration, electronic ingestion or the FHIR API.</td>
     </tr>
     <tr>
       <td>LAB_REPORT_UPDATED</td>
-      <td>Occurs when a lab report is updated.</td>
+      <td>A lab report is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -851,29 +689,33 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>MEDICATION_LIST_ITEM_CREATED</td>
-      <td>Occurs when a medication is added for a patient.</td>
+      <td>A medication is added for a patient.</td>
     </tr>
     <tr>
       <td>MEDICATION_LIST_ITEM_UPDATED</td>
-      <td>Occurs when a medication is updated for a patient.</td>
+      <td>A medication is updated for a patient.</td>
     </tr>
     <tr>
       <td>PRESCRIPTION_CREATED</td>
-      <td>Occurs when a prescription is created.</td>
+      <td>A prescription is created.</td>
     </tr>
     <tr>
       <td>PRESCRIPTION_UPDATED</td>
-      <td>Occurs when a prescription is created for a patient using the Prescribe command. Additional details for the prescription become available with subsequent PRESCRIPTION_UPDATED events.</td>
+      <td>A prescription is created for a patient using the Prescribe command. Additional details for the prescription become available with subsequent PRESCRIPTION_UPDATED events.</td>
     </tr>
   </tbody>
 </table>
@@ -882,17 +724,21 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>MESSAGE_CREATED</td>
-      <td>Occurs when a message (patient/practitioner communication) is created.</td>
+      <td>A message (patient/practitioner communication) is created.</td>
     </tr>
   </tbody>
 </table>
@@ -901,12 +747,16 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -924,21 +774,25 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>OBSERVATION_CREATED</td>
-      <td>Occurs when an observation is created.</td>
+      <td>An observation is created.</td>
     </tr>
     <tr>
       <td>OBSERVATION_UPDATED</td>
-      <td>Occurs when an observation is updated.</td>
+      <td>An observation is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -947,12 +801,16 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -974,21 +832,25 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>REFERRAL_REPORT_CREATED</td>
-      <td>Occurs when a specialist consult report is created in Data Integration.</td>
+      <td>A specialist consult report is created in Data Integration.</td>
     </tr>
     <tr>
       <td>REFERRAL_REPORT_UPDATED</td>
-      <td>Occurs when a specialist consult report is updated.</td>
+      <td>A specialist consult report is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -997,25 +859,29 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>TASK_CREATED</td>
-      <td>Occurs when a task is created.</td>
+      <td>A task is created.</td>
     </tr>
     <tr>
       <td>TASK_UPDATED</td>
-      <td>Occurs when a task is updated.</td>
+      <td>A task is updated.</td>
     </tr>
     <tr>
       <td>TASK_COMMENT_CREATED</td>
-      <td>Occurs when a comment is added to a task.</td>
+      <td>A comment is added to a task.</td>
     </tr>
     <tr>
       <td>TASK_COMMENT_UPDATED</td>
@@ -1027,15 +893,15 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td>TASK_LABELS_ADJUSTED</td>
-      <td>Occurs when a task's labels are changed.</td>
+      <td>A task's labels are changed.</td>
     </tr>
     <tr>
       <td>TASK_COMPLETED</td>
-      <td>Occurs when a task is set to completed.</td>
+      <td>A task is set to completed.</td>
     </tr>
     <tr>
       <td>TASK_CLOSED</td>
-      <td>Occurs when a task is set to closed.</td>
+      <td>A task is set to closed.</td>
     </tr>
   </tbody>
 </table>
@@ -1044,21 +910,25 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>VITAL_SIGN_CREATED</td>
-      <td>Occurs when a vitals entry is created for a patient using the Vitals command. Additional details for the vitals become available with subsequent VITAL_SIGN_UPDATED events.</td>
+      <td>A vitals entry is created for a patient using the Vitals command. Additional details for the vitals become available with subsequent VITAL_SIGN_UPDATED events.</td>
     </tr>
     <tr>
       <td>VITAL_SIGN_UPDATED</td>
-      <td>Occurs when a vitals entry is updated for a patient.</td>
+      <td>A vitals entry is updated for a patient.</td>
     </tr>
   </tbody>
 </table>
@@ -1071,12 +941,16 @@ These events fire during the command lifecycle.
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1169,12 +1043,16 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1240,12 +1118,16 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1315,12 +1197,16 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1404,12 +1290,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1475,12 +1365,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1546,12 +1440,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1625,12 +1523,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1704,12 +1606,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1767,12 +1673,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1830,12 +1740,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1925,12 +1839,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -1996,12 +1914,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2083,12 +2005,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2154,12 +2080,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2249,12 +2179,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2336,12 +2270,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2402,7 +2340,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__SELECTED</td>
-      <td>Occurs when a medication is selected from Medication Statement search results.</td>
+      <td>A medication is selected from Medication Statement search results.</td>
     </tr>
   </tbody>
 </table>
@@ -2411,12 +2349,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2482,12 +2424,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2553,12 +2499,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2616,12 +2566,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2703,12 +2657,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2774,12 +2732,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2845,12 +2807,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -2932,12 +2898,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -3003,12 +2973,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -3074,12 +3048,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -3145,12 +3123,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -3216,12 +3198,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -3287,12 +3273,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -3366,12 +3356,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -3437,12 +3431,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -3500,12 +3498,16 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
+    <col width="10%"/>
+    <col width="30%"/>
+    <col width="35%"/>
+    <col width="25%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Description</th>
+    <th>Occurs when</th>
+    <th>Target object</th>
+    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
@@ -3518,27 +3520,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLAIM__CONDITIONS</td>
-      <td>Occurs when the conditions are loaded within the claim summary.</td>
+      <td>The conditions are loaded within the claim summary.</td>
     </tr>
     <tr>
       <td>PATIENT_CHART__CONDITIONS</td>
-      <td>Occurs when the conditions are loaded within the patient summary</td>
+      <td>The conditions are loaded within the patient summary</td>
     </tr>
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
-      <td>Occurs when a patient chart's summary section is loading.</td>
+      <td>A patient chart's summary section is loading.</td>
     </tr>
     <tr>
       <td>PLUGIN_CREATED</td>
-      <td>Occurs when a plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
+      <td>A plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PLUGIN_UPDATED</td>
-      <td>Occurs when a plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
+      <td>A plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</td>
-      <td>Occurs when adding a pharmacy for a patient in their profile.</td>
+      <td>Adding a pharmacy for a patient in their profile.</td>
     </tr>
   </tbody>
 </table>
