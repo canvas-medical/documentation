@@ -103,43 +103,43 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 
 ### PatientAddress
 
-| Field Name  | Type                        |
-|-------------|-----------------------------|
-| id          | UUID                        |
-| dbid        | Integer                     |
-| line1       | String                      |
-| line2       | String                      |
-| city        | String                      |
-| district    | String                      |
-| state_code  | String                      |
-| postal_code | String                      |
-| use         | [AddressUse](#addressuse)   |
-| type        | [AddressType](#addresstype) |
-| longitude   | Float                       |
-| latitude    | Float                       |
-| start       | Date                        |
-| end         | Date                        |
-| country     | String                      |
-| state       | String                      |
-| patient     | [Patient](#patient)         |
+| Field Name  | Type                                                    |
+|-------------|---------------------------------------------------------|
+| id          | UUID                                                    |
+| dbid        | Integer                                                 |
+| line1       | String                                                  |
+| line2       | String                                                  |
+| city        | String                                                  |
+| district    | String                                                  |
+| state_code  | String                                                  |
+| postal_code | String                                                  |
+| use         | [AddressUse](/sdk/data-enumeration-types/#addressuse)   |
+| type        | [AddressType](/sdk/data-enumeration-types/#addresstype) |
+| longitude   | Float                                                   |
+| latitude    | Float                                                   |
+| start       | Date                                                    |
+| end         | Date                                                    |
+| country     | String                                                  |
+| state       | String                                                  |
+| patient     | [Patient](#patient)                                     |
 
 ### PatientContactPoint
 
-| Field Name         | Type                                      |
-|--------------------|-------------------------------------------|
-| id                 | UUID                                      |
-| dbid               | Integer                                   |
-| system             | [ContactPointSystem](#contactpointsystem) |
-| value              | String                                    |
-| use                | String                                    |
-| use_notes          | String                                    |
-| rank               | Integer                                   |
-| state              | [ContactPointState](#contactpointstate)   |
-| patient            | Patient                                   |
-| has_consent        | Boolean                                   |
-| last_verified      | DateTime                                  |
-| verification_token | String                                    |
-| opted_out          | Boolean                                   |
+| Field Name         | Type                                                                  |
+|--------------------|-----------------------------------------------------------------------|
+| id                 | UUID                                                                  |
+| dbid               | Integer                                                               |
+| system             | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
+| value              | String                                                                |
+| use                | String                                                                |
+| use_notes          | String                                                                |
+| rank               | Integer                                                               |
+| state              | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
+| patient            | Patient                                                               |
+| has_consent        | Boolean                                                               |
+| last_verified      | DateTime                                                              |
+| verification_token | String                                                                |
+| opted_out          | Boolean                                                               |
 
 ### PatientExternalIdentifier
 
@@ -168,50 +168,15 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | name       | String              |
 | value      | JSON                |
 
-
 ## Enumeration types
-
-### AddressType
-
-| Value      | Label    |
-|------------|----------|
-| postal     | Postal   |
-| physical   | Physical |
-| both       | Both     |
-
-### AddressUse
-
-| Value      | Label |
-|------------|-------|
-| home       | Home  |
-| work       | Work  |
-| temp       | Temp  |
-| old        | Old   |
-
-### ContactPointState
-
-| Value      | Label   |
-|------------|---------|
-| active     | Active  |
-| deleted    | Deleted |
-
-### ContactPointSystem
-
-| Value | Label |
-|-------|-------|
-| phone | phone |
-| fax   | fax   |
-| email | email |
-| pager | pager |
-| other | other |
 
 ### SexAtBirth
 
-| Value             | Label  |
-|-------------------|--------|
-| F                 | female |
-| M                 | male   |
-| O                 | other  |
+| Value             | Label   |
+|-------------------|---------|
+| F                 | female  |
+| M                 | male    |
+| O                 | other   |
 | UNK               | unknown |
 | "" (empty string) | ""      |
 

@@ -53,7 +53,7 @@ staff.creator_tasks.all()
 | nickname                   | String                                                          |
 | previous_names             | JSON                                                            |
 | birth_date                 | Date                                                            |
-| sex_at_birth               | [PersonSex](#personsex)                                         |
+| sex_at_birth               | [PersonSex](/sdk/data-enumeration-types/#personsex)             |
 | sexual_orientation_term    | String                                                          |
 | sexual_orientation_code    | String                                                          |
 | gender_identity_term       | String                                                          |
@@ -70,7 +70,7 @@ staff.creator_tasks.all()
 | group_npi_number           | String                                                          |
 | bill_through_organization  | Boolean                                                         |
 | tax_id                     | String                                                          |
-| tax_id_type                | [TaxIDType](#taxidtype)                                         |
+| tax_id_type                | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)             |
 | spi_number                 | String                                                          |
 | personal_meeting_room_link | URL                                                             |
 | state                      | JSON                                                            |
@@ -81,24 +81,6 @@ staff.creator_tasks.all()
 | assignee_tasks             | [Task](/sdk/data-task/#task)[]                                  |
 | comments                   | [TaskComment](/sdk/data-task/#taskcomment)[]                    |
 | care_team_memberships      | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[] |
-
-## Enumeration types
-
-### PersonSex
-
-| Value | Label     |
-|-------|-----------|
-| F   | female      |
-| M   | male        |
-| O   | other       |
-| UNK | unknown     |
-
-### TaxIDType
-
-| Value | Label      |
-|-------|------------|
-| E  | EIN text |
-| S   | SSN      |
 
 <br/>
 <br/>

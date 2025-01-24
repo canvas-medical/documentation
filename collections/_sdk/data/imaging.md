@@ -54,109 +54,64 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 
 ### ImagingOrder
 
-| Field Name          | Type                                  |
-|---------------------|---------------------------------------|
-| id                  | UUID                                  |
-| dbid                | Integer                               |
-| created             | DateTime                              |
-| modified            | DateTime                              |
-| originator          | CanvasUser                            |
-| deleted             | Boolean                               |
-| committer           | CanvasUser                            |
-| entered_in_error    | CanvasUser                            |
-| patient             | [Patient](/sdk/data-patient/#patient) |
-| imaging             | String                                |
-| note_to_radiologist | String                                |
-| internal_comment    | String                                |
-| status              | [OrderStatus](#orderstatus)           |
-| date_time_ordered   | DateTime                              |
-| priority            | String                                |
-| delegated           | Boolean                               |
+| Field Name          | Type                                                    |
+|---------------------|---------------------------------------------------------|
+| id                  | UUID                                                    |
+| dbid                | Integer                                                 |
+| created             | DateTime                                                |
+| modified            | DateTime                                                |
+| originator          | CanvasUser                                              |
+| deleted             | Boolean                                                 |
+| committer           | CanvasUser                                              |
+| entered_in_error    | CanvasUser                                              |
+| patient             | [Patient](/sdk/data-patient/#patient)                   |
+| imaging             | String                                                  |
+| note_to_radiologist | String                                                  |
+| internal_comment    | String                                                  |
+| status              | [OrderStatus](/sdk/data-enumeration-types/#orderstatus) |
+| date_time_ordered   | DateTime                                                |
+| priority            | String                                                  |
+| delegated           | Boolean                                                 |
 
 ### ImagingReview
 
-| Field Name                   | Type                                                                  |
-|------------------------------|-----------------------------------------------------------------------|
-| id                           | UUID                                                                  |
-| dbid                         | Integer                                                               |
-| created                      | DateTime                                                              |
-| modified                     | DateTime                                                              |
-| originator                   | CanvasUser                                                            |
-| deleted                      | Boolean                                                               |
-| committer                    | CanvasUser                                                            |
-| patient_communication_method | [ReviewPatientCommunicationMethod](#reviewpatientcommunicationmethod) |
-| internal_comment             | String                                                                |
-| message_to_patient           | String                                                                |
-| is_released_to_patient       | Boolean                                                               |
-| status                       | [ReviewStatus](#reviewstatus)                                         |
-| patient                      | [Patient](/sdk/data-patient/#patient)                                 |
+| Field Name                   | Type                                                                                              |
+|------------------------------|---------------------------------------------------------------------------------------------------|
+| id                           | UUID                                                                                              |
+| dbid                         | Integer                                                                                           |
+| created                      | DateTime                                                                                          |
+| modified                     | DateTime                                                                                          |
+| originator                   | CanvasUser                                                                                        |
+| deleted                      | Boolean                                                                                           |
+| committer                    | CanvasUser                                                                                        |
+| patient_communication_method | [ReviewPatientCommunicationMethod](/sdk/data-enumeration-types/#reviewpatientcommunicationmethod) |
+| internal_comment             | String                                                                                            |
+| message_to_patient           | String                                                                                            |
+| is_released_to_patient       | Boolean                                                                                           |
+| status                       | [ReviewStatus](/sdk/data-enumeration-types/#reviewstatus)                                         |
+| patient                      | [Patient](/sdk/data-patient/#patient)                                                             |
 
 ### ImagingReport
 
-| Field Name         | Type                                        |
-|--------------------|---------------------------------------------|
-| id                 | UUID                                        |
-| dbid               | Integer                                     |
-| created            | DateTime                                    |
-| modified           | DateTime                                    |
-| review_mode        | [DocumentReviewMode](#documentreviewmode)   |
-| junked             | Boolean                                     |
-| requires_signature | Boolean                                     |
-| assigned_date      | DateTime                                    |
-| patient            | [Patient](/sdk/data-patient/#patient)       |
-| order              | [ImagingOrder](#imagingorder)               |
-| source             | [ImagingReportSource](#imagingreportsource) |
-| name               | String                                      |
-| result_date        | Date                                        |
-| original_date      | Date                                        |
-| review             | [ImagingReview](#imagingreview)             |
+| Field Name         | Type                                                                  |
+|--------------------|-----------------------------------------------------------------------|
+| id                 | UUID                                                                  |
+| dbid               | Integer                                                               |
+| created            | DateTime                                                              |
+| modified           | DateTime                                                              |
+| review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |
+| junked             | Boolean                                                               |
+| requires_signature | Boolean                                                               |
+| assigned_date      | DateTime                                                              |
+| patient            | [Patient](/sdk/data-patient/#patient)                                 |
+| order              | [ImagingOrder](#imagingorder)                                         |
+| source             | [ImagingReportSource](#imagingreportsource)                           |
+| name               | String                                                                |
+| result_date        | Date                                                                  |
+| original_date      | Date                                                                  |
+| review             | [ImagingReview](#imagingreview)                                       |
 
 ## Enumeration types
-
-### OrderStatus
-
-| Value       | Description      |
-|-------------|------------------|
-| proposed    | Proposed         |
-| draft       | Draft            |
-| planned     | Planned          |
-| requested   | Requested        |
-| received    | Received         |
-| accepted    | Accepted         |
-| in-progress | In-progress      |
-| review      | Review           |
-| completed   | Completed        |
-| cancelled   | Cancelled        |
-| suspended   | Suspended        |
-| rejected    | Rejected         |
-| failed      | Failed           |
-| EIE         | Entered in Error |
-
-### ReviewPatientCommunicationMethod
-
-| Value | Description                           |
-|-------|---------------------------------------|
-| DM    | delegate call, can leave message      |
-| DA    | delegate call, need patient to answer |
-| DL    | delegate letter                       |
-| DC    | do not communicate                    |
-| AM    | already left message                  |
-| AR    | already reviewed with patient         |
-
-### ReviewStatus
-
-| Value     | Label     |
-|-----------|-----------|
-| reviewing | reviewing |
-| reviewed  | reviewed  |
-
-### DocumentReviewMode
-
-| Value | Label                    |
-|-------|--------------------------|
-| RR    | Review required          |
-| AR    | Already reviewed offline |
-| RN    | Review not required      |
 
 ### ImagingReportSource
 

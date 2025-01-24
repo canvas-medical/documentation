@@ -124,90 +124,49 @@ __Find All Expired Coverages__
 
 ### TransactorAddress
 
-| Field Name  | Type                                       |
-|-------------|--------------------------------------------|
-| id          | UUID                                       |
-| dbid        | Integer                                    |
-| created     | DateTime                                   |
-| modified    | DateTime                                   |
-| line1       | String                                     |
-| line2       | String                                     |
-| city        | String                                     |
-| district    | String                                     |
-| state_code  | String                                     |
-| postal_code | String                                     |
-| use         | [AddressUse](#addressuse)                  |
-| type        | [AddressType](#addresstype)                |
-| longitude   | Float                                      |
-| latitude    | Float                                      |
-| start       | Date                                       |
-| end         | Date                                       |
-| country     | String                                     |
-| state       | [AddressState](#addressstate)              |
-| transactor  | [Transactor](#transactor)                  |
-| coverages   | [Coverage](/sdk/data-coverage/#coverage)[] |
+| Field Name  | Type                                                      |
+|-------------|-----------------------------------------------------------|
+| id          | UUID                                                      |
+| dbid        | Integer                                                   |
+| created     | DateTime                                                  |
+| modified    | DateTime                                                  |
+| line1       | String                                                    |
+| line2       | String                                                    |
+| city        | String                                                    |
+| district    | String                                                    |
+| state_code  | String                                                    |
+| postal_code | String                                                    |
+| use         | [AddressUse](/sdk/data-enumeration-types/#addressuse)     |
+| type        | [AddressType](/sdk/data-enumeration-types/#addresstype)   |
+| longitude   | Float                                                     |
+| latitude    | Float                                                     |
+| start       | Date                                                      |
+| end         | Date                                                      |
+| country     | String                                                    |
+| state       | [AddressState](/sdk/data-enumeration-types/#addressstate) |
+| transactor  | [Transactor](#transactor)                                 |
+| coverages   | [Coverage](/sdk/data-coverage/#coverage)[]                |
+
 
 ### TransactorPhone
 
-| Field Name | Type                                       |
-|------------|--------------------------------------------|
-| id         | UUIDField                                  |
-| dbid       | Integer                                    |
-| created    | DateTime                                   |
-| modified   | DateTime                                   |
-| system     | String                                     |
-| value      | String                                     |
-| use        | [ContactPointUse](#contactpointuse)        |
-| use_notes  | String                                     |
-| rank       | Integer                                    |
-| state      | [ContactPointState](#contactpointstate)    |
-| transactor | [Transactor](#transactor)                  |
-| coverages  | [Coverage](/sdk/data-coverage/#coverage)[] |
+| Field Name | Type                                                                |
+|------------|---------------------------------------------------------------------|
+| id         | UUIDField                                                           |
+| dbid       | Integer                                                             |
+| created    | DateTime                                                            |
+| modified   | DateTime                                                            |
+| system     | String                                                              |
+| value      | String                                                              |
+| use        | [ContactPointUse](/sdk/data-enumeration-types/#contactpointuse)     |
+| use_notes  | String                                                              |
+| rank       | Integer                                                             |
+| state      | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate) |
+| transactor | [Transactor](#transactor)                                           |
+| coverages  | [Coverage](/sdk/data-coverage/#coverage)[]                          |
+
 
 ## Enumeration types
-
-### AddressState
-
-| Value      | Label   |
-|------------|---------|
-| active     | Active  |
-| deleted    | Deleted |
-
-### AddressType
-
-| Value      | Label    |
-|------------|----------|
-| postal     | Postal   |
-| physical   | Physical |
-| both       | Both     |
-
-### AddressUse
-
-| Value      | Label |
-|------------|-------|
-| home       | Home  |
-| work       | Work  |
-| temp       | Temp  |
-| old        | Old   |
-
-### ContactPointState
-
-| Value      | Label   |
-|------------|---------|
-| active     | Active  |
-| deleted    | Deleted |
-
-### ContactPointUse
-
-| Value      | Label      |
-|------------|------------|
-| home       | Home       |
-| work       | Work       |
-| temp       | Temp       |
-| old        | Old        |
-| other      | Other      |
-| mobile     | Mobile     |
-| automation | Automation |
 
 ### CoverageStack
 

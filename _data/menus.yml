@@ -501,6 +501,9 @@ data_module:
  - title: "Command"
    url: /sdk/data-command/
    description: Structured units of documentation in a patient's chart.
+ - title: "Common Enumeration Types"
+   url: /sdk/data-enumeration-types/
+   description: Common choice classes used in multiple models.
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
