@@ -1168,7 +1168,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_COMMIT</td>
       <td>After the Allergy command is committed.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1185,7 +1185,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_DELETE</td>
       <td>After the Allergy command is deleted.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1202,7 +1202,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
       <td>After the Allergy command is marked as entered in error.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1219,7 +1219,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
       <td>After an action is executed on the Allergy command.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1236,7 +1236,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_ORIGINATE</td>
       <td>After the Allergy command is first entered into a note.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1253,7 +1253,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_UPDATE</td>
       <td>After data for the Allergy command is updated.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1270,7 +1270,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_COMMIT</td>
       <td>Before the Allergy command is committed.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1287,7 +1287,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_DELETE</td>
       <td>Before the Allergy command is deleted.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1304,7 +1304,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td>Before the Allergy command is marked as entered in error.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1321,7 +1321,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
       <td>Before an action is executed on the Allergy command.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1338,7 +1338,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_ORIGINATE</td>
       <td>Before the Allergy command is first entered into a note.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1355,7 +1355,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_UPDATE</td>
       <td>Before data for the Allergy command is updated.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -1372,7 +1372,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY__ALLERGY__POST_SEARCH</td>
       <td>After the initial results are fetched for the allergy search in the Allergy command.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
@@ -1380,7 +1380,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY__ALLERGY__PRE_SEARCH</td>
       <td>Before the initial results are fetched for the allergy search in the Allergy command.</td>
-      <td><pre>"id": allergy_id
+      <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
@@ -1407,62 +1407,213 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__CONDITION_SELECTED</td>
       <td>Occurs after a condition is selected in the Assess command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_COMMIT</td>
       <td>Occurs after the Assess command is committed.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_DELETE</td>
       <td>Occurs after the Assess command is deleted.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_ENTER_IN_ERROR</td>
       <td>Occurs after the Assess command is marked as entered in error.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_EXECUTE_ACTION</td>
       <td>Occurs after an action is executed on the Assess command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_ORIGINATE</td>
       <td>Occurs after the Assess command is first entered into a note.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_UPDATE</td>
       <td>Occurs after data for the Assess command is updated.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_COMMIT</td>
       <td>Occurs before the Assess command is committed.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_DELETE</td>
       <td>Occurs before the Assess command is deleted.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td>Occurs before the Assess command is marked as entered in error.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_EXECUTE_ACTION</td>
       <td>Occurs before an action is executed on the Assess command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_ORIGINATE</td>
       <td>Occurs before the Assess command is first entered into a note.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_UPDATE</td>
       <td>Occurs before data for the Assess command is updated.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ASSESS__CONDITION__POST_SEARCH</td>
       <td>Occurs after the initial results are fetched for the condition search in the Assess command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>ASSESS__CONDITION__PRE_SEARCH</td>
       <td>Before the initial results are fetched for the condition search in the Assess command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1486,54 +1637,158 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__POST_COMMIT</td>
       <td>Occurs after the command has been committed.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_DELETE</td>
       <td>Occurs after the command has been deleted.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ENTER_IN_ERROR</td>
       <td>Occurs after the command has been marked as entered in error.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_EXECUTE_ACTION</td>
       <td>Occurs after a command action has been executed.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ORIGINATE</td>
       <td>Occurs after the command has been originated.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_UPDATE</td>
       <td>Occurs after the command has been updated.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_COMMIT</td>
       <td>Occurs before the command is committed.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_DELETE</td>
       <td>Occurs before the command is deleted.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td>Occurs before the command is marked as entered in error.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_EXECUTE_ACTION</td>
       <td>Occurs before a command action is executed.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ORIGINATE</td>
       <td>Occurs before the command is originated.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_UPDATE</td>
       <td>Occurs before the command is updated.	</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE</td>
       <td>Occurs after the command is added to a note in the UI.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1579,58 +1834,186 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_COMMIT</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_DELETE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_EXECUTE_ACTION</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_ORIGINATE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_UPDATE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_COMMIT</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_DELETE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_ORIGINATE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_UPDATE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL__GOAL_ID__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL__GOAL_ID__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1654,58 +2037,222 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__POST_COMMIT</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_DELETE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_ENTER_IN_ERROR</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_EXECUTE_ACTION</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_ORIGINATE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_UPDATE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_COMMIT</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_DELETE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_EXECUTE_ACTION</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_ORIGINATE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_UPDATE</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE__DIAGNOSE__POST_SEARCH</td>
       <td>Occurs after the initial results are fetched for the diagnosis search in the Diagnose command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE__DIAGNOSE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1777,18 +2324,34 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL__LANGUAGE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__LANGUAGE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__TITLE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__TITLE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1860,18 +2423,34 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY__FAMILY_HISTORY__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY__FAMILY_HISTORY__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY__RELATIVE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY__RELATIVE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1895,50 +2474,206 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__POST_COMMIT</td>
       <td>Occurs after the Goal command is committed.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_DELETE</td>
       <td>Occurs after the Assess command is deleted.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
       <td>Occurs after the Goal command is marked as entered in error.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_EXECUTE_ACTION</td>
       <td>Occurs after an action is executed on the Goal command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_ORIGINATE</td>
       <td>Occurs after the Goal command is first entered into a note.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_UPDATE</td>
       <td>Occurs after data for the Goal command is updated.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_COMMIT</td>
       <td>Occurs before the Goal command is committed.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_DELETE</td>
       <td>Occurs before the Assess command is deleted.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td>Occurs before the Goal command is marked as entered in error.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
       <td>Occurs before an action is executed on the Goal command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_ORIGINATE</td>
       <td>Occurs before the Goal command is first entered into a note.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_UPDATE</td>
       <td>Occurs before data for the Goal command is updated.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2077,34 +2812,66 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER__IMAGE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGING_CENTER__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__INDICATIONS__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__INDICATIONS__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__ORDERING_PROVIDER__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__ORDERING_PROVIDER__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2176,10 +2943,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT__STATEMENT__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT__STATEMENT__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2251,26 +3026,50 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE__CODING__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__CODING__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__GIVEN_BY__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__GIVEN_BY__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__LOT_NUMBER__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__LOT_NUMBER__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2342,10 +3141,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT__INSTRUCT__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT__INSTRUCT__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2417,34 +3224,66 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER__DIAGNOSIS__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__DIAGNOSIS__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__LAB_PARTNER__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__LAB_PARTNER__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__ORDERING_PROVIDER__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__ORDERING_PROVIDER__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__TESTS__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__TESTS__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2516,26 +3355,50 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_END_DATE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_END_DATE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_START_DATE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_START_DATE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2607,10 +3470,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__POST_SEARCH</td>
       <td>Occurs after the initial results are fetched for the medication search in the medication statement command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__PRE_SEARCH</td>
       <td>Occurs before a medication statement search for a medication.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__SELECTED</td>
@@ -2686,10 +3557,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM__PERFORM__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PERFORM__PERFORM__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2761,10 +3640,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM__QUESTIONNAIRE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM__QUESTIONNAIRE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2903,26 +3790,50 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE__INDICATIONS__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__INDICATIONS__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__PHARMACY__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__PHARMACY__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__PRESCRIBE__POST_SEARCH</td>
       <td>Occurs after the initial results are fetched for the medication search in the Prescribe command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__PRESCRIBE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2994,10 +3905,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE__QUESTIONNAIRE__POST_SEARCH</td>
       <td>Occurs after the initial results are fetched for the questionnaire search in the Questionnaire command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE__QUESTIONNAIRE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3069,10 +3988,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT__CODING__POST_SEARCH</td>
       <td>Occurs after the initial results are fetched for the reason search in the Reason for Visit command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT__CODING__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3144,26 +4071,50 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL__INDICATIONS__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__INDICATIONS__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__PHARMACY__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__PHARMACY__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__PRESCRIBE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__PRESCRIBE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3235,10 +4186,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY__ALLERGY__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY__ALLERGY__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3310,10 +4269,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS__QUESTIONNAIRE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>ROS__QUESTIONNAIRE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3385,10 +4352,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION__MEDICATION__POST_SEARCH</td>
       <td>Occurs after the initial results are fetched for the medication search in the Stop Medication command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION__MEDICATION__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3460,10 +4435,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT__QUESTIONNAIRE__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT__QUESTIONNAIRE__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3535,10 +4518,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3610,18 +4601,34 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK__ASSIGN_TO__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>TASK__ASSIGN_TO__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>TASK__LABELS__POST_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>TASK__LABELS__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3693,10 +4700,18 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL__GOAL_STATEMENT__POST_SEARCH</td>
       <td>Occurs after the initial results are fetched for the goal search in the Update Goal command.</td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL__GOAL_STATEMENT__PRE_SEARCH</td>
       <td></td>
+      <td><pre>"id": command_uuid
+"type": Command</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
