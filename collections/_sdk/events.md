@@ -224,7 +224,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</td>
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_UPDATED</td>
@@ -232,7 +232,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</td>
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_CHECKED_IN</td>
@@ -240,7 +240,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</td>
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_RESCHEDULED</td>
@@ -248,7 +248,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</td>
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_RESTORED</td>
@@ -256,7 +256,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</td>
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_CANCELED</td>
@@ -264,7 +264,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</td>
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_NO_SHOWED</td>
@@ -272,7 +272,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</td>
+  "id": pt_key</pre></td>
     </tr>
 
   </tbody>
@@ -1171,10 +1171,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1186,10 +1188,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1201,10 +1205,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1216,10 +1222,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1231,10 +1239,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1246,10 +1256,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1261,10 +1273,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1276,10 +1290,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1291,10 +1307,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1306,10 +1324,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1321,10 +1341,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1336,10 +1358,12 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
       <td><pre>"fields":
-  "allergy": str
+  "allergy": dict
   "severity": str
   "narrative": str
-  "approximate_date": str
+  "approximate_date":
+    "input": str
+    "date": str
 "note":
   "uuid": note_id
 "patient":
@@ -1350,30 +1374,16 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td>After the initial results are fetched for the allergy search in the Allergy command.</td>
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
-      <td><pre>"fields":
-  "allergy": str
-  "severity": str
-  "narrative": str
-  "approximate_date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_key</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>ALLERGY__ALLERGY__PRE_SEARCH</td>
       <td>Before the initial results are fetched for the allergy search in the Allergy command.</td>
       <td><pre>"id": allergy_id
 "type": Command</pre></td>
-      <td><pre>"fields":
-  "allergy": str
-  "severity": str
-  "narrative": str
-  "approximate_date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_key</pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
