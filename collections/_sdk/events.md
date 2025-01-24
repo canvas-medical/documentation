@@ -615,10 +615,18 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>INSTRUCTION_CREATED</td>
       <td>An instruction is created using the Instruct command. Additional details for the instruction may become available with subsequent INSTRUCTION_UPDATED events.</td>
+      <td><pre>"id": instruction_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>INSTRUCTION_UPDATED</td>
       <td>An instruction is updated.</td>
+      <td><pre>"id": instruction_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -642,10 +650,18 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>INTERVIEW_CREATED</td>
       <td>An interview is created using the Questionnaire command or through the Questionnaire endpoint in the FHIR API. Additional details for the interview may become available with subsequent INTERVIEW_UPDATED events.</td>
+      <td><pre>"id": interview_id
+"type": Interview</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>INTERVIEW_UPDATED</td>
       <td>An interview is updated.</td>
+      <td><pre>"id": interview_id
+"type": Interview</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -669,18 +685,34 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>LAB_ORDER_CREATED</td>
       <td>A lab order is created via the Lab Order command. Additional details for the lab order may become available with subsequent LAB_ORDER_UPDATED events.</td>
+      <td><pre>"id": laborder_id
+"type": LabOrder</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_UPDATED</td>
       <td>A lab order is updated.</td>
+      <td><pre>"id": laborder_id
+"type": LabOrder</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>LAB_REPORT_CREATED</td>
       <td>A lab report is created either through Data Integration, electronic ingestion or the FHIR API.</td>
+      <td><pre>"id": labreport_id
+"type": LabReport</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>LAB_REPORT_UPDATED</td>
       <td>A lab report is updated.</td>
+      <td><pre>"id": labreport_id
+"type": LabReport</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -704,18 +736,34 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>MEDICATION_LIST_ITEM_CREATED</td>
       <td>A medication is added for a patient.</td>
+      <td><pre>"id": medication_id
+"type": Medication</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_LIST_ITEM_UPDATED</td>
       <td>A medication is updated for a patient.</td>
+      <td><pre>"id": medication_id
+"type": Medication</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>PRESCRIPTION_CREATED</td>
       <td>A prescription is created.</td>
+      <td><pre>"id": prescription_id
+"type": Medication</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>PRESCRIPTION_UPDATED</td>
       <td>A prescription is created for a patient using the Prescribe command. Additional details for the prescription become available with subsequent PRESCRIPTION_UPDATED events.</td>
+      <td><pre>"id": prescription_id
+"type": Medication</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -739,11 +787,15 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>MESSAGE_CREATED</td>
       <td>A message (patient/practitioner communication) is created.</td>
+      <td><pre>"id": message_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
 
-#### Notes
+<!-- #### Notes
 
 <table>
   <colgroup>
@@ -768,7 +820,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td></td>
     </tr>
   </tbody>
-</table>
+</table> -->
 
 #### Observations
 
@@ -789,10 +841,18 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>OBSERVATION_CREATED</td>
       <td>An observation is created.</td>
+      <td><pre>"id": observation_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>OBSERVATION_UPDATED</td>
       <td>An observation is updated.</td>
+      <td><pre>"id": observation_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -816,14 +876,26 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>PROTOCOL_OVERRIDE_CREATED</td>
       <td></td>
+      <td><pre>"id": protocoloverride_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>PROTOCOL_OVERRIDE_UPDATED</td>
       <td></td>
+      <td><pre>"id": protocoloverride_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>PROTOCOL_OVERRIDE_DELETED</td>
       <td></td>
+      <td><pre>"id": protocoloverride_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -847,10 +919,18 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>REFERRAL_REPORT_CREATED</td>
       <td>A specialist consult report is created in Data Integration.</td>
+      <td><pre>"id": referralreport_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>REFERRAL_REPORT_UPDATED</td>
       <td>A specialist consult report is updated.</td>
+      <td><pre>"id": referralreport_id
+"type": None</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -874,34 +954,62 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>TASK_CREATED</td>
       <td>A task is created.</td>
+      <td><pre>"id": task_id
+"type": Task</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>TASK_UPDATED</td>
       <td>A task is updated.</td>
+      <td><pre>"id": task_id
+"type": Task</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMENT_CREATED</td>
       <td>A comment is added to a task.</td>
+      <td><pre>"id": taskcomment_id
+"type": TaskComment</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMENT_UPDATED</td>
       <td></td>
+      <td><pre>"id": taskcomment_id
+"type": TaskComment</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMENT_DELETED</td>
       <td></td>
+      <td><pre>"id": taskcomment_id
+"type": TaskComment</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>TASK_LABELS_ADJUSTED</td>
       <td>A task's labels are changed.</td>
+      <td><pre>"id": user_seelcted_tasklabel_id
+"type": None</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>TASK_COMPLETED</td>
       <td>A task is set to completed.</td>
+      <td><pre>"id": task_id
+"type": Task</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>TASK_CLOSED</td>
       <td>A task is set to closed.</td>
+      <td><pre>"id": task_id
+"type": Task</pre></td>
+      <td><pre>"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -925,10 +1033,16 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>VITAL_SIGN_CREATED</td>
       <td>A vitals entry is created for a patient using the Vitals command. Additional details for the vitals become available with subsequent VITAL_SIGN_UPDATED events.</td>
+      <td><pre>"id": vitalsign_id
+"type": None</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>VITAL_SIGN_UPDATED</td>
       <td>A vitals entry is updated for a patient.</td>
+      <td><pre>"id": vitalsign_id
+"type": None</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -941,69 +1055,65 @@ These events fire during the command lifecycle.
 
 <table>
   <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
+    <col width="40%"/>
+    <col width="60%"/>
   </colgroup>
   <thead>
     <th>Event</th>
     <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>PRE_COMMAND_ORIGINATE</td>
-      <td>Occurs before any command is entered into a note.</td>
+      <td>Before any command is entered into a note.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_ORIGINATE</td>
-      <td>Occurs after any command is entered into a note.</td>
+      <td>After any command is entered into a note.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_UPDATE</td>
-      <td>Occurs before the data in any command is updated.</td>
+      <td>Before the data in any command is updated.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_UPDATE</td>
-      <td>Occurs after the data in any command is updated.</td>
+      <td>After the data in any command is updated.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_COMMIT</td>
-      <td>Occurs before any command is committed.</td>
+      <td>Before any command is committed.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_COMMIT</td>
-      <td>Occurs after any command is committed.</td>
+      <td>After any command is committed.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_DELETE</td>
-      <td>Occurs before any command is deleted.</td>
+      <td>Before any command is deleted.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_DELETE</td>
-      <td>Occurs after any command is deleted.</td>
+      <td>After any command is deleted.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_ENTER_IN_ERROR</td>
-      <td>Occurs before any command is marked as entered in error.</td>
+      <td>Before any command is marked as entered in error.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_ENTER_IN_ERROR</td>
-      <td>Occurs after any command is marked as entered in error.</td>
+      <td>After any command is marked as entered in error.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on any command.</td>
+      <td>Before an action is executed on any command.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on any command.</td>
+      <td>After an action is executed on any command.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_INSERTED_INTO_NOTE</td>
-      <td>Occurs after a command is added to a note in the UI.</td>
+      <td>After a command is added to a note in the UI.</td>
     </tr>
   </tbody>
 </table>
@@ -1057,59 +1167,213 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   <tbody>
     <tr>
       <td>ALLERGY_COMMAND__POST_COMMIT</td>
-      <td></td>
+      <td>After the Allergy command is committed.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_DELETE</td>
-      <td></td>
+      <td>After the Allergy command is deleted.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
+      <td>After the Allergy command is marked as entered in error.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
+      <td>After an action is executed on the Allergy command.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_ORIGINATE</td>
-      <td></td>
+      <td>After the Allergy command is first entered into a note.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_UPDATE</td>
-      <td></td>
+      <td>After data for the Allergy command is updated.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_COMMIT</td>
-      <td></td>
+      <td>Before the Allergy command is committed.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_DELETE</td>
-      <td></td>
+      <td>Before the Allergy command is deleted.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
+      <td>Before the Allergy command is marked as entered in error.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
+      <td>Before an action is executed on the Allergy command.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
+      <td>Before the Allergy command is first entered into a note.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_UPDATE</td>
-      <td></td>
+      <td>Before data for the Allergy command is updated.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY__ALLERGY__POST_SEARCH</td>
-      <td></td>
+      <td>After the initial results are fetched for the allergy search in the Allergy command.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
     <tr>
       <td>ALLERGY__ALLERGY__PRE_SEARCH</td>
-      <td></td>
+      <td>Before the initial results are fetched for the allergy search in the Allergy command.</td>
+      <td><pre>"id": allergy_id
+"type": Command</pre></td>
+      <td><pre>"fields":
+  "allergy": str
+  "severity": str
+  "narrative": str
+  "approximate_date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1188,7 +1452,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS__CONDITION__PRE_SEARCH</td>
-      <td></td>
+      <td>Before the initial results are fetched for the condition search in the Assess command.</td>
     </tr>
   </tbody>
 </table>
