@@ -6,10 +6,6 @@
   color: #0d2c4c;
 }
 
-.cardSectionBackground {
-  background: linear-gradient(175deg, rgba(255, 255, 255, 1) 60%, rgba(238, 233, 210, 1) 60%);
-}
-
 .cardSectionInnerContainer {
   width: 1080px;
   max-width: 100%;
@@ -41,12 +37,6 @@
   font-weight: 400;
   line-height: 1.2em;
   display: inline-block;
-}
-
-.cardSectionH2 {
-  font-family: Helvetica, sans-serif;
-  font-size: 18px;
-  line-height: 1.2em;
 }
 
 .topPaddingSm {
@@ -121,10 +111,6 @@
   padding-bottom: 1em;
 }
 
-.anchorContainer {
-  padding-top: 8px;
-}
-
 @media only screen and (max-width: 768px) {
   .cardSectionFullWidthContainer {
     padding: 60px 20px;
@@ -136,10 +122,6 @@
 
   .cardSectionH1 {
     font-size: 32px;
-  }
-
-  .cardSectionH2 {
-    font-size: 20px;
   }
 
   .cardSectionParagraph {

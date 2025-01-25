@@ -50,13 +50,11 @@ $container-padding: 14px;
 // Height calculations
 :root {
     @media (max-width: calc( $breakpoint-lg - 1px ) ) {
-            --header-height: 97px;
             --footer-height: 0px;
-            --body-height: calc(var(--viewport-height) - (var(--header-height) + var(--footer-height) + 2px));
+            --body-height: calc(var(--viewport-height) - (97 + var(--footer-height) + 2px));
     }
     @media (min-width: $breakpoint-lg) {
-        --header-height: 107px;
-        --footer-height: 0px;
-        --body-height: calc( var(--viewport-height) - ( var(--header-height) + var(--footer-height) + 2px ) );
+            --footer-height: 0px;
+            --body-height: calc(var(--viewport-height) - (97 + var(--footer-height) + 2px));
     }
 }
