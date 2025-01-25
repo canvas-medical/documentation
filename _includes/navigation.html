@@ -19,9 +19,6 @@
             <a class="navigation__menu__item{% assign url_path = item.url | split: "/" %}{% assign page_path = page.url | split: "/" %}{% if url_path[1] == page_path[1] %} navigation__menu__item__active{% endif %}" href="{{ item.url }}">{{ item.title }}</a>
             {% endfor %}
         </div>
-        <div class="navigation__alt">
-            <span>&copy; 2025 Canvas Medical</span>
-        </div>
     </div>
     </div>
 
