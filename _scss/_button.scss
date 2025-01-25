@@ -12,8 +12,10 @@
         align-items: center;
         gap: 16px;
         cursor: pointer;
+        width: 20%;
         @media (max-width: $breakpoint-md) {
             padding: 8px 40px 8px 20px;
+            width: 60%;
         }
         svg {
             fill: $text-color;
