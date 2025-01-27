@@ -75,17 +75,17 @@ teams = Team.objects.filter(created__gt="2025-01-01")
 
 ### TeamContactPoint
 
-| Field Name | Type                                      |
-|------------|-------------------------------------------|
-| id         | UUID                                      |
-| dbid       | Integer                                   |
-| system     | [ContactPointSystem](#contactpointsystem) |
-| value      | String                                    |
-| use        | [ContactPointUse](#contactpointuse)       |
-| use_notes  | String                                    |
-| rank       | Integer                                   |
-| state      | [ContactPointState](#contactpointstate)   |
-| team       | [Team](#team)                             |
+| Field Name | Type                                                                  |
+|------------|-----------------------------------------------------------------------|
+| id         | UUID                                                                  |
+| dbid       | Integer                                                               |
+| system     | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
+| value      | String                                                                |
+| use        | [ContactPointUse](/sdk/data-enumeration-types/#contactpointuse)       |
+| use_notes  | String                                                                |
+| rank       | Integer                                                               |
+| state      | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
+| team       | [Team](#team)                                                         |
 
 ## Enumeration types
 
@@ -104,35 +104,6 @@ teams = Team.objects.filter(created__gt="2025-01-01")
 | COMPLETE_OPEN_LAB_ORDERS                  | Complete open lab orders                        |
 | REVIEW_ERA_POSTING_EXCEPTIONS             | Review electronic remittance posting exceptions |
 | REVIEW_COVERAGES                          | Review incomplete patient coverages             |
-
-### ContactPointSystem
-
-| Value | Label |
-|-------|-------|
-| phone | phone |
-| fax   | fax   |
-| email | email |
-| pager | pager |
-| other | other |
-
-### ContactPointUse
-
-| Value      | Label      |
-|------------|------------|
-| home       | Home       |
-| work       | Work       |
-| temp       | Temp       |
-| old        | Old        |
-| other      | Other      |
-| mobile     | Mobile     |
-| automation | Automation |
-
-### ContactPointState
-
-| Value      | Label   |
-|------------|---------|
-| active     | Active  |
-| deleted    | Deleted |
 
 <br/>
 <br/>
