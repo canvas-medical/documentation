@@ -27,7 +27,7 @@ An example of adding a task:
 import arrow
 
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.task.task import AddTask, AddTaskComment, UpdateTask, TaskStatus
+from canvas_sdk.effects.task import AddTask, AddTaskComment, UpdateTask, TaskStatus
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 
@@ -80,7 +80,7 @@ To update an existing task, import the `UpdateTask` class and create an instance
 An example of updating a task to a status of `COMPLETED`:
 
 ```python
-from canvas_sdk.effects.task.task import UpdateTask, TaskStatus
+from canvas_sdk.effects.task import UpdateTask, TaskStatus
 
 update_task = UpdateTask(
     id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
@@ -99,7 +99,7 @@ To add a comment to a task, import the `AddTaskComment` class and create an inst
 | body | required | string | The comment body.                 |
 
 ```python
-from canvas_sdk.effects.task.task import AddTaskComment
+from canvas_sdk.effects.task import AddTaskComment
 
 add_task_comment = AddTaskComment(
     task_id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
