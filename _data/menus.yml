@@ -427,6 +427,9 @@ guides_list:
  - title: "Creating, Implementing, and Extending a Scribe Parser"
    url: /guides/scribe-ai-parser/
 
+ - title: "Growth Charts Plugin"
+   url: /guides/growth-charts/
+
  - title: "Improve HCC Coding Accuracy"
    url: /guides/improve-hcc-coding-accuracy/
 
