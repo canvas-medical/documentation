@@ -1154,20 +1154,16 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
-  <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>ALLERGY_COMMAND__POST_COMMIT</td>
-      <td>After the Allergy command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1184,7 +1180,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_DELETE</td>
-      <td>After the Allergy command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1201,7 +1196,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>After the Allergy command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1218,7 +1212,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>After an action is executed on the Allergy command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1235,7 +1228,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_ORIGINATE</td>
-      <td>After the Allergy command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1252,7 +1244,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_UPDATE</td>
-      <td>After data for the Allergy command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1269,7 +1260,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_COMMIT</td>
-      <td>Before the Allergy command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1286,7 +1276,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_DELETE</td>
-      <td>Before the Allergy command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1303,7 +1292,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Before the Allergy command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1320,7 +1308,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Before an action is executed on the Allergy command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1337,7 +1324,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_ORIGINATE</td>
-      <td>Before the Allergy command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1354,7 +1340,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_UPDATE</td>
-      <td>Before data for the Allergy command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1371,7 +1356,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY__ALLERGY__POST_SEARCH</td>
-      <td>After the initial results are fetched for the allergy search in the Allergy command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -1379,7 +1363,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ALLERGY__ALLERGY__PRE_SEARCH</td>
-      <td>Before the initial results are fetched for the allergy search in the Allergy command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -1393,20 +1376,16 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
-  <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>ASSESS_COMMAND__CONDITION_SELECTED</td>
-      <td>Occurs after a condition is selected in the Assess command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1421,7 +1400,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Assess command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1436,7 +1414,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Assess command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1451,7 +1428,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Assess command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1466,7 +1442,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Assess command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1481,7 +1456,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Assess command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1496,7 +1470,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Assess command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1511,7 +1484,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Assess command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1526,7 +1498,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Assess command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1541,7 +1512,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Assess command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1556,7 +1526,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Assess command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1571,7 +1540,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Assess command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1586,7 +1554,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Assess command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1601,7 +1568,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS__CONDITION__POST_SEARCH</td>
-      <td>Occurs after the initial results are fetched for the condition search in the Assess command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -1609,7 +1575,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>ASSESS__CONDITION__PRE_SEARCH</td>
-      <td>Before the initial results are fetched for the condition search in the Assess command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -1623,20 +1588,17 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the command has been committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1648,7 +1610,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_DELETE</td>
-      <td>Occurs after the command has been deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1660,7 +1621,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the command has been marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1672,7 +1632,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after a command action has been executed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1684,7 +1643,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the command has been originated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1696,7 +1654,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_UPDATE</td>
-      <td>Occurs after the command has been updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1708,7 +1665,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1720,7 +1676,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1732,7 +1687,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1744,7 +1698,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before a command action is executed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1756,7 +1709,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the command is originated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1768,7 +1720,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before the command is updated.	</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1780,7 +1731,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE</td>
-      <td>Occurs after the command is added to a note in the UI.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1820,20 +1770,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1847,7 +1794,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1861,7 +1807,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1875,7 +1820,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1889,7 +1833,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1903,7 +1846,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1917,7 +1859,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1931,7 +1872,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1945,7 +1885,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1959,7 +1898,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1973,7 +1911,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -1987,7 +1924,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2001,7 +1937,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL__GOAL_ID__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2009,7 +1944,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>CLOSE_GOAL__GOAL_ID__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2023,20 +1957,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2053,7 +1984,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2070,7 +2000,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2087,7 +2016,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2104,7 +2032,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2121,7 +2048,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2138,7 +2064,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2155,7 +2080,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2172,7 +2096,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2189,7 +2112,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2206,7 +2128,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2223,7 +2144,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2240,7 +2160,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE__DIAGNOSE__POST_SEARCH</td>
-      <td>Occurs after the initial results are fetched for the diagnosis search in the Diagnose command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2248,7 +2167,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>DIAGNOSE__DIAGNOSE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2262,23 +2180,20 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2286,10 +2201,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2297,10 +2211,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2308,10 +2221,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2319,10 +2231,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2330,10 +2241,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2341,10 +2251,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2352,10 +2261,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2363,10 +2271,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2374,10 +2281,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2385,10 +2291,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2396,10 +2301,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
-      <td><pre>"fields": {}
+      <td><pre>"fields": dict
 "note":
   "uuid": note_id
 "patient":
@@ -2407,7 +2311,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__LANGUAGE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2415,7 +2318,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__LANGUAGE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2423,7 +2325,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__TITLE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2431,7 +2332,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__TITLE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2445,20 +2345,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2472,7 +2369,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2486,7 +2382,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2500,7 +2395,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2514,7 +2408,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2528,7 +2421,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2542,7 +2434,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2556,7 +2447,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2570,7 +2460,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2584,7 +2473,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2598,7 +2486,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2612,7 +2499,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2626,7 +2512,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY__FAMILY_HISTORY__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2634,7 +2519,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY__FAMILY_HISTORY__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2642,7 +2526,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY__RELATIVE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2650,7 +2533,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>FAMILY_HISTORY__RELATIVE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -2664,20 +2546,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>GOAL_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Goal command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2694,7 +2573,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Assess command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2711,7 +2589,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Goal command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2728,7 +2605,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Goal command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2745,7 +2621,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Goal command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2762,7 +2637,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Goal command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2779,7 +2653,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Goal command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2796,7 +2669,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Assess command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2813,7 +2685,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Goal command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2830,7 +2701,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Goal command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2847,7 +2717,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Goal command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2864,7 +2733,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Goal command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2887,20 +2755,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the History of Present Illness command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2912,7 +2777,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_DELETE</td>
-      <td>Occurs after the History of Present Illness command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2924,7 +2788,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the History of Present Illness command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2936,7 +2799,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the History of Present Illness command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2948,7 +2810,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the History of Present Illness command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2960,7 +2821,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the History of Present Illness command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2972,7 +2832,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the History of Present Illness command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2984,7 +2843,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the History of Present Illness command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -2996,7 +2854,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the History of Present Illness command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3008,7 +2865,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the History of Present Illness command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3020,7 +2876,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the History of Present Illness command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3032,7 +2887,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the History of Present Illness command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3050,20 +2904,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3082,7 +2933,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3101,7 +2951,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3120,7 +2969,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3139,7 +2987,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3158,7 +3005,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3177,7 +3023,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3196,7 +3041,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3215,7 +3059,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3234,7 +3077,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3253,7 +3095,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3272,7 +3113,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3291,7 +3131,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3299,7 +3138,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3307,7 +3145,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3315,7 +3152,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGING_CENTER__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3323,7 +3159,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER__INDICATIONS__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3331,7 +3166,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER__INDICATIONS__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3339,7 +3173,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER__ORDERING_PROVIDER__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3347,7 +3180,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMAGING_ORDER__ORDERING_PROVIDER__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3361,20 +3193,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3390,7 +3219,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3406,7 +3234,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3422,7 +3249,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3438,7 +3264,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3454,7 +3279,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3470,7 +3294,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3486,7 +3309,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3502,7 +3324,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3518,7 +3339,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3534,7 +3354,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3550,7 +3369,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3566,7 +3384,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT__STATEMENT__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3574,7 +3391,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT__STATEMENT__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3588,20 +3404,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3619,7 +3432,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3637,7 +3449,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3655,7 +3466,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3673,7 +3483,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3691,7 +3500,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3709,7 +3517,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3727,7 +3534,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3745,7 +3551,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3763,7 +3568,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3781,7 +3585,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3799,7 +3602,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3817,7 +3619,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE__CODING__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3825,7 +3626,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE__CODING__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3833,7 +3633,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE__GIVEN_BY__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3841,7 +3640,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE__GIVEN_BY__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3849,7 +3647,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE__LOT_NUMBER__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3857,7 +3654,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>IMMUNIZE__LOT_NUMBER__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -3871,20 +3667,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>INSTRUCT_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3897,7 +3690,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3910,7 +3702,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3923,7 +3714,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3936,7 +3726,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3949,7 +3738,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3962,7 +3750,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3975,7 +3762,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -3988,7 +3774,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4001,7 +3786,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4014,7 +3798,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4027,7 +3810,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4040,7 +3822,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT__INSTRUCT__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4048,7 +3829,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>INSTRUCT__INSTRUCT__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4062,20 +3842,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4092,7 +3869,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4109,7 +3885,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4126,7 +3901,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4143,7 +3917,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4160,7 +3933,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4177,7 +3949,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4194,7 +3965,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4211,7 +3981,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4228,7 +3997,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4245,7 +4013,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4262,7 +4029,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4279,7 +4045,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER__DIAGNOSIS__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4287,7 +4052,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER__DIAGNOSIS__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4295,7 +4059,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER__LAB_PARTNER__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4303,7 +4066,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER__LAB_PARTNER__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4311,7 +4073,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER__ORDERING_PROVIDER__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4319,7 +4080,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER__ORDERING_PROVIDER__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4327,7 +4087,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER__TESTS__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4335,7 +4094,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>LAB_ORDER__TESTS__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4349,20 +4107,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4382,7 +4137,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4402,7 +4156,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4422,7 +4175,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4442,7 +4194,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4462,7 +4213,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4482,7 +4232,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4502,7 +4251,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4522,7 +4270,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4542,7 +4289,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4562,7 +4308,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4582,7 +4327,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4602,7 +4346,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_END_DATE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4610,7 +4353,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_END_DATE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4618,7 +4360,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_START_DATE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4626,7 +4367,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_START_DATE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4634,7 +4374,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4642,7 +4381,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4656,20 +4394,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Medication Statement command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4682,7 +4417,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Medication Statement command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4695,7 +4429,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Medication Statement command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4708,7 +4441,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Medication Statement command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4721,7 +4453,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Medication Statement command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4734,7 +4465,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Medication Statement command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4747,7 +4477,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Medication Statement command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4760,7 +4489,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Medication Statement command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4773,7 +4501,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Medication Statement command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4786,7 +4513,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Medication Statement command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4799,7 +4525,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Medication Statement command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4812,7 +4537,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Medication Statement command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4825,7 +4549,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__POST_SEARCH</td>
-      <td>Occurs after the initial results are fetched for the medication search in the medication statement command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4833,7 +4556,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__PRE_SEARCH</td>
-      <td>Occurs before a medication statement search for a medication.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -4841,7 +4563,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__SELECTED</td>
-      <td>A medication is selected from Medication Statement search results.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4860,20 +4581,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>PERFORM_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4886,7 +4604,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4899,7 +4616,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4912,7 +4628,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4925,7 +4640,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4938,7 +4652,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4951,7 +4664,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4964,7 +4676,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4977,7 +4688,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -4990,7 +4700,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5003,7 +4712,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5016,7 +4724,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5029,7 +4736,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM__PERFORM__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5037,7 +4743,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PERFORM__PERFORM__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5051,20 +4756,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5076,7 +4778,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5088,7 +4789,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5100,7 +4800,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5112,7 +4811,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5124,7 +4822,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5136,7 +4833,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5148,7 +4844,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5160,7 +4855,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5172,7 +4866,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5184,7 +4877,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5196,7 +4888,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5208,7 +4899,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM__QUESTIONNAIRE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5216,7 +4906,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PHYSICAL_EXAM__QUESTIONNAIRE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5230,20 +4919,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>PLAN_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Plan command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5255,7 +4941,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Plan command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5267,7 +4952,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Plan command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5279,7 +4963,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Plan command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5291,7 +4974,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Plan command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5303,7 +4985,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Plan command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5315,7 +4996,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Plan command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5327,7 +5007,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Plan command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5339,7 +5018,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Plan command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5351,7 +5029,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Plan command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5363,7 +5040,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Plan command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5375,7 +5051,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Plan command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5393,20 +5068,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Prescribe command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5428,7 +5100,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Prescribe command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5450,7 +5121,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Prescribe command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5472,7 +5142,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Prescribe command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5494,7 +5163,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Prescribe command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5516,7 +5184,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Prescribe command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5538,7 +5205,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Prescribecommand is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5560,7 +5226,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Prescribe command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5582,7 +5247,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Prescribe command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5604,7 +5268,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Prescribe command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5626,7 +5289,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Prescribe command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5648,7 +5310,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Prescribe command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5670,7 +5331,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE__INDICATIONS__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5678,7 +5338,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE__INDICATIONS__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5686,7 +5345,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE__PHARMACY__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5694,7 +5352,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE__PHARMACY__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5702,7 +5359,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE__PRESCRIBE__POST_SEARCH</td>
-      <td>Occurs after the initial results are fetched for the medication search in the Prescribe command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5710,7 +5366,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>PRESCRIBE__PRESCRIBE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5724,20 +5379,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Questionnaire command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5750,7 +5402,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Questionnaire command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5763,7 +5414,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Questionnaire command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5776,7 +5426,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Questionnaire command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5789,7 +5438,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Questionnaire command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5802,7 +5450,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Questionnaire command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5815,7 +5462,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Questionnaire command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5828,7 +5474,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Questionnaire command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5841,7 +5486,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Questionnaire command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5854,7 +5498,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Questionnaire command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5867,7 +5510,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Questionnaire command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5880,7 +5522,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Questionnaire command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5893,7 +5534,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE__QUESTIONNAIRE__POST_SEARCH</td>
-      <td>Occurs after the initial results are fetched for the questionnaire search in the Questionnaire command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5901,7 +5541,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>QUESTIONNAIRE__QUESTIONNAIRE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -5915,20 +5554,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Reason for Visit command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5941,7 +5577,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Reason for Visit command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5954,7 +5589,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Reason for Visit command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5967,7 +5601,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Reason for Visit command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5980,7 +5613,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Reason for Visit command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -5993,7 +5625,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Reason for Visit command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6006,7 +5637,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Reason for Visit command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6019,7 +5649,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Reason for Visit command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6032,7 +5661,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Reason for Visit command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6045,7 +5673,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Reason for Visit command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6058,7 +5685,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Reason for Visit command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6071,7 +5697,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Reason for Visit command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6084,7 +5709,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT__CODING__POST_SEARCH</td>
-      <td>Occurs after the initial results are fetched for the reason search in the Reason for Visit command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6092,7 +5716,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REASON_FOR_VISIT__CODING__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6106,20 +5729,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>REFILL_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6141,7 +5761,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6163,7 +5782,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6185,7 +5803,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6207,7 +5824,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6229,7 +5845,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6251,7 +5866,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6273,7 +5887,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6295,7 +5908,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6317,7 +5929,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6339,7 +5950,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6361,7 +5971,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6383,7 +5992,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL__INDICATIONS__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6391,7 +5999,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL__INDICATIONS__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6399,7 +6006,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL__PHARMACY__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6407,7 +6013,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL__PHARMACY__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6415,7 +6020,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL__PRESCRIBE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6423,7 +6027,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REFILL__PRESCRIBE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6437,20 +6040,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6463,7 +6063,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6476,7 +6075,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6489,7 +6087,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6502,7 +6099,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6515,7 +6111,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6528,7 +6123,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6541,7 +6135,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6554,7 +6147,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6567,7 +6159,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6580,7 +6171,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6593,7 +6183,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6606,7 +6195,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY__ALLERGY__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6614,7 +6202,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>REMOVE_ALLERGY__ALLERGY__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6628,20 +6215,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="35%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>ROS_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6653,7 +6237,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6665,7 +6248,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6677,7 +6259,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6689,7 +6270,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6701,7 +6281,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6713,7 +6292,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6725,7 +6303,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6737,7 +6314,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6749,7 +6325,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6761,7 +6336,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6773,7 +6347,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6785,7 +6358,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS__QUESTIONNAIRE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6793,7 +6365,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>ROS__QUESTIONNAIRE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6807,20 +6378,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Stop Medication command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6833,7 +6401,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Stop Medication command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6846,7 +6413,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Stop Medication command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6859,7 +6425,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Stop Medication command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6872,7 +6437,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Stop Medication command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6885,7 +6449,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Stop Medication command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6898,7 +6461,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Stop Medication command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6911,7 +6473,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Stop Medication command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6924,7 +6485,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Stop Medication command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6937,7 +6497,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Stop Medication command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6950,7 +6509,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Stop Medication command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6963,7 +6521,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Stop Medication command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -6976,7 +6533,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION__MEDICATION__POST_SEARCH</td>
-      <td>Occurs after the initial results are fetched for the medication search in the Stop Medication command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6984,7 +6540,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STOP_MEDICATION__MEDICATION__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -6998,20 +6553,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7023,7 +6575,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7035,7 +6586,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7047,7 +6597,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7059,7 +6608,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7071,7 +6619,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7083,7 +6630,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7095,7 +6641,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7107,7 +6652,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7119,7 +6663,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7131,7 +6674,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7143,7 +6685,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7155,7 +6696,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT__QUESTIONNAIRE__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7163,7 +6703,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT__QUESTIONNAIRE__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7177,20 +6716,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="10%"/>
     <col width="35%"/>
-    <col width="45%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7206,7 +6742,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7222,7 +6757,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7238,7 +6772,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7254,7 +6787,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7270,7 +6802,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7286,7 +6817,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7302,7 +6832,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7318,7 +6847,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7334,7 +6862,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7350,7 +6877,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7366,7 +6892,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7382,7 +6907,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7390,7 +6914,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7404,20 +6927,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>TASK_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Task command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7434,7 +6954,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Task command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7451,7 +6970,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Task command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7468,7 +6986,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Task command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7485,7 +7002,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Task command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7502,7 +7018,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Task command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7519,7 +7034,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Task command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7536,7 +7050,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Task command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7553,7 +7066,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Task command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7570,7 +7082,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Task command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7587,7 +7098,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Task command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7604,7 +7114,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Task command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7621,7 +7130,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK__ASSIGN_TO__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7629,7 +7137,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK__ASSIGN_TO__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7637,7 +7144,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK__LABELS__POST_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7645,7 +7151,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK__LABELS__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7659,20 +7164,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_COMMIT</td>
-      <td>Occurs after the Update Goal command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7688,7 +7190,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_DELETE</td>
-      <td>Occurs after the Update Goal command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7704,7 +7205,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td>Occurs after the Update Goal command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7720,7 +7220,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_EXECUTE_ACTION</td>
-      <td>Occurs after an action is executed on the Update Goal command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7736,7 +7235,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_ORIGINATE</td>
-      <td>Occurs after the Update Goal command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7752,7 +7250,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_UPDATE</td>
-      <td>Occurs after data for the Update Goal command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7768,7 +7265,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_COMMIT</td>
-      <td>Occurs before the Update Goal command is committed.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7784,7 +7280,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_DELETE</td>
-      <td>Occurs before the Update Goal command is deleted.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7800,7 +7295,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td>Occurs before the Update Goal command is marked as entered in error.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7816,7 +7310,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td>Occurs before an action is executed on the Update Goal command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7832,7 +7325,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_ORIGINATE</td>
-      <td>Occurs before the Update Goal command is first entered into a note.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7848,7 +7340,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_UPDATE</td>
-      <td>Occurs before data for the Update Goal command is updated.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7864,7 +7355,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL__GOAL_STATEMENT__POST_SEARCH</td>
-      <td>Occurs after the initial results are fetched for the goal search in the Update Goal command.</td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7872,7 +7362,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>UPDATE_GOAL__GOAL_STATEMENT__PRE_SEARCH</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"search_term": str
@@ -7886,20 +7375,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <colgroup>
     <col width="10%"/>
-    <col width="30%"/>
     <col width="35%"/>
-    <col width="25%"/>
+    <col width="55%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
     <th>Target object</th>
     <th>Context object</th>
   </thead>
   <tbody>
     <tr>
       <td>VITALS_COMMAND__POST_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7924,7 +7410,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7949,7 +7434,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7974,7 +7458,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -7999,7 +7482,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -8024,7 +7506,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -8049,7 +7530,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_COMMIT</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -8074,7 +7554,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_DELETE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -8099,7 +7578,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -8124,7 +7602,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -8149,7 +7626,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
@@ -8174,7 +7650,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_UPDATE</td>
-      <td></td>
       <td><pre>"id": command_uuid
 "type": Command</pre></td>
       <td><pre>"fields":
