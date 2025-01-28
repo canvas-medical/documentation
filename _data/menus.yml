@@ -427,8 +427,11 @@ guides_list:
  - title: "Creating, Implementing, and Extending a Scribe Parser"
    url: /guides/scribe-ai-parser/
 
- - title: "Growth Charts Plugin"
+ - title: "Growth Charts"
    url: /guides/growth-charts/
+   description: Display growth charts based on observations
+   uses:
+     - sdk
 
  - title: "Improve HCC Coding Accuracy"
    url: /guides/improve-hcc-coding-accuracy/

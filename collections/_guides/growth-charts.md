@@ -8,8 +8,8 @@ guide_for:
 
 The [Growth charts Plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/growth-charts) was designed to help determine which percentile a patient falls into. We currently support both WHO and CDC growth charts, but it is possible to include additional charts if the same logic is applied
 
-  - It uses the [`ACTION_BUTTON`](/sdk/handlers-action-buttons) handler.
-  - It respondes to [`CHART_SUMMARY_VITALS_SECTION`](/sdk/events) event to display the growth charts button in the chart summary vitals section. 
+  - It uses the [`ACTION_BUTTON`](/sdk/handlers-action-buttons) handler to provide a button in the UI to launch the visualization.
+  - We set `BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION` to make the action button appear in the chart summary's vitals section 
   - Retrieves patient observations such as height, weight, BMI, and head circumference.
   - Uses a chart template to show the graphs
   - Predefined graph values are sourced from data files (e.g., who_boys_length_age), which can be included in the protocol.
@@ -19,6 +19,13 @@ The [Growth charts Plugin](https://github.com/Medical-Software-Foundation/canvas
 ## Graphs structure
 
 The graph data files have a simple structure, representing X and Y axes along with the resultant series:
+
+To get the values to use on this plugin we used the following resources
+
+[`World Health Organization (WHO)`](https://www.cdc.gov/growthcharts/who-data-files.htm)
+
+[`Centers for Disease Control and Prevention (CDC)`](https://www.cdc.gov/growthcharts/cdc-growth-charts.htm)
+
 
 ```python
     who_boys_length_age = [
@@ -86,7 +93,7 @@ To generate the graphs and [`LAUNCH_MODAL`](/sdk/effects) we use the chart templ
 
 ## The chart template and the result
 
-This template is an HTML file (with CSS and JavaScript) that imports the [`D3js`](https://d3js.org/) library to helps us generate the graphs.
+This template is an HTML file (with CSS and JavaScript) that imports the [`D3js`](https://d3js.org/) library to help us generate the graphs.
 
 It includes two sections (WHO and CDC), with options to convert the graph units (lbs/kg and cm/inches) and to print the current section.
 
