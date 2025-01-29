@@ -166,7 +166,7 @@ permalink: "/"
 
 <div class="landingpage_section">
     <h2 class="section-header">User Documentation</h2>
-    <div class="card-grid">
+    <div class="card-grid" style="justify-content: space-evenly;">
         <a href="https://canvas-medical.help.usepylon.com/" target="_blank">
             <div class="card-section-item">
                 <span class="cardHeading">Canvas Knowledge Center</span>

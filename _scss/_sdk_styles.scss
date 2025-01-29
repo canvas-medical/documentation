@@ -114,11 +114,12 @@
 .card-grid {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
   flex-wrap: wrap;
 
   .card-section-item {
     width: 320px;
+    min-height: 120px;
     display: flex;
     flex-direction: column;
 
@@ -143,6 +144,17 @@
 }
 
 @media only screen and (max-width: 768px) {
+  .card-grid {
+    flex-wrap: unset;
+
+    a:first-child > .card-section-item {
+      margin: 0px auto;
+    }
+    a:last-child > .card-section-item {
+      margin-top: 0px;
+    }
+  }
+
   .card-grid, .card-list {
     flex-direction: column;
 
