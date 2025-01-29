@@ -57,14 +57,14 @@ These events fire as a result of records being created, updated, or deleted.
       <td>PATIENT_CREATED</td>
       <td>Patient is created.</td>
       <td><pre>"id": pt_id
-"type": Patient</pre></td>
+"type": [Patient](/sdk/data-patient/)</pre></td>
       <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>PATIENT_UPDATED</td>
       <td>Patient's data is updated.</td>
       <td><pre>"id": pt_id
-"type": Patient</pre></td>
+"type": [Patient](/sdk/data-patient/)</pre></td>
       <td><pre>empty</pre></td>
     </tr>
     <tr>
@@ -332,7 +332,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>CONDITION_ASSESSED</td>
       <td>A condition is assessed through the Assess Condition command.</td>
       <td><pre>"id": condition_id
-"type": Condition</pre></td>
+"type": [Condition](/sdk/data-condition/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -340,7 +340,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>CONDITION_CREATED</td>
       <td>A condition is diagnosed for a patient. Additional details for the condition may become available with subsequent CONDITION_UPDATED events.</td>
       <td><pre>"id": condition_id
-"type": Condition</pre></td>
+"type": [Condition](/sdk/data-condition/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -348,7 +348,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>CONDITION_RESOLVED</td>
       <td>A condition is resolved through the Resolve Condition command.</td>
       <td><pre>"id": condition_id
-"type": Condition</pre></td>
+"type": [Condition](/sdk/data-condition/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -356,7 +356,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>CONDITION_UPDATED</td>
       <td>A condition is updated for a patient.</td>
       <td><pre>"id": condition_id
-"type": Condition</pre></td>
+"type": [Condition](/sdk/data-condition/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -650,7 +650,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>INTERVIEW_CREATED</td>
       <td>An interview is created using the Questionnaire command or through the Questionnaire endpoint in the FHIR API. Additional details for the interview may become available with subsequent INTERVIEW_UPDATED events.</td>
       <td><pre>"id": interview_id
-"type": Interview</pre></td>
+"type": [Interview](/sdk/data-questionnaire/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -658,7 +658,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>INTERVIEW_UPDATED</td>
       <td>An interview is updated.</td>
       <td><pre>"id": interview_id
-"type": Interview</pre></td>
+"type": [Interview](/sdk/data-questionnaire/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -685,7 +685,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>LAB_ORDER_CREATED</td>
       <td>A lab order is created via the Lab Order command. Additional details for the lab order may become available with subsequent LAB_ORDER_UPDATED events.</td>
       <td><pre>"id": laborder_id
-"type": LabOrder</pre></td>
+"type": [LabOrder](/sdk/data-labs/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -693,7 +693,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>LAB_ORDER_UPDATED</td>
       <td>A lab order is updated.</td>
       <td><pre>"id": laborder_id
-"type": LabOrder</pre></td>
+"type": [LabOrder](/sdk/data-labs/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -701,7 +701,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>LAB_REPORT_CREATED</td>
       <td>A lab report is created either through Data Integration, electronic ingestion or the FHIR API.</td>
       <td><pre>"id": labreport_id
-"type": LabReport</pre></td>
+"type": [LabReport](/sdk/data-labs/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -709,7 +709,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>LAB_REPORT_UPDATED</td>
       <td>A lab report is updated.</td>
       <td><pre>"id": labreport_id
-"type": LabReport</pre></td>
+"type": [LabReport](/sdk/data-labs/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -736,7 +736,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>MEDICATION_LIST_ITEM_CREATED</td>
       <td>A medication is added for a patient.</td>
       <td><pre>"id": medication_id
-"type": Medication</pre></td>
+"type": [Medication](/sdk/data-medication/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -744,7 +744,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>MEDICATION_LIST_ITEM_UPDATED</td>
       <td>A medication is updated for a patient.</td>
       <td><pre>"id": medication_id
-"type": Medication</pre></td>
+"type": [Medication](/sdk/data-medication/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -752,7 +752,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>PRESCRIPTION_CREATED</td>
       <td>A prescription is created.</td>
       <td><pre>"id": prescription_id
-"type": Medication</pre></td>
+"type": [Medication](/sdk/data-medication/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -760,7 +760,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>PRESCRIPTION_UPDATED</td>
       <td>A prescription is created for a patient using the Prescribe command. Additional details for the prescription become available with subsequent PRESCRIPTION_UPDATED events.</td>
       <td><pre>"id": prescription_id
-"type": Medication</pre></td>
+"type": [Medication](/sdk/data-medication/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -954,7 +954,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>TASK_CREATED</td>
       <td>A task is created.</td>
       <td><pre>"id": task_id
-"type": Task</pre></td>
+"type": [Task](/sdk/data-task/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -962,7 +962,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>TASK_UPDATED</td>
       <td>A task is updated.</td>
       <td><pre>"id": task_id
-"type": Task</pre></td>
+"type": [Task](/sdk/data-task/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -970,21 +970,21 @@ These events fire as a result of records being created, updated, or deleted.
       <td>TASK_COMMENT_CREATED</td>
       <td>A comment is added to a task.</td>
       <td><pre>"id": taskcomment_id
-"type": TaskComment</pre></td>
+"type": [Task](/sdk/data-task/)Comment</pre></td>
       <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMENT_UPDATED</td>
       <td></td>
       <td><pre>"id": taskcomment_id
-"type": TaskComment</pre></td>
+"type": [Task](/sdk/data-task/)Comment</pre></td>
       <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMENT_DELETED</td>
       <td></td>
       <td><pre>"id": taskcomment_id
-"type": TaskComment</pre></td>
+"type": [Task](/sdk/data-task/)Comment</pre></td>
       <td><pre>empty</pre></td>
     </tr>
     <tr>
@@ -998,7 +998,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>TASK_COMPLETED</td>
       <td>A task is set to completed.</td>
       <td><pre>"id": task_id
-"type": Task</pre></td>
+"type": [Task](/sdk/data-task/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -1006,7 +1006,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td>TASK_CLOSED</td>
       <td>A task is set to closed.</td>
       <td><pre>"id": task_id
-"type": Task</pre></td>
+"type": [Task](/sdk/data-task/)</pre></td>
       <td><pre>"patient":
   "id": pt_id</pre></td>
     </tr>
@@ -1164,7 +1164,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1180,7 +1180,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1196,7 +1196,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1212,7 +1212,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1228,7 +1228,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1244,7 +1244,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1260,7 +1260,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1276,7 +1276,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1292,7 +1292,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1308,7 +1308,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1324,7 +1324,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1340,7 +1340,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "severity": str
@@ -1356,14 +1356,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ALLERGY__ALLERGY__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>ALLERGY__ALLERGY__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -1386,7 +1386,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__CONDITION_SELECTED</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1400,7 +1400,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1414,7 +1414,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1428,7 +1428,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1442,7 +1442,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1456,7 +1456,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1470,7 +1470,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1484,7 +1484,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1498,7 +1498,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1512,7 +1512,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1526,7 +1526,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1540,7 +1540,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1554,7 +1554,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "condition": dict
   "background": str
@@ -1568,14 +1568,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>ASSESS__CONDITION__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>ASSESS__CONDITION__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -1599,7 +1599,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1610,7 +1610,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1621,7 +1621,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1632,7 +1632,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1643,7 +1643,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1654,7 +1654,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1665,7 +1665,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1676,7 +1676,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1687,7 +1687,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1698,7 +1698,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1709,7 +1709,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1720,7 +1720,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1731,7 +1731,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "text": str
 "note":
@@ -1781,7 +1781,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1794,7 +1794,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1807,7 +1807,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1820,7 +1820,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1833,7 +1833,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1846,7 +1846,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1859,7 +1859,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1872,7 +1872,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1885,7 +1885,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1898,7 +1898,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1911,7 +1911,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1924,7 +1924,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_id": dict
   "achievement_status": str
@@ -1937,14 +1937,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>CLOSE_GOAL__GOAL_ID__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL__GOAL_ID__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -1968,7 +1968,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -1984,7 +1984,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2000,7 +2000,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2016,7 +2016,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2032,7 +2032,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2048,7 +2048,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2064,7 +2064,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2080,7 +2080,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2096,7 +2096,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2112,7 +2112,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2128,7 +2128,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2144,7 +2144,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "diagnose": dict
   "background": str
@@ -2160,14 +2160,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>DIAGNOSE__DIAGNOSE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE__DIAGNOSE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -2191,7 +2191,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2201,7 +2201,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2211,7 +2211,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2221,7 +2221,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2231,7 +2231,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2241,7 +2241,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2251,7 +2251,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2261,7 +2261,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2271,7 +2271,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2281,7 +2281,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2291,7 +2291,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2301,7 +2301,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields": dict
 "note":
   "uuid": note_id
@@ -2311,28 +2311,28 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>EDUCATIONAL_MATERIAL__LANGUAGE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__LANGUAGE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__TITLE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__TITLE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -2356,7 +2356,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2369,7 +2369,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2382,7 +2382,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2395,7 +2395,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2408,7 +2408,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2421,7 +2421,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2434,7 +2434,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2447,7 +2447,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2460,7 +2460,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2473,7 +2473,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2486,7 +2486,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2499,7 +2499,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "family_history": dict
   "relative": dict
@@ -2512,28 +2512,28 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>FAMILY_HISTORY__FAMILY_HISTORY__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY__FAMILY_HISTORY__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY__RELATIVE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY__RELATIVE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -2557,7 +2557,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2573,7 +2573,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2589,7 +2589,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2605,7 +2605,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2621,7 +2621,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2637,7 +2637,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2653,7 +2653,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2669,7 +2669,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2685,7 +2685,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2701,7 +2701,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2717,7 +2717,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2733,7 +2733,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>GOAL_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": str
   "start_date": str
@@ -2766,7 +2766,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2777,7 +2777,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2788,7 +2788,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2799,7 +2799,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2810,7 +2810,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2821,7 +2821,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2832,7 +2832,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2843,7 +2843,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2854,7 +2854,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2865,7 +2865,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2876,7 +2876,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2887,7 +2887,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -2915,7 +2915,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -2933,7 +2933,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -2951,7 +2951,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -2969,7 +2969,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -2987,7 +2987,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -3005,7 +3005,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -3023,7 +3023,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -3041,7 +3041,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -3059,7 +3059,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -3077,7 +3077,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -3095,7 +3095,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -3113,7 +3113,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "image": dict
   "indications": list[dict]
@@ -3131,56 +3131,56 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMAGING_ORDER__IMAGE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGING_CENTER__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__INDICATIONS__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__INDICATIONS__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__ORDERING_PROVIDER__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__ORDERING_PROVIDER__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -3204,7 +3204,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3219,7 +3219,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3234,7 +3234,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3249,7 +3249,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3264,7 +3264,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3279,7 +3279,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3294,7 +3294,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3309,7 +3309,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3324,7 +3324,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3339,7 +3339,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3354,7 +3354,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3369,7 +3369,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "statement": dict
   "date":
@@ -3384,14 +3384,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZATION_STATEMENT__STATEMENT__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT__STATEMENT__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -3415,7 +3415,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3432,7 +3432,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3449,7 +3449,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3466,7 +3466,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3483,7 +3483,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3500,7 +3500,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3517,7 +3517,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3534,7 +3534,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3551,7 +3551,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3568,7 +3568,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3585,7 +3585,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3602,7 +3602,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "lot_number": dict
@@ -3619,42 +3619,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>IMMUNIZE__CODING__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__CODING__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__GIVEN_BY__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__GIVEN_BY__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__LOT_NUMBER__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__LOT_NUMBER__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -3678,7 +3678,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3690,7 +3690,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3702,7 +3702,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3714,7 +3714,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3726,7 +3726,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3738,7 +3738,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3750,7 +3750,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3762,7 +3762,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3774,7 +3774,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3786,7 +3786,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3798,7 +3798,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3810,7 +3810,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "instruct": dict
   "narrative": str
@@ -3822,14 +3822,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>INSTRUCT__INSTRUCT__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT__INSTRUCT__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -3853,7 +3853,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -3869,7 +3869,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -3885,7 +3885,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -3901,7 +3901,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -3917,7 +3917,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -3933,7 +3933,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -3949,7 +3949,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -3965,7 +3965,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -3981,7 +3981,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -3997,7 +3997,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -4013,7 +4013,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -4029,7 +4029,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "lab_partner": dict
   "tests": list[dict]
@@ -4045,56 +4045,56 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>LAB_ORDER__DIAGNOSIS__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__DIAGNOSIS__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__LAB_PARTNER__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__LAB_PARTNER__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__ORDERING_PROVIDER__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__ORDERING_PROVIDER__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__TESTS__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__TESTS__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -4118,7 +4118,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4137,7 +4137,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4156,7 +4156,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4175,7 +4175,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4194,7 +4194,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4213,7 +4213,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4232,7 +4232,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4251,7 +4251,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4270,7 +4270,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4289,7 +4289,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4308,7 +4308,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4327,7 +4327,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
   "approximate_start_date":
@@ -4346,42 +4346,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_END_DATE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_END_DATE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_START_DATE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_START_DATE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -4405,7 +4405,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4417,7 +4417,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4429,7 +4429,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4441,7 +4441,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4453,7 +4453,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4465,7 +4465,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4477,7 +4477,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4489,7 +4489,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4501,7 +4501,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4513,7 +4513,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4525,7 +4525,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4537,7 +4537,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4549,21 +4549,21 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__SELECTED</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "sig": str
@@ -4592,7 +4592,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4604,7 +4604,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4616,7 +4616,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4628,7 +4628,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4640,7 +4640,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4652,7 +4652,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4664,7 +4664,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4676,7 +4676,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4688,7 +4688,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4700,7 +4700,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4712,7 +4712,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4724,7 +4724,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "perform": dict
   "notes": str
@@ -4736,14 +4736,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PERFORM__PERFORM__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PERFORM__PERFORM__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -4767,7 +4767,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4778,7 +4778,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4789,7 +4789,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4800,7 +4800,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4811,7 +4811,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4822,7 +4822,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4833,7 +4833,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4844,7 +4844,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4855,7 +4855,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4866,7 +4866,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4877,7 +4877,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4888,7 +4888,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -4899,14 +4899,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PHYSICAL_EXAM__QUESTIONNAIRE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM__QUESTIONNAIRE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -4930,7 +4930,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -4941,7 +4941,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -4952,7 +4952,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -4963,7 +4963,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -4974,7 +4974,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -4985,7 +4985,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -4996,7 +4996,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -5007,7 +5007,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -5018,7 +5018,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -5029,7 +5029,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -5040,7 +5040,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -5051,7 +5051,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PLAN_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "narrative": str
 "note":
@@ -5079,7 +5079,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5100,7 +5100,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5121,7 +5121,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5142,7 +5142,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5163,7 +5163,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5184,7 +5184,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5205,7 +5205,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5226,7 +5226,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5247,7 +5247,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5268,7 +5268,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5289,7 +5289,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5310,7 +5310,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5331,42 +5331,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>PRESCRIBE__INDICATIONS__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__INDICATIONS__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__PHARMACY__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__PHARMACY__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__PRESCRIBE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__PRESCRIBE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -5390,7 +5390,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5402,7 +5402,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5414,7 +5414,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5426,7 +5426,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5438,7 +5438,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5450,7 +5450,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5462,7 +5462,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5474,7 +5474,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5486,7 +5486,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5498,7 +5498,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5510,7 +5510,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5522,7 +5522,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
   "result": str
@@ -5534,14 +5534,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>QUESTIONNAIRE__QUESTIONNAIRE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE__QUESTIONNAIRE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -5565,7 +5565,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5577,7 +5577,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5589,7 +5589,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5601,7 +5601,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5613,7 +5613,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5625,7 +5625,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5637,7 +5637,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5649,7 +5649,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5661,7 +5661,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5673,7 +5673,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5685,7 +5685,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5697,7 +5697,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "coding": dict
   "comment": str
@@ -5709,14 +5709,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REASON_FOR_VISIT__CODING__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT__CODING__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -5740,7 +5740,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5761,7 +5761,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5782,7 +5782,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5803,7 +5803,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5824,7 +5824,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5845,7 +5845,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5866,7 +5866,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5887,7 +5887,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5908,7 +5908,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5929,7 +5929,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5950,7 +5950,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5971,7 +5971,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "prescribe": dict
   "indications": list[dict]
@@ -5992,42 +5992,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REFILL__INDICATIONS__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__INDICATIONS__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__PHARMACY__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__PHARMACY__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__PRESCRIBE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REFILL__PRESCRIBE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -6051,7 +6051,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6063,7 +6063,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6075,7 +6075,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6087,7 +6087,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6099,7 +6099,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6111,7 +6111,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6123,7 +6123,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6135,7 +6135,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6147,7 +6147,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6159,7 +6159,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6171,7 +6171,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6183,7 +6183,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "allergy": dict
   "narrative": str
@@ -6195,14 +6195,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>REMOVE_ALLERGY__ALLERGY__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY__ALLERGY__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -6226,7 +6226,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6237,7 +6237,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6248,7 +6248,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6259,7 +6259,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6270,7 +6270,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6281,7 +6281,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6292,7 +6292,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6303,7 +6303,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6314,7 +6314,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6325,7 +6325,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6336,7 +6336,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6347,7 +6347,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6358,14 +6358,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>ROS__QUESTIONNAIRE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>ROS__QUESTIONNAIRE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -6389,7 +6389,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6401,7 +6401,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6413,7 +6413,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6425,7 +6425,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6437,7 +6437,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6449,7 +6449,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6461,7 +6461,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6473,7 +6473,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6485,7 +6485,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6497,7 +6497,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6509,7 +6509,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6521,7 +6521,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "medication": dict
   "rationale": str
@@ -6533,14 +6533,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STOP_MEDICATION__MEDICATION__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION__MEDICATION__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -6564,7 +6564,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6575,7 +6575,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6586,7 +6586,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6597,7 +6597,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6608,7 +6608,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6619,7 +6619,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6630,7 +6630,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6641,7 +6641,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6652,7 +6652,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6663,7 +6663,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6674,7 +6674,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6685,7 +6685,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "questionnaire": dict
 "note":
@@ -6696,14 +6696,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>STRUCTURED_ASSESSMENT__QUESTIONNAIRE__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT__QUESTIONNAIRE__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -6727,7 +6727,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6742,7 +6742,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6757,7 +6757,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6772,7 +6772,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6787,7 +6787,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6802,7 +6802,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6817,7 +6817,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6832,7 +6832,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6847,7 +6847,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6862,7 +6862,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6877,7 +6877,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6892,7 +6892,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
   "approximate_date":
@@ -6907,14 +6907,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -6938,7 +6938,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -6954,7 +6954,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -6970,7 +6970,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -6986,7 +6986,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -7002,7 +7002,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -7018,7 +7018,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -7034,7 +7034,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -7050,7 +7050,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -7066,7 +7066,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -7082,7 +7082,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -7098,7 +7098,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -7114,7 +7114,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "title": str
   "assign_to": dict
@@ -7130,28 +7130,28 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>TASK__ASSIGN_TO__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>TASK__ASSIGN_TO__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>TASK__LABELS__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>TASK__LABELS__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -7175,7 +7175,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7190,7 +7190,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7205,7 +7205,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7220,7 +7220,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7235,7 +7235,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7250,7 +7250,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7265,7 +7265,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7280,7 +7280,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7295,7 +7295,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7310,7 +7310,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7325,7 +7325,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7340,7 +7340,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "goal_statement": dict
   "due_date": str
@@ -7355,14 +7355,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>UPDATE_GOAL__GOAL_STATEMENT__POST_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL__GOAL_STATEMENT__PRE_SEARCH</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
@@ -7386,7 +7386,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__POST_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7410,7 +7410,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__POST_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7434,7 +7434,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__POST_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7458,7 +7458,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__POST_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7482,7 +7482,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__POST_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7506,7 +7506,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__POST_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7530,7 +7530,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__PRE_COMMIT</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7554,7 +7554,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__PRE_DELETE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7578,7 +7578,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__PRE_ENTER_IN_ERROR</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7602,7 +7602,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__PRE_EXECUTE_ACTION</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7626,7 +7626,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__PRE_ORIGINATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
@@ -7650,7 +7650,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__PRE_UPDATE</td>
       <td><pre>"id": command_uuid
-"type": Command</pre></td>
+"type": [Command](/sdk/data-command/)</pre></td>
       <td><pre>"fields":
   "height": str
   "weight_lbs": str
