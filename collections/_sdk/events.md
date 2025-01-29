@@ -30,7 +30,6 @@ For more information on writing plugins, see the guide [here](/guides/your-first
 
 ## Event Types
 
-The following Canvas events are able to trigger a plugin to execute. <br><br>
 The event `target` object can be accessed within the compute method of the plugin by `self.event.target`. If `self.event.target.type` exists, it provides the same type that would be imported from the Data module. For example, a type of `Condition` would be the same as what you can import from `canvas_sdk.v1.data.condition`. <br><br>
 The event `context` object can be accessed via `self.event.context`.
 
