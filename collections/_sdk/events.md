@@ -56,14 +56,14 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td>PATIENT_CREATED</td>
       <td>Patient is created.</td>
-      <td><pre>"id": pt_key
+      <td><pre>"id": pt_id
 "type": Patient</pre></td>
       <td><pre>empty</pre></td>
     </tr>
     <tr>
       <td>PATIENT_UPDATED</td>
       <td>Patient's data is updated.</td>
-      <td><pre>"id": pt_key
+      <td><pre>"id": pt_id
 "type": Patient</pre></td>
       <td><pre>empty</pre></td>
     </tr>
@@ -73,7 +73,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": care_team_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CARE_TEAM_MEMBERSHIP_UPDATED</td>
@@ -81,7 +81,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": care_team_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CARE_TEAM_MEMBERSHIP_DELETED</td>
@@ -89,7 +89,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": care_team_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PATIENT_ADDRESS_CREATED</td>
@@ -97,7 +97,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": address_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PATIENT_ADDRESS_UPDATED</td>
@@ -105,7 +105,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": address_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PATIENT_ADDRESS_DELETED</td>
@@ -113,7 +113,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": address_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PATIENT_CONTACT_PERSON_CREATED</td>
@@ -121,7 +121,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": contact_person_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PATIENT_CONTACT_PERSON_UPDATED</td>
@@ -129,7 +129,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": contact_person_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PATIENT_CONTACT_PERSON_DELETED</td>
@@ -137,7 +137,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": contact_person_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
     <td>PATIENT_CONTACT_POINT_CREATED</td>
@@ -145,7 +145,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": contact_point_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PATIENT_CONTACT_POINT_UPDATED</td>
@@ -153,7 +153,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": contact_point_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PATIENT_CONTACT_POINT_DELETED</td>
@@ -161,7 +161,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": contact_point_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -188,7 +188,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": allergy_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_INTOLERANCE_UPDATED</td>
@@ -196,7 +196,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": allergy_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -223,7 +223,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_UPDATED</td>
@@ -231,7 +231,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_CHECKED_IN</td>
@@ -239,7 +239,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_RESCHEDULED</td>
@@ -247,7 +247,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_RESTORED</td>
@@ -255,7 +255,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_CANCELED</td>
@@ -263,7 +263,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>APPOINTMENT_NO_SHOWED</td>
@@ -271,7 +271,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
 
   </tbody>
@@ -299,7 +299,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": billing_line_item_id
 "type": BillingLineItem</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>BILLING_LINE_ITEM_UPDATED</td>
@@ -307,7 +307,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": billing_line_item_id
 "type": BillingLineItem</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -334,7 +334,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": condition_id
 "type": Condition</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CONDITION_CREATED</td>
@@ -342,7 +342,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": condition_id
 "type": Condition</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CONDITION_RESOLVED</td>
@@ -350,7 +350,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": condition_id
 "type": Condition</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CONDITION_UPDATED</td>
@@ -358,7 +358,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": condition_id
 "type": Condition</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -385,7 +385,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": consent_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CONSENT_DELETED</td>
@@ -393,7 +393,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": consent_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CONSENT_UPDATED</td>
@@ -401,7 +401,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": consent_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -428,7 +428,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": coverage_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>COVERAGE_UPDATED</td>
@@ -436,7 +436,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": coverage_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -463,7 +463,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": device_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DEVICE_UPDATED</td>
@@ -471,7 +471,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": device_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -531,7 +531,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": report_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_REPORT_UPDATED</td>
@@ -539,7 +539,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": report_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -566,7 +566,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": immun_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_UPDATED</td>
@@ -574,7 +574,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": immun_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_CREATED</td>
@@ -582,7 +582,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": immun_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_UPDATED</td>
@@ -590,7 +590,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": immun_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -617,7 +617,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": instruction_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCTION_UPDATED</td>
@@ -625,7 +625,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": instruction_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -652,7 +652,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": interview_id
 "type": Interview</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INTERVIEW_UPDATED</td>
@@ -660,7 +660,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": interview_id
 "type": Interview</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -687,7 +687,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": laborder_id
 "type": LabOrder</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_UPDATED</td>
@@ -695,7 +695,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": laborder_id
 "type": LabOrder</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_REPORT_CREATED</td>
@@ -703,7 +703,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": labreport_id
 "type": LabReport</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_REPORT_UPDATED</td>
@@ -711,7 +711,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": labreport_id
 "type": LabReport</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -738,7 +738,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": medication_id
 "type": Medication</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_LIST_ITEM_UPDATED</td>
@@ -746,7 +746,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": medication_id
 "type": Medication</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIPTION_CREATED</td>
@@ -754,7 +754,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": prescription_id
 "type": Medication</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIPTION_UPDATED</td>
@@ -762,7 +762,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": prescription_id
 "type": Medication</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -789,7 +789,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": message_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -843,7 +843,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": observation_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>OBSERVATION_UPDATED</td>
@@ -851,7 +851,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": observation_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -878,7 +878,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": protocoloverride_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PROTOCOL_OVERRIDE_UPDATED</td>
@@ -886,7 +886,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": protocoloverride_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PROTOCOL_OVERRIDE_DELETED</td>
@@ -894,7 +894,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": protocoloverride_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -921,7 +921,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": referralreport_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFERRAL_REPORT_UPDATED</td>
@@ -929,7 +929,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": referralreport_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -956,7 +956,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": task_id
 "type": Task</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_UPDATED</td>
@@ -964,7 +964,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": task_id
 "type": Task</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMENT_CREATED</td>
@@ -1000,7 +1000,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": task_id
 "type": Task</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_CLOSED</td>
@@ -1008,7 +1008,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": task_id
 "type": Task</pre></td>
       <td><pre>"patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1175,7 +1175,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_DELETE</td>
@@ -1191,7 +1191,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -1207,7 +1207,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
@@ -1223,7 +1223,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_ORIGINATE</td>
@@ -1239,7 +1239,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__POST_UPDATE</td>
@@ -1255,7 +1255,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_COMMIT</td>
@@ -1271,7 +1271,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_DELETE</td>
@@ -1287,7 +1287,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -1303,7 +1303,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -1319,7 +1319,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_ORIGINATE</td>
@@ -1335,7 +1335,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY_COMMAND__PRE_UPDATE</td>
@@ -1351,7 +1351,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ALLERGY__ALLERGY__POST_SEARCH</td>
@@ -1395,7 +1395,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_COMMIT</td>
@@ -1409,7 +1409,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_DELETE</td>
@@ -1423,7 +1423,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -1437,7 +1437,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_EXECUTE_ACTION</td>
@@ -1451,7 +1451,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_ORIGINATE</td>
@@ -1465,7 +1465,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__POST_UPDATE</td>
@@ -1479,7 +1479,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_COMMIT</td>
@@ -1493,7 +1493,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_DELETE</td>
@@ -1507,7 +1507,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -1521,7 +1521,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -1535,7 +1535,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_ORIGINATE</td>
@@ -1549,7 +1549,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS_COMMAND__PRE_UPDATE</td>
@@ -1563,7 +1563,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ASSESS__CONDITION__POST_SEARCH</td>
@@ -1605,7 +1605,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_DELETE</td>
@@ -1616,7 +1616,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -1627,7 +1627,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_EXECUTE_ACTION</td>
@@ -1638,7 +1638,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_ORIGINATE</td>
@@ -1649,7 +1649,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_UPDATE</td>
@@ -1660,7 +1660,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_COMMIT</td>
@@ -1671,7 +1671,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_DELETE</td>
@@ -1682,7 +1682,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -1693,7 +1693,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -1704,7 +1704,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_ORIGINATE</td>
@@ -1715,7 +1715,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__PRE_UPDATE</td>
@@ -1726,7 +1726,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE</td>
@@ -1737,7 +1737,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1789,7 +1789,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_DELETE</td>
@@ -1802,7 +1802,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -1815,7 +1815,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_EXECUTE_ACTION</td>
@@ -1828,7 +1828,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_ORIGINATE</td>
@@ -1841,7 +1841,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__POST_UPDATE</td>
@@ -1854,7 +1854,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_COMMIT</td>
@@ -1867,7 +1867,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_DELETE</td>
@@ -1880,7 +1880,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -1893,7 +1893,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -1906,7 +1906,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_ORIGINATE</td>
@@ -1919,7 +1919,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL_COMMAND__PRE_UPDATE</td>
@@ -1932,7 +1932,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>CLOSE_GOAL__GOAL_ID__POST_SEARCH</td>
@@ -1979,7 +1979,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_DELETE</td>
@@ -1995,7 +1995,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -2011,7 +2011,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_EXECUTE_ACTION</td>
@@ -2027,7 +2027,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_ORIGINATE</td>
@@ -2043,7 +2043,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__POST_UPDATE</td>
@@ -2059,7 +2059,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_COMMIT</td>
@@ -2075,7 +2075,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_DELETE</td>
@@ -2091,7 +2091,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -2107,7 +2107,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -2123,7 +2123,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_ORIGINATE</td>
@@ -2139,7 +2139,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE_COMMAND__PRE_UPDATE</td>
@@ -2155,7 +2155,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>DIAGNOSE__DIAGNOSE__POST_SEARCH</td>
@@ -2196,7 +2196,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_DELETE</td>
@@ -2206,7 +2206,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -2216,7 +2216,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_EXECUTE_ACTION</td>
@@ -2226,7 +2226,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_ORIGINATE</td>
@@ -2236,7 +2236,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__POST_UPDATE</td>
@@ -2246,7 +2246,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_COMMIT</td>
@@ -2256,7 +2256,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_DELETE</td>
@@ -2266,7 +2266,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -2276,7 +2276,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -2286,7 +2286,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_ORIGINATE</td>
@@ -2296,7 +2296,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_UPDATE</td>
@@ -2306,7 +2306,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>EDUCATIONAL_MATERIAL__LANGUAGE__POST_SEARCH</td>
@@ -2364,7 +2364,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_DELETE</td>
@@ -2377,7 +2377,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -2390,7 +2390,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
@@ -2403,7 +2403,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_ORIGINATE</td>
@@ -2416,7 +2416,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__POST_UPDATE</td>
@@ -2429,7 +2429,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_COMMIT</td>
@@ -2442,7 +2442,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_DELETE</td>
@@ -2455,7 +2455,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -2468,7 +2468,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -2481,7 +2481,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_ORIGINATE</td>
@@ -2494,7 +2494,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY_COMMAND__PRE_UPDATE</td>
@@ -2507,7 +2507,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>FAMILY_HISTORY__FAMILY_HISTORY__POST_SEARCH</td>
@@ -2568,7 +2568,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_DELETE</td>
@@ -2584,7 +2584,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -2600,7 +2600,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_EXECUTE_ACTION</td>
@@ -2616,7 +2616,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_ORIGINATE</td>
@@ -2632,7 +2632,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__POST_UPDATE</td>
@@ -2648,7 +2648,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_COMMIT</td>
@@ -2664,7 +2664,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_DELETE</td>
@@ -2680,7 +2680,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -2696,7 +2696,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -2712,7 +2712,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_ORIGINATE</td>
@@ -2728,7 +2728,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>GOAL_COMMAND__PRE_UPDATE</td>
@@ -2744,7 +2744,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2772,7 +2772,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_DELETE</td>
@@ -2783,7 +2783,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -2794,7 +2794,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_EXECUTE_ACTION</td>
@@ -2805,7 +2805,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ORIGINATE</td>
@@ -2816,7 +2816,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_UPDATE</td>
@@ -2827,7 +2827,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_COMMIT</td>
@@ -2838,7 +2838,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_DELETE</td>
@@ -2849,7 +2849,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -2860,7 +2860,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -2871,7 +2871,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ORIGINATE</td>
@@ -2882,7 +2882,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_UPDATE</td>
@@ -2893,7 +2893,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2928,7 +2928,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_DELETE</td>
@@ -2946,7 +2946,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -2964,7 +2964,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_EXECUTE_ACTION</td>
@@ -2982,7 +2982,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_ORIGINATE</td>
@@ -3000,7 +3000,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__POST_UPDATE</td>
@@ -3018,7 +3018,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_COMMIT</td>
@@ -3036,7 +3036,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_DELETE</td>
@@ -3054,7 +3054,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -3072,7 +3072,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -3090,7 +3090,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_ORIGINATE</td>
@@ -3108,7 +3108,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER_COMMAND__PRE_UPDATE</td>
@@ -3126,7 +3126,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMAGING_ORDER__IMAGE__POST_SEARCH</td>
@@ -3214,7 +3214,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_DELETE</td>
@@ -3229,7 +3229,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -3244,7 +3244,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</td>
@@ -3259,7 +3259,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_ORIGINATE</td>
@@ -3274,7 +3274,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__POST_UPDATE</td>
@@ -3289,7 +3289,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_COMMIT</td>
@@ -3304,7 +3304,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_DELETE</td>
@@ -3319,7 +3319,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -3334,7 +3334,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -3349,7 +3349,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_ORIGINATE</td>
@@ -3364,7 +3364,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_UPDATE</td>
@@ -3379,7 +3379,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZATION_STATEMENT__STATEMENT__POST_SEARCH</td>
@@ -3427,7 +3427,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_DELETE</td>
@@ -3444,7 +3444,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -3461,7 +3461,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_EXECUTE_ACTION</td>
@@ -3478,7 +3478,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_ORIGINATE</td>
@@ -3495,7 +3495,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__POST_UPDATE</td>
@@ -3512,7 +3512,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_COMMIT</td>
@@ -3529,7 +3529,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_DELETE</td>
@@ -3546,7 +3546,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -3563,7 +3563,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -3580,7 +3580,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_ORIGINATE</td>
@@ -3597,7 +3597,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE_COMMAND__PRE_UPDATE</td>
@@ -3614,7 +3614,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>IMMUNIZE__CODING__POST_SEARCH</td>
@@ -3685,7 +3685,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_DELETE</td>
@@ -3697,7 +3697,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -3709,7 +3709,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_EXECUTE_ACTION</td>
@@ -3721,7 +3721,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_ORIGINATE</td>
@@ -3733,7 +3733,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__POST_UPDATE</td>
@@ -3745,7 +3745,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_COMMIT</td>
@@ -3757,7 +3757,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_DELETE</td>
@@ -3769,7 +3769,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -3781,7 +3781,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -3793,7 +3793,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_ORIGINATE</td>
@@ -3805,7 +3805,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT_COMMAND__PRE_UPDATE</td>
@@ -3817,7 +3817,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>INSTRUCT__INSTRUCT__POST_SEARCH</td>
@@ -3864,7 +3864,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_DELETE</td>
@@ -3880,7 +3880,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -3896,7 +3896,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_EXECUTE_ACTION</td>
@@ -3912,7 +3912,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_ORIGINATE</td>
@@ -3928,7 +3928,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__POST_UPDATE</td>
@@ -3944,7 +3944,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_COMMIT</td>
@@ -3960,7 +3960,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_DELETE</td>
@@ -3976,7 +3976,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -3992,7 +3992,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -4008,7 +4008,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_ORIGINATE</td>
@@ -4024,7 +4024,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER_COMMAND__PRE_UPDATE</td>
@@ -4040,7 +4040,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>LAB_ORDER__DIAGNOSIS__POST_SEARCH</td>
@@ -4132,7 +4132,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_DELETE</td>
@@ -4151,7 +4151,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -4170,7 +4170,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
@@ -4189,7 +4189,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_ORIGINATE</td>
@@ -4208,7 +4208,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__POST_UPDATE</td>
@@ -4227,7 +4227,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_COMMIT</td>
@@ -4246,7 +4246,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_DELETE</td>
@@ -4265,7 +4265,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -4284,7 +4284,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -4303,7 +4303,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_ORIGINATE</td>
@@ -4322,7 +4322,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY_COMMAND__PRE_UPDATE</td>
@@ -4341,7 +4341,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICAL_HISTORY__APPROXIMATE_END_DATE__POST_SEARCH</td>
@@ -4412,7 +4412,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_DELETE</td>
@@ -4424,7 +4424,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -4436,7 +4436,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</td>
@@ -4448,7 +4448,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_ORIGINATE</td>
@@ -4460,7 +4460,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__POST_UPDATE</td>
@@ -4472,7 +4472,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_COMMIT</td>
@@ -4484,7 +4484,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_DELETE</td>
@@ -4496,7 +4496,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -4508,7 +4508,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -4520,7 +4520,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_ORIGINATE</td>
@@ -4532,7 +4532,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT_COMMAND__PRE_UPDATE</td>
@@ -4544,7 +4544,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>MEDICATION_STATEMENT__MEDICATION__POST_SEARCH</td>
@@ -4570,7 +4570,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -4599,7 +4599,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_DELETE</td>
@@ -4611,7 +4611,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -4623,7 +4623,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_EXECUTE_ACTION</td>
@@ -4635,7 +4635,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_ORIGINATE</td>
@@ -4647,7 +4647,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__POST_UPDATE</td>
@@ -4659,7 +4659,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_COMMIT</td>
@@ -4671,7 +4671,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_DELETE</td>
@@ -4683,7 +4683,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -4695,7 +4695,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -4707,7 +4707,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_ORIGINATE</td>
@@ -4719,7 +4719,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM_COMMAND__PRE_UPDATE</td>
@@ -4731,7 +4731,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PERFORM__PERFORM__POST_SEARCH</td>
@@ -4773,7 +4773,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_DELETE</td>
@@ -4784,7 +4784,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -4795,7 +4795,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_EXECUTE_ACTION</td>
@@ -4806,7 +4806,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_ORIGINATE</td>
@@ -4817,7 +4817,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__POST_UPDATE</td>
@@ -4828,7 +4828,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_COMMIT</td>
@@ -4839,7 +4839,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_DELETE</td>
@@ -4850,7 +4850,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -4861,7 +4861,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -4872,7 +4872,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_ORIGINATE</td>
@@ -4883,7 +4883,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM_COMMAND__PRE_UPDATE</td>
@@ -4894,7 +4894,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PHYSICAL_EXAM__QUESTIONNAIRE__POST_SEARCH</td>
@@ -4936,7 +4936,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_DELETE</td>
@@ -4947,7 +4947,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -4958,7 +4958,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_EXECUTE_ACTION</td>
@@ -4969,7 +4969,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_ORIGINATE</td>
@@ -4980,7 +4980,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__POST_UPDATE</td>
@@ -4991,7 +4991,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_COMMIT</td>
@@ -5002,7 +5002,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_DELETE</td>
@@ -5013,7 +5013,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -5024,7 +5024,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -5035,7 +5035,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_ORIGINATE</td>
@@ -5046,7 +5046,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PLAN_COMMAND__PRE_UPDATE</td>
@@ -5057,7 +5057,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5095,7 +5095,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_DELETE</td>
@@ -5116,7 +5116,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -5137,7 +5137,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_EXECUTE_ACTION</td>
@@ -5158,7 +5158,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_ORIGINATE</td>
@@ -5179,7 +5179,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__POST_UPDATE</td>
@@ -5200,7 +5200,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_COMMIT</td>
@@ -5221,7 +5221,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_DELETE</td>
@@ -5242,7 +5242,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -5263,7 +5263,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -5284,7 +5284,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_ORIGINATE</td>
@@ -5305,7 +5305,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE_COMMAND__PRE_UPDATE</td>
@@ -5326,7 +5326,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>PRESCRIBE__INDICATIONS__POST_SEARCH</td>
@@ -5397,7 +5397,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_DELETE</td>
@@ -5409,7 +5409,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -5421,7 +5421,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_EXECUTE_ACTION</td>
@@ -5433,7 +5433,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_ORIGINATE</td>
@@ -5445,7 +5445,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__POST_UPDATE</td>
@@ -5457,7 +5457,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_COMMIT</td>
@@ -5469,7 +5469,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_DELETE</td>
@@ -5481,7 +5481,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -5493,7 +5493,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -5505,7 +5505,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_ORIGINATE</td>
@@ -5517,7 +5517,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE_COMMAND__PRE_UPDATE</td>
@@ -5529,7 +5529,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>QUESTIONNAIRE__QUESTIONNAIRE__POST_SEARCH</td>
@@ -5572,7 +5572,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_DELETE</td>
@@ -5584,7 +5584,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -5596,7 +5596,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_EXECUTE_ACTION</td>
@@ -5608,7 +5608,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_ORIGINATE</td>
@@ -5620,7 +5620,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__POST_UPDATE</td>
@@ -5632,7 +5632,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_COMMIT</td>
@@ -5644,7 +5644,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_DELETE</td>
@@ -5656,7 +5656,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -5668,7 +5668,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -5680,7 +5680,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_ORIGINATE</td>
@@ -5692,7 +5692,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT_COMMAND__PRE_UPDATE</td>
@@ -5704,7 +5704,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REASON_FOR_VISIT__CODING__POST_SEARCH</td>
@@ -5756,7 +5756,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_DELETE</td>
@@ -5777,7 +5777,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -5798,7 +5798,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_EXECUTE_ACTION</td>
@@ -5819,7 +5819,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_ORIGINATE</td>
@@ -5840,7 +5840,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__POST_UPDATE</td>
@@ -5861,7 +5861,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_COMMIT</td>
@@ -5882,7 +5882,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_DELETE</td>
@@ -5903,7 +5903,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -5924,7 +5924,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -5945,7 +5945,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_ORIGINATE</td>
@@ -5966,7 +5966,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL_COMMAND__PRE_UPDATE</td>
@@ -5987,7 +5987,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REFILL__INDICATIONS__POST_SEARCH</td>
@@ -6058,7 +6058,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_DELETE</td>
@@ -6070,7 +6070,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -6082,7 +6082,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
@@ -6094,7 +6094,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_ORIGINATE</td>
@@ -6106,7 +6106,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__POST_UPDATE</td>
@@ -6118,7 +6118,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_COMMIT</td>
@@ -6130,7 +6130,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_DELETE</td>
@@ -6142,7 +6142,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -6154,7 +6154,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -6166,7 +6166,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_ORIGINATE</td>
@@ -6178,7 +6178,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY_COMMAND__PRE_UPDATE</td>
@@ -6190,7 +6190,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>REMOVE_ALLERGY__ALLERGY__POST_SEARCH</td>
@@ -6232,7 +6232,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_DELETE</td>
@@ -6243,7 +6243,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -6254,7 +6254,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_EXECUTE_ACTION</td>
@@ -6265,7 +6265,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_ORIGINATE</td>
@@ -6276,7 +6276,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__POST_UPDATE</td>
@@ -6287,7 +6287,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_COMMIT</td>
@@ -6298,7 +6298,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_DELETE</td>
@@ -6309,7 +6309,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -6320,7 +6320,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -6331,7 +6331,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_ORIGINATE</td>
@@ -6342,7 +6342,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS_COMMAND__PRE_UPDATE</td>
@@ -6353,7 +6353,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>ROS__QUESTIONNAIRE__POST_SEARCH</td>
@@ -6396,7 +6396,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_DELETE</td>
@@ -6408,7 +6408,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -6420,7 +6420,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_EXECUTE_ACTION</td>
@@ -6432,7 +6432,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_ORIGINATE</td>
@@ -6444,7 +6444,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__POST_UPDATE</td>
@@ -6456,7 +6456,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_COMMIT</td>
@@ -6468,7 +6468,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_DELETE</td>
@@ -6480,7 +6480,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -6492,7 +6492,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -6504,7 +6504,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_ORIGINATE</td>
@@ -6516,7 +6516,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION_COMMAND__PRE_UPDATE</td>
@@ -6528,7 +6528,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STOP_MEDICATION__MEDICATION__POST_SEARCH</td>
@@ -6570,7 +6570,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_DELETE</td>
@@ -6581,7 +6581,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -6592,7 +6592,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_EXECUTE_ACTION</td>
@@ -6603,7 +6603,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_ORIGINATE</td>
@@ -6614,7 +6614,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__POST_UPDATE</td>
@@ -6625,7 +6625,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_COMMIT</td>
@@ -6636,7 +6636,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_DELETE</td>
@@ -6647,7 +6647,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -6658,7 +6658,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -6669,7 +6669,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_ORIGINATE</td>
@@ -6680,7 +6680,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_UPDATE</td>
@@ -6691,7 +6691,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>STRUCTURED_ASSESSMENT__QUESTIONNAIRE__POST_SEARCH</td>
@@ -6737,7 +6737,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_DELETE</td>
@@ -6752,7 +6752,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -6767,7 +6767,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
@@ -6782,7 +6782,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_ORIGINATE</td>
@@ -6797,7 +6797,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__POST_UPDATE</td>
@@ -6812,7 +6812,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_COMMIT</td>
@@ -6827,7 +6827,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_DELETE</td>
@@ -6842,7 +6842,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -6857,7 +6857,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -6872,7 +6872,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_ORIGINATE</td>
@@ -6887,7 +6887,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY_COMMAND__PRE_UPDATE</td>
@@ -6902,7 +6902,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__POST_SEARCH</td>
@@ -6949,7 +6949,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_DELETE</td>
@@ -6965,7 +6965,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -6981,7 +6981,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_EXECUTE_ACTION</td>
@@ -6997,7 +6997,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_ORIGINATE</td>
@@ -7013,7 +7013,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__POST_UPDATE</td>
@@ -7029,7 +7029,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_COMMIT</td>
@@ -7045,7 +7045,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_DELETE</td>
@@ -7061,7 +7061,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -7077,7 +7077,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -7093,7 +7093,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_ORIGINATE</td>
@@ -7109,7 +7109,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK_COMMAND__PRE_UPDATE</td>
@@ -7125,7 +7125,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>TASK__ASSIGN_TO__POST_SEARCH</td>
@@ -7185,7 +7185,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_DELETE</td>
@@ -7200,7 +7200,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -7215,7 +7215,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_EXECUTE_ACTION</td>
@@ -7230,7 +7230,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_ORIGINATE</td>
@@ -7245,7 +7245,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__POST_UPDATE</td>
@@ -7260,7 +7260,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_COMMIT</td>
@@ -7275,7 +7275,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_DELETE</td>
@@ -7290,7 +7290,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -7305,7 +7305,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -7320,7 +7320,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_ORIGINATE</td>
@@ -7335,7 +7335,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL_COMMAND__PRE_UPDATE</td>
@@ -7350,7 +7350,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>UPDATE_GOAL__GOAL_STATEMENT__POST_SEARCH</td>
@@ -7405,7 +7405,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_DELETE</td>
@@ -7429,7 +7429,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_ENTER_IN_ERROR</td>
@@ -7453,7 +7453,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_EXECUTE_ACTION</td>
@@ -7477,7 +7477,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_ORIGINATE</td>
@@ -7501,7 +7501,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__POST_UPDATE</td>
@@ -7525,7 +7525,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_COMMIT</td>
@@ -7549,7 +7549,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_DELETE</td>
@@ -7573,7 +7573,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_ENTER_IN_ERROR</td>
@@ -7597,7 +7597,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_EXECUTE_ACTION</td>
@@ -7621,7 +7621,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_ORIGINATE</td>
@@ -7645,7 +7645,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
     <tr>
       <td>VITALS_COMMAND__PRE_UPDATE</td>
@@ -7669,7 +7669,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "note":
   "uuid": note_id
 "patient":
-  "id": pt_key</pre></td>
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
