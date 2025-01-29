@@ -1,4 +1,15 @@
 .navigation {
+    &__cta {
+      background-color: black;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      &:hover {
+          text-decoration: none;
+          background-color: #475569;
+      }
+    }
+
     &__container {
         width: 100%;
         height: 96px;
