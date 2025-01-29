@@ -9,7 +9,7 @@ sections:
         description: >-
           A structured set of questions intended to guide the collection of answers from end-users. Questionnaires provide detailed control over order, presentation, phraseology and grouping to allow coherent, consistent data collection.<br><br>
           [https://hl7.org/fhir/R4/questionnaire.html](https://hl7.org/fhir/R4/questionnaire.html)<br><br>
-          See our [article](https://canvas-medical.help.usepylon.com/articles/7418371785-creating-a-new-questionnaire) for information about how to create and upload a questionnaire in Canvas.<br><br>
+          See our [article](https://canvas-medical.help.usepylon.com/articles/7017593857-creating-questionnaires) for information about how to create and upload a questionnaire in Canvas.<br><br>
           **Understanding Canvas Questionnaires**<br><br>
           *Codings*<br><br>
           All questionnaires must have coding, and all response options within a question on a questionnaire must have codings.<br><br>
