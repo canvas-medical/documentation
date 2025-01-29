@@ -103,3 +103,39 @@ http.patch(
     data="this-is-my-data"
 )
 ```
+
+## Making concurrent requests with Http
+
+There is an interface for executing HTTP requests in parallel.
+
+The `batch_requests` method will execute the requests in parallel using multithreading, and return once all of the
+requests have completed. The `timeout` value allows for specifying a timeout value in seconds; if a request has not
+completed before the timeout value, an error will be returned for that request.
+
+The return value will be a list of responses to the requests. The order of the return value will correspond to the order
+of the provided requests.
+
+
+**Parameters**:
+
+| Name             | Type                         | Required | Description                   |
+|:-----------------|:-----------------------------|:---------|:------------------------------|
+| `batch_requests` | _Iterable[BatchableRequest]_ | `true`   | The list of batched requests. |
+| `timeout`        | _integer_                    | `false`  | The timeout value in seconds. |
+
+**Example**:
+
+```python
+from canvas_sdk.utils import Http, batch_get, batch_post, batch_put, batch_patch
+
+http = Http()
+
+requests = [
+    batch_get("https://my-url.com/", headers={"Authorization": f"Bearer token"}),
+    batch_post("https://my-url.com/", headers={"Authorization": f"Bearer token"}, json={"post": "json"}),
+    batch_put("https://my-url.com/", headers={"Authorization": f"Bearer token"}, data="this-is-my-data"),
+    batch_patch("https://my-url.com/", headers={"Authorization": f"Bearer token"}, json={"patch": "json"})
+]
+
+responses = http.batch_requests(requests, timeout=30)
+```
