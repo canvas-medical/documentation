@@ -173,6 +173,10 @@
     }
 
     .landingpage_section {
+      .section-container.reverse-order-on-small-widths {
+        flex-direction: column-reverse;
+      }
+
       .section-container {
         flex-wrap: wrap;
         flex-direction: column;

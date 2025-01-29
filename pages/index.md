@@ -109,7 +109,7 @@ permalink: "/"
             {% endif %}
         {% endif %}
     {% endfor %}
-    <div class="section-container">
+    <div class="section-container reverse-order-on-small-widths">
         <div class="card-list half-width">
             <a href="/api/">
                 <div class="card-section-item">
