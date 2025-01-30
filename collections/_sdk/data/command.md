@@ -112,7 +112,7 @@ __PLEASE NOTE__ the Commands Module is under development and Canvas is working t
 | entered_in_error   | CanvasUser                            |
 | state              | String                                |
 | patient            | [Patient](/sdk/data-patient/#patient) |
-| note_id            | Integer                               |
+| note               | [Note](/sdk/data-note/#note)          |
 | schema_key         | String                                |
 | data               | JSON                                  |
 | origination_source | String                                |

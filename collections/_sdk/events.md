@@ -277,6 +277,37 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Detected Issues
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DETECTED_ISSUE_CREATED</td>
+      <td>Occurs when a detected issue is created.</td>
+    </tr>
+    <tr>
+      <td>DETECTED_ISSUE_UPDATED</td>
+      <td>Occurs when a detected issue is updated.</td>
+    </tr>
+    <tr>
+      <td>DETECTED_ISSUE_EVIDENCE_CREATED</td>
+      <td>Occurs when detected issue evidence is created.</td>
+    </tr>
+    <tr>
+      <td>DETECTED_ISSUE_EVIDENCE_UPDATED</td>
+      <td>Occurs when a detected issue evidence is updated.</td>
+    </tr>
+  </tbody>
+</table>
+
 #### Devices
 
 <table>
@@ -3107,6 +3138,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 The following events are emitted during the lifecycle of a patient portal session.
 
+
 <table>
   <colgroup>
     <col width="40%"/>
@@ -3160,6 +3192,76 @@ The following events are emitted during the lifecycle of a patient portal sessio
     <tr>
       <td>PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH</td>
       <td>Occurs after appointment providers are resolved, allowing the internal values to be modified</td>
+  </tbody>
+</table>
+
+
+### Action Buttons Events
+
+For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
+
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SHOW_NOTE_HEADER_BUTTON</td>
+      <td>Occurs when patient notes are being loaded.</td>
+    </tr>
+    <tr>
+      <td>SHOW_NOTE_FOOTER_BUTTON</td>
+      <td>Occurs when patient notes are being loaded.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for social determinants section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_GOALS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for goals section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_CONDITIONS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for conditions section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_MEDICATIONS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for medications section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_ALLERGIES_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for allergies section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_CARE_TEAMS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for care teams section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_VITALS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for vitals section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_IMMUNIZATIONS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for immunizations section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_SURGICAL_HISTORY_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for surgical history section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_FAMILY_HISTORY_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for family history section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_CODING_GAPS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for coding gaps section.</td>
     </tr>
   </tbody>
 </table>
@@ -3198,11 +3300,11 @@ The following events are emitted during the lifecycle of a patient portal sessio
     </tr>
     <tr>
       <td>PLUGIN_CREATED</td>
-      <td>Occurs when a plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
+      <td>Occurs when a plugin is uploaded for the first time. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PLUGIN_UPDATED</td>
-      <td>Occurs when a plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.</td>
+      <td>Occurs when a plugin is enabled or when the plugin code has changed. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</td>

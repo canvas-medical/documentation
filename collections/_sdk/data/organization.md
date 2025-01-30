@@ -29,32 +29,23 @@ organization = Organization.objects.first()
 
 ### Organization
 
-| Field Name            | Type                    |
-|---------------------- |------------------------ |
-| dbid                  | Integer                 |
-| created               | DateTime                |
-| modified              | DateTime                |
-| full_name             | String                  |
-| short_name            | String                  |
-| subdomain             | String                  |
-| logo_url              | String                  |
-| background_image_url  | String                  |
-| background_gradient   | String                  |
-| active                | Boolean                 |
-| tax_id                | String                  |
-| tax_id_type           | [TaxIDType](#taxidtype) |
-| group_npi_number      | String                  |
-| group_taxonomy_number | String                  |
-| include_zz_qualifier  | Boolean                 |
-
-## Enumeration types
-
-### TaxIDType
-
-| Value | Label      |
-|-------|------------|
-| E     | EIN text   |
-| S     | SSN        |
+| Field Name            | Type                                                |
+|-----------------------|-----------------------------------------------------|
+| dbid                  | Integer                                             |
+| created               | DateTime                                            |
+| modified              | DateTime                                            |
+| full_name             | String                                              |
+| short_name            | String                                              |
+| subdomain             | String                                              |
+| logo_url              | String                                              |
+| background_image_url  | String                                              |
+| background_gradient   | String                                              |
+| active                | Boolean                                             |
+| tax_id                | String                                              |
+| tax_id_type           | [TaxIDType](/sdk/data-enumeration-types/#taxidtype) |
+| group_npi_number      | String                                              |
+| group_taxonomy_number | String                                              |
+| include_zz_qualifier  | Boolean                                             |
 
 <br/>
 <br/>
