@@ -6,36 +6,6 @@ The commands module lets you create and update commands within a specific note i
 
 Common objectives that can be met by using Command classes include dynamic note templates, clinical decision support, order set composition, care gap closure, and care coordination automation.
 
-The following commands are available for use in this module:
-
-- [Allergy](#allergy)
-- [Assess](#assess)
-- [CloseGoal](#closegoal)
-- [Diagnose](#diagnose)
-- [FamilyHistory](#familyhistory)
-- [Goal](#goal)
-- [HistoryOfPresentIllness](#historyofpresentillness)
-- [Instruct](#instruct)
-- [LabOrder](#laborder)
-- [MedicalHistory](#medicalhistory)
-- [MedicationStatement](#medicationstatement)
-- [SurgicalHistory](#surgicalhistory)
-- [Perform](#perform)
-- [Plan](#plan)
-- [Prescribe](#prescribe)
-- [PhysicalExam](#physicalexam)
-- [Questionnaire](#questionnaire)
-- [ReasonForVisit](#reasonforvisit)
-- [Refill](#refill)
-- [RemoveAllergy](#removeallergy)
-- [ReviewOfSystems](#review-of-systems)
-- [StopMedication](#stopmedication)
-- [StructuredAssessment](#structuredassessment)
-- [Task](#task)
-- [UpdateDiagnosis](#updatediagnosis)
-- [UpdateGoal](#updategoal)
-- [Vitals](#vitals)
-
 ## Common Attributes
 
 ### Parameters

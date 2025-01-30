@@ -109,7 +109,7 @@ $ canvas uninstall [OPTIONS] NAME
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
-## `canvas enable`
+### `canvas enable`
 
 Enable a plugin from a Canvas instance..
 
@@ -128,7 +128,7 @@ $ canvas enable [OPTIONS] NAME
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
-## `canvas disable`
+### `canvas disable`
 
 Disable a plugin from a Canvas instance..
 
