@@ -4,27 +4,33 @@ title: "Events"
 
 **What is an Event?**
 
-An event is an occurrence of an action that happens within Canvas. For example, a patient being prescribed a medication, a user searching for a condition or an appointment being created are all examples of events.
+An event is an occurrence of an action that happens within Canvas. For example, a patient being prescribed a medication,
+a user searching for a condition or an appointment being created are all examples of events.
 
 **Why should I use them?**
 
-By writing plugins that respond to events, plugin code is notified and can react to events that occur in Canvas. This enables plugin authors to create custom workflows whenever a relevant event takes place, such as making a POST request to a webhook.
+By writing plugins that respond to events, plugin code is notified and can react to events that occur in Canvas. This
+enables plugin authors to create custom workflows whenever a relevant event takes place, such as making a POST request
+to a webhook.
 
 **How do I use them?**
 
-To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseProtocol`. For example:
+To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin
+that inherits from `BaseProtocol`. For example:
 
 ```python
 from canvas_sdk.events import EventType
 
-class Protocol(BaseProtocol):
-    RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
-    def compute(self):
-        ....
+class Protocol(BaseProtocol):
+  RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
+
+  def compute(self):
+    ....
 ```
 
-The plugin author can enter custom workflow code into the `compute` method that will execute every time an Allergy Intolerance is created in Canvas.
+The plugin author can enter custom workflow code into the `compute` method that will execute every time an Allergy
+Intolerance is created in Canvas.
 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
@@ -749,9 +755,15 @@ Each command lifecycle event provides specific context to the handler, depending
 
 ```json
 {
-  "note": { "uuid": "note-123" },
-  "patient": { "id": "patient-123" },
-  "fields": { "key": "value" }
+  "note": {
+    "uuid": "note-123"
+  },
+  "patient": {
+    "id": "patient-123"
+  },
+  "fields": {
+    "key": "value"
+  }
 }
 ```
 
@@ -764,7 +776,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 ```json
 {
-  "fields": { "key": "value" }
+  "fields": {
+    "key": "value"
+  }
 }
 ```
 
@@ -990,15 +1004,19 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 The Clipboard Command provides the following fields in its context:
 
 | Field  | Type     | Description                                   |
-| ------ | -------- | --------------------------------------------- |
+|--------|----------|-----------------------------------------------|
 | `text` | _string_ | The raw text content copied to the clipboard. |
 
 Refer to the [base context documentation](#context-overview) for additional details about the full context structure.
 
 ```json
 {
-  "note": { "uuid": "note-123" },
-  "patient": { "id": "patient-123" },
+  "note": {
+    "uuid": "note-123"
+  },
+  "patient": {
+    "id": "patient-123"
+  },
   "fields": {
     "text": "Patient complains of persistent headaches for the past two weeks."
   }
@@ -3099,6 +3117,68 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>VITALS_COMMAND__PRE_UPDATE</td>
       <td></td>
+    </tr>
+  </tbody>
+</table>
+
+
+### Patient Portal lifecycle events
+
+The following events are emitted during the lifecycle of a patient portal session.
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENT_CANCELED</td>
+      <td>Occurs after an appointment is canceled</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENT_RESCHEDULED</td>
+    <td>Occurs after an appointment is rescheduled</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED</td>
+    <td>Occurs when checking if an appointment can be canceled</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED</td>
+    <td>Occurs when checking if an appointment can be rescheduled</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH</td>
+    <td>Occurs after the appointment slots search has been done, allowing the values to be modified</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH</td>
+    <td>Occurs before appointment types are resolved, allowing the internal values to be bypassed</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH</td>
+    <td>Occurs after appointment types are resolved, allowing the internal values to be modified</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__PRE_SEARCH</td>
+    <td>Occurs before appointment locations are resolved, allowing the internal values to be bypassed</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH</td>
+    <td>Occurs after appointment locations are resolved, allowing the internal values to be modified</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__PRE_SEARCH</td>
+    <td>Occurs before appointment providers are resolved, allowing the internal values to be bypassed</td>
+    </tr>
+    <tr>
+    <td>PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH</td>
+    <td>Occurs after appointment providers are resolved, allowing the internal values to be modified</td>
     </tr>
   </tbody>
 </table>
