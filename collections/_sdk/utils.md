@@ -108,13 +108,27 @@ http.patch(
 
 There is an interface for executing HTTP requests in parallel.
 
-The `batch_requests` method will execute the requests in parallel using multithreading, and return once all of the
-requests have completed. The `timeout` value allows for specifying a timeout value in seconds; if a request has not
-completed before the timeout value, an error will be returned for that request.
+The `batch_requests` method will execute the requests in parallel using multithreading, and return once all the requests
+have completed.
+
+The first parameter to the method is an iterable of `BatchableRequest` objects. These can be created with the following
+helper functions:
+
+```
+batch_get
+batch_post
+batch_put
+batch_patch
+```
+
+The parameters that these helper functions accept match what the corresponding single-request methods accept.
+
+The `timeout` parameter allows for specifying a timeout value in seconds; if a request has not completed before the
+timeout value, an error will be returned for that request. The maximum allowed value for `timeout` is 30 seconds. If
+`timeout` is not specified, it will be set to the maximum value.
 
 The return value will be a list of responses to the requests. The order of the return value will correspond to the order
 of the provided requests.
-
 
 **Parameters**:
 
@@ -137,5 +151,5 @@ requests = [
     batch_patch("https://my-url.com/", headers={"Authorization": f"Bearer token"}, json={"patch": "json"})
 ]
 
-responses = http.batch_requests(requests, timeout=30)
+responses = http.batch_requests(requests, timeout=10)
 ```
