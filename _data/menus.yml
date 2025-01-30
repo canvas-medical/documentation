@@ -502,12 +502,21 @@ data_module:
  - title: "Allergy Intolerance"
    url: /sdk/data-allergy-intolerance/
    description: Harmful or undesired physiological responses associated with exposure to a substance.
+ - title: "Care Team"
+   url: /sdk/data-care-team/
+   description: Teams assigned for patient care.
  - title: "Command"
    url: /sdk/data-command/
    description: Structured units of documentation in a patient's chart.
+ - title: "Common Enumeration Types"
+   url: /sdk/data-enumeration-types/
+   description: Common choice classes used in multiple models.
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
+ - title: "Coverage"
+   url: /sdk/data-coverage/
+   description: Patient insurance coverage.
  - title: "Detected Issue"
    url: /sdk/data-detected-issue/
    description: Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient.
