@@ -502,6 +502,9 @@ data_module:
  - title: "Allergy Intolerance"
    url: /sdk/data-allergy-intolerance/
    description: Harmful or undesired physiological responses associated with exposure to a substance.
+ - title: "Appointment"
+   url: /sdk/data-appointment/
+   description: A scheduled meeting between a patient and a provider.
  - title: "Care Team"
    url: /sdk/data-care-team/
    description: Teams assigned for patient care.
