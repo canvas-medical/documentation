@@ -277,6 +277,37 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Detected Issues
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DETECTED_ISSUE_CREATED</td>
+      <td>Occurs when a detected issue is created.</td>
+    </tr>
+    <tr>
+      <td>DETECTED_ISSUE_UPDATED</td>
+      <td>Occurs when a detected issue is updated.</td>
+    </tr>
+    <tr>
+      <td>DETECTED_ISSUE_EVIDENCE_CREATED</td>
+      <td>Occurs when detected issue evidence is created.</td>
+    </tr>
+    <tr>
+      <td>DETECTED_ISSUE_EVIDENCE_UPDATED</td>
+      <td>Occurs when a detected issue evidence is updated.</td>
+    </tr>
+  </tbody>
+</table>
+
 #### Devices
 
 <table>

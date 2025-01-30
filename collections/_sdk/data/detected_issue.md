@@ -87,15 +87,18 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 
 ### DetectedIssueEvidence
 
-| Field Name     | Type                            |
-|----------------|---------------------------------|
-| dbid           | Integer                         |
-| system         | String                          |
-| version        | String                          |
-| code           | String                          |
-| display        | String                          |
-| user_selected  | Boolean                         |
-| detected_issue | [DetectedIssue](#detectedissue) |
+
+| Field Name     | Type                                                    |
+|----------------|---------------------------------------------------------|
+| id             | UUID                                                    |
+| dbid           | Integer                                                 |
+| system         | String                                                  |
+| version        | String                                                  |
+| code           | String                                                  |
+| display        | String                                                  |
+| user_selected  | Boolean                                                 |
+| detected_issue | [DetectedIssue](/sdk/data-detected-issue/#detectedissue) |
+
 
 <br/>
 <br/>
