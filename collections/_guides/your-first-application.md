@@ -67,7 +67,7 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
 4. **scope**:
    - `global`: The app will appear across all contexts.
    - `patient_specific`: The app will appear only in the patient chart page.
-5. **origins**: The allowed origins for the application. This is used for security purposes. The URLs must match the format available [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#host-source).
+5. **origins**: The allowed origins for the application. This is used for security purposes. For more info check the [Application Handler](/sdk/handlers-applications).
 
 ## Step 4: Overriding the Application Behavior
 

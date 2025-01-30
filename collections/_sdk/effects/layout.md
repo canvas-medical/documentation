@@ -1,7 +1,7 @@
 ---
 title: "Layout Effects"
 slug: "layout-effect"
-excerpt: "Rearrange or hide sections in a patient's profile o chart."
+excerpt: "Modify or interact with the layout in Canvas."
 hidden: false
 ---
 
@@ -49,19 +49,23 @@ other context.
 
 Values in the `PatientChartSummaryConfiguration.Section` enum are:
 
-| Constant | Description |
-| -------- | ----------- |
+| Constant            | Description         |
+|---------------------|---------------------|
 | SOCIAL_DETERMINANTS | social_determinants |
-| GOALS | goals |
-| CONDITIONS | conditions |
-| MEDICATIONS | medications |
-| ALLERGIES | allergies |
-| CARE_TEAMS | care_teams |
-| VITALS | vitals |
-| IMMUNIZATIONS | immunizations |
-| SURGICAL_HISTORY | surgical_history |
-| FAMILY_HISTORY | family_history |
-| CODING_GAPS | coding_gaps |
+| GOALS               | goals               |
+| CONDITIONS          | conditions          |
+| MEDICATIONS         | medications         |
+| ALLERGIES           | allergies           |
+| CARE_TEAMS          | care_teams          |
+| VITALS              | vitals              |
+| IMMUNIZATIONS       | immunizations       |
+| SURGICAL_HISTORY    | surgical_history    |
+| FAMILY_HISTORY      | family_history      |
+| CODING_GAPS         | coding_gaps         |
+
+### Action Buttons
+Each section of the patient chart can also be customized with action buttons. Please refer to the [Action Buttons](/sdk/handlers-action-buttons/) documentation for more information.
+
 
 ## Patient Profile
 
@@ -149,3 +153,124 @@ Values in the `PatientProfileConfiguration.Section` enum are:
 <br/>
 <br/>
 
+## Modals
+
+The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
+
+### Example Usage
+
+```python
+from canvas_sdk.effects import LaunchModalEffect, EffectType
+
+class ModalEffectHandler:
+    def compute(self):
+        modal_effect = LaunchModalEffect(
+            url="https://example.com/info",
+            content=None,
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL
+        )
+        return [modal_effect.apply()]
+```
+
+The `LaunchModalEffect` class has the following properties:
+
+- **url**: A string containing the URL to load within the modal. If `content` is also specified, an error will be raised.
+- **content**: A string containing the content to be displayed directly within the modal. If `url` is also provided, an error will be raised.
+- **target**: Defines where the modal should be launched. Options include:
+  - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
+  - `NEW_WINDOW`: Opens the content in a new browser window.
+  - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
+
+
+### Custom HTML and Django Templates
+
+To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect`.
+
+```python
+def render_to_string(template_name: str, context: dict[str, Any] | None = None) -> str | None:
+    """Load a template and render it with the given context.
+
+    Args:
+        template_name (str): The path to the template file, relative to the plugin package.
+            If the path starts with a forward slash ("/"), it will be stripped during resolution.
+        context (dict[str, Any] | None): A dictionary of variables to pass to the template
+            for rendering. Defaults to None, which uses an empty context.
+
+    Returns:
+        str: The rendered template as a string.
+
+    Raises:
+        FileNotFoundError: If the template file does not exist within the plugin's directory
+            or if the resolved path is invalid.
+    """
+```
+
+#### Example Template
+
+Consider a simple HTML file named `templates/modal_content.html`:
+{% raw %}
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ heading }}</h1>
+    <p>{{ message }}</p>
+</body>
+</html>
+```
+{% endraw %}
+
+This template uses Django template placeholders like {% raw %} `{{ title }}`, `{{ heading }}`, and `{{ message }}` {% endraw %} to dynamically render content based on the provided context.
+
+#### Rendering the Template in Python
+
+Here’s how you can use the `render_to_string` utility to render the template and pass the resulting HTML to a `LaunchModalEffect`:
+
+```python
+from canvas_sdk.effects import LaunchModalEffect
+from canvas_sdk.templates import render_to_string 
+
+class ModalEffectHandler:
+    def compute(self):
+        # Define the context for the template
+        context = {
+            "title": "Welcome Modal",
+            "heading": "Hello, User!",
+            "message": "This is a dynamically rendered modal using Django templates."
+        }
+
+        # Render the HTML content using the template and context
+        rendered_html = render_to_string("templates/modal_content.html", context)
+
+        # Create a LaunchModalEffect with the rendered content
+        modal_effect = LaunchModalEffect(
+            content=rendered_html,
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL
+        )
+
+        return [modal_effect.apply()]
+```
+
+### Additional Configuration
+To use URLs or custom scripts within the `LaunchModalEffect`, additional security configurations must be specified in the `CANVAS_MANIFEST.json` file of your plugin.
+
+1. **Allowing URLs**: URLs specified in the url property of `LaunchModalEffect` must be added to the `origins.urls` section of the `CANVAS_MANIFEST.json`.
+2. **Allowing custom scripts**: If custom HTML contains scripts, the script origins must be added to the `origins.scripts` section of the `CANVAS_MANIFEST.json`.
+
+The URLs must match the format available [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#host-source).
+
+```json
+{
+    "sdk_version": "0.1.4",
+    "plugin_version": "0.0.1",
+    "name": "custom_html",
+    "description": "...",
+    "origins": {
+        "urls": ["https://example.com/info"],
+        "scripts": ["https://d3js.org/d3.v4.js"]
+    }
+}
+```
