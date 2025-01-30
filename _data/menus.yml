@@ -490,7 +490,7 @@ effects_module:
    description: Contextual information in a patient's chart.
  - title: "Layout Effects"
    url: /sdk/layout-effect/
-   description: Rearrange or hide summary sections in a patient's chart.
+   description: Modify or interact with the layout in Canvas.
  - title: "Questionnaires"
    url: /sdk/effect-questionnaires/
    description: Interact with questionnaires and interviews.
