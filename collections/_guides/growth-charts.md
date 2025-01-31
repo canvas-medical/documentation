@@ -1,46 +1,86 @@
 ---
-title: "Generate growth charts based on observations"
+title: "Surfacing data visualizations within the Canvas charting interface"
 guide_for:
 - /sdk/handlers/
 - /sdk/events/
 - /sdk/effects/
 ---
 
-The [Growth charts Plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/growth-charts) was designed to help determine which percentile a patient falls into. We currently support both WHO and CDC growth charts, but it is possible to include additional charts if the same logic is applied
+## Purpose
 
-  - It uses the [`ACTION_BUTTON`](/sdk/handlers-action-buttons) handler to provide a button in the UI to launch the visualization.
-  - We set `BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION` to make the action button appear in the chart summary's vitals section 
-  - Retrieves patient observations such as height, weight, BMI, and head circumference.
-  - Uses a chart template to show the graphs
-  - Predefined graph values are sourced from data files (e.g., who_boys_length_age), which can be included in the protocol.
-  - Plots observations values onto the graphs
-  - Uses the [`LAUNCH_MODAL`](/sdk/effects) effect to render a modal displaying the graphs results.
+The Canvas SDK gives you access to real-time patient data and allows you to create custom UIs accessible from a patient’s chart. The combination of these capabilities allows you to create rich, interactive data visualizations your clinicians can access directly in the charting interface. This example will show you how we’ve used this approach to implement a pediatric growth charts feature.
 
-## Graphs structure
+## On this guide you will learn how to:
 
-The graph data files have a simple structure, representing X and Y axes along with the resultant series:
+  - Use the [`ACTION_BUTTON`](/sdk/handlers-action-buttons) handler to provide a button, specify its location, and define its action in the UI.
+  - Use the [`LAUNCH_MODAL`](/sdk/effects) effect to display a “Hello World” message.
+  - Fetch patient observations, such as height and weight, from the [`SDK`](/sdk) and transform them for use in the charts.
+  - Create an HTML template and pass in the patient data.
+  - Use all of the above features to generate a Growth Chart and display it in the application.
 
-To get the values to use on this plugin we used the following resources
+## Growth Charts
 
-[`World Health Organization (WHO)`](https://www.cdc.gov/growthcharts/who-data-files.htm)
+Growth charts are percentile curves showing the distribution of selected body measurements in children. A growth chart shows how a child’s height, weight, and head circumference (for infants) compare to other children of the same age and sex. It helps track a child’s growth over time and can indicate whether they are growing at a healthy rate. Growth charts are commonly used by doctors to monitor development and identify potential health concerns.
+On this guide we will use charts from the [`Center for Disease Control and Prevention (CDC)`](https://www.cdc.gov/growthcharts/who-data-files.htm) to demonstrate how you can create your own. 
 
-[`Centers for Disease Control and Prevention (CDC)`](https://www.cdc.gov/growthcharts/cdc-growth-charts.htm)
+## Our Plugin
 
+Our complete plugin can be consulted on the [`Medical Software Foundation`](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/growth_charts/) and has 24 different types of growth charts. 
+
+The plugin adds a button on the Vital Signs section of the patient chart that, when clicked, launches a modal displaying a generated HTML, which includes the height, weight, and head circumference measurements graphed against various percentile curves.
+
+![vitals action button](/assets/images/vitals-action-button.png){: style='width: 300px'}
+
+![chart template](/assets/images/growth-charts.png){: style='width: 600px'}
+
+In the next steps, we will show you how we used the features above to create it.
+
+## How to add a Button
+
+To add a button to the vital signs section, you’ll implement an [`ACTION_BUTTON`](/sdk/handlers-action-buttons) handler. In your handler class, you’ll set the `BUTTON_LOCATION` constant to `ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION` to make the action button appear in the corresponding section of the chart summary.
 
 ```python
-    who_boys_length_age = [
-        { "x": 0, "y": 46.77032, "z": "5th" },
-        { "x": 1, "y": 51.52262, "z": "5th" },
-        { "x": 2, "y": 55.13442, "z": "5th" },
-        ...
-        { "x": 23, "y": 92.93123, "z": "98th" },
-        { "x": 24, "y": 93.92634, "z": "98th" }
-    ]
+    class GenerateVitalsGraphs(ActionButton):
+        BUTTON_TITLE = "Growth Charts"
+        BUTTON_KEY = "show_growth_charts"
+        BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION
+
+     def handle(self) -> list[Effect]:
+        # here we define what's the button action
 ```
 
-## Getting patient data
+## How to launch a modal on a button click
 
-For WHO and CDC growth charts, we need values like weight, length, BMI, etc. To obtain these, we use [`Observations`](/sdk/data-observation/).
+Now that you have your button showing in the chart section, you can launch a modal when it’s clicked using the [`LaunchModalEffect`](/sdk/layout-effect/#modals)
+
+In this guide, we are launching a modal, although this click action can invoke any other plugin code
+
+Here’s an example of a simple plugin using the Launch Modal effect to display an HTML “Hello World” message.
+
+```python
+    class HelloWorld(ActionButton):
+        BUTTON_TITLE = "Hello World"
+        BUTTON_KEY = "show_hello_world"
+        BUTTON_LOCATION = ActionButton.ButtonLocation.
+        
+        def handle(self) -> list[Effect]:
+            launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { title: 'hello world' }))
+
+    return [launch_modal.apply()]
+```
+
+And here's the result! 
+
+![action button](/assets/images/action-button-hello-world.png){: style='width: 300px'}
+
+![hello world](/assets/images/template-hello-world.png){: style='width: 400px'}
+
+
+## How to fetch the observations
+
+To retrieve the patient data we use the [`Data Module`](/sdk/data/) and more specifically, for this case, the [`Observation`](/sdk/data-observation/) model. 
+
+Here, we get the `self.target`, which is the patient's `id`, to retrieve the patient and their observations by filtering for the values we need — such as weight, height, etc.
 
 ```python
     patient = Patient.objects.get(id=self.target)
@@ -53,18 +93,74 @@ For WHO and CDC growth charts, we need values like weight, length, BMI, etc. To 
     observation_head_circumference = Observation.objects.for_patient(self.target).filter(name="head_circumference")
 ```
 
-## Structure data to be used on graphs
+## How to use html templates in the modal
 
-With the patient’s values, we can then structure our data for plotting the graph
+The use of templates allows us to render any kind of information from the data we have. We can even import external libraries from CDNs and add CSS styles to customize and enhance our modal.
+
+For example, to draw our graphs, we used d3js, a free, open-source JavaScript library for visualizing data. How to use d3js is outside the scope of this guide, but you can find great documentation and tutorials on the d3 site [`here`](https://d3js.org/getting-started)
+
+Here's an example of a template file name `hello-world.html` that receives a variable called title, which will be used inside the template.
+
+```html
+<!DOCTYPE html>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 30px;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<html lang="en">
+    <h1 id="main"></h1>
+</html>
+<script>
+    const div = document.getElementById('main');
+    div.textContent = `{{ title | safe }}`;
+</script>
+```
+
+## How we render a growth chart in a template
+
+To render a growth chart on the template, we first need to transform the Excel file we get from the CDC website into a JSON array and then pass it, along with the other necessary information, to the template (as we will see in the next step).
 
 ```python
-    # value to be used on a particular graph
-    weight_for_age = [
-        x: "0", y: "10",
-        x: "1", y: "12",
-        x: "2", y: "14",
+    who_boys_length_age = [
+        { "x": 0, "y": 46.77032, "z": "5th" },
+        { "x": 1, "y": 51.52262, "z": "5th" },
+        { "x": 2, "y": 55.13442, "z": "5th" },
+        ...
+        { "x": 23, "y": 92.93123, "z": "98th" },
+        { "x": 24, "y": 93.92634, "z": "98th" }
     ]
+```
 
+## How do we use the patient data to plot the graph?
+
+After obtaining the necessary information, we need to structure it in a way that can be used in the graph. To do this, we create a list of x and y values corresponding to the patient’s age and weight. With this list, we can add a line on top of the growth chart to compare both sets of data.
+
+Here, we need to convert the weight since the Excel file has the values in kg, and our patient data is in lbs.
+
+```python
+     weight_for_age = {}
+
+    for obs in observation_weight:
+        if obs.value:
+            note = Note.objects.get(dbid=obs.note_id)
+            age_in_months = get_age_in_months(birth_date, note.datetime_of_service)
+            weight_in_kg = convert_oz_to_kg(obs.value)
+            weight_for_age[age_in_months] = weight_in_kg
+
+     length_for_age = [
+        { x: "0", y: "46" },
+        { x: "1", y: "50" },
+        { x: "2", y: "54" },
+        { x: "2", y: "57" },
+    ]
+```
+
+Finally, we create a list of graphs with the necessary variables and data, which are passed to the template to generate the graph.
+
+```python
     # list of graphs
     graphs = [
         {
@@ -75,30 +171,13 @@ With the patient’s values, we can then structure our data for plotting the gra
             "xLabel": 'Age', # label for the x axis
             "yLabel": 'Length', # label for the y axis
             "zLabel": 'Percentile', # label for the z axis
-            "layerData": weight_for_age, # the patient’s data that will be plotted on the graph
+            "layerData": length_for_age, # the patient’s data that will be plotted on the graph
             "tab": "WHO" # the section where the graph should be rendered (WHO or CDC)
         }
     ]
 ```
 
-## Generate graphs and Launch Modal
+## Conclusion
 
-To generate the graphs and [`LAUNCH_MODAL`](/sdk/effects) we use the chart template and pass the graphs as arguments.
+By combining action buttons with the data module and the launch modal effect, you can create unique visualizations to help contextualize patient data for your clinical users.
 
-```python
-    launch_modal = LaunchModalEffect(
-            content=render_to_string("templates/chart.html", {"graphs": graphs}),
-        )
-```
-
-## The chart template and the result
-
-This template is an HTML file (with CSS and JavaScript) that imports the [`D3js`](https://d3js.org/) library to help us generate the graphs.
-
-It includes two sections (WHO and CDC), with options to convert the graph units (lbs/kg and cm/inches) and to print the current section.
-
-The HTML file dynamically generates the graphs on the corresponding tab using the provided graph data and can be modified to include additional sections or support more units.
-
-![vitals action button](/assets/images/vitals-action-button.png){: style='width: 300px'}
-
-![chart template](/assets/images/growth-charts.png){: style='width: 600px'}
