@@ -439,6 +439,12 @@ guides_list:
    uses:
      - sdk
 
+ - title: "Visualizing Data Within the Canvas Chart"
+   url: /guides/growth-charts/
+   description: Visualizing observations as pediatric growth charts
+   uses:
+     - sdk
+
  - title: "Improve HCC Coding Accuracy"
    url: /guides/improve-hcc-coding-accuracy/
    description: Make HCC coding more intuitive and efficient in Canvas
