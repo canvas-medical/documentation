@@ -14,6 +14,7 @@
         cursor: pointer;
         @media (max-width: $breakpoint-md) {
             padding: 8px 40px 8px 20px;
+            width: 60%;
         }
         svg {
             fill: $text-color;

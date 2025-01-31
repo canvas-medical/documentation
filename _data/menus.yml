@@ -417,31 +417,64 @@ guides:
 guides_list:
  - title: "Your First Plugin"
    url: /guides/your-first-plugin/
+   description: Customize the behavior of Canvas using plugins
+   uses:
+     - sdk
 
  - title: "Creating Webhooks"
    url: /guides/creating-webhooks-with-the-canvas-sdk/
+   description: Make automatic API requests based on Canvas events
+   uses:
+     - sdk
 
  - title: "Customize Search Results"
    url: /guides/customize-search-results/
+   description: Add your own  logic to surface the right options with the appropriate context
+   uses:
+     - sdk
 
  - title: "Creating, Implementing, and Extending a Scribe Parser"
    url: /guides/scribe-ai-parser/
+   description: Creating, Implementing, and Extending a Scribe Parser
+   uses:
+     - sdk
 
  - title: "Improve HCC Coding Accuracy"
    url: /guides/improve-hcc-coding-accuracy/
+   description: Make HCC coding more intuitive and efficient in Canvas
+   uses:
+     - sdk
+     - fhir_api
 
  - title: "Staying on Top of Tasks"
    url: /guides/staying-on-top-of-tasks/
+   description: Create tasks via API? Listen for completion with a plugin!
+   uses:
+     - sdk
+     - fhir_api
 
  - title: "Submit a Full Vital Panel via FHIR"
    url: /guides/submit-vitals-via-fhir/
+   description: Learn how to document a full vitals panel via FHIR
+   uses:
+     - fhir_api
 
  - title: "Tailoring the Chart to Your Patient"
    url: /guides/tailoring-the-chart-to-the-patient/
+   description: Customize a patient's chart so the features most relevant to them are front-and-center
+   uses:
+     - sdk
+
+ - title: "Your First Application"
+   url: /guides/your-first-application
+   description: Install and customize embeddable applications in Canvas
+   uses:
+     - sdk
 
 guides_templates:
  - title: "Behavioral Health"
    url: /guides/bh
+   description: tktk
    identifier: guides_care-models-bh
 
 sdk:

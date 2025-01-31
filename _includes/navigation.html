@@ -8,11 +8,20 @@
         </div>
     </div>
     <div class="navigation__container__inner navigation__container__global">
-        <a class="navigation__logo" href="{{ '/' | relative_url }}">
-            <img src="{{ '/assets/images/logo.png' | relative_url }}" class="navigation__logo-img" alt="{{ site.title | escape }}">
-        </a>
-        <button class="btn btn__search search__toggle" style="margin-right: 20px;"><svg class="ais-SearchBox-submitIcon" width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><path d="M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z"></path></svg> Search the docs</button>
-	<span>Ready to build? <a href="https://www.canvasmedical.com/emrs/developer-sandbox">Create a sandbox account now!</a></span>
+        <div class="navigation__container__inner" style="flex-wrap: wrap;">
+            <a class="navigation__logo" href="{{ '/' | relative_url }}">
+                <img src="{{ '/assets/images/logo.png' | relative_url }}" class="navigation__logo-img" alt="{{ site.title | escape }}">
+            </a>
+            <button class="btn btn__search search__toggle" style="border: 1px solid #e4e4e7; margin-right: 20px;"><svg class="ais-SearchBox-submitIcon" width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><path d="M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z"></path></svg> Search the docs</button>
+        </div>
+        <a class="navigation__cta" href="https://www.canvasmedical.com/emrs/developer-sandbox">Create a sandbox account!</a>
+        <div class="navigation__container__inner navigation__container__site navigation__wrapper">
+            <div class="navigation__menu">
+                {% for item in site.menus.main %}
+                    <a class="navigation__menu__item{% assign url_path = item.url | split: "/" %}{% assign page_path = page.url | split: "/" %}{% if url_path[1] == page_path[1] %} navigation__menu__item__active{% endif %}" href="{{ item.url }}">{{ item.title }}</a>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
     <div class="sidenav__toggle navsidetogle">
@@ -21,16 +30,6 @@
         </div>
         <div class="sidenav__toggle__close">
             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
-        </div>
-    </div>
-    <div class="navigation__container__inner navigation__container__site navigation__wrapper">
-        <div class="navigation__menu">
-            {% for item in site.menus.main %}
-            <a class="navigation__menu__item{% assign url_path = item.url | split: "/" %}{% assign page_path = page.url | split: "/" %}{% if url_path[1] == page_path[1] %} navigation__menu__item__active{% endif %}" href="{{ item.url }}">{{ item.title }}</a>
-            {% endfor %}
-        </div>
-        <div class="navigation__alt">
-            <a class="navigation__menu__item" href="https://www.canvasmedical.com/" target="_blank">&copy; <span id="current-year"></span> Canvas Medical</a>
         </div>
     </div>
 </nav>

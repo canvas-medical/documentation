@@ -1,7 +1,7 @@
 .sidenav {
     max-height: var(--body-height);
     overflow-y: auto;
-    border-right: 1px solid $babyblue;
+    border-right: 1px solid #e4e4e7;
     padding-left: $container-padding;
     padding-right: $container-padding;
     position: relative;
@@ -43,7 +43,7 @@
     @media (max-width: $breakpoint-md) {
         &.sidenavtoc {
             min-width: 0px;
-            border-right: 0px solid $babyblue;
+            border-right: 0px solid #e4e4e7;
             width: calc(100vw - 28px);
         }
     }
