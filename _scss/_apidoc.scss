@@ -59,6 +59,10 @@
     background-color: $lightgrey;
     padding: 0.5em 1em;
 
+    h3 {
+      margin-top: 1rem;
+    }
+
     &__list__item {
       display: flex;
       align-items: center;

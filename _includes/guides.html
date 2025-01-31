@@ -1,0 +1,18 @@
+<div class="card-grid">
+    {% for item in site.menus.guides_list %}
+        <a href="{{ item.url }}">
+            <div class="card-section-item fixed-height-card">
+                <span class="cardHeading">{{ item.title }}</span>
+                <p>{{ item.description }}</p>
+                <div class="platform-components-used">
+                    {% if item.uses contains "sdk" %}
+                        <img src="/assets/images/icon.svg" alt="This guide makes use of the Canvas SDK."/>
+                    {% endif %}
+                    {% if item.uses contains "fhir_api" %}
+                        <img src="/assets/images/icon-fhir-128.png" alt="This guide makes use of the Canvas FHIR® API, built on the HL7® FHIR® standard."/>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+</div>
