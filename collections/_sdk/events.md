@@ -3150,7 +3150,7 @@ The following events are emitted during the lifecycle of a patient portal sessio
   <tbody>
     <tr>
       <td>PATIENT_PORTAL__GET_INTAKE_FORMS</td>
-      <td>Occurs everytime the application loads</td>
+      <td>Occurs everytime the patient portal loads</td>
     </tr>
   </tbody>
 </table>
