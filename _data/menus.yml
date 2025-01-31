@@ -439,9 +439,9 @@ guides_list:
    uses:
      - sdk
 
- - title: "Growth Charts"
+ - title: "Visualizing Data Within the Canvas Chart"
    url: /guides/growth-charts/
-   description: Display growth charts based on observations
+   description: Visualizing observations as pediatric growth charts
    uses:
      - sdk
 
