@@ -63,7 +63,7 @@ Please note that the content of each `value` field can contain any value that is
 | npi_number                | String                                               |
 | bill_through_organization | Boolean                                              |
 | tax_id                    | String                                               |
-| tax_id_type               | [TaxIDType](#taxidtype)                              |
+| tax_id_type               | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)  |
 | billing_location_name     | String                                               |
 | group_npi_number          | String                                               |
 | taxonomy_number           | String                                               |
@@ -78,12 +78,3 @@ Please note that the content of each `value` field can contain any value that is
 | practice_location         | [PracticeLocation](#practicelocation)                |
 | name                      | String                                               |
 | value                     | JSON                                                 |
-
-## Enumeration types
-
-### TaxIDType
-
-| Value | Label      |
-|-------|------------|
-| E     | EIN text   |
-| S     | SSN        |
