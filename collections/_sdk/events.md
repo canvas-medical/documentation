@@ -949,6 +949,77 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   </tbody>
 </table>
 
+#### Cancel Prescription Command
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__POST_ORIGINATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_UPDATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__POST_UPDATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_COMMIT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__POST_COMMIT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_DELETE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__POST_DELETE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__PRE_SEARCH</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__POST_SEARCH</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Clipboard Command
 
 <table>
@@ -2708,6 +2779,79 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+#### Snooze Protocol Command
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+   <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__PRE_ORIGINATE</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__POST_ORIGINATE</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__PRE_UPDATE</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__POST_UPDATE</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__PRE_COMMIT</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__POST_COMMIT</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__PRE_DELETE</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__POST_DELETE</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__PRE_ENTER_IN_ERROR</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__POST_ENTER_IN_ERROR</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__PRE_EXECUTE_ACTION</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__POST_EXECUTE_ACTION</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL__PROTOCOL__PRE_SEARCH</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>SNOOZE_PROTOCOL__PROTOCOL__POST_SEARCH</td>
+    <td></td>
+  </tr>
+
+  </tbody>
+</table>
+
+
 #### Stop Medication Command
 
 <table>
@@ -2995,6 +3139,85 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
     <tr>
       <td>TASK__LABELS__PRE_SEARCH</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Update Diagnosis Command
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__POST_ORIGINATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_UPDATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__POST_UPDATE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_COMMIT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__POST_COMMIT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_DELETE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__POST_DELETE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS__CONDITION__PRE_SEARCH</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS__CONDITION__POST_SEARCH</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS__NEW_CONDITION__PRE_SEARCH</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>UPDATE_DIAGNOSIS__NEW_CONDITION__POST_SEARCH</td>
       <td></td>
     </tr>
   </tbody>
