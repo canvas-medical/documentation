@@ -151,7 +151,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr> 
     <tr> 
       <td>Task</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td> <span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>Attachments are added through a modal</li></ul></td>
     </tr>
     <tr> 
