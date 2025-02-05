@@ -536,6 +536,9 @@ effects_module:
  - title: "Tasks"
    url: /sdk/effect-tasks/
    description: Create or update tasks.
+ - title: "Intake Forms"
+   url: /sdk/effect-intake-forms/
+   description: Create intake forms.
 
 data_module:
  - title: "Allergy Intolerance"

@@ -3134,6 +3134,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+### Patient Portal lifecycle events
+
+The following events are emitted during the lifecycle of a patient portal session.
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PATIENT_PORTAL__GET_INTAKE_FORMS</td>
+      <td>Occurs everytime the patient portal loads</td>
+    </tr>
+  </tbody>
+</table>
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
