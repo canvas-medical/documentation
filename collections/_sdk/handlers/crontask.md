@@ -56,3 +56,8 @@ class LogTheTime(CronTask):
 Here's what this scheduled task would output in the logs:
 
 `INFO 2024-07-18 18:47:00,000 The current time is 2024-07-18T18:47:00.000000+00:00`
+
+<br/>
+<br/>
+<br/>
+<br/>

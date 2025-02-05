@@ -285,7 +285,7 @@ sections:
                     type: string
               - name: telecom
                 type: json
-                description: This is a list of objects where Canvas will take the first system equal to phone and store as the contact's phone number. Then the first system equal to email will be stored as this contact's email address. The value of the email or phone number is stored in the value field. If any other option is passed in the system field, the data will not be stored.
+                description: This is a list of objects where Canvas will take the first system equal to phone and store as the contact's phone number. This value must only be a 10 digit number, no other characters are accepted. Then the first system equal to email will be stored as this contact's email address. The value of the email or phone number is stored in the value field. If any other option is passed in the system field, the data will not be stored.
                 attributes:
                   - name: system
                     type: string

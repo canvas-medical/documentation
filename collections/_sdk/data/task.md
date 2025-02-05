@@ -94,17 +94,17 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 
 ### TaskLabel
 
-| Field Name       | Type                                |
-|------------------|-------------------------------------|
-| id               | UUID                                |
-| dbid             | Integer                             |
-| tasks            | M2M                                 |
-| position         | Integer                             |
-| color            | [ColorEnum](#colorenum)             |
-| task_association | [Origin](#origin)                   |
-| name             | String                              |
-| active           | Boolean                             |
-| modules          | [TaskLabelModule](#tasklabelmodule) |
+| Field Name       | Type                                                |
+|------------------|-----------------------------------------------------|
+| id               | UUID                                                |
+| dbid             | Integer                                             |
+| tasks            | M2M                                                 |
+| position         | Integer                                             |
+| color            | [ColorEnum](/sdk/data-enumeration-types/#colorenum) |
+| task_association | [Origin](/sdk/data-enumeration-types/#origin)       |
+| name             | String                                              |
+| active           | Boolean                                             |
+| modules          | [TaskLabelModule](#tasklabelmodule)                 |
 
 ## Enumeration types
 
@@ -135,43 +135,6 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 |-------------|-------------|
 | claims      | Claims      |
 | tasks       | Tasks       |
-
-### Origin
-
-| Value           | Label                               |
-|-----------------|-------------------------------------|
-| REF_CMD         | Referral command                    |
-| CMP_IMG_ORD     | Completing image orders             |
-| IMG_REP_REV     | Imaging report review               |
-| LAB_RES_REV     | Lab results review                  |
-| CON_REP_REV     | Consult report review               |
-| UNC_DOC_REP_REV |Uncategorized document report review |
-| ASN_NOT_PHN_REV | Assigned note/phone call for review |
-| POP_HLT_OUT     | Population health outreach          |
-| CMP_LAB_ORD     | Completing lab orders               |
-| CHT_PDF         | Chart PDF                           |
-| EXP_CLM_SNO     | Expired claim snoozed               |
-| FLG_PST_REV     | Flagged posting review              |
-| BAT_PTN_STA     | Batch patient statements            |
-| INC_COV         | Incomplete Coverage                 |
-
-### ColorEnum
-
-| Value    | Label    |
-|----------|----------|
-| red      | Red      |
-| orange   | Orange   |
-| yellow   | Yellow   |
-| olive    | Olive    |
-| green    | Green    |
-| teal     | Teal     |
-| blue     | Blue     |
-| violet   | Violet   |
-| purple   | Purple   |
-| pink     | Pink     |
-| brown    | Brown    |
-| grey     | Grey     |
-| black    | Black    |
 
 <br/>
 <br/>

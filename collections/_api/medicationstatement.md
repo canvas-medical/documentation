@@ -69,21 +69,26 @@ sections:
             create_and_update_description: A create/update requires either a medicationReference or medicationCodeableConcept when making a request.
             type: json
             attributes:
-                - name: system
-                  type: string
-                  required_in: create,update
-                  description: The url of the medication coding. 
-                  enum_options:
-                    - value: http://www.nlm.nih.gov/research/umls/rxnorm
-                    - value: http://www.fdbhealth.com/
-                - name: code
-                  type: string
-                  required_in: create,update
-                  description: The code value of the medication coding
-                - name: display
-                  type: string
-                  required_in: create,update
-                  description: The display name of the medication
+              - name: coding
+                description: Code defined by a terminology system.
+                type: array[json]
+                required_in: create, update
+                attributes: 
+                  - name: system
+                    type: string
+                    required_in: create,update
+                    description: The url of the medication coding. 
+                    enum_options:
+                      - value: http://www.nlm.nih.gov/research/umls/rxnorm
+                      - value: http://www.fdbhealth.com/
+                  - name: code
+                    type: string
+                    required_in: create,update
+                    description: The code value of the medication coding
+                  - name: display
+                    type: string
+                    required_in: create,update
+                    description: The display name of the medication
           - name: subject
             description: Who is/was taking the medication.
             type: json

@@ -221,4 +221,6 @@ run `canvas install <path/to/plugin>` and your plugin will be packaged,
 uploaded, installed, and enabled. As you make changes to your plugin, run the
 same command to update the code of the installed plugin.
 
-
+<br/>
+<br/>
+<br/>

@@ -15,12 +15,12 @@ at runtime through Django's expressive [QuerySet API](https://docs.djangoproject
 
 The pages below provide listings of the models, their attributes, and examples of usage.
 
-<div>
+<div class="sdk-card-list">
 {% for item in site.menus.data_module %}
     <a href="{{ item.url }}">
-        <div style="padding-left: 20px; padding-bottom: 20px; margin: 0px 2px 40px 2px; box-shadow: 0 0 1px 2px #e5eaec; border-radius: 3px;">
-            <h2 style="padding-top: 10px;">{{ item.title }}</h2>
-            <span>{{ item.description }}</span>
+        <div class="sdk-card">
+            <span class="cardHeading">{{ item.title }}</span>
+            <p>{{ item.description }}</p>
         </div>
     </a>
 {% endfor %}
