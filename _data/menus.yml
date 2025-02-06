@@ -595,6 +595,9 @@ data_module:
  - title: "Questionnaire"
    url: /sdk/data-questionnaire
    description: Groups of coded questions and the coded patient responses.
+ - title: "Reason For Visit"
+   url: /sdk/data-reason-for-visit/
+   description: The reason for a patient's visit.
  - title: "Staff"
    url: /sdk/data-staff
    description: Data associated with Staff members.

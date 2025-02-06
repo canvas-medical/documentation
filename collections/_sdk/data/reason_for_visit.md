@@ -1,7 +1,7 @@
 ---
-title: "Reason For Visit Setting Coding"
-slug: "data-reason-for-visit-setting-coding"
-excerpt: "Canvas SDK Reason For Visit Setting Coding"
+title: "Reason For Visit"
+slug: "data-reason-for-visit"
+excerpt: "Canvas SDK Reason For Visit and its codings"
 hidden: false
 ---
 
