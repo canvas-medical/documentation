@@ -2,9 +2,14 @@
 title: "Commands"
 ---
 
-The commands module lets you create and update commands within a specific note in Canvas. Commands are the building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation, like HPIs and questionnaires, as well as orders like prescriptions, labs, and referrals. Each Command class can be instantiated in your plugin and used to build a new command instance within a specific note or update an existing instance. The commands are then displayed in real time within the end user's workflow.
+The commands module lets you create and update commands within a specific note in Canvas. Commands are the building
+blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation, like HPIs and
+questionnaires, as well as orders like prescriptions, labs, and referrals. Each Command class can be instantiated in
+your plugin and used to build a new command instance within a specific note or update an existing instance. The commands
+are then displayed in real time within the end user's workflow.
 
-Common objectives that can be met by using Command classes include dynamic note templates, clinical decision support, order set composition, care gap closure, and care coordination automation.
+Common objectives that can be met by using Command classes include dynamic note templates, clinical decision support,
+order set composition, care gap closure, and care coordination automation.
 
 ## Common Attributes
 
@@ -48,17 +53,16 @@ Returns an effect that enter-in-errors an existing, committed command in the not
 ```python
 from canvas_sdk.commands import PlanCommand
 
+
 def compute():
+  existing_plan = PlanCommand(command_uuid='63hdik', narrative='something new')
+  new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
+  new_plan.narrative = 'newer'
 
-    existing_plan = PlanCommand(command_uuid='63hdik', narrative='something new')
-    new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
-    new_plan.narrative = 'newer'
-
-    return [existing_plan.edit(), new_plan.originate()]
+  return [existing_plan.edit(), new_plan.originate()]
 ```
 
 Command-specific details for each command class can be found below.
-
 
 ## Allergy
 
@@ -80,14 +84,11 @@ Command-specific details for each command class can be found below.
 | `concept_id`   | _integer_           | The identifier for the allergen concept.               |
 | `concept_type` | _AllergenType enum_ | The type of allergen. See `AllergenType` values below. |
 
-
-
 | AllergenType     | Description                        |
 |:-----------------|:-----------------------------------|
 | `ALLERGEN_GROUP` | Represents a group of allergens.   |
 | `MEDICATION`     | Represents a medication allergen.  |
 | `INGREDIENT`     | Represents an ingredient allergen. |
-
 
 | Severity   | Description                    |
 |:-----------|:-------------------------------|
@@ -98,15 +99,15 @@ Command-specific details for each command class can be found below.
 **Example**:
 
 ```python
-from canvas_sdk.commands import AllergyCommand, AllergenType, Allergen 
+from canvas_sdk.commands import AllergyCommand, AllergenType, Allergen
 from datetime import date
 
 allergy = AllergyCommand(
-    note_uuid="rk786p",
-    allergy=Allergen(concept_id=12345, concept_type=AllergenType.MEDICATION),
-    severity=AllergyCommand.Severity.SEVERE,
-    narrative="Severe rash and difficulty breathing after penicillin.",
-    approximate_date=date(2023, 6, 15)
+  note_uuid="rk786p",
+  allergy=Allergen(concept_id=12345, concept_type=AllergenType.MEDICATION),
+  severity=AllergyCommand.Severity.SEVERE,
+  narrative="Severe rash and difficulty breathing after penicillin.",
+  approximate_date=date(2023, 6, 15)
 )
 ```
 
@@ -135,11 +136,11 @@ allergy = AllergyCommand(
 from canvas_sdk.commands import AssessCommand
 
 assess = AssessCommand(
-    note_uuid='rk786p',
-    condition_id='hu38rlo',
-    background='started in 2012',
-    status=AssessCommand.Status.STABLE,
-    narrative='experiencing more pain lately'
+  note_uuid='rk786p',
+  condition_id='hu38rlo',
+  background='started in 2012',
+  status=AssessCommand.Status.STABLE,
+  narrative='experiencing more pain lately'
 )
 ```
 
@@ -161,10 +162,10 @@ assess = AssessCommand(
 from canvas_sdk.commands import CloseGoalCommand, GoalCommand
 
 close_goal = CloseGoalCommand(
-    note_uuid="rk786p",
-    goal_id=12345,
-    achievement_status=GoalCommand.AchievementStatus.ACHIEVED,
-    progress="Patient has achieved the target weight goal of 150 lbs."
+  note_uuid="rk786p",
+  goal_id=12345,
+  achievement_status=GoalCommand.AchievementStatus.ACHIEVED,
+  progress="Patient has achieved the target weight goal of 150 lbs."
 )
 ```
 
@@ -186,10 +187,10 @@ close_goal = CloseGoalCommand(
 from canvas_sdk.commands import FamilyHistoryCommand
 
 family_history = FamilyHistoryCommand(
-    note_uuid="rk786p",
-    family_history="Diabetes Type 2",
-    relative="Mother",
-    note="Diagnosed at age 45"
+  note_uuid="rk786p",
+  family_history="Diabetes Type 2",
+  relative="Mother",
+  note="Diagnosed at age 45"
 )
 ```
 
@@ -213,11 +214,11 @@ from canvas_sdk.commands import DiagnoseCommand
 from datetime import datetime
 
 diagnose = DiagnoseCommand(
-    note_uuid='rk786p',
-    icd10_code='M54.50',
-    background='lifted heavy box',
-    approximate_date_of_onset=datetime(2012, 1, 1),
-    today_assessment='unable to sleep lately'
+  note_uuid='rk786p',
+  icd10_code='M54.50',
+  background='lifted heavy box',
+  approximate_date_of_onset=datetime(2012, 1, 1),
+  today_assessment='unable to sleep lately'
 )
 ```
 
@@ -235,7 +236,6 @@ diagnose = DiagnoseCommand(
 | `achievement_status` | _AchievementStatus enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _Priority enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
-
 
 | `AchievementStatus` | Value            |
 |:--------------------|:-----------------|
@@ -262,13 +262,13 @@ from canvas_sdk.commands import GoalCommand
 from datetime import datetime
 
 goal = GoalCommand(
-    note_uuid='rk786p',
-    goal_statement='Eat more healthy vegetables.',
-    start_date=datetime(2024, 1, 1),
-    due_date=datetime(2024, 12, 31),
-    achievement_status=GoalCommand.AchievementStatus.IN_PROGRESS,
-    priority=GoalCommand.Priority.HIGH,
-    progress='patient is frequenting local farmers market to find healthy options'
+  note_uuid='rk786p',
+  goal_statement='Eat more healthy vegetables.',
+  start_date=datetime(2024, 1, 1),
+  due_date=datetime(2024, 12, 31),
+  achievement_status=GoalCommand.AchievementStatus.IN_PROGRESS,
+  priority=GoalCommand.Priority.HIGH,
+  progress='patient is frequenting local farmers market to find healthy options'
 )
 ```
 
@@ -288,9 +288,9 @@ goal = GoalCommand(
 from canvas_sdk.commands import HistoryOfPresentIllnessCommand
 
 hpi = HistoryOfPresentIllnessCommand(
-        note_uuid='rk786p',
-        narrative='presents with chronic back pain and headaches'
-    )
+  note_uuid='rk786p',
+  narrative='presents with chronic back pain and headaches'
+)
 ```
 
 ---
@@ -310,9 +310,9 @@ hpi = HistoryOfPresentIllnessCommand(
 from canvas_sdk.commands import InstructCommand
 
 InstructCommand(
-    note_uuid='rk786p',
-    instruction="Education about dehydration",
-    comment="To address mild dehydration symptoms"
+  note_uuid='rk786p',
+  instruction="Education about dehydration",
+  comment="To address mild dehydration symptoms"
 )
 ```
 
@@ -337,12 +337,12 @@ InstructCommand(
 from canvas_sdk.commands import LabOrderCommand
 
 LabOrderCommand(
-    lab_partner="Quest Diagnostics",
-    tests_order_codes=["91292"],
-    ordering_provider_key="provider_key_123",
-    diagnosis_codes=["E119"],
-    fasting_required=True,
-    comment="Patient should fast for 8 hours before the test."
+  lab_partner="Quest Diagnostics",
+  tests_order_codes=["91292"],
+  ordering_provider_key="provider_key_123",
+  diagnosis_codes=["E119"],
+  fasting_required=True,
+  comment="Patient should fast for 8 hours before the test."
 )
 ```
 
@@ -367,10 +367,10 @@ from canvas_sdk.commands import MedicalHistoryCommand
 from datetime import date
 
 MedicalHistoryCommand(
-    past_medical_history="Resistant Hypertension",
-    approximate_start_date=date(2015, 1, 1),
-    show_on_condition_list=True,
-    comments="Controlled with medication."
+  past_medical_history="Resistant Hypertension",
+  approximate_start_date=date(2015, 1, 1),
+  show_on_condition_list=True,
+  comments="Controlled with medication."
 )
 ```
 
@@ -391,9 +391,9 @@ MedicalHistoryCommand(
 from canvas_sdk.commands import MedicationStatementCommand
 
 medication_statement = MedicationStatementCommand(
-    note_uuid='rk786p',
-    fdb_code='198698',
-    sig='two pills taken orally'
+  note_uuid='rk786p',
+  fdb_code='198698',
+  sig='two pills taken orally'
 )
 ```
 
@@ -416,9 +416,9 @@ from canvas_sdk.commands import PastSurgicalHistoryCommand
 from datetime import date
 
 PastSurgicalHistoryCommand(
-    past_surgical_history="Appendectomy",
-    approximate_date=date(2008, 6, 15),
-    comment="No complications reported."
+  past_surgical_history="Appendectomy",
+  approximate_date=date(2008, 6, 15),
+  comment="No complications reported."
 )
 ```
 
@@ -439,8 +439,8 @@ PastSurgicalHistoryCommand(
 from canvas_sdk.commands import PerformCommand
 
 PerformCommand(
-    cpt_code="99213",
-    notes="Patient presented with a common cold."
+  cpt_code="99213",
+  notes="Patient presented with a common cold."
 )
 ```
 
@@ -460,8 +460,8 @@ PerformCommand(
 from canvas_sdk.commands import PlanCommand
 
 plan = PlanCommand(
-    note_uuid='rk786p',
-    narrative='will return in 2 weeks to check on pain management'
+  note_uuid='rk786p',
+  narrative='will return in 2 weeks to check on pain management'
 )
 ```
 
@@ -471,19 +471,19 @@ plan = PlanCommand(
 
 **Command-specific parameters**:
 
-| Name                   | Type                          | Required | Description                                                        |
-|------------------------|-------------------------------|----------|--------------------------------------------------------------------|
-| `fdb_code`             | _string_                      | `true`   | FDB code for the medication.                                       |
-| `icd10_codes`          | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. |
-| `sig`                  | _string_                      | `true`   | Administration instructions/details of the medication.             |
-| `days_supply`          | _integer_                     | `false`  | Number of days the prescription is intended to cover.              |
-| `quantity_to_dispense` | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                              |
-| `type_to_dispense`     | _ClinicalQuantity_            | `true`   | Information about the form or unit of the medication to dispense.  |
-| `refills`              | _integer_                     | `true`   | Number of refills allowed for the prescription.                    |
-| `substitutions`        | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed. |
-| `pharmacy`             | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent.    |
-| `prescriber_id`        | _string_                      | `true`   | The key of the prescriber.                     |
-| `note_to_pharmacist`   | _string_                      | `false`  | Additional notes or instructions for the pharmacist.               |
+| Name                   | Type                          | Required | Description                                                         |
+|------------------------|-------------------------------|----------|---------------------------------------------------------------------|
+| `fdb_code`             | _string_                      | `true`   | FDB code for the medication.                                        |
+| `icd10_codes`          | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription.  |
+| `sig`                  | _string_                      | `true`   | Administration instructions/details of the medication.              |
+| `days_supply`          | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
+| `quantity_to_dispense` | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                               |
+| `type_to_dispense`     | _ClinicalQuantity_            | `true`   | Information about the form or unit of the medication to dispense.   |
+| `refills`              | _integer_                     | `true`   | Number of refills allowed for the prescription.                     |
+| `substitutions`        | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed.  |
+| `pharmacy`             | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. |
+| `prescriber_id`        | _string_                      | `true`   | The key of the prescriber.                                          |
+| `note_to_pharmacist`   | _string_                      | `false`  | Additional notes or instructions for the pharmacist.                |
 
 **Enums and Types**
 
@@ -501,7 +501,6 @@ Represents the detailed information about the form or unit of the medication.
 | `representative_ndc`            | _string_ | National Drug Code (NDC) representing the medication. |
 | `ncpdp_quantity_qualifier_code` | _string_ | NCPDP code indicating the quantity qualifier.         |
 
-
 **Example**
 
 ```python
@@ -509,20 +508,20 @@ from canvas_sdk.commands.constants import ClinicalQuantity
 from canvas_sdk.commands import PrescribeCommand
 
 prescription = PrescribeCommand(
-    fdb_code="216092",
-    icd10_codes=["R51"],
-    sig="Take one tablet daily after meals",
-    days_supply=30,
-    quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
-    refills=3,
-    substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
-    prescriber_id="provider_123",
-    note_to_pharmacist="Please verify patient's insurance before processing."
+  fdb_code="216092",
+  icd10_codes=["R51"],
+  sig="Take one tablet daily after meals",
+  days_supply=30,
+  quantity_to_dispense=30,
+  type_to_dispense=ClinicalQuantity(
+    representative_ndc="12843016128",
+    ncpdp_quantity_qualifier_code="C48542"
+  ),
+  refills=3,
+  substitutions=PrescribeCommand.Substitutions.ALLOWED,
+  pharmacy="Main Street Pharmacy",
+  prescriber_id="provider_123",
+  note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
 
@@ -543,14 +542,13 @@ prescription = PrescribeCommand(
 from canvas_sdk.commands import PhysicalExamCommand
 
 questionnaire = PhysicalExamCommand(
-    note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+  note_uuid='rk786p',
+  questionnaire_id='g73hd9',
+  result='The patient is feeling average today.'
 )
 ```
 
 ---
-
 
 ## Questionnaire
 
@@ -567,9 +565,9 @@ questionnaire = PhysicalExamCommand(
 from canvas_sdk.commands import QuestionnaireCommand
 
 questionnaire = QuestionnaireCommand(
-    note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+  note_uuid='rk786p',
+  questionnaire_id='g73hd9',
+  result='The patient is feeling average today.'
 )
 ```
 
@@ -579,11 +577,11 @@ questionnaire = QuestionnaireCommand(
 
 **Command-specific parameters**:
 
-| Name         | Type      | Required                  | Description                                              |
-|:-------------|:----------|:--------------------------|:---------------------------------------------------------|
-| `structured` | _boolean_ | `false`                   | Whether the RFV is structured or not. Defaults to False. |
-| `coding`     | _Coding_  | `true` if structured=True | The coding of the structured RFV.                        |
-| `comment`    | _string_  | `false`                   | Additional commentary on the RFV.                        |
+| Name         | Type                     | Required                  | Description                                                                                                                                                                                                                |
+|:-------------|:-------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `structured` | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
+| `coding`     | _Coding_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full Coding object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a Coding is provided, it is validated against existing records |
+| `comment`    | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
 
 **Example**:
 
@@ -591,14 +589,23 @@ questionnaire = QuestionnaireCommand(
 from canvas_sdk.commands import ReasonForVisitCommand
 
 structured_rfv = ReasonForVisitCommand(
-    note_uuid='rk786p',
-    structured=True,
-    coding={'code': '', 'system': '', 'display': ''},
-    comment='also wants to discuss treament options'
+  note_uuid='rk786p',
+  structured=True,
+  coding={'code': '', 'system': '', 'display': ''},
+  comment='also wants to discuss treament options'
 )
+
+# Example with a UUID string referencing a Coding record
+structured_rfv2 = ReasonForVisitCommand(
+  note_uuid='rk786p',
+  structured=True,
+  coding="e2b1e1e3-3f52-4a0a-bb3a-123456789abc",  # Must correspond to an existing coding record
+  comment="Discuss treatment options"
+)
+
 unstructured_rfv = ReasonForVisitCommand(
-    note_uuid='rk786p',
-    comment='also wants to discuss treatment options'
+  note_uuid='rk786p',
+  comment='also wants to discuss treatment options'
 )
 ```
 
@@ -617,20 +624,20 @@ from canvas_sdk.commands import RefillCommand, PrescribeCommand
 from canvas_sdk.commands.constants import ClinicalQuantity
 
 RefillCommand(
-    fdb_code="216092",
-    icd10_codes=["R51"],
-    sig="Take one tablet daily after meals",
-    days_supply=30,
-    quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
-    refills=3,
-    substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
-    prescriber_id="provider_123",
-    note_to_pharmacist="Please verify patient's insurance before processing."
+  fdb_code="216092",
+  icd10_codes=["R51"],
+  sig="Take one tablet daily after meals",
+  days_supply=30,
+  quantity_to_dispense=30,
+  type_to_dispense=ClinicalQuantity(
+    representative_ndc="12843016128",
+    ncpdp_quantity_qualifier_code="C48542"
+  ),
+  refills=3,
+  substitutions=PrescribeCommand.Substitutions.ALLOWED,
+  pharmacy="Main Street Pharmacy",
+  prescriber_id="provider_123",
+  note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
 
@@ -651,8 +658,8 @@ RefillCommand(
 from canvas_sdk.commands import RemoveAllergyCommand
 
 RemoveAllergyCommand(
-    allergy_id="123",
-    narrative="Allergy no longer applies after reassessment."
+  allergy_id="123",
+  narrative="Allergy no longer applies after reassessment."
 )
 ```
 
@@ -673,14 +680,13 @@ RemoveAllergyCommand(
 from canvas_sdk.commands import ReviewOfSystemsCommand
 
 questionnaire = ReviewOfSystemsCommand(
-    note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+  note_uuid='rk786p',
+  questionnaire_id='g73hd9',
+  result='The patient is feeling average today.'
 )
 ```
 
 ---
-
 
 ## StopMedication
 
@@ -697,9 +703,9 @@ questionnaire = ReviewOfSystemsCommand(
 from canvas_sdk.commands import StopMedicationCommand
 
 stop_medication = StopMedicationCommand(
-    note_uuid='rk786p',
-    medication_id='2u309j',
-    rationale='In remission'
+  note_uuid='rk786p',
+  medication_id='2u309j',
+  rationale='In remission'
 )
 ```
 
@@ -720,9 +726,9 @@ stop_medication = StopMedicationCommand(
 from canvas_sdk.commands import StructuredAssessmentCommand
 
 questionnaire = StructuredAssessmentCommand(
-    note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+  note_uuid='rk786p',
+  questionnaire_id='g73hd9',
+  result='The patient is feeling average today.'
 )
 ```
 
@@ -757,7 +763,6 @@ questionnaire = StructuredAssessmentCommand(
 | `UNASSIGNED` | `"unassigned"` | Task is unassigned.                       |
 | `STAFF`      | `"staff"`      | Task assigned to a specific staff member. |
 
-
 **Example**:
 
 ```python
@@ -766,12 +771,12 @@ from canvas_sdk.commands.commands.task import TaskAssigner, AssigneeType
 from datetime import date
 
 TaskCommand(
-    title="Follow-up appointment scheduling",
-    assign_to=TaskAssigner(to=AssigneeType.STAFF, id=123),
-    due_date=date(2024, 12, 15),
-    comment="Ensure the patient schedules a follow-up within 30 days.",
-    labels=["Urgent"],
-    linked_items_urns=["urn:task:123", "urn:note:456"]
+  title="Follow-up appointment scheduling",
+  assign_to=TaskAssigner(to=AssigneeType.STAFF, id=123),
+  due_date=date(2024, 12, 15),
+  comment="Ensure the patient schedules a follow-up within 30 days.",
+  labels=["Urgent"],
+  linked_items_urns=["urn:task:123", "urn:note:456"]
 )
 ```
 
@@ -796,10 +801,10 @@ TaskCommand(
 from canvas_sdk.commands import UpdateDiagnosisCommand
 
 UpdateDiagnosisCommand(
-    condition_code="E119",
-    new_condition_code="E109",
-    background="Patient previously diagnosed with diabetes type 2; now updated to diabetes type 1.",
-    narrative="Updating condition based on recent clinical findings."
+  condition_code="E119",
+  new_condition_code="E109",
+  background="Patient previously diagnosed with diabetes type 2; now updated to diabetes type 1.",
+  narrative="Updating condition based on recent clinical findings."
 )
 ```
 
@@ -842,12 +847,12 @@ from canvas_sdk.commands import UpdateGoalCommand, GoalCommand
 from datetime import datetime
 
 update_goal = UpdateGoalCommand(
-    note_uuid='rk786p',
-    goal_id='0j9whjjk',
-    due_date=datetime(2025, 3, 31),
-    achievement_status=GoalCommand.AchievementStatus.WORSENING,
-    priority=GoalCommand.Priority.MEDIUM,
-    progress='patient has slowed down progress and requesting to move due date out'
+  note_uuid='rk786p',
+  goal_id='0j9whjjk',
+  due_date=datetime(2025, 3, 31),
+  achievement_status=GoalCommand.AchievementStatus.WORSENING,
+  priority=GoalCommand.Priority.MEDIUM,
+  progress='patient has slowed down progress and requesting to move due date out'
 )
 ```
 
@@ -884,14 +889,12 @@ update_goal = UpdateGoalCommand(
 | `TEMPORAL`          | `3`   | Measurement taken from the forehead. |
 | `TYMPANIC`          | `4`   | Measurement taken from the ear.      |
 
-
 | BloodPressureSite      | Value | Description                         |
 |------------------------|-------|-------------------------------------|
 | `SITTING_RIGHT_UPPER`  | `0`   | Sitting position, right upper arm.  |
 | `SITTING_LEFT_UPPER`   | `1`   | Sitting position, left upper arm.   |
 | `STANDING_RIGHT_UPPER` | `4`   | Standing position, right upper arm. |
 | `SUPINE_LEFT_LOWER`    | `11`  | Supine position, left lower arm.    |
-
 
 | PulseRhythm             | Value | Description                  |
 |-------------------------|-------|------------------------------|
@@ -905,16 +908,16 @@ update_goal = UpdateGoalCommand(
 from canvas_sdk.commands import VitalsCommand
 
 VitalsCommand(
-    height=70,
-    weight_lbs=150,
-    body_temperature=98,
-    body_temperature_site=VitalsCommand.BodyTemperatureSite.ORAL,
-    blood_pressure_systole=120,
-    blood_pressure_diastole=80,
-    blood_pressure_position_and_site=VitalsCommand.BloodPressureSite.SITTING_RIGHT_UPPER,
-    pulse=72,
-    pulse_rhythm=VitalsCommand.PulseRhythm.REGULAR,
-    oxygen_saturation=98,
-    note="Vitals are within normal range."
+  height=70,
+  weight_lbs=150,
+  body_temperature=98,
+  body_temperature_site=VitalsCommand.BodyTemperatureSite.ORAL,
+  blood_pressure_systole=120,
+  blood_pressure_diastole=80,
+  blood_pressure_position_and_site=VitalsCommand.BloodPressureSite.SITTING_RIGHT_UPPER,
+  pulse=72,
+  pulse_rhythm=VitalsCommand.PulseRhythm.REGULAR,
+  oxygen_saturation=98,
+  note="Vitals are within normal range."
 )
 ```
