@@ -81,6 +81,7 @@ staff.creator_tasks.all()
 | assignee_tasks             | [Task](/sdk/data-task/#task)[]                                  |
 | comments                   | [TaskComment](/sdk/data-task/#taskcomment)[]                    |
 | care_team_memberships      | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[] |
+| teams                      | [Team](/sdk/data-team/#team)[]                                  |
 
 <br/>
 <br/>
