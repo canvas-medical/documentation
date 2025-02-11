@@ -10,7 +10,7 @@ Stay up to date on the latest important dates for the Canvas platform.
 <table border="1" style="table-layout: fixed; width: 100%">
   <colgroup>
     <col width="18%">
-    <col width="12">
+    <col width="12%">
     <col width="48%">
     <col width="11%">
     <col width="11%">
