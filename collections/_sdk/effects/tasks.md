@@ -44,7 +44,7 @@ class Protocol(BaseProtocol):
     def compute(self) -> list[Effect]:
         lab_report = LabReport.objects.get(id=self.target)
         staff_assignee = Staff.objects.get(last_name="Weed")
-        team = Team.objecst.get(name="Labs")
+        team = Team.objects.get(name="Labs")
 
         if lab_report.patient:
             add_task = AddTask(
