@@ -844,14 +844,14 @@ type: None</pre></td>
 
 <table>
   <thead>
-    <tr><th  colspan="2">IMMUNIZATION_STATEMENT_UPDATED</th></tr>
-    <td>occurs when an immunization statement is updated.</td>
-    <tr>
-      <th>Target object</th>
-      <th>Context object</th>
-    </tr>
+    <tr><th colspan="2">IMMUNIZATION_STATEMENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when an immunization statement is updated.</td></tr>
   </thead>
   <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
     <tr>
       <td><pre>"id": immunization_id
 "type": None</pre></td>
