@@ -292,34 +292,37 @@ These events fire as a result of records being created, updated, or deleted.
 #### Allergy Intolerances
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>ALLERGY_INTOLERANCE_CREATED </b><span> - occurs when an allergy is created for a patient. Additional details for the allergy may become available with subsequent ALLERGY_INTOLERANCE_UPDATED events.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>ALLERGY_INTOLERANCE_CREATED</td>
-      <td>An allergy is created for a patient. Additional details for the allergy may become available with subsequent ALLERGY_INTOLERANCE_UPDATED events.</td>
-      <td><pre>"id": allergy_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>ALLERGY_INTOLERANCE_UPDATED</td>
-      <td>An allergy is updated for a patient.</td>
       <td><pre>"id": allergy_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>ALLERGY_INTOLERANCE_UPDATED </b><span> - occurs when an allergy is updated for a patient.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": allergy_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -327,110 +330,147 @@ These events fire as a result of records being created, updated, or deleted.
 #### Appointments
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>APPOINTMENT_CREATED </b><span> - occurs when an appointment is first created/booked.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>APPOINTMENT_CREATED</td>
-      <td>An appointment is first created/booked.</td>
-      <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>APPOINTMENT_UPDATED</td>
-      <td>Details of an appointment are updated.</td>
-      <td><pre>"id": appointment_id
+       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+     
+<table>
+  <thead>
+    <td colspan="2"><b>APPOINTMENT_UPDATED </b><span> - occurs when details of an appointment are updated.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>APPOINTMENT_CHECKED_IN</td>
-      <td>A patient has arrived and been checked in for their appointment.</td>
-      <td><pre>"id": appointment_id
+       <td><pre>"id": appointment_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+    "id": pt_id</pre></td>
     </tr>
-    <tr>
-      <td>APPOINTMENT_RESCHEDULED</td>
-      <td>An appointment is rescheduled. In this case, a new appointment is created that is linked to the appointment it was rescheduled from.</td>
-      <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>APPOINTMENT_RESTORED</td>
-      <td>A cancelled appointment is restored to a non-cancelled status.</td>
-      <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>APPOINTMENT_CANCELED</td>
-      <td>An appointment is cancelled.</td>
-      <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>APPOINTMENT_NO_SHOWED</td>
-      <td>An appointment is marked as a no-show.</td>
-      <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
+  </tbody>
+</table>
 
+<table>
+  <thead>
+    <td colspan="2"><b>APPOINTMENT_CHECKED_IN </b><span> - occurs when a patient has arrived and been checked in for their appointment.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>APPOINTMENT_RESTORED </b><span> - occurs when a cancelled appointment is restored to a non-cancelled status.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>APPOINTMENT_CANCELED </b><span> - occurs when an appointment is cancelled.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>APPOINTMENT_NO_SHOWED </b><span> - occurs when an appointment is marked as a no-show.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
   </tbody>
 </table>
 
 #### Billing Line Items
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>BILLING_LINE_ITEM_CREATED </b><span> - occurs when a billing line item is created from adding a CPT code to a note.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>BILLING_LINE_ITEM_CREATED</td>
-      <td>A billing line item is created from adding a CPT code to a note.</td>
-      <td><pre>"id": billing_line_item_id
-"type": BillingLineItem</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>BILLING_LINE_ITEM_UPDATED</td>
-      <td>A billing line item is modified.</td>
       <td><pre>"id": billing_line_item_id
 "type": BillingLineItem</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>BILLING_LINE_ITEM_UPDATED </b><span> - occurs when a billing line item is modified.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": billing_line_item_id
+"type": BillingLineItem</pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -438,50 +478,73 @@ These events fire as a result of records being created, updated, or deleted.
 #### Conditions
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>CONDITION_ASSESSED </b><span> - occurs when a condition is assessed through the Assess Condition command.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>CONDITION_ASSESSED</td>
-      <td>A condition is assessed through the Assess Condition command.</td>
-      <td><pre>"id": condition_id
-"type": [Condition](/sdk/data-condition/)</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CONDITION_CREATED</td>
-      <td>A condition is diagnosed for a patient. Additional details for the condition may become available with subsequent CONDITION_UPDATED events.</td>
       <td><pre>"id": condition_id
-"type": [Condition](/sdk/data-condition/)</pre></td>
+"type": <a href='/sdk/data-condition/'>Condition</a></pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>CONDITION_CREATED </b><span> - occurs when a condition is diagnosed for a patient. Additional details for the condition may become available with subsequent CONDITION_UPDATED events.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CONDITION_RESOLVED</td>
-      <td>A condition is resolved through the Resolve Condition command.</td>
       <td><pre>"id": condition_id
-"type": [Condition](/sdk/data-condition/)</pre></td>
+"type": <a href='/sdk/data-condition/'>Condition</a></pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>CONDITION_RESOLVED </b><span> - occurs when a condition is resolved through the Resolve Condition command.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CONDITION_UPDATED</td>
-      <td>A condition is updated for a patient.</td>
       <td><pre>"id": condition_id
-"type": [Condition](/sdk/data-condition/)</pre></td>
+"type": <a href='/sdk/data-condition/'>Condition</a></pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>CONDITION_UPDATED </b><span> - occurs when a condition is updated for a patient.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": condition_id
+"type": <a href='/sdk/data-condition/'>Condition</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -489,42 +552,55 @@ These events fire as a result of records being created, updated, or deleted.
 #### Consents
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>CONSENT_CREATED </b><span> - occurs when a patient consent is created.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>CONSENT_CREATED</td>
-      <td>A patient consent is created.</td>
-      <td><pre>"id": consent_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CONSENT_DELETED</td>
-      <td>A patient consent is removed/deleted.</td>
       <td><pre>"id": consent_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>CONSENT_DELETED </b><span> - occurs when a patient consent is removed/deleted.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CONSENT_UPDATED</td>
-      <td>A patient consent is updated.</td>
       <td><pre>"id": consent_id
-"type": None</pre></td>
+type: None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+   id: pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>CONSENT_UPDATED </b><span> - occurs when a patient consent is updated.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": consent_id
+type: None</pre></td>
+      <td><pre>"patient":
+   id: pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -532,34 +608,37 @@ These events fire as a result of records being created, updated, or deleted.
 #### Coverages
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>COVERAGE_CREATED </b><span> - occurs when a coverage for a patient is created.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>COVERAGE_CREATED</td>
-      <td>A coverage for a patient is created.</td>
-      <td><pre>"id": coverage_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>COVERAGE_UPDATED</td>
-      <td>A coverage for a patient is updated.</td>
       <td><pre>"id": coverage_id
-"type": None</pre></td>
+type: None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+   id: pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>COVERAGE_UPDATED </b><span> - occurs when a coverage for a patient is updated.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": coverage_id
+type: None</pre></td>
+      <td><pre>"patient":
+   id: pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -598,34 +677,37 @@ These events fire as a result of records being created, updated, or deleted.
 #### Devices
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>DEVICE_CREATED </b><span> - occurs when a device is created.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>DEVICE_CREATED</td>
-      <td>A device is created.</td>
-      <td><pre>"id": device_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>DEVICE_UPDATED</td>
-      <td>A device is updated.</td>
       <td><pre>"id": device_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>DEVICE_UPDATED </b><span> - occurs when a device is updated.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": device_id
+"type": None</pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -633,29 +715,32 @@ These events fire as a result of records being created, updated, or deleted.
 #### Encounters
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>ENCOUNTER_CREATED </b><span> - occurs when an encounter is created.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>ENCOUNTER_CREATED</td>
-      <td>An encounter is created.</td>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
       <td><pre>"id": encounter_id
 "type": None</pre></td>
       <td><pre>empty</pre></td>
     </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>ENCOUNTER_UPDATED </b><span> - occurs when an encounter is updated.</span></td>
+  </thead>
+  <tbody>
     <tr>
-      <td>ENCOUNTER_UPDATED</td>
-      <td>An encounter is updated.</td>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
       <td><pre>"id": encounter_id
 "type": None</pre></td>
       <td><pre>empty</pre></td>
@@ -666,34 +751,37 @@ These events fire as a result of records being created, updated, or deleted.
 #### Imaging Reports
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>IMAGING_REPORT_CREATED </b><span> - occurs when an imaging report is entered into the data integration section of canvas.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>IMAGING_REPORT_CREATED</td>
-      <td>An imaging report is entered into the Data Integration section of Canvas.</td>
-      <td><pre>"id": report_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>IMAGING_REPORT_UPDATED</td>
-      <td>An imaging report is updated.</td>
       <td><pre>"id": report_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>IMAGING_REPORT_UPDATED </b><span> - occurs when an imaging report is updated.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": report_id
+"type": None</pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -701,50 +789,74 @@ These events fire as a result of records being created, updated, or deleted.
 #### Immunizations
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>IMMUNIZATION_CREATED </b><span> - occurs when an immunization is created. additional details for the immunization may become available with subsequent immunization_updated events.</span></td>
   </thead>
   <tbody>
     <tr>
-      <td>IMMUNIZATION_CREATED</td>
-      <td>An immunization is created. Additional details for the immunization may become available with subsequent IMMUNIZATION_UPDATED events.</td>
-      <td><pre>"id": immun_id
-"type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>IMMUNIZATION_UPDATED</td>
-      <td>An immunization is updated.</td>
-      <td><pre>"id": immun_id
+      <td><pre>"id": immunization_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>IMMUNIZATION_UPDATED </b><span> - occurs when an immunization is updated.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>IMMUNIZATION_STATEMENT_CREATED</td>
-      <td>An immunization statement is created. Additional details for the immunization statement may become available with subsequent IMMUNIZATION_STATEMENT_UPDATED events.</td>
-      <td><pre>"id": immun_id
+      <td><pre>"id": immunization_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>IMMUNIZATION_STATEMENT_CREATED </b><span> - occurs when an immunization statement is created. additional details for the immunization statement may become available with subsequent immunization_statement_updated events.</span></td>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>IMMUNIZATION_STATEMENT_UPDATED</td>
-      <td>An immunization statement is updated.</td>
-      <td><pre>"id": immun_id
+      <td><pre>"id": immunization_id
 "type": None</pre></td>
       <td><pre>"patient":
-  "id": pt_id</pre></td>
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th  colspan="2">IMMUNIZATION_STATEMENT_UPDATED</th></tr>
+    <td>occurs when an immunization statement is updated.</td>
+    <tr>
+      <th>Target object</th>
+      <th>Context object</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><pre>"id": immunization_id
+"type": None</pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
