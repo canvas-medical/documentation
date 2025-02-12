@@ -40,129 +40,252 @@ These events fire as a result of records being created, updated, or deleted.
 #### Patients
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <td colspan="2"><b>PATIENT_CREATED </b><span> - occurs when a patient is created.</span></td>
   </thead>
   <tbody>
-    <tr>
-      <td>PATIENT_CREATED</td>
-      <td>Patient is created.</td>
-      <td><pre>"id": pt_id
-"type": [Patient](/sdk/data-patient/)</pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_UPDATED</td>
-      <td>Patient's data is updated.</td>
-      <td><pre>"id": pt_id
-"type": [Patient](/sdk/data-patient/)</pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-    <tr>
-      <td>CARE_TEAM_MEMBERSHIP_CREATED</td>
-      <td>New care team member is added for a patient.</td>
-      <td><pre>"id": care_team_id
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": pt_id
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    <td><pre>empty</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_UPDATED </b><span> - occurs when a patient's data is updated.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": pt_id
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    <td><pre>empty</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>CARE_TEAM_MEMBERSHIP_CREATED </b><span> - occurs when a new care team member is added for a patient.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": care_team_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>CARE_TEAM_MEMBERSHIP_UPDATED</td>
-      <td>Care team member is adjusted for a patient.</td>
-      <td><pre>"id": care_team_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>CARE_TEAM_MEMBERSHIP_UPDATED </b><span> - occurs when a care team member is adjusted for a patient.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": care_team_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>CARE_TEAM_MEMBERSHIP_DELETED</td>
-      <td>Care team member is removed for a patient.</td>
-      <td><pre>"id": care_team_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>CARE_TEAM_MEMBERSHIP_DELETED </b><span> - occurs when a care team member is removed for a patient.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": care_team_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_ADDRESS_CREATED</td>
-      <td>Address is added for a patient.</td>
-      <td><pre>"id": address_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_ADDRESS_CREATED </b><span> - occurs when an address is added for a patient.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": address_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_ADDRESS_UPDATED</td>
-      <td>One of a patient's addresses is updated.</td>
-      <td><pre>"id": address_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_ADDRESS_UPDATED </b><span> - occurs when one of a patient's addresses is updated.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": address_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_ADDRESS_DELETED</td>
-      <td>One of a patient's addresses is removed.</td>
-      <td><pre>"id": address_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_ADDRESS_DELETED </b><span> - occurs when one of a patient's addresses is removed.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": address_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_PERSON_CREATED</td>
-      <td>Contact is added for a patient.</td>
-      <td><pre>"id": contact_person_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_CONTACT_PERSON_CREATED </b><span> - occurs when a contact is added for a patient.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": contact_person_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_PERSON_UPDATED</td>
-      <td>One of a patient's contacts is updated.</td>
-      <td><pre>"id": contact_person_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_CONTACT_PERSON_UPDATED </b><span> - occurs when one of a patient's contacts is updated.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": contact_person_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_PERSON_DELETED</td>
-      <td>One of a patient's contacts is removed.</td>
-      <td><pre>"id": contact_person_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_CONTACT_PERSON_DELETED </b><span> - occurs when one of a patient's contacts is removed.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": contact_person_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-    <td>PATIENT_CONTACT_POINT_CREATED</td>
-    <td>Contact method for a patient is added.</td>
-      <td><pre>"id": contact_point_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_CONTACT_POINT_CREATED </b><span> - occurs when a contact method for a patient is added.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": contact_point_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_POINT_UPDATED</td>
-      <td>Contact method for a patient is updated.</td>
-      <td><pre>"id": contact_point_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_CONTACT_POINT_UPDATED </b><span> - occurs when a contact method for a patient is updated.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": contact_point_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_CONTACT_POINT_DELETED</td>
-      <td>Contact method for a patient is removed.</td>
-      <td><pre>"id": contact_point_id
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <td colspan="2"><b>PATIENT_CONTACT_POINT_DELETED </b><span> - occurs when a contact method for a patient is removed.</span></td>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": contact_point_id
 "type": None</pre></td>
-      <td><pre>"patient":
-  "id": pt_id</pre></td>
-    </tr>
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
   </tbody>
 </table>
 
