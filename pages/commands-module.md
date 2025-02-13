@@ -217,11 +217,21 @@ Commands migrated to the new framework will function similarly if not identicall
       <td></td>
     <tr> 
       <td>Refer</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr> 
       <td>Follow Up</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+      <tr> 
+      <td>Adjust Prescription</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+      <tr> 
+      <td>Resolve Condition</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
