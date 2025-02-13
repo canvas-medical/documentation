@@ -579,11 +579,11 @@ questionnaire = QuestionnaireCommand(
 
 **Command-specific parameters**:
 
-| Name         | Type      | Required                  | Description                                              |
-|:-------------|:----------|:--------------------------|:---------------------------------------------------------|
-| `structured` | _boolean_ | `false`                   | Whether the RFV is structured or not. Defaults to False. |
-| `coding`     | _Coding_  | `true` if structured=True | The coding of the structured RFV.                        |
-| `comment`    | _string_  | `false`                   | Additional commentary on the RFV.                        |
+| Name         | Type                     | Required                  | Description                                                                                                                                                                                                                |
+|:-------------|:-------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `structured` | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
+| `coding`     | _Coding_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full Coding object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a Coding is provided, it is validated against existing records |
+| `comment`    | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
 
 **Example**:
 
@@ -591,14 +591,23 @@ questionnaire = QuestionnaireCommand(
 from canvas_sdk.commands import ReasonForVisitCommand
 
 structured_rfv = ReasonForVisitCommand(
-    note_uuid='rk786p',
-    structured=True,
-    coding={'code': '', 'system': '', 'display': ''},
-    comment='also wants to discuss treament options'
+  note_uuid='rk786p',
+  structured=True,
+  coding={'code': '', 'system': '', 'display': ''},
+  comment='also wants to discuss treament options'
 )
+
+# Example with a UUID string referencing a Coding record
+structured_rfv2 = ReasonForVisitCommand(
+  note_uuid='rk786p',
+  structured=True,
+  coding="e2b1e1e3-3f52-4a0a-bb3a-123456789abc",  # Must correspond to an existing coding record
+  comment="Discuss treatment options"
+)
+
 unstructured_rfv = ReasonForVisitCommand(
-    note_uuid='rk786p',
-    comment='also wants to discuss treatment options'
+  note_uuid='rk786p',
+  comment='also wants to discuss treatment options'
 )
 ```
 
