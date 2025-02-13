@@ -229,7 +229,7 @@ sections:
               Information about diagnoses relevant to the claim items.
             create_and_update_description: These diagnoses will create Assessments in Canvas. At least one diagnosis element is required. 
             type: array[json]
-            required_in: create,update
+            required_in: create
             attributes:
               - name: sequence
                 required_in: create,update
@@ -301,7 +301,7 @@ sections:
             description: >-
               List of service charges to be used in the claim.
             type: array[json]
-            required_in: create,update
+            required_in: create
             attributes:
               - name: sequence
                 required_in: create,update
