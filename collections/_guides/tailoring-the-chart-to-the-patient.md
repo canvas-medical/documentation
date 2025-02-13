@@ -538,6 +538,8 @@ patients over the age of 15.
 
 <div style="position: relative; padding-bottom: 62.5%; height: 0;"><iframe src="https://www.loom.com/embed/ab4a7517b1e846f981d9a3f86b157910?sid=a1a2c26c-13c7-40f5-842c-7fde52b20762" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
+View and deploy the Pediatric Patient Chart Customization Extension [here](https://www.canvasmedical.com/extensions/pediatric-patient-chart-customizations).
+
 ## Conclusion
 
 Age is one differentiator that changes the relevance of EMR features, but
