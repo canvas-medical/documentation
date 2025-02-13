@@ -509,7 +509,7 @@ sdk_overview:
    url: /sdk/protocols/
  - title: "Utils Module"
    url: /sdk/utils/
- - title: "Questionnaires Module"
+ - title: "Questionnaires"
    url: /sdk/questionnaires/
 
 sdk_handlers:
