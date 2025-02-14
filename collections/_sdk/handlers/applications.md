@@ -14,7 +14,7 @@ To add an application, your handler class should inherit from  the
 `Application` class.
 
 Your class must implement the `on_open()` method. In most cases, you will
-return a `LaunchModalEffect`, with either a url you wish to iframe into the
+return a `LaunchModalEffect`, with either an url you wish to iframe into the
 Canvas UI or HTML to be rendered in that iframe directly.
 
 Here is an example of an implemented application class:
