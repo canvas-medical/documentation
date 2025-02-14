@@ -21,7 +21,7 @@ sections:
           - name: extension
             type: array[json]
             description_for_all_endpoints: >-
-              Canvas supports a current queue extension representing the current queue the given claim is in on the Canvas instance. Learn more about navigating claim queues [here](https://canvas-medical.help.usepylon.com/articles/3240845520-queues).<br><br>
+              Canvas supports a single extension iteration on a claim to represent the current queue the given claim is in on the Canvas instance. Learn more about navigating claim queues [here](https://canvas-medical.help.usepylon.com/articles/3240845520-queues).<br><br>
 
               **Canvas Claim Queues**
 
@@ -37,8 +37,6 @@ sections:
                 | Rejected    | RejectedNeedsReview    |
                 | Submission  | QueuedForSubmission    | 
                 | Trash       | Trash                  |
-            read_and_search_description: >-
-              Canvas supports a note identifier extension on this resource. The note identifier can be used with the [Canvas Note API](/api/note) <br><br>
             create_and_update_description: >-
               By default, a claim is created in the **NeedsCodingReview** queue in Canvas.<br>Sending a different value in this extension updates the claim to be in that queue.
             attributes:
@@ -48,8 +46,6 @@ sections:
                 description: Reference that defines the content of this object.
                 enum_options:
                   - value: http://schemas.canvasmedical.com/fhir/extensions/claim-queue
-                  - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
-                    exclude_in: create,update
               - name: valueCoding
                 type: json
                 required_in: create,update
@@ -90,10 +86,6 @@ sections:
                       - value: Rejected
                       - value: Submission
                       - value: Trash
-              - name: valueId
-                exclude_in: create,update
-                type: string
-                description: The valueId field is used for the Note extension and will be the note's unique identifier.
           - name: status
             description: The status of the resource instance.
             type: enum [ active ]
@@ -229,7 +221,7 @@ sections:
               Information about diagnoses relevant to the claim items.
             create_and_update_description: These diagnoses will create Assessments in Canvas. At least one diagnosis element is required. 
             type: array[json]
-            required_in: create
+            required_in: create,update
             attributes:
               - name: sequence
                 required_in: create,update
@@ -301,7 +293,7 @@ sections:
             description: >-
               List of service charges to be used in the claim.
             type: array[json]
-            required_in: create
+            required_in: create,update
             attributes:
               - name: sequence
                 required_in: create,update
@@ -352,17 +344,6 @@ sections:
                  - name: value
                    type: integer
                    description:  Numerical value (with implicit precision)
-              - name: encounter
-                type: array[json]
-                exclude_in: create, update
-                description: Encounters related to this billed item.
-                attributes: 
-                  - name: reference
-                    type: string
-                    description: The reference string of the encounter in the format of `"Encounter/879b35fd-3bc2-4ccd-98d7-954dd9b6d0a9"`.
-                  - name: type
-                    type: string
-                    description: Type the reference refers to (e.g. "Encounter").
               - name: modifier
                 type: array[json]
                 description: Product or service billing modifiers. 

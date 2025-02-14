@@ -1,4 +1,6 @@
 source "https://rubygems.org"
+gem 'csv'
+gem 'webrick'
 
 # Hello! This is where you manage which Jekyll version is used to run.
 # When you want to use a different version, change it below, save the
@@ -18,7 +20,7 @@ gem "jekyll", "4.2.1"
 group :jekyll_plugins do
    gem 'jekyll-algolia'
    gem 'jekyll-feed'
-   gem 'jekyll-last-modified-at'
+   #gem 'jekyll-last-modified-at'
    gem 'jekyll-menus'
    gem 'jekyll-seo-tag'
    gem 'jekyll-sitemap'
