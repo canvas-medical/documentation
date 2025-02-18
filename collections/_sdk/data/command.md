@@ -75,6 +75,7 @@ The following table shows the different command `schema_key` values with links t
 | closeGoal           | [CloseGoal](/sdk/commands/#closegoal)                             |
 | diagnose            | [Diagnose](/sdk/commands/#diagnose)                               |
 | familyHistory       | [FamilyHistory](/sdk/commands/#familyhistory)                     |
+| followUp            | [FollowUp](/sdk/commands/#followUp)                               |
 | goal                | [Goal](/sdk/commands/#goal)                                       |
 | hpi                 | [HistoryOfPresentIllness](/sdk/commands/#historyofpresentillness) |
 | instruct            | [Instruct](/sdk/commands/#instruct)                               |
@@ -95,7 +96,7 @@ The following table shows the different command `schema_key` values with links t
 | updateGoal          | [UpdateGoal](/sdk/commands/#updategoal)                           |
 | vitals              | [Vitals](/sdk/commands/#vitals)                                   |
 
-__PLEASE NOTE__ the Commands Module is under development and Canvas is working to migrate all commands to be available. This means that some commands are not able to emit events available in plugins, and historical commands created prior to their Commands Module availability may not be able to be queried using the data module. [This product updates table](/product-updates/commands-module/) shows the commands and their release statuses.  If a command in a chart is not available by querying the `Command` data model, the data is still available to be queried using corresponding data models (i.e. [Questionnaire](/sdk/data-questionnaire/), [ImagingOrder](/sdk/data-imaging/), etc.).
+__PLEASE NOTE__ the Commands Module is under development and Canvas is working to migrate all commands to be available. This  means that some commands are not able to emit events available in plugins, and historical commands created prior to their Commands Module availability may not be able to be queried using the data module. [This product updates table](/product-updates/commands-module/) shows the commands and their release statuses.  If a command in a chart is not available by querying the `Command` data model, the data is still available to be queried using corresponding data models (i.e. [Questionnaire](/sdk/data-questionnaire/), [ImagingOrder](/sdk/data-imaging/), etc.).
 
 ## Attributes
 
