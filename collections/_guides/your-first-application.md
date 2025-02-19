@@ -103,6 +103,7 @@ class MyApplication(Application):
 - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
 - `NEW_WINDOW`: Opens the URL in a new browser window.
 - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
+- `RIGHT_CHART_PANE_LARGE`: Opens the URL in an enlarged right-hand pane of the patient chart.
 
 ## Step 5: Installing the Application
 
