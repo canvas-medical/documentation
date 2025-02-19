@@ -158,6 +158,8 @@ The following effects are available to be applied in Canvas.
 | COMMIT_TASK_COMMAND                                | Can be used to commit a task command in a note.                                                                                                                                                             |
 | ORIGINATE_VITALS_COMMAND                           | Can be used to originate a vitals command in a note.                                                                                                                                                        |
 | COMMIT_VITALS_COMMAND                              | Can be used to commit a vitals command in a note.                                                                                                                                                           |
+| ORIGINATE_FOLLOW_UP_COMMAND                        | Can be used to originate a follow up command in a note.                                                                                                                                                     |
+| COMMIT_FOLLOW_UP_COMMAND                           | Can be used to commit a follow up command in a note.                                                                                                                                                         |
 
 <br/>
 <br/>

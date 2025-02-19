@@ -75,6 +75,7 @@ The following table shows the different command `schema_key` values with links t
 | closeGoal           | [CloseGoal](/sdk/commands/#closegoal)                             |
 | diagnose            | [Diagnose](/sdk/commands/#diagnose)                               |
 | familyHistory       | [FamilyHistory](/sdk/commands/#familyhistory)                     |
+| followUp            | [FollowUp](/sdk/commands/#followUp)                               |
 | goal                | [Goal](/sdk/commands/#goal)                                       |
 | hpi                 | [HistoryOfPresentIllness](/sdk/commands/#historyofpresentillness) |
 | instruct            | [Instruct](/sdk/commands/#instruct)                               |

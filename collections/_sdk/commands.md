@@ -195,6 +195,54 @@ family_history = FamilyHistoryCommand(
 
 ---
 
+## FollowUp
+
+**Command-specific parameters**:
+
+| Name             | Type                     | Required                  | Description                                                                                                                                                                                                                |
+|:-----------------|:-------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `structured`     | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
+| `requested_date` | _date_                   | `false`                   | The desired follow up date.                                                                                                                                                                                                |
+| `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment.                                                                                                                                                                                           |
+| `coding`         | _Coding_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full Coding object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a Coding is provided, it is validated against existing records |
+| `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import FollowUpCommand
+from datetime import date
+
+structured = FollowUpCommand(
+  note_uuid='rk786p',
+  structured=True,
+  requested_date=date(2025, 3, 2),
+  note_type_id="kz986a",
+  coding={'code': '', 'system': '', 'display': ''},
+  comment='also wants to discuss treatment options'
+)
+
+# Example with a UUID string referencing a Coding record
+structured2 = FollowUpCommand(
+  note_uuid='rk786p',
+  structured=True,
+  requested_date=date(2025, 3, 2),
+  note_type_id="kz986a",
+  coding="e2b1e1e3-3f52-4a0a-bb3a-123456789abc",  # Must correspond to an existing coding record
+  comment="Discuss treatment options"
+)
+
+unstructured = FollowUpCommand(
+  note_uuid='rk786p',
+  requested_date=date(2025, 3, 2),
+  note_type_id="kz986a",
+  comment='also wants to discuss treatment options'
+)
+
+```
+
+---
+
 ## Diagnose
 
 **Command-specific parameters**:
@@ -616,7 +664,7 @@ structured_rfv = ReasonForVisitCommand(
   note_uuid='rk786p',
   structured=True,
   coding={'code': '', 'system': '', 'display': ''},
-  comment='also wants to discuss treament options'
+  comment='also wants to discuss treatment options'
 )
 
 # Example with a UUID string referencing a Coding record
