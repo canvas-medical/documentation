@@ -320,29 +320,51 @@ InstructCommand(
 
 ## LabOrder
 
+The `LabOrderCommand` is used to initiate a lab order through the Canvas system.
+This command requires detailed information about the lab partner, the tests being ordered, and the provider placing the
+order.
+Built-in validations ensure that:
+
+- The specified lab partner exists (whether provided by name or ID).
+- The ordered tests are available for the chosen lab partner.
+
 **Command-specific parameters**:
 
-| Name                    | Type           | Required | Description                                      |
-|-------------------------|----------------|----------|--------------------------------------------------|
-| `lab_partner`           | _string_       | `true`   | The name of the lab processing the order.        |
-| `tests_order_codes`     | _list[string]_ | `true`   | Codes for the tests being ordered.               |
-| `ordering_provider_key` | _string_       | `true`   | The key for the provider ordering the tests.     |
-| `diagnosis_codes`       | _list[string]_ | `true`   | ICD-10 Diagnosis codes justifying the lab order. |
-| `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.  |
-| `comment`               | _string_       | `false`  | Additional comments related to the lab order.    |
+| Name                    | Type           | Required | Description                                                                                                                                                      |
+|-------------------------|----------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `lab_partner`           | _string_       | `true`   | The lab partner processing the order. Accepts either the lab partner’s name or its unique identifier (ID).                                                       |
+| `tests_order_codes`     | _list[string]_ | `true`   | A list of codes or IDs for the tests being ordered. The system verifies that each provided value corresponds to an available test for the specified lab partner. |
+| `ordering_provider_key` | _string_       | `false`  | The key for the provider ordering the tests.                                                                                                                     |
+| `diagnosis_codes`       | _list[string]_ | `false`  | ICD-10 Diagnosis codes justifying the lab order.                                                                                                                 |
+| `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.                                                                                                                  |
+| `comment`               | _string_       | `false`  | Additional comments related to the lab order.                                                                                                                    |
+
+## Validations
+
+- **Lab Partner Validation:**
+  The system checks that the provided `lab_partner` (by name or ID) exists in the system. If no matching lab partner is
+  found, a validation error is raised.
+
+- **Tests Order Codes Validation:**
+  Each test code or ID in `tests_order_codes` is verified against the tests available for the specified lab partner. If
+  one or more tests cannot be found, the error will indicate which codes or IDs are missing.
 
 **Example**:
 
 ```python
 from canvas_sdk.commands import LabOrderCommand
+from canvas_sdk.v1.data.lab import LabPartner, LabPartnerTest
+
+partner = LabPartner.objects.first()
+tests = [test.order_code for test in LabPartnerTest.objects.filter(lab_partner=partner)]
 
 LabOrderCommand(
-    lab_partner="Quest Diagnostics",
-    tests_order_codes=["91292"],
-    ordering_provider_key="provider_key_123",
-    diagnosis_codes=["E119"],
-    fasting_required=True,
-    comment="Patient should fast for 8 hours before the test."
+  lab_partner=str(partner.id),
+  tests_order_codes=tests,
+  ordering_provider_key="provider_key_123",
+  diagnosis_codes=["E119"],
+  fasting_required=True,
+  comment="Patient should fast for 8 hours before the test."
 )
 ```
 

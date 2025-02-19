@@ -573,9 +573,9 @@ data_module:
  - title: "Labs"
    url: /sdk/data-labs/
    description: Analysis of clinical specimens to obtain information about the health of a patient.
- - title: "Medication"
-   url: /sdk/data-medication/
-   description: Pharmacologic agents used in the diagnosis, cure, mitigation, treatment, or prevention of disease.
+ - title: "Lab Partner"
+   url: /sdk/data-lab-partner-and-test/
+   description: Lab partners and the tests they offer within Canvas.
  - title: "Note"
    url: /sdk/data-note/
    description: Clinical notes on patient charts.
