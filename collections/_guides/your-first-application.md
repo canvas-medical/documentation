@@ -34,6 +34,10 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
     "plugin_version": "0.0.1",
     "name": "my_cool_application",
     "description": "Edit the description in CANVAS_MANIFEST.json",
+    "origins": {
+        "urls": ["https://my-application.com"],
+        "scripts": []
+    },
     "components": {
         "applications": [
             {
@@ -41,8 +45,7 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
                 "name": "My Application",
                 "description": "An Application that does xyz...",
                 "scope": "global",
-                "icon": "assets/python-logo.png",
-                "origins": ["https://my-application.com"]
+                "icon": "assets/python-logo.png"
             }
         ],
         "commands": [],
