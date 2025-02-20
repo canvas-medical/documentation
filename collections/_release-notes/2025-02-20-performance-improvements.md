@@ -1,7 +1,7 @@
 ---
 title: Performance Upgrades  
 layout: productupdates  
-tags: ui api plugins sdk  
+tags: api ui plugins sdk  
 date: 2025-02-20  
 ---
 
