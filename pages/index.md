@@ -7,7 +7,7 @@ permalink: "/"
 
 <div class="heroContainer">
     <div class="heroContainerLeft">
-        <h1>Unprecedented Access to Your EMR</h1>
+        <h1>Unprecedented Access to Customize Your EMR</h1>
         <h2>Explore our reference materials, guides, and examples to build and integrate with the Canvas platform.</h2>
         <a href="https://www.canvasmedical.com/emrs/developer-sandbox" class="heroButton">Create a Sandbox Account</a>
     </div>
@@ -23,7 +23,7 @@ permalink: "/"
 <!-- NEW SDK Section of Landing Page -->
 <div class="landingPageSection">
     <h2 class="landingPageSectionHeader">The Canvas SDK</h2>
-    <p class="landingPageSectionDescription">Run your code natively in Canvas's infrastructure with enterprise-grade security.</p>
+    <p class="landingPageSectionDescription">Run your code natively in Canvas' infrastructure with enterprise-grade security.</p>
 <div class="cardSectionLanding">
 
 
@@ -91,7 +91,7 @@ permalink: "/"
 <!-- FHIR API Section with Stats and Cards -->
 <div class="landingPageSection">
     <h2 class="landingPageSectionHeader">Our FHIR API</h2>
-    <p class="landingPageSectionDescription">A FHIR API that lets you securely access and manage EMR data.</p>
+    <p class="landingPageSectionDescription">Canvas Medical offers a FHIR API that lets practices and partners securely access and manage EHR data.</p>
 
  <!-- Stats Container -->
 <div class="statsContainer">
@@ -163,7 +163,7 @@ permalink: "/"
 <!-- NEW guide you section -->
 <div class="landingPageSection">
     <h2 class="landingPageSectionHeader">Let Us Guide You</h2>
-    <p class="landingPageSectionDescription">Explore our guides and examples to integrate into Canvas.</p>
+    <p class="landingPageSectionDescription">Explore our guides and examples on how to customize Canvas for your organization.</p>
     <div class="landingpage-cards">
         {% include guides.html %}
     </div>
@@ -202,7 +202,7 @@ permalink: "/"
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M6.99983 6.00149C7.1173 5.66757 7.34915 5.386 7.65432 5.20665C7.95949 5.0273 8.3183 4.96174 8.66718 5.02158C9.01606 5.08142 9.3325 5.2628 9.56046 5.5336C9.78842 5.8044 9.91319 6.14714 9.91266 6.50112C9.91266 7.50037 8.41378 8 8.41378 8M8.4331 10H8.43977M8.33316 13.3333C11.4628 13.3333 13.9998 10.7963 13.9998 7.66667C13.9998 4.53705 11.4628 2 8.33316 2C5.20355 2 2.6665 4.53705 2.6665 7.66667C2.6665 8.3 2.7704 8.90906 2.96208 9.47774C3.03421 9.69175 3.07028 9.79875 3.07678 9.88095C3.08321 9.96213 3.07835 10.019 3.05827 10.098C3.03793 10.1779 2.99303 10.261 2.90323 10.4272L1.81279 12.4456C1.65725 12.7335 1.57948 12.8774 1.59688 12.9885C1.61204 13.0853 1.669 13.1705 1.75261 13.2215C1.84862 13.2801 2.01136 13.2632 2.33686 13.2296L5.75087 12.8767C5.85426 12.866 5.90595 12.8606 5.95307 12.8624C5.99941 12.8642 6.03213 12.8686 6.07732 12.879C6.12327 12.8896 6.18104 12.9118 6.2966 12.9564C6.92864 13.1999 7.61531 13.3333 8.33316 13.3333Z" stroke="#52525B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-</span> Questions? <a href="#">Contact Sales.</a>
+</span> Questions? <a href="https://github.com/canvas-medical/canvas-plugins/discussions">Join the discussion.</a>
       </li>
     </ul>
   </div>
