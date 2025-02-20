@@ -1,8 +1,8 @@
 ---
-title: Update Type to Dispense via Plugins  
+title: Performance Upgrades  
 layout: productupdates  
-tags: bugfix plugins sdk  
-date: 2025-02-19  
+tags: ui api plugins sdk  
+date: 2025-02-20  
 ---
 
 This release includes performance improvements for users of the EMR UI, the Fumage FHIR API, and the SDK:
