@@ -619,10 +619,24 @@ questionnaire = PhysicalExamCommand(
 )
 ```
 
+**Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+
 ---
 
 
 ## Questionnaire
+
+### Overview
+
+The `QuestionnaireCommand` is used to present a questionnaire to a patient and commit their responses to an interview. It requires the ID of the questionnaire
+
+In addition to the basic parameters, this command supports a dynamic response interface. Once instantiated, you can retrieve the list of questions via the `questions` property, and then record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
+
+- **Text questions (TYPE_TEXT):** Accept a keyword argument `text` (a string).
+- **Integer questions (TYPE_INTEGER):** Accept a keyword argument `integer` (an integer or a value convertible to an integer).
+- **Radio questions (TYPE_RADIO):** Accept a keyword argument `option` (a `ResponseOption` instance); only one option may be selected.
+- **Checkbox questions (TYPE_CHECKBOX):** Accept a keyword argument `option` (a `ResponseOption` instance) along with an optional boolean `selected` (defaulting to True) and an optional string `comment`. Multiple responses can be recorded.
+
 
 **Command-specific parameters**:
 
@@ -642,6 +656,55 @@ questionnaire = QuestionnaireCommand(
     result='The patient is feeling average today.'
 )
 ```
+
+## Usage Example
+
+Below is an example that demonstrates how to instantiate a `QuestionnaireCommand`, retrieve the questions, and add responses to them based on their type:
+
+```python
+from canvas_sdk.commands.questionnaire import QuestionnaireCommand
+from canvas_sdk.commands.questionnaire.question import ResponseOption
+
+q = Questionnaire.objects.filter(name="Exercise").first()
+# Create a QuestionnaireCommand instance.
+command = QuestionnaireCommand(questionnaire_id=str(q.id))
+
+# Retrieve the list of questions.
+questions = command.questions
+
+# Record responses for each question.
+for question in questions:
+    if question.type == RO.TYPE_TEXT:
+        # For text questions, pass a 'text' keyword argument.
+        question.add_response(text=f"Thanks for all the fish")
+    elif question.type == RO.TYPE_INTEGER:
+        # For integer questions, pass an 'integer' keyword argument.
+        question.add_response(integer=42)
+    elif question.type == RO.TYPE_RADIO:
+        # For radio questions, pass an 'option' keyword argument (a ResponseOption instance).
+        first_option = question.options[0]
+        question.add_response(option=first_option)
+    elif question.type == RO.TYPE_CHECKBOX:
+        # For checkbox questions, add responses with option, selected flag, and optionally a comment.
+        first_option = question.options[0]
+        last_option = question.options[-1]
+        question.add_response(option=first_option, selected=True, comment="Don't panic")
+        question.add_response(option=last_option, selected=True)
+```
+
+### Explanation
+
+- **Retrieving Questions:**  
+  The `questions` property returns a list of question objects created from the questionnaire's data.
+
+
+- **Recording Responses:**
+  Each question object provides an `add_response()` method that enforces the correct response format:
+  - For **TextQuestion**, you must pass a `text` parameter.
+  - For **IntegerQuestion**, you must pass an `integer` parameter.
+  - For **RadioQuestion**, you must pass an `option` parameter (a `ResponseOption` instance) that corresponds to one of the allowed options.
+  - For **CheckboxQuestion**, you must pass an `option` parameter along with an optional `selected` flag (defaulting to True) and an optional `comment`. Multiple responses can be recorded for checkbox questions.
+  - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
 
 ---
 
@@ -758,6 +821,8 @@ questionnaire = ReviewOfSystemsCommand(
 )
 ```
 
+**Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+
 ---
 
 
@@ -804,6 +869,8 @@ questionnaire = StructuredAssessmentCommand(
     result='The patient is feeling average today.'
 )
 ```
+
+**Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
 
 ---
 
