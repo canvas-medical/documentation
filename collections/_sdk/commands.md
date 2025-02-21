@@ -59,6 +59,40 @@ def compute():
 
 Command-specific details for each command class can be found below.
 
+## AdjustPrescription
+
+**Command-specific parameters**:
+
+| Name           | Type     | Required | Description                          |
+|:---------------|:---------|:---------|:-------------------------------------|
+| `new_fdb_code` | _string_ | `true`   | The FDB code for the new medication. |
+
+Check the [Prescribe](#prescribe) command for the other parameters used in the Refill command.
+
+```python
+from canvas_sdk.commands import AdjustPrescriptionCommand, PrescribeCommand
+from canvas_sdk.commands.constants import ClinicalQuantity
+
+AdjustPrescriptionCommand(
+    fdb_code="172480",
+    new_fdb_code="216092",
+    icd10_codes=["R51"],
+    sig="Take one tablet daily after meals",
+    days_supply=30,
+    quantity_to_dispense=30,
+    type_to_dispense=ClinicalQuantity(
+        representative_ndc="12843016128",
+        ncpdp_quantity_qualifier_code="C48542"
+    ),
+    refills=3,
+    substitutions=PrescribeCommand.Substitutions.ALLOWED,
+    pharmacy="Main Street Pharmacy",
+    prescriber_id="provider_123",
+    note_to_pharmacist="Please verify patient's insurance before processing."
+)
+```
+
+---
 
 ## Allergy
 
@@ -343,24 +377,100 @@ hpi = HistoryOfPresentIllnessCommand(
 
 ---
 
+
+## ImagingOrder
+
+**Command-specific parameters**:
+
+| Name                    | Type              | Required | Description                                                                   |
+|:------------------------|:------------------|:---------|:------------------------------------------------------------------------------|
+| `image_code`            | _string_          | `true`   | Code identifier of the imaging order.                                         |
+| `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order.                          |
+| `priority`              | _Priority enum_   | `false`  | Priority of the imaging order. Must be one of `ImagingOrderCommand.Priority`. |
+| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              | 
+| `service_provider`      | _ServiceProvider_ | `true`   | Service provider of the imaging order.                                        |
+| `comment`               | _string_          | `false`  | Additional comments.                                                          |
+| `ordering_provider_key` | _string_          | `true`   | The key for the provider ordering the imaging.                                |
+| `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
+
+**Enums and Types**:
+
+**`Priority`**
+
+| Priority  | Description                |
+|:----------|:---------------------------|
+| `ROUTINE` | Indicates a routine order. |
+| `URGENT`  | Indicates un urgent order. |
+
+**`ServiceProvider`**:
+
+Represents the detailed information of the service provider.
+
+| Field Name       | Type               | Description                                            |
+|------------------|--------------------|--------------------------------------------------------|
+| first_name       | _string_           | Service provider's first name (max length 512)         |
+| last_name        | _string_           | Service provider's last name (max length 512)          |
+| specialty        | _string_           | Provider's specialty (max length 512)                  |
+| practice_name    | _string_           | Name of the practice (max length 512)                  |
+| business_fax     | _Optional[string]_ | Business fax number (optional, max length 512)         |
+| business_phone   | _Optional[string]_ | Business phone number (optional, max length 512)       |
+| business_address | _Optional[string]_ | Business address (optional, max length 512)            |
+| notes            | _Optional[string]_ | Additional notes (optional, max length 512)            |
+ 
+**Example**:
+
+```python
+from canvas_sdk.commands import ImagingOrderCommand
+from canvas_sdk.commands.constants import ServiceProvider
+
+imaging_order = ImagingOrderCommand(
+    note_uuid="rk786p",
+    image_code="G0204",
+    diagnosis_codes=["E119"],
+    priority=ImagingOrderCommand.Priority.ROUTINE,
+    comment="this is a comment",
+    additional_details="more details",
+    ordering_provider_key="pk3920p",
+    service_provider=ServiceProvider(
+      first_name="Clinic",
+      last_name="Imaging",
+      practice_name="Clinic Imaging",
+      specialty="radiology",
+      business_address="Street Address",
+      business_phone="1234569874",
+      business_fax="1234569874"
+ ),
+)
+```
+
+---
+
 ## Instruct
 
 **Command-specific parameters**:
 
-| Name          | Type     | Required | Description                                          |
-|---------------|----------|----------|------------------------------------------------------|
-| `instruction` | _string_ | `true`   | The specific instruction to be included in the note. |
-| `comment`     | _string_ | `false`  | Additional comments related to the instruction.      |
+| Name      | Type       | Required | Description                                                           |
+|-----------|------------|----------|-----------------------------------------------------------------------|
+| `coding`  | __Coding__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. |
+| `comment` | _string_   | `false`  | Additional comments related to the instruction.                       |
 
 **Example**:
 
 ```python
 from canvas_sdk.commands import InstructCommand
+from canvas_sdk.commands.constants import CodeSystems, Coding
 
+# SNOMED code
 InstructCommand(
     note_uuid='rk786p',
-    instruction="Education about dehydration",
+    coding=Coding(system=CodeSystems.SNOMED, code="65921008"),
     comment="To address mild dehydration symptoms"
+)
+
+# UNSTRUCTURED code
+InstructCommand(
+    note_uuid='rk786p',
+    coding=Coding(system=CodeSystems.UNSTRUCTURED, code="Physical medicine neuromuscular training"),
 )
 ```
 
@@ -681,6 +791,81 @@ unstructured_rfv = ReasonForVisitCommand(
 )
 ```
 
+## Refer
+
+**Command-specific parameters**:
+
+| Name                  | Type                    | Required | Description                                                                                  |
+|:----------------------|:------------------------|:---------|:---------------------------------------------------------------------------------------------|
+| `service_provider`    | _ServiceProvider_       | `true`   | The service provider associated with the referral command.                                   |
+| `diagnosis_codes`     | _list[string]_          | `true`   | A list of relevant ICD-10 Diagnosis.                                                         |
+| `clinical_question`   | _ClinicalQuestion enum_ | `true`   | The clinical question prompting the referral. Must be one of `ReferCommand.ClinicalQuestion` |
+| `priority`            | _Priority enum_         | `false`  | Priority of the imaging order. Must be one of `ReferCommand.Priority`.                       |
+| `notes_to_specialist` | _string_                | `true`   | Notes or additional information directed to the specialist.                                  | 
+| `include_visit_note`  | _boolean_               | `false`  | Flag indicating whether the visit note should be included in the referral.                   |
+| `comment`             | _string_                | `false`  | An optional comment providing further details about the referral.                            |
+| `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command.                                       |
+
+**Enums and Types**:
+
+**`Priority`**
+
+| Priority  | Description                |
+|:----------|:---------------------------|
+| `ROUTINE` | Indicates a routine order. |
+| `URGENT`  | Indicates un urgent order. |
+
+**`ClinicalQuestion`**
+
+| Clinical Question                  | Description                            |
+|------------------------------------|----------------------------------------|
+| COGNITIVE_ASSISTANCE               | Cognitive Assistance (Advice/Guidance) |
+| ASSISTANCE_WITH_ONGOING_MANAGEMENT | Assistance with Ongoing Management     |
+| SPECIALIZED_INTERVENTION           | Specialized intervention               |
+| DIAGNOSTIC_UNCERTAINTY             | Diagnostic Uncertainty                 |
+
+
+**`ServiceProvider`**:
+
+Represents the detailed information of the service provider.
+
+| Field Name       | Type               | Description                                            |
+|------------------|--------------------|--------------------------------------------------------|
+| first_name       | _string_           | Service provider's first name (max length 512)         |
+| last_name        | _string_           | Service provider's last name (max length 512)          |
+| specialty        | _string_           | Provider's specialty (max length 512)                  |
+| practice_name    | _string_           | Name of the practice (max length 512)                  |
+| business_fax     | _Optional[string]_ | Business fax number (optional, max length 512)         |
+| business_phone   | _Optional[string]_ | Business phone number (optional, max length 512)       |
+| business_address | _Optional[string]_ | Business address (optional, max length 512)            |
+| notes            | _Optional[string]_ | Additional notes (optional, max length 512)            |
+ 
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferCommand
+from canvas_sdk.commands.constants import ServiceProvider
+
+refer_command = ReferCommand(
+    note_uuid="rk786p",
+    diagnosis_codes=["E119"],
+    priority=ReferCommand.Priority.ROUTINE,
+    clinical_question=ReferCommand.ClinicalQuestion.DIAGNOSTIC_UNCERTAINTY,
+    comment="this is a comment",
+    notes_to_specialist="This is a note to specialist",
+    include_visit_note=True,
+    service_provider=ServiceProvider(
+      first_name="Clinic",
+      last_name="Acupuncture",
+      practice_name="Clinic Acupuncture",
+      specialty="Acupuncture",
+      business_address="Street Address",
+      business_phone="1234569874",
+      business_fax="1234569874"
+ ),
+)
+```
+
 ---
 
 ## Refill
@@ -734,6 +919,34 @@ RemoveAllergyCommand(
     narrative="Allergy no longer applies after reassessment."
 )
 ```
+
+---
+
+## Resolve Condition
+
+**Command-specific parameters**:
+
+| Name                     | Type      | Required | Description                                                                |
+|--------------------------|-----------|----------|----------------------------------------------------------------------------|
+| `condition_id`           | _string_  | `true`   | The externally exposable id of the condition being resolved.               |
+| `show_in_condition_list` | _boolean_ | `false`  | Determines whether the condition remains visible in patient chart summary. |
+| `rationale`              | _string_  | `false`  | Additional context.                                                        |
+
+```python
+from canvas_sdk.commands.commands import ResolveConditionCommand
+from canvas_sdk.v1.data import Condition
+
+patient_condition = Condition.objects.for_patient(self.event.context["patient"]["id"]).committed().active().first()
+
+ResolveConditionCommand(
+   condition_id=patient_condition.id,
+   show_in_condition_list=True,
+   rationale="Additional notes.",
+   note_uuid="rk786p",
+)
+```
+
+
 
 ---
 
