@@ -3,8 +3,8 @@
 # This config file contains the config of your webpages
 # You may also want to update /config/webpack.pwa.js in case you want to generate a Progressive Web App
 
-title: Canvas Documentation
-description: Canvas Documentation
+title: Canvas Medical EMR Customization - SDK, FHIR API & Guides
+description: Build powerful EMR customizations and integrations with Canvas Medical’s developer tools. Explore documentation on the Server Side SDK, FHIR API, and implementation guides. Stay updated on the latest product enhancements to streamline healthcare workflows and optimize clinical operations.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://docs.canvasmedical.com" # the base hostname & protocol for your site, e.g. http://example.com
 theme_color: '#eee9d9'

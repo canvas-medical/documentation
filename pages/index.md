@@ -1,6 +1,6 @@
 ---
 layout: landingpage
-title: Canvas Docs
+title: Canvas Medical Developer Docs
 permalink: "/"
 ---
 <!-- NEW HERO Section of Landing Page -->
