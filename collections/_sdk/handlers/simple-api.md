@@ -28,7 +28,9 @@ class MyAPI(SimpleAPIRoute):
     PATH = "/my-api/hello-world"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        return compare_digest(credentials.key) == compare_digest(self.secrets["my-api-key"])
+        provided_api_key_bytes = credentials.key.encode()
+        api_key_bytes = self.secrets["my-api-key"].encode()
+        return compare_digest(provided_api_key_bytes, api_key_bytes)
 
     def get(self) -> list[Response | Effect]:
         return [
@@ -60,7 +62,7 @@ The Canvas SDK offers two styles for defining API endpoints. Both styles allow f
 
 ## SimpleAPIRoute
 
-For handlers that inherit from `SimpleAPIRoute`, you supply a `PATH` value, like `/my-api/hello-world` above, and then implementations of the HTTP verbs you wish to support on that path.
+For handlers that inherit from SimpleAPIRoute, you supply a `PATH` value, like `/my-api/hello-world` above, and then implementations of the HTTP verbs you wish to support on that path.
 
 I can adapt the previous example to add a POST endpoint on the same handler:
 
@@ -91,7 +93,7 @@ The handler can now respond to both GET and POST requests to `/my-api/hello-worl
 
 ## SimpleAPI
 
-For handlers that inherit from `SimpleAPI`, the syntax is a little different. You can include any number of endpoints in your handler class, and you can name your route handling methods anything you wish. Here is an example:
+For handlers that inherit from SimpleAPI, the syntax is a little different. You can include any number of endpoints in your handler class, and you can name your route handling methods anything you wish. Here is an example:
 
 ```python
 from canvas_sdk.effects import Effect
@@ -294,5 +296,7 @@ Endpoints can also return Effects along with a response object, if you want your
 If your endpoint does not provide a response object, then the requester will receive a **204 No Content** response.
 
 ## Authentication
+
+Defining an `authenticate` method on your handler is required. By default, SimpleAPI handlers will return a **401 Unauthorized** response.
 
 Credentials, custom
