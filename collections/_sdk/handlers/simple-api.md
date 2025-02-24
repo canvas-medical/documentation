@@ -12,7 +12,7 @@ The Canvas SDK provides a way to define an HTTP API with any number of endpoints
 
 Follow the instructions in [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) to create a Plugins project. Use `my_api` as your project name.
 
-Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and class names as you see fit in your project, but for this exercise, we are just going to rename the value `components -> protocols -> 0 -> class` to be `my_api.protocols.my_protocol:MyAPI`.
+Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and class names as you see fit in your project, but for this exercise, we are just going to set the value at `components -> protocols -> 0 -> class` to be `my_api.protocols.my_protocol:MyAPI`.
 
 Open `my_api/protocols/my_protocol.py` and replace the contents of the file with this code:
 
