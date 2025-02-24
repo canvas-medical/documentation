@@ -42,18 +42,17 @@ You can see in the code above that the `authenticate` method is going to authent
 
 ```shell
 $ python -c "import secrets; print(secrets.token_hex(16))"
-50b8f5813a87235ad0678211dc6e7c22
 ```
 
-Copy that value and install it as a Plugins secret called `my-api-key`.
+Copy the value that it prints out install it as a Plugins secret called `my-api-key`.
 
 The last step is to deploy your plugin; the instructions for doing so are on the [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 
-After your plugin is installed, you can send requests to your endpoint with `curl`. If we are using the API key generated above, the `curl` command would look like the following (note that you will need to supply your instance name):
+After your plugin is installed, you can send requests to your endpoint with `curl`. The `curl` command would look like the following (note that you will need to supply your instance name and API key):
 
 ```shell
 curl --location 'https://<instance-name>/plugin-io/api/my-api/hello-world' \
-     --header 'Authorization: 50b8f5813a87235ad0678211dc6e7c22'
+     --header 'Authorization: <api-key>'
 ```
 
 # Defining APIs
