@@ -68,33 +68,37 @@ reasonForVisit
 
 The following table shows the different command `schema_key` values with links to their respective [Command Modules](/sdk/commands). The attributes shown in each corresponding entry contain the structure that will appear in the `data` JSON field of each `Command`.
 
-| Schema Key          | Command Data                                                      |
-|-------------------- | ----------------------------------------------------------------- |
-| allergy             | [Allergy](/sdk/commands/#allergy)                                 |
-| assess              | [Assess](/sdk/commands/#assess)                                   |
-| closeGoal           | [CloseGoal](/sdk/commands/#closegoal)                             |
-| diagnose            | [Diagnose](/sdk/commands/#diagnose)                               |
-| familyHistory       | [FamilyHistory](/sdk/commands/#familyhistory)                     |
-| followUp            | [FollowUp](/sdk/commands/#followUp)                               |
-| goal                | [Goal](/sdk/commands/#goal)                                       |
+| Schema Key          | Command Data                                                     |
+|---------------------|------------------------------------------------------------------|
+| adjustPrescription  | [AdjustPrescription](/sdk/commands/#adjustprescription)          |
+| allergy             | [Allergy](/sdk/commands/#allergy)                                |
+| assess              | [Assess](/sdk/commands/#assess)                                  |
+| closeGoal           | [CloseGoal](/sdk/commands/#closegoal)                            |
+| diagnose            | [Diagnose](/sdk/commands/#diagnose)                              |
+| familyHistory       | [FamilyHistory](/sdk/commands/#familyhistory)                    |
+| followUp            | [FollowUp](/sdk/commands/#followUp)                              |
+| goal                | [Goal](/sdk/commands/#goal)                                      |
 | hpi                 | [HistoryOfPresentIllness](/sdk/commands/#historyofpresentillness) |
-| instruct            | [Instruct](/sdk/commands/#instruct)                               |
-| labOrder            | [LabOrder](/sdk/commands/#laborder)                               |
-| medicalHistory      | [MedicalHistory](/sdk/commands/#medicalhistory)                   |
-| medicationStatement | [MedicationStatement](/sdk/commands/#medicationstatement)         |
-| perform             |  [Perform](/sdk/commands/#perform)                                |
-| plan                | [Plan](/sdk/commands/#plan)                                       |
-| prescribe           | [Prescribe](/sdk/commands/#prescribe)                             |
-| questionnaire       | [Questionnaire](/sdk/commands/#questionnaire)                     |
-| reasonForVisit      | [ReasonForVisit](/sdk/commands/#reasonforvisit)                   |
-| refill              | [Refill](/sdk/commands/#refill)                                   |
-| removeAllergy       | [RemoveAllergy](/sdk/commands/#removeallergy)                     |
-| stopMedication      | [StopMedication](/sdk/commands/#stopmedication)                   |
-| surgicalHistory     | [SurgicalHistory](/sdk/commands/#surgicalhistory)                 |
-| task                | [Task](/sdk/commands/#task)                                       |
-| updateDiagnosis     | [UpdateDiagnosis](/sdk/commands/#updatediagnosis)                 |
-| updateGoal          | [UpdateGoal](/sdk/commands/#updategoal)                           |
-| vitals              | [Vitals](/sdk/commands/#vitals)                                   |
+| imagingOrder        | [ImagingOrder](/sdk/commands/#imagingorder)                      |
+| instruct            | [Instruct](/sdk/commands/#instruct)                              |
+| labOrder            | [LabOrder](/sdk/commands/#laborder)                              |
+| medicalHistory      | [MedicalHistory](/sdk/commands/#medicalhistory)                  |
+| medicationStatement | [MedicationStatement](/sdk/commands/#medicationstatement)        |
+| perform             | [Perform](/sdk/commands/#perform)                                |
+| plan                | [Plan](/sdk/commands/#plan)                                      |
+| prescribe           | [Prescribe](/sdk/commands/#prescribe)                            |
+| questionnaire       | [Questionnaire](/sdk/commands/#questionnaire)                    |
+| reasonForVisit      | [ReasonForVisit](/sdk/commands/#reasonforvisit)                  |
+| refer               | [Refer](/sdk/commands/#refer)                                    |
+| refill              | [Refill](/sdk/commands/#refill)                                  |
+| removeAllergy       | [RemoveAllergy](/sdk/commands/#removeallergy)                    |
+| resolveCondition    | [ResolveCondition](/sdk/commands/#resolvecondition)              |
+| stopMedication      | [StopMedication](/sdk/commands/#stopmedication)                  |
+| surgicalHistory     | [SurgicalHistory](/sdk/commands/#surgicalhistory)                |
+| task                | [Task](/sdk/commands/#task)                                      |
+| updateDiagnosis     | [UpdateDiagnosis](/sdk/commands/#updatediagnosis)                |
+| updateGoal          | [UpdateGoal](/sdk/commands/#updategoal)                          |
+| vitals              | [Vitals](/sdk/commands/#vitals)                                  |
 
 __PLEASE NOTE__ the Commands Module is under development and Canvas is working to migrate all commands to be available. This means that some commands are not able to emit events available in plugins, and historical commands created prior to their Commands Module availability may not be able to be queried using the data module. [This product updates table](/product-updates/commands-module/) shows the commands and their release statuses.  If a command in a chart is not available by querying the `Command` data model, the data is still available to be queried using corresponding data models (i.e. [Questionnaire](/sdk/data-questionnaire/), [ImagingOrder](/sdk/data-imaging/), etc.).
 

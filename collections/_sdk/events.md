@@ -1658,6 +1658,548 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 ---
 
+#### Adjust Prescription Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__INDICATIONS__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__INDICATIONS__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__PHARMACY__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__PHARMACY__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBE__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBE__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__CHANGE_MEDICATION_TO__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__CHANGE_MEDICATION_TO__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+
 #### Allergy Command
 
 <table>
@@ -10003,6 +10545,512 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>  
 </table>
 
+#### Refer Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__REFER_TO__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__REFER_TO__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__INDICATIONS__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__INDICATIONS__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__DOCUMENTS_TO_INCLUDE__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__DOCUMENTS_TO_INCLUDE__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__LINKED_ITEMS__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__LINKED_ITEMS__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
 #### Refill Prescription Command
 
 <table>
@@ -10810,6 +11858,333 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
   </tbody>  
 </table>
+
+#### Resolve Condition Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION__CONDITION__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION__CONDITION__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
 
 #### Review of Systems Command
 
