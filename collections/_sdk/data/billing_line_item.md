@@ -1,5 +1,5 @@
 ---
-title: "Coverage"
+title: "Billing Line Item"
 slug: "data-billing-line-item"
 excerpt: "Canvas SDK Billing Line Item"
 hidden: false
