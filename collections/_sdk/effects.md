@@ -45,7 +45,6 @@ Some effects have helper classes that assist you by providing payload validation
 and constructing the effect object for you. The example below shows the
 [`PatientChartSummaryConfiguration`](/sdk/layout-effect/#patient-summary) class in use:
 
-
 ```python
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers.base import BaseHandler
@@ -86,12 +85,14 @@ class CustomChartLayout(BaseHandler):
     </a>
 
 {% endfor %}
-    <a href="/sdk/commands/">
-        <div class="sdk-card">
-            <span class="cardHeading">Commands</span>
-            <p>The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation.</p>
-        </div>
-    </a>
+<a href="/sdk/commands/">
+
+<div class="sdk-card">
+<span class="cardHeading">Commands</span>
+<p>The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation.</p>
+</div>
+</a>
+
 </div>
 
 ## Effect Types
@@ -99,13 +100,16 @@ class CustomChartLayout(BaseHandler):
 The following effects are available to be applied in Canvas.
 
 | Effect                                             | Description                                                                                                                                                                                                 |
-|----------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ADD_BANNER_ALERT                                   | Can be used to [add a banner alert](/sdk/effect-banner-alerts/#adding-a-banner-alert) to a patient's chart.                                                                                                 |
 | REMOVE_BANNER_ALERT                                | Can be used to [remove a banner alert](/sdk/effect-banner-alerts/#removing-a-banner-alert) from a patient's chart.                                                                                          |
 | SHOW_PATIENT_CHART_SUMMARY_SECTIONS                | Can be used to reorder or hide the summary sections in a patient chart. Check out [this effect class](/sdk/layout-effect/#patient-summary/).                                                                |
 | SHOW_ACTION_BUTTON                                 | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/).                                                                                                            |
 | LAUNCH_MODAL                                       | Can be used to launch a modal window. Check out [Modals](/sdk/layout-effect/#modals).                                                                                                                       |
 | ADD_OR_UPDATE_PROTOCOL_CARD                        | Can be used to generate a ProtocolCard in the Canvas UI. Use the [ProtocolCard](/sdk/effect-protocol-cards/) class in the effects module.                                                                   |
+| ADD_BILLING_LINE_ITEM                              | Can be used to generate a Billing Line Item in a note footer. Use the [AddBillingLineItem](/sdk/effect-billing-line-items/) class in the effects module.                                                    |
+| UPDATE_BILLING_LINE_ITEM                           | Can be used to update an existing Billing Line Item in a note footer. Use the [UpdateBillingLineItem](/sdk/effect-billing-line-items/) class in the effects module.                                         |
+| REMOVE_BILLING_LINE_ITEM                           | Can be used to remove a Billing Line Item in a note footer. Use the [RemoveBillingLineItem](/sdk/effect-billing-line-items/) class in the effects module.                                                   |
 | ANNOTATE_CLAIM_CONDITION_RESULTS                   | Can be used to add annotations to the conditions appearing in a claim's detail view.                                                                                                                        |
 | ANNOTATE_PATIENT_CHART_CONDITION_RESULTS           | Add an annotation to a condition within the patient summary.                                                                                                                                                |
 | AUTOCOMPLETE_SEARCH_RESULTS                        | Can be used to modify search results by re-ordering or adding text annotations to individual result records. To see how you can put this to use, check out [this guide](/guides/customize-search-results/). |
@@ -162,4 +166,3 @@ The following effects are available to be applied in Canvas.
 <br/>
 <br/>
 <br/>
-
