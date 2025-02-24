@@ -4,11 +4,11 @@ slug: "handlers-simple-api"
 excerpt: "Framework for defining HTTP APIs with the Canvas SDK."
 ---
 
-# Introduction
+## Introduction
 
 The Canvas SDK provides a way to define an HTTP API with any number of endpoints in your instance.
 
-# Quickstart
+## Quickstart
 
 Follow the instructions in [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) to create a Plugins project. Use `my_api` as your project name.
 
@@ -55,11 +55,11 @@ curl --location 'https://<instance-name>/plugin-io/api/my-api/hello-world' \
      --header 'Authorization: <api-key>'
 ```
 
-# Defining APIs
+## Defining APIs
 
 The Canvas SDK offers two styles for defining API endpoints. Both styles allow for creating GET, POST, PUT, DELETE, and PATCH endpoints. To implement an API endpoint or set of endpoints using one of the two styles, your handler will simply inherit from a specific base class.
 
-## SimpleAPIRoute
+### SimpleAPIRoute
 
 For handlers that inherit from SimpleAPIRoute, you supply a `PATH` value, like `/my-api/hello-world` above, and then implementations of the HTTP verbs you wish to support on that path.
 
@@ -90,7 +90,7 @@ class MyAPI(SimpleAPIRoute):
 
 The handler can now respond to both GET and POST requests to `/my-api/hello-world`.
 
-## SimpleAPI
+### SimpleAPI
 
 For handlers that inherit from SimpleAPI, the syntax is a little different. You can include any number of endpoints in your handler class, and you can name your route handling methods anything you wish. Here is an example:
 
@@ -167,7 +167,7 @@ class MyAPI(SimpleAPI):
 
 With `PREFIX` set, each endpoint does not have to individually specify the `/my-api` portion of the URL path.
 
-## Request objects
+### Request objects
 
 When a handler is invoked to handle an incoming HTTP request, the request object is available as an attribute on the handler. The request method, path, query parameters, content type, and body are all available as attributes on the request object:
 
@@ -218,11 +218,11 @@ class MyAPI(SimpleAPIRoute):
         ]
 ```
 
-## Responses
+### Responses
 
 Endpoint handlers may return zero or one response objects and any number of Effects. Handlers that return multiple response objects will return a **500 Internal Server Error** response back to the requester.
 
-### Response types
+#### Response types
 
 Several response types are provided for convenience:
 
@@ -286,7 +286,7 @@ class MyAPI(SimpleAPIRoute):
         ]
 ```
 
-### Returning Effects
+#### Returning Effects
 
 SimpleAPI endpoints can return any number of Effects just like any Canvas plugin; this is why SimpleAPI endpoints return a list of items rather than just a response object.
 
@@ -294,7 +294,7 @@ Endpoints can also return Effects along with a response object, if you want your
 
 If your endpoint does not provide a response object, then the requester will receive a **204 No Content** response.
 
-## Authentication
+### Authentication
 
 Defining an `authenticate` method on your handler is required. By default, SimpleAPI handlers will return a **401 Unauthorized** response.
 
