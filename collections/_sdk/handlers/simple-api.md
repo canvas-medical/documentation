@@ -49,7 +49,7 @@ that you have set on your instance. This endpoint is using API key authenticatio
 API key. You can generate an API key like this:
 
 ```shell
-$ python -c "import secrets; print(secrets.token_hex(16))"
+python -c "import secrets; print(secrets.token_hex(16))"
 ```
 
 Copy the value that it prints out and set it as a Plugins secret on your instance called
