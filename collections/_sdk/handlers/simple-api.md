@@ -80,7 +80,11 @@ For handlers that inherit from **SimpleAPIRoute**, you set a class variable in y
 that path. The method names will match the names of the HTTP verbs, but lowercased.
 
 The `PATH` value will be the unique part of the full URL for your endpoint. The format of the full
-URL will be `https://<instance-name>.canvasmedical.com/plugio-io/api/<PATH>`
+URL will be:
+
+```
+https://<instance-name>.canvasmedical.com/plugio-io/api/<PATH>`
+```
 
 We can adapt the previous example to add a POST endpoint on the same handler:
 
