@@ -82,9 +82,7 @@ that path. The method names will match the names of the HTTP verbs, but lowercas
 The `PATH` value will be the unique part of the full URL for your endpoint. The format of the full
 URL will be:
 
-```
-https://<instance-name>.canvasmedical.com/plugio-io/api/<PATH>`
-```
+`https://<instance-name>.canvasmedical.com/plugio-io/api/<PATH>`
 
 We can adapt the previous example to add a POST endpoint for the same route on the same handler:
 
