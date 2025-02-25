@@ -101,46 +101,6 @@ from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPI
 
 
 class MyAPI(SimpleAPI):
-    def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        ...
-
-    @api.get("/my-api/hello-world")
-    def hello_world_get(self) -> list[Response | Effect]:
-        return [
-            JSONResponse({"message": "Hello world from my GET endpoint!"})
-        ]
-
-    @api.post("/my-api/hello-world")
-    def hello_world_post(self) -> list[Response | Effect]:
-        return [
-            JSONResponse({"message": "Hello world from my POST endpoint!"})
-        ]
-
-    @api.put("/my-api/hello-world")
-    def hello_world_put(self) -> list[Response | Effect]:
-        return [
-            JSONResponse({"message": "Hello world from my PUT endpoint!"})
-        ]
-
-    @api.get("/my-api/goodbye")
-    def goodbye_get(self) -> list[Response | Effect]:
-        return [
-            JSONResponse({"message": "Goodbye from my GET endpoint!"})
-        ]
-
-```
-
-This syntax will be familiar if you are familiar with Python API frameworks like `Flask` or `FastAPI`. If you have many endpoints that you wish to share the same authentication, this syntax may be more convenient.
-
-You can also specify a path `PREFIX` value for endpoint grouping purposes. If you have multiple endpoints that will all have the same path prefix, you can specify it by setting a value for `PREFIX`:
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPI
-
-
-class MyAPI(SimpleAPI):
     PREFIX = "/my-api"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
@@ -165,7 +125,9 @@ class MyAPI(SimpleAPI):
         ]
 ```
 
-With `PREFIX` set, each endpoint does not have to individually specify the `/my-api` portion of the URL path.
+This syntax will be familiar if you have used Python API frameworks like `Flask` or `FastAPI`. If you have many endpoints that you wish to share the same authentication method, this syntax may be more convenient.
+
+You can also specify a path `PREFIX` value for endpoint grouping purposes, as illustrated in the example above. If you have multiple endpoints that will all have the same path prefix, you can specify it by setting a value for `PREFIX`. With `PREFIX` set, each endpoint does not have to individually specify the `/my-api` portion of the URL path.
 
 ### Request objects
 
