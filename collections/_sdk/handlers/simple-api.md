@@ -297,10 +297,10 @@ If your endpoint does not provide a response object, then the requester will rec
 
 ### Authentication
 
-To get your API to return responses, you must define an `authenticate` method on your handler. By
-default, **SimpleAPI** handlers will return a **401 Unauthorized** response if no `authenticate`
-method is defined. The `authenticate` method should return `True` or `False` depending on whether
-the requester is authenticated.
+Defining an `authenticate` method on your handler is required. By default, **SimpleAPI** handlers
+will return a **401 Unauthorized** response if no `authenticate` method is defined. The
+`authenticate` method should return `True` or `False` depending on whether the requester is
+authenticated.
 
 Please keep in mind that while setting Plugins secrets on your instance is out of scope for this
 guide, best practices would dictate that most `authenticate` methods would make use of these
