@@ -305,9 +305,9 @@ will return a **401 Unauthorized** response if no `authenticate` method is defin
 authenticated.
 
 Please keep in mind that while setting Plugins secrets on your instance is out of scope for this
-guide, best practices would dictate that most `authenticate` methods would make use of these
-secrets (OAuth being a notable exception). Your secrets can be accessed through the `secrets`
-attribute on the handler.
+guide, best practices would dictate that most `authenticate` methods would use these secrets to
+authenticate credentials in a request (OAuth being a notable exception). Your secrets can be
+accessed through the `secrets` attribute on the handler.
 
 Additionally, to assist with adhering to security and cryptography best practices, the Python
 `secrets` module is available for use.
