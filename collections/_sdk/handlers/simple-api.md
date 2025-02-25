@@ -289,8 +289,10 @@ class MyAPI(SimpleAPIRoute):
 **SimpleAPI** endpoints return a list of items rather than just a response object.
 
 Endpoints can return Effects along with a response object, if you want your endpoint to invoke
-certain Effects and then also return an HTTP response. To do this, return a list that includes your
-response object and all of the Effects you wish to invoke.
+certain Effects and also return an HTTP response. To do this, return a list that includes your
+response object and all the Effects you wish to invoke. All effects returned will be received and
+processed by your Canvas instance, and any response objects returned will be sent back to the
+original requester.
 
 If your endpoint does not provide a response object, then the requester will receive a
 **204 No Content** response.
