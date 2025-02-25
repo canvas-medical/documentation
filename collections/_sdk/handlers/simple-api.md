@@ -63,7 +63,7 @@ The Canvas SDK offers two styles for defining API endpoints. Both styles allow f
 
 For handlers that inherit from SimpleAPIRoute, you supply a `PATH` value, like `/my-api/hello-world` above, and then implementations of the HTTP verbs you wish to support on that path.
 
-I can adapt the previous example to add a POST endpoint on the same handler:
+We can adapt the previous example to add a POST endpoint on the same handler:
 
 ```python
 from canvas_sdk.effects import Effect
@@ -296,6 +296,70 @@ If your endpoint does not provide a response object, then the requester will rec
 
 ### Authentication
 
-Defining an `authenticate` method on your handler is required. By default, SimpleAPI handlers will return a **401 Unauthorized** response.
+Defining an `authenticate` method on your handler is required. By default, SimpleAPI handlers will return a **401 Unauthorized** response if no `authenticate` method is defined. The `authenticate` method should return `True` or `False` depending on whether the requester is authenticated.
 
-Credentials, custom
+Please keep in mind that while setting Plugins secrets on your instance is out of scope for this guide, best practices would require that any `authenticate` method makes use of these secrets, which exist on the `secrets` attribute on the handler.
+
+To assist with adhering to security and cryptography best practices, the Python `secrets` module is available for use.
+
+The Canvas SDK can parse and validate the Authentication header automatically for several authentication schemes. You can specify which authentication scheme you want to use for your route or API in the method signature of your `authenticate` method.
+
+For Basic authentication:
+
+```python
+def authenticate(self, credentials: BasicCredentials) -> bool:
+    provided_username = credentials.username
+    provided_password = credentials.password
+
+	# Validate provided username and password against the username and password in self.secrets
+    ...
+```
+
+For Bearer authentication:
+
+```python
+def authenticate(self, credentials: BearerCredentials) -> bool:
+    provided_token = credentials.token
+
+	# Validate provided token against the token in self.secrets
+	...
+```
+
+For API key authentication:
+
+```python
+def authenticate(self, credentials: APIKeyCredentials) -> bool:
+    provided_key = credentials.key
+
+	# Validate provided key against the key in self.secrets
+	...
+```
+
+It's also possible to create custom authentication schemes. There are two ways to do this.
+
+The first method is to access authentication headers on the request object directly. If you wish to do this, then you would define your authenticate method to take a `Credentials` object, and pull the authentication values from the request:
+
+```python
+def authenticate(self, credentials: Credentials) -> bool:
+    provided_api_key = self.request.headers["My-API-Key"]
+    provided_app_key = self.request.headers["My-App-Key"]
+
+    # Validate the provided credentials against the credentials in self.secrets
+    ...
+```
+
+Another way to do this is by defining your own `Credentials` class which obtains the authentication values out of the request headers:
+
+```python
+class MyCredentials(Credentials):
+    def __init__(self, request: "Request") -> None:
+        self.api_key = self.request.headers['My-API-Key']
+        self.app_key = self.request.headers['My-App-Key']
+
+def authenticate(self, credentials: MyCredentials) -> bool:
+    provided_api_key = credentials.api_key
+    provided_app_key = credentials.app_key
+
+    # Validate the provided credentials against the credentials in self.secrets
+    ...
+```
