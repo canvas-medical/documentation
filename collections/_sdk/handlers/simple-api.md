@@ -36,7 +36,7 @@ class MyAPI(SimpleAPIRoute):
         api_key = self.secrets["my-api-key"]
 
         # compare_digest requires bytes, so we must encode the strings
-        return compare_digest(provided_api_key_bytes.encode(), api_key_bytes.encode())
+        return compare_digest(provided_api_key.encode(), api_key.encode())
 
     def get(self) -> list[Response | Effect]:
         return [
