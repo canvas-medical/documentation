@@ -86,7 +86,7 @@ URL will be:
 https://<instance-name>.canvasmedical.com/plugio-io/api/<PATH>`
 ```
 
-We can adapt the previous example to add a POST endpoint on the same handler:
+We can adapt the previous example to add a POST endpoint for the same route on the same handler:
 
 ```python
 from canvas_sdk.effects import Effect
@@ -231,7 +231,6 @@ Several response types are provided for convenience:
 In addition to the response body, you can also specify the response status code and the response
 headers.
 
-
 ```python
 from http import HTTPStatus
 
@@ -289,9 +288,9 @@ class MyAPI(SimpleAPIRoute):
 **SimpleAPI** endpoints can return any number of Effects just like any Canvas plugin; this is why
 **SimpleAPI** endpoints return a list of items rather than just a response object.
 
-Endpoints can also return Effects along with a response object, if you want your endpoint to invoke
-certain Effects and then also return an HTTP response. To do this, just return a list that includes
-your response object and all of the Effects you wish to invoke.
+Endpoints can return Effects along with a response object, if you want your endpoint to invoke
+certain Effects and then also return an HTTP response. To do this, return a list that includes your
+response object and all of the Effects you wish to invoke.
 
 If your endpoint does not provide a response object, then the requester will receive a
 **204 No Content** response.
@@ -304,8 +303,9 @@ method is defined. The `authenticate` method should return `True` or `False` dep
 the requester is authenticated.
 
 Please keep in mind that while setting Plugins secrets on your instance is out of scope for this
-guide, best practices would dictate that any `authenticate` method makes use of these secrets, which
-can be accessed through the `secrets` attribute on the handler.
+guide, best practices would dictate that most `authenticate` methods would make use of these
+secrets (OAuth being a notable exception). Your secrets can be accessed through the `secrets`
+attribute on the handler.
 
 Additionally, to assist with adhering to security and cryptography best practices, the Python
 `secrets` module is available for use.
@@ -382,8 +382,8 @@ class MyAPI(SimpleAPIRoute):
 
 It's also possible to create custom authentication schemes. There are two ways to do this.
 
-The first method is to access authentication headers on the request object directly. If you wish to
-do this, then you would define your authenticate method to take a `Credentials` object, and pull the
+The first way is to access authentication headers on the request object directly. If you wish to do
+this, then you would define your authenticate method to take a `Credentials` object, and pull the
 authentication values from the request headers:
 
 ```python
@@ -406,8 +406,8 @@ class MyAPI(SimpleAPIRoute):
         ...
 ```
 
-Another way to do this is by defining your own `Credentials` class which obtains the authentication
-values out of the request headers:
+Another way to do this is by defining your own `Credentials` subclass which obtains the
+authentication values out of the request headers:
 
 ```python
 from canvas_sdk.effects import Effect
