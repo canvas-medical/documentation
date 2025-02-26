@@ -317,6 +317,12 @@ several authentication schemes, but you must authenticate the credentials in you
 method. You can specify which authentication scheme you want to use for your route or API in the
 method signature of your `authenticate` method.
 
+Examples of how to define `authenticate` methods for various authentication schemes are shown below,
+but if you are interested in something that is more "batteries included", please skip ahead to the
+[Authentication mixins](#authentication-mixins) section below. The
+[API key authentication mixin](#api-key-1) is a good choice that offers simplicity and good security
+if you need something to get you started.
+
 ##### Basic
 
 For Basic authentication, use `BasicCredentials`:
