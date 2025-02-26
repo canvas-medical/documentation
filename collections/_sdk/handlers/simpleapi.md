@@ -310,10 +310,14 @@ accessed through the `secrets` attribute on the handler.
 Additionally, to assist with adhering to security and cryptography best practices, the Python
 `secrets` module is available for use.
 
+#### Authentication schemes
+
 The Canvas SDK can parse and validate the format of the Authentication header automatically for
 several authentication schemes, but you must authenticate the credentials in your `authenticate`
 method. You can specify which authentication scheme you want to use for your route or API in the
 method signature of your `authenticate` method.
+
+##### Basic
 
 For Basic authentication, use `BasicCredentials`:
 
@@ -338,6 +342,8 @@ class MyAPI(SimpleAPIRoute):
         ...
 ```
 
+##### Bearer
+
 For Bearer authentication, use `BearerCredentials`:
 
 ```python
@@ -359,6 +365,8 @@ class MyAPI(SimpleAPIRoute):
         ...
 ```
 
+##### API key
+
 For API key authentication, use `APIKeyCredentials`:
 
 ```python
@@ -379,6 +387,8 @@ class MyAPI(SimpleAPIRoute):
     def get(self) -> list[Response | Effect]:
         ...
 ```
+
+##### Custom
 
 It's also possible to create custom authentication schemes. There are two ways to do this.
 
@@ -433,4 +443,48 @@ class MyAPI(SimpleAPIRoute):
 
     def get(self) -> list[Response | Effect]:
         ...
+```
+
+#### Authentication mixins
+
+The Canvas SDK offers several "batteries included" authentication mixins that you can use to implement your authentication method. If you choose to use these, then the only action you must take is to ensure that you set the appropriate secrets on your instance.
+
+Make sure you always list the mixin class to the left of the base class, which is **SimpleAPIRoute** in the examples below.
+
+##### Basic
+
+If you want an implementation of Basic authentication, you can use the `BasicAuthMixin`. You will need to set the `simpleapi-basic-username` and `simpleapi-basic-password` secrets on your instance.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.handlers.simple_api import BasicAuthMixin, SimpleAPIRoute
+
+
+class MyAPI(BasicAuthMixin, SimpleAPIRoute):
+    PATH = "/my-api/hello-world"
+
+    def get(self) -> list[Response | Effect]:
+        return [
+            JSONResponse({"message": "Hello world!"})
+        ]
+```
+
+##### API key
+
+If you want an implementation of API key authentication, you can use the `APIKeyAuthMixin`. You will need to set the `simpleapi-api-key` secret on your instance.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+
+
+class MyAPI(APIKeyAuthMixin, SimpleAPIRoute):
+    PATH = "/my-api/hello-world"
+
+    def get(self) -> list[Response | Effect]:
+        return [
+            JSONResponse({"message": "Hello world!"})
+        ]
 ```
