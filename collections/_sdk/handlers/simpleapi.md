@@ -1,6 +1,6 @@
 ---
 title: "SimpleAPI"
-slug: "handlers-simple-api"
+slug: "handlers-simpleapi"
 excerpt: "Framework for defining HTTP APIs with the Canvas SDK."
 ---
 
