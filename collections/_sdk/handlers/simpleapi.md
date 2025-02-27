@@ -69,9 +69,15 @@ curl --location 'https://<instance-name>.canvasmedical.com/plugin-io/api/my-api/
 
 ## Defining APIs
 
-The Canvas SDK offers two styles for defining API endpoints. Both styles allow for creating GET,
-POST, PUT, DELETE, and PATCH endpoints. To implement an API endpoint or set of endpoints using one
-of the two styles, your handler will simply inherit from a specific base class.
+The Canvas SDK offers two styles for defining API endpoints. To implement an API endpoint or set of
+endpoints using one of the two styles, your handler will simply inherit from a specific base class.
+The following HTTP verbs are supported:
+
+* GET
+* POST
+* PUT
+* DELETE
+* PATCH
 
 ### SimpleAPIRoute
 
@@ -109,8 +115,7 @@ class MyAPI(SimpleAPIRoute):
         ]
 ```
 
-The handler can now respond to both GET and POST requests at `/my-api/hello-world`. This syntax will
-be familiar if you have used the Django web framework.
+The handler can now respond to both GET and POST requests at `/my-api/hello-world`.
 
 ### SimpleAPI
 
@@ -149,9 +154,10 @@ class MyAPI(SimpleAPI):
         ]
 ```
 
-This syntax will be familiar if you have used Python API frameworks like `Flask` or `FastAPI`. If
-you have many endpoints that you wish to share the same authentication, this syntax may be more
-convenient.
+This syntax will be familiar if you have used Python API frameworks like `Flask` or `FastAPI`. The
+decorator functions are named for the HTTP verb you wish to implement on the route, and the URL path
+is passed into the decorator function. If you have many endpoints that you wish to share the same
+authentication, this syntax may be more convenient.
 
 You can also specify a path `PREFIX` value for endpoint grouping purposes, as shown in the example
 above. If you have multiple endpoints that will all have the same path prefix, you can specify it by
@@ -215,7 +221,8 @@ class MyAPI(SimpleAPIRoute):
 
 Endpoint handlers may return zero or one response objects and any number of Effects. Handlers that
 return multiple response objects will return a **500 Internal Server Error** response back to the
-requester.
+requester. If your endpoint does not provide a response object, then the requester will receive a
+**204 No Content** response.
 
 #### Response types
 
@@ -284,16 +291,10 @@ class MyAPI(SimpleAPIRoute):
 #### Returning Effects
 
 **SimpleAPI** endpoints can return any number of Effects just like any Canvas plugin; this is why
-**SimpleAPI** endpoints return a list of items rather than just a response object.
+**SimpleAPI** endpoints return a list of items rather than just a single response object.
 
-Endpoints can return Effects along with a response object, if you want your endpoint to invoke
-certain Effects and also return an HTTP response. To do this, return a list that includes your
-response object and all the Effects you wish to invoke. All effects returned will be received and
-processed by your Canvas instance, and any response objects returned will be sent back to the
-original requester.
-
-If your endpoint does not provide a response object, then the requester will receive a
-**204 No Content** response.
+Any effects present in the list returned by an endpoint will be processed by your Canvas instance,
+and the response object, if provided, will be sent back to the original requester.
 
 ### Authentication
 
@@ -310,18 +311,18 @@ accessed through the `secrets` attribute on the handler.
 Additionally, to assist with adhering to security and cryptography best practices, the Python
 `secrets` module is available for use.
 
+Examples of how to define `authenticate` methods for various authentication schemes are shown in the
+next section, but if you are interested in something that is more "batteries included", please skip
+ahead to the [Authentication mixins](#authentication-mixins) section below. The
+[API key authentication mixin](#api-key-1) is a good choice that offers simplicity and good security
+if you need something to get started.
+
 #### Authentication schemes
 
 The Canvas SDK can parse and validate the format of the Authentication header automatically for
 several authentication schemes, but you must authenticate the credentials in your `authenticate`
 method. You can specify which authentication scheme you want to use for your route or API in the
 method signature of your `authenticate` method.
-
-Examples of how to define `authenticate` methods for various authentication schemes are shown below,
-but if you are interested in something that is more "batteries included", please skip ahead to the
-[Authentication mixins](#authentication-mixins) section below. The
-[API key authentication mixin](#api-key-1) is a good choice that offers simplicity and good security
-if you need something to get you started.
 
 ##### Basic
 
@@ -478,7 +479,18 @@ class MyAPI(BasicAuthMixin, SimpleAPIRoute):
 
 ##### API key
 
-If you want an implementation of API key authentication, you can use the `APIKeyAuthMixin`. You will need to set the `simpleapi-api-key` secret on your instance.
+If you want an implementation of API key authentication, you can use the `APIKeyAuthMixin`.
+
+You will need to set the API key secret on your instance. You can generate a secure, random API key
+like this:
+
+```shell
+python -c "import secrets; print(secrets.token_hex(16))"
+```
+
+Copy the output from that command, and set the `simpleapi-api-key` secret on your instance.
+
+After you set your secret, you can use the `APIKeyAuthMixin`:
 
 ```python
 from canvas_sdk.effects import Effect
