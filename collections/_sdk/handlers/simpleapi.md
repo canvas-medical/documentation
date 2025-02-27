@@ -341,8 +341,7 @@ class MyAPI(SimpleAPIRoute):
         provided_username = credentials.username
         provided_password = credentials.password
 
-        # Validate the provided username and password against a username and password in
-        # self.secrets
+        # Validate provided username and password against a username and password in self.secrets
         ...
 
     def get(self) -> list[Response | Effect]:
@@ -365,7 +364,7 @@ class MyAPI(SimpleAPIRoute):
     def authenticate(self, credentials: BearerCredentials) -> bool:
         provided_token = credentials.token
 
-        # Validate the provided access token via OAuth
+        # Validate provided access token via OAuth
         ...
 
     def get(self) -> list[Response | Effect]:
@@ -388,7 +387,7 @@ class MyAPI(SimpleAPIRoute):
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
         provided_api_key = credentials.key
 
-        # Validate the provided key against an API key in self.secrets
+        # Validate provided key against an API key in self.secrets
         ...
 
     def get(self) -> list[Response | Effect]:
@@ -416,7 +415,7 @@ class MyAPI(SimpleAPIRoute):
         provided_api_key = self.request.headers["My-API-Key"]
         provided_app_key = self.request.headers["My-App-Key"]
 
-        # Validate the provided credentials against the credentials in self.secrets
+        # Validate provided credentials against the credentials in self.secrets
         ...
 
     def get(self) -> list[Response | Effect]:
@@ -445,7 +444,7 @@ class MyAPI(SimpleAPIRoute):
         provided_api_key = credentials.api_key
         provided_app_key = credentials.app_key
 
-        # Validate the provided credentials against the credentials in self.secrets
+        # Validate provided credentials against the credentials in self.secrets
         ...
 
     def get(self) -> list[Response | Effect]:
