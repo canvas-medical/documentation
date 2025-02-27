@@ -529,6 +529,9 @@ effects_module:
  - title: "Banner Alerts"
    url: /sdk/effect-banner-alerts/
    description: Contextual information in a patient's chart.
+ - title: "Billing Line Items"
+   url: /sdk/effect-billing-line-items/
+   description: Add, modify, or remove billing codes on a note.
  - title: "Layout Effects"
    url: /sdk/layout-effect/
    description: Modify or interact with the layout in Canvas.
