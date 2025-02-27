@@ -36,8 +36,8 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "url_permissions": [
         {
-          "url": "https://my-application.com",
-          "permissions": []
+            "url": "https://my-application.com",
+            "permissions": []
         }
     ],
     "components": {

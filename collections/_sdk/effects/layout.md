@@ -273,13 +273,13 @@ The URLs must match the format available [here](https://developer.mozilla.org/en
     "description": "...",
     "url_permissions": [
         {
-          "url": "https://example.com/info",
-          "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE"]
+            "url": "https://example.com/info",
+            "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE"]
         },
         {
-          "url": "https://d3js.org/d3.v4.js",
-          "permissions": ["SCRIPTS"]
+            "url": "https://d3js.org/d3.v4.js",
+            "permissions": ["SCRIPTS"]
         }
-      ]
+    ]
 }
 ```

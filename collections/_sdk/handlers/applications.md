@@ -57,8 +57,8 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
     "description": "This is a very nice application",
     "url_permissions": [
         {
-          "url": "https://example.com/",
-          "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "SCRIPTS"]
+            "url": "https://example.com/",
+            "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "SCRIPTS"]
         }
     ],
     "components": {
