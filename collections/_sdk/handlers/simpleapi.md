@@ -7,12 +7,17 @@ excerpt: "Framework for defining HTTP APIs with the Canvas SDK."
 ## Introduction
 
 The Canvas SDK provides a way to define an HTTP API with any number of endpoints in your instance.
+Developers can define the routes and implement the code that will handle incoming HTTP requests.
+
+This feature allows developers to create endpoints that can receive webhook events from other
+services and act on them. This can be used to invoke Effects in a Canvas instance, send another
+request to a different service, or simply return a response back to the requester.
 
 ## Quickstart
 
 Follow the instructions in
 [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) to create a Plugins
-project. Use `my_api` as your project name.
+project. For this exercise, use `my_api` as your project name.
 
 Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
 class names as you see fit in your project, but for this exercise, we are just going to set the
