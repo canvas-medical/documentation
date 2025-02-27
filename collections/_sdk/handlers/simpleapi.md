@@ -309,7 +309,7 @@ authenticate credentials in a request (OAuth being a notable exception). Your se
 accessed through the `secrets` attribute on the handler.
 
 Additionally, to assist with adhering to security and cryptography best practices, the Python
-`secrets` module is available for use.
+`hashlib`, `hmac`, and `secrets` modules are available for use.
 
 Examples of how to define `authenticate` methods for various authentication schemes are shown in the
 next section, but if you are interested in something that is more "batteries included", please skip
