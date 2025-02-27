@@ -17,7 +17,7 @@ request to a different service, or simply return a response back to the requeste
 
 Follow the instructions in
 [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) to create a Plugins
-project. For this exercise, use `my_api` as your project name.
+project. For this exercise, use `my_api` as your project (i.e. plugin) name.
 
 Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
 class names as you see fit in your project, but for this exercise, we are just going to set the
@@ -34,7 +34,7 @@ from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
 
 
 class MyAPI(SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
         provided_api_key = credentials.key
@@ -49,6 +49,9 @@ class MyAPI(SimpleAPIRoute):
         ]
 ```
 
+The next step is to deploy your plugin; the instructions for doing so are on the
+[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
+
 You can see in the code above that the `authenticate` method is going to authenticate using a secret
 that you have set on your instance. This endpoint is using API key authentication, which requires an
 API key. You can generate an API key like this:
@@ -60,15 +63,12 @@ python -c "import secrets; print(secrets.token_hex(16))"
 Copy the value that it prints out and set it as a Plugins secret on your instance called
 `my-api-key`.
 
-The last step is to deploy your plugin; the instructions for doing so are on the
-[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
-
-After your plugin is deployed, you can send requests to your endpoint with `curl`. The `curl`
-command would look like the following (note that you will need to supply your instance name and API
-key):
+Now that your plugin is deployed and your secret is set, you can send requests to your endpoint with
+`curl`. The `curl` command would look like the following (note that you will need to supply your
+instance name and API key):
 
 ```shell
-curl --location 'https://<instance-name>.canvasmedical.com/plugin-io/api/my-api/hello-world' \
+curl --location 'https://<instance-name>.canvasmedical.com/plugin-io/api/my_api/routes/hello-world' \
      --header 'Authorization: <api-key>'
 ```
 
@@ -90,10 +90,10 @@ For handlers that inherit from **SimpleAPIRoute**, you set a class variable in y
 `PATH` as in the example above, and then implementations of the HTTP verbs you wish to support on
 that path. The method names will match the names of the HTTP verbs, but lowercased.
 
-The `PATH` value will be the unique part of the full URL for your endpoint. The format of the full
-URL will be:
+The plugin name and the `PATH` value together will form the unique part of the full URL for your
+endpoint. The format of the full URL will be:
 
-`https://<instance-name>.canvasmedical.com/plugio-io/api/<PATH>`
+`https://<instance-name>.canvasmedical.com/plugio-io/api/<plugin-name>/<PATH>`
 
 We can adapt the previous example to add a POST endpoint for the same route on the same handler:
 
@@ -104,7 +104,7 @@ from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
 
 
 class MyAPI(SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
         ...
@@ -120,7 +120,7 @@ class MyAPI(SimpleAPIRoute):
         ]
 ```
 
-The handler can now respond to both GET and POST requests at `/my-api/hello-world`.
+The handler can now respond to both GET and POST requests at `/routes/hello-world`.
 
 ### SimpleAPI
 
@@ -135,7 +135,7 @@ from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPI
 
 
 class MyAPI(SimpleAPI):
-    PREFIX = "/my-api"
+    PREFIX = "/routes"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
         ...
@@ -167,7 +167,7 @@ authentication, this syntax may be more convenient.
 You can also specify a path `PREFIX` value for endpoint grouping purposes, as shown in the example
 above. If you have multiple endpoints that will all have the same path prefix, you can specify it by
 setting a value for `PREFIX`. With `PREFIX` set, each endpoint does not have to individually specify
-the `/my-api` portion of the URL path.
+the `/routes` portion of the URL path.
 
 ### Request objects
 
@@ -182,7 +182,7 @@ from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
 
 
 class MyAPI(SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
         ...
@@ -250,7 +250,7 @@ from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
 
 
 class MyAPI(SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
         ...
@@ -340,7 +340,7 @@ from canvas_sdk.handlers.simple_api import BasicCredentials, SimpleAPIRoute
 
 
 class MyAPI(SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def authenticate(self, credentials: BasicCredentials) -> bool:
         provided_username = credentials.username
@@ -364,7 +364,7 @@ from canvas_sdk.handlers.simple_api import BearerCredentials, SimpleAPIRoute
 
 
 class MyAPI(SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def authenticate(self, credentials: BearerCredentials) -> bool:
         provided_token = credentials.token
@@ -387,7 +387,7 @@ from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
 
 
 class MyAPI(SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
         provided_api_key = credentials.key
@@ -414,7 +414,7 @@ from canvas_sdk.handlers.simple_api import Credentials, SimpleAPIRoute
 
 
 class MyAPI(SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def authenticate(self, credentials: Credentials) -> bool:
         provided_api_key = self.request.headers["My-API-Key"]
@@ -443,7 +443,7 @@ class MyCredentials(Credentials):
 
 
 class MyAPI(SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def authenticate(self, credentials: MyCredentials) -> bool:
         provided_api_key = credentials.api_key
@@ -473,7 +473,7 @@ from canvas_sdk.handlers.simple_api import BasicAuthMixin, SimpleAPIRoute
 
 
 class MyAPI(BasicAuthMixin, SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def get(self) -> list[Response | Effect]:
         return [
@@ -503,7 +503,7 @@ from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
 
 
 class MyAPI(APIKeyAuthMixin, SimpleAPIRoute):
-    PATH = "/my-api/hello-world"
+    PATH = "/routes/hello-world"
 
     def get(self) -> list[Response | Effect]:
         return [
