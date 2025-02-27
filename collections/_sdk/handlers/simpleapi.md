@@ -16,12 +16,16 @@ request to a different service, or simply return a response back to the requeste
 ## Quickstart
 
 Follow the instructions in
-[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) to create a Plugins
+[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) to create a plugins
 project. For this exercise, use `my_api` as your project (i.e. plugin) name.
 
 Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
 class names as you see fit in your project, but for this exercise, we are just going to set the
 value at `components -> protocols -> 0 -> class` to be `my_api.protocols.my_protocol:MyAPI`.
+
+We're going to need a secret value for authentication. The instructions for declaring secrets is
+outlined on the [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
+Declare a secret in `CANVAS_MANIFEST.json` named `my-api-key`.
 
 Open `my_api/protocols/my_protocol.py` and replace the contents of the file with this code:
 
@@ -52,16 +56,16 @@ class MyAPI(SimpleAPIRoute):
 The next step is to deploy your plugin; the instructions for doing so are on the
 [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 
-You can see in the code above that the `authenticate` method is going to authenticate using a secret
-that you have set on your instance. This endpoint is using API key authentication, which requires an
-API key. You can generate an API key like this:
+You can see in the code above that the `authenticate` method is going to authenticate using API key
+authentication. We've already declared the secret, so now we need to generate a value and set it on
+your instance. You can generate an API key like this:
 
 ```shell
 python -c "import secrets; print(secrets.token_hex(16))"
 ```
 
-Copy the value that it prints out and set it as a Plugins secret on your instance called
-`my-api-key`.
+Copy the value that it prints out and set the value for `my-api-key` in your plugin secrets on your
+instance.
 
 Now that your plugin is deployed and your secret is set, you can send requests to your endpoint with
 `curl`. The `curl` command would look like the following (note that you will need to supply your
@@ -308,7 +312,7 @@ will return a **401 Unauthorized** response if no `authenticate` method is defin
 `authenticate` method should return `True` or `False` depending on whether the requester is
 authenticated.
 
-Please keep in mind that while setting Plugins secrets on your instance is out of scope for this
+Please keep in mind that while setting plugins secrets on your instance is out of scope for this
 guide, best practices would dictate that most `authenticate` methods would use these secrets to
 authenticate credentials in a request (OAuth being a notable exception). Your secrets can be
 accessed through the `secrets` attribute on the handler.
@@ -458,13 +462,18 @@ class MyAPI(SimpleAPIRoute):
 
 #### Authentication mixins
 
-The Canvas SDK offers several "batteries included" authentication mixins that you can use to implement your authentication method. If you choose to use these, then the only action you must take is to ensure that you set the appropriate secrets on your instance.
+The Canvas SDK offers several "batteries included" authentication mixins that you can use to
+implement your authentication method. If you choose to use these, then the only action you must take
+is to ensure that you set the appropriate secrets for your plugin on your instance.
 
-Make sure you always list the mixin class to the left of the base class, which is **SimpleAPIRoute** in the examples below.
+Make sure you always list the mixin class to the left of the base class, which is **SimpleAPIRoute**
+in the examples below.
 
 ##### Basic
 
-If you want an implementation of Basic authentication, you can use the `BasicAuthMixin`. You will need to set the `simpleapi-basic-username` and `simpleapi-basic-password` secrets on your instance.
+If you want an implementation of Basic authentication, you can use the `BasicAuthMixin`. You will
+need to declare the `simpleapi-basic-username` and `simpleapi-basic-password` secrets in your
+manifest file, and then set the secrets on your instance after you deploy your plugin.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -483,10 +492,11 @@ class MyAPI(BasicAuthMixin, SimpleAPIRoute):
 
 ##### API key
 
-If you want an implementation of API key authentication, you can use the `APIKeyAuthMixin`.
+If you want an implementation of API key authentication, you can use the `APIKeyAuthMixin`. You will
+need to declare the `simpleapi-api-key` secret in your manifest file, and then set the secret on
+your instance after you deploy your plugin.
 
-You will need to set the API key secret on your instance. You can generate a secure, random API key
-like this:
+You can generate a secure, random API key like this:
 
 ```shell
 python -c "import secrets; print(secrets.token_hex(16))"
