@@ -34,10 +34,12 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
     "plugin_version": "0.0.1",
     "name": "my_cool_application",
     "description": "Edit the description in CANVAS_MANIFEST.json",
-    "origins": {
-        "urls": ["https://my-application.com"],
-        "scripts": []
-    },
+    "url_permissions": [
+        {
+          "url": "https://my-application.com",
+          "permissions": []
+        }
+    ],
     "components": {
         "applications": [
             {
@@ -70,7 +72,7 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
 4. **scope**:
    - `global`: The app will appear across all contexts.
    - `patient_specific`: The app will appear only in the patient chart page.
-5. **origins**: The allowed origins for the application. This is used for security purposes. For more info check the [Application Handler](/sdk/handlers-applications).
+5. **url_permissions**: The allowed urls and permissions for the application. This is used for security purposes. For more info check the [Application Handler](/sdk/handlers-applications).
 
 ## Step 4: Overriding the Application Behavior
 
