@@ -44,8 +44,8 @@ Other information you can define about your application is the `scope`
 (`"patient_specific"` or `"global"`), which determines if the application is
 visible only in a patient chart or outside of charts.
 
-For security reasons you also need to specify the list the domains that will be loaded within the iframe, or they will not be
-rendered. For more info on the format of the `origins` field, check the [Additional Configuration](/sdk/layout-effect/#additional-configuration) for `LaunchModalEffect`.
+For security reasons you also need to specify the domains that will be loaded within the iframe, or they will not be
+rendered. For more info on the format of the `url_permissions` field, check the [Additional Configuration](/sdk/layout-effect/#additional-configuration) for `LaunchModalEffect`.
 
 Here's what your `CANVAS_MANIFEST.json` might look like:
 
@@ -55,9 +55,12 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
     "plugin_version": "0.0.1",
     "name": "my_application",
     "description": "This is a very nice application",
-    "origins": {
-      "urls": ["http://example.com"]
-    },
+    "url_permissions": [
+        {
+            "url": "https://example.com/",
+            "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "SCRIPTS"]
+        }
+    ],
     "components": {
         "protocols": [],
         "applications": [

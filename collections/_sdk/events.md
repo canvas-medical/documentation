@@ -1205,32 +1205,48 @@ type: None</pre></td>
   </tbody>
 </table>
 
-<!-- #### Notes
+#### Notes
 
 <table>
-  <colgroup>
-    <col width="10%"/>
-    <col width="30%"/>
-    <col width="35%"/>
-    <col width="25%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
-    <th>Target object</th>
-    <th>Context object</th>
+    <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs as a note traverses through its state machine.</td></tr>
   </thead>
   <tbody>
     <tr>
-      <td>NOTE_STATE_CHANGE_EVENT_CREATED</td>
-      <td></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>NOTE_STATE_CHANGE_EVENT_UPDATED</td>
-      <td></td>
+      <td><pre>"id": nsce_id
+"type": NoteStateChangeEvent</pre></td>
+      <td><pre>"note_id": note_id,
+"patient_id": pt_id,
+"state": str</pre></td>
     </tr>
   </tbody>
-</table> -->
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs if a note state change event is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": nsce_id
+"type": NoteStateChangeEvent</pre></td>
+      <td><pre>"note_id": note_id,
+"patient_id": pt_id,
+"state": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 
 #### Observations
 
