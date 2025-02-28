@@ -1,8 +1,8 @@
 ---
-title: Developer API framework  
+title: Adds Developer API framework  
 layout: productupdates  
-tags: sdk  
+tags: plugins sdk  
 date: 2025-02-28  
 ---
 
-We've added a [developer API framework](https://docs.canvasmedical.com/sdk/handlers-simpleapi/) to plugins, which allows developers to define HTTP APIs on their Canvas instance.
+We've added a developer API framework to plugins, which allows developers to define HTTP APIs on their Canvas instance. [Read more.](/sdk/handlers-simpleapi)
