@@ -517,10 +517,12 @@ sdk_handlers:
     url: /sdk/handlers-action-buttons/
   - title: "Applications"
     url: /sdk/handlers-applications/
-  - title: "CronTask"
-    url: /sdk/handlers-crontask/
   - title: "BaseHandler"
     url: /sdk/handlers-basehandler/
+  - title: "CronTask"
+    url: /sdk/handlers-crontask/
+  - title: "SimpleAPI"
+    url: /sdk/handlers-simpleapi/
 
 effects_module:
  - title: "Protocol Cards"
