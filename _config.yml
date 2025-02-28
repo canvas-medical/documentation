@@ -8,7 +8,7 @@ description: Build powerful EMR customizations and integrations with Canvas Medi
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://docs.canvasmedical.com" # the base hostname & protocol for your site, e.g. http://example.com
 theme_color: '#eee9d9'
-logo: assets/images/2024-logo.png
+logo: assets/images/canvas-docs-meta.png
 timezone: America/Los_Angeles
 
 ### Cookie consent
