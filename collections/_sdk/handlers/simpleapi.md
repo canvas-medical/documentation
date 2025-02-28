@@ -10,7 +10,7 @@ The Canvas SDK provides a way to define an HTTP API with any number of endpoints
 Developers can define the routes and implement the code that will handle incoming HTTP requests.
 
 This feature allows developers to create endpoints that can receive webhook events from other
-services and act on them. This can be used to invoke Effects in a Canvas instance, send another
+services. An endpoint receiving a request can invoke Effects in a Canvas instance, send another
 request to a different service, or simply return a response back to the requester.
 
 ## Quickstart
