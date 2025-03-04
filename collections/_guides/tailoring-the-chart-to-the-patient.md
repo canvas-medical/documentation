@@ -1,5 +1,7 @@
 ---
 title: "Tailoring the Chart to the Patient"
+guide_for:
+- /sdk/layout-effect/
 ---
 
 Different patients have different needs, and your tools should reflect that.
