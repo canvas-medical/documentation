@@ -221,9 +221,64 @@ class MyAPI(SimpleAPIRoute):
         # Body as plain text
         text_body = request.text()
 
+        # Body parsed as form data
+        form_data = request.form_data()
+        
         return [
             JSONResponse({"message": "Hello world!"})
         ]
+```
+
+#### Forms
+
+If your endpoint is set up to accept `x-www-form-urlencoded` or `multipart/form-data` data, there is
+method named `form_data` on the request object that will parse the request body. This method will
+return a Python `dict` of `FormPart` objects, each of which represents a subpart of the form.
+
+Every subpart in a form has a name, and these names are the keys in the Python `dict` returned by
+the method. Because subpart names are not unique, the value in the `dict` will be a list of subparts
+that have that name.
+
+A `FormPart` can represent either a simple string value or a file. Each `FormPart` has `name`,
+`value`, `content_type`, and `filename` attributes.
+
+If a `FormPart` represents a simple string value, then the `value` will be string, and both
+`content_type` and `filename` will be set to `None`.
+
+If a `FormPart` represents a file, then the `value` will be a `bytes` object. The `content_type` and
+`filename` of the file will be set based on the contents of the file.
+
+If a request is of type `x-www-form-urlencoded`, then all `FormPart` objects will represent simple
+string values. If a request is of type `multipart/form-data`, then each `FormPart` object may
+represent either a simple string value or a file.
+
+Here is an example of how to use the `form_data` method to iterate over the subparts of a request
+body with form data:
+
+```python
+form_data = request.form_data()
+
+for name, parts in form_data.items():
+    for part in parts:
+        log.info(f"part name:    {name}")
+
+        if part.filename:
+            # It's a file
+            log.info(f"content:      {part.value}")
+            log.info(f"filename:     {part.filename}")
+            log.info(f"content type: {part.content_type}")
+        else:
+            # It's a simple key-value pair
+            log.info(f"value:        {part.value")
+```
+
+If you know the name of the subpart you are looking for, you can also access that subpart directly
+by looking up the name in the Python `dict` returned by `form_data`:
+
+```python
+form_data = request.form_data()
+
+parts = form_data["my-part-name"]
 ```
 
 ### Responses
