@@ -24,9 +24,9 @@ The complete plugin is open-source and can be found in the [Medical Software Fou
 
 The plugin adds a button on the Vital Signs section of the patient chart that, when clicked, launches a modal displaying the patient's height, weight, and head circumference measurements graphed against various percentile curves.
 
-![vitals action button](/assets/images/vitals-action-button.png){: style='width: 300px'}
+![vitals action button](/assets/images/vitals-action-button.png){: style='width: 50%'}
 
-![chart template](/assets/images/growth-charts.png){: style='width: 600px'}
+![chart template](/assets/images/growth-charts.png){: style='width: 95%'}
 
 In the following steps, we'll show you how we used the Canvas SDK to create it.
 

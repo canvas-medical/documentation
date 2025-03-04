@@ -37,10 +37,12 @@
             overflow-y: auto;
         }
         &__content {
-            min-width: 600px;
             max-width: 800px;
             @media (max-width: $breakpoint-md) {
                 padding: 20px;
+            }    
+            @media (max-width: $breakpoint-sm) {
+                min-width: 90%;
             }
         }
         .sidepanels {
