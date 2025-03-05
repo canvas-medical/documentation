@@ -44,6 +44,18 @@ from canvas_sdk.v1.data.appointment import Appointments , AppointmentProgressSta
 appointments = Appointment.objects.filter(status=AppointmentProgressStatus.CONFIRMED)
 ```
 
+### Filtering by External Identifiers
+
+To query Appointments by external identifiers, the `external_identifiers` relation can be used with double-underscores to identify values stored on the [AppointmentExternalIdentifier](#appointmentexternalidentifier) model. For example:
+
+```python
+from canvas_sdk.v1.data.appointment import Appointment
+
+appointment = Appointment.objects.filter(
+    external_identifiers__system="COMPANY_IDENTIFIER",
+    external_identifiers__value="ejNoTa5vKzoT9oSjg87MVB").first()
+```
+
 ## Attributes
 
 ### Appointment
@@ -60,14 +72,31 @@ appointments = Appointment.objects.filter(status=AppointmentProgressStatus.CONFI
 | duration_minutes             | Integer                                                           |
 | comment                      | String                                                            |
 | note_id                      | Integer                                                           |
-| note_type_id                  | Integer                                                           |
+| note_type_id                 | Integer                                                           |
 | status                       | String                                                            |
 | status                       | String                                                            |
 | meeting_link                 | URL                                                               |
 | telehealth_instructions_sent | Boolean                                                           |
 | location                     | [PracticeLocation](#/sdk/data-practicelocation/#practicelocation) |
 | description                  | String                                                            |
+| external_identifiers         | [AppointmentExternalIdentifier](#appointmentexternalidentifier)[] |
 
+
+### AppointmentExternalIdentifier
+
+| Field Name      | Type                        |
+|-----------------|-----------------------------|
+| id              | UUID                        |
+| dbid            | Integer                     |
+| created         | DateTime                    |
+| modified        | DateTime                    |
+| use             | String                      |
+| identifier_type | String                      |
+| system          | String                      |
+| value           | String                      |
+| issued_date     | Date                        |
+| expiration_date | Date                        |
+| appointment     | [Appointment](#appointment) |
 
 <br/>
 <br/>

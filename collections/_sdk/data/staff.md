@@ -32,6 +32,17 @@ staff.creator_tasks.all()
 # <QuerySet [<Task: Task object (7)>]>
 ```
 
+To show a Staff member's contact points (email, phone, etc.), the `telecom` attribute can be used. For example:
+
+```python
+>>> from canvas_sdk.v1.data.staff import Staff
+
+>>> staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+
+>>> [(t.system, t.value,) for t in staff.telecom.all()]
+[('phone', '8005551416'), ('email', 'support@canvasmedical.com')]
+```
+
 ## Attributes
 
 ### Staff
@@ -82,6 +93,21 @@ staff.creator_tasks.all()
 | comments                   | [TaskComment](/sdk/data-task/#taskcomment)[]                    |
 | care_team_memberships      | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[] |
 | teams                      | [Team](/sdk/data-team/#team)[]                                  |
+| telecom                    | [StaffContactPoint](#staffcontactpoint)[]                       |
+
+### StaffContactPoint
+
+| Field Name         | Type                                                                  |
+|--------------------|-----------------------------------------------------------------------|
+| id                 | UUID                                                                  |
+| dbid               | Integer                                                               |
+| system             | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
+| value              | String                                                                |
+| use                | String                                                                |
+| use_notes          | String                                                                |
+| rank               | Integer                                                               |
+| state              | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
+| staff              | [Staff](#staff)                                                       |
 
 <br/>
 <br/>
