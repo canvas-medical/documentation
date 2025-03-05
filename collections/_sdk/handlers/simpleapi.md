@@ -244,9 +244,9 @@ A `FormPart` can represent either a simple string value or a file. A `FormPart` 
 string will have attributes for `name` and `value`. A `FormPart` that represents a file will have
 attributes for `name`, `filename`, `content`, `content_type`.
 
-If a request is of type `application/x-www-form-urlencoded`, then all `FormPart` objects will
-represent simple string values. If a request is of type `multipart/form-data`, then each `FormPart`
-object may represent either a simple string value or a file.
+If the content type of a request is `application/x-www-form-urlencoded`, then all `FormPart` objects
+will represent simple string values. If the content type of a request is `multipart/form-data`, then
+each `FormPart` object may represent either a simple string value or a file.
 
 Here is an example of how to use the `form_data` method to iterate over the subparts of a request
 body with form data:
