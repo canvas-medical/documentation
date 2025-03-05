@@ -237,8 +237,8 @@ method will return a Python `dict` of `FormPart` objects, each of which represen
 form.
 
 Every subpart in a form has a name, and these names are the keys in the Python `dict` returned by
-the method. Because subpart names are not unique, the value in the `dict` will be a list of subparts
-that have that name.
+the method. Because subpart names are not required to be unique, the value in the `dict` will be a
+list of subparts that have that name.
 
 A `FormPart` can represent either a simple string value or a file. A `FormPart` that represents a
 string will have attributes for `name` and `value`. A `FormPart` that represents a file will have
