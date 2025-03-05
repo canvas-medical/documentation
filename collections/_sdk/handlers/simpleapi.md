@@ -4,8 +4,6 @@ slug: "handlers-simpleapi"
 excerpt: "Framework for defining HTTP APIs with the Canvas SDK."
 ---
 
-## Introduction
-
 The Canvas SDK provides a way to define an HTTP API with any number of endpoints in your instance.
 Developers can define the routes and implement the code that will handle incoming HTTP requests.
 
@@ -97,7 +95,7 @@ that path. The method names will match the names of the HTTP verbs, but lowercas
 The plugin name and the `PATH` value together will form the unique part of the full URL for your
 endpoint. The format of the full URL will be:
 
-`https://<instance-name>.canvasmedical.com/plugio-io/api/<plugin-name>/<PATH>`
+`https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/<PATH>`
 
 We can adapt the previous example to add a POST endpoint for the same route on the same handler:
 
