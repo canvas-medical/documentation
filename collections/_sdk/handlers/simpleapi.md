@@ -231,9 +231,10 @@ class MyAPI(SimpleAPIRoute):
 
 #### Forms
 
-If your endpoint is set up to accept `x-www-form-urlencoded` or `multipart/form-data` data, there is
-method named `form_data` on the request object that will parse the request body. This method will
-return a Python `dict` of `FormPart` objects, each of which represents a subpart of the form.
+If your endpoint is set up to accept `application/x-www-form-urlencoded` or `multipart/form-data`
+data, there is method named `form_data` on the request object that will parse the request body. This
+method will return a Python `dict` of `FormPart` objects, each of which represents a subpart of the
+form.
 
 Every subpart in a form has a name, and these names are the keys in the Python `dict` returned by
 the method. Because subpart names are not unique, the value in the `dict` will be a list of subparts
@@ -243,9 +244,9 @@ A `FormPart` can represent either a simple string value or a file. A `FormPart` 
 string will have attributes for `name` and `value`. A `FormPart` that represents a file will have
 attributes for `name`, `filename`, `content`, `content_type`.
 
-If a request is of type `x-www-form-urlencoded`, then all `FormPart` objects will represent simple
-string values. If a request is of type `multipart/form-data`, then each `FormPart` object may
-represent either a simple string value or a file.
+If a request is of type `application/x-www-form-urlencoded`, then all `FormPart` objects will
+represent simple string values. If a request is of type `multipart/form-data`, then each `FormPart`
+object may represent either a simple string value or a file.
 
 Here is an example of how to use the `form_data` method to iterate over the subparts of a request
 body with form data:
