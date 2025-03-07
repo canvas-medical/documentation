@@ -201,7 +201,7 @@ class MyAPI(SimpleAPIRoute):
         # Raw query string
         query_string = request.query_string
 
-        # Query parameters as a Python dict
+        # Query parameters as a Python dictionary
         query_params = request.query_params
 
         # Request headers
@@ -213,7 +213,7 @@ class MyAPI(SimpleAPIRoute):
         # Raw body
         body = request.body
 
-        # JSON body as a Python dict (for requests with application/json content types)
+        # JSON body as a Python dictionary (for requests with application/json content types)
         json_body = request.json()
 
         # Body as plain text
@@ -222,6 +222,35 @@ class MyAPI(SimpleAPIRoute):
         return [
             JSONResponse({"message": "Hello world!"})
         ]
+```
+
+#### Mappings
+
+Attributes on the request object like headers, query parameters, and form data can in most cases be
+represented by mappings containing key-value pairs (i.e. Python dictionaries) with a small caveat:
+keys are not required to be unique. Because of this, there can be more than one value per key.
+
+These attributes are represented by a data structure that most of the time will behave like a Python
+dictionary, unless you want to access the addition values for a key. If you do request the value for
+a key using standard dictionary syntax, you will get the first value that was encountered for that
+key. If you want the other values, you will need to use different methods to access them.
+
+Here is an example showing how to access the additional values:
+
+```python
+# Request sent to /route?value1=a&value1=b&value2=c
+query_params = request.query_params
+
+# Get the first value for value1
+value1 = query_params["value1"]
+
+# Get all values for value1 with get_list
+value1_all = query_params.get_list("value1")
+
+# Iterate over all query parameters with multi_items
+for key, value in query_params.multi_items():
+    log.info(f"key:   {key}")
+    log.info(f"value: {value}")
 ```
 
 ### Responses
