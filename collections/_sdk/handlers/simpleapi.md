@@ -203,7 +203,7 @@ class MyAPI(SimpleAPIRoute):
         # Raw query string
         query_string = request.query_string
 
-        # Query parameters as a Python dict
+        # Query parameters as a Python dictionary
         query_params = request.query_params
 
         # Request headers
@@ -215,7 +215,7 @@ class MyAPI(SimpleAPIRoute):
         # Raw body
         body = request.body
 
-        # JSON body as a Python dict (for requests with application/json content types)
+        # JSON body as a Python dictionary (for requests with application/json content types)
         json_body = request.json()
 
         # Body as plain text
@@ -233,12 +233,12 @@ class MyAPI(SimpleAPIRoute):
 
 If your endpoint is set up to accept `application/x-www-form-urlencoded` or `multipart/form-data`
 data, there is method named `form_data` on the request object that will parse the request body. This
-method will return a Python `dict` of `FormPart` objects, each of which represents a subpart of the
-form.
+method will return a Python dictionary of `FormPart` objects, each of which represents a subpart of
+the form.
 
-Every subpart in a form has a name, and these names are the keys in the Python `dict` returned by
-the method. Because subpart names are not required to be unique, the value in the `dict` will be a
-list of subparts that have that name.
+Every subpart in a form has a name, and these names are the keys in the Python dictionary returned
+by the method. Because subpart names are not required to be unique, the value in the dictionary will
+be a list of subparts that have that name.
 
 A `FormPart` can represent either a simple string value or a file. A `FormPart` that represents a
 string will have attributes for `name` and `value`. A `FormPart` that represents a file will have
@@ -269,7 +269,7 @@ for name, parts in form_data.items():
 ```
 
 If you know the name of the subparts you are looking for, you can also access that subpart directly
-by looking up the name in the Python `dict` returned by `form_data`:
+by looking up the name in the Python dictionary returned by `form_data`:
 
 ```python
 form_data = request.form_data()
