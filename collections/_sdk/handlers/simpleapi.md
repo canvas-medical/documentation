@@ -171,6 +171,48 @@ above. If you have multiple endpoints that will all have the same path prefix, y
 setting a value for `PREFIX`. With `PREFIX` set, each endpoint does not have to individually specify
 the `/routes` portion of the URL path.
 
+### Path patterns
+
+If you want to set up an endpoint that will respond to requests where the path matches a pattern
+rather than an exact string, you can use a path pattern. This is common in cases where the path of
+an endpoint contains a resource identifier.
+
+You can specify a path pattern by by denoting any number of the path parameters in the path using
+`<>` syntax, with the name of the path parameters in between the angle brackets. Path parameter
+names must be be unique within the path. They can also be specified in the path prefix (for
+**SimpleAPI** handlers).
+
+Path parameters will be extracted from the path and will be available on the
+[request object](#request-objects) in the `path_params` attribute.
+
+In the example below, the value `id` is specified as part of the path, and can be accessed by the
+handler:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+
+
+class MyAPI(SimpleAPIRoute):
+    PATH = "/routes/hello-world/<id>"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        ...
+
+    def get(self) -> list[Response | Effect]:
+        id_ = self.request.path_params["id"]
+
+        return [
+            JSONResponse(
+                {
+                    "message": "Hello world from my GET endpoint!",
+                    "id": id_
+                }
+            )
+        ]
+```
+
 ### Request objects
 
 When a handler is invoked to handle an incoming HTTP request, the request object is available as an
