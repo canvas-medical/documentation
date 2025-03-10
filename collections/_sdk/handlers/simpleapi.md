@@ -224,7 +224,7 @@ class MyAPI(SimpleAPIRoute):
         ]
 ```
 
-#### Mappings
+#### Key-value mappings
 
 Attributes on the request object like headers, query parameters, and form data can in most cases be
 represented by mappings containing key-value pairs (i.e. Python dictionaries) with a small caveat:
@@ -242,10 +242,10 @@ Here is an example showing how to access the additional values:
 query_params = request.query_params
 
 # Get the first value for value1
-value1 = query_params["value1"]
+value1: str = query_params["value1"]
 
 # Get all values for value1 with get_list
-value1_all = query_params.get_list("value1")
+value1_all: list[str] = query_params.get_list("value1")
 
 # Iterate over all query parameters with multi_items
 for key, value in query_params.multi_items():
