@@ -213,6 +213,33 @@ class MyAPI(SimpleAPIRoute):
         ]
 ```
 
+#### Path matching
+
+When you specify routes using path patterns, it is possible that multiple endpoints may match with a
+request. This has a few implications that need to be considered, because only one endpoint can
+provide a response.
+
+If the endpoints that match are all part of the same handler class, then the request will be handled
+by the endpoint that appears highest up in the class definition, i.e. the one that is defined first.
+Consider two endpoints specified to match the following patterns:
+
+```
+/routes/hello-world/current-user
+/routes/hello-world/<id>
+```
+
+The first uses an exact match, and the second uses a pattern. The path
+`/routes/hello-world/current-user` matches both of those patterns. However, if you register the
+second endpoint first it would never be possible for a request with the path of
+`/routes/hello-world/current-user` to match with the endpoint for
+`/routes/hello-world/current-user`. If you need to define endpoints that use exact matching that may
+overlap with endpoints defined with path patterns, order must be carefully considered.
+
+If, however, you have defined multiple **SimpleAPIRoute** or **SimpleAPI** handlers, and a request
+matches with multiple endpoints across these handlers, an error condition will result. There is not
+a way to specify priority across handlers, so if you need fine-grained control over request routing
+for endpoints that use path patterns, make sure they are contained within the same handler class.
+
 ### Request objects
 
 When a handler is invoked to handle an incoming HTTP request, the request object is available as an
