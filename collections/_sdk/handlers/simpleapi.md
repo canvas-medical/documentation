@@ -260,8 +260,8 @@ for key, value in query_params.multi_items():
 
 If your endpoint is set up to accept `application/x-www-form-urlencoded` or `multipart/form-data`
 data, there is method named `form_data` on the request object that will parse the request body. This
-method will return a mapping containing `FormPart` objects, each of which represents a subpart of
-the form.
+method will return a key-value mapping containing `FormPart` objects, each of which represents a
+subpart of the form.
 
 Every subpart in a form has a name, and these names are the keys in the mapping that is returned by
 the method. A `FormPart` can represent either a simple string value or a file. A `FormPart` that
