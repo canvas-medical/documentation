@@ -201,7 +201,7 @@ class MyAPI(SimpleAPIRoute):
         # Raw query string
         query_string = request.query_string
 
-        # Query parameters as a Python dictionary
+        # Query parameters as a key-value mapping
         query_params = request.query_params
 
         # Request headers
@@ -227,7 +227,7 @@ class MyAPI(SimpleAPIRoute):
 #### Key-value mappings
 
 Attributes on the request object like headers, query parameters, and form data can in most cases be
-represented by mappings containing key-value pairs (i.e. Python dictionaries) with a small caveat:
+represented by mappings containing key-value pairs (e.g. Python dictionaries) with a small caveat:
 keys are not required to be unique. Because of this, there can be more than one value per key.
 
 These attributes are represented by a data structure that most of the time will behave like a Python
