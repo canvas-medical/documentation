@@ -477,6 +477,12 @@ guides_list:
    uses:
      - sdk
 
+ - title: "Tailoring Portal Landing Page"
+   url: /guides/tailoring-portal-landing-page/
+   description: Customize a patient's landing page with interactive and relevant widgets
+   uses:
+    - sdk
+
 guides_templates:
  - title: "Behavioral Health"
    url: /guides/bh

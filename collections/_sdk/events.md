@@ -14923,5 +14923,9 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</td>
       <td>Adding a pharmacy for a patient in their profile.</td>
     </tr>
+    <tr>
+      <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
+      <td>Patient Portal landing page is loading. See <a href="{% link _sdk/_guides/tailoring-portal-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
+    </tr>
   </tbody>
 </table>
