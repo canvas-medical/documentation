@@ -219,6 +219,9 @@ class MyAPI(SimpleAPIRoute):
         # Body as plain text
         text_body = request.text()
 
+        # Body parsed as form data
+        form_data = request.form_data()
+        
         return [
             JSONResponse({"message": "Hello world!"})
         ]
@@ -247,10 +250,60 @@ value1: str = query_params["value1"]
 # Get all values for value1 with get_list
 value1_all: list[str] = query_params.get_list("value1")
 
-# Iterate over all query parameters with multi_items
+# Iterate over all query parameters (repeating keys if necessary) with multi_items
 for key, value in query_params.multi_items():
     log.info(f"key:   {key}")
     log.info(f"value: {value}")
+```
+
+#### Forms
+
+If your endpoint is set up to accept `application/x-www-form-urlencoded` or `multipart/form-data`
+data, there is method named `form_data` on the request object that will parse the request body. This
+method will return a key-value mapping containing `FormPart` objects, each of which represents a
+subpart of the form.
+
+Every subpart in a form has a name, and these names are the keys in the mapping that is returned by
+the method. A `FormPart` can represent either a simple string value or a file. A `FormPart` that
+represents a string will have attributes for `name` and `value`. A `FormPart` that represents a file
+will have attributes for `name`, `filename`, `content`, `content_type`.
+
+If the content type of a request is `application/x-www-form-urlencoded`, then all `FormPart` objects
+will represent simple string values. If the content type of a request is `multipart/form-data`, then
+each `FormPart` object may represent either a simple string value or a file.
+
+Here is an example of how to use the `form_data` method to iterate over the subparts of a request
+body with form data:
+
+```python
+form_data = request.form_data()
+
+# To iterate over all parts, we have to use the multi_items method because there may be more than
+# one part with the same name
+for name, part in form_data.multi_items():
+    log.info(f"part name:    {name}")
+
+    if part.is_file():
+        # It's a file
+        log.info(f"content:      {part.content}")
+        log.info(f"filename:     {part.filename}")
+        log.info(f"content type: {part.content_type}")
+    else:
+        # It's a simple string
+        log.info(f"value:        {part.value")
+```
+
+If you know the name of the subparts you are looking for, you can also access the subparts directly
+by looking up the name in the mapping returned by `form_data`:
+
+```python
+form_data = request.form_data()
+
+# Get the first part named "my-part-name"
+part = form_data["my-part-name"]
+
+# Get all parts named "my-part-name"
+parts_all = form_data.get_list("my-part-name")
 ```
 
 ### Responses
