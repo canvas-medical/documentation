@@ -14,12 +14,12 @@ working through this exercise." %}
 
 ## What Are Widgets in the Patient Portal?
 
-Widgets in the patient portal are interactive components that enhance the user experience by providing quick access to information and functionalities. 
+[Widgets](/sdk/layout-effect/#portal-landing-page-widgets) in the patient portal are interactive components that enhance the user experience by providing quick access to information and functionalities. 
 They can display key details like upcoming appointments. Widgets can be fully customized with unique content or leverage ready-made components—such as Appointments and Messaging provided by Canvas to ensure consistency and ease of use. 
 These widgets are organized on the landing page using a grid layout, which supports various sizes to optimize the visual presentation and responsiveness across different devices.
 
 
-## How do I add a Widget?
+## How to add a Widget?
 
 A widget can be added by listening to the `PATIENT_PORTAL__WIDGET_CONFIGURATION` event and returning one or several `PortalWidget`
 
@@ -47,7 +47,11 @@ class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
     
     def compute(self):
-        widget = PortalWidget(content="Hello World", size=PortalWidget.Size.COMPACT, priority=10)
+        widget = PortalWidget(
+          content="Hello World", 
+          size=PortalWidget.Size.COMPACT, 
+          priority=10
+        )
         return [widget.apply()]
 ```
 
@@ -59,8 +63,8 @@ creates a new widget with a simple "Hello World" message, a compact size, and a 
 This widget will show the last medication and CTA to request a refill.
 
 So let's update the example above to:
-- Fetch patient's medication.
-- Leverage our HTML templating to display the necessary information
+- Fetch the patient's medication.
+- Leverage [HTML templating](/sdk/layout-effect/#custom-html-and-django-templates) to display the necessary information
 
 ### Step 1: Fetch patient medication
 
@@ -78,9 +82,11 @@ Create a `templates` folder inside your plugin's folder
   mkdir templates
 ```
 Add HTML file.
+
 ```bash
   touch medication_widget.html
 ```
+And add the following html:
 
 ```html
 <!DOCTYPE html>
@@ -101,7 +107,6 @@ Add HTML file.
 <body>
 </body>
 </html>
-
 ```
 
 ### Step 3: Design your widget
@@ -112,7 +117,7 @@ to the messaging page to request a refill.
 
 #### Header
 
-A light gray background color and a blue text to ensure it matches the patient portal designs
+A light gray background color and a blue text to ensure it matches the patient portal aesthetic.
 
 ```html
 <style>
@@ -134,7 +139,7 @@ A light gray background color and a blue text to ensure it matches the patient p
 ```
 
 #### Card Component
-We will add template variables for the medication name (`{{name}}`) and start date (`{{start_date}}`), allowing these values to be dynamically updated in the plugin.
+We will add template variables for the medication name and start date, allowing these values to be dynamically updated in the plugin.
 ```html
 <body>
   <div class="widget">
@@ -213,9 +218,51 @@ button:hover {
 }
 ```
 
-<details>
-  <summary>Full HTML example</summary>
+### Step 4: Tying everything together
 
+Update your plugin's `compute` method to pass the desired values for medication name and start date using `render_to_string` function
+
+```python
+medication_info = {
+    "start_date": last_medication.start_date.strftime("%B %d, %Y"),
+    "name": last_medication.codings.first().display
+}
+
+widget = PortalWidget(content=render_to_string("templates/medication_widget.html", medication_info), size=PortalWidget.Size.COMPACT, priority=10)
+
+```
+
+<div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/sdk/widgets/patient_medication_widget.png" alt="medication widget" /></div>
+
+### Full Example
+
+```python
+from canvas_sdk.effects.widgets import PortalWidget
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.templates import render_to_string
+from canvas_sdk.v1.data import Patient
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
+
+    def compute(self):
+        patient = Patient.objects.get(id=self.target)
+        last_medication = patient.medications.last()
+
+        medication_info = {
+            "start_date": last_medication.start_date.strftime("%B %d, %Y"),
+            "name": last_medication.codings.first().display
+        }
+
+        medication_widget = PortalWidget(
+          content=render_to_string("templates/medication_widget.html", medication_info), 
+          size=PortalWidget.Size.COMPACT, 
+          priority=10
+        )
+        return [medication_widget.apply()]
+```
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -311,51 +358,7 @@ button:hover {
 
 
 ```
-</details>
 
-### Step 4: Tying everything together
-
-Update your plugin's `compute` method to pass the desired values for medication name and start date using `render_to_string` function
-
-```python
-medication_info = {
-    "start_date": last_medication.start_date.strftime("%B %d, %Y"),
-    "name": last_medication.codings.first().display
-}
-
-widget = PortalWidget(content=render_to_string("templates/medication_widget.html", medication_info), size=PortalWidget.Size.COMPACT, priority=10)
-
-```
-
-<details>
-  <summary>Full Plugin example</summary>
-
-```python
-from canvas_sdk.effects.widgets import PortalWidget
-from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
-from canvas_sdk.templates import render_to_string
-from canvas_sdk.v1.data import Patient
-
-
-class Protocol(BaseProtocol):
-    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
-
-    def compute(self):
-        patient = Patient.objects.get(id=self.target)
-        last_medication = patient.medications.last()
-
-        medication_info = {
-            "start_date": last_medication.start_date.strftime("%B %d, %Y"),
-            "name": last_medication.codings.first().display
-        }
-
-        medication_widget = PortalWidget(content=render_to_string("templates/medication_widget.html", medication_info), size=PortalWidget.Size.COMPACT, priority=10)
-        return [medication_widget.apply()]
-```
-</details>
-
-<p><img src="/assets/images/sdk/widgets/patient_medication_widget.png" alt="medication widget" /></p>
 
 
 ## Upcoming appointments Widget provided by Canvas
@@ -380,7 +383,10 @@ class UpcomingAppointmentWidget(BaseProtocol):
         return [widget.apply()]
 ```
 
-<p><img src="/assets/images/sdk/widgets/upcoming_appointments_widget.png" alt="medication widget" /></p>
+<div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/sdk/widgets/upcoming_appointments_widget.png" alt="medication widget" /></div>
+
+
+
 
 
 <br/>

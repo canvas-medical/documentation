@@ -14925,7 +14925,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
     </tr>
     <tr>
       <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
-      <td>Patient Portal landing page is loading. See <a href="{% link _sdk/_guides/tailoring-portal-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
+      <td>Patient Portal landing page is loading. See <a href="{% link _guides/tailoring-portal-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
     </tr>
   </tbody>
 </table>
