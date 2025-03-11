@@ -4,8 +4,6 @@ slug: "handlers-simpleapi"
 excerpt: "Framework for defining HTTP APIs with the Canvas SDK."
 ---
 
-## Introduction
-
 The Canvas SDK provides a way to define an HTTP API with any number of endpoints in your instance.
 Developers can define the routes and implement the code that will handle incoming HTTP requests.
 
@@ -97,7 +95,7 @@ that path. The method names will match the names of the HTTP verbs, but lowercas
 The plugin name and the `PATH` value together will form the unique part of the full URL for your
 endpoint. The format of the full URL will be:
 
-`https://<instance-name>.canvasmedical.com/plugio-io/api/<plugin-name>/<PATH>`
+`https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/<PATH>`
 
 We can adapt the previous example to add a POST endpoint for the same route on the same handler:
 
@@ -135,7 +133,7 @@ wish. Here is an example:
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPI
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPI, api
 
 
 class MyAPI(SimpleAPI):
@@ -203,7 +201,7 @@ class MyAPI(SimpleAPIRoute):
         # Raw query string
         query_string = request.query_string
 
-        # Query parameters as a Python dictionary
+        # Query parameters as a key-value mapping
         query_params = request.query_params
 
         # Request headers
@@ -227,6 +225,35 @@ class MyAPI(SimpleAPIRoute):
         return [
             JSONResponse({"message": "Hello world!"})
         ]
+```
+
+#### Key-value mappings
+
+Attributes on the request object like headers, query parameters, and form data can in most cases be
+represented by mappings containing key-value pairs (e.g. Python dictionaries) with a small caveat:
+keys are not required to be unique. Because of this, there can be more than one value per key.
+
+These attributes are represented by a data structure that most of the time will behave like a Python
+dictionary, unless you want to access the addition values for a key. If you do request the value for
+a key using standard dictionary syntax, you will get the first value that was encountered for that
+key. If you want the other values, you will need to use different methods to access them.
+
+Here is an example showing how to access the additional values:
+
+```python
+# Request sent to /route?value1=a&value1=b&value2=c
+query_params = request.query_params
+
+# Get the first value for value1
+value1: str = query_params["value1"]
+
+# Get all values for value1 with get_list
+value1_all: list[str] = query_params.get_list("value1")
+
+# Iterate over all query parameters (repeating keys if necessary) with multi_items
+for key, value in query_params.multi_items():
+    log.info(f"key:   {key}")
+    log.info(f"value: {value}")
 ```
 
 #### Forms

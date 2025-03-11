@@ -2,6 +2,7 @@
     font-size: 14px;
     margin-top: $container-padding;
     padding-top: $container-padding;
+    min-width: 250px;
 
     &__active {
         color: $link-color !important;
