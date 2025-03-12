@@ -111,6 +111,10 @@ And add the following html:
 
 ### Step 3: Design your widget
 
+{% include alert.html type="info" content="Developers are responsible for providing all the necessary CSS to style their widget. 
+The widget does not include default styles, so you should include custom CSS—either inline or via an external stylesheet—to define 
+the layout, typography, colors, spacing, and interactive elements." %}
+
 While you can design your widget in any way that suits your needs, for this example we'll create one featuring a header and a card component. 
 The card will display the medication name, the prescription date, and a clear call-to-action (CTA) button that redirects the patient
 to the messaging page to request a refill.
@@ -118,7 +122,7 @@ to the messaging page to request a refill.
 #### Header
 
 A light gray background color and a blue text to ensure it matches the patient portal aesthetic.
-
+{% raw %}
 ```html
 <style>
   .header {
@@ -137,9 +141,12 @@ A light gray background color and a blue text to ensure it matches the patient p
     <div class="header">My Health</div>
 </body>
 ```
+{% endraw %}
 
 #### Card Component
 We will add template variables for the medication name and start date, allowing these values to be dynamically updated in the plugin.
+
+{% raw %}
 ```html
 <body>
   <div class="widget">
@@ -158,6 +165,8 @@ We will add template variables for the medication name and start date, allowing 
   </script>
 </body>
 ```
+{% endraw %}
+
 Let's dive in and add some styles to the card.
 
 Our `widget` class ensures that all elements are both vertically and horizontally centered, 
@@ -263,6 +272,8 @@ class Protocol(BaseProtocol):
         )
         return [medication_widget.apply()]
 ```
+
+{% raw %}
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -359,6 +370,7 @@ class Protocol(BaseProtocol):
 
 ```
 
+{% endraw %}
 
 
 ## Upcoming appointments Widget provided by Canvas

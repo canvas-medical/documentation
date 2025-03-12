@@ -212,7 +212,8 @@ The `PortalWidget` class has the following properties:
 - **Size**: Determines the widget's layout on the frontend grid:
   - `EXPANDED`: Fills an entire row (12 columns).
   - `MEDIUM`: Occupies 8 columns.
-  - `COMPACT`: Occupies 4 columns
+  - `COMPACT`: Occupies 4 columns.
+  - **Note: All sizes have a fixed height of 300px.** 
 - **priority**: This value is used to order the widgets within the patient portal. A lower number indicates a higher priority.
 
 ## Custom HTML and Django Templates
