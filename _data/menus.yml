@@ -477,8 +477,8 @@ guides_list:
    uses:
      - sdk
 
- - title: "Tailoring Portal Landing Page"
-   url: /guides/tailoring-portal-landing-page/
+ - title: "Building a Custom Portal Landing Page"
+   url: /guides/custom-landing-page/
    description: Customize a patient's landing page with interactive and relevant widgets
    uses:
     - sdk
