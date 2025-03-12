@@ -38,11 +38,12 @@
         }
         &__content {
             max-width: 800px;
+            min-width: 70%;
             @media (max-width: $breakpoint-md) {
                 padding: 20px;
             }    
             @media (max-width: $breakpoint-sm) {
-                min-width: 90%;
+                min-width: 70%;
             }
         }
         .sidepanels {

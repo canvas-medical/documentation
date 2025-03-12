@@ -652,4 +652,8 @@ releasenotes_betas:
    url: /product-updates/commands-module
  - title: "Note API"
    url: /product-updates/note-api
+ - title: "Patient Portal"
+   url: /product-updates/patient-portal
+
+   
 
