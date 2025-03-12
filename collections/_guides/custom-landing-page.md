@@ -272,7 +272,7 @@ class Protocol(BaseProtocol):
         )
         return [medication_widget.apply()]
 ```
-
+<br>
 {% raw %}
 ```html
 <!DOCTYPE html>
