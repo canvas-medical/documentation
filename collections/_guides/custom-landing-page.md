@@ -1,5 +1,5 @@
 ---
-title: "Tailoring patient portal landing page"
+title: "Building a Custom Portal Landing Page"
 guide_for:
 - /sdk/layout-effect/
 ---
