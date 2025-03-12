@@ -73,10 +73,8 @@ sections:
                   type: string
                   description: The valueId field is used for the Note extension and will be the note's unique identifier.
           - name: identifier
-            type: array[json]
-            description_for_all_endpoints: >-
-              External Ids for this item. <br><br>
-              The identifier list defines additional identifiers that are able to be stored for an appointment.<br><br>These identifiers will not be surfaced on the Patient's chart, but they may help you identify the patient in your system by associating your identifier with the resource's `id`.
+            type: string
+            description: Filters appointments by their external identifiers. You can search by just the identifier value or by using the format `system|value` (e.g. `AssigningSystem|test123`). This parameter helps locate specific appointments using identifiers that may be used in external systems or patient-facing applications.
             update_description: >-
               To update an existing `identifier`, include the `id` in the `identifier[x].id` field returned from Read/Search.<br><br>
               The `identifier` section sent in an update will entirely replace existing identifiers currently within the period.start and period.end dates.<br><br>
@@ -304,6 +302,9 @@ sections:
           - name: appointment-type
             type: string
             description: Filters by the code and/or system under `appointmentType.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code` (e.g `http://snomed.info/sct|308335008`).
+          - name: identifier
+            type: string
+            description: Filters appointments by their external identifiers. You can search by just the identifier value or by using the format `system|value` (e.g. `NIST-MPI-1|171122`).
           - name: location
             type: string
             description: The location of the appointment in the format `Location/9d3a079f-22c0-4918-96d7-72eb567563ec`.
