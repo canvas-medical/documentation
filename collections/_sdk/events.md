@@ -14879,6 +14879,25 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   </tbody>
 </table>
 
+### Patient Portal Events
+
+<table>
+  <colgroup>
+    <col width="30%"/>
+    <col width="70%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Occurs when</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PATIENT_PORTAL__GET_FORMS</td>
+      <td>Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value.</td>
+    </tr>
+  </tbody>
+</table>
+
 ### Other Events
 
 <table>
