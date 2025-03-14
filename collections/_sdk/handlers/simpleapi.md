@@ -234,7 +234,7 @@ represented by mappings containing key-value pairs (e.g. Python dictionaries) wi
 keys are not required to be unique. Because of this, there can be more than one value per key.
 
 These attributes are represented by a data structure that most of the time will behave like a Python
-dictionary, unless you want to access the addition values for a key. If you do request the value for
+dictionary, unless you want to access the additional values for a key. If you do request the value for
 a key using standard dictionary syntax, you will get the first value that was encountered for that
 key. If you want the other values, you will need to use different methods to access them.
 
