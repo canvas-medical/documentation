@@ -100,6 +100,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | subscribed_coverages     | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | tasks                    | [Task](/sdk/data-task/#task)[]                                            |
 | telecom                  | [PatientContactPoint](#patientcontactpoint)[]                             |
+| user                     | [CanvasUser](/sdk/data-user/)[]                                                 |
 
 ### PatientAddress
 
