@@ -11,7 +11,7 @@ The `BannerAlert` model represents alerts associated with [Patient](/sdk/data-pa
 
 ## Usage
 
-The `BannerAlert` model can be used to find all of the banner alert records linked to a patient. For example, to find all of the banner alerts for a patient, the `Patiient.banner_alerts` method can be used:
+The `BannerAlert` model can be used to find all of the banner alert records linked to a patient. For example, to find all of the banner alerts for a patient, the `Patient.banner_alerts` method can be used:
 
 ```python
 >>> from canvas_sdk.v1.data.patient import Patient
