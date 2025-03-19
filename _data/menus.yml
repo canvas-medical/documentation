@@ -557,8 +557,12 @@ data_module:
  - title: "Appointment"
    url: /sdk/data-appointment/
    description: A scheduled meeting between a patient and a provider.
+ - title: "Banner Alert"
+   url: /sdk/data-banner-alert/
+   description: An alert notification linked to a patient.
  - title: "Billing Line Item"
    url: /sdk/data-billing-line-item/
+   description: A billable code linked to a patient note.
  - title: "Care Team"
    url: /sdk/data-care-team/
    description: Teams assigned for patient care.
