@@ -644,12 +644,18 @@ releasenotes_product_updates:
    url: /product-updates/important-dates
  - title: "Roadmap"
    url: /product-updates/roadmap
+ - title: "Recently Released"
+   url: /product-updates/recently-released
 
 releasenotes_betas:
+ - title: "CancelRX"
+   url: /product-updates/cancelrx
  - title: "Commands API"
    url: /product-updates/commands-api
  - title: "Commands Module"
    url: /product-updates/commands-module
+ - title: "Move Commands"
+   url: /product-updates/move-commands
  - title: "Note API"
    url: /product-updates/note-api
  - title: "Patient Portal"
