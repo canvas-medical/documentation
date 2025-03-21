@@ -549,6 +549,9 @@ effects_module:
  - title: "Tasks"
    url: /sdk/effect-tasks/
    description: Create or update tasks.
+ - title: "Patient Portal"
+   url: /sdk/patient-portal/
+   description: Customize your Patient Portal.
 
 data_module:
  - title: "Allergy Intolerance"
