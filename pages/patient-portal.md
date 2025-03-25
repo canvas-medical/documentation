@@ -14,6 +14,8 @@ Phone and email capture (including verification flows) within registration will 
 
 To invite a patient to the portal, you must link a unique email or phone to their portal user in their profile. The email and/or phone number do not necessarily have to match what have been added as contact points - but they will be **leveraged for password resets**. Once added, you can send an invite. After the patient successfully activates their account, staff can continue to trigger password reset emails if necessary.
 
+If not using the portal, this section can be hidden using the `ENABLE_PATIENT_PORTAL` config in constance.
+
 {:refdef: style="text-align: center;"}
 ![description](/assets/images/patient-reg.gif){:width="98%"}
 {: refdef}
@@ -26,13 +28,15 @@ All communication will continue to be sent to the verified contact points (not t
 
 
 ### Transition
-If you are a current app user, Canvas will create a plugin that identifies all patients with verified phone numbers and emails using a protocol. That protocol can be used to send your patients a customizable message via a campaign prior to the transition. You can opt to send this communication via your own CRM if preferred. We will provide a link to a [video](youtube) with instructions. This video will also be posted as a banner on the login page when we launch.
+Please let us know if you would like help communicating this change to your patients using a campaign. 
 
-When the update is released, we will migrate preferred, verified phone numbers and emails to the user profile and trigger the invite to all users, prompting them to set a username and password. 
+When the update is released, we will migrate preferred, verified phone numbers and emails to the user profile. When the patient navigates to the new portal login page, they will need to leverage the activation form to prompt an email invite. After entering their associated contact point, they will receive an email prompting them to set up a username and password. 
 
 {:refdef: style="text-align: center;"}
 ![description](/assets/images/portal-invite.gif){:width="98%"}
 {: refdef}
+
+We will include a video at the top of the page as guidance. 
 
 ## Appointments
 
@@ -65,7 +69,7 @@ The audit trail in the note footer will show that the appointment was created by
 ![description](/assets/images/patient-scheduling.gif){:width="98%"}
 {: refdef}
 
-You can leverage plugins if you need more advanced scheduling logic (i.e. only show patients certain appointment types or providers based on their profile).  
+You can leverage the [patient portal appointment lifecycle events](/sdk/events/#patient-portal-lifecycle-events) if you need more advanced scheduling logic (i.e. only show patients certain appointment types or providers based on their profile).  
 
 
 ## My Health
@@ -79,6 +83,8 @@ The chart summary will show the following:
 - **Conditions:** All conditions where show_in_summary = true. This includes active conditions and past medical history. Patients will see the last assessed date and the name of the provider who last committed the associated assessment. 
 - **Medications:** Active medications. Patients will see the name of the medication, start date, instructions (sig), and the last prescriber.
 - **Allergies:** Active allergies. Patients will see all available fields (allergy, severity, reaction, and onset date).
+
+Patients will also be able to upload documents. Documents added within the portal will populate a new channel in Data Integration. 
 
 
 ## Consents
@@ -101,3 +107,7 @@ The responses will then be recorded in the patient profile. Accepted consents wi
 {:refdef: style="text-align: center;"}
 ![description](/assets/images/portal-consents-profile.png){:width="70%"}
 {: refdef}
+
+## Forms
+
+
