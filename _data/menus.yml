@@ -421,6 +421,12 @@ guides_list:
    uses:
      - sdk
 
+ - title: "Building a Custom Portal Landing Page"
+   url: /guides/custom-landing-page/
+   description: Customize a patient's landing page with interactive and relevant widgets
+   uses:
+    - sdk
+
  - title: "Creating Webhooks"
    url: /guides/creating-webhooks-with-the-canvas-sdk/
    description: Make automatic API requests based on Canvas events
@@ -562,8 +568,12 @@ data_module:
  - title: "Appointment"
    url: /sdk/data-appointment/
    description: A scheduled meeting between a patient and a provider.
+ - title: "Banner Alert"
+   url: /sdk/data-banner-alert/
+   description: An alert notification linked to a patient.
  - title: "Billing Line Item"
    url: /sdk/data-billing-line-item/
+   description: A billable code linked to a patient note.
  - title: "Care Team"
    url: /sdk/data-care-team/
    description: Teams assigned for patient care.

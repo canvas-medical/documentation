@@ -14810,9 +14810,72 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>  
 </table>
 
+### Patient Portal lifecycle events
+
+The following events are emitted during the lifecycle of a patient portal session.
+
+
+<table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Description</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENT_CANCELED</td>
+      <td>Occurs after an appointment is canceled</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENT_RESCHEDULED</td>
+      <td>Occurs after an appointment is rescheduled</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED</td>
+      <td>Occurs when checking if an appointment can be canceled</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED</td>
+      <td>Occurs when checking if an appointment can be rescheduled</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH</td>
+      <td>Occurs after the appointment slots search has been done, allowing the values to be modified</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH</td>
+      <td>Occurs before appointment types are resolved, allowing the internal values to be bypassed</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH</td>
+      <td>Occurs after appointment types are resolved, allowing the internal values to be modified</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__PRE_SEARCH</td>
+      <td>Occurs before appointment locations are resolved, allowing the internal values to be bypassed</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH</td>
+      <td>Occurs after appointment locations are resolved, allowing the internal values to be modified</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__PRE_SEARCH</td>
+      <td>Occurs before appointment providers are resolved, allowing the internal values to be bypassed</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH</td>
+      <td>Occurs after appointment providers are resolved, allowing the internal values to be modified</td>
+  </tbody>
+</table>
+
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
+
 
 <table>
   <colgroup>
@@ -14941,6 +15004,10 @@ For more information on handling these events, see <a href="/sdk/handlers-action
     <tr>
       <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</td>
       <td>Adding a pharmacy for a patient in their profile.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
+      <td>Patient Portal landing page is loading. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
     </tr>
   </tbody>
 </table>

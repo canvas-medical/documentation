@@ -76,6 +76,7 @@ To show a Staff member's contact points (email, phone, etc.), the `telecom` attr
 | cultural_ethnicity_terms   | Array[String]                                                   |
 | last_known_timezone        | TimeZone                                                        |
 | active                     | Boolean                                                         |
+| primary_practice_location  | [PracticeLocation](/sdk/data-practicelocation/)                 |
 | npi_number                 | String                                                          |
 | nadean_number              | String                                                          |
 | group_npi_number           | String                                                          |
