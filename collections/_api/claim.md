@@ -23,7 +23,7 @@ sections:
             description_for_all_endpoints: >-
               Canvas supports a current queue extension representing the current queue the given claim is in on the Canvas instance. Learn more about navigating claim queues [here](https://canvas-medical.help.usepylon.com/articles/3240845520-queues).<br><br>
 
-              **Canvas Claim Queues**
+              **Canvas Built-in Claim Queues**
 
                 | display     | code                   |
                 | :-----------| :----------------------|
@@ -37,6 +37,9 @@ sections:
                 | Rejected    | RejectedNeedsReview    |
                 | Submission  | QueuedForSubmission    | 
                 | Trash       | Trash                  |
+              
+              It is possible to create custom queues in Canvas and utilize in the FHIR API.
+
             read_and_search_description: >-
               Canvas supports a note identifier extension on this resource. The note identifier can be used with the [Canvas Note API](/api/note) <br><br>
             create_and_update_description: >-
