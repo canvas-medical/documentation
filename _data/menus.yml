@@ -421,6 +421,12 @@ guides_list:
    uses:
      - sdk
 
+ - title: "Building a Custom Portal Landing Page"
+   url: /guides/custom-landing-page/
+   description: Customize a patient's landing page with interactive and relevant widgets
+   uses:
+    - sdk
+
  - title: "Creating Webhooks"
    url: /guides/creating-webhooks-with-the-canvas-sdk/
    description: Make automatic API requests based on Canvas events
@@ -439,9 +445,9 @@ guides_list:
    uses:
      - sdk
 
- - title: "Visualizing Data Within the Canvas Chart"
-   url: /guides/growth-charts/
-   description: Visualizing observations as pediatric growth charts
+ - title: "Implementing Patient Portal Forms"
+   url: /guides/patient-portal-forms
+   description: Surface Forms Within the Patient Portal
    uses:
      - sdk
 
@@ -471,17 +477,19 @@ guides_list:
    uses:
      - sdk
 
+ - title: "Visualizing Data Within the Canvas Chart"
+   url: /guides/growth-charts/
+   description: Visualizing observations as pediatric growth charts
+   uses:
+     - sdk
+
  - title: "Your First Application"
    url: /guides/your-first-application
    description: Install and customize embeddable applications in Canvas
    uses:
      - sdk
 
- - title: "Building a Custom Portal Landing Page"
-   url: /guides/custom-landing-page/
-   description: Customize a patient's landing page with interactive and relevant widgets
-   uses:
-    - sdk
+
 
 guides_templates:
  - title: "Behavioral Health"
@@ -540,6 +548,9 @@ effects_module:
  - title: "Billing Line Items"
    url: /sdk/effect-billing-line-items/
    description: Add, modify, or remove billing codes on a note.
+ - title: "Form Result"
+   url: /sdk/form-result-effect
+   description: Effect for dynamically displaying forms in the Patient Portal.
  - title: "Layout Effects"
    url: /sdk/layout-effect/
    description: Modify or interact with the layout in Canvas.
