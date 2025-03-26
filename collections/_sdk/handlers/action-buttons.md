@@ -148,7 +148,7 @@ class CommitButtonHandler(ActionButton):
             effects.append(
                 Effect(
                     type=effect_type,
-                    payload=json.dumps({"command_uuid": str(command.id)}),
+                    payload=json.dumps({"command": str(command.id)}),
                 )
             )
 
