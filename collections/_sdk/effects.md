@@ -173,6 +173,9 @@ The following effects are available to be applied in Canvas.
 | COMMIT_ADJUST_PRESCRIPTION_COMMAND                 | Can be used to commit a adjust prescription command in a note.                                                                                                                                              |
 | ORIGINATE_RESOLVE_CONDITION_COMMAND                | Can be used to originate a resolve condition command in a note.                                                                                                                                             |
 | COMMIT_RESOLVE_CONDITION_COMMAND                   | Can be used to commit a resolve condition command in a note.                                                                                                                                                |
+| PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK      | Can be used to show the 'join' button on the telehealth appointment card, allowing patients to easily join their appointments.                                                                              |
+| PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE          | Can be used to show the 'cancel' button on the appointment card, allowing patients to easily cancel their appointments                                                                                      |
+| PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE       | Can be used to show the 'reschedule' button on the appointment card, allowing patients to easily reschedule their appointments                                                                              |
 
 <br/>
 <br/>
