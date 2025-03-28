@@ -49,7 +49,7 @@ To invite a patient to the portal, you must link a unique email or phone to thei
 {% include alert.html type="info" content="We included phone or email since some current users may only have one or the other. If you would like to link portal users via email only, you can update your settings within constance config in admin." %}
 
 <div style="background-color: #c9dfe3; color: black; padding: 10px;">
-If you do not want this to be a manual process, a plugin can be used to automatically update the portal user based on changes to the patient contacts and trigger an invite. <a href="https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/update-user-with-contact-points">Click here</a> for an example plugin or reach out to support to enable this workflow.
+If you do not want this to be a manual process, a plugin can be used to automatically update the portal user based on changes to the patient contacts and trigger an invite. <a href="https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/update-user-with-contact-points"> Reach out to support for help enabling this workflow.
 </div>
 
 All communication will continue to be sent to the verified contact points (not the portal user email or phone). We have plans in the future to manage outbound communication via plugins, which will allow for further configuration.
@@ -67,7 +67,7 @@ When the update is released, we will migrate preferred, verified phone numbers a
 ![description](/assets/images/portal-activation.gif){:width="98%"}
 {: refdef}
 
-We will include a video at the top of the page as guidance. 
+We will include a banner at the top of the login page with guidance. 
 
 
 ## Landing Page 
