@@ -10,6 +10,7 @@ appointment type and previously completed forms.
 The patient’s responses are stored as Interviews, and the developer can choose to generate a Questionnaire Command
 within a Note.
 
+
 ## What you'll learn:
 
 - Use the [`FormResult`](/sdk/form-result-effect) effect to display questionnaires dynamically.
@@ -20,6 +21,7 @@ within a Note.
 ## Example
 This example assigns intake questionnaires based on the presence of upcoming appointments and adds the completed questionnaires to the visit, authored by the patient. 
 
+
 ```python
 from canvas_sdk.effects.patient_portal.form_result import FormResult
 from canvas_sdk.events import EventType
@@ -28,8 +30,8 @@ from canvas_sdk.v1.data import Patient, Appointment, Interview, Note, Questionna
 from canvas_sdk.v1.data.appointment import AppointmentProgressStatus
 import arrow
 
-# 1
 
+# 1
 INTAKE_QUESTIONNAIRES = [
   "Insurance Details",
   "Preferred Pharmacy Details",
@@ -53,6 +55,7 @@ class Protocol(BaseHandler):
 
   def compute(self):
     """Compute and return a list of FormResult effects based on upcoming appointments."""
+
     
     # 2
     patient = Patient.objects.get(id=self.target)
@@ -72,6 +75,7 @@ class Protocol(BaseHandler):
       missing_intake_forms = [qname for qname in INTAKE_QUESTIONNAIRES if qname not in completed_forms]
       missing_intake_questionnaire_ids = Questionnaire.objects.filter(name__in=missing_intake_forms).values_list("id",
                                                                                                                  flat=True)
+
 
       #3
       forms = [
@@ -102,6 +106,7 @@ displayed.
 
 - **Prevent Duplicate Forms:** Since this logic runs on every page load, check **existing responses** before assigning
   new forms.
+
 
 ## Summary
 
