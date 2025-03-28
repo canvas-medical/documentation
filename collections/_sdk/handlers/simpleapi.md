@@ -171,6 +171,75 @@ above. If you have multiple endpoints that will all have the same path prefix, y
 setting a value for `PREFIX`. With `PREFIX` set, each endpoint does not have to individually specify
 the `/routes` portion of the URL path.
 
+### Path patterns
+
+If you want to set up an endpoint that will respond to requests where the path matches a pattern
+rather than an exact string, you can use a path pattern. This is common in cases where the path of
+an endpoint contains a resource identifier.
+
+You can specify a path pattern by by denoting any number of the path parameters in the path using
+`<>` syntax, with the name of the path parameters in between the angle brackets. Path parameter
+names must be be unique within the path. They can also be specified in the path prefix (for
+**SimpleAPI** handlers).
+
+Path parameters will be extracted from the path and will be available on the
+[request object](#request-objects) in the `path_params` attribute.
+
+In the example below, the value `id` is specified as part of the path, and can be accessed by the
+handler:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+
+
+class MyAPI(SimpleAPIRoute):
+    PATH = "/routes/hello-world/<id>"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        ...
+
+    def get(self) -> list[Response | Effect]:
+        id_ = self.request.path_params["id"]
+
+        return [
+            JSONResponse(
+                {
+                    "message": "Hello world from my GET endpoint!",
+                    "id": id_
+                }
+            )
+        ]
+```
+
+#### Path matching
+
+When you specify routes using path patterns, it is possible that multiple endpoints may match with a
+request. This has a few implications that need to be considered, because only one endpoint can
+provide a response.
+
+If the endpoints that match are all part of the same handler class, then the request will be handled
+by the endpoint that appears highest up in the class definition, i.e. the one that is defined first.
+Consider two endpoints specified to match the following patterns:
+
+```
+/routes/hello-world/current-user
+/routes/hello-world/<id>
+```
+
+The first uses an exact match, and the second uses a pattern. The path
+`/routes/hello-world/current-user` matches both of those patterns. However, if you register the
+second endpoint first it would never be possible for a request with the path of
+`/routes/hello-world/current-user` to match with the endpoint for
+`/routes/hello-world/current-user`. If you need to define endpoints that use exact matching that may
+overlap with endpoints defined with path patterns, order must be carefully considered.
+
+If, however, you have defined multiple **SimpleAPIRoute** or **SimpleAPI** handlers, and a request
+matches with multiple endpoints across these handlers, an error condition will result. There is not
+a way to specify priority across handlers, so if you need fine-grained control over request routing
+for endpoints that use path patterns, make sure they are contained within the same handler class.
+
 ### Request objects
 
 When a handler is invoked to handle an incoming HTTP request, the request object is available as an
