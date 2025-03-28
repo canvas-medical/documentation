@@ -654,8 +654,6 @@ releasenotes_betas:
    url: /product-updates/commands-api
  - title: "Commands Module"
    url: /product-updates/commands-module
- - title: "Move Commands"
-   url: /product-updates/move-commands
  - title: "Note API"
    url: /product-updates/note-api
  - title: "Patient Portal"
