@@ -300,7 +300,7 @@ class Protocol(BaseProtocol):
             log.info(f"Notification of {event_name} unsuccessful. =[")
 
         return []
-
+```
 
 Alternatively, you could include several classes, each resposible for some
 specific request type. When including several classes in one plugin, they all
