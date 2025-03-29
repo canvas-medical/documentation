@@ -291,7 +291,7 @@ class Protocol(BaseProtocol):
         http = Http()
         response = http.post(url, json=payload, headers=headers)
 
-        # You can also get the name of the event as as sting using EventType.Name()
+        # You can also get the name of the event as as string using EventType.Name()
         event_name = EventType.Name(self.event.type)
 
         if response.ok:
