@@ -111,7 +111,7 @@ class Protocol(BaseProtocol):
 
         http = Http()
         response = http.post(url, json=payload)
-        
+
         if response.ok:
             log.info("Successfully notified API of task creation!")
         else:
@@ -232,7 +232,7 @@ class Protocol(BaseProtocol):
 
         http = Http()
         response = http.post(url, json=payload, headers=headers)
-        
+
         if response.ok:
             log.info("Successfully notified API of task creation!")
         else:
@@ -248,18 +248,68 @@ request, including our `AUTH_TOKEN` value and the created task's ID.
 request](/assets/images/webhook-guide/webhook-guide-second-request.png)
 
 
+## Listening for multiple events
+
+A single plugin class can listen for multiple event types. The event type will
+be available in `self.event.type`, which will contain a member of the `EventType`
+enums. The [full list of events is available](/sdk/events/#event-types).
+Here is a short example that listens for two different events:
+
+```python
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.utils import Http
+from logger import log
+
+
+class Protocol(BaseProtocol):
+    """
+    When a task is created or updated, hit a webhook
+    """
+
+    RESPONDS_TO = [
+        EventType.Name(EventType.TASK_CREATED),
+        EventType.Name(EventType.TASK_UPDATED),
+    ]
+
+    def compute(self):
+        """
+        Notify our server of tasks as they are created.
+        """
+        url = f"https://webhook.site/{self.secrets['WEBHOOK_ID']}"
+        headers = {"Authorization": f"Bearer {self.secrets['AUTH_TOKEN']}"}
+
+        # self.event.type is a member of the EventType enum corresponding to
+        # one of the event types in the plugin's RESPONDS_TO attribute
+        verb = 'created' if self.event.type == EventType.TASK_CREATED else 'updated'
+
+        payload = {
+            "message": f"A Task was {verb}!",
+            "resource_id": self.target,
+        }
+
+        http = Http()
+        response = http.post(url, json=payload, headers=headers)
+
+        # You can also get the name of the event as as sting using EventType.Name()
+        event_name = EventType.Name(self.event.type)
+
+        if response.ok:
+            log.info(f"Successfully notified API of {event_name}")
+        else:
+            log.info(f"Notification of {event_name} unsuccessful. =[")
+
+        return []
+
+
+Alternatively, you could include several classes, each resposible for some
+specific request type. When including several classes in one plugin, they all
+have access to the same secrets dictionary, you just need to declare each class
+in the manifest file.
+
 ## Conclusion
 
-I hope you found this helpful, remember that you can take this example even
-further by listening for [many other events](/sdk/events/#event-types) and
-customizing the request based on which event fired, just set `RESPONDS_TO` to
-a list of event types instead of a single type. With this approach, one class
-could provide webhooks for many different data types. Alternatively, you could
-include several classes, each resposible for some specific request type.
-When including several classes in one plugin, they all have access to the same
-secrets dictionary, you just need to declare each class in the manifest file.
-
-Happy coding, I can't wait to see what you build!
+I hope you found this helpful. Happy coding, we can't wait to see what you build!
 
 <br/>
 <br/>
