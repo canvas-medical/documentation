@@ -2,9 +2,6 @@
 title: "Authentication"
 layout: documentation
 ---
-If you are using a [Canvas Sandbox Environment](doc:creating-a-sandbox-environment) you can skip this step and use your Bearer Token shown on your Dashboard. 
-
-For our Customers that have a development, staging, or production instances you can continue on below to setup authentication. 
 [block:api-header]
 {
   "title": "Introduction"
