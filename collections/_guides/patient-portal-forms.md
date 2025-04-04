@@ -44,13 +44,13 @@ class Protocol(BaseHandler):
 
   RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_FORMS)
 
-  def _get_upcoming_appointment_note_id(self, appointments, codes):
-    """Retrieve the note_id for the first confirmed future appointment matching given codes."""
+  def _get_upcoming_appointment_note_id(self, appointments, note_type_names):
+    """Retrieve the note_id for the first confirmed future appointment matching given note type names."""
     now = arrow.now().date()
     return appointments.filter(
       status=AppointmentProgressStatus.CONFIRMED,
       start_time__gt=now,
-      note_type__code__in=codes
+      note_type__name__in=note_type_names
     ).values_list("note__id", flat=True).first()
 
   def compute(self):
@@ -64,6 +64,7 @@ class Protocol(BaseHandler):
     completed_forms = set(
       Interview.objects.filter(
         patient=patient,
+        entered_in_error_id__isnull=True,
         questionnaires__name__in=INTAKE_QUESTIONNAIRES
       ).values_list("questionnaires__name", flat=True)
     )
@@ -71,7 +72,7 @@ class Protocol(BaseHandler):
     forms = []
 
     # Assign Intake Forms for new patients
-    if note_id := self._get_upcoming_appointment_note_id(patient_appointments, ["telehealth", "office"]):
+    if note_id := self._get_upcoming_appointment_note_id(patient_appointments, ["Telehealth", "Office visit"]):
       missing_intake_forms = [qname for qname in INTAKE_QUESTIONNAIRES if qname not in completed_forms]
       missing_intake_questionnaire_ids = Questionnaire.objects.filter(name__in=missing_intake_forms).values_list("id",
                                                                                                                  flat=True)
