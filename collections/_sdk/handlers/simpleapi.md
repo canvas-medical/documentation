@@ -21,7 +21,7 @@ Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory 
 class names as you see fit in your project, but for this exercise, we are just going to set the
 value at `components -> protocols -> 0 -> class` to be `my_api.protocols.my_protocol:MyAPI`.
 
-We're going to need a secret value for authentication. The instructions for declaring secrets is
+We're going to need a secret value for authentication. The instructions for declaring secrets are
 outlined on the [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 Declare a secret in `CANVAS_MANIFEST.json` named `my-api-key`.
 
