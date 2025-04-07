@@ -216,11 +216,12 @@ sections:
                     type: boolean
               - name: text
                 type: string
-          - name: description [deprecated]
+          - name: description
             type: string
             description: >-
               Shown on a subject line in a meeting request, or appointment list.<br><br>
-              **Note:** This field is being deprecated in favor of `reasonCode`. The text in `reasonCode` and this description attribute will always match.
+              This description attribute is useful for Scheduled Events in Canvas that do no have a corresponding timeline entry.<br><br>
+              For appointments associated with a patient timeline entry, we strongly suggest using the `reasonCode` field to map to the Reason For Visit command in a Canvas Note. However, this descrition will match the reasonCode.text attribute in a Read/Search
           - name: supportingInformation
             required_in: create,update
             type: array[json]
