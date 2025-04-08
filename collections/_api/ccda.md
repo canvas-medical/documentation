@@ -8,7 +8,7 @@ Software requirements for retrieving C-CDA via API calls can be found [here](/ap
 
 ## Authentication
 
-If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/authentication) to get you set up.
+If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) to get you set up.
 
 ## Request and Parameters
 
