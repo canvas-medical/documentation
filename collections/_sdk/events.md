@@ -30,8 +30,24 @@ For more information on writing plugins, see the guide [here](/guides/your-first
 
 ## Event Types
 
-The event `target` object can be accessed within the compute method of the plugin by `self.event.target`. If `self.event.target.type` exists, it provides the same type that would be imported from the Data module. For example, a type of `Condition` would be the same as what you can import from `canvas_sdk.v1.data.condition`. <br><br>
-The event `context` object can be accessed via `self.event.context`.
+The event `target` object can be accessed within the compute method of the plugin by `self.event.target`. If `self.event.target.type` exists, it provides the same type that would be imported from the Data module. For example, a type of `Condition` would be the same as what you can import from `canvas_sdk.v1.data.condition`.
+
+The event `context` object can be accessed via `self.event.context`. The
+content present in each event's context depends on the event type. The table
+below shows what you can expect for event type, or you could take a look
+yourself by logging it out.
+
+```python
+from canvas_sdk.events import EventType
+from logger import log
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
+
+    def compute(self):
+        log.info(self.event.context)
+        return []
+```
 
 ### Record lifecycle events
 
