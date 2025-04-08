@@ -112,9 +112,9 @@ __PLEASE NOTE__ the Commands Module is under development and Canvas is working t
 | dbid               | Integer                               |
 | created            | DateTime                              |
 | modified           | DateTime                              |
-| originator         | CanvasUser                            |
-| committer          | CanvasUser                            |
-| entered_in_error   | CanvasUser                            |
+| originator         | [CanvasUser](/sdk/data-canvasuser)    |
+| committer          | [CanvasUser](/sdk/data-canvasuser)    |
+| entered_in_error   | [CanvasUser](/sdk/data-canvasuser)    |
 | state              | String                                |
 | patient            | [Patient](/sdk/data-patient/#patient) |
 | note               | [Note](/sdk/data-note/#note)          |

@@ -91,8 +91,8 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 | created                        | DateTime                                                |
 | modified                       | DateTime                                                |
 | deleted                        | Boolean                                                 |
-| committer                      | CanvasUser                                              |
-| entered_in_error               | CanvasUser                                              |
+| committer                      | [CanvasUser](/sdk/data-canvasuser)                      |
+| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                      |
 | patient                        | [Patient](/sdk/data-patient/#patient)                   |
 | note_id                        | Integer                                                 |
 | allergy_intolerance_type       | String                                                  |

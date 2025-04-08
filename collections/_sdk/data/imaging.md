@@ -60,10 +60,10 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | dbid                | Integer                                                 |
 | created             | DateTime                                                |
 | modified            | DateTime                                                |
-| originator          | CanvasUser                                              |
+| originator          | [CanvasUser](/sdk/data-canvasuser)                      |
 | deleted             | Boolean                                                 |
-| committer           | CanvasUser                                              |
-| entered_in_error    | CanvasUser                                              |
+| committer           | [CanvasUser](/sdk/data-canvasuser)                      |
+| entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                      |
 | patient             | [Patient](/sdk/data-patient/#patient)                   |
 | imaging             | String                                                  |
 | note_to_radiologist | String                                                  |
@@ -81,9 +81,9 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | dbid                         | Integer                                                                                           |
 | created                      | DateTime                                                                                          |
 | modified                     | DateTime                                                                                          |
-| originator                   | CanvasUser                                                                                        |
+| originator                   | [CanvasUser](/sdk/data-canvasuser)                                                                |
 | deleted                      | Boolean                                                                                           |
-| committer                    | CanvasUser                                                                                        |
+| committer                    | [CanvasUser](/sdk/data-canvasuser)                                                                |
 | patient_communication_method | [ReviewPatientCommunicationMethod](/sdk/data-enumeration-types/#reviewpatientcommunicationmethod) |
 | internal_comment             | String                                                                                            |
 | message_to_patient           | String                                                                                            |

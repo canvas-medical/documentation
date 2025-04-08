@@ -72,9 +72,9 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 | modified                | DateTime                                          |
 | identified              | DateTime                                          |
 | deleted                 | Boolean                                           |
-| originator              | CanvasUser                                        |
-| committer               | CanvasUser                                        |
-| entered_in_error        | CanvasUser                                        |
+| originator              | [CanvasUser](/sdk/data-canvasuser)                |
+| committer               | [CanvasUser](/sdk/data-canvasuser)                |
+| entered_in_error        | [CanvasUser](/sdk/data-canvasuser)                |
 | patient                 | [Patient](/sdk/data-patient/#patient)             |
 | code                    | String                                            |
 | status                  | String                                            |

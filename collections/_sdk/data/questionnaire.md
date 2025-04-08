@@ -191,8 +191,8 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | id                   | UUID                                                           |
 | dbid                 | Integer                                                        |
 | deleted              | Boolean                                                        |
-| committer            | CanvasUser                                                     |
-| entered_in_error     | CanvasUser                                                     |
+| committer            | [CanvasUser](/sdk/data-canvasuser)                             |
+| entered_in_error     | [CanvasUser](/sdk/data-canvasuser)                             |
 | status               | String                                                         |
 | name                 | String                                                         |
 | language_id          | Integer                                                        |

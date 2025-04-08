@@ -54,9 +54,9 @@ devices = Devices.objects.filter(manufacturer="ACME Biomedical", lot_number="M32
 | dbid                        | Integer                               |
 | created                     | DateTime                              |
 | modified                    | DateTime                              |
-| originator                  | CanvasUser                            |
-| committer                   | CanvasUser                            |
-| entered_in_error            | CanvasUser                            |
+| originator                  | [CanvasUser](/sdk/data-canvasuser)    |
+| committer                   | [CanvasUser](/sdk/data-canvasuser)    |
+| entered_in_error            | [CanvasUser](/sdk/data-canvasuser)    |
 | patient                     | [Patient](/sdk/data-patient/#patient) |
 | note_id                     | Integer                               |
 | deleted                     | Boolean                               |

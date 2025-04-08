@@ -64,7 +64,7 @@ appointment = Appointment.objects.filter(
 |------------------------------|-------------------------------------------------------------------|
 | id                           | UUID                                                              |
 | dbid                         | Integer                                                           |
-| entered_in_error             | CanvasUser                                                        |
+| entered_in_error             | [CanvasUser](/sdk/data-canvasuser)                                |
 | patient                      | [Patient](/sdk/data-patient/#patient)                             |
 | appointment_rescheduled_from | [Appointment](#appointment)                                       |
 | provider                     | [Staff](#/sdk/data-staff/#staff)                                  |

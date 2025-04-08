@@ -86,7 +86,7 @@ To show a Staff member's contact points (email, phone, etc.), the `telecom` attr
 | spi_number                 | String                                                          |
 | personal_meeting_room_link | URL                                                             |
 | state                      | JSON                                                            |
-| user                       | CanvasUser                                                      |
+| user                       | [CanvasUser](/sdk/data-canvasuser)                              |
 | supervising_team           | [Staff](#staff)[]                                               |
 | notes                      | Note[]                                                          |
 | creator_tasks              | [Task](/sdk/data-task/#task)[]                                  |

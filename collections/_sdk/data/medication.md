@@ -90,8 +90,8 @@ medications = Medication.objects.find(AdhdMedications)
 | dbid                           | Integer                                 |
 | patient                        | [Patient](/sdk/data-patient/#patient)   |
 | deleted                        | Boolean                                 |
-| entered_in_error               | CanvasUser                              |
-| committer                      | CanvasUser                              |
+| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)      |
+| committer                      | [CanvasUser](/sdk/data-canvasuser)      |
 | status                         | String                                  |
 | start_date                     | Date                                    |
 | end_date                       | Date                                    |

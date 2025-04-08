@@ -577,6 +577,9 @@ data_module:
  - title: "Billing Line Item"
    url: /sdk/data-billing-line-item/
    description: A billable code linked to a patient note.
+ - title: "CanvasUser"
+   url: /sdk/data-canvasuser/
+   description: User accounts associated with other records.
  - title: "Care Team"
    url: /sdk/data-care-team/
    description: Teams assigned for patient care.

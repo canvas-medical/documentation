@@ -129,9 +129,9 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | original_date        | DateTime                              |
 | date_performed       | DateTime                              |
 | custom_document_name | String                                |
-| originator           | CanvasUser                            |
-| committer            | CanvasUser                            |
-| entered_in_error     | CanvasUser                            |
+| originator           | [CanvasUser](/sdk/data-canvasuser)    |
+| committer            | [CanvasUser](/sdk/data-canvasuser)    |
+| entered_in_error     | [CanvasUser](/sdk/data-canvasuser)    |
 | deleted              | Boolean                               |
 | values               | [LabValue](#labvalue)[]               |
 
@@ -143,10 +143,10 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | dbid                         | Integer                               |
 | created                      | DateTime                              |
 | modified                     | DateTime                              |
-| originator                   | CanvasUser                            |
+| originator                   | [CanvasUser](/sdk/data-canvasuser)    |
 | deleted                      | Boolean                               |
-| committer                    | CanvasUser                            |
-| entered_in_error             | CanvasUser                            |
+| committer                    | [CanvasUser](/sdk/data-canvasuser)    |
+| entered_in_error             | [CanvasUser](/sdk/data-canvasuser)    |
 | internal_comment             | String                                |
 | message_to_patient           | String                                |
 | status                       | String                                |
@@ -194,10 +194,10 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | dbid                      | Integer                                           |
 | created                   | DateTime                                          |
 | modified                  | DateTime                                          |
-| originator                | CanvasUser                                        |
+| originator                | [CanvasUser](/sdk/data-canvasuser)                |
 | deleted                   | Boolean                                           |
-| committer                 | CanvasUser                                        |
-| entered_in_error          | CanvasUser                                        |
+| committer                 | [CanvasUser](/sdk/data-canvasuser)                |
+| entered_in_error          | [CanvasUser](/sdk/data-canvasuser)                |
 | patient                   | [Patient](/sdk/data-patient/#patient)             |
 | ontology_lab_partner      | String                                            |
 | comment                   | String                                            |
@@ -225,10 +225,10 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | dbid              | Integer                                               |
 | created           | DateTime                                              |
 | modified          | DateTime                                              |
-| originator        | CanvasUser                                            |
+| originator        | [CanvasUser](/sdk/data-canvasuser)                    |
 | deleted           | Boolean                                               |
-| committer         | CanvasUser                                            |
-| entered_in_error  | CanvasUser                                            |
+| committer         | [CanvasUser](/sdk/data-canvasuser)                    |
+| entered_in_error  | [CanvasUser](/sdk/data-canvasuser)                    |
 | order             | [LabOrder](#laborder)                                 |
 | mode              | [LabReasonMode](#labreasonmode)                       |
 | reason_conditions | [LabOrderReasonCondition](#laborderreasoncondition)[] |
