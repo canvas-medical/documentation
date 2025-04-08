@@ -552,6 +552,37 @@ class MyAPI(SimpleAPIRoute):
         ...
 ```
 
+##### Session
+
+To authenticate using a logged-in user's session, use `SessionCredentials`:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.handlers.simple_api import SessionCredentials, SimpleAPIRoute
+
+
+class MyAPI(SimpleAPIRoute):
+    PATH = "/routes/hello-world"
+
+    def authenticate(self, credentials: SessionCredentials) -> bool:
+        logged_in_user = credentials.logged_in_user
+
+        # Structure looks like:
+        # {
+        #     "id": "abc123",
+        #     "type": "Staff"
+        # }
+        # Where "type" is "Staff" or "Patient"
+        # You could authenticate based on type or check to see if the
+        # individual is in a particular group or team.
+        ...
+
+
+    def get(self) -> list[Response | Effect]:
+        ...
+```
+
 ##### Custom
 
 It's also possible to create custom authentication schemes. There are two ways to do this.
@@ -662,6 +693,48 @@ from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
 
 
 class MyAPI(APIKeyAuthMixin, SimpleAPIRoute):
+    PATH = "/routes/hello-world"
+
+    def get(self) -> list[Response | Effect]:
+        return [
+            JSONResponse({"message": "Hello world!"})
+        ]
+```
+
+##### Staff Session
+
+If you want to ensure the visiting user is a logged in staff user, you can use
+the `StaffSessionAuthMixin`. This makes no assertions about the particular
+staff member, just that they are staff, and that they are logged in.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.handlers.simple_api import StaffSessionAuthMixin, SimpleAPIRoute
+
+
+class MyAPI(StaffSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/routes/hello-world"
+
+    def get(self) -> list[Response | Effect]:
+        return [
+            JSONResponse({"message": "Hello world!"})
+        ]
+```
+
+##### Patient Session
+
+If you want to ensure the visiting user is a logged in patient user, you can use
+the `PatientSessionAuthMixin`. This makes no assertions about the particular
+patient, just that they are a patient, and that they are logged in.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+
+
+class MyAPI(PatientSessionAuthMixin, SimpleAPIRoute):
     PATH = "/routes/hello-world"
 
     def get(self) -> list[Response | Effect]:
