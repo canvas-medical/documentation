@@ -31,6 +31,11 @@ Returns an Effect that originates a new command in the note body.
 
 Returns an Effect that edits an existing command with the values set on the command class instance.
 
+**Behavior and Considerations:**
+- **Partial Edits:** If you update only some fields of the command, any fields not explicitly modified will retain their existing values.
+- **No Changes:** Calling `edit()` without making any changes will result in a no-op; the command remains unchanged.
+- **Invalid Values:** If you attempt to set an invalid value, you should receive a validation error.
+
 #### delete
 
 Returns an Effect that deletes an existing, non-committed command from the note body.
@@ -772,34 +777,48 @@ questionnaire = QuestionnaireCommand(
 Below is an example that demonstrates how to instantiate a `QuestionnaireCommand`, retrieve the questions, and add responses to them based on their type:
 
 ```python
+import uuid
 from canvas_sdk.commands.questionnaire import QuestionnaireCommand
 from canvas_sdk.commands.questionnaire.question import ResponseOption
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Note
 
-q = Questionnaire.objects.filter(name="Exercise").first()
-# Create a QuestionnaireCommand instance.
-command = QuestionnaireCommand(questionnaire_id=str(q.id))
+class Protocol(BaseHandler):
 
-# Retrieve the list of questions.
-questions = command.questions
+    def compute(self) -> list[Effect]:
+      q = Questionnaire.objects.filter(name="Exercise").first()
+      note = Note.objects.last()
+      # Create a QuestionnaireCommand instance.
+      command = QuestionnaireCommand(questionnaire_id=str(q.id))
+      command.note_uuid = str(note.id)
+      command.command_uuid = str(uuid.uuid4())
 
-# Record responses for each question.
-for question in questions:
-    if question.type == RO.TYPE_TEXT:
-        # For text questions, pass a 'text' keyword argument.
-        question.add_response(text=f"Thanks for all the fish")
-    elif question.type == RO.TYPE_INTEGER:
-        # For integer questions, pass an 'integer' keyword argument.
-        question.add_response(integer=42)
-    elif question.type == RO.TYPE_RADIO:
-        # For radio questions, pass an 'option' keyword argument (a ResponseOption instance).
-        first_option = question.options[0]
-        question.add_response(option=first_option)
-    elif question.type == RO.TYPE_CHECKBOX:
-        # For checkbox questions, add responses with option, selected flag, and optionally a comment.
-        first_option = question.options[0]
-        last_option = question.options[-1]
-        question.add_response(option=first_option, selected=True, comment="Don't panic")
-        question.add_response(option=last_option, selected=True)
+      # Alternatively you can just retrieve an existing questionnaire command, and only return an `edit` effect.
+
+      # Retrieve the list of questions.
+      questions = command.questions
+
+      # Record responses for each question.
+      for question in questions:
+          if question.type == RO.TYPE_TEXT:
+              # For text questions, pass a 'text' keyword argument.
+              question.add_response(text=f"Thanks for all the fish")
+          elif question.type == RO.TYPE_INTEGER:
+              # For integer questions, pass an 'integer' keyword argument.
+              question.add_response(integer=42)
+          elif question.type == RO.TYPE_RADIO:
+              # For radio questions, pass an 'option' keyword argument (a ResponseOption instance).
+              first_option = question.options[0]
+              question.add_response(option=first_option)
+          elif question.type == RO.TYPE_CHECKBOX:
+              # For checkbox questions, add responses with option, selected flag, and optionally a comment.
+              first_option = question.options[0]
+              last_option = question.options[-1]
+              question.add_response(option=first_option, selected=True, comment="Don't panic")
+              question.add_response(option=last_option, selected=True)
+
+      # Because we're directly setting a command_uuid, we can return both originate and edit. 
+      return [command.originate(), command.edit()]
 ```
 
 ### Explanation
@@ -815,6 +834,12 @@ for question in questions:
   - For **RadioQuestion**, you must pass an `option` parameter (a `ResponseOption` instance) that corresponds to one of the allowed options.
   - For **CheckboxQuestion**, you must pass an `option` parameter along with an optional `selected` flag (defaulting to True) and an optional `comment`. Multiple responses can be recorded for checkbox questions.
   - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
+
+
+ - **Creating and Editing:**
+   When creating a new questionnaire command, you must explicitly set a unique `command_uuid`. Providing this UUID enables you to originate the command within the note and then subsequently edit it with detailed responses in the same protocol execution.
+
+ - This approach is necessary because given the dynamic nature of the questionnaire command, the initial creation (origination) only includes the questionnaire ID. Once the command has been originated, you can immediately follow up with an edit to populate it with the patient's responses.
 
 ---
 
