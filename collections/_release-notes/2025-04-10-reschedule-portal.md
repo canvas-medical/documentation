@@ -1,7 +1,7 @@
 ---
 title: Fixes Missing Appointment Details in Portal Reschedule Flow
 layout: productupdates
-tags: beta portal
+tags: beta bugfix portal
 date: 2025-04-10
 ---
 
