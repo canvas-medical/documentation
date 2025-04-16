@@ -27,7 +27,7 @@ The following are the Python libraries that you are allowed to import to your pr
 - re
 - requests
 - string
-- time (Coming on 11/16/2022)
+- time
 - traceback
 - typing
 - urllib
