@@ -176,6 +176,8 @@ The following effects are available to be applied in Canvas.
 | PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK      | Can be used to show the 'join' button on the telehealth appointment card, allowing patients to easily join their appointments.                                                                              |
 | PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE          | Can be used to show the 'cancel' button on the appointment card, allowing patients to easily cancel their appointments                                                                                      |
 | PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE       | Can be used to show the 'reschedule' button on the appointment card, allowing patients to easily reschedule their appointments                                                                              |
+| UPDATE_USER                                        | Can be used to update a user                                                                                                                                                      |
+| PATIENT_PORTAL__SEND_INVITE                        | Can be used to trigger a portal invitation for a user                                                                                                                                                      |
 
 <br/>
 <br/>
