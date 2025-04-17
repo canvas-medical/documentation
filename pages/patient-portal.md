@@ -5,7 +5,6 @@ layout: betas
 date: 2024-01-22
 ---
 
-{% include alert.html type="warning" content="<b>Beta Participation:</b> The login workflow and document upload are currently being tested within a closed beta. All other capabilities are open for testing. Reach out to support if you would like to participate." %}
 
 ## Overview
 
@@ -33,11 +32,9 @@ Opportunities for customization via plugins are highlighted in blue.
 
 Enabled through: `ENABLE_PATIENT_PORTAL` in Constance config.
 
-**Access to the Canvas patient portal will soon require a username and password.**
+Customers that use the Canvas patient portal have a new section in the profile to manage portal users. 
 
-Customers that use the Canvas patient portal will have new section in the profile to manage portal users. 
-
-Phone and email capture (including verification flows) within registration will remain unchanged; however, there is now an additional step to register and invite patients to the portal. 
+Phone and email capture (including verification flows) within registration has remain unchanged; however, there is now an additional step to register and invite patients to the portal. 
 
 To invite a patient to the portal, you must link a unique email or phone to their portal user in their profile. The email and/or phone number do not necessarily have to match what have been added as contact points - but they will be **leveraged for password resets**. Once added, you can send an invite. After the patient successfully activates their account, staff can continue to trigger password reset emails if necessary.
 
@@ -52,24 +49,13 @@ To invite a patient to the portal, you must link a unique email or phone to thei
 If you do not want this to be a manual process, a plugin can be used to automatically update the portal user based on changes to the patient contacts and trigger an invite. Reach out to support for help enabling this workflow.
 </div>
 
-
 All communication will continue to be sent to the verified contact points (not the portal user email or phone). We have plans in the future to manage outbound communication via plugins, which will allow for further configuration.
 
+## Login Page Banner
 
-### Transition
+Enabeled through: `PATIENT_APP_BANNER`  in Constance config.
 
-{% include alert.html type="warning" content="This change will be released the morning of 4/17/25" %}
-
-Please let us know if you would like help communicating this change to your patients using a campaign. 
-
-When the update is released, we will migrate preferred, verified phone numbers and emails to the user profile. When the patient navigates to the new portal login page, they will need to leverage the activation form to prompt an email invite. After entering their associated contact point, they will receive an email prompting them to set up a username and password. 
-
-{:refdef: style="text-align: center;"}
-![description](/assets/images/portal-activation.gif){:width="98%"}
-{: refdef}
-
-We will include a banner at the top of the login page with guidance. 
-
+You can add a banner to your login page using this new config. Leverage HTML to add style to the text. 
 
 ## Landing Page 
 
@@ -86,9 +72,9 @@ We've implemented a landing page that is powered by plugins. The Canvas managed 
 Enabeled through: `PATIENT_APP_MY_HEALTH` in Constance config.
 
 ### Chart Summary
-The My Health section will include a new chart summary and the current Health Records section, if enabled. Each section will mimic the filters used in the default view of the chart (if you see it in Canvas - the patient will see it on their portal)
+The My Health section includes a new chart summary and the current Health Records section (if enabled). Each section will mimic the filters used in the default view of the chart (if you see it in Canvas - the patient will see it on their portal)
 
-The chart summary will show the following:
+The chart summary shows the following:
 
 - **Conditions:** All conditions where show_in_summary = true. This includes active conditions and past medical history. Patients will see the last assessed date and the name of the provider who last committed the associated assessment. 
 - **Medications:** Active medications. Patients will see the name of the medication, start date, instructions (sig), and the last prescriber.
@@ -97,7 +83,7 @@ The chart summary will show the following:
 ### Upload Documents
 Patients will also be able to upload documents. Documents added within the portal will populate a new channel in Data Integration. 
 
-{% include alert.html type="warning" content="This is permission based and will only be available after the new username and password login flow is released. " %}
+{% include alert.html type="warning" content="This is permission based and needs to be configured for testing. Reach out to support if you would like to enable this feature for testing. " %}
 
 {:refdef: style="text-align: center;"}
 ![landing page](/assets/images/patient-upload.png){:width="98%"}
