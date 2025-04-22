@@ -164,8 +164,7 @@ Commands migrated to the new framework will function similarly if not identicall
        <td> <span class="tag-complete"> Released - GA </span> </td>
        <td><ul><li>Updated layout</li></ul> </td>
     </tr>
-    </tr>
-     <tr> 
+    <tr> 
       <td>Change Diagnosis</td>
        <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
@@ -215,6 +214,7 @@ Commands migrated to the new framework will function similarly if not identicall
       <td>Structured Assessment</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
+    </tr>
     <tr> 
       <td>Refer</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
