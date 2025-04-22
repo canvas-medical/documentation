@@ -563,6 +563,9 @@ effects_module:
  - title: "Patient Portal"
    url: /sdk/patient-portal/
    description: Customize your Patient Portal.
+ - title: "Patient"
+   url: /sdk/effect-patient/
+   description: Interact with patient data.
 
 data_module:
  - title: "Allergy Intolerance"
