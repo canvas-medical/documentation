@@ -156,18 +156,18 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>Refill</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>Adds max refill validation for epcs</li> <li>Limits to 2 indications</li></ul> </td>
     </tr>
      <tr> 
       <td>Vitals</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
        <td><ul><li>Updated layout</li></ul> </td>
     </tr>
     </tr>
      <tr> 
       <td>Change Diagnosis</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr> 
@@ -183,17 +183,17 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
      <tr> 
       <td>Image</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>Attachments are added through a modal</li></ul></td>
     </tr>
      <tr> 
       <td>Snooze Protocol</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr> 
       <td>Immunization Statement</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
      <tr> 
@@ -203,12 +203,12 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>Physical Exam</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr> 
       <td>Review of Systems</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr> 
@@ -225,13 +225,48 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
-      <tr> 
+    <tr> 
+      <td>Resolve Condition</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
       <td>Adjust Prescription</td>
+      <td><span class="tag-in-progress"> In progress </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Chart Section Review</td>
+      <td><span class="tag-in-progress"> In progress </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Lab Review</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
-      <tr> 
-      <td>Resolve Condition</td>
+    <tr> 
+      <td>Imaging Review</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Consult Report Review</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Uncategorized Document Review</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Approve Refill</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td>Deny Refill</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
