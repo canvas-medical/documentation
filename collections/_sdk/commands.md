@@ -184,6 +184,29 @@ assess = AssessCommand(
 
 ---
 
+## ChangeMedication
+
+**Command-specific parameters**:
+
+| Name            | Type     | Required | Description                                                        |
+|:----------------|:---------|:---------|:-------------------------------------------------------------------|
+| `medication_id` | _string_ | `true`   | Externally exposable id of the patient's medication being changed. |
+| `sig`           | _string_ | `false`  | Administration details of the medication.                          |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ChangeMedicationCommand
+
+change_medication = ChangeMedicationCommand(
+    note_uuid='rk786p',
+    medication_id='2u309j',
+    sig='two pills taken orally'
+)
+```
+
+---
+
 ## CloseGoal
 
 **Command-specific parameters**:

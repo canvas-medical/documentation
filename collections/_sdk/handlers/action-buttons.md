@@ -110,6 +110,7 @@ from canvas_sdk.effects.base import EffectType
 schema_key_to_effect_type = {
     "allergy": EffectType.COMMIT_ALLERGY_COMMAND,
     "assess": EffectType.COMMIT_ASSESS_COMMAND,
+    "changeMedication": EffectType.COMMIT_CHANGE_MEDICATION_COMMAND,
     "closeGoal": EffectType.COMMIT_CLOSE_GOAL_COMMAND,
     "diagnose": EffectType.COMMIT_DIAGNOSE_COMMAND,
     "familyHistory": EffectType.COMMIT_FAMILY_HISTORY_COMMAND,
