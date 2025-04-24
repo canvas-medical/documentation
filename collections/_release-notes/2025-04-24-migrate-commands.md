@@ -1,5 +1,5 @@
 ---
-title: Migrates Legacy Commands to SDK
+title: Migrates Legacy Commands to the SDK
 tags: sdk plugins
 layout: productupdates
 date: 2025-04-24
