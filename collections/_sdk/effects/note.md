@@ -9,9 +9,9 @@ hidden: false
 
 The Canvas SDK provides effects to facilitate creating **visit notes**, **appointments**, and **schedule events**. Below you'll find detailed documentation for each effect type.
 
-## CreateNote Effect
+## Note Effect
 
-The `CreateNote` effect facilitates the creation of visit notes for patients.
+The `Note` effect facilitates the creation of visit notes for patients.
 
 ### Attributes
 
@@ -32,10 +32,10 @@ The `CreateNote` effect facilitates the creation of visit notes for patients.
 ### Example Usage
 
 ```python
-from canvas_sdk.effects.note.create_note import CreateNote
+from canvas_sdk.effects.note.note import Note
 import datetime
 
-note_effect = CreateNote(
+note_effect = Note(
     note_type_id="note-type-uuid",
     datetime_of_service=datetime.datetime.now(),
     patient_id="patient-uuid",
@@ -43,14 +43,14 @@ note_effect = CreateNote(
     provider_id="provider-uuid"
 )
 
-return note_effect.apply()
+return note_effect.create()
 ```
 
 ---
 
-## CreateScheduleEvent Effect
+## ScheduleEvent Effect
 
-The `CreateScheduleEvent` effect enables creating schedule events for providers, with optional patient association.
+The `ScheduleEvent` effect enables creating schedule events for providers, with optional patient association.
 
 ### Attributes
 
@@ -76,10 +76,10 @@ The `CreateScheduleEvent` effect enables creating schedule events for providers,
 ### Example Usage
 
 ```python
-from canvas_sdk.effects.note.create_appointment import CreateScheduleEvent
+from canvas_sdk.effects.note.create_appointment import ScheduleEvent
 import datetime
 
-schedule_event_effect = CreateScheduleEvent(
+schedule_event_effect = ScheduleEvent(
     note_type_id="schedule-event-note-type-uuid",
     patient_id="patient-uuid",  # Optional depending on note type
     description="Team meeting",  # Optional depending on note type
@@ -89,14 +89,14 @@ schedule_event_effect = CreateScheduleEvent(
     provider_id="provider-uuid"
 )
 
-return schedule_event_effect.apply()
+return schedule_event_effect.create()
 ```
 
 ---
 
-## CreateAppointment Effect
+## Appointment Effect
 
-The `CreateAppointment` effect facilitates creating patient appointments with providers.
+The `Appointment` effect facilitates creating patient appointments with providers.
 
 ### Attributes
 
@@ -121,10 +121,10 @@ The `CreateAppointment` effect facilitates creating patient appointments with pr
 ### Example Usage
 
 ```python
-from canvas_sdk.effects.note.create_appointment import CreateAppointment
+from canvas_sdk.effects.note.create_appointment import Appointment
 import datetime
 
-appointment_effect = CreateAppointment(
+appointment_effect = Appointment(
     appointment_note_type_id="appointment-note-type-uuid",
     patient_id="patient-uuid",
     meeting_link="https://zoom.us/example-link",  # Optional
@@ -134,7 +134,7 @@ appointment_effect = CreateAppointment(
     provider_id="provider-uuid"
 )
 
-return appointment_effect.apply()
+return appointment_effect.create()
 ```
 
 ---
