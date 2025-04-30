@@ -15,13 +15,13 @@ The `Note` effect facilitates the creation of visit notes for patients.
 
 ### Attributes
 
-| Attribute | Type | Description | Required |
-|-----------|------|-------------|----------|
-| `note_type_id` | `UUID \| str` | Identifier for the note type | Yes |
-| `datetime_of_service` | `datetime.datetime` | When the service was provided | Yes |
-| `patient_id` | `str` | Identifier for the patient | Yes |
-| `practice_location_id` | `UUID \| str` | Identifier for the practice location | Yes |
-| `provider_id` | `str` | Identifier for the provider | Yes |
+| Attribute              | Type                | Description                          | Required |
+|------------------------|---------------------|--------------------------------------|----------|
+| `note_type_id`         | `UUID` or `str`     | Identifier for the note type         | Yes      |
+| `datetime_of_service`  | `datetime.datetime` | When the service was provided        | Yes      |
+| `patient_id`           | `str`               | Identifier for the patient           | Yes      |
+| `practice_location_id` | `UUID` or `str`     | Identifier for the practice location | Yes      |
+| `provider_id`          | `str`               | Identifier for the provider          | Yes      |
 
 ### Implementation Details
 
@@ -54,17 +54,17 @@ The `ScheduleEvent` effect enables creating schedule events for providers, with 
 
 ### Attributes
 
-| Attribute | Type | Description | Required |
-|-----------|------|-------------|----------|
-| `note_type_id` | `UUID \| str` | Identifier for the note type (must be of category `SCHEDULE_EVENT`) | Yes |
-| `patient_id` | `str \| None` | Identifier for the patient (if applicable) | Conditional |
-| `description` | `str \| None` | Custom description for the event | Conditional |
-| `start_time` | `datetime.datetime` | Start time of the event | Yes |
-| `duration_minutes` | `int` | Duration of the event in minutes | Yes |
-| `practice_location_id` | `UUID \| str` | Identifier for the practice location | Yes |
-| `provider_id` | `str` | Identifier for the provider | Yes |
-| `status` | `AppointmentProgressStatus \| None` | Status of the event | No |
-| `external_identifiers` | `list[AppointmentIdentifier] \| None` | External system identifiers | No |
+| Attribute              | Type                                    | Description                                                         | Required    |
+|------------------------|-----------------------------------------|---------------------------------------------------------------------|-------------|
+| `note_type_id`         | `UUID` or `str`                         | Identifier for the note type (must be of category `SCHEDULE_EVENT`) | Yes         |
+| `patient_id`           | `str` or `None`                         | Identifier for the patient (if applicable)                          | Conditional |
+| `description`          | `str` or `None`                         | Custom description for the event                                    | Conditional |
+| `start_time`           | `datetime.datetime`                     | Start time of the event                                             | Yes         |
+| `duration_minutes`     | `int`                                   | Duration of the event in minutes                                    | Yes         |
+| `practice_location_id` | `UUID` or `str`                         | Identifier for the practice location                                | Yes         |
+| `provider_id`          | `str`                                   | Identifier for the provider                                         | Yes         |
+| `status`               | `AppointmentProgressStatus` or `None`   | Status of the event                                                 | No          |
+| `external_identifiers` | `list[AppointmentIdentifier]` or `None` | External system identifiers                                         | No          |
 
 ### Implementation Details
 
@@ -100,17 +100,17 @@ The `Appointment` effect facilitates creating patient appointments with provider
 
 ### Attributes
 
-| Attribute | Type | Description | Required |
-|-----------|------|-------------|----------|
-| `appointment_note_type_id` | `UUID \| str` | Identifier for the appointment note type (must be of category `ENCOUNTER` and scheduleable) | Yes |
-| `patient_id` | `str` | Identifier for the patient | Yes |
-| `meeting_link` | `str \| None` | Link for virtual appointments | No |
-| `start_time` | `datetime.datetime` | Start time of the appointment | Yes |
-| `duration_minutes` | `int` | Duration of the appointment in minutes | Yes |
-| `practice_location_id` | `UUID \| str` | Identifier for the practice location | Yes |
-| `provider_id` | `str` | Identifier for the provider | Yes |
-| `status` | `AppointmentProgressStatus \| None` | Status of the appointment | No |
-| `external_identifiers` | `list[AppointmentIdentifier] \| None` | External system identifiers | No |
+| Attribute                  | Type                                    | Description                                                                                 | Required |
+|----------------------------|-----------------------------------------|---------------------------------------------------------------------------------------------|----------|
+| `appointment_note_type_id` | `UUID` or `str`                         | Identifier for the appointment note type (must be of category `ENCOUNTER` and scheduleable) | Yes      |
+| `patient_id`               | `str`                                   | Identifier for the patient                                                                  | Yes      |
+| `meeting_link`             | `str` or `None`                         | Link for virtual appointments                                                               | No       |
+| `start_time`               | `datetime.datetime`                     | Start time of the appointment                                                               | Yes      |
+| `duration_minutes`         | `int`                                   | Duration of the appointment in minutes                                                      | Yes      |
+| `practice_location_id`     | `UUID` or `str`                         | Identifier for the practice location                                                        | Yes      |
+| `provider_id`              | `str`                                   | Identifier for the provider                                                                 | Yes      |
+| `status`                   | `AppointmentProgressStatus` or `None`   | Status of the appointment                                                                   | No       |
+| `external_identifiers`     | `list[AppointmentIdentifier]` or `None` | External system identifiers                                                                 | No       |
 
 ### Implementation Details
 
