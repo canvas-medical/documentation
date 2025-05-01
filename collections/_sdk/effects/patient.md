@@ -5,29 +5,29 @@ excerpt: "Effects for patients"
 hidden: false
 ---
 
-# CreatePatient Effect
+# Patient Effect
 
-The `CreatePatient` effect enables the creation of patient records within the Canvas system. This effect captures demographic information, contact details, and clinical associations necessary for patient registration.
+The `Patient` effect enables the creation of patient records within the Canvas system. This effect captures demographic information, contact details, and clinical associations necessary for patient registration.
 
 ## Attributes
 
-| Attribute | Type | Description | Required |
-|-----------|------|-------------|----------|
-| `first_name` | `str` | Patient's first name | Yes |
-| `last_name` | `str` | Patient's last name | Yes |
-| `middle_name` | `str \| None` | Patient's middle name | No |
-| `birthdate` | `datetime.date \| None` | Patient's date of birth | No |
-| `prefix` | `str \| None` | Name prefix (e.g., "Dr.", "Mr.") | No |
-| `suffix` | `str \| None` | Name suffix (e.g., "Jr.", "III") | No |
-| `sex_at_birth` | `PersonSex \| None` | Patient's sex assigned at birth | No |
-| `nickname` | `str \| None` | Patient's preferred name or nickname | No |
-| `social_security_number` | `str \| None` | Patient's SSN | No |
-| `administrative_note` | `str \| None` | Administrative notes about the patient | No |
-| `clinical_note` | `str \| None` | Clinical notes about the patient | No |
-| `default_location_id` | `str \| None` | ID of patient's default practice location | No |
-| `default_provider_id` | `str \| None` | ID of patient's default healthcare provider | No |
-| `previous_names` | `list[str] \| None` | List of patient's previous names | No |
-| `contact_points` | `list[PatientContactPoint] \| None` | Patient's contact information | No |
+| Attribute                | Type                                  | Description                                 | Required |
+|--------------------------|---------------------------------------|---------------------------------------------|----------|
+| `first_name`             | `str`                                 | Patient's first name                        | Yes      |
+| `last_name`              | `str`                                 | Patient's last name                         | Yes      |
+| `middle_name`            | `str` or `None`                       | Patient's middle name                       | No       |
+| `birthdate`              | `datetime.date` or `None`             | Patient's date of birth                     | No       |
+| `prefix`                 | `str` or `None`                       | Name prefix (e.g., "Dr.", "Mr.")            | No       |
+| `suffix`                 | `str` or `None`                       | Name suffix (e.g., "Jr.", "III")            | No       |
+| `sex_at_birth`           | `PersonSex` or `None`                 | Patient's sex assigned at birth             | No       |
+| `nickname`               | `str` or `None`                       | Patient's preferred name or nickname        | No       |
+| `social_security_number` | `str` or `None`                       | Patient's SSN                               | No       |
+| `administrative_note`    | `str` or `None`                       | Administrative notes about the patient      | No       |
+| `clinical_note`          | `str` or `None`                       | Clinical notes about the patient            | No       |
+| `default_location_id`    | `str` or `None`                       | ID of patient's default practice location   | No       |
+| `default_provider_id`    | `str` or `None`                       | ID of patient's default healthcare provider | No       |
+| `previous_names`         | `list[str]` or `None`                 | List of patient's previous names            | No       |
+| `contact_points`         | `list[PatientContactPoint]` or `None` | Patient's contact information               | No       |
 
 ## PatientContactPoint
 
@@ -35,13 +35,13 @@ The `PatientContactPoint` dataclass represents various methods of contacting the
 
 ### Attributes
 
-| Attribute | Type | Description | Required |
-|-----------|------|-------------|----------|
-| `system` | `ContactPointSystem` | Type of contact (e.g., phone, email) | Yes |
-| `value` | `str` | The contact information value (e.g., phone number, email address) | Yes |
-| `use` | `ContactPointUse` | Purpose of the contact point (e.g., home, work) | Yes |
-| `rank` | `int` | Priority order of contact methods | Yes |
-| `has_consent` | `bool \| None` | Whether consent has been given to use this contact method | No |
+| Attribute     | Type                 | Description                                                       | Required |
+|---------------|----------------------|-------------------------------------------------------------------|----------|
+| `system`      | `ContactPointSystem` | Type of contact (e.g., phone, email)                              | Yes      |
+| `value`       | `str`                | The contact information value (e.g., phone number, email address) | Yes      |
+| `use`         | `ContactPointUse`    | Purpose of the contact point (e.g., home, work)                   | Yes      |
+| `rank`        | `int`                | Priority order of contact methods                                 | Yes      |
+| `has_consent` | `bool` or `None`     | Whether consent has been given to use this contact method         | No       |
 
 ## Implementation Details
 
@@ -52,16 +52,16 @@ The `PatientContactPoint` dataclass represents various methods of contacting the
 ## Example Usage
 
 ```python
-from canvas_sdk.effects.patient.create_patient import CreatePatient, PatientContactPoint
+from canvas_sdk.effects.patient import Patient, PatientContactPoint
 from canvas_sdk.v1.data.common import ContactPointSystem, ContactPointUse, PersonSex
 import datetime
 
-patient_effect = CreatePatient(
+patient = Patient(
     first_name="Jane",
     last_name="Doe",
     middle_name="Marie",
     birthdate=datetime.date(1980, 1, 15),
-    sex_at_birth=PersonSex.FEMALE,
+    sex_at_birth=PersonSex.SEX_FEMALE,
     nickname="Janie",
     default_location_id="location-uuid",
     default_provider_id="provider-uuid",
@@ -83,7 +83,7 @@ patient_effect = CreatePatient(
     ]
 )
 
-return patient_effect.apply()
+return patient.create()
 ```
 
 ## Validation
