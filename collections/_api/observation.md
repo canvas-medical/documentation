@@ -502,9 +502,9 @@ sections:
         
             **Additional examples**
 
-              - [Creating a vital panel](https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation/request/17030070-9375d12e-012c-4a68-8f2a-5709c758b4f0)
-              - [Creating a vital sign with components (should only be used for blood pressure)](https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation/request/17030070-b020fab6-334b-4aa9-9cde-cf1dc59444b4)
-              - [Creating a vital sign without components](https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation/request/17030070-f87d6190-3a72-42e0-9429-520bd6eaa66b)
+              - [Creating a vital panel](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20panel.bru)
+              - [Creating a vital sign with components (should only be used for blood pressure)](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20w-%20components.bru)
+              - [Creating a vital sign without components](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20w-o%20components.bru)
         read:
           responses: [200, 401, 403, 404]
           example_request: observation-read-request
