@@ -145,14 +145,14 @@ permalink: "/"
     <p class="cardSectionLandingDescription">Steps you through authentication and general usage.</p>
 </a>
 
-<a href="https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation" target="_blank" class="cardSectionLandingItemFhir">
+<a href="https://github.com/canvas-medical/canvas-fhir-example-requests" target="_blank" class="cardSectionLandingItemFhir">
     <div class="cardSectionLandingIcon">
        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12.6182 13.4179C8.94938 17.101 9.40187 20.7913 11.0682 23.5705C7.24013 21.9383 3.70655 15.4671 8.60297 9.59142C13.8258 4.36857 12.8465 2.08357 12.8465 0.125C14.4787 3.06285 17.0285 8.9904 12.6182 13.4179Z" fill="#74C9C3"/>
         <path d="M11.8645 23.6281C11.0833 21.9351 10.2688 17.8408 12.6343 15.4676C16.8966 11.074 16.2123 7.22361 16.1175 6.99132C16.1129 6.98395 16.1105 6.98022 16.1105 6.98022C16.1121 6.98022 16.1145 6.98395 16.1175 6.99132C16.2924 7.2682 19.6358 12.6902 17.1755 18.7316C18.5949 17.9118 19.1986 16.7917 19.3748 16.4466C18.6398 22.4036 14.8819 23.3836 11.8645 23.6281Z" fill="#74C9C3"/>
         <path d="M10.5615 6.32715C8.60289 7.52403 4.17535 10.5707 3.91421 14.4879C3.65306 18.405 5.87278 20.0371 7.17849 21.3428C6.52563 20.3636 5.21992 17.948 5.21992 14.8143C5.21992 11.6806 8.82049 7.74169 10.5615 6.32715Z" fill="#74C9C3"/></svg>
 </div>
-    <span class="cardSectionLandingHeading">Postman Collection</span>
+    <span class="cardSectionLandingHeading">Example Request Collection</span>
     <p class="cardSectionLandingDescription">Explore our FHIR API with premade requests.</p>
 </a>
 </div>
