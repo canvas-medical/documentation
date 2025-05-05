@@ -28,7 +28,7 @@ Declare a secret in `CANVAS_MANIFEST.json` named `my-api-key`.
 Open `my_api/protocols/my_protocol.py` and replace the contents of the file with this code:
 
 ```python
-from secrets import compare_digest
+from hmac import compare_digest
 
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
