@@ -565,6 +565,9 @@ effects_module:
  - title: "Patient Portal"
    url: /sdk/patient-portal/
    description: Customize your Patient Portal.
+ - title: "Notes"
+   url: /sdk/effect-notes/
+   description: Interact with notes in Canvas.
 
 data_module:
  - title: "Allergy Intolerance"
