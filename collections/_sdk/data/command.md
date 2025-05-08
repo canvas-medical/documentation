@@ -73,6 +73,7 @@ The following table shows the different command `schema_key` values with links t
 | adjustPrescription  | [AdjustPrescription](/sdk/commands/#adjustprescription)          |
 | allergy             | [Allergy](/sdk/commands/#allergy)                                |
 | assess              | [Assess](/sdk/commands/#assess)                                  |
+| changeMedication    | [ChangeMedication](/sdk/commands/#changemedication)              |
 | closeGoal           | [CloseGoal](/sdk/commands/#closegoal)                            |
 | diagnose            | [Diagnose](/sdk/commands/#diagnose)                              |
 | familyHistory       | [FamilyHistory](/sdk/commands/#familyhistory)                    |
