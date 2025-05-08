@@ -1263,7 +1263,6 @@ type: None</pre></td>
   </tbody>
 </table>
 
-
 #### Observations
 
 <table>
@@ -2230,7 +2229,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     </tr>
   </tbody>  
 </table>
-
 
 #### Allergy Command
 
@@ -12508,7 +12506,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>  
 </table>
 
-
 #### Review of Systems Command
 
 <table>
@@ -12882,7 +12879,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
   </tbody>
 </table>
-
 
 #### Stop Medication Command
 
@@ -15121,151 +15117,569 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 The following events are emitted during the lifecycle of a patient portal session.
 
-
 <table>
-  <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Description</th>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENT_CANCELED</th></tr>
+    <tr><td colspan="3">Occurs after an appointment is canceled</td></tr>
   </thead>
   <tbody>
     <tr>
-      <td>PATIENT_PORTAL__APPOINTMENT_CANCELED</td>
-      <td>Occurs after an appointment is canceled</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>appt_id</pre></td>
+      <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
+      <td><pre>None</pre></td>
     </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENT_RESCHEDULED</td>
-      <td>Occurs after an appointment is rescheduled</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED</td>
-      <td>Occurs when checking if an appointment can be canceled</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED</td>
-      <td>Occurs when checking if an appointment can be rescheduled</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH</td>
-      <td>Occurs after the appointment slots search has been done, allowing the values to be modified</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH</td>
-      <td>Occurs before appointment types are resolved, allowing the internal values to be bypassed</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH</td>
-      <td>Occurs after appointment types are resolved, allowing the internal values to be modified</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__PRE_SEARCH</td>
-      <td>Occurs before appointment locations are resolved, allowing the internal values to be bypassed</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH</td>
-      <td>Occurs after appointment locations are resolved, allowing the internal values to be modified</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__PRE_SEARCH</td>
-      <td>Occurs before appointment providers are resolved, allowing the internal values to be bypassed</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH</td>
-      <td>Occurs after appointment providers are resolved, allowing the internal values to be modified</td>
-  </tbody>
+  </tbody>  
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENT_RESCHEDULED</th></tr>
+    <tr><td colspan="3">Occurs after an appointment is rescheduled</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>appt_id</pre></td>
+      <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
+      <td><pre>None</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED</th></tr>
+    <tr><td colspan="3">Occurs when checking if an appointment can be canceled</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>appt_id</pre></td>
+      <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
+      <td><pre>None</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED</th></tr>
+    <tr><td colspan="3">Occurs when checking if an appointment can be rescheduled</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>appt_id</pre></td>
+      <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
+      <td><pre>None</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH</th></tr>
+    <tr><td colspan="3">Occurs after the appointment slots search has been done, allowing the values to be modified</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>"slots_by_provider": dict</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH</th></tr>
+    <tr><td colspan="3">Occurs before appointment types are resolved, allowing the internal values to be bypassed</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH</th></tr>
+    <tr><td colspan="3">Occurs after appointment types are resolved, allowing the internal values to be modified</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>"appointment_types": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__PRE_SEARCH</th></tr>
+    <tr><td colspan="3">Occurs before appointment locations are resolved, allowing the internal values to be bypassed</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH</th></tr>
+    <tr><td colspan="3">Occurs after appointment locations are resolved, allowing the internal values to be modified</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>"locations": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__PRE_SEARCH</th></tr>
+    <tr><td colspan="3">Occurs before appointment providers are resolved, allowing the internal values to be bypassed</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH</th></tr>
+    <tr><td colspan="3">Occurs after appointment providers are resolved, allowing the internal values to be modified</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>"providers": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
 
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
 
-
 <table>
-  <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Description</th>
+    <tr><th colspan="2">SHOW_NOTE_HEADER_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
   </thead>
   <tbody>
     <tr>
-      <td>SHOW_NOTE_HEADER_BUTTON</td>
-      <td>Occurs when patient notes are being loaded.</td>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": str
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SHOW_NOTE_FOOTER_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_NOTE_FOOTER_BUTTON</td>
-      <td>Occurs when patient notes are being loaded.</td>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": str
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for social determinants section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for social determinants section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_GOALS_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for goals section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_GOALS_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for goals section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_CONDITIONS_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for conditions section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_CONDITIONS_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for conditions section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_MEDICATIONS_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for medications section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_MEDICATIONS_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for medications section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_ALLERGIES_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for allergies section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_ALLERGIES_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for allergies section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_CARE_TEAMS_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for care teams section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_CARE_TEAMS_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for care teams section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_VITALS_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for vitals section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_VITALS_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for vitals section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_IMMUNIZATIONS_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for immunizations section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_IMMUNIZATIONS_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for immunizations section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_SURGICAL_HISTORY_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for surgical history section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_SURGICAL_HISTORY_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for surgical history section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_FAMILY_HISTORY_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for family history section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_FAMILY_HISTORY_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for family history section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CHART_SUMMARY_CODING_GAPS_SECTION_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for coding gaps section</td></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>SHOW_CHART_SUMMARY_CODING_GAPS_SECTION_BUTTON</td>
-      <td>Occurs when patient chart summary is being loaded, specifically for coding gaps section.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ACTION_BUTTON_CLICKED</th></tr>
+    <tr><td colspan="2">Occurs when an action button is clicked</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "key": action_button_key
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+### Application Events
+
+For more information on these events, see <a href="/sdk/handlers-applications" target="_blank">Applications</a>.
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__ON_OPEN</th></tr>
+    <tr><td colspan="2">Occurs when a user clicks on an application icon to open it</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "patient":
+    "id": str
+  "user": 
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 ### Patient Portal Events
 
 <table>
-  <colgroup>
-    <col width="30%"/>
-    <col width="70%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Occurs when</th>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
+    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
   </thead>
   <tbody>
     <tr>
-      <td>PATIENT_PORTAL__GET_FORMS</td>
-      <td>Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value.</td>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"requested_from": str["appointment" | "labs" | "login" | "messaging" | "my-health" | "payment" | "search-appointment"]</pre></td>
     </tr>
-  </tbody>
+  </tbody>  
 </table>
 
 ### Other Events
@@ -15286,7 +15700,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
     </tr>
     <tr>
       <td>CRON</td>
-      <td>This event fires regularly and can be used for scheduled tasks. See [CronTask](/sdk/handlers-crontask/).</td>
+      <td>This event fires regularly and can be used for scheduled tasks. See <a href='/sdk/handlers-crontask/'>CronTask</a>.</td>
     </tr>
     <tr>
       <td>CLAIM__CONDITIONS</td>
