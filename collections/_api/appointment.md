@@ -305,6 +305,9 @@ sections:
           - name: appointment-type
             type: string
             description: Filters by the code and/or system under `appointmentType.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code` (e.g `http://snomed.info/sct|308335008`).
+          - name: identifier
+            type: string
+            description: Filters appointments by their external identifiers. You can search by just the identifier value or by using the format `system|value` (e.g. `NIST-MPI-1|171122`).
           - name: location
             type: string
             description: The location of the appointment in the format `Location/9d3a079f-22c0-4918-96d7-72eb567563ec`.

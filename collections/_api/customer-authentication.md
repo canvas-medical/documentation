@@ -56,16 +56,6 @@ The basic steps are:
 
 Note that if you use this Flow, you will need to add redirect URIs when creating an application. That's the URI that will receive the authorization code.
 
-If you're using Postman, you can do this flow automatically by going to the `Authorization` tab on the request you're using and set the type to `OAuth 2.0` and set the parameters like in the following image:
-
-<img src="https://files.readme.io/4cafddd-Screenshot_2021-10-26_at_18.41.58.png" alt="Postman Authorization" style="width: 80%;" />
-
-Caveat: Your application needs to set `https://oauth.pstmn.io/v1/callback` as the redirect URI.
-
-After you press "Get New Access Token," you'll be redirected to your Canvas EHR instance to accept the request, and once you do, you'll get a new access token in Postman (that you can use wherever).
-
-If you want to do the flow manually, then the steps are as follows:
-
 1. On your browser, open `{YOUR_CANVAS_EHR_INSTANCE}/auth/authorize/?response_type=code&client_id={CLIENT_ID}&scope={LIST_OF_SCOPES}&redirect_uri={REDIRECT_URI_AS_DEFINED_ON_THE_APPLICATION}`. This will prompt the logged-in user to authorize the Application. Upon authorization, the flow will redirect to the {REDIRECT_URI_AS_DEFINED_ON_THE_APPLICATION} with a code on the query string. You'll need that code next.
 
 2. Now you need to exchange the code received in the previous step for an access token. For that, run the following:

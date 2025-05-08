@@ -161,8 +161,8 @@ sections:
             type: string
             description: The DiagnosticReport category. Filters by the code and/or system  under `category.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code`.
             search_options:
-              - value: http://terminology.hl7.org/CodeSystem/v2-0074
-              - value: http://loinc.org
+              - value: http://terminology.hl7.org/CodeSystem/v2-0074|code
+              - value: http://loinc.org|code
           - name: code
             type: string
             description: The DiagnosticReport code. Filters by the code and/or system under `code.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code`.
