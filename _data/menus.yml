@@ -506,6 +506,8 @@ sdk:
 sdk_overview:
  - title: "Introduction"
    url: /sdk/
+ - title: "Caching Module"
+   url: /sdk/caching/
  - title: "Command Line Interface"
    url: /sdk/canvas_cli/
  - title: "Commands Module"
