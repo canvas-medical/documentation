@@ -15,7 +15,6 @@ from canvas_sdk.caching.plugins import get_cache
 
 cache = get_cache()
 ```
-> ⚠️ Caching is only available when `CANVAS_SDK_PLUGINS_CACHE_ENABLED` is enabled in the environment. If disabled, attempting to access the cache will raise a `CachingException`.
 
 ---
 
