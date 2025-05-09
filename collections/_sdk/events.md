@@ -15677,7 +15677,13 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr> 
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"requested_from": str["appointment" | "labs" | "login" | "messaging" | "my-health" | "payment" | "search-appointment"]</pre></td>
+      <td><pre>"requested_from": str["appointment" |
+                      "labs" |
+                      "login" |
+                      "messaging" |
+                      "my-health" |
+                      "payment" |
+                      "search-appointment"]</pre></td>
     </tr>
   </tbody>  
 </table>
