@@ -93,6 +93,7 @@ AdjustPrescriptionCommand(
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="Main Street Pharmacy",
     prescriber_id="provider_123",
+    supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
@@ -679,19 +680,20 @@ plan = PlanCommand(
 
 **Command-specific parameters**:
 
-| Name                   | Type                          | Required | Description                                                        |
-|------------------------|-------------------------------|----------|--------------------------------------------------------------------|
-| `fdb_code`             | _string_                      | `true`   | FDB code for the medication.                                       |
-| `icd10_codes`          | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. |
-| `sig`                  | _string_                      | `true`   | Administration instructions/details of the medication.             |
-| `days_supply`          | _integer_                     | `false`  | Number of days the prescription is intended to cover.              |
-| `quantity_to_dispense` | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                              |
-| `type_to_dispense`     | _ClinicalQuantity_            | `true`   | Information about the form or unit of the medication to dispense.  |
-| `refills`              | _integer_                     | `true`   | Number of refills allowed for the prescription.                    |
-| `substitutions`        | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed. |
-| `pharmacy`             | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent.    |
-| `prescriber_id`        | _string_                      | `true`   | The key of the prescriber.                     |
-| `note_to_pharmacist`   | _string_                      | `false`  | Additional notes or instructions for the pharmacist.               |
+| Name                      | Type                          | Required | Description                                                        |
+|---------------------------|-------------------------------|----------|--------------------------------------------------------------------|
+| `fdb_code`                | _string_                      | `true`   | FDB code for the medication.                                       |
+| `icd10_codes`             | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. |
+| `sig`                     | _string_                      | `true`   | Administration instructions/details of the medication.             |
+| `days_supply`             | _integer_                     | `false`  | Number of days the prescription is intended to cover.              |
+| `quantity_to_dispense`    | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                              |
+| `type_to_dispense`        | _ClinicalQuantity_            | `true`   | Information about the form or unit of the medication to dispense.  |
+| `refills`                 | _integer_                     | `true`   | Number of refills allowed for the prescription.                    |
+| `substitutions`           | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed. |
+| `pharmacy`                | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. |
+| `prescriber_id`           | _string_                      | `true`   | The key of the prescriber.                                         |
+| `supervising_provider_id` | _string_                      | `true`   | The key of the supervising provider.                               |
+| `note_to_pharmacist`      | _string_                      | `false`  | Additional notes or instructions for the pharmacist.               |
 
 **Enums and Types**
 
@@ -730,6 +732,7 @@ prescription = PrescribeCommand(
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="Main Street Pharmacy",
     prescriber_id="provider_123",
+    supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
@@ -1005,6 +1008,7 @@ RefillCommand(
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="Main Street Pharmacy",
     prescriber_id="provider_123",
+    supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
