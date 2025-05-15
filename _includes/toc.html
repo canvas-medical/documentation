@@ -14,16 +14,43 @@
                 <ul class="toc__submenu toc__accordion toc__accordion__expanded">
                     {% assign itemSorted = item.children | sort: "sort" %}
                     {% for item in itemSorted %}
+                      {%- assign expanded = false -%}
+                      {% if item.children %}
+                        {% for child in item.children %}
+                            {% assign child_url = child.url | split: '#' %}
+                            {% if child_url[0] == page.url %}
+                              {% assign expanded = true %}
+                            {% endif %}
+
+                            {% if child.children %}
+                              {% for grandchild in child.children %}
+                                {% assign grandchild_url = grandchild.url | split: '#' %}
+                                {% if grandchild_url[0] == page.url %}
+                                  {% assign expanded = true %}
+                                {% endif %}
+
+                                {% if grandchild.children %}
+                                  {% for greatgrandchild in grandchild.children %}
+                                    {% assign greatgrandchild_url = greatgrandchild.url | split: '#' %}
+                                    {% if greatgrandchild_url[0] == page.url %}
+                                      {% assign expanded = true %}
+                                    {% endif %}
+                                  {% endfor %}
+                                {% endif %}
+                              {% endfor %}
+                            {% endif %}
+                          {% endfor %}
+                      {% endif %}
                     <li class="toc__item">
                         <div>
-                            {% if item.children %}<span class="toc__toggle{% if item.children %}{% for item in item.children %}{% assign this_url = item.url | split: '#' %}{% if this_url[0] == page.url %} toc__toggle__expanded toc__active__toggle{% endif %}{% endfor %}{% endif %}">{% include icons/chevron.svg %}</span>{% endif %}
+                            {% if item.children %}<span class="toc__toggle{% if expanded %} toc__toggle__expanded toc__active__toggle{% endif %}">{% include icons/chevron.svg %}</span>{% endif %}
                             {% if item.url %}<a href="{{ item.url }}" {% assign this_url=item.url | split: '#' %}{% if
                                 this_url[0]==page.url %} class="toc__active" {% endif %}>{{ item.title }}</a>{% else
                             %}{{
                                 item.title }}{% endif %}
                         </div>
                         {% if item.children %}
-                        <ul class="toc__submenu toc__accordion{% if item.children %}{% for item in item.children %}{% assign this_url = item.url | split: '#' %}{% if this_url[0] == page.url %} toc__accordion__expanded{% endif %}{% endfor %}{% endif %}">
+                        <ul class="toc__submenu toc__accordion{% if expanded %} toc__accordion__expanded{% endif %}">
                             {% for item in item.children %}
                             <li class="toc__item">
                                 <div>
