@@ -265,6 +265,8 @@ api_documentreference:
    url: /api/documentreference/#read
  - title: "DocumentReference Search"
    url: /api/documentreference/#search
+ - title: "DocumentReference Operations"
+   url: /api/documentreference-operations
 api_encounter:
  - title: "Encounter Read"
    url: /api/encounter/#read
