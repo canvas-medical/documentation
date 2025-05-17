@@ -540,7 +540,14 @@ sdk_handlers:
   - title: "CronTask"
     url: /sdk/handlers-crontask/
   - title: "SimpleAPI"
-    url: /sdk/handlers-simpleapi/
+    url: /sdk/handlers-simple-api/
+    identifier: simple_api_handlers
+
+simple_api_handlers:
+  - title: "HTTP API"
+    url: /sdk/handlers-simple-api-http/
+  - title: "WebSocket API"
+    url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
  - title: "Protocol Cards"
