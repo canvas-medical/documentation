@@ -216,7 +216,6 @@ sections:
                         exclude_in: create
                       - value: patientadministrativedocument
                       - value: referralreport
-                        exclude_in: create
                       - value: uncategorizedclinicaldocument
             type: array[json]
           - name: subject
@@ -331,7 +330,6 @@ sections:
                       - value: mimeType Sufficient
           - name: context
             type: json
-            exclude_in: create
             description: >-
               Clinical context of document. <br><br>
 
@@ -340,10 +338,13 @@ sections:
               - For POC Lab Reports or Educational Material documents, the context will contain information about the encounter of the note the commands were committed with if applicable. 
 
               - For Lab Reports that have a Lab Review committed in a note, the context will have information about any encounter associated with that note.
+
+              - For Referral Reports, the context will include practiceSettings that include any specialty codings of the referral.
             attributes: 
               - name: encounter
                 type: array[json]
                 description: Context of the document content
+                exclude_in: create
                 attributes: 
                   - name: reference
                     type: string
@@ -354,6 +355,7 @@ sections:
               - name: period
                 type: json
                 description: Time of service that is being documented
+                exclude_in: create
                 attributes: 
                   - name: start
                     type: datetime
@@ -361,6 +363,31 @@ sections:
                   - name: end
                     type: datetime
                     description: End time with inclusive boundary, if not ongoing of the encounter
+              - name: practiceSetting
+                type: json
+                description: Specialty coding
+                create_description: >- 
+                  Specialty coding.
+                  <br><br>
+                  **Required** for DocumentReferences with a `category.coding.code` of **referralreprt**. Use to determine the Specialty on the documents of the category type 'referralreport'. Use [this value set for reference](https://hl7.org/fhir/R4/valueset-c80-practice-codes.html).
+                attributes:
+                  - name: coding
+                    type: array[json]
+                    attributes:
+                      - name: system
+                        description: The system url of the specialty coding.
+                        required_in: create
+                        enum_options: 
+                          - value: http://snomed.info/sct
+                        type: string
+                      - name: code
+                        description: The code of the specialty.
+                        required_in: create
+                        type: string
+                      - name: display
+                        description: Title of the specialty as a display text value.
+                        required_in: create
+                        type: string
         search_parameters:
           - name: _id
             type: string
@@ -678,7 +705,18 @@ payload = {
                 "display": "mimeType Sufficient"
             }
         }
-    ]
+    ],
+    "context": {
+        "encounter": [
+            {
+                "reference": "Encounter/879b35fd-3bc2-4ccd-98d7-954dd9b6d0a9",
+                "type": "Encounter"
+            }
+        ],
+        "period": {
+            "start": "2024-02-22T23:10:12.409838+00:00"
+        }
+    }
 }
 ```
 {% endtab %}
@@ -1125,6 +1163,27 @@ payload = {
             "resource": {
                 "resourceType": "DocumentReference",
                 "id": "6ebf590d-ff90-412e-a5e7-9be30d6e4c35",
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-comment",
+                        "valueString": "A comment on Consult note"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-clinical-date",
+                        "valueDate": "2024-10-10"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-review-mode",
+                        "valueCode": "RN"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer",
+                        "valueReference": {
+                            "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
+                            "type": "Practitioner"
+                        }
+                    },
+                ],
                 "status": "current",
                 "type": {
                     "coding": [
@@ -1180,7 +1239,18 @@ payload = {
                             "display": "mimeType Sufficient"
                         }
                     }
-                ]
+                ],
+                "context": {
+                    "practiceSetting": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "394580004",
+                                "display": "Clinical genetics"
+                            }
+                        ]
+                    }
+                }
             }
         },
         {
