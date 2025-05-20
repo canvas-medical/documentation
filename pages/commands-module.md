@@ -241,8 +241,8 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr> 
       <td>Chart Section Review</td>
-      <td><span class="tag-in-progress"> In progress </span> </td>
-      <td></td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>The committed layout defaults to expanded.</li></ul></td>
     </tr>
     <tr> 
       <td>Lab Review</td>
