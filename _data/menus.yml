@@ -529,6 +529,8 @@ sdk_overview:
    url: /sdk/utils/
  - title: "Questionnaires"
    url: /sdk/questionnaires/
+ - title: "Secrets"
+   url: /sdk/secrets/
 
 sdk_handlers:
   - title: "Action Buttons"
