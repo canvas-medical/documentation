@@ -491,6 +491,11 @@ guides_list:
    uses:
      - sdk
 
+ - title: "Additional fields on patient profile"
+   url: /guides/profile-additional-fields/
+   description: How to add additional fields to patient profile
+   uses:
+     - sdk
 
 
 guides_templates:
@@ -564,6 +569,9 @@ effects_module:
  - title: "Form Result"
    url: /sdk/form-result-effect
    description: Effect for dynamically displaying forms in the Patient Portal.
+ - title: "Create Form"
+   url: /sdk/create-form-effect
+   description: Effect for dynamically displaying forms in the Patient profile.
  - title: "Layout Effects"
    url: /sdk/layout-effect/
    description: Modify or interact with the layout in Canvas.
