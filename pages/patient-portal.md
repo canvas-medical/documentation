@@ -30,7 +30,7 @@ Opportunities for customization via plugins are highlighted in blue.
 
 ## Username & Password Login
 
-Enabled through: `ENABLE_PATIENT_PORTAL` in Constance config.
+Enabled through `ENABLE_PATIENT_PORTAL` in Constance config.
 
 Customers that use the Canvas patient portal have a new section in the profile to manage portal users. 
 
@@ -53,7 +53,7 @@ All communication will continue to be sent to the verified contact points (not t
 
 ## Login Page Banner
 
-Enabeled through: `PATIENT_APP_BANNER`  in Constance config.
+Enabeled through `PATIENT_APP_BANNER`  in Constance config.
 
 You can add a banner to your login page using this new config. Leverage HTML to add style to the text. 
 
@@ -69,7 +69,7 @@ We've implemented a landing page that is powered by plugins. The Canvas managed 
 
 ## My Health
 
-Enabeled through: `PATIENT_APP_MY_HEALTH` in Constance config.
+Enabeled through `PATIENT_APP_MY_HEALTH` in Constance config.
 
 ### Chart Summary
 The My Health section includes a new chart summary and the current Health Records section (if enabled). Each section will mimic the filters used in the default view of the chart (if you see it in Canvas - the patient will see it on their portal)
@@ -81,9 +81,10 @@ The chart summary shows the following:
 - **Allergies:** Active allergies. Patients will see all available fields (allergy, severity, reaction, and onset date).
 
 ### Upload Documents
-Patients will also be able to upload documents. Documents added within the portal will populate a new channel in Data Integration. 
 
-{% include alert.html type="warning" content="This is permission based and needs to be configured for testing. Reach out to support if you would like to enable this feature for testing. " %}
+Enabled through `ALLOW_PATIENT_DOCUMENT_UPLOADS` in Constance config. 
+
+Patients will also be able to upload documents. Documents added within the portal will populate a new channel in Data Integration. 
 
 {:refdef: style="text-align: center;"}
 ![landing page](/assets/images/patient-upload.png){:width="98%"}
@@ -124,7 +125,7 @@ The responses will then be recorded in the patient profile. Accepted consents wi
 
 ## Appointments
 
-Enabeled through: `PATIENT_APP_APPOINTMENTS` in Constance config.
+Enabeled through `PATIENT_APP_APPOINTMENTS` in Constance config.
 
 ### Viewing Appointments
 Patients can now manage their appointments through the portal
