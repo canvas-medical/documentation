@@ -2230,6 +2230,42 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   </tbody>  
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__SUPERVISING_PROVIDER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
 #### Allergy Command
 
 <table>
@@ -9876,6 +9912,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">PRESCRIBE__SUPERVISING_PROVIDER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">PRESCRIBE_COMMAND__POST_ORIGINATE</th></tr>
   </thead>
   <tbody>
@@ -11851,6 +11923,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <thead>
     <tr><th colspan="2">REFILL__PRESCRIBE__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+  <tr><th colspan="2">REFILL__SUPERVISING_PROVIDER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
