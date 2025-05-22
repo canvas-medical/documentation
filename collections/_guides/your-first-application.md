@@ -47,7 +47,9 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
                 "name": "My Application",
                 "description": "An Application that does xyz...",
                 "scope": "global",
-                "icon": "assets/python-logo.png"
+                "icon": "assets/python-logo.png",
+                "menu_position": "top",
+                "menu_order": "100"
             }
         ],
         "commands": [],
@@ -72,7 +74,13 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
 4. **scope**:
    - `global`: The app will appear across all contexts.
    - `patient_specific`: The app will appear only in the patient chart page.
+   - `provider_menu_item`: The app button will be displayed on the provider's menu.
+   - `portal_menu_item`: The app button will be displayed on the patient portal menu.
 5. **url_permissions**: The allowed urls and permissions for the application. This is used for security purposes. For more info check the [Application Handler](/sdk/handlers-applications).
+6. **menu_position**: Determines where the menu item will be placed within the menu (this configuration applies only to the providers menu) 
+   - `top`: The item will be placed on the top section.
+   - `bottom`: The item will be placed in the bottom section - this section should display items that open in a new window.
+7. **menu_order**: How the items will be ordered in the menu. e.g 100, 200
 
 ## Step 4: Overriding the Application Behavior
 
@@ -107,6 +115,7 @@ class MyApplication(Application):
 
 - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
 - `NEW_WINDOW`: Opens the URL in a new browser window.
+- `PAGE`: Opens the URL as a page in the app
 - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
 - `RIGHT_CHART_PANE_LARGE`: Opens the URL in an enlarged right-hand pane of the patient chart.
 

@@ -506,6 +506,8 @@ sdk:
 sdk_overview:
  - title: "Introduction"
    url: /sdk/
+ - title: "Caching Module"
+   url: /sdk/caching/
  - title: "Command Line Interface"
    url: /sdk/canvas_cli/
  - title: "Commands Module"
@@ -527,6 +529,8 @@ sdk_overview:
    url: /sdk/utils/
  - title: "Questionnaires"
    url: /sdk/questionnaires/
+ - title: "Secrets"
+   url: /sdk/secrets/
 
 sdk_handlers:
   - title: "Action Buttons"
@@ -538,7 +542,14 @@ sdk_handlers:
   - title: "CronTask"
     url: /sdk/handlers-crontask/
   - title: "SimpleAPI"
-    url: /sdk/handlers-simpleapi/
+    url: /sdk/handlers-simple-api/
+    identifier: simple_api_handlers
+
+simple_api_handlers:
+  - title: "HTTP API"
+    url: /sdk/handlers-simple-api-http/
+  - title: "WebSocket API"
+    url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
  - title: "Protocol Cards"
@@ -565,6 +576,12 @@ effects_module:
  - title: "Patient Portal"
    url: /sdk/patient-portal/
    description: Customize your Patient Portal.
+ - title: "Patient"
+   url: /sdk/effect-patient/
+   description: Interact with patient data.
+ - title: "Notes"
+   url: /sdk/effect-notes/
+   description: Interact with notes in Canvas.
 
 data_module:
  - title: "Allergy Intolerance"
