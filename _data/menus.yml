@@ -569,8 +569,8 @@ effects_module:
  - title: "Form Result"
    url: /sdk/form-result-effect
    description: Effect for dynamically displaying forms in the Patient Portal.
- - title: "Create Form"
-   url: /sdk/create-form-effect
+ - title: "Patient Metadata Create Form"
+   url: /sdk/patient-metadata-create-form-effect
    description: Effect for dynamically displaying forms in the Patient profile.
  - title: "Layout Effects"
    url: /sdk/layout-effect/

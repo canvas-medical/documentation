@@ -9,10 +9,10 @@ This guide explains how to create additional fields that will appear on the pati
 
 ## What you'll learn:
 
-- Use the [`CreateForm`](/sdk/create-form-effect) effect to display additional fields on the patient profile.
+- Use the [`PatientMetadataCreateForm`](/sdk/patient-metadata-create-form-effect) effect to display additional fields on the patient profile.
 - Use the [`FormField`](/sdk/create-form-effect/#formfield) class to create fields
 
-## Create form plugin
+## Patient Metadata Create form plugin
 
 #### 1. FormField
 
@@ -28,12 +28,12 @@ To create the form, we need to specify which items will be included. For this, w
     ),
 ```
 
-#### 2. CreateFormEffect
+#### 2. PatientMetadataCreateFormEffect
 
 The next step is to add these fields to the effect so they can be used to build the form.
 
 ```python
-CreateFormEffect(form_fields=[
+PatientMetadataCreateFormEffect(form_fields=[
     FormField(
         key='musicGenre',
         label='Preferred music genre',
@@ -51,7 +51,7 @@ Here’s an example of a complete plugin showcasing the different input types.
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.create_form import CreateFormEffect, InputType, FormField
+from canvas_sdk.effects.patient_metadata_create_form import PatientMetadataCreateFormEffect, InputType, FormField
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 
@@ -61,7 +61,7 @@ class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_METADATA__GET_ADDITIONAL_FIELDS)
 
     def compute(self) -> list[Effect]:
-        form = CreateFormEffect(form_fields=[
+        form = PatientMetadataCreateFormEffect(form_fields=[
             FormField(
                 key='musicGenre',
                 label='Preferred music genre',

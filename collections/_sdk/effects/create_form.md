@@ -1,6 +1,6 @@
 ---
-title: "Create form"
-slug: "create-form-effect"
+title: "Patient Metadata Create form"
+slug: "patient-metadata-create-form-effect"
 excerpt: "Effect for dynamically displaying fields on patient profile"
 hidden: false
 ---
@@ -10,7 +10,7 @@ hidden: false
 This allow developers to dynamically display additional fields to the patient profile.
 
 ```python
-    CreateFormEffect(form_fields=[
+    PatientMetadataCreateFormEffect(form_fields=[
         FormField(
             key='status',
             label='Status',
@@ -40,9 +40,9 @@ A FormField consists of the following properties:
 | `options`          | `list[str]` | possible options for when the input type is set to "SELECT”  |
 
 
-### **CreateFormEffect**
+### **PatientMetadataCreateFormEffect**
 
-A CreateFormEffect consists of the following properties:
+A PatientMetadataCreateFormEffect consists of the following properties:
 
 #### Attributes
 
