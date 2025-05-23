@@ -15844,5 +15844,9 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
       <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
       <td>Patient Portal landing page is loading. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
     </tr>
+    <tr>
+      <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>
+      <td>Patient Profile is loading. See <a href="{% link _guides/profile-additional-fields.md %}" target="_blank">How to add patient profile additional fields</a> for examples of how to use this event.</td>
+    </tr>
   </tbody>
 </table>
