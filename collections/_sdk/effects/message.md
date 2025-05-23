@@ -78,7 +78,7 @@ from canvas_sdk.v1.data.staff import Staff
 
 from canvas_sdk.effects.message import Message
 
-sender = Staff.objects.first()
+staff = Staff.objects.first()
 patient = Patient.objects.first()
 
 # 1. Create (originate) only
