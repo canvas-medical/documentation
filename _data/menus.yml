@@ -582,6 +582,9 @@ effects_module:
  - title: "Notes"
    url: /sdk/effect-notes/
    description: Interact with notes in Canvas.
+ - title: "Messages"
+   url: /sdk/effect-messages/
+   description: Interact with messages in Canvas.
 
 data_module:
  - title: "Allergy Intolerance"
@@ -629,6 +632,9 @@ data_module:
  - title: "Lab Partner"
    url: /sdk/data-lab-partner-and-test/
    description: Lab partners and the tests they offer within Canvas.
+ - title: "Message"
+   url: /sdk/data-message/
+   description: Messages sent to and from Canvas.
  - title: "Note"
    url: /sdk/data-note/
    description: Clinical notes on patient charts.
