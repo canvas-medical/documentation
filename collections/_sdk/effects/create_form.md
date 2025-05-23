@@ -1,13 +1,13 @@
 ---
 title: "Patient Metadata Create form"
 slug: "patient-metadata-create-form-effect"
-excerpt: "Effect for dynamically displaying fields on patient profile"
+excerpt: "Effect for dynamically displaying fields in the patient profile"
 hidden: false
 ---
 
 ## Overview
 
-This allow developers to dynamically display additional fields to the patient profile.
+This allows developers to dynamically display additional fields in the patient profile.
 
 ```python
     PatientMetadataCreateFormEffect(form_fields=[

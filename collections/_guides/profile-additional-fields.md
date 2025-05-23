@@ -53,11 +53,11 @@ Here’s an example of a complete plugin showcasing the different input types.
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.patient_metadata_create_form import PatientMetadataCreateFormEffect, InputType, FormField
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-# Inherit from BaseProtocol to properly get registered for events
-class Protocol(BaseProtocol):
+# Inherit from BaseHandler to properly get registered for events
+class Protocol(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_METADATA__GET_ADDITIONAL_FIELDS)
 
     def compute(self) -> list[Effect]:
