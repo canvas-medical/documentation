@@ -93,6 +93,7 @@ AdjustPrescriptionCommand(
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="Main Street Pharmacy",
     prescriber_id="provider_123",
+    supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
@@ -691,6 +692,7 @@ plan = PlanCommand(
 | `substitutions`        | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed. |
 | `pharmacy`             | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent.    |
 | `prescriber_id`        | _string_                      | `true`   | The key of the prescriber.                     |
+| `supervising_provider_id` | _string_                   | `true`   | The key of the supervising provider of the presciber.           |
 | `note_to_pharmacist`   | _string_                      | `false`  | Additional notes or instructions for the pharmacist.               |
 
 **Enums and Types**
@@ -730,6 +732,7 @@ prescription = PrescribeCommand(
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="Main Street Pharmacy",
     prescriber_id="provider_123",
+    supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
@@ -1005,6 +1008,7 @@ RefillCommand(
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="Main Street Pharmacy",
     prescriber_id="provider_123",
+    supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
