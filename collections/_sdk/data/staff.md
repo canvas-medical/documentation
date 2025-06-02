@@ -110,6 +110,39 @@ To show a Staff member's contact points (email, phone, etc.), the `telecom` attr
 | state              | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
 | staff              | [Staff](#staff)                                                       |
 
+### StaffAddress
+
+| Field Name  | Type                                                    |
+|-------------|---------------------------------------------------------|
+| id          | UUID                                                    |
+| dbid        | Integer                                                 |
+| line1       | String                                                  |
+| line2       | String                                                  |
+| city        | String                                                  |
+| district    | String                                                  |
+| state_code  | String                                                  |
+| postal_code | String                                                  |
+| use         | [AddressUse](/sdk/data-enumeration-types/#addressuse)   |
+| type        | [AddressType](/sdk/data-enumeration-types/#addresstype) |
+| longitude   | Float                                                   |
+| latitude    | Float                                                   |
+| start       | Date                                                    |
+| end         | Date                                                    |
+| country     | String                                                  |
+| state       | String                                                  |
+| staff       | [Staff](#staff)                                         |
+
+### StaffPhoto
+
+| Field Name  | Type                                                    |
+|-------------|---------------------------------------------------------|
+| dbid        | Integer                                                 |
+| created     | DateTime                                                |
+| modified    | DateTime                                                |
+| staff       | [Staff](#staff)                                         |
+| url         | String                                                  |
+| title       | String                                                  |
+
 <br/>
 <br/>
 <br/>
