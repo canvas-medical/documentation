@@ -35,7 +35,7 @@ Before any effect is emitted, the model runs these checks:
 - **Role Constraints:** Sender and Recipient must always be one of Patient or Staff; Patient-to-Patient and Staff-to-Staff messaging are not allowed.
 - **UI Refresh Required:** Due to system constraints, editing a message requires a manual UI refresh for updated content to display.
 - **No Attachments Supported:** The Message effect does not yet support attachments.
-- **Immediate Post for Patient-to-Staff:** Messages created from a Patient to Staff cannot be drafted and will immediately appear in the timeline.
+- **Immediate Post for Patient-to-Staff:** Messages created from a Patient to Staff cannot be drafted and will immediately appear in the timeline. This means that `CREATE_AND_SEND` and `SEND` effects will fail in these scenarios. You should only use the `CREATE` method for Patient-to-Staff messaging.
 
 
 ## Effect Methods
