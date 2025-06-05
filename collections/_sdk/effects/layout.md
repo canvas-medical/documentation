@@ -167,7 +167,8 @@ class ModalEffectHandler:
         modal_effect = LaunchModalEffect(
             url="https://example.com/info",
             content=None,
-            target=LaunchModalEffect.TargetType.DEFAULT_MODAL
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+            title="Example Info"
         )
         return [modal_effect.apply()]
 ```
@@ -181,6 +182,7 @@ The `LaunchModalEffect` class has the following properties:
   - `NEW_WINDOW`: Opens the content in a new browser window.
   - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
   - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
+- **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 
 
 ## Portal Landing Page Widgets
