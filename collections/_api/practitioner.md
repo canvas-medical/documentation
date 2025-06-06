@@ -295,7 +295,7 @@ sections:
           - name: email
             type: string
             description: Practitioner user email.
-          - name: npiNumber
+          - name: npi-number
             type: string
             description: Practitioner NPI number.
 
