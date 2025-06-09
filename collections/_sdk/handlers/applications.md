@@ -15,7 +15,7 @@ To add an application, your handler class should inherit from  the
 
 Your class must implement the `on_open()` method. In most cases, you will
 return a `LaunchModalEffect`, with either a URL you wish to iframe into the
-Canvas UI or HTML to be rendered in that iframe directly.
+Canvas UI or HTML to be rendered in that iframe directly, make sure to set a `title` so users can easily recognize the application when it's minimized.
 
 Here is an example of an implemented application class:
 
@@ -28,7 +28,7 @@ from canvas_sdk.handlers.application import Application
 class IFrameApp(Application):
     def on_open(self) -> Effect:
         return LaunchModalEffect(url=f"https://www.canvasmedical.com/extensions",
-            target=LaunchModalEffect.TargetType.RIGHT_CHART_PANE).apply()
+            target=LaunchModalEffect.TargetType.RIGHT_CHART_PANE, title="Your Iframe App").apply()
 ```
 
 In addition, your `CANVAS_MANIFEST.json` file must provide some information
