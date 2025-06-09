@@ -180,6 +180,7 @@ The following effects are available to be applied in Canvas.
 | PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE       | Can be used to show the 'reschedule' button on the appointment card, allowing patients to easily reschedule their appointments                                                                              |
 | UPDATE_USER                                        | Can be used to update a user                                                                                                                                                      |
 | PATIENT_PORTAL__SEND_INVITE                        | Can be used to trigger a portal invitation for a user                                                                                                                                                      |
+| PATIENT_METADATA__CREATE_ADDITIONAL_FIELDS         | Can be used to show additional fields on the patient profile section                                                                                                                                                      |
 
 <br/>
 <br/>
