@@ -1,6 +1,6 @@
 ---
 title: "Message Effect"
-slug: "message-effect"
+slug: "effect-messages"
 excerpt: "Effect for creating, editing, and sending messages."
 hidden: false
 ---
