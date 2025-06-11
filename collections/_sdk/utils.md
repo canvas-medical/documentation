@@ -169,7 +169,7 @@ Plugin authors can search for medications by NDC code, RxNorm RXCUI, or full-tex
 
 ```python
 from urllib.parse import urlencode
-from canvas_sdk.utils import ontologies_http
+from canvas_sdk.utils.http import ontologies_http
 
 # full text search of the medication name, description, and synonyms
 response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({"search": "tylenol"})}").json()
