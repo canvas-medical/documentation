@@ -587,6 +587,9 @@ effects_module:
  - title: "Patient"
    url: /sdk/effect-patient/
    description: Interact with patient data.
+ - title: "Patient Metadata"
+   url: /sdk/effect-patient-metadata/
+   description: Interact with patient metadata.
  - title: "Notes"
    url: /sdk/effect-notes/
    description: Interact with notes in Canvas.
