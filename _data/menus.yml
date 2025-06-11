@@ -437,9 +437,16 @@ guides_list:
 
  - title: "Customize Search Results"
    url: /guides/customize-search-results/
-   description: Add your own  logic to surface the right options with the appropriate context
+   description: Add your own logic to surface the right options with the appropriate context
    uses:
      - sdk
+
+ - title: "Embedding a SMART on FHIR App"
+   url: /guides/embedding-a-smart-on-fhir-application/
+   description: Embed a SMART app into Canvas
+   uses:
+     - sdk
+     - fhir_api
 
  - title: "Creating, Implementing, and Extending a Scribe Parser"
    url: /guides/scribe-ai-parser/
