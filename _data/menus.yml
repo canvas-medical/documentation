@@ -647,6 +647,9 @@ data_module:
  - title: "Lab Partner"
    url: /sdk/data-lab-partner-and-test/
    description: Lab partners and the tests they offer within Canvas.
+ - title: "Medications"
+   url: /sdk/data-medication/
+   description: A record of a medication that is being consumed by a patient, either now, in the past, or in the future.
  - title: "Message"
    url: /sdk/data-message/
    description: Messages sent to and from Canvas.
