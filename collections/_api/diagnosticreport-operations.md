@@ -15,6 +15,41 @@ The subsequent parameters in the array must be named `labTestCollection`. These 
 
 To mark a lab value as abnormal, an optional `interpretation` attribute can be added to a `labValue` `Observation` resource. <b>Only abnormal interpretations (`"code": "A"`)</b> are currently supported, and the payload must match the structure shown in the example below.
 
+For the values/units in each `labValue` object, either a `valueQuantity` or `valueString` can be supplied in the payload. For example:
+
+```
+...,
+"valueQuantity": {
+    "value": "0.7",
+    "unit": "mg/dL",
+    "system": "http://unitsofmeasure.org",
+},
+...
+```
+
+or
+
+```
+...,
+"valueString": "Normal",
+...
+```
+
+If using `valueQuantity` and a comparator value is needed (i.e. `<1.0`), the comparator value can be passed in a `comparator` key like so:
+
+```
+...,
+"valueQuantity": {
+    "value": "1.0",
+    "unit": "mg/dL",
+    "system": "http://unitsofmeasure.org",
+    "comparator": "<"
+},
+...
+```
+
+Supported `comparator` values are `<`, `<=`, `>=`, and `>`.
+
 {% include alert.html type="warning" content="While lab tests can be posted and are visible in the Canvas UI, they are not currently available to be read through the FHIR API. Only lab values can be read through the Observation resource." %}
 
 

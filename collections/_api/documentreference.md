@@ -52,7 +52,7 @@ sections:
 
               - clinical-date  
 
-              - reviewer  
+              - A reviewer is required, it can either be a practitioner or a group
 
               - requires-signature
               "
@@ -66,6 +66,7 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-clinical-date
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-review-mode
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-reviewer
+                  - value: http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-priority
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-requires-signature
               - name: valueString
@@ -88,16 +89,16 @@ sections:
               - name: valueReference
                 type: json
                 required_in: create
-                description_for_all_endpoints: Value of extension for Reviewer.
-                create_description: The `valueReference` attribute is needed for expressing the Reviewer of the document where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-reviewer`. This attribute is required and will be the reference to the Practitioner (Canvas Staff) that's assigned as the reviewer of this document.
+                description_for_all_endpoints: Value of extension for Reviewer(s). The reviewer can be an individual practitioner and/or a group of practitioners.
+                create_description: The `valueReference` attribute is needed for expressing the Reviewer of the document where the `url` can be `http://schemas.canvasmedical.com/fhir/document-reference-reviewer` for an individual practitioner or `http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group` for a group/team of practitioners. This attribute is required and will be the reference to the Practitioner (Canvas Staff) and/or Group (Canvas Team) that's assigned as the reviewer of this document.
                 attributes:
                   - name: reference
                     type: string
                     required_in: create
-                    description: The reference string of the Practitioner in the format of `"Practitioner/95b9ac2d-e963-4d7a-b165-7901870f1663"`.
+                    description: The reference string of the Practitioner or Group in the format of `"Practitioner/95b9ac2d-e963-4d7a-b165-7901870f1663"` or `"Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78"`.
                   - name: type
                     type: string
-                    description: Type the reference refers to (e.g. "Practitioner").
+                    description: Type the reference refers to (e.g. "Practitioner" or "Group").
               - name: valueBoolean
                 type: string
                 required_in: create
@@ -442,6 +443,13 @@ curl --request POST \
             }
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
+            "valueReference": {
+                "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
+                "type": "Group"
+            }
+        },
+        {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
             "valueBoolean": true
         },
@@ -524,6 +532,13 @@ payload = {
             "valueReference": {
                 "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
                 "type": "Practitioner",
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
+            "valueReference": {
+                "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
+                "type": "Group"
             }
         },
         {
@@ -613,6 +628,13 @@ payload = {
             "valueReference": {
                 "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
                 "type": "Practitioner"
+            }
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
+            "valueReference": {
+                "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
+                "type": "Group"
             }
         },
         {
@@ -844,6 +866,13 @@ payload = {
                         "valueReference": {
                             "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
                             "type": "Practitioner"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
+                        "valueReference": {
+                            "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
+                            "type": "Group"
                         }
                     },
                     {
