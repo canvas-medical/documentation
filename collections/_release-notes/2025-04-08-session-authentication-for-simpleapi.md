@@ -15,6 +15,6 @@ just staff, or based on any information specific to that logged in user.
 Using this will allow you to create and serve responses that are aware of who
 the logged in user is.
 
-See [SimpleAPI Authentication Options](/sdk/handlers-simpleapi/#session) for more details.
+See [SimpleAPI Authentication Options](/sdk/handlers-simple-api-http/#session) for more details.
 
 
