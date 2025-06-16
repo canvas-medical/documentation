@@ -22,7 +22,7 @@ sections:
           
           - Any [Educational Material](https://canvas-medical.help.usepylon.com/articles/4966226408-educational-material-command) committed on a patient's chart.
           
-          - Any [Invoices](https://canvas-medical.help.usepylon.com/articles/5985827257-statements-and-invoicing) generated for a patient.
+          - Any [Invoices](https://help.canvasmedical.com/articles/9992348572-claim-management#invoicing-statements-128) generated for a patient.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
