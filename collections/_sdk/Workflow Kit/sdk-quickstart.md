@@ -485,7 +485,7 @@ As recommended, John's physician can then complete the Fall Questionnaire in his
 <img src="https://files.readme.io/e4d8fa2-fall_screening_questionnaire.png" alt="Fall Screening Questionnaire" width="60%">
 
 
-{% include alert.html type="info" content="For more information on creating Questionnaires in Canvas, see [Creating a New Questionnaire](https://canvas-medical.help.usepylon.com/articles/7418371785-creating-a-new-questionnaire)." %}
+{% include alert.html type="info" content="For more information on creating Questionnaires in Canvas, see [Creating a New Questionnaire](https://help.canvasmedical.com/articles/7017593857-creating-questionnaires)." %}
 
 Once the recommended Fall Screening Questionnaire has been completed, the Protocol is considered to have been satisfied. It is now moved to the _Inactive_ tab in John's chart:
 
