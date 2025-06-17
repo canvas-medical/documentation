@@ -279,7 +279,7 @@ sections:
                     type: string
               - name: relationship
                 type: array[json]
-                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry can contain a text string attribute and a coding list. The text attribute is a free text string representing the relationship to the patient. The coding list can specify the [configurable contact category codings](https://canvas-medical.help.usepylon.com/articles/4371968359-patient-contact-information) this contact has to the patient.
+                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry can contain a text string attribute and a coding list. The text attribute is a free text string representing the relationship to the patient. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
                 attributes:
                   - name: text
                     type: string

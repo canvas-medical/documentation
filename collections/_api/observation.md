@@ -477,7 +477,7 @@ sections:
             
             **Note types**<br>
             Most our FHIR endpoints insert commands into a Data Import Note type on the patient's timeline.
-            With the release of [configurable note types](https://canvas-medical.help.usepylon.com/articles/9237060452-note-types), if you create a new Note Type in Settings with **system = Canvas** and **code = VitalsImport**,
+            With the release of [configurable note types](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types), if you create a new Note Type in Settings with **system = Canvas** and **code = VitalsImport**,
             then the Observation Create endpoint will always import into that note type instead.<br><br>
 
 

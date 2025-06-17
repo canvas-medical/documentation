@@ -28,7 +28,7 @@ sections:
             type: json
             description: >-
               Type of coverage, such as medical, workers compensation, self pay, etc.<br><br>
-              In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers).
+              In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Pylon article](https://help.canvasmedical.com/articles/5877696655-patient-coverages#managing-insurers-68).
             attributes:
               - name: coding
                 description: Code defined by a terminology system.
