@@ -137,7 +137,7 @@ Enabling the appointments section within constance allows all patients to:
 - Cancel upcoming appointments 
 
 <div style="background-color: #c9dfe3; color: black; padding: 10px;">
-Available actions can be restricted based on your business logic. See <a href="https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/portal_disable_cancel_appts%20">here</a> for an example plugin that hides the cancellation button.
+Available actions can be restricted based on your business logic. See <a href="https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/portal_disable_cancel_appts">here</a> for an example plugin that hides the cancellation button.
 </div>
 
 ### Patient Self-Scheduling
