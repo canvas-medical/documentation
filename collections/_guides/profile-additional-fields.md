@@ -51,7 +51,7 @@ Here’s an example of a complete plugin showcasing the different input types.
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.patient_metadata_create_form import PatientMetadataCreateFormEffect, InputType, FormField
+from canvas_sdk.effects.patient_metadata import PatientMetadataCreateFormEffect, InputType, FormField
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 
