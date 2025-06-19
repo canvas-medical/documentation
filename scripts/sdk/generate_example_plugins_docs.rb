@@ -13,6 +13,7 @@ require 'json'
 # './canvas-plugins/example-plugins/'
 canvas_plugins_repo_root = ENV['EXAMPLE_PLUGINS_ROOT'] || './canvas-plugins/example-plugins/'
 
+# List the plugins we were requested to generate docs for
 changed_plugins = ARGV[0].split(',')
 puts "\nGenerating docs for example plugins:"
 changed_plugins.each do |plugin|
@@ -20,58 +21,79 @@ changed_plugins.each do |plugin|
 end
 puts
 
+# For each plugin
 changed_plugins.each do |plugin_name|
+  # See if there is a matching plugin directory in the canvas plugins repo
   plugin_path = Pathname.new("#{canvas_plugins_repo_root}#{plugin_name}")
   unless plugin_path.exist?
     puts "Plugin not found: #{plugin_path}"
     next
   end
+  # If the directory exists, see if it contains a manifest file
   manifest_file = plugin_path.children.select{|a| a.basename.to_s.downcase == 'canvas_manifest.json'}.first
   unless manifest_file
     puts "Directory does not contain a manifest file: #{plugin_path}"
     next
   end
 
+  # Load the manifest file, and read the name attribute (which we use a lot)
   manifest = JSON.load_file manifest_file
   plugin_name = manifest['name']
 
   puts "Plugin found: #{plugin_path}"
+
+  # Write or overwrite a markdown file that will contain our documentation
   File.open("collections/_sdk/examples/#{plugin_name}.md", 'w') do |file|
+    # Add the front matter
     file.puts("---")
     file.puts("title: '#{plugin_name}'")
     file.puts("slug: 'example-#{plugin_name}'")
     file.puts("---")
     file.puts("")
 
+    # Add a banner with a link to the plugin's location in the github repo
     alert_html = <<ALERTHTML
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/#{plugin_name}' target='_blank'>View the source</a> for this plugin on GitHub." %}
 ALERTHTML
-
-    file.puts()
     file.puts(alert_html)
     file.puts()
 
+    # Embed the readme markdown content directly into this doc page
     readme = plugin_path.children.select{|a| a.basename.to_s.downcase == 'readme.md'}.first
     readme.readlines.each do |line|
       file.puts(line)
     end
     file.puts()
 
+    # This is a method which is called recursively to walk the plugin
+    # directory structure. It recreates the tree as nested headers, which are
+    # used to generate the table of contents.
+    # 
+    # Some files may be listed as a header but without having their content
+    # displayed. We only display content of the manifest and files ending in .py.
     def print_directory_contents(directory_path, file, level = 0)
+      # We sort the files to ensure the readme and manifest are handled first.
       directory_path.children.sort do |a,b|
         ['readme.md', 'canvas_manifest.json'].include?(a.basename.to_s.downcase) ? 0 : 1
       end.each do |child_path|
+        # If the current child_path is a directory, we'll create the header
+        # for the directory and then recurse.
         if child_path.directory?
           file.puts("##" + ("#"*level) + " " + child_path.basename.to_s + '/')
           file.puts()
           print_directory_contents(child_path, file, level + 1)
         else
+          # Ignore the readme, we dumped its contents above
           if child_path.basename.to_s.downcase == 'readme.md'
             # Already handled separately
             next
           end
+          # Create a header at the appropriate level (starting with h2) for
+          # this filename.
           file.puts("##" + ("#"*level) + " " + child_path.basename.to_s)
           file.puts()
+          # If its the manifest file, ensure the syntax highlighting is set to
+          # json when dumping the contents.
           if child_path.basename.to_s.downcase == 'canvas_manifest.json'
               file.puts("```json")
               child_path.readlines.each do |line|
@@ -79,6 +101,8 @@ ALERTHTML
               end
               file.puts("```")
               file.puts()
+          # If it's a python file, ensure the syntax highlighting is set to
+          # python when dumping the contents
           elsif child_path.extname == ".py"
               file.puts("```python")
               child_path.readlines.each do |line|
@@ -91,34 +115,12 @@ ALERTHTML
       end
     end
 
+    # Initial entrypoint for the recursive function
     print_directory_contents plugin_path, file
+
+    # Ensure padding at the bottom of the page
+    file.puts("<br/>")
+    file.puts("<br/>")
+    file.puts("<br/>")
   end
 end
-
-# ```
-# ---
-# title: "Test Issue 52"
-# slug: "example-test-issue-52"
-# ---
-# 
-# {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/api_samples' target='_blank'>View the source</a> for this plugin on GitHub."  %}
-# 
-# This is my example
-# 
-# ## CANVAS_MANIFEST.json
-# 
-# tktk
-# 
-# ## routes/
-# 
-# tk
-# 
-# ### api.py
-# 
-# tk
-# 
-# ### info.py
-# 
-# tk
-# 
-# ```
