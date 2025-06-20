@@ -10,7 +10,7 @@ hidden: false
 This allows developers to dynamically display additional fields in the patient profile. For more  guidance please reference ["How to add additional profile fields" guide](https://docs.canvasmedical.com/guides/profile-additional-fields/).
 
 ```python
-    from canvas_sdk.effects.patient_metadata_create_form import PatientMetadataCreateFormEffect, InputType, FormField
+    from canvas_sdk.effects.patient_metadata import PatientMetadataCreateFormEffect, InputType, FormField
 
     PatientMetadataCreateFormEffect(form_fields=[
         FormField(
