@@ -182,11 +182,11 @@ sections:
           - name: reasonCode
             type: array[json]
             description_for_all_endpoints: >-
-              Coded reason this appointment is scheduled. <br><br>Canvas supports two ways to specify the reason for vist (RFV): [structured](/documentation/reason-for-visit-setting-codings) and unstructured. Both the `coding` and `text` attributes are used for Structured RFVs, whereas unstructured RFVs only leverage the `text` attribute.
+              Coded reason this appointment is scheduled. <br><br>Canvas supports two ways to specify the reason for vist (RFV): [structured](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) and unstructured. Both the `coding` and `text` attributes are used for Structured RFVs, whereas unstructured RFVs only leverage the `text` attribute.
             create_description:
               Canvas only accepts the first item in the reasonCode list.<br><br>
 
-              If you are taking advantage of our [structured reason for visit](/documentation/reason-for-visit-setting-codings) feature, you can provide a `coding` that Canvas can use to look up the `code` value in configured in settings and display the structured RFV matching that code. If `Appointment.reasonCode[0].coding[0].code` is not a valid ReasonForVisitSettingCoding you will get the error "structured reason for visit with code {code} does not exist". You will also receive an error if the RFV code in Canvas' setting's page is not unique. <br><br> 
+              If you are taking advantage of our [structured reason for visit](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) feature, you can provide a `coding` that Canvas can use to look up the `code` value in configured in settings and display the structured RFV matching that code. If `Appointment.reasonCode[0].coding[0].code` is not a valid ReasonForVisitSettingCoding you will get the error "structured reason for visit with code {code} does not exist". You will also receive an error if the RFV code in Canvas' setting's page is not unique. <br><br> 
 
               The `text` attribute maps to the free text Reason For Visit command.  If you are using the structured reason for visit feature, this text will display as the `comment` in the command.  If you are not using the structured reason for visit feature, then only `Appointment.reasonCode[0].text` needs to be populated in your message and `coding` should be omitted. <br><br>
 

@@ -10,7 +10,7 @@ This guide explains how to create additional fields that will appear on the pati
 ## What you'll learn:
 
 - Use the [`PatientMetadataCreateForm`](/sdk/patient-metadata-create-form-effect) effect to display additional fields on the patient profile.
-- Use the [`FormField`](/sdk/create-form-effect/#formfield) class to create fields
+- Use the [`FormField`](/sdk/patient-metadata-create-form-effect/#formfield) class to create fields
 
 ## Patient Metadata Create form plugin
 

@@ -78,7 +78,7 @@ sections:
 
           **`timezone`**
           <br><br>
-          [http://hl7.org/fhir/StructureDefinition/tz-code](http://hl7.org/fhir/StructureDefinition/tz-code)
+          [http://hl7.org/fhir/StructureDefinition/tz-code](https://build.fhir.org/ig/HL7/fhir-extensions/StructureDefinition-tz-code.html)
           <br><br>
           The timezone a patient lives in.
           <br><br>
