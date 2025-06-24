@@ -74,7 +74,6 @@ appointment = Appointment.objects.filter(
 | note_id                      | Integer                                                           |
 | note_type_id                 | Integer                                                           |
 | status                       | String                                                            |
-| status                       | String                                                            |
 | meeting_link                 | URL                                                               |
 | telehealth_instructions_sent | Boolean                                                           |
 | location                     | [PracticeLocation](#/sdk/data-practicelocation/#practicelocation) |
