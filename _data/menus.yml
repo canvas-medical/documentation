@@ -784,6 +784,9 @@ sdk_handlers:
     url: /sdk/handlers-crontask/
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-handler/
+  - title: "Payment Processors"
+    url: /sdk/handlers-payment-processors/
+    identifier: payment_processors_handlers
 
 simple_api_handlers:
   - title: "HTTP API"
