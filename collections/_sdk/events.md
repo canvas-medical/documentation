@@ -101,6 +101,29 @@ Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `M
 
 For detailed information about condition data structures, see [Condition](/sdk/data-condition/).
 
+#### AllergySearchResult
+
+Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY__ALLERGY__POST_SEARCH`, etc.) return results that follow this structure:
+
+```json
+{
+  "id": "allergy_id",
+  "display": "Allergy Name",
+  "annotations": ["Optional", "List", "Of", "Annotations"],
+  "extra": {
+    "coding": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "code": "7980",
+        "display": "Penicillin"
+      }
+    ]
+  }
+}
+```
+
+For detailed information about allergy data structures, see [Allergy Intolerance](/sdk/data-allergy-intolerance/).
+
 ### Record lifecycle events
 
 These events fire as a result of records being created, updated, or deleted.
@@ -2657,7 +2680,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#allergysearchresult'>AllergySearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
@@ -12013,7 +12036,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#allergysearchresult'>AllergySearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
