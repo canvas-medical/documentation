@@ -82,7 +82,7 @@ staff = Staff.objects.first()
 patient = Patient.objects.first()
 ```
 
-### 1. Create (originate) only
+### Create (originate) only
 
 ```
 m1 = Message(
@@ -93,7 +93,7 @@ m1 = Message(
 effect_create = m1.create()
 ```
 
-### 2. Create and send in one step
+### Create and send in one step
 
 ```
 m2 = Message(
@@ -106,7 +106,7 @@ effect_create_and_send = m2.create_and_send()
 m = MessageModel.objects.get(message_id="msg-1234")
 ```
 
-### 3. Edit an existing message
+### Edit an existing message
 
 ```
 m3 = Message(
@@ -116,7 +116,7 @@ m3 = Message(
 effect_edit = m3.edit()
 ```
 
-### 4. Send an already-created message
+### Send an existing message
 
 ```
 m4 = Message(message_id=m.id)
