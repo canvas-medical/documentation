@@ -49,6 +49,35 @@ class Protocol(BaseProtocol):
         return []
 ```
 
+### Search Result Data Structures
+
+Many events include search results in their context. To help developers understand the data contracts, this section documents the common structures found in search results.
+
+#### MedicationSearchResult
+
+Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, `PRESCRIBE__PRESCRIBE__POST_SEARCH`, etc.) return results that follow this structure:
+
+```json
+{
+  "id": "medication_id",
+  "display": "Medication Name",
+  "annotations": ["Optional", "List", "Of", "Annotations"],
+  "extra": {
+    "coding": [
+      {
+        "system": "http://www.fdbhealth.com/",
+        "code": 554704,
+        "display": "Medication Display Name"
+      }
+    ]
+  }
+}
+```
+
+For detailed information about medication data structures, see [Medication](/sdk/data-medication/).
+
+For examples of working with medication search results, see the [Customize Search Results](/guides/customize-search-results/) guide.
+
 ### Record lifecycle events
 
 These events fire as a result of records being created, updated, or deleted.
@@ -2171,7 +2200,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
@@ -2207,7 +2236,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
@@ -3353,7 +3382,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
@@ -8875,14 +8904,10 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT__MEDICATION__PRE_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -10269,14 +10294,10 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__SUPERVISING_PROVIDER__POST_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -11915,7 +11936,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
@@ -13279,7 +13300,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
