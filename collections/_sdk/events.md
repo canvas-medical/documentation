@@ -78,6 +78,29 @@ For detailed information about medication data structures, see [Medication](/sdk
 
 For examples of working with medication search results, see the [Customize Search Results](/guides/customize-search-results/) guide.
 
+#### ConditionSearchResult
+
+Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH`, etc.) return results that follow this structure:
+
+```json
+{
+  "id": "condition_id",
+  "display": "Condition Name",
+  "annotations": ["Optional", "List", "Of", "Annotations"],
+  "extra": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "Z87.891",
+        "display": "Personal history of nicotine dependence"
+      }
+    ]
+  }
+}
+```
+
+For detailed information about condition data structures, see [Condition](/sdk/data-condition/).
+
 ### Record lifecycle events
 
 These events fire as a result of records being created, updated, or deleted.
@@ -2997,7 +3020,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
@@ -3015,7 +3038,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
@@ -4380,7 +4403,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
@@ -8590,7 +8613,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
@@ -12630,7 +12653,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid 
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>  
 </table>
