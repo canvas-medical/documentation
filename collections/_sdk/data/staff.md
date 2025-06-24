@@ -53,8 +53,6 @@ To show a Staff member's contact points (email, phone, etc.), the `telecom` attr
 | dbid                       | Integer                                                         |
 | created                    | DateTime                                                        |
 | modified                   | DateTime                                                        |
-| created                    | DateTime                                                        |
-| modified                   | DateTime                                                        |
 | prefix                     | String                                                          |
 | suffix                     | String                                                          |
 | first_name                 | String                                                          |
