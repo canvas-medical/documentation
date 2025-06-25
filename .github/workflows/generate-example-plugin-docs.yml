@@ -29,7 +29,7 @@ jobs:
           bundler-cache: true
       - name: Execute content generation script for each plugin with changes
         run: |
-          ruby scripts/sdk/generate_example_plugins_docs.rb ${{ inputs.plugins_changed }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} ruby scripts/sdk/generate_example_plugins_docs.rb ${{ inputs.plugins_changed }}
       - name: Remove the canvas-plugins repo so we don't check it in
         run: |
           rm -rf canvas-plugins/
