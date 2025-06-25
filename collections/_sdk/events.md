@@ -380,7 +380,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
   </tbody>
 </table>
-     
+
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_UPDATED</th></tr>
@@ -1700,9 +1700,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -1722,7 +1722,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -1733,9 +1733,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -1755,7 +1755,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -1766,9 +1766,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -1788,7 +1788,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -1799,9 +1799,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -1821,7 +1821,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -1832,9 +1832,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -1854,7 +1854,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -1865,9 +1865,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -1887,7 +1887,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -1898,9 +1898,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -1919,7 +1919,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -1930,9 +1930,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -1952,7 +1952,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -1963,9 +1963,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -1985,7 +1985,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -1996,9 +1996,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -2018,7 +2018,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2029,9 +2029,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -2051,7 +2051,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2062,9 +2062,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -2084,7 +2084,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2095,14 +2095,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2113,14 +2113,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2131,14 +2131,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2149,14 +2149,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2167,14 +2167,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2185,14 +2185,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2203,14 +2203,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2221,14 +2221,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2239,14 +2239,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2257,14 +2257,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Allergy Command
@@ -2304,9 +2304,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2320,7 +2320,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2331,9 +2331,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2347,7 +2347,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2358,9 +2358,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2374,7 +2374,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2385,9 +2385,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2401,7 +2401,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2412,9 +2412,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2428,7 +2428,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2439,9 +2439,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2455,7 +2455,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2466,9 +2466,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2482,7 +2482,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2493,9 +2493,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2509,7 +2509,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2520,9 +2520,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2536,7 +2536,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2547,9 +2547,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2563,7 +2563,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2574,9 +2574,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -2590,7 +2590,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2601,14 +2601,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#allergysearchresult'>AllergySearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2619,14 +2619,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Assess Command
@@ -2639,9 +2639,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2653,7 +2653,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2664,9 +2664,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2678,7 +2678,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2689,9 +2689,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2703,7 +2703,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2714,9 +2714,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2728,7 +2728,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2739,9 +2739,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2753,7 +2753,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2764,9 +2764,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2778,7 +2778,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2789,9 +2789,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2803,7 +2803,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2814,9 +2814,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2828,7 +2828,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2839,9 +2839,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2853,7 +2853,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2864,9 +2864,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2878,7 +2878,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2889,9 +2889,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2903,7 +2903,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2914,9 +2914,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2928,7 +2928,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2939,9 +2939,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -2953,7 +2953,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2964,14 +2964,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2982,14 +2982,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Cancel Prescription Command
@@ -3073,9 +3073,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3085,7 +3085,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3096,9 +3096,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3108,7 +3108,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3119,9 +3119,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3131,7 +3131,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3142,9 +3142,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3154,7 +3154,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3165,9 +3165,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3177,7 +3177,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3188,9 +3188,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3200,7 +3200,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3211,9 +3211,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3223,7 +3223,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3234,9 +3234,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3246,7 +3246,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3257,9 +3257,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3269,7 +3269,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3280,9 +3280,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3292,7 +3292,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3303,9 +3303,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3315,7 +3315,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3326,9 +3326,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -3338,7 +3338,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3349,14 +3349,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3367,14 +3367,14 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Clipboard Command
@@ -3387,9 +3387,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3398,7 +3398,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3409,9 +3409,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3420,7 +3420,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3431,9 +3431,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3442,7 +3442,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3453,9 +3453,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3464,7 +3464,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3475,9 +3475,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3486,7 +3486,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3497,9 +3497,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3508,7 +3508,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3519,9 +3519,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3530,7 +3530,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3541,9 +3541,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3552,7 +3552,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3563,9 +3563,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3574,7 +3574,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3585,9 +3585,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3596,7 +3596,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3607,9 +3607,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3618,7 +3618,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3629,9 +3629,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3640,7 +3640,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3651,9 +3651,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "text": str
@@ -3662,7 +3662,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 ##### Clipboard Fields Context
@@ -3697,9 +3697,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3710,7 +3710,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3721,9 +3721,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3734,7 +3734,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3745,9 +3745,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3758,7 +3758,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3769,9 +3769,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3782,7 +3782,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3793,9 +3793,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3806,7 +3806,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3817,9 +3817,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3830,7 +3830,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3841,9 +3841,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3854,7 +3854,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3865,9 +3865,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3878,7 +3878,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3889,9 +3889,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3902,7 +3902,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3913,9 +3913,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3926,7 +3926,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3937,9 +3937,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3950,7 +3950,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3961,9 +3961,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_id": dict
@@ -3974,7 +3974,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3985,14 +3985,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4003,14 +4003,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Diagnose Command
@@ -4023,9 +4023,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4039,7 +4039,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4050,9 +4050,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4066,7 +4066,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4077,9 +4077,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4093,7 +4093,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4104,9 +4104,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4120,7 +4120,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4131,9 +4131,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4147,7 +4147,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4158,9 +4158,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4174,7 +4174,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4185,9 +4185,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4201,7 +4201,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4212,9 +4212,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4228,7 +4228,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4239,9 +4239,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4255,7 +4255,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4266,9 +4266,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4282,7 +4282,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4293,9 +4293,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4309,7 +4309,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4320,9 +4320,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "diagnose": dict
@@ -4336,7 +4336,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4347,14 +4347,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4365,14 +4365,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Educational Material Command
@@ -4385,9 +4385,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4395,7 +4395,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4406,9 +4406,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4416,7 +4416,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4427,9 +4427,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4437,7 +4437,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4448,9 +4448,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4458,7 +4458,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4469,9 +4469,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4479,7 +4479,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4490,9 +4490,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4500,7 +4500,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4511,9 +4511,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4521,7 +4521,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4532,9 +4532,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4542,7 +4542,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4553,9 +4553,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4563,7 +4563,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4574,9 +4574,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4584,7 +4584,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4595,9 +4595,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4605,7 +4605,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4616,9 +4616,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields": dict
 "note":
@@ -4626,7 +4626,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4637,14 +4637,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4655,14 +4655,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4673,14 +4673,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4691,14 +4691,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Family History Command
@@ -4711,9 +4711,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4724,7 +4724,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4735,9 +4735,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4748,7 +4748,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4759,9 +4759,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4772,7 +4772,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4783,9 +4783,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4796,7 +4796,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4807,9 +4807,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4820,7 +4820,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4831,9 +4831,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4844,7 +4844,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4855,9 +4855,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4868,7 +4868,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4879,9 +4879,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4892,7 +4892,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4903,9 +4903,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4916,7 +4916,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4927,9 +4927,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4940,7 +4940,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4951,9 +4951,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4964,7 +4964,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4975,9 +4975,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "family_history": dict
@@ -4988,7 +4988,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4999,14 +4999,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5017,14 +5017,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5035,14 +5035,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5053,14 +5053,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Follow Up Command
@@ -5073,9 +5073,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5088,7 +5088,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5099,9 +5099,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5114,7 +5114,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5125,9 +5125,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5140,7 +5140,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5151,9 +5151,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5166,7 +5166,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5177,9 +5177,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5192,7 +5192,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5203,9 +5203,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5218,7 +5218,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5229,9 +5229,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5244,7 +5244,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5255,9 +5255,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5270,7 +5270,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5281,9 +5281,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5296,7 +5296,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5307,9 +5307,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5322,7 +5322,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5333,9 +5333,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5348,7 +5348,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5359,9 +5359,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "requested_date": dict
@@ -5374,7 +5374,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5385,14 +5385,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5403,14 +5403,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5421,14 +5421,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5439,14 +5439,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Goal Command
@@ -5459,9 +5459,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5475,7 +5475,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5486,9 +5486,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5502,7 +5502,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5513,9 +5513,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5529,7 +5529,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5540,9 +5540,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5556,7 +5556,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5567,9 +5567,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5583,7 +5583,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5594,9 +5594,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5610,7 +5610,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5621,9 +5621,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5637,7 +5637,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5648,9 +5648,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5664,7 +5664,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5675,9 +5675,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5691,7 +5691,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5702,9 +5702,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5718,7 +5718,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5729,9 +5729,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5745,7 +5745,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5756,9 +5756,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": str
@@ -5772,7 +5772,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### History of Present Illness Command
@@ -5785,9 +5785,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5796,7 +5796,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5807,9 +5807,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5818,7 +5818,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5829,9 +5829,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5840,7 +5840,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5851,9 +5851,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5862,7 +5862,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5873,9 +5873,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5884,7 +5884,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5895,9 +5895,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5906,7 +5906,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5917,9 +5917,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5928,7 +5928,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5939,9 +5939,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5950,7 +5950,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5961,9 +5961,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5972,7 +5972,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5983,9 +5983,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -5994,7 +5994,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6005,9 +6005,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -6016,7 +6016,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6027,9 +6027,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -6038,7 +6038,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Imaging Order Command
@@ -6051,9 +6051,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6069,7 +6069,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6080,9 +6080,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6098,7 +6098,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6109,9 +6109,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6127,7 +6127,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6138,9 +6138,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6156,7 +6156,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6167,9 +6167,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6185,7 +6185,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6196,9 +6196,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6214,7 +6214,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6225,9 +6225,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6243,7 +6243,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6254,9 +6254,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6272,7 +6272,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6283,9 +6283,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6301,7 +6301,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6312,9 +6312,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6330,7 +6330,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6341,9 +6341,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6359,7 +6359,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6370,9 +6370,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "image": dict
@@ -6388,7 +6388,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6399,14 +6399,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6417,14 +6417,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6435,14 +6435,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6453,14 +6453,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6471,14 +6471,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6489,14 +6489,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6507,14 +6507,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6525,14 +6525,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Immunization Statement Command
@@ -6545,9 +6545,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6560,7 +6560,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6571,9 +6571,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6586,7 +6586,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6597,9 +6597,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6612,7 +6612,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6623,9 +6623,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6638,7 +6638,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6649,9 +6649,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6664,7 +6664,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6675,9 +6675,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6690,7 +6690,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6701,9 +6701,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6716,7 +6716,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6727,9 +6727,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6742,7 +6742,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6753,9 +6753,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6768,7 +6768,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6779,9 +6779,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6794,7 +6794,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6805,9 +6805,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6820,7 +6820,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6831,9 +6831,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "statement": dict
@@ -6846,7 +6846,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6857,14 +6857,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6875,14 +6875,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Immunize Command
@@ -6895,9 +6895,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -6912,7 +6912,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6923,9 +6923,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -6940,7 +6940,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6951,9 +6951,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -6968,7 +6968,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6979,9 +6979,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -6996,7 +6996,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7007,9 +7007,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -7024,7 +7024,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7035,9 +7035,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -7052,7 +7052,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7063,9 +7063,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -7080,7 +7080,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7091,9 +7091,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -7108,7 +7108,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7119,9 +7119,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -7136,7 +7136,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7147,9 +7147,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -7164,7 +7164,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7175,9 +7175,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -7192,7 +7192,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7203,9 +7203,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -7220,7 +7220,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7231,14 +7231,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7249,14 +7249,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7267,14 +7267,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7285,14 +7285,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7303,14 +7303,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7321,14 +7321,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Instruct Command
@@ -7341,9 +7341,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7353,7 +7353,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7364,9 +7364,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7376,7 +7376,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7387,9 +7387,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7399,7 +7399,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7410,9 +7410,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7422,7 +7422,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7433,9 +7433,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7445,7 +7445,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7456,9 +7456,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7468,7 +7468,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7479,9 +7479,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7491,7 +7491,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7502,9 +7502,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7514,7 +7514,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7525,9 +7525,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7537,7 +7537,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7548,9 +7548,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7560,7 +7560,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7571,9 +7571,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7583,7 +7583,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7594,9 +7594,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "instruct": dict
@@ -7606,7 +7606,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7617,14 +7617,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7635,14 +7635,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Lab Order Command
@@ -7655,9 +7655,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7671,7 +7671,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7682,9 +7682,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7698,7 +7698,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7709,9 +7709,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7725,7 +7725,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7736,9 +7736,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7752,7 +7752,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7763,9 +7763,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7779,7 +7779,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7790,9 +7790,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7806,7 +7806,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7817,9 +7817,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7833,7 +7833,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7844,9 +7844,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7860,7 +7860,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7871,9 +7871,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7887,7 +7887,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7898,9 +7898,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7914,7 +7914,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7925,9 +7925,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7941,7 +7941,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7952,9 +7952,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "lab_partner": dict
@@ -7968,7 +7968,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7979,14 +7979,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7997,14 +7997,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8015,14 +8015,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8033,14 +8033,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8051,14 +8051,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8069,14 +8069,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8087,14 +8087,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8105,14 +8105,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Medical History Command
@@ -8125,9 +8125,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8144,7 +8144,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8155,9 +8155,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8174,7 +8174,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8185,9 +8185,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8204,7 +8204,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8215,9 +8215,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8234,7 +8234,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8245,9 +8245,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8264,7 +8264,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8275,9 +8275,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8294,7 +8294,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8305,9 +8305,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8324,7 +8324,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8335,9 +8335,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8354,7 +8354,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8365,9 +8365,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8384,7 +8384,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8395,9 +8395,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8414,7 +8414,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8425,9 +8425,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8444,7 +8444,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8455,9 +8455,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_medical_history": dict
@@ -8474,7 +8474,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8485,14 +8485,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8503,14 +8503,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8521,14 +8521,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8539,14 +8539,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8557,14 +8557,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8575,14 +8575,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Medication Statement Command
@@ -8595,9 +8595,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8607,7 +8607,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8618,9 +8618,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8630,7 +8630,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8641,9 +8641,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8653,7 +8653,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8664,9 +8664,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8676,7 +8676,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8687,9 +8687,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8699,7 +8699,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8710,9 +8710,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8722,7 +8722,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8733,9 +8733,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8745,7 +8745,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8756,9 +8756,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8768,7 +8768,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8779,9 +8779,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8791,7 +8791,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8802,9 +8802,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8814,7 +8814,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8825,9 +8825,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8837,7 +8837,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8848,9 +8848,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -8860,7 +8860,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8871,28 +8871,32 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">MEDICATION_STATEMENT__MEDICATION__PRE_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Perfom Command
@@ -8905,9 +8909,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -8917,7 +8921,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8928,9 +8932,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -8940,7 +8944,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8951,9 +8955,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -8963,7 +8967,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8974,9 +8978,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -8986,7 +8990,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8997,9 +9001,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -9009,7 +9013,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9020,9 +9024,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -9032,7 +9036,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9043,9 +9047,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -9055,7 +9059,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9066,9 +9070,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -9078,7 +9082,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9089,9 +9093,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -9101,7 +9105,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9112,9 +9116,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -9124,7 +9128,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9135,9 +9139,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -9147,7 +9151,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9158,9 +9162,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "perform": dict
@@ -9170,7 +9174,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9181,14 +9185,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9199,14 +9203,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Physical Exam Command
@@ -9219,9 +9223,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9230,7 +9234,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9241,9 +9245,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9252,7 +9256,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9263,9 +9267,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9274,7 +9278,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9285,9 +9289,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9296,7 +9300,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9307,9 +9311,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9318,7 +9322,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9329,9 +9333,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9340,7 +9344,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9351,9 +9355,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9362,7 +9366,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9373,9 +9377,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9384,7 +9388,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9395,9 +9399,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9406,7 +9410,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9417,9 +9421,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9428,7 +9432,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9439,9 +9443,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9450,7 +9454,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9461,9 +9465,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -9472,7 +9476,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9483,14 +9487,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9501,14 +9505,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Plan Command
@@ -9521,9 +9525,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9532,7 +9536,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9543,9 +9547,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9554,7 +9558,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9565,9 +9569,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9576,7 +9580,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9587,9 +9591,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9598,7 +9602,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9609,9 +9613,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9620,7 +9624,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9631,9 +9635,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9642,7 +9646,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9653,9 +9657,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9664,7 +9668,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9675,9 +9679,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9686,7 +9690,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9697,9 +9701,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9708,7 +9712,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9719,9 +9723,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9730,7 +9734,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9741,9 +9745,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9752,7 +9756,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9763,9 +9767,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "narrative": str
@@ -9774,7 +9778,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Prescribe Command
@@ -9787,9 +9791,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -9808,7 +9812,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9819,9 +9823,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -9840,7 +9844,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9851,9 +9855,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -9872,7 +9876,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9883,9 +9887,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -9904,7 +9908,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9915,9 +9919,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -9936,7 +9940,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9947,9 +9951,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -9968,7 +9972,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9979,9 +9983,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -10000,7 +10004,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10011,9 +10015,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -10032,7 +10036,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10043,9 +10047,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -10064,7 +10068,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10075,9 +10079,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -10096,7 +10100,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10107,9 +10111,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -10128,7 +10132,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10139,9 +10143,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -10160,7 +10164,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10171,14 +10175,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10189,14 +10193,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10207,14 +10211,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10225,14 +10229,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10243,14 +10247,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10261,28 +10265,32 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE__SUPERVISING_PROVIDER__POST_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[dict]</pre></td>
+"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10293,14 +10301,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Questionnaire Command
@@ -10313,9 +10321,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10325,7 +10333,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10336,9 +10344,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10348,7 +10356,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10359,9 +10367,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10371,7 +10379,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10382,9 +10390,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10394,7 +10402,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10405,9 +10413,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10417,7 +10425,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10428,9 +10436,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10440,7 +10448,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10451,9 +10459,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10463,7 +10471,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10474,9 +10482,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10486,7 +10494,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10497,9 +10505,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10509,7 +10517,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10520,9 +10528,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10532,7 +10540,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10543,9 +10551,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10555,7 +10563,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10566,9 +10574,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -10578,7 +10586,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10589,14 +10597,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10607,14 +10615,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Reason for Visit Command
@@ -10627,9 +10635,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10639,7 +10647,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10650,9 +10658,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10662,7 +10670,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10673,9 +10681,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10685,7 +10693,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10696,9 +10704,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10708,7 +10716,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10719,9 +10727,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10731,7 +10739,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10742,9 +10750,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10754,7 +10762,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10765,9 +10773,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10777,7 +10785,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10788,9 +10796,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10800,7 +10808,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10811,9 +10819,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10823,7 +10831,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10834,9 +10842,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10846,7 +10854,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10857,9 +10865,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10869,7 +10877,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10880,9 +10888,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "coding": dict
@@ -10892,7 +10900,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10903,14 +10911,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10921,14 +10929,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Refer Command
@@ -10941,9 +10949,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -10960,7 +10968,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10971,9 +10979,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -10990,7 +10998,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11001,9 +11009,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11020,7 +11028,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11031,9 +11039,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11050,7 +11058,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11061,9 +11069,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11080,7 +11088,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11091,9 +11099,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11110,7 +11118,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11121,9 +11129,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11140,7 +11148,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11151,9 +11159,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11170,7 +11178,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11181,9 +11189,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11200,7 +11208,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11211,9 +11219,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11230,7 +11238,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11241,9 +11249,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11260,7 +11268,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11271,9 +11279,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "refer_to": dict
@@ -11290,7 +11298,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11301,14 +11309,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11319,14 +11327,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11337,14 +11345,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11355,14 +11363,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11373,14 +11381,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11391,14 +11399,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11409,14 +11417,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11427,14 +11435,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Refill Prescription Command
@@ -11447,9 +11455,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11468,7 +11476,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11479,9 +11487,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11500,7 +11508,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11511,9 +11519,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11532,7 +11540,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11543,9 +11551,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11564,7 +11572,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11575,9 +11583,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11596,7 +11604,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11607,9 +11615,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11628,7 +11636,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11639,9 +11647,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11660,7 +11668,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11671,9 +11679,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11692,7 +11700,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11703,9 +11711,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11724,7 +11732,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11735,9 +11743,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11756,7 +11764,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11767,9 +11775,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11788,7 +11796,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11799,9 +11807,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
@@ -11820,7 +11828,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11831,14 +11839,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11849,14 +11857,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11867,14 +11875,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11885,14 +11893,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11903,14 +11911,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11921,14 +11929,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11939,14 +11947,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11957,14 +11965,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#allergysearchresult'>AllergySearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Remove Allergy Command
@@ -11977,9 +11985,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -11989,7 +11997,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12000,9 +12008,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12012,7 +12020,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12023,9 +12031,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12035,7 +12043,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12046,9 +12054,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12058,7 +12066,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12069,9 +12077,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12081,7 +12089,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12092,9 +12100,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12104,7 +12112,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12115,9 +12123,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12127,7 +12135,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12138,9 +12146,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12150,7 +12158,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12161,9 +12169,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12173,7 +12181,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12184,9 +12192,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12196,7 +12204,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12207,9 +12215,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12219,7 +12227,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12230,9 +12238,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "allergy": dict
@@ -12242,7 +12250,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12253,14 +12261,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12271,14 +12279,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Resolve Condition Command
@@ -12291,9 +12299,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12304,7 +12312,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12315,9 +12323,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12328,7 +12336,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12339,9 +12347,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12352,7 +12360,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12363,9 +12371,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12376,7 +12384,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12387,9 +12395,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12400,7 +12408,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12411,9 +12419,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12424,7 +12432,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12435,9 +12443,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12448,7 +12456,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12459,9 +12467,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12472,7 +12480,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12483,9 +12491,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12496,7 +12504,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12507,9 +12515,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12520,7 +12528,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12531,9 +12539,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12544,7 +12552,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12555,9 +12563,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
@@ -12568,7 +12576,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12579,14 +12587,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12597,14 +12605,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Review of Systems Command
@@ -12617,9 +12625,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12628,7 +12636,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12639,9 +12647,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12650,7 +12658,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12661,9 +12669,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12672,7 +12680,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12683,9 +12691,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12694,7 +12702,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12705,9 +12713,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12716,7 +12724,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12727,9 +12735,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12738,7 +12746,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12749,9 +12757,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12760,7 +12768,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12771,9 +12779,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12782,7 +12790,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12793,9 +12801,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12804,7 +12812,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12815,9 +12823,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12826,7 +12834,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12837,9 +12845,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12848,7 +12856,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12859,9 +12867,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -12870,7 +12878,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12881,14 +12889,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12899,14 +12907,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Snooze Protocol Command
@@ -12991,9 +12999,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13003,7 +13011,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13014,9 +13022,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13026,7 +13034,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13037,9 +13045,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13049,7 +13057,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13060,9 +13068,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13072,7 +13080,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13083,9 +13091,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13095,7 +13103,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13106,9 +13114,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13118,7 +13126,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13129,9 +13137,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13141,7 +13149,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13152,9 +13160,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13164,7 +13172,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13175,9 +13183,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13187,7 +13195,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13198,9 +13206,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13210,7 +13218,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13221,9 +13229,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13233,7 +13241,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13244,9 +13252,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "medication": dict
@@ -13256,7 +13264,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13267,14 +13275,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13285,14 +13293,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Structured Assessment Command
@@ -13305,9 +13313,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13316,7 +13324,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13327,9 +13335,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13338,7 +13346,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13349,9 +13357,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13360,7 +13368,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13371,9 +13379,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13382,7 +13390,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13393,9 +13401,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13404,7 +13412,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13415,9 +13423,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13426,7 +13434,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13437,9 +13445,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13448,7 +13456,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13459,9 +13467,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13470,7 +13478,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13481,9 +13489,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13492,7 +13500,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13503,9 +13511,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13514,7 +13522,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13525,9 +13533,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13536,7 +13544,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13547,9 +13555,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "questionnaire": dict
@@ -13558,7 +13566,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13569,14 +13577,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13587,14 +13595,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Surgical History Command
@@ -13607,9 +13615,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13622,7 +13630,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13633,9 +13641,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13648,7 +13656,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13659,9 +13667,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13674,7 +13682,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13685,9 +13693,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13700,7 +13708,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13711,9 +13719,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13726,7 +13734,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13737,9 +13745,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13752,7 +13760,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13763,9 +13771,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13778,7 +13786,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13789,9 +13797,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13804,7 +13812,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13815,9 +13823,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13830,7 +13838,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13841,9 +13849,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13856,7 +13864,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13867,9 +13875,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13882,7 +13890,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13893,9 +13901,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "past_surgical_history": dict
@@ -13908,7 +13916,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13919,14 +13927,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13937,14 +13945,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Task Command
@@ -13957,9 +13965,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -13973,7 +13981,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13984,9 +13992,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14000,7 +14008,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14011,9 +14019,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14027,7 +14035,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14038,9 +14046,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14054,7 +14062,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14065,9 +14073,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14081,7 +14089,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14092,9 +14100,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14108,7 +14116,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14119,9 +14127,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14135,7 +14143,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14146,9 +14154,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14162,7 +14170,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14173,9 +14181,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14189,7 +14197,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14200,9 +14208,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14216,7 +14224,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14227,9 +14235,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14243,7 +14251,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14254,9 +14262,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "title": str
@@ -14270,7 +14278,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14281,14 +14289,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14299,14 +14307,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14317,14 +14325,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14335,14 +14343,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Update Diagnosis Command
@@ -14434,9 +14442,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14449,7 +14457,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14460,9 +14468,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14475,7 +14483,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14486,9 +14494,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14501,7 +14509,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14512,9 +14520,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14527,7 +14535,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14538,9 +14546,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14553,7 +14561,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14564,9 +14572,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14579,7 +14587,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14590,9 +14598,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14605,7 +14613,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14616,9 +14624,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14631,7 +14639,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14642,9 +14650,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14657,7 +14665,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14668,9 +14676,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14683,7 +14691,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14694,9 +14702,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14709,7 +14717,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14720,9 +14728,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "goal_statement": dict
@@ -14735,7 +14743,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14746,14 +14754,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14764,14 +14772,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14782,14 +14790,14 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
 "results": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 #### Vitals Command
@@ -14802,9 +14810,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -14826,7 +14834,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14837,9 +14845,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -14861,7 +14869,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14872,9 +14880,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -14896,7 +14904,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14907,9 +14915,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -14931,7 +14939,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14942,9 +14950,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -14966,7 +14974,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14977,9 +14985,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -15001,7 +15009,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15012,9 +15020,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -15036,7 +15044,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15047,9 +15055,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -15071,7 +15079,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15082,9 +15090,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -15106,7 +15114,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15117,9 +15125,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -15141,7 +15149,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15152,9 +15160,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -15176,7 +15184,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15187,9 +15195,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "height": str
@@ -15211,7 +15219,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "patient":
   "id": pt_id</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 ### Patient Portal lifecycle events
@@ -15228,13 +15236,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>appt_id</pre></td>
       <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15247,13 +15255,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>appt_id</pre></td>
       <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15266,13 +15274,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>appt_id</pre></td>
       <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15285,13 +15293,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>appt_id</pre></td>
       <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15304,13 +15312,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
       <td><pre>"slots_by_provider": dict</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15323,13 +15331,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15342,13 +15350,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
       <td><pre>"appointment_types": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15361,13 +15369,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15380,13 +15388,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
       <td><pre>"locations": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15399,13 +15407,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15418,13 +15426,13 @@ The following events are emitted during the lifecycle of a patient portal sessio
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>None</pre></td>
       <td><pre>None</pre></td>
       <td><pre>"providers": list[dict]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 ### Action Buttons Events
@@ -15440,16 +15448,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
     <tr>
       <td>Target</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre>
   "note_id": str
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15461,16 +15469,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
     <tr>
       <td>Target</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre>
   "note_id": str
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15483,16 +15491,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15505,16 +15513,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15527,16 +15535,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15549,16 +15557,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15571,16 +15579,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15593,16 +15601,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15615,16 +15623,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15637,16 +15645,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15659,16 +15667,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15681,16 +15689,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15703,16 +15711,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15724,16 +15732,16 @@ For more information on handling these events, see <a href="/sdk/handlers-action
     <tr>
       <td>Target</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre>
   "key": action_button_key
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 ### Application Events
@@ -15749,17 +15757,17 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>Target</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>application_id</pre></td>
       <td><pre>
   "patient":
     "id": str
-  "user": 
+  "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 ### Patient Portal Events
@@ -15774,8 +15782,8 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
       <td>Target</td>
       <td>Target type</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>"requested_from": str["appointment" |
@@ -15786,7 +15794,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
                       "payment" |
                       "search-appointment"]</pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 ### Other Events
