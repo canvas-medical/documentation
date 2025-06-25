@@ -49,94 +49,6 @@ class Protocol(BaseProtocol):
         return []
 ```
 
-### Search Result Data Structures
-
-Many events include search results in their context. To help developers understand the data contracts, this section documents the common structures found in search results.
-
-#### MedicationSearchResult
-
-Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, `PRESCRIBE__PRESCRIBE__POST_SEARCH`, etc.) return results that follow this structure:
-
-```json
-{
-  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
-  "dbid": 12345,
-  "status": "active",
-  "start_date": "2024-01-15",
-  "end_date": null,
-  "national_drug_code": "12345-6789-01",
-  "codings": [
-    {
-      "dbid": 67890,
-      "system": "http://www.fdbhealth.com/",
-      "version": "2024.1",
-      "code": 554704,
-      "display": "Lisinopril 10 MG Oral Tablet",
-      "user_selected": false
-    }
-  ]
-}
-```
-
-For detailed information about medication data structures, see [Medication](/sdk/data-medication/).
-
-For examples of working with medication search results, see the [Customize Search Results](/guides/customize-search-results/) guide.
-
-#### ConditionSearchResult
-
-Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH`, etc.) return results that follow this structure:
-
-```json
-{
-  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
-  "dbid": 67890,
-  "clinical_status": "active",
-  "onset_date": "2023-12-01",
-  "resolution_date": null,
-  "codings": [
-    {
-      "dbid": 12345,
-      "system": "http://hl7.org/fhir/sid/icd-10-cm",
-      "version": "2024",
-      "code": "E11.9",
-      "display": "Type 2 diabetes mellitus without complications",
-      "user_selected": false
-    }
-  ]
-}
-```
-
-For detailed information about condition data structures, see [Condition](/sdk/data-condition/).
-
-#### AllergySearchResult
-
-Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY__ALLERGY__POST_SEARCH`, etc.) return results that follow this structure:
-
-```json
-{
-  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
-  "dbid": 12345,
-  "status": "active",
-  "severity": "severe",
-  "onset_date": "2023-01-15",
-  "last_occurrence": "2023-06-20",
-  "allergy_intolerance_type": "allergy",
-  "category": 1,
-  "narrative": "Patient reports severe allergic reaction to penicillin",
-  "codings": [
-    {
-      "dbid": 67890,
-      "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-      "version": "2023-03",
-      "code": "7980",
-      "display": "Penicillin",
-      "user_selected": true
-    }
-  ]
-}
-```
-
-For detailed information about allergy data structures, see [Allergy Intolerance](/sdk/data-allergy-intolerance/).
 
 ### Record lifecycle events
 
@@ -15931,3 +15843,92 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     </tr>
   </tbody>
 </table>
+
+### Search Result Data Structures
+
+Many events include search results in their context. To help developers understand the data contracts, this section documents the common structures found in search results.
+
+#### MedicationSearchResult
+
+Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, `PRESCRIBE__PRESCRIBE__POST_SEARCH`, etc.) return results that follow this structure:
+
+```json
+{
+  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
+  "dbid": 12345,
+  "status": "active",
+  "start_date": "2024-01-15",
+  "end_date": null,
+  "national_drug_code": "12345-6789-01",
+  "codings": [
+    {
+      "dbid": 67890,
+      "system": "http://www.fdbhealth.com/",
+      "version": "2024.1",
+      "code": 554704,
+      "display": "Lisinopril 10 MG Oral Tablet",
+      "user_selected": false
+    }
+  ]
+}
+```
+
+For detailed information about medication data structures, see [Medication](/sdk/data-medication/).
+
+For examples of working with medication search results, see the [Customize Search Results](/guides/customize-search-results/) guide.
+
+#### ConditionSearchResult
+
+Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH`, etc.) return results that follow this structure:
+
+```json
+{
+  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
+  "dbid": 67890,
+  "clinical_status": "active",
+  "onset_date": "2023-12-01",
+  "resolution_date": null,
+  "codings": [
+    {
+      "dbid": 12345,
+      "system": "http://hl7.org/fhir/sid/icd-10-cm",
+      "version": "2024",
+      "code": "E11.9",
+      "display": "Type 2 diabetes mellitus without complications",
+      "user_selected": false
+    }
+  ]
+}
+```
+
+For detailed information about condition data structures, see [Condition](/sdk/data-condition/).
+
+#### AllergySearchResult
+
+Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY__ALLERGY__POST_SEARCH`, etc.) return results that follow this structure:
+
+```json
+{
+  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
+  "dbid": 12345,
+  "status": "active",
+  "severity": "severe",
+  "onset_date": "2023-01-15",
+  "last_occurrence": "2023-06-20",
+  "allergy_intolerance_type": "allergy",
+  "category": 1,
+  "narrative": "Patient reports severe allergic reaction to penicillin",
+  "codings": [
+    {
+      "dbid": 67890,
+      "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+      "version": "2023-03",
+      "code": "7980",
+      "display": "Penicillin",
+      "user_selected": true
+    }
+  ]
+}
+```
+
+For detailed information about allergy data structures, see [Allergy Intolerance](/sdk/data-allergy-intolerance/).
