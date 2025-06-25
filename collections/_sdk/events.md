@@ -67,17 +67,16 @@ Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH
   "start_date": "2024-01-15",
   "end_date": null,
   "national_drug_code": "12345-6789-01",
-  "extra": {
-    "coding": [
-      {
-        "system": "http://www.fdbhealth.com/",
-        "code": 554704,
-        "display": "Lisinopril 10 MG Oral Tablet",
-        "version": "2024.1",
-        "user_selected": false
-      }
-    ]
-  }
+  "codings": [
+    {
+      "dbid": 67890,
+      "system": "http://www.fdbhealth.com/",
+      "version": "2024.1",
+      "code": 554704,
+      "display": "Lisinopril 10 MG Oral Tablet",
+      "user_selected": false
+    }
+  ]
 }
 ```
 
@@ -98,17 +97,16 @@ Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `M
   "clinical_status": "active",
   "onset_date": "2023-12-01",
   "resolution_date": null,
-  "extra": {
-    "coding": [
-      {
-        "system": "http://hl7.org/fhir/sid/icd-10-cm",
-        "code": "E11.9",
-        "display": "Type 2 diabetes mellitus without complications",
-        "version": "2024",
-        "user_selected": false
-      }
-    ]
-  }
+  "codings": [
+    {
+      "dbid": 12345,
+      "system": "http://hl7.org/fhir/sid/icd-10-cm",
+      "version": "2024",
+      "code": "E11.9",
+      "display": "Type 2 diabetes mellitus without complications",
+      "user_selected": false
+    }
+  ]
 }
 ```
 
@@ -131,18 +129,16 @@ Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY_
   "category": 1,
   "narrative": "Patient reports severe allergic reaction to penicillin",
   "annotations": ["Optional", "List", "Of", "Annotations"],
-  "extra": {
-    "coding": [
-      {
-        "dbid": 67890,
-        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-        "version": "2023-03",
-        "code": "7980",
-        "display": "Penicillin",
-        "user_selected": true
-      }
-    ]
-  }
+  "codings": [
+    {
+      "dbid": 67890,
+      "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+      "version": "2023-03",
+      "code": "7980",
+      "display": "Penicillin",
+      "user_selected": true
+    }
+  ]
 }
 ```
 
