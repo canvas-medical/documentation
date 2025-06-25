@@ -120,15 +120,26 @@ Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY_
 
 ```json
 {
-  "id": "allergy_id",
-  "display": "Allergy Name",
+  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
+  "dbid": 12345,
+  "display": "Penicillin allergy",
+  "status": "active",
+  "severity": "severe",
+  "onset_date": "2023-01-15",
+  "last_occurrence": "2023-06-20",
+  "allergy_intolerance_type": "allergy",
+  "category": 1,
+  "narrative": "Patient reports severe allergic reaction to penicillin",
   "annotations": ["Optional", "List", "Of", "Annotations"],
   "extra": {
     "coding": [
       {
+        "dbid": 67890,
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2023-03",
         "code": "7980",
-        "display": "Penicillin"
+        "display": "Penicillin",
+        "user_selected": true
       }
     ]
   }
