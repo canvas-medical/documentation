@@ -91,6 +91,19 @@ listed in the `url_permissions` section of the manifest, and the
     ],
 ```
 
+We also want to change the application scope from the default "global" setting to "patient specific":
+
+```json
+    "components": {
+        "applications": [
+            {
+                ...
+                "scope": "patient_specific",
+            }
+        ],
+    },
+```
+
 ### Setting the SMART launch URL
 
 The SMART authorization dance begins with the SMART app's launch URL. The
@@ -151,6 +164,22 @@ retrieve from the FHIR API. The example SMART app we've been working with
 simply shows the raw FHIR records retrieved for the patient.
 
 ![SMART app in action](/assets/images/guides/embedding-a-smart-app/SMART_App.png){: style='width: 35%'}
+
+If you want to update the example SMART app to authorize additional data access from the FHIR API, you'll need to add those endpoints to the `scope` values in [launch.html](https://github.com/canvas-medical/example-smart-on-fhir-app/blob/main/launch.html), or wherever your authorize method is called:
+
+```
+    <script>
+        FHIR.oauth2.authorize({
+            ...
+            // The scopes that you request from the EHR. In this case we want to:
+            scope: "patient/Patient.read patient/MedicationStatement.read patient/Goal.read patient/DocumentReference.read launch offline_access openid fhirUser",
+            ...
+        });
+    </script>
+```
+
+For a more comprehensive list of available FHIR scopes, visit the [API docs](https://docs.canvasmedical.com/api/).
+
 
 ## A more flexible alternative
 
