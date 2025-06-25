@@ -10288,7 +10288,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11970,7 +11970,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
-"results": list[<a href='#allergysearchresult'>AllergySearchResult</a>]</pre></td>
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
