@@ -59,15 +59,22 @@ Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH
 
 ```json
 {
-  "id": "medication_id",
-  "display": "Medication Name",
+  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
+  "dbid": 12345,
+  "display": "Lisinopril 10 MG Oral Tablet",
   "annotations": ["Optional", "List", "Of", "Annotations"],
+  "status": "active",
+  "start_date": "2024-01-15",
+  "end_date": null,
+  "national_drug_code": "12345-6789-01",
   "extra": {
     "coding": [
       {
         "system": "http://www.fdbhealth.com/",
         "code": 554704,
-        "display": "Medication Display Name"
+        "display": "Lisinopril 10 MG Oral Tablet",
+        "version": "2024.1",
+        "user_selected": false
       }
     ]
   }
@@ -84,15 +91,21 @@ Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `M
 
 ```json
 {
-  "id": "condition_id",
-  "display": "Condition Name",
+  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
+  "dbid": 67890,
+  "display": "Type 2 diabetes mellitus",
   "annotations": ["Optional", "List", "Of", "Annotations"],
+  "clinical_status": "active",
+  "onset_date": "2023-12-01",
+  "resolution_date": null,
   "extra": {
     "coding": [
       {
         "system": "http://hl7.org/fhir/sid/icd-10-cm",
-        "code": "Z87.891",
-        "display": "Personal history of nicotine dependence"
+        "code": "E11.9",
+        "display": "Type 2 diabetes mellitus without complications",
+        "version": "2024",
+        "user_selected": false
       }
     ]
   }
