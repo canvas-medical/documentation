@@ -61,8 +61,6 @@ Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH
 {
   "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
   "dbid": 12345,
-  "display": "Lisinopril 10 MG Oral Tablet",
-  "annotations": ["Optional", "List", "Of", "Annotations"],
   "status": "active",
   "start_date": "2024-01-15",
   "end_date": null,
@@ -92,8 +90,6 @@ Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `M
 {
   "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
   "dbid": 67890,
-  "display": "Type 2 diabetes mellitus",
-  "annotations": ["Optional", "List", "Of", "Annotations"],
   "clinical_status": "active",
   "onset_date": "2023-12-01",
   "resolution_date": null,
@@ -120,7 +116,6 @@ Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY_
 {
   "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
   "dbid": 12345,
-  "display": "Penicillin allergy",
   "status": "active",
   "severity": "severe",
   "onset_date": "2023-01-15",
@@ -128,7 +123,6 @@ Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY_
   "allergy_intolerance_type": "allergy",
   "category": 1,
   "narrative": "Patient reports severe allergic reaction to penicillin",
-  "annotations": ["Optional", "List", "Of", "Annotations"],
   "codings": [
     {
       "dbid": 67890,
