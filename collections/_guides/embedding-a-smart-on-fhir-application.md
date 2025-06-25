@@ -165,7 +165,7 @@ simply shows the raw FHIR records retrieved for the patient.
 
 ![SMART app in action](/assets/images/guides/embedding-a-smart-app/SMART_App.png){: style='width: 35%'}
 
-To customize and authorize additional data access from the FHIR API, update the `scope` values from the example app [launch.html](https://github.com/canvas-medical/example-smart-on-fhir-app/blob/main/launch.html), or wherever your authorize method is called:
+If you want to update the example SMART app to authorize additional data access from the FHIR API, you'll need to add those endpoints to the `scope` values in [launch.html](https://github.com/canvas-medical/example-smart-on-fhir-app/blob/main/launch.html), or wherever your authorize method is called:
 
 ```
     <script>
