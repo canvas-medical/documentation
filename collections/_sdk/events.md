@@ -8880,6 +8880,10 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
   </tbody>  
 </table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -10270,6 +10274,10 @@ Refer to the [base context documentation](#context-overview) for additional deta
     </tr>
   </tbody>  
 </table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15848,28 +15856,42 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 
 Many events include search results in their context. To help developers understand the data contracts, this section documents the common structures found in search results.
 
+Search results contain basic metadata fields (`text`, `disabled`, `description`, `annotations`, `value`) and an `extra` object with detailed information including coding arrays and additional type-specific fields.
+
 #### MedicationSearchResult
 
 Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, `PRESCRIBE__PRESCRIBE__POST_SEARCH`, etc.) return results that follow this structure:
 
 ```json
 {
-  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
-  "dbid": 12345,
-  "status": "active",
-  "start_date": "2024-01-15",
-  "end_date": null,
-  "national_drug_code": "12345-6789-01",
-  "codings": [
-    {
-      "dbid": 67890,
-      "system": "http://www.fdbhealth.com/",
-      "version": "2024.1",
-      "code": 554704,
-      "display": "Lisinopril 10 MG Oral Tablet",
-      "user_selected": false
-    }
-  ]
+  "text": "acetaminophen 500 mg tablet",
+  "disabled": false,
+  "description": null,
+  "annotations": null,
+  "extra": {
+    "coding": [
+      {
+        "code": 206813,
+        "display": "acetaminophen 500 mg tablet",
+        "system": "http://www.fdbhealth.com/"
+      },
+      {
+        "code": "198440",
+        "display": "acetaminophen 500 mg tablet",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
+      }
+    ],
+    "clinical_quantities": [
+      {
+        "erx_quantity": "1.0000000",
+        "representative_ndc": "57896021910",
+        "clinical_quantity_description": "tablet",
+        "erx_ncpdp_script_quantity_qualifier_code": "C48542",
+        "erx_ncpdp_script_quantity_qualifier_description": "Tablet"
+      }
+    ]
+  },
+  "value": 206813
 }
 ```
 
@@ -15883,21 +15905,25 @@ Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `M
 
 ```json
 {
-  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
-  "dbid": 67890,
-  "clinical_status": "active",
-  "onset_date": "2023-12-01",
-  "resolution_date": null,
-  "codings": [
-    {
-      "dbid": 12345,
-      "system": "http://hl7.org/fhir/sid/icd-10-cm",
-      "version": "2024",
-      "code": "E11.9",
-      "display": "Type 2 diabetes mellitus without complications",
-      "user_selected": false
-    }
-  ]
+  "text": "Broken internal left hip prosthesis, subsequent encounter",
+  "disabled": false,
+  "description": null,
+  "annotations": ["T84.011D"],
+  "extra": {
+    "coding": [
+      {
+        "code": "T84011D",
+        "display": "Broken internal left hip prosthesis, subsequent encounter",
+        "system": "ICD-10"
+      },
+      {
+        "code": 404684003,
+        "display": "Broken internal left hip prosthesis, subsequent encounter",
+        "system": "http://snomed.info/sct"
+      }
+    ]
+  },
+  "value": "T84011D"
 }
 ```
 
@@ -15909,25 +15935,22 @@ Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY_
 
 ```json
 {
-  "id": "b80b1cdc-2e6a-4aca-90cc-ebc02e683f35",
-  "dbid": 12345,
-  "status": "active",
-  "severity": "severe",
-  "onset_date": "2023-01-15",
-  "last_occurrence": "2023-06-20",
-  "allergy_intolerance_type": "allergy",
-  "category": 1,
-  "narrative": "Patient reports severe allergic reaction to penicillin",
-  "codings": [
-    {
-      "dbid": 67890,
-      "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-      "version": "2023-03",
-      "code": "7980",
-      "display": "Penicillin",
-      "user_selected": true
-    }
-  ]
+  "text": "Penicillins (allergy group)",
+  "disabled": false,
+  "description": null,
+  "annotations": null,
+  "extra": {
+    "coding": [
+      {
+        "code": 476,
+        "display": "Penicillins",
+        "system": "http://www.fdbhealth.com/"
+      }
+    ],
+    "category_id": 1,
+    "category": "allergy group"
+  },
+  "value": 476
 }
 ```
 

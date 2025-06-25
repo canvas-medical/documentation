@@ -174,7 +174,7 @@ The dropdown of options presented to the user now reflects our modifications!
 
 ## Understanding Search Result Data Structures
 
-The search results in this example follow the MedicationSearchResult structure. Each result contains fields like `id`, `national_drug_code `, `status`, and `potency_unit_code` that provide detailed information about the medication option.
+The search results in this example follow the MedicationSearchResult structure. Each result contains fields like `text`, `value`, and `extra.coding` array that provide detailed information about the medication option.
 
 For complete details about medication search result data contracts and other search result structures, see the [Search Result Data Structures](/sdk/events/#search-result-data-structures) section in the Events documentation.
 
