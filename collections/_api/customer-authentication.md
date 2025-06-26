@@ -101,11 +101,11 @@ and you'll get a brand new access token.
 
 Scopes are useful to prevent access to unwanted parts of the API. If you're using the Client Credentials Flow, Scopes are optional, and if omitted, you'll have full access to the FHIR API. Be mindful of that.
 
-If you're using the Authorization Code Flow, you need to pass scopes as part of your first request to get an authorization code. These scopes follow the [Clinical Scope Syntax](https://www.hl7.org/fhir/smart-app-launch/scopes-and-launch-context.html#clinical-scope-syntax) set by HL7.
+If you're using the Authorization Code Flow, you need to pass scopes as part of your first request to get an authorization code. These scopes follow the [Clinical Scope Syntax](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#clinical-scope-syntax) set by HL7.
 
-Since Canvas currently works on a User level (e.g., the logged-in user isn't a Patient), the most relevant scopes can be found [here](https://www.hl7.org/fhir/smart-app-launch/scopes-and-launch-context.html#user-level-scopes).
+Since Canvas currently works on a User level (e.g., the logged-in user isn't a Patient), the most relevant scopes can be found [here](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#user-level-scopes).
 
-In short, they have the form: `user/resourceType.(read|write|*)`, where `resourceType` can be one of the supported resources (e.g., `Patient, Practitioner, etc) or a wildcard `*`.
+In short, they have the form: `user/(resourceType|*).(c|r|u|s)`, where `resourceType` can be one of the supported resources (e.g., `Patient`, `Practitioner`, etc.) or a wildcard `*`. The requested permissions come after the period, and can be `c`, `r`, `u`, or `s` for `create`, `read`, `update`, and `search` respectively.
 
 ## Additional reading
 - [Authentication Best Practices](/api/authentication-best-practices)
