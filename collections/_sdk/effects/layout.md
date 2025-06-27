@@ -160,7 +160,7 @@ The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a
 ### Example Usage
 
 ```python
-from canvas_sdk.effects import LaunchModalEffect, EffectType
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
 
 class ModalEffectHandler:
     def compute(self):
@@ -266,7 +266,7 @@ This template uses Django template placeholders like {% raw %} `{{ title }}`, `{
 Here’s how you can use the `render_to_string` utility to render the template and pass the resulting HTML to a `LaunchModalEffect` or `PortalWidget`:
 
 ```python
-from canvas_sdk.effects import LaunchModalEffect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.effects.widgets import PortalWidget
 from canvas_sdk.templates import render_to_string 
 
