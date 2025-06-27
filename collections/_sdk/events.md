@@ -15854,7 +15854,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 
 ### Search Result Data Structures
 
-Many events include search results in their context. To help developers understand the data contracts, this section documents the common structures found in search results.
+Many event payloads include search results. This section documents the common structures within them.
 
 #### MedicationSearchResult
 
