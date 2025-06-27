@@ -307,3 +307,133 @@ response_json = ontologies_http.get_json(f"/fdb/ndcs-to-medications/76420037215,
 #   ...
 # ]
 ```
+
+## Making requests to the Pharmacy service
+
+Plugin authors can make requests to our Pharmacy service using the `PharmacyHttp` client. 
+This client provides a simplified interface for searching pharmacies and retrieving pharmacy details.
+
+```python
+from canvas_sdk.utils.http import pharmacy_http
+```
+
+Unlike the general Http client, PharmacyHttp only provides two specific methods for pharmacy operations. 
+Direct HTTP methods (get, post, put, patch) are not available.
+
+### Searching for pharmacies
+
+Search for pharmacies by name, with optional location-based filtering.
+
+**Parameters**:
+
+| Name           | Type     | Required | Description                                                  |
+| :------------- | :------- | :------- | :----------------------------------------------------------- |
+| `search_term`  | _string_ | `true`   | The search query for pharmacy name or organization.          |
+| `latitude`     | _string_ | `false`  | Latitude coordinate for location-based search.               |
+| `longitude`    | _string_ | `false`  | Longitude coordinate for location-based search.              |
+
+**Example**:
+
+```python
+from canvas_sdk.utils.http import pharmacy_http
+
+# Basic search by name
+results = pharmacy_http.search_pharmacies("CVS")
+
+# Search with location filtering
+results = pharmacy_http.search_pharmacies(
+    "pharmacy",
+    latitude="40.7128",
+    longitude="-74.0060"
+)
+
+# The results list contains pharmacy objects like:
+# [
+#   {
+#     "id": 123456,
+#     "distance_miles": 0.8,
+#     "ncpdp_id": "1234567",
+#     "store_number": "#1234",
+#     "organization_name": "CVS Pharmacy #1234",
+#     "address_line_1": "123 MAIN ST",
+#     "address_line_2": "",
+#     "city": "New York",
+#     "state": "NY",
+#     "zip_code": "10001",
+#     "phone_primary": "2125551234",
+#     "fax": "2125555678",
+#     "latitude": 40.7128,
+#     "longitude": -74.0060,
+#     "npi": "1234567890",
+#     "specialty_type": "Retail",
+#     ...
+#   },
+#   ...
+# ]
+```
+
+### Looking up a pharmacy by NCPDP ID
+
+Retrieve detailed information about a specific pharmacy using its NCPDP (National Council for Prescription Drug Programs) identifier.
+
+**Parameters**:
+
+| Name        | Type     | Required | Description                          |
+| :---------- | :------- | :------- | :----------------------------------- |
+| `ncpdp_id`  | _string_ | `true`   | The NCPDP identifier of the pharmacy.|
+
+**Example**:
+
+```python
+from canvas_sdk.utils.http import pharmacy_http
+
+# Look up a specific pharmacy
+pharmacy = pharmacy_http.get_pharmacy_by_ncpdp_id("1234567")
+
+# The response contains detailed pharmacy information:
+# {
+#   "id": 123456,
+#   "ncpdp_id": "1234567",
+#   "store_number": "#1234",
+#   "organization_name": "Example Pharmacy #1234",
+#   "address_line_1": "123 MAIN ST",
+#   "address_line_2": "",
+#   "city": "New York",
+#   "state": "NY",
+#   "zip_code": "10001",
+#   "country": "US",
+#   "standardized_address_line_1": "123 Main St",
+#   "standardized_city": "New York",
+#   "standardized_state": "NY",
+#   "standardized_zip_code": "100010000",
+#   "phone_primary": "2125551234",
+#   "fax": "2125555678",
+#   "email": "",
+#   "active_start_time": "2020-01-01T00:00:00Z",
+#   "active_end_time": "2099-12-31T23:59:59Z",
+#   "service_level": "New~Refill~Change~Cancel~ControlledSubstance",
+#   "npi": "1234567890",
+#   "specialty_type": "Retail",
+#   "dea_number": "",
+#   "organization_type": "Pharmacy",
+#   "organization_id": 1234567,
+#   "latitude": 40.7128,
+#   "longitude": -74.0060,
+#   ...
+# }
+```
+
+### Response fields
+
+Both methods return pharmacy objects with the following key fields:
+
+- `ncpdp_id`: Unique NCPDP identifier for the pharmacy
+- `organization_name`: Name of the pharmacy
+- `address_line_1`, `address_line_2`, `city`, `state`, `zip_code`: Physical address
+- `phone_primary`: Primary phone number
+- `fax`: Fax number
+- `npi`: National Provider Identifier
+- `specialty_type`: Type of pharmacy (e.g., "Retail", "Mail Order")
+- `service_level`: Services available (e.g., "New~Refill~Change~Cancel~ControlledSubstance")
+- `latitude`, `longitude`: Geographic coordinates
+- `distance_miles`: Distance from search location (only present in search results when location is provided)
