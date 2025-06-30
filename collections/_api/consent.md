@@ -83,8 +83,7 @@ sections:
             description_for_all_endpoints: The source on which this consent statement is based.
             create_description: For create interactions, `sourceAttachment.title`, `sourceAttachment.contentType`, and `sourceAttachment.data` are required.<br><br>
             read_and_search_description: >-
-              Canvas returns the `sourceAttachment.url` for the document associated with the consent that has the latest period.start date.<br><br>
-              **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
+              Canvas returns the `sourceAttachment.url` for the document associated with the consent that has the latest period.start date.
             create_and_update_description: >-
               The source on which this consent is based.<br><br>
               For create interactions, `sourceAttachment.title`, `sourceAttachment.contentType`, and `sourceAttachment.data` are required.
@@ -313,12 +312,6 @@ print(response.text)
   },
   "dateTime": "2022-04-13T14:43:32.317476+00:00",
   "sourceAttachment": {
-      "extension": [
-              {
-                  "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
-                  "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
-              }
-      ],
       "url": "https://fumage-example.canvasmedical.com/Consent/a9d3c0d9-e87a-4737-b909-ac81ee62f9a0/files/sourceAttachment"
   },
   "provision": {
@@ -438,12 +431,6 @@ print(response.text)
           },
           "dateTime": "2022-04-13T14:43:32.317476+00:00",
           "sourceAttachment": {
-            "extension": [
-                  {
-                      "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
-                      "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/UploadTest_RNYbNvp.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=L%2FPPGh1A9AlUrHFRsiDiqaDYQYE%3D&Expires=1714137914"
-                  }
-              ],
               "url": "https://fumage-example.canvasmedical.com/Consent/a9d3c0d9-e87a-4737-b909-ac81ee62f9a0/files/sourceAttachment"
           },
           "provision": {
