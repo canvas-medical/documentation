@@ -21,22 +21,39 @@ A Protocol card consists of three main parts:
   - open a new tab and navigate to another site
   - insert a command into a note
 
-| Name              | Type                   | Required                                     | Description                                                                                                                                        |
-| :---------------- | :--------------------- | :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `patient_id`      | _string_               | `true` (if `patient_filter` is not included) | The id of the [patient](/sdk/data-patient/)                                                                                                        |
-| `patient_filter`  | _dict_                 | `true` (if `patient_id` is not included)     | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients |
-| `key`             | _string_               | `true`                                       | A unique identifier for the protocol card                                                                                                          |
-| `title`           | _string_               | `true`                                       | The title for the protocol card, which appears at the top in bold                                                                                  |
-| `narrative`       | _string_               | `false`                                      | The narrative for the protocol card, which appears just below the title                                                                            |
-| `recommendations` | list[_Recommendation_] | `false`                                      | The recommendations to appear in the protocol card                                                                                                 |
-|                   |                        |                                              |                                                                                                                                                    |
+| Name               | Type                                    | Required                                     | Description                                                                                                                                        |
+| :----------------- | :-------------------------------------- | :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `patient_id`       | _string_                                | `true` (if `patient_filter` is not included) | The id of the [patient](/sdk/data-patient/)                                                                                                        |
+| `patient_filter`   | _dict_                                  | `true` (if `patient_id` is not included)     | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients |
+| `key`              | _string_                                | `true`                                       | A unique identifier for the protocol card                                                                                                          |
+| `title`            | _string_                                | `true`                                       | The title for the protocol card, which appears at the top in bold                                                                                  |
+| `narrative`        | _string_                                | `false`                                      | The narrative for the protocol card, which appears just below the title                                                                            |
+| `can_be_snoozed`   | _boolean_                               | `false`                                      | Whether the protocol card can be snoozed, defaults to `false`                                                                                      |
+| `status`           | [Status](#status)                       | `false`                                      | The status of the protocol card, defaults to `Status.DUE`                                                                                          |
+| `recommendations`  | list[[Recommendation](#recommendation)] | `false`                                      | The recommendations to appear in the protocol card                                                                                                 |
+| `feedback_enabled` | _boolean_                               | `false`                                      | Whether users can provide feedback for the protocol card in Settings, defaults to `false`                                                          |
+| `due_in`           | _integer_                               | `false`                                      | The number of days until the protocol card will be considered due for the patient, defaults to `-1` for already due                                |
+|                    |                                         |                                              |                                                                                                                                                    |
 
-| `Recommendation` |          |         |                                       |
-| :--------------- | :------- | :------ | :------------------------------------ |
-| `title`          | _string_ | `true`  | The description of the recommendation |
-| `button`         | _string_ | `false` | The text to appear on the button      |
-| `href`           | _string_ | `false` | The url for the button to navigate to |
-|                  |          |         |                                       |
+### Recommendation
+
+| Attribute | Type     | Required | Description                           |
+| :-------- | :------- | :------- | :------------------------------------ |
+| `title`   | _string_ | `true`   | The description of the recommendation |
+| `button`  | _string_ | `false`  | The text to appear on the button      |
+| `href`    | _string_ | `false`  | The url for the button to navigate to |
+|           |          |          |                                       |
+
+### Status
+
+| Enum             | Value          |
+| :--------------- | :------------- |
+| `DUE`            | due            |
+| `SATISFIED`      | satisfied      |
+| `NOT_APPLICABLE` | not_applicable |
+| `PENDING`        | pending        |
+| `NOT_RELEVANT`   | not_relevant   |
+|                  |                |
 
 To include a command recommendation, we recommend you import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See [below](#supported-commands) for the list of supported commands.
 </br>
@@ -62,6 +79,7 @@ class Protocol(BaseProtocol):
             key="testing-protocol-cards",
             title="This is a ProtocolCard title",
             narrative="this is the narrative",
+            status=ProtocolCard.Status.DUE,
             recommendations=[Recommendation(title="this recommendation has no action, just words!")]
         )
 
@@ -107,6 +125,7 @@ class Protocol(BaseProtocol):
             key="testing-protocol-cards",
             title="This is a ProtocolCard title",
             narrative="this is the narrative",
+            can_be_snoozed=True,
             recommendations=[
                 Recommendation(title="this recommendation has no action, just words!")
             ],
@@ -138,24 +157,24 @@ class Protocol(BaseProtocol):
 
 The following commands from the [commands module](/sdk/commands/) are currently supported for insertion from Protocol Cards:
 
-- Allergy  
-- Assess  
-- Diagnose  
-- FollowUp  
-- Goal  
-- HistoryOfPresentIllness  
-- Image  
-- Immunize  
-- Instruct  
-- LabOrder  
-- MedicationStatement  
-- Perform  
-- Plan  
-- Prescribe  
-- Questionnaire  
-- ReasonForVisit  
-- Refer  
-- StructuredAssessment  
-- Task  
-- ValidateCodingGap  
-- Vitals  
+- Allergy
+- Assess
+- Diagnose
+- FollowUp
+- Goal
+- HistoryOfPresentIllness
+- Image
+- Immunize
+- Instruct
+- LabOrder
+- MedicationStatement
+- Perform
+- Plan
+- Prescribe
+- Questionnaire
+- ReasonForVisit
+- Refer
+- StructuredAssessment
+- Task
+- ValidateCodingGap
+- Vitals
