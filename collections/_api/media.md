@@ -80,8 +80,6 @@ sections:
           - name: content
             required_in: create
             description_for_all_endpoints: Actual Media.
-            read_and_search_description: >-
-              **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             type: json
             attributes:
               - name: contentType
@@ -279,12 +277,6 @@ print(response.text)
         "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
     },
     "content": {
-        "extension": [
-              {
-                  "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
-                  "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/20240412_124150_e8443b40ac434173a45e649b40b6a9f4.png?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=cTm%2BodgYbW8WSgnjUld8GBmmRXo%3D&Expires=1714137543"
-              }
-        ],
         "contentType": "image/jpeg",
         "url": "https://fumage-example.canvasmedical.com/Media/729e5242-bad6-4bd7-905d-9716ae262971/files/content",
         "title": "Image title"
@@ -407,12 +399,6 @@ print(response.text)
                     "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
                 },
                 "content": {
-                    "extension": [
-                        {
-                            "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
-                            "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/20240412_124150_e8443b40ac434173a45e649b40b6a9f4.png?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=cTm%2BodgYbW8WSgnjUld8GBmmRXo%3D&Expires=1714137543"
-                        }
-                    ],
                     "contentType": "image/jpeg",
                     "url": "https://fumage-example.canvasmedical.com/Media/729e5242-bad6-4bd7-905d-9716ae262971/files/content",
                     "title": "Image title"
