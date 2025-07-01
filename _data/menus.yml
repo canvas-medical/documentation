@@ -579,12 +579,6 @@ effects_module:
  - title: "Patient Metadata Create Form"
    url: /sdk/patient-metadata-create-form-effect
    description: Effect for dynamically displaying forms in the Patient profile.
- - title: "Update User"
-   url: /sdk/update-user-effect
-   description: Effect for updating a user.
- - title: "Send Patient Portal Invitation"
-   url: /sdk/send-invite-effect
-   description: Effect used to send an invitation to the patient portal.
  - title: "Layout Effects"
    url: /sdk/layout-effect/
    description: Modify or interact with the layout in Canvas.
