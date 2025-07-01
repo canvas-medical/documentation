@@ -40,7 +40,7 @@ class Protocol(BaseProtocol):
 
 ## Customize Landing Page
 
-To customize the landing page you can leverage the `Portal Widgets` effect. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples.
+To customize the landing page you can leverage the `Portal Widgets` effect. See [Portal Landing Page Widgets](/sdk/layout-effect/#portal-landing-page-widgets) and <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples.
 
 
 ## Customize Appointment Cards

@@ -5,7 +5,13 @@ excerpt: "Modify or interact with the layout in Canvas."
 hidden: false
 ---
 
-## Patient Summary
+This page documents layout effects that can be used to customize the user interface in different Canvas environments. Effects are organized by the environment where they apply.
+
+## Clinician View (Patient Chart) Effects
+
+These effects work within the clinician interface, specifically when viewing patient charts and clinical workflows.
+
+### Patient Summary
 There are many summary sections in a patient's chart, organized by data type.
 While there is a default ordering, you can use an Effect to reorder them or
 hide some of them entirely. The `PatientChartSummaryConfiguration` class helps
@@ -67,7 +73,7 @@ Values in the `PatientChartSummaryConfiguration.Section` enum are:
 Each section of the patient chart can also be customized with action buttons. Please refer to the [Action Buttons](/sdk/handlers-action-buttons/) documentation for more information.
 
 
-## Patient Profile
+### Patient Profile
 
 
 The ``PatientProfileConfiguration`` class allows you to reorder, hide, and/or specificy whether sections load expanded or collapsed. 
@@ -153,11 +159,11 @@ Values in the `PatientProfileConfiguration.Section` enum are:
 <br/>
 <br/>
 
-## Modals
+### Modals
 
-The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
+The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources. This effect can be used in both clinician and patient portal environments.
 
-### Example Usage
+#### Example Usage
 
 ```python
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
@@ -185,11 +191,15 @@ The `LaunchModalEffect` class has the following properties:
 - **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 
 
-## Portal Landing Page Widgets
+## Patient Portal Effects
+
+These effects work within the patient portal environment, where patients interact with their health information and care team.
+
+### Portal Landing Page Widgets
 
 The `PortalWidget` class allows you to add widgets of various sizes to the patient portal landing page. You can fully customize your widgets or leverage ready-made widgets provided by Canvas, such as Appointments and Messaging.
 
-### Example Usage
+#### Example Usage
 
 ```python
 from canvas_sdk.effects.widgets import PortalWidget
@@ -218,7 +228,11 @@ The `PortalWidget` class has the following properties:
   - **Note: All sizes have a fixed height of 300px.** 
 - **priority**: This value is used to order the widgets within the patient portal. A lower number indicates a higher priority.
 
-## Custom HTML and Django Templates
+## Shared Effects
+
+These effects can be used in both clinician view and patient portal environments.
+
+### Custom HTML and Django Templates
 
 To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect` or `PortalWidget`.
 
@@ -312,7 +326,7 @@ class PortalWidgetHandler:
         return [portal_widget.apply()]
 ```
 
-## Additional Configuration
+### Additional Configuration
 To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, additional security configurations must be specified in the `CANVAS_MANIFEST.json` file of your plugin.
 
 - **Allowing URLs**: URLs specified in the **url** property must be added to the `url_permissions` section of the `CANVAS_MANIFEST.json` in order for the URL to load properly.
