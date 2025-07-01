@@ -33,11 +33,11 @@ sections:
               - name: coding
                 description: Code defined by a terminology system.
                 type: array[json]
-                attributes: 
+                attributes:
                   - name: system
                     description: The system url of the coding.
                     required_in: create,update
-                    enum_options: 
+                    enum_options:
                       - value: http://hl7.org/fhir/ValueSet/coverage-type
                     type: string
                   - name: code
@@ -198,11 +198,11 @@ sections:
                 description: Code defined by a terminology system.
                 type: array[json]
                 required_in: create,update
-                attributes: 
+                attributes:
                   - name: system
                     description: The system url of the coding.
                     required_in: create,update
-                    enum_options: 
+                    enum_options:
                       - value: http://hl7.org/fhir/ValueSet/subscriber-relationship
                     type: string
                   - name: code
@@ -307,16 +307,16 @@ sections:
               - name: identifier
                 exclude_in: read,search
                 type: json
-                description: Logical reference, when literal reference is not known. 
+                description: Logical reference, when literal reference is not known.
                 attributes:
                   - name: value
                     type: string
                     required_in: create, update
-                    description: The value that is unique. These values can only be found and updated in the [Insurers Admin view](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers) in Canvas. 
+                    description: The value that is unique. These values can only be found and updated in the [Insurers Admin view](https://help.canvasmedical.com/articles/5877696655-patient-coverages#managing-insurers-68) in Canvas.
                   - name: system
                     type: string
-                    description: The namespace for the identifier value. 
-                    enum_options: 
+                    description: The namespace for the identifier value.
+                    enum_options:
                       - value: https://www.claim.md/services/era/
           - name: class
             type: json
@@ -333,15 +333,15 @@ sections:
                     description: Code defined by a terminology system.
                     type: array[json]
                     required_in: create,update
-                    attributes: 
+                    attributes:
                       - name: system
                         description: The system url of the coding.
                         required_in: create,update
-                        enum_options: 
+                        enum_options:
                           - value: http://hl7.org/fhir/ValueSet/coverage-class
                         type: string
                       - name: code
-                        description: The code of the class. 
+                        description: The code of the class.
                         type: string
                         required_in: create,update
                         enum_options:
@@ -506,19 +506,19 @@ payload = {
   "resourceType": "Coverage",
   "order": 1,
   "status": "active",
-  "type": { 
+  "type": {
     "coding": [
       {
         "system": "http://hl7.org/fhir/ValueSet/coverage-type",
         "code": "MILITARY",
         "display": "military health program"
       }
-    ] 
+    ]
   },
   "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
   "subscriberId": "1234",
   "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
-  "relationship": { 
+  "relationship": {
     "coding": [
       {
         "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
@@ -539,7 +539,7 @@ payload = {
   ],
   "class": [
     {
-      "type": { 
+      "type": {
         "coding": [
           {
             "system": "http://hl7.org/fhir/ValueSet/coverage-class",
@@ -550,7 +550,7 @@ payload = {
       "value": "Starfleet HMO"
     },
     {
-      "type": { 
+      "type": {
         "coding": [
           {
             "system": "http://hl7.org/fhir/ValueSet/coverage-class",
@@ -561,7 +561,7 @@ payload = {
       "value": "Stars"
     },
     {
-      "type": { 
+      "type": {
         "coding": [
           {
             "system": "http://hl7.org/fhir/ValueSet/coverage-class",
@@ -572,7 +572,7 @@ payload = {
       "value": "Captains Only"
     },
     {
-      "type": { 
+      "type": {
         "coding": [
           {
             "system": "http://hl7.org/fhir/ValueSet/coverage-class",
@@ -596,7 +596,7 @@ print(response.text)
 
 ```
     {% endtab %}
-    
+
   {% endtabs %}
 </div>
 
@@ -871,19 +871,19 @@ payload = {
   "resourceType": "Coverage",
   "order": 1,
   "status": "active",
-  "type": { 
+  "type": {
     "coding": [
       {
         "system": "http://hl7.org/fhir/ValueSet/coverage-type",
         "code": "MILITARY",
         "display": "military health program"
       }
-    ] 
+    ]
   },
   "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
   "subscriberId": "1234",
   "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
-  "relationship": { 
+  "relationship": {
     "coding": [
       {
         "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
@@ -904,7 +904,7 @@ payload = {
   ],
   "class": [
     {
-      "type": { 
+      "type": {
         "coding": [
           {
             "system": "http://hl7.org/fhir/ValueSet/coverage-class",
@@ -915,7 +915,7 @@ payload = {
       "value": "Starfleet HMO"
     },
     {
-      "type": { 
+      "type": {
         "coding": [
           {
             "system": "http://hl7.org/fhir/ValueSet/coverage-class",
@@ -926,7 +926,7 @@ payload = {
       "value": "Stars"
     },
     {
-      "type": { 
+      "type": {
         "coding": [
           {
             "system": "http://hl7.org/fhir/ValueSet/coverage-class",
@@ -937,7 +937,7 @@ payload = {
       "value": "Captains Only"
     },
     {
-      "type": { 
+      "type": {
         "coding": [
           {
             "system": "http://hl7.org/fhir/ValueSet/coverage-class",
