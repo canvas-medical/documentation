@@ -159,37 +159,6 @@ Values in the `PatientProfileConfiguration.Section` enum are:
 <br/>
 <br/>
 
-### Modals
-
-The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources. This effect can be used in both clinician and patient portal environments.
-
-#### Example Usage
-
-```python
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-
-class ModalEffectHandler:
-    def compute(self):
-        modal_effect = LaunchModalEffect(
-            url="https://example.com/info",
-            content=None,
-            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
-            title="Example Info"
-        )
-        return [modal_effect.apply()]
-```
-
-The `LaunchModalEffect` class has the following properties:
-
-- **url**: A string containing the URL to load within the modal. If `content` is also specified, an error will be raised.
-- **content**: A string containing the content to be displayed directly within the modal. If `url` is also provided, an error will be raised.
-- **target**: Defines where the modal should be launched. Options include:
-  - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
-  - `NEW_WINDOW`: Opens the content in a new browser window.
-  - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
-  - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
-- **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
-
 
 ## Patient Portal Effects
 
@@ -231,6 +200,37 @@ The `PortalWidget` class has the following properties:
 ## Shared Effects
 
 These effects can be used in both clinician view and patient portal environments.
+
+### Modals
+
+The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources. This effect can be used in both clinician and patient portal environments.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+
+class ModalEffectHandler:
+    def compute(self):
+        modal_effect = LaunchModalEffect(
+            url="https://example.com/info",
+            content=None,
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+            title="Example Info"
+        )
+        return [modal_effect.apply()]
+```
+
+The `LaunchModalEffect` class has the following properties:
+
+- **url**: A string containing the URL to load within the modal. If `content` is also specified, an error will be raised.
+- **content**: A string containing the content to be displayed directly within the modal. If `url` is also provided, an error will be raised.
+- **target**: Defines where the modal should be launched. Options include:
+  - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
+  - `NEW_WINDOW`: Opens the content in a new browser window.
+  - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
+  - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
+- **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 
 ### Custom HTML and Django Templates
 
