@@ -748,16 +748,60 @@ prescription = PrescribeCommand(
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
 | `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
+### Toggle Questions Feature
+
+The PhysicalExamCommand includes special functionality for toggling questions on/off. 
+When working with a PhysicalExameCommand, the following methods are available:
+
+**Methods**:
+
+| Method                      | Parameters                                 | Returns   | Description                                                |
+|:----------------------------|:-------------------------------------------|:----------|:-----------------------------------------------------------|
+| `is_question_enabled`       | `question_id: str` or `int`                | `bool`    | Check if a specific question is enabled (not skipped).     |
+| `set_question_enabled`      | `question_id: str` or `int, enabled: bool` | `None`    | Enable or disable a specific question.                     |
+| `question_toggles`          | _property_                                 | `dict`    | Get all current toggle states (question_id → enabled).     |
+
 **Example**:
 
 ```python
 from canvas_sdk.commands import PhysicalExamCommand
 
-questionnaire = PhysicalExamCommand(
-    note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+# Create a new physical exam
+exam = PhysicalExamCommand(
+  note_uuid='a229456f-c10d-4f85-a04e-e8675d4e56dd',
+  questionnaire_id='83d93454-25a9-404d-83a5-e0ed2ec3af00',
 )
+
+questions = exam.questions  # Retrieve the list of questions
+# Returns: [
+#               Question(
+#                       self.name='question-12', 
+#                       self.label='Body length (in)',
+#                       self.type='TXT', 
+#                       self.options=[ResponseOption(self.dbid=38, self.name='Body length (in)', self.code='8306-3', self.value='')], 
+#                       self.response=None
+#               ), 
+#               Question(
+#                       self.name='question-13', 
+#                       self.label='Head circumference (cm)', 
+#                       self.type='TXT', self.options=[ResponseOption(self.dbid=39, self.name='Head circumference (cm)', self.code='8287-5', self.value='')], 
+#                       self.response=None
+#               )
+
+# Check if a question is enabled
+if exam.is_question_enabled("12"):
+  print("Body length question is enabled.")
+
+# Disable irrelevant questions
+exam.set_question_enabled("13", False) 
+
+# Get all toggle states
+states = exam.question_toggles
+# Returns: {"12": True, "13": False, "14": True, ...}, where keys are question IDs and values are enabled states.
+
+# Working with existing exam - toggle states are preserved
+existing_exam = PhysicalExamCommand(command_uuid='existing-exam-uuid')
+# All previously set toggle states are automatically loaded
 ```
 
 **Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
@@ -770,6 +814,8 @@ questionnaire = PhysicalExamCommand(
 ### Overview
 
 The `QuestionnaireCommand` is used to present a questionnaire to a patient and commit their responses to an interview. It requires the ID of the questionnaire
+
+**Automatic Questionnaire ID Loading**: When instantiating a QuestionnaireCommand with an existing `command_uuid`, the questionnaire_id will be automatically loaded from the database if not explicitly provided. This means you don't need to specify the questionnaire_id when working with existing commands.
 
 In addition to the basic parameters, this command supports a dynamic response interface. Once instantiated, you can retrieve the list of questions via the `questions` property, and then record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
 
@@ -1074,16 +1120,61 @@ ResolveConditionCommand(
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
 | `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
+
+### Toggle Questions Feature
+
+The ReviewOfSystemsCommand includes the same toggle functionality as PhysicalExamCommand, 
+allowing practitioners to enable or disable specific system review questions based on patient relevance.
+
+**Methods**:
+
+| Method                      | Parameters                                 | Returns   | Description                                                |
+|:----------------------------|:-------------------------------------------|:----------|:-----------------------------------------------------------|
+| `is_question_enabled`       | `question_id: str` or `int`                | `bool`    | Check if a specific question is enabled (not skipped).     |
+| `set_question_enabled`      | `question_id: str` or `int, enabled: bool` | `None`    | Enable or disable a specific question.                     |
+| `question_toggles`          | _property_                                 | `dict`    | Get all current toggle states (question_id → enabled).     |
+
 **Example**:
 
 ```python
 from canvas_sdk.commands import ReviewOfSystemsCommand
 
-questionnaire = ReviewOfSystemsCommand(
-    note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+# Create a new review of systems
+ros = ReviewOfSystemsCommand(
+  note_uuid='8a18931a-acd9-474b-9070-ccd6fd472313',
+  questionnaire_id='ed92577b-a023-4370-bc85-2b57e8afc4d8',
 )
+
+questions = ros.questions  # Retrieve the list of questions
+# Returns: [
+#               Question(
+#                       self.name='question-14', 
+#                       self.label='Recurrent fever or chills',
+#                       self.type='TXT', 
+#                       self.options=[]], 
+#                       self.response=None
+#               ), 
+#               Question(
+#                       self.name='question-25', 
+#                       self.label='Other', 
+#                       self.type='TXT', self.options=[], 
+#                       self.response=None
+#               )
+
+# Check if a question is enabled
+if ros.is_question_enabled("14"):
+  print("Recurrent fever or chills question is enabled.")
+
+# Disable irrelevant questions
+ros.set_question_enabled("25", False) 
+
+# Get all toggle states
+states = ros.question_toggles
+# Returns: {"14": True, "25": False, "26": True, ...}, where keys are question IDs and values are enabled states.
+
+# Working with existing ros - toggle states are preserved
+existing_ros = ReviewOfSystemsCommand(command_uuid='existing-exam-uuid')
+# All previously set toggle states are automatically loaded
 ```
 
 **Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
