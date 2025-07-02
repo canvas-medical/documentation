@@ -101,7 +101,7 @@ patient = Patient(
     ]
 )
 
-return patient.create()
+return [patient.create()]
 ```
 
 ## Validation
