@@ -20,7 +20,7 @@ Creates a new external identifier for a patient.
 ### Example
 
 ```python
-from canvas_sdk.v1.effects.patient import CreatePatientExternalIdentifier
+from canvas_sdk.effects.patient import CreatePatientExternalIdentifier
 
 effect = CreatePatientExternalIdentifier(
     patient_id="1eed3ea2a8d546a1b681a2a45de1d790",
