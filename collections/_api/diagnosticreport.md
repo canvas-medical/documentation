@@ -144,8 +144,7 @@ sections:
           - name: presentedForm
             type: array[json]
             description: >-
-              Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created. <br><br>
-              **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
+              Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created.
             attributes:
                 - name: url
                   type: string
@@ -243,12 +242,6 @@ sections:
     "presentedForm":
     [
         {
-            "extension": [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
-                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/Screenshot_2024-02-21_at_15.26.42.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=Ns%2BLQ5z5XXWH4WMOXWczuMQ7s0A%3D&Expires=1714138104"
-                }
-            ],
             "url": "https://fumage-example.canvasmedical.com/DiagnosticReport/9b90621b-059f-4f6e-9ef5-58171098e424/files/presentedForm"
         }
     ]
@@ -394,12 +387,6 @@ sections:
                 ],
                 "presentedForm": [
                     {
-                        "extension": [
-                            {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
-                                "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/Screenshot_2024-02-21_at_15.26.42.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=Ns%2BLQ5z5XXWH4WMOXWczuMQ7s0A%3D&Expires=1714138104"
-                            }
-                        ],
                         "url": "https://fumage-example.canvasmedical.com/DiagnosticReport/197d1b7a-374e-4aa8-82b2-6960a62ecf7a/files/presentedForm"
                     }
                 ]

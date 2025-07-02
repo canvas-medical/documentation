@@ -594,6 +594,9 @@ effects_module:
  - title: "Patient"
    url: /sdk/effect-patient/
    description: Interact with patient data.
+ - title: "Patient External ID"
+   url: /sdk/effect-create-patient-external-identifier/
+   description: Create a new external identifier for a patient.
  - title: "Patient Metadata"
    url: /sdk/effect-patient-metadata/
    description: Interact with patient metadata.
@@ -623,6 +626,9 @@ data_module:
  - title: "Care Team"
    url: /sdk/data-care-team/
    description: Teams assigned for patient care.
+ - title: "Claim"
+   url: /sdk/data-claim/
+   description: A healthcare claim.
  - title: "Command"
    url: /sdk/data-command/
    description: Structured units of documentation in a patient's chart.
@@ -668,6 +674,9 @@ data_module:
  - title: "Patient"
    url: /sdk/data-patient/
    description: Data used to categorize individuals for identification, records matching, and other purposes.
+ - title: "Posting"
+   url: /sdk/data-posting/
+   description: Payments and postings associated with healthcare claims.
  - title: "PracticeLocation"
    url: /sdk/data-practicelocation/
    description: The practice locations present in the Canvas EMR.

@@ -172,6 +172,12 @@ of type `AUTOCOMPLETE_SEARCH_RESULTS` with our modified list as the payload.
 
 The dropdown of options presented to the user now reflects our modifications!
 
+## Understanding Search Result Data Structures
+
+The search results in this example follow the MedicationSearchResult structure. Each result contains fields like `text`, `disabled`, `description`, `annotations`, `extra`, and `value` that provide detailed information about the medication option.
+
+For complete details about medication search result data contracts and other search result structures, see the [Search Result Data Structures](/sdk/events/#search-result-data-structures) section in the Events documentation.
+
 ## Watch Me Build It
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/d3b696bdb482401c82aad2a2347c11ea?sid=07417cab-cb22-4165-ba16-2a2dcc2b3ce5" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div> 
