@@ -27,6 +27,8 @@ effect = CreatePatientExternalIdentifier(
     system="https://www.va.gov/",
     value="VET123456"
 )
+
+effect.create()
 ```
 
 This effect will create a new external identifier for the specified patient.
