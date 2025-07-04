@@ -677,6 +677,9 @@ data_module:
   - title: "Patient Consent"
     url: /sdk/data-patient-consent/
     description: Documented patient consents that ensure legal compliance and protect patient rights.
+  - title: "Payor Specific Charge"
+    url: /sdk/data-payor-specific-charge/
+    description: A billing charge specific to a certain transactor in Canvas.
   - title: "Posting"
     url: /sdk/data-posting/
     description: Payments and postings associated with healthcare claims.
