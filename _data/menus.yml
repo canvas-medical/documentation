@@ -522,6 +522,8 @@ sdk_overview:
    url: /sdk/caching/
  - title: "Command Line Interface"
    url: /sdk/canvas_cli/
+ - title: "Sandboxing and Allowed Imports"
+   url: /sdk/sandboxing-and-allowed-imports/
  - title: "Commands Module"
    url: /sdk/commands/
  - title: "Data Module"
