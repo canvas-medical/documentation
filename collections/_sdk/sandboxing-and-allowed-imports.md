@@ -207,6 +207,6 @@ Plus all the standard safe builtins from RestrictedPython including basic types 
 
 ## Requesting Additional Imports
 
-If there is a library or function not on this list that you wish to import in your plugin, reach out to your Canvas support team with the request. Additional imports can be added after a security review.
+If there is a library or function not on this list that you wish to import in your plugin, reach out to your Canvas support team with the request or visit the [Canvas developer forum](https://github.com/canvas-medical/canvas-plugins/discussions). Additional imports can often be added after a security review.
 
 The allowed imports are defined in the [Canvas Plugins repository](https://github.com/canvas-medical/canvas-plugins/blob/main/plugin_runner/sandbox.py) and are regularly updated to support common development needs while maintaining security.
