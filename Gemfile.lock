@@ -122,7 +122,7 @@ GEM
       json (>= 1.8.0)
     unicode-display_width (1.8.0)
     verbal_expressions (0.1.5)
-    webrick (1.8.1)
+    webrick (1.8.2)
 
 PLATFORMS
   arm64-darwin-20
