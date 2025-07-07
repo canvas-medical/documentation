@@ -537,12 +537,14 @@ sdk_overview:
    identifier: sdk_handlers
  - title: "Protocols Module"
    url: /sdk/protocols/
- - title: "Utils Module"
-   url: /sdk/utils/
  - title: "Questionnaires"
    url: /sdk/questionnaires/
+ - title: "Sandboxing and Allowed Imports"
+   url: /sdk/sandboxing-and-allowed-imports/
  - title: "Secrets"
    url: /sdk/secrets/
+ - title: "Utils Module"
+   url: /sdk/utils/
 
 sdk_handlers:
   - title: "Action Buttons"
