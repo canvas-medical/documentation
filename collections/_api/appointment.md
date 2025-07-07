@@ -11,7 +11,7 @@ sections:
           [https://hl7.org/fhir/R4/appointment.html](https://hl7.org/fhir/R4/appointment.html)
           <br><br>
           This may result in one or more [Encounters](/api/encounter).<br><br>
-          The appointment resource maps to both [patient appointments](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management) as well as [other events](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management#scheduling-other-events-30) in Canvas. Instructions for configuring appointment and note types can be found [here](/documentation/appointment-and-note-types).
+          The appointment resource maps to both [patient appointments](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management) as well as [other events](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management#scheduling-other-events-30) in Canvas. Instructions for configuring appointment and note types can be found [here](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -24,7 +24,7 @@ sections:
           - name: contained
             type: array[json]
             description_for_all_endpoints: >-
-              Contained, inline Resources. Used to store links for telehealth appointments. 
+              Contained, inline Resources. Used to store links for telehealth appointments.
             read_and_search_description: There will be a reference in the `supportingInformation` attribute with a `type` of `Endpoint` and a reference` of `#appointment-meeting-endpoint-0` that will match the `contained[0].id`.
             create_and_update_description:
               This endpoint allows one custom video meeting link to be passed in that will be utilized on the UI over the default provider's meeting link if the appointment is a telemedicine. You can specify a telehealth meeting link by adding an element in the `SupportingInformation` attribute where the `SupportingInformation.reference` is `#appointment-meeting-endpoint-0` and matches the `contained[0].id` attribute of `appointment-meeting-endpoint-0`. See examples for help.
@@ -42,7 +42,7 @@ sections:
               - name: connectionType
                 type: json
                 exclude_in: create, update
-                attributes: 
+                attributes:
                   - name: code
                     type: string
                     description: Protocol/Profile/Standard to be used with this endpoint connection
@@ -105,7 +105,7 @@ sections:
               - name: period
                 type: json
                 description: Time period when id is/was valid for use.
-                attributes: 
+                attributes:
                   - name: start
                     type: datetime
                     description: Starting time with inclusive boundary. If omitted this will default to `1970-01-01`.
@@ -116,7 +116,7 @@ sections:
             type: enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed | entered-in-error ]
             required_in: create,update
             description_for_all_endpoints: >-
-              The status of the appointment. <br><br> 
+              The status of the appointment. <br><br>
 
               This table shows the mappings of statuses/states an appointment is in within Canvas to the FHIR status attribute. <br>
 
@@ -141,7 +141,7 @@ sections:
               The Create endpoint does NOT accept a status of `entered-in-error`.
             update_description: >-
               If any of the first 7 FHIR statuses are used, the appointment will appear on the schedule  from the dropdown on the Appointment Card in the Schedule view with one of those statuses. <br><br>An appointment can be updated to `cancelled` and as a result it will disappear from the schedule view and/or will be a restorable note on the patient's timeline. Once an appointment is in a cancelled state, it should not be updated to a different status via FHIR, instead the note should be reverted directly in the Patient's chart before it can be updated via FHIR again. <br><br>
-              The Update endpoint does NOT accept a status of `entered-in-error`. 
+              The Update endpoint does NOT accept a status of `entered-in-error`.
           - name: appointmentType
             type: json
             description_for_all_endpoints: >-
@@ -172,7 +172,7 @@ sections:
                   - name: code
                     description: >-
                       The code of the appointment. <br><br>
-                      This needs to match a coding in the Appointment and Note Types Canvas Settings and be deemed as Is Scheduleable. 
+                      This needs to match a coding in the Appointment and Note Types Canvas Settings and be deemed as Is Scheduleable.
                     type: string
                   - name: display
                     exclude_in: create, update
@@ -186,7 +186,7 @@ sections:
             create_description:
               Canvas only accepts the first item in the reasonCode list.<br><br>
 
-              If you are taking advantage of our [structured reason for visit](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) feature, you can provide a `coding` that Canvas can use to look up the `code` value in configured in settings and display the structured RFV matching that code. If `Appointment.reasonCode[0].coding[0].code` is not a valid ReasonForVisitSettingCoding you will get the error "structured reason for visit with code {code} does not exist". You will also receive an error if the RFV code in Canvas' setting's page is not unique. <br><br> 
+              If you are taking advantage of our [structured reason for visit](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) feature, you can provide a `coding` that Canvas can use to look up the `code` value in configured in settings and display the structured RFV matching that code. If `Appointment.reasonCode[0].coding[0].code` is not a valid ReasonForVisitSettingCoding you will get the error "structured reason for visit with code {code} does not exist". You will also receive an error if the RFV code in Canvas' setting's page is not unique. <br><br>
 
               The `text` attribute maps to the free text Reason For Visit command.  If you are using the structured reason for visit feature, this text will display as the `comment` in the command.  If you are not using the structured reason for visit feature, then only `Appointment.reasonCode[0].text` needs to be populated in your message and `coding` should be omitted. <br><br>
 
@@ -198,13 +198,13 @@ sections:
               - name: coding
                 type: array[json]
                 description: Code defined by a terminology system.
-                attributes: 
+                attributes:
                   - name: system
                     exclude_in: create, update
                     description: The system of the coding.
                     type: string
                   - name: code
-                    description: The code of the reason for visit.  
+                    description: The code of the reason for visit.
                     type: string
                   - name: display
                     exclude_in: create, update
@@ -272,9 +272,9 @@ sections:
           - name: participant
             required_in: create,update
             read_and_search_description: >-
-               Participants involved in appointment. There will be at least one entry for a practitioner. An optional 2nd entry will display if the appointment involves a specific patient. This will be dictated by the `appointmentType` and if it relates to a generic event or a patient's appointment. 
+               Participants involved in appointment. There will be at least one entry for a practitioner. An optional 2nd entry will display if the appointment involves a specific patient. This will be dictated by the `appointmentType` and if it relates to a generic event or a patient's appointment.
             create_and_update_description:
-              Participants involved in appointment. At least one object needs to be supplied that corresponds to the practitioner, there will always be a practitioner involved in every appointment type. An optional 2nd object corresponding to the patient reference will be accepted if the `appointmentType` allows/requires a patient participant. 
+              Participants involved in appointment. At least one object needs to be supplied that corresponds to the practitioner, there will always be a practitioner involved in every appointment type. An optional 2nd object corresponding to the patient reference will be accepted if the `appointmentType` allows/requires a patient participant.
             type: array[json]
             attributes:
               - name: actor
@@ -335,7 +335,7 @@ sections:
           - name: _sort
             type: string
             description: Triggers sorting of the results by a specific criteria. Adding a `-` will sort in descending order while the default sorts in ascending order.
-            search_options: 
+            search_options:
               - value: date
               - value: patient
               - value: practitioner
@@ -344,7 +344,7 @@ sections:
               - value: -practitioner
         endpoints: [create, read, update, search]
         create:
-          description: Create an **Appointment**<br><br> 
+          description: Create an **Appointment**<br><br>
             It is recommended to utilize the [FHIR Slot Search](/api/slot#search) to find appointment times for a specific practitioner.<br><br>
             **Prevent Double Booking** By default, Canvas does not prevent appointments from being created if there is already an existing appointment for that provider. However, Canvas has a config setting to disable double booking. If double booking is not allowed and the Appointment Create or Appointment Update request is trying to book an appointment for a given Provider that already has a scheduled appointment at that time, you will see a 422 error status with the following error message returned `This appointment time is no longer available.`
           responses: [201, 400, 401, 403, 405, 422]
@@ -467,7 +467,7 @@ sections:
             "reference": "Appointment/7fa2874e-73c8-418d-bb25-eea0ccac651c",
             "type": "Appointment",
             "display": "Co-scheduled appointment"
-        } 
+        }
     ],
     "start": "2023-10-24T13:30:00+00:00",
     "end": "2023-10-24T14:00:00+00:00",

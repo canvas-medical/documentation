@@ -16,7 +16,7 @@ This guide explains how to create additional fields that will appear on the pati
 
 #### 1. FormField
 
-To create the form, we need to specify which items will be included. For this, we use the [`FormField`](/sdk/create-form-effect/#formfield) class, where we can define our inputs and their attributes.
+To create the form, we need to specify which items will be included. For this, we use the [`FormField`](/sdk/patient-metadata-create-form-effect/#formfield) class, where we can define our inputs and their attributes.
 
 ```python
     FormField(
