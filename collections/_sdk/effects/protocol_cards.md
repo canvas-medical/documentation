@@ -56,8 +56,10 @@ A Protocol card consists of three main parts:
 |                  |                |
 
 To include a command recommendation, we recommend you import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See [below](#supported-commands) for the list of supported commands.
+
 </br>
 </br>
+
 For non-command recommendations, you can either use the `Recommendation` class, or the `.add_recommendation(title: str = "", button: str = "", href: str | None)` method on the protocol card.
 
 **Example**:
