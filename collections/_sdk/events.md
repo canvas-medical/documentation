@@ -1505,7 +1505,7 @@ type: None</pre></td>
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>"id": user_seelcted_tasklabel_id
+      <td><pre>"id": user_selected_tasklabel_id
 "type": None</pre></td>
       <td><pre>empty</pre></td>
     </tr>
