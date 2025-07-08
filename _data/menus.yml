@@ -622,6 +622,9 @@ data_module:
  - title: "Billing Line Item"
    url: /sdk/data-billing-line-item/
    description: A billable code linked to a patient note.
+ - title: "Business Line"
+   url: /sdk/data-business-line/
+   description: A group of patients that share a common brand under an organization.
  - title: "CanvasUser"
    url: /sdk/data-canvasuser/
    description: User accounts associated with other records.
@@ -676,6 +679,12 @@ data_module:
  - title: "Patient"
    url: /sdk/data-patient/
    description: Data used to categorize individuals for identification, records matching, and other purposes.
+ - title: "Patient Consent"
+   url: /sdk/data-patient-consent/
+   description: Documented patient consents that ensure legal compliance and protect patient rights.
+ - title: "Payor Specific Charge"
+   url: /sdk/data-payor-specific-charge/
+   description: A billing charge specific to a certain transactor in Canvas.
  - title: "Posting"
    url: /sdk/data-posting/
    description: Payments and postings associated with healthcare claims.
