@@ -120,6 +120,29 @@ commands_in_note = Note.commands.all()
 | is_patient_required                         | Boolean                                   |
 | allow_custom_title                          | Boolean                                   |
 
+### NoteStateChangeEvent
+
+| Field Name                                  | Type                                      |
+|---------------------------------------------|-------------------------------------------|
+| id                                          | UUID                                      |
+| dbid                                        | Integer                                   |
+| created                                     | DateTime                                  |
+| modified                                    | DateTime                                  |
+| note                                        | [Note](/sdk/data-note/)                   |
+| originator                                  | [CanvasUser](/sdk/data-canvasuser)        |
+| state                                       | String                                    |
+| note_state_document                         | String                                    |
+| note_state_html                             | String                                    |
+
+### CurrentNoteStateEvent
+
+| Field Name                                  | Type                                      |
+|---------------------------------------------|-------------------------------------------|
+| id                                          | UUID                                      |
+| dbid                                        | Integer                                   |
+| state                                       | String                                    |
+| note                                        | [Note](/sdk/data-note/)                   |
+
 ## Enumeration types
 
 ### NoteTypeCategories
