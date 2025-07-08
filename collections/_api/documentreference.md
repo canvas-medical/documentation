@@ -276,8 +276,7 @@ sections:
                 description: Type the reference refers to (e.g. "Organization").
           - name: description
             type: string
-            description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource. 
-            create_and_update_description: It requires standard document titles that must be matched to the document provided in the coding type attribute. See the table above with the available loinc codes and their associated description.
+            description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource.
           - name: content
             type: array[json]
             required_in: create
