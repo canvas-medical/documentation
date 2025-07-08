@@ -8,21 +8,21 @@ Plugins developed with the Canvas SDK execute safely and securely in a sandbox t
 
 The following Python standard library modules and their allowed imports are available within the sandbox:
 
-##### `__future__`
+`__future__`
 Provides access to features from future Python versions for backwards compatibility. [read more](https://docs.python.org/3/library/__future__.html)
 - `annotations`
 
-##### `base64`
+`base64`
 Provides functions for encoding and decoding data in base64 format, commonly used for data transmission and storage. [read more](https://docs.python.org/3/library/base64.html)
 - `b64decode`
 - `b64encode`
 
-##### `collections`
+`collections`
 Provides specialized container datatypes that extend beyond the built-in types like lists and dictionaries. [read more](https://docs.python.org/3/library/collections.html)
 - `Counter`
 - `defaultdict`
 
-##### `datetime`
+`datetime`
 Provides classes for working with dates and times, essential for medical applications that need to track appointment schedules and patient timelines. [read more](https://docs.python.org/3/library/datetime.html)
 - `date`
 - `datetime`
@@ -30,56 +30,56 @@ Provides classes for working with dates and times, essential for medical applica
 - `timezone`
 - `UTC`
 
-##### `dateutil`
+`dateutil`
 Extends Python's datetime capabilities with more flexible date parsing and arithmetic. [read more](https://dateutil.readthedocs.io/en/stable/)
 - `relativedelta`
 
-##### `dateutil.relativedelta`
+`dateutil.relativedelta`
 Provides relative time delta calculations for more complex date arithmetic operations. [read more](https://dateutil.readthedocs.io/en/stable/relativedelta.html)
 - `relativedelta`
 
-##### `decimal`
+`decimal`
 Provides precise decimal arithmetic for financial and scientific calculations where floating-point accuracy is critical. [read more](https://docs.python.org/3/library/decimal.html)
 - `Decimal`
 
-##### `enum`
+`enum`
 Provides support for enumerations, useful for defining sets of named constants such as status codes or categories. [read more](https://docs.python.org/3/library/enum.html)
 - `Enum`
 - `StrEnum`
 
-##### `functools`
+`functools`
 Provides utilities for higher-order functions and operations on callable objects. [read more](https://docs.python.org/3/library/functools.html)
 - `reduce`
 
-##### `hashlib`
+`hashlib`
 Provides secure hash and message digest algorithms for data integrity verification and security purposes. [read more](https://docs.python.org/3/library/hashlib.html)
 - `sha256`
 
-##### `hmac`
+`hmac`
 Provides hash-based message authentication code (HMAC) functions for secure message authentication. [read more](https://docs.python.org/3/library/hmac.html)
 - `compare_digest`
 - `new`
 
-##### `http`
+`http`
 Provides HTTP status codes and related constants for web API development and HTTP response handling. [read more](https://docs.python.org/3/library/http.html)
 - `HTTPStatus`
 
-##### `json`
+`json`
 Provides functions for parsing and generating JSON data, essential for API communication and data serialization. [read more](https://docs.python.org/3/library/json.html)
 - `dumps`
 - `loads`
 
-##### `operator`
+`operator`
 Provides function equivalents of operators for functional programming and complex data operations. [read more](https://docs.python.org/3/library/operator.html)
 - `and_`
 
-##### `random`
+`random`
 Provides functions for generating random numbers and making random selections, useful for sampling and testing scenarios. [read more](https://docs.python.org/3/library/random.html)
 - `choices`
 - `uniform`
 - `randint`
 
-##### `re`
+`re`
 Provides regular expression matching operations for pattern matching and text processing. [read more](https://docs.python.org/3/library/re.html)
 - `compile`
 - `DOTALL`
@@ -89,17 +89,17 @@ Provides regular expression matching operations for pattern matching and text pr
 - `split`
 - `sub`
 
-##### `string`
+`string`
 Provides string constants and template classes for string manipulation and formatting operations. [read more](https://docs.python.org/3/library/string.html)
 - `ascii_lowercase`
 - `digits`
 
-##### `time`
+`time`
 Provides time-related functions for measuring execution time and adding delays in processing. [read more](https://docs.python.org/3/library/time.html)
 - `time`
 - `sleep`
 
-##### `typing`
+`typing`
 Provides support for type hints and static type checking to improve code clarity and IDE support. [read more](https://docs.python.org/3/library/typing.html)
 - `Any`
 - `cast`
@@ -115,21 +115,21 @@ Provides support for type hints and static type checking to improve code clarity
 - `Type`
 - `TypedDict`
 
-##### `urllib`
+`urllib`
 Provides modules for working with URLs, including URL parsing and manipulation. [read more](https://docs.python.org/3/library/urllib.html)
 - `parse`
 
-##### `urllib.parse`
+`urllib.parse`
 Provides URL parsing utilities for breaking apart and constructing URLs and query strings. [read more](https://docs.python.org/3/library/urllib.parse.html)
 - `urlencode`
 - `quote`
 
-##### `uuid`
+`uuid`
 Provides functions for generating universally unique identifiers (UUIDs) for creating unique record identifiers. [read more](https://docs.python.org/3/library/uuid.html)
 - `uuid4`
 - `UUID`
 
-##### `zoneinfo`
+`zoneinfo`
 Provides timezone support for handling datetime objects across different time zones. [read more](https://docs.python.org/3/library/zoneinfo.html)
 - `ZoneInfo`
 
