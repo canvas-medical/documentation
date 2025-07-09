@@ -73,7 +73,7 @@ To update an existing task, import the `UpdateTask` class and create an instance
 | team_id     | optional | string       | The id of the [team](/sdk/data-team/) the task should be assigned to.                |
 | patient_id  | optional | string       | The id of the [patient](/sdk/data-patient/) the task is associated with.             |
 | title       | optional | string       | The title of the task. This is displayed at the top of a task card in the Canvas UI. |
-| due         | optional | satetime     | A date/time when the task is due.                                                    |
+| due         | optional | datetime     | A date/time when the task is due.                                                    |
 | status      | optional | TaskStatus   | A status of `OPEN`, `CLOSED` or `COMPLETED`. Defaults to `OPEN` if not supplied.     |
 | labels      | optional | list[string] | A list of labels that will be added at the bottom of a task card in the Canvas UI.   |
 
