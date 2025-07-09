@@ -631,6 +631,9 @@ data_module:
  - title: "Care Team"
    url: /sdk/data-care-team/
    description: Teams assigned for patient care.
+ - title: "Charge Description Master"
+   url: /sdk/data-charge-description-master/
+   description: Billing charges in Canvas that can be added to the note footer.
  - title: "Claim"
    url: /sdk/data-claim/
    description: A healthcare claim.

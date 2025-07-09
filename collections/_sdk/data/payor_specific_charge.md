@@ -37,11 +37,12 @@ You can also access a transactor's specific charges from the `Transactor` model:
 
 ### PayorSpecificCharge
 
-| Field Name            | Type                                         |
-| --------------------- | -------------------------------------------- |
-| dbid                  | Integer                                      |
-| transactor            | [Transactor](/sdk/data-coverage/#transactor) |
-| charge_amount         | Decimal                                      |
-| effective_date        | Date                                         |
-| end_date              | Date                                         |
-| part_of_capitated_set | Boolean                                      |
+| Field Name            | Type                                                           |
+| --------------------- | -------------------------------------------------------------- |
+| dbid                  | Integer                                                        |
+| transactor            | [Transactor](/sdk/data-coverage/#transactor)                   |
+| charge                | [ChargeDescriptionMaster](/sdk/data-charge-description-master) |
+| charge_amount         | Decimal                                                        |
+| effective_date        | Date                                                           |
+| end_date              | Date                                                           |
+| part_of_capitated_set | Boolean                                                        |
