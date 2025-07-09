@@ -82,6 +82,7 @@ commands_in_note = Note.commands.all()
 | title               | String                                |
 | body                | JSON                                  |
 | originator          | [CanvasUser](/sdk/data-canvasuser)    |
+| provider            | [Staff](/sdk/data-staff/#staff)       |
 | checksum            | String                                |
 | billing_note        | String                                |
 | related_data        | JSON                                  |

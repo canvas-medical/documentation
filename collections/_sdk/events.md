@@ -1247,7 +1247,7 @@ type: None</pre></td>
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs if a note state change event is updated.</td></tr>
+    <tr><td colspan="2">Occurs if a note state change event is updated. Note state change events are updated when a note is locked and we generate an archived PDF copy of the note; this is done asynchronously.</td></tr>
   </thead>
   <tbody>
     <tr>
