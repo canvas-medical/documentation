@@ -27,6 +27,12 @@ module.exports = Merge(CommonConfig, {
       minimize: true,
       debug: false,
     }),
-    new ImageminPlugin({ test: /\.(jpe?g|png|gif|svg)$/i }),
+    new ImageminPlugin({ 
+      test: /\.(jpe?g|png|gif|svg)$/i,
+      optipng: { optimizationLevel: 5 },
+      gifsicle: { optimizationLevel: 3, interlaced: false },
+      mozjpeg: { progressive: true, quality: 80 },
+      svgo: { plugins: [{ removeViewBox: false }] }
+    }),
   ],
 });
