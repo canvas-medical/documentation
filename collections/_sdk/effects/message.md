@@ -76,7 +76,7 @@ from canvas_sdk.v1.data.message import Message as MessageModel
 from canvas_sdk.v1.data.patient import Patient
 from canvas_sdk.v1.data.staff import Staff
 
-from canvas_sdk.effects.message import Message
+from canvas_sdk.effects.note.message import Message
 
 staff = Staff.objects.first()
 patient = Patient.objects.first()
