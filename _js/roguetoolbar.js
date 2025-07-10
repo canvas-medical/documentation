@@ -1,7 +1,7 @@
 // Create the icon SVG element
 const createIcon = (path) => {
   const svg = document.createElement('svg');
-  svg.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+  svg.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
     ${path}
   </svg>`;
   return svg;
@@ -13,10 +13,15 @@ const createExpandIcon = () => {
   return createIcon(path);
 };
 
+// Path for a clipboard SVG element
+const clipboardIconPath = '<path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/>';
+
+// Path for a checkbox SVG element
+const copySuccessIconPath = '<path d="M128 64c0-35.3 28.7-64 64-64L352 0l0 128c0 17.7 14.3 32 32 32l128 0 0 288c0 35.3-28.7 64-64 64l-256 0c-35.3 0-64-28.7-64-64l0-112 174.1 0-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39L128 288l0-224zm0 224l0 48L24 336c-13.3 0-24-10.7-24-24s10.7-24 24-24l104 0zM512 128l-128 0L384 0 512 128z"/>';
+
 // Create the clipboard icon SVG element
 const createClipboardIcon = () => {
-  const path = '<path d="M384 112v352c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h80c0-35.29 28.71-64 64-64s64 28.71 64 64h80c26.51 0 48 21.49 48 48zM192 40c-13.255 0-24 10.745-24 24s10.745 24 24 24 24-10.745 24-24-10.745-24-24-24m96 114v-20a6 6 0 0 0-6-6H102a6 6 0 0 0-6 6v20a6 6 0 0 0 6 6h180a6 6 0 0 0 6-6z"/>';
-  return createIcon(path);
+  return createIcon(clipboardIconPath);
 };
 
 // Find all div.highlighter-rouge elements and add the clipboard and expand icons
@@ -41,14 +46,21 @@ highlighterRougeDivs.forEach((div) => {
   div.prepend(toolbarDiv);
 
   // Add click event listener to the clipboard icon
-  clipboardIconDiv.addEventListener('click', () => {
+  clipboardIconDiv.addEventListener('click', (e) => {
     const codeElement = div.querySelector('code');
     if (codeElement) {
       const textToCopy = codeElement.textContent;
       navigator.clipboard.writeText(textToCopy).catch((error) => {
         console.error('Unable to copy text to clipboard:', error);
+        return;
       });
     }
+
+    const copyButtonSvg = e.currentTarget.querySelector('svg > svg')
+    copyButtonSvg.innerHTML = copySuccessIconPath;
+    setTimeout(() => {
+      copyButtonSvg.innerHTML = clipboardIconPath;
+    }, 1000);
   });
 
   // Add click event listener to the expand icon
