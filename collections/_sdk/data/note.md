@@ -71,23 +71,23 @@ commands_in_note = Note.commands.all()
 
 ### Note
 
-| Field Name          | Type                                  |
-|---------------------|---------------------------------------|
-| id                  | UUID                                  |
-| dbid                | Integer                               |
-| created             | DateTime                              |
-| modified            | DateTime                              |
-| patient             | [Patient](/sdk/data-patient/#patient) |
-| note_type_version   | [NoteType](#notetype)                 |
-| title               | String                                |
-| body                | JSON                                  |
-| originator          | [CanvasUser](/sdk/data-canvasuser)    |
-| provider            | [Staff](/sdk/data-staff/#staff)       |
-| checksum            | String                                |
-| billing_note        | String                                |
-| related_data        | JSON                                  |
-| datetime_of_service | DateTime                              |
-| place_of_service    | String                                |
+| Field Name          | Type                                  | Notes                                                                |
+|---------------------|---------------------------------------|----------------------------------------------------------------------|
+| id                  | UUID                                  |                                                                      |
+| dbid                | Integer                               |                                                                      |
+| created             | DateTime                              |                                                                      |
+| modified            | DateTime                              |                                                                      |
+| patient             | [Patient](/sdk/data-patient/#patient) |                                                                      |
+| note_type_version   | [NoteType](#notetype)                 |                                                                      |
+| title               | String                                |                                                                      |
+| body                | JSON                                  |                                                                      |
+| originator          | [CanvasUser](/sdk/data-canvasuser)    |                                                                      |
+| provider            | [Staff](/sdk/data-staff/#staff)       |                                                                      |
+| checksum            | String                                |                                                                      |
+| billing_note        | String                                |                                                                      |
+| related_data        | JSON                                  | Can contain one key, `roomNumber`, if the Note is an inpatient stay. |
+| datetime_of_service | DateTime                              |                                                                      |
+| place_of_service    | String                                |                                                                      |
 
 ### NoteType
 
