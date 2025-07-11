@@ -85,8 +85,8 @@ from canvas_sdk.effects.patient_metadata import PatientMetadata
 
 # Create a metadata entry for patient preferences
 metadata = PatientMetadata(
-  patient_id="550e8400e29b41d4a716446655440000",
-  key="preferred_contact_time"
+    patient_id="550e8400e29b41d4a716446655440000",
+    key="preferred_contact_time"
 )
 
 # Upsert the metadata value
@@ -155,8 +155,8 @@ class NarrativeMetadataExtractor(BaseHandler):
    import json
    from canvas_sdk.effects.patient_metadata import PatientMetadata
    metadata = PatientMetadata(
-     patient_id="550e8400e29b41d4a716446655440000",
-     key="result"
+       patient_id="550e8400e29b41d4a716446655440000",
+       key="result"
    )
    complex_data = {"scores": [85, 92, 78], "average": 85.0}
    metadata.upsert(json.dumps(complex_data))
@@ -166,8 +166,8 @@ class NarrativeMetadataExtractor(BaseHandler):
    from canvas_sdk.effects.patient_metadata import PatientMetadata
    ```python
    metadata = PatientMetadata(
-     patient_id="550e8400e29b41d4a716446655440000",
-     key="boolean_value"
+       patient_id="550e8400e29b41d4a716446655440000",
+       key="boolean_value"
    )
    metadata.upsert("true" if patient_consented else "false")
    ```
