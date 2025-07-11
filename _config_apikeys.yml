@@ -4,4 +4,3 @@ algolia:
   max_record_size: 100000
   files_to_exclude:
     - 'release-notes/*/index.html'
-  nodes_to_index: 'p,code'
