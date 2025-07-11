@@ -48,7 +48,10 @@ def run_code_snippet(snippet, file_path, index):
         return all(result for result in results)
 
     try:
-        parsed = ast.parse(snippet, filename=f"{file_path} block #{index}")
+        parsed = ast.parse(
+            textwrap.dedent(snippet),
+            filename=f"{file_path} block #{index}",
+        )
 
         compile(parsed, filename=f"{file_path} block #{index}", mode="exec")
 
@@ -62,17 +65,17 @@ def run_code_snippet(snippet, file_path, index):
 
         exec(import_src, {})
 
-        print(f"✅ Syntax OK {file_path}, block #{index}")
+        print(f"✅ Syntax OK {file_path} block #{index}")
 
         return True
     except ModuleNotFoundError as e:
         print(f"❌ Missing import: {e}")
         return False
     except SyntaxError as e:
-        print(f"\n❌ SyntaxError in {file_path}, block #{index}: {e}")
+        print(f"❌ SyntaxError in {file_path} block #{index}: {e}")
         return False
     except Exception as e:
-        print(f"\n❌ Other parse error in {file_path}, block #{index}: {e}")
+        print(f"❌ Other parse error in {file_path} block #{index}: {e}")
         return False
 
 
@@ -94,7 +97,8 @@ def main():
                 print()
                 print(
                     "\n".join(
-                        f"{i: <5} {line}" for i, line in enumerate(block.splitlines())
+                        f"{i + 1: <5} {line}"
+                        for i, line in enumerate(block.splitlines())
                     )
                 )
                 print()
