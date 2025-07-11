@@ -25,7 +25,7 @@ A key use case is surfacing potential codings gaps that come from external sourc
 
 The workflow within Canvas is centered around issues created with the `DetectedIssue.code` set to `CODINGGAP`. Although we are leveraging it in our R4 endpoint, `CODINGGAP` was introduced to the value set in R5, and can be used for surfacing conditions that may be present on historical claims but not yet diagnosed within the current year, suspect conditions, or condition data from external sources. The code should be structured as follows:
 
-```
+```json
     "code": {
         "coding": [
             {
@@ -159,7 +159,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 
 ICD_CODES = {
-    "HCC": {"A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202","ADDMORECODES..."}
+    "HCC": {"A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202", "ADD_MORE_CODES..."}
 }
 
 
@@ -221,8 +221,7 @@ from canvas_sdk.protocols import BaseProtocol
 
 ICD_CODES = {
     "HCC": {
-        "A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202",
-        ,"ADDMORECODES...", 
+        "A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202", "ADD_MORE_CODES...", 
     }
 
 }

@@ -57,7 +57,7 @@ In order to generate a CCDA for a known patient key, you'll need to do a GET req
 ## Example and Response
 
 Here's a cURL example of a request for a continuity of care document, filtered for 2020-01-01 to 2020-12-31, and with a generation date of 2022-01-01, at 16:30 UTC:
-```
+```json
 {
   "codes": [
     {
@@ -102,6 +102,3 @@ In general: Codes in the 2xx range indicate success. Codes in the 4xx range indi
     </tr>
   </tbody>
 </table>
-
-
-

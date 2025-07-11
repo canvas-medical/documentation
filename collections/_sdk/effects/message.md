@@ -84,7 +84,7 @@ patient = Patient.objects.first()
 
 ### Create (originate) only
 
-```
+```python
 m1 = Message(
     content="Your lab results are available.",
     sender_id=staff.id,
@@ -95,7 +95,7 @@ effect_create = m1.create()
 
 ### Create and send in one step
 
-```
+```python
 m2 = Message(
     content="Your appointment is confirmed.",
     sender_id=staff.id,
@@ -108,7 +108,7 @@ m = MessageModel.objects.get(message_id="msg-1234")
 
 ### Edit an existing message
 
-```
+```python
 m3 = Message(
     message_id=m.id,
     content="Updated: Your appointment has moved to 3pm."
@@ -118,7 +118,7 @@ effect_edit = m3.edit()
 
 ### Send an existing message
 
-```
+```python
 m4 = Message(message_id=m.id)
 effect_send = m4.send()
 ```

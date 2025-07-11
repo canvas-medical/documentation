@@ -223,7 +223,7 @@ If the endpoints that match are all part of the same handler class, then the req
 by the endpoint that appears highest up in the class definition, i.e. the one that is defined first.
 Consider two endpoints specified to match the following patterns:
 
-```
+```generic
 /routes/hello-world/current-user
 /routes/hello-world/<id>
 ```

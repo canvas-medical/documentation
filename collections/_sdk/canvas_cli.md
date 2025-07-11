@@ -16,7 +16,7 @@ Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas 
 
 **Example:**
 
-```
+```ini
 [buttered-popcorn]
 client_id=butter
 client_secret=salt

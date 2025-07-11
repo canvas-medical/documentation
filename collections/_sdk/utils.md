@@ -114,7 +114,7 @@ have completed.
 The first parameter to the method is an iterable of `BatchableRequest` objects. These can be created with the following
 helper functions:
 
-```
+```generic
 batch_get
 batch_post
 batch_put
