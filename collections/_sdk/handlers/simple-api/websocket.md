@@ -91,8 +91,7 @@ Here’s an example using a SimpleAPI HTTP POST route to trigger a broadcast:
 ```python
 from http import HTTPStatus
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.effects.websocket import Broadcast
+from canvas_sdk.effects.simple_api import Broadcast, JSONResponse, Response
 from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
 
 class WebhookAPI(SimpleAPI):

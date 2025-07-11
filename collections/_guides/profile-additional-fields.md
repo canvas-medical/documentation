@@ -41,8 +41,8 @@ PatientMetadataCreateFormEffect(form_fields=[
         required=False,
         editable=True,
     ),
-    ...
-]
+    ...,
+])
 ```
 
 #### 3. The plugin

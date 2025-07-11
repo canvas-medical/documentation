@@ -52,9 +52,11 @@ class Protocol(BaseProtocol):
 Using this value, the `Command` model can be queried to fetch additional data about the command. Two main fields to pay attention to here are the `schema_key` and `data` fields. The `schema_key` field contains the type of the command, while the `data` field contains a JSON object with command data as key/value pairs:
 
 ```python
-    command_instance = Command.objects.get(id=self.target)
-    log.info(command_instance.schema_key)
-    log.info(command_instance.data)
+from canvas_sdk.v1.data.command import Command
+
+command_instance = Command.objects.get(id=self.target)
+log.info(command_instance.schema_key)
+log.info(command_instance.data)
 ```
 
 For example, for a _Reason For Visit_ command, the preceding code would log the following lines:

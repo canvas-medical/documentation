@@ -107,26 +107,30 @@ Looking in the Canvas UI, there will now be a Data Import note placed on that pa
 
 Now that we have created a Vital Panel, we will be able to use this panel_id when creating the individual vital signs to be associated with the same command by passing the `derivedFrom` attribute in the payload:
 ```python
+payload = {
+    # ...
     "derivedFrom": [
         {
             "reference": f"Observation/{panel_id}",
             "type": "Observation"
         }
-    ]
-``` 
+    ],
+    # ...
+}
+```
 
 Now we are ready to create the following vital signs in the panel that are supported via FHIR Observation Create:
 
-- Height  
-- Weight  
-- Waist Circumference  
-- Body Temperature  
-- Blood Pressure  
-- Pulse Rhythm  
-- Pulse Rate  
-- Respiration Rate  
-- Oxygen Saturation  
-- Notes  
+- Height
+- Weight
+- Waist Circumference
+- Body Temperature
+- Blood Pressure
+- Pulse Rhythm
+- Pulse Rate
+- Respiration Rate
+- Oxygen Saturation
+- Notes
 
 #### Add Height
 

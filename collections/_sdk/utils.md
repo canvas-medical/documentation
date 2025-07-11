@@ -176,7 +176,7 @@ from urllib.parse import urlencode
 from canvas_sdk.utils.http import ontologies_http
 
 # full text search of the medication name, description, and synonyms
-response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({"search": "tylenol"})}").json()
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'search': 'tylenol'})}").json()
 
 # response_json contains a "results" key with this object as the first result:
 # {

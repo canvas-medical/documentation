@@ -359,7 +359,7 @@ for name, part in form_data.multi_items():
         log.info(f"content type: {part.content_type}")
     else:
         # It's a simple string
-        log.info(f"value:        {part.value")
+        log.info(f"value:        {part.value}")
 ```
 
 If you know the name of the subparts you are looking for, you can also access the subparts directly
@@ -429,7 +429,7 @@ class MyAPI(SimpleAPIRoute):
     def put(self) -> list[Response | Effect]:
         return [
             PlainTextResponse(
-                "Hello world from my PUT endpoint!"},
+                "Hello world from my PUT endpoint!",
                 status_code=HTTPStatus.ACCEPTED,
                 headers={"My-Header", "my header value"}
             )
@@ -438,7 +438,7 @@ class MyAPI(SimpleAPIRoute):
     def patch(self) -> list[Response | Effect]:
         return [
             Response(
-                b'{"message": "Hello world from my PATCH endpoint!"}'
+                b'{"message": "Hello world from my PATCH endpoint!"}',
                 status_code=HTTPStatus.NOT_MODIFIED,
                 headers={"My-Header", "my header value"},
                 content_type="application/json"
