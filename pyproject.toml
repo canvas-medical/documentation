@@ -5,6 +5,7 @@ requires-python = ">=3.11"
 dependencies = [
     "ai-scribe",
     "canvas>=0.44.3",
+    "marko>=2.1.4",
     "requests>=2.32.4",
 ]
 
