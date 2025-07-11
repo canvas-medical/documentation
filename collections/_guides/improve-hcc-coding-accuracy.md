@@ -49,7 +49,7 @@ There is no built in UI feature in Canvas that surfaces coding gaps that have ye
 
 The protocol will surface in each patient's chart and staff can also leverage the population page as a work list. 
 
-``` python
+```python
 from canvas_sdk.protocols.clinical_quality_measure import ClinicalQualityMeasure
 from canvas_sdk.events import EventType
 from canvas_sdk.effects.protocol_card import ProtocolCard

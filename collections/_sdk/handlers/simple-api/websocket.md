@@ -62,7 +62,7 @@ def authenticate(self) -> bool:
 ##### APIKey-Based (External Clients)
 For external tools or scripts, pass an auth key as a query parameter:
 
-```python
+```
 wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin>/<channel>?api_key=<key>
 ```
 
