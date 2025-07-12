@@ -33,18 +33,23 @@ The `Note` effect facilitates the creation and updating of visit notes for patie
 ### Example Usage
 
 ```python
-from canvas_sdk.effects.note.note import Note
 import datetime
 
-note_effect = Note(
-    note_type_id="note-type-uuid",
-    datetime_of_service=datetime.datetime.now(),
-    patient_id="patient-uuid",
-    practice_location_id="practice-location-uuid",
-    provider_id="provider-uuid"
-)
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
 
-return note_effect.create()
+
+class Protocol(BaseHandler):
+    def compute(self):
+        note_effect = Note(
+            note_type_id="note-type-uuid",
+            datetime_of_service=datetime.datetime.now(),
+            patient_id="patient-uuid",
+            practice_location_id="practice-location-uuid",
+            provider_id="provider-uuid"
+        )
+
+        return [note_effect.create()]
 ```
 
 ### Update Note
@@ -66,13 +71,19 @@ Updates an existing note. Only certain fields can be modified after creation.
 #### Example Usage
 
 ```python
+import datetime
+
 from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
 
-note_effect = Note(instance_id="existing-note-uuid")
-note_effect.title = "Updated Consultation Notes"
-note_effect.datetime_of_service = datetime.datetime.now()
 
-return note_effect.update()
+class Protocol(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        note_effect.title = "Updated Consultation Notes"
+        note_effect.datetime_of_service = datetime.datetime.now()
+
+        return [note_effect.update()]
 ```
 
 ---
@@ -105,20 +116,25 @@ The `ScheduleEvent` effect enables creating, updating, and deleting schedule eve
 ### Example Usage
 
 ```python
-from canvas_sdk.effects.note.create_appointment import ScheduleEvent
 import datetime
 
-schedule_event_effect = ScheduleEvent(
-    note_type_id="schedule-event-note-type-uuid",
-    patient_id="patient-uuid",  # Optional depending on note type
-    description="Team meeting",  # Optional depending on note type
-    start_time=datetime.datetime.now(),
-    duration_minutes=30,
-    practice_location_id="practice-location-uuid",
-    provider_id="provider-uuid"
-)
+from canvas_sdk.effects.note.appointment import ScheduleEvent
+from canvas_sdk.handlers.base import BaseHandler
 
-return schedule_event_effect.create()
+
+class Protocol(BaseHandler):
+    def compute(self):
+        schedule_event_effect = ScheduleEvent(
+            note_type_id="schedule-event-note-type-uuid",
+            patient_id="patient-uuid",  # Optional depending on note type
+            description="Team meeting",  # Optional depending on note type
+            start_time=datetime.datetime.now(),
+            duration_minutes=30,
+            practice_location_id="practice-location-uuid",
+            provider_id="provider-uuid"
+        )
+
+        return [schedule_event_effect.create()]
 ```
 
 ### Update Schedule Event
@@ -140,14 +156,20 @@ Updates an existing schedule event by creating a new event and cancelling the or
 #### Example Usage
 
 ```python
+import datetime
+
 from canvas_sdk.effects.note.appointment import ScheduleEvent
+from canvas_sdk.handlers.base import BaseHandler
 
-schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
-schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
-schedule_event_effect.duration_minutes = 60
-schedule_event_effect.description = "Rescheduled team meeting"
 
-return schedule_event_effect.update()
+class Protocol(BaseHandler):
+    def compute(self):
+        schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
+        schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
+        schedule_event_effect.duration_minutes = 60
+        schedule_event_effect.description = "Rescheduled team meeting"
+
+        return [schedule_event_effect.update()]
 ```
 
 ### Delete Schedule Event
@@ -157,11 +179,17 @@ Marks a schedule event as cancelled.
 #### Example Usage
 
 ```python
+import datetime
+
 from canvas_sdk.effects.note.appointment import ScheduleEvent
+from canvas_sdk.handlers.base import BaseHandler
 
-schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
 
-return schedule_event_effect.delete()
+class Protocol(BaseHandler):
+    def compute(self):
+        schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
+
+        return [schedule_event_effect.delete()]
 ```
 
 ---
@@ -193,7 +221,7 @@ The `Appointment` effect facilitates creating, updating, and cancelling patient 
 ### Example Usage
 
 ```python
-from canvas_sdk.effects.note.create_appointment import Appointment
+from canvas_sdk.effects.note.appointment import Appointment
 import datetime
 
 appointment_effect = Appointment(
