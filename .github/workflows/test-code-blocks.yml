@@ -1,0 +1,22 @@
+name: test-code-blocks
+
+on:
+  push:
+    paths:
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  test-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout docs
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Test code blocks
+        run: |
+          uv run ./test-code-blocks.py
