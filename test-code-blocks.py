@@ -136,7 +136,7 @@ def run_code_snippet(snippet: str, file_path: Path, index: int) -> tuple[bool, s
             results.append(run_code_snippet(block, file_path, index))
 
         if all(result for result, _ in results):
-            return True, f"✅ Syntax OK {file_path} block #{index}"
+            return True, f"✅ {file_path} block #{index}"
         else:
             return False, "\n".join(message for _, message in results)
 
@@ -158,7 +158,7 @@ def run_code_snippet(snippet: str, file_path: Path, index: int) -> tuple[bool, s
 
         exec(import_src, {})
 
-        return True, f"✅ Syntax OK {file_path} block #{index}"
+        return True, f"✅ {file_path} block #{index}"
     except ModuleNotFoundError as e:
         return False, f"❌ Missing import: {e}"
     except SyntaxError as e:
