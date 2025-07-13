@@ -215,7 +215,7 @@ response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({
 # }
 
 # search for a specific RxNorm RXCUI
-response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({"rxnorm_rxcui": 313782})}").json()
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'rxnorm_rxcui': 313782})}").json()
 
 # response_json contains the same general format as above
 
