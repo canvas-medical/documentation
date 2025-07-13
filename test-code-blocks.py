@@ -210,9 +210,6 @@ def main():
 
                 print(text)
 
-    text_output += "\n"
-    print()
-
     summary = f"ℹ️ {total_code_blocks} Python code blocks found\n"
 
     if failures or missing_language:
