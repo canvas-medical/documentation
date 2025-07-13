@@ -6,7 +6,7 @@ import os
 import sys
 import textwrap
 from pathlib import Path
-from typing import Iterator, Literal, cast
+from typing import Any, Iterator, Literal, cast
 
 import marko
 import requests
@@ -14,18 +14,21 @@ from marko.block import FencedCode
 from marko.element import Element
 from marko.inline import RawText
 
-GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
-GITHUB_SHA = os.environ["GITHUB_SHA"]
-GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
+GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY")
+GITHUB_SHA = os.environ.get("GITHUB_SHA")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 
 
 def create_check(
-    in_progress=False,
-    conclusion=None,
-    summary="",
-    text="",
-):
-    payload = {
+    in_progress: bool = False,
+    conclusion: str | None = None,
+    summary: str = "",
+    text: str = "",
+) -> None:
+    if not GITHUB_REPOSITORY:
+        return
+
+    payload: dict[str, Any] = {
         "name": "Code Block Check",
         "head_sha": GITHUB_SHA,
         "status": "in_progress" if in_progress else "completed",
@@ -118,7 +121,7 @@ def extract_doctest_blocks(text):
     return blocks
 
 
-def run_code_snippet(snippet, file_path, index):
+def run_code_snippet(snippet: str, file_path: Path, index: int) -> tuple[bool, str]:
     if ">>>" in snippet:
         new_blocks = extract_doctest_blocks(snippet)
         results = []
@@ -126,7 +129,10 @@ def run_code_snippet(snippet, file_path, index):
         for block in new_blocks:
             results.append(run_code_snippet(block, file_path, index))
 
-        return all(result for result in results)
+        if all(result for result, _ in results):
+            return True, f"✅ Syntax OK {file_path} block #{index}"
+        else:
+            return False, "\n".join(message for _, message in results)
 
     try:
         parsed = ast.parse(
@@ -146,28 +152,23 @@ def run_code_snippet(snippet, file_path, index):
 
         exec(import_src, {})
 
-        print(f"✅ Syntax OK {file_path} block #{index}")
-
-        return True
+        return True, f"✅ Syntax OK {file_path} block #{index}"
     except ModuleNotFoundError as e:
-        print(f"❌ Missing import: {e}")
-        return False
+        return False, f"❌ Missing import: {e}"
     except SyntaxError as e:
-        print(f"❌ SyntaxError in {file_path} block #{index}: {e}")
-        return False
+        return False, f"❌ SyntaxError in {file_path} block #{index}: {e}"
     except Exception as e:
-        print(f"❌ Other parse error in {file_path} block #{index}: {e}")
-        return False
+        return False, f"❌ Other parse error in {file_path} block #{index}: {e}"
 
 
-def print_code_block(code_block: str) -> None:
-    print()
-    print(
-        "\n".join(
+def code_block_text(code_block: str) -> str:
+    return (
+        "\n"
+        + "\n".join(
             f"{i + 1: <5} {line}" for i, line in enumerate(code_block.splitlines())
         )
+        + "\n"
     )
-    print()
 
 
 def main():
@@ -176,6 +177,8 @@ def main():
     failures = 0
     total_code_blocks = 0
     missing_language = 0
+
+    text_output = ""
 
     for markdown_file in glob.iglob("**/*.md", recursive=True):
         if "node_modules" in markdown_file:
@@ -188,30 +191,46 @@ def main():
             if language == "PYTHON":
                 total_code_blocks += 1
 
-                if not run_code_snippet(block, markdown_file, index + 1):
-                    print_code_block(block)
+                result, message = run_code_snippet(block, markdown_file, index + 1)
+
+                text = message
+
+                if not result:
+                    text += "\n" + code_block_text(block)
+                    text_output += text
 
                     failures += 1
+
+                print(text)
             elif language == "MISSING":
                 missing_language += 1
 
-                print(f"❌ Missing language in {markdown_file} block #{index + 1}")
-                print_code_block(block)
+                text = f"❌ Missing language in {markdown_file} block #{index + 1}\n"
+                text += code_block_text(block)
 
+                text_output += text
+
+                print(text)
+
+    text_output += "\n"
     print()
-    print(f"ℹ️ {total_code_blocks} Python code blocks found")
+
+    summary = f"ℹ️ {total_code_blocks} Python code blocks found\n"
 
     if failures or missing_language:
-        create_check(conclusion="failure", summary="", text="")
+        summary += f"💻 {missing_language} code blocks missing language\n"
+        summary += f"💥 {failures} code blocks failed"
 
-        print(f"💻 {missing_language} code blocks missing language")
-        print(f"💥 {failures} code blocks failed")
-
-        sys.exit(1)
+        create_check(conclusion="failure", summary=summary, text=text_output)
     else:
-        create_check(conclusion="success", summary="", text="")
+        summary += "🎉 all code blocks passed!"
 
-        print("🎉 all code blocks passed!")
+        create_check(conclusion="success", summary=summary)
+
+    print(summary)
+
+    if failures or missing_language:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
