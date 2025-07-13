@@ -1,9 +1,6 @@
 name: Test code blocks
 
 on:
-  push:
-    paths:
-      - '**.md'
   pull_request:
     types:
       - opened
