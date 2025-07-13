@@ -59,8 +59,6 @@ def create_check(
     if response.status_code >= 300:
         print(f"❌ Failed to create check: {response.status_code}")
         print(response.text)
-    else:
-        print("✅ GitHub Check created successfully")
 
 
 def text_from_code_block(code_block: FencedCode) -> str:
