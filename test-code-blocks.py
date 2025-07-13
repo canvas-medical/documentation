@@ -2,14 +2,62 @@
 
 import ast
 import glob
-from pathlib import Path
+import os
 import sys
-import marko
 import textwrap
+from pathlib import Path
 from typing import Iterator, Literal, cast
+
+import marko
+import requests
 from marko.block import FencedCode
 from marko.element import Element
 from marko.inline import RawText
+
+GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
+GITHUB_SHA = os.environ["GITHUB_SHA"]
+GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
+
+
+def create_check(
+    in_progress=False,
+    conclusion=None,
+    summary="",
+    text="",
+):
+    payload = {
+        "name": "Code Block Check",
+        "head_sha": GITHUB_SHA,
+        "status": "in_progress" if in_progress else "completed",
+    }
+
+    if not in_progress:
+        payload.update(
+            {
+                # one of: success, failure, neutral, cancelled, timed_out, action_required
+                "conclusion": conclusion,
+                "output": {
+                    "title": "Code Block Check",
+                    "summary": summary,
+                    "text": text,
+                },
+            }
+        )
+
+    response = requests.post(
+        f"https://api.github.com/repos/{GITHUB_REPOSITORY}/check-runs",
+        headers={
+            "Authorization": f"Bearer {GITHUB_TOKEN}",
+            "Accept": "application/vnd.github+json",
+        },
+        json=payload,
+    )
+
+    if response.status_code >= 300:
+        print(f"❌ Failed to create check: {response.status_code}")
+        print(response.text)
+    else:
+        print("✅ GitHub Check created successfully")
 
 
 def text_from_code_block(code_block: FencedCode) -> str:
@@ -123,6 +171,8 @@ def print_code_block(code_block: str) -> None:
 
 
 def main():
+    create_check(in_progress=True)
+
     failures = 0
     total_code_blocks = 0
     missing_language = 0
@@ -152,11 +202,15 @@ def main():
     print(f"ℹ️ {total_code_blocks} Python code blocks found")
 
     if failures or missing_language:
+        create_check(conclusion="failure", summary="", text="")
+
         print(f"💻 {missing_language} code blocks missing language")
         print(f"💥 {failures} code blocks failed")
 
         sys.exit(1)
     else:
+        create_check(conclusion="success", summary="", text="")
+
         print("🎉 all code blocks passed!")
 
 

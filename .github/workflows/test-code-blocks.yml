@@ -1,4 +1,4 @@
-name: test-code-blocks
+name: Test code blocks
 
 on:
   push:
@@ -24,5 +24,9 @@ jobs:
         uses: astral-sh/setup-uv@v6
 
       - name: Test code blocks
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           uv run ./test-code-blocks.py

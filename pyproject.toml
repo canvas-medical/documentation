@@ -7,6 +7,7 @@ dependencies = [
     "canvas>=0.44.3",
     "marko>=2.1.4",
     "requests>=2.32.4",
+    "types-requests>=2.32.4.20250611",
 ]
 
 [tool.uv]
