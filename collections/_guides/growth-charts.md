@@ -54,6 +54,9 @@ In this guide, we are launching a modal, but this click action can result in any
 Here’s an example of a simple plugin using the `LaunchModalEffect` to display a “Hello World” message.
 
 ```python
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+
+
 class HelloWorld(ActionButton):
     BUTTON_TITLE = "Hello World"
     BUTTON_KEY = "show_hello_world"
@@ -182,27 +185,33 @@ def handle(self) -> list[Effect]:
 Finally, we create a list of graphs with the necessary variables and data, which are passed to the template to generate and render the graph.
 
 ```python
-# list of graphs
-graphs = [
-    {
-        "data": who_boys_length_age, # the data from the graph file
-        "title": 'Length for age (Boys 0 - 2 years)', # graph title
-        "xType": 'Generic', # the type of x axis (Generic, Length, Weight) - We need this info to convert the values 
-        "yType": 'Length', # the type of y axis (Generic, Length, Weight)
-        "xLabel": 'Age', # label for the x axis
-        "yLabel": 'Length', # label for the y axis
-        "zLabel": 'Percentile', # label for the z axis
-        "layerData": length_for_age, # the patient’s data that will be plotted on the graph
-        "tab": "WHO" # the section where the graph should be rendered (WHO or CDC)
-    },
-    # ...repeat for other data series
-]
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.base import BaseHandler
 
-launch_modal = LaunchModalEffect(
-    content=render_to_string("templates/chart.html", {"graphs": graphs}),
-)
 
-return [launch_modal.apply()]
+class Protocol(BaseHandler):
+    def compute(self):
+        # list of graphs
+        graphs = [
+            {
+                "data": who_boys_length_age, # the data from the graph file
+                "title": 'Length for age (Boys 0 - 2 years)', # graph title
+                "xType": 'Generic', # the type of x axis (Generic, Length, Weight) - We need this info to convert the values 
+                "yType": 'Length', # the type of y axis (Generic, Length, Weight)
+                "xLabel": 'Age', # label for the x axis
+                "yLabel": 'Length', # label for the y axis
+                "zLabel": 'Percentile', # label for the z axis
+                "layerData": length_for_age, # the patient’s data that will be plotted on the graph
+                "tab": "WHO" # the section where the graph should be rendered (WHO or CDC)
+            },
+            # ...repeat for other data series
+        ]
+
+        launch_modal = LaunchModalEffect(
+            content=render_to_string("templates/chart.html", {"graphs": graphs}),
+        )
+
+        return [launch_modal.apply()]
 ```
 
 <br/>

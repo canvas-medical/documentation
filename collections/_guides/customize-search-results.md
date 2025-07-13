@@ -111,7 +111,7 @@ search results that would be served to the user if there were no
 modifications.
 
 ### Decide whether to make any changes
-```python
+```python partial
         if results is None:
             return [Effect(type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS, payload=json.dumps(None))]
 ```
@@ -122,7 +122,7 @@ being `None` means "make no changes, present the results without modification",
 whereas an empty result set means "present no options to the user".
 
 ### Loop through the results, making modifications as appropriate
-```python
+```python partial
         post_processed_results = []
         for result in results:
             should_float_to_top = False
@@ -158,7 +158,7 @@ list at position 0. If it did not match, we append the result to the end of
 the list.
 
 ### Return the modified results as a properly typed effect
-```python
+```python partial
         return [
             Effect(
                 type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS,

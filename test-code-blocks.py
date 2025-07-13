@@ -91,6 +91,11 @@ def extract_code_blocks(
         if not code_block.lang:
             code_blocks.append(("MISSING", text_from_code_block(code_block)))
         elif code_block.lang.lower() == "python":
+            # sometimes we want to quote portions of snippets from a larger
+            # snippet to provide larger context without the full imports
+            if code_block.extra == "partial":
+                continue
+
             code_blocks.append(("PYTHON", text_from_code_block(code_block)))
         else:
             # we could also parse JSON, XML, etc. if desired

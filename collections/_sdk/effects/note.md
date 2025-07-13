@@ -221,20 +221,24 @@ The `Appointment` effect facilitates creating, updating, and cancelling patient 
 ### Example Usage
 
 ```python
-from canvas_sdk.effects.note.appointment import Appointment
 import datetime
+from canvas_sdk.effects.note.appointment import Appointment
+from canvas_sdk.handlers.base import BaseHandler
 
-appointment_effect = Appointment(
-    appointment_note_type_id="appointment-note-type-uuid",
-    patient_id="patient-uuid",
-    meeting_link="https://zoom.us/example-link",  # Optional
-    start_time=datetime.datetime.now(),
-    duration_minutes=60,
-    practice_location_id="practice-location-uuid",
-    provider_id="provider-uuid"
-)
 
-return appointment_effect.create()
+class Protocol(BaseHandler):
+    def compute(self):
+        appointment_effect = Appointment(
+            appointment_note_type_id="appointment-note-type-uuid",
+            patient_id="patient-uuid",
+            meeting_link="https://zoom.us/example-link",  # Optional
+            start_time=datetime.datetime.now(),
+            duration_minutes=60,
+            practice_location_id="practice-location-uuid",
+            provider_id="provider-uuid"
+        )
+
+        return appointment_effect.create()
 ```
 
 ### Update Appointment
@@ -260,13 +264,17 @@ Updates an existing appointment by creating a new appointment and cancelling the
 
 ```python
 from canvas_sdk.effects.note.appointment import Appointment
+from canvas_sdk.handlers.base import BaseHandler
 
-appointment_effect = Appointment(instance_id="existing-appointment-uuid")
-appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=2)
-appointment_effect.duration_minutes = 45
-appointment_effect.meeting_link = "https://new-meeting-link.com"
 
-return appointment_effect.update()
+class Protocol(BaseHandler):
+    def compute(self):
+        appointment_effect = Appointment(instance_id="existing-appointment-uuid")
+        appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=2)
+        appointment_effect.duration_minutes = 45
+        appointment_effect.meeting_link = "https://new-meeting-link.com"
+
+        return appointment_effect.update()
 ```
 
 ### Cancel Appointment
@@ -277,10 +285,14 @@ Cancels an existing appointment and updates its status.
 
 ```python
 from canvas_sdk.effects.note.appointment import Appointment
+from canvas_sdk.handlers.base import BaseHandler
 
-appointment_effect = Appointment(instance_id="existing-appointment-uuid")
 
-return appointment_effect.cancel()
+class Protocol(BaseHandler):
+    def compute(self):
+        appointment_effect = Appointment(instance_id="existing-appointment-uuid")
+
+        return appointment_effect.cancel()
 ```
 
 ---
