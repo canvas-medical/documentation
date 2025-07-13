@@ -17,6 +17,7 @@ from marko.inline import RawText
 GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY")
 GITHUB_SHA = os.environ.get("GITHUB_SHA")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
+GITHUB_PYTHON_VERSION = os.environ.get("GITHUB_PYTHON_VERSION")
 
 
 def create_check(
@@ -28,8 +29,10 @@ def create_check(
     if not GITHUB_REPOSITORY:
         return
 
+    title = f"Code Block Check: {GITHUB_PYTHON_VERSION}"
+
     payload: dict[str, Any] = {
-        "name": "Code Block Check",
+        "name": title,
         "head_sha": GITHUB_SHA,
         "status": "in_progress" if in_progress else "completed",
     }
@@ -40,7 +43,7 @@ def create_check(
                 # one of: success, failure, neutral, cancelled, timed_out, action_required
                 "conclusion": conclusion,
                 "output": {
-                    "title": "Code Block Check",
+                    "title": title,
                     "summary": summary,
                     "text": text,
                 },
