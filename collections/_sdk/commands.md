@@ -70,7 +70,7 @@ Command-specific details for each command class can be found below.
 
 | Name           | Type     | Required | Description                          |
 |:---------------|:---------|:---------|:-------------------------------------|
-| `new_fdb_code` | _string_ | `true`   | The FDB code for the new medication. |
+| `new_fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the new medication. |
 
 Check the [Prescribe](#prescribe) command for the other parameters used in the Refill command.
 
@@ -591,7 +591,7 @@ MedicalHistoryCommand(
 
 | Name       | Type     | Required | Description                               |
 |:-----------|:---------|:---------|:------------------------------------------|
-| `fdb_code` | _string_ | `true`   | The fdb code of the medication.           |
+| `fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication.           |
 | `sig`      | _string_ | `false`  | Administration details of the medication. |
 
 **Example**:
@@ -682,7 +682,7 @@ plan = PlanCommand(
 
 | Name                   | Type                          | Required | Description                                                        |
 |------------------------|-------------------------------|----------|--------------------------------------------------------------------|
-| `fdb_code`             | _string_                      | `true`   | FDB code for the medication.                                       |
+| `fdb_code`             | _string_                      | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication.                                       |
 | `icd10_codes`          | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. |
 | `sig`                  | _string_                      | `true`   | Administration instructions/details of the medication.             |
 | `days_supply`          | _integer_                     | `false`  | Number of days the prescription is intended to cover.              |
