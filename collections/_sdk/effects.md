@@ -11,17 +11,6 @@ will be performed with the data provided in the `payload`.
 
 ## Using Effects
 
-### Disallowed Effect/Event Combinations
-
-Canvas prevents certain combinations of events and effects to avoid infinite loops that could occur when an effect triggers the same event that generated it. The following combinations are specifically disallowed:
-
-| Event Type | Disallowed Effect Types |
-|------------|------------------------|
-| `PATIENT_CHART__CONDITIONS` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
-| `PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
-
-For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
-
 ### Basic Usage
 
 Effects are returned as a list from the `compute` method of a plugin that inherits from `BaseHandler`. For example:
@@ -85,6 +74,17 @@ class CustomChartLayout(BaseHandler):
 
         return [layout.apply()]
 ```
+
+### Disallowed Effect/Event Combinations
+
+Canvas prevents certain combinations of events and effects to avoid infinite loops that could occur when an effect triggers the same event that generated it. The following combinations are specifically disallowed:
+
+| Event Type | Disallowed Effect Types |
+|------------|------------------------|
+| `PATIENT_CHART__CONDITIONS` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
+| `PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
+
+For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 
 ## Effect Classes
 
