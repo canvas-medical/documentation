@@ -138,7 +138,7 @@ AdjustPrescriptionCommand(
 **Example**:
 
 ```python
-from canvas_sdk.commands import AllergyCommand, AllergenType, Allergen 
+from canvas_sdk.commands.commands.allergy import AllergyCommand, AllergenType, Allergen
 from datetime import date
 
 allergy = AllergyCommand(
@@ -197,7 +197,7 @@ assess = AssessCommand(
 **Example**:
 
 ```python
-from canvas_sdk.commands import ChangeMedicationCommand
+from canvas_sdk.commands.commands.change_medication import ChangeMedicationCommand
 
 change_medication = ChangeMedicationCommand(
     note_uuid='rk786p',
@@ -804,8 +804,8 @@ Below is an example that demonstrates how to instantiate a `QuestionnaireCommand
 
 ```python
 import uuid
-from canvas_sdk.commands.questionnaire import QuestionnaireCommand
-from canvas_sdk.commands.questionnaire.question import ResponseOption
+from canvas_sdk.commands.commands.questionnaire import QuestionnaireCommand
+from canvas_sdk.commands.commands.questionnaire.question import ResponseOption
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note
 
@@ -1048,7 +1048,7 @@ RemoveAllergyCommand(
 | `rationale`              | _string_  | `false`  | Additional context.                                                        |
 
 ```python
-from canvas_sdk.commands.commands import ResolveConditionCommand
+from canvas_sdk.commands.commands.resolve_condition import ResolveConditionCommand
 from canvas_sdk.v1.data import Condition
 
 patient_condition = Condition.objects.for_patient(self.event.context["patient"]["id"]).committed().active().first()

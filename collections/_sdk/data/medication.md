@@ -75,7 +75,7 @@ Filtering by ValueSet works a little differently. The `find` method on the model
 
 ```python
 from canvas_sdk.v1.data.medication import Medication
-from canvas_sdk.value_set.v022.medication import AdhdMedications
+from canvas_sdk.value_set.v2022.medication import AdhdMedications
 
 medications = Medication.objects.find(AdhdMedications)
 ```

@@ -114,7 +114,7 @@ have completed.
 The first parameter to the method is an iterable of `BatchableRequest` objects. These can be created with the following
 helper functions:
 
-```
+```generic
 batch_get
 batch_post
 batch_put
@@ -176,7 +176,7 @@ from urllib.parse import urlencode
 from canvas_sdk.utils.http import ontologies_http
 
 # full text search of the medication name, description, and synonyms
-response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({"search": "tylenol"})}").json()
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'search': 'tylenol'})}").json()
 
 # response_json contains a "results" key with this object as the first result:
 # {
@@ -215,7 +215,7 @@ response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({
 # }
 
 # search for a specific RxNorm RXCUI
-response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({"rxnorm_rxcui": 313782})}").json()
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'rxnorm_rxcui': 313782})}").json()
 
 # response_json contains the same general format as above
 

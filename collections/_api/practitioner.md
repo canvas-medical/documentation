@@ -328,6 +328,7 @@ sections:
 <div id="practitioner-create-request">
 {% tabs practitioner-create-request %}
 {% tab practitioner-create-request curl %}
+
 ```sh
 curl --request POST \
      --url 'https://fumage-example.canvasmedical.com/Practitioner' \
@@ -485,9 +486,11 @@ curl --request POST \
 }
 '
 ```
+
 {% endtab %}
 
 {% tab practitioner-create-request python %}
+
 ```python
 import requests
 
@@ -656,6 +659,7 @@ response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
 ```
+
 {% endtab %}
 
 {% endtabs %}
@@ -672,6 +676,7 @@ print(response.text)
 <div id="practitioner-read-response">
 {% tabs practitioner-read-response %}
 {% tab practitioner-read-response 200 %}
+
 ```json
 {
     "resourceType": "Practitioner",
@@ -835,8 +840,10 @@ print(response.text)
     ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-read-response 401 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -851,8 +858,10 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-read-response 403 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -867,8 +876,10 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-read-response 404 %}
+
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -882,8 +893,8 @@ print(response.text)
         }
     ]
 }
-
 ```
+
 {% endtab %}
 {% endtabs %}
 </div>
@@ -892,6 +903,7 @@ print(response.text)
 {% tabs practitioner-update-request %}
 
 {% tab practitioner-update-request curl %}
+
 ```sh
 curl --request PUT \
      --url 'https://fumage-example.canvasmedical.com/Practitioner/<id>' \
@@ -1060,9 +1072,11 @@ curl --request PUT \
 }
 '
 ```
+
 {% endtab %}
 
 {% tab practitioner-update-request python %}
+
 ```python
 import requests
 
@@ -1237,6 +1251,7 @@ response = requests.put(url, json=payload, headers=headers)
 
 print(response.text)
 ```
+
 {% endtab %}
 
 {% endtabs %}
@@ -1253,6 +1268,7 @@ print(response.text)
 <div id="practitioner-search-response">
 {% tabs practitioner-search-response %}
 {% tab practitioner-search-response 200 %}
+
 ```json
 {
     "resourceType": "Practitioner",
@@ -1416,8 +1432,10 @@ print(response.text)
     ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-search-response 400 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1432,8 +1450,10 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-search-response 401 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1448,8 +1468,10 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-search-response 403 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1464,6 +1486,7 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% endtabs %}
 </div>

@@ -18,7 +18,7 @@ gem "jekyll", "4.2.1"
 group :jekyll_plugins do
    gem 'jekyll-algolia'
    gem 'jekyll-feed'
-   gem 'jekyll-last-modified-at'
+   gem "jekyll-last-modified-at", "~> 1.3.2"
    gem 'jekyll-menus'
    gem 'jekyll-seo-tag'
    gem 'jekyll-sitemap'
@@ -29,3 +29,12 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+
+gem "csv", "~> 3.3"
+
+gem "base64", "~> 0.3.0"
+
+gem "bigdecimal", "~> 3.2"
+
+gem "mutex_m", "~> 0.3.0"
