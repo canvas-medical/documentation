@@ -114,7 +114,7 @@ modifications.
 
 ### Decide whether to make any changes
 
-```python partial
+```python?partial=true
         if results is None:
             return [Effect(type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS, payload=json.dumps(None))]
 ```
@@ -126,7 +126,7 @@ whereas an empty result set means "present no options to the user".
 
 ### Loop through the results, making modifications as appropriate
 
-```python partial
+```python?partial=true
         post_processed_results = []
         for result in results:
             should_float_to_top = False
@@ -162,7 +162,8 @@ list at position 0. If it did not match, we append the result to the end of
 the list.
 
 ### Return the modified results as a properly typed effect
-```python partial
+
+```python?partial=true
         return [
             Effect(
                 type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS,
