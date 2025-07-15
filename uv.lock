@@ -3,7 +3,7 @@ revision = 2
 requires-python = ">=3.11"
 
 [manifest]
-overrides = [{ name = "canvas", specifier = ">=0.44.3" }]
+overrides = [{ name = "canvas", specifier = ">=0.44.2" }]
 
 [[package]]
 name = "ai-scribe"
@@ -344,7 +344,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "ai-scribe", git = "https://github.com/Medical-Software-Foundation/canvas.git?subdirectory=extensions%2Fai-scribe&rev=main" },
-    { name = "canvas", specifier = ">=0.44.3" },
+    { name = "canvas", specifier = ">=0.44.2" },
     { name = "marko", specifier = ">=2.1.4" },
     { name = "requests", specifier = ">=2.32.4" },
     { name = "types-requests", specifier = ">=2.32.4.20250611" },
