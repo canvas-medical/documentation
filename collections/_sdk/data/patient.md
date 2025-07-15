@@ -192,6 +192,15 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | UNK               | unknown |
 | "" (empty string) | ""      |
 
+## Computed properties
+
+### Patient
+
+| Field Name           | Type   |
+| -------------------- | ------ |
+| preferred_first_name | String |
+| preferred_full_name  | String |
+
 <br/>
 <br/>
 <br/>

@@ -48,7 +48,7 @@ To show a Staff member's contact points (email, phone, etc.), the `telecom` attr
 ### Staff
 
 | Field Name                 | Type                                                            |
-|----------------------------|-----------------------------------------------------------------|
+| -------------------------- | --------------------------------------------------------------- |
 | id                         | UUID                                                            |
 | dbid                       | Integer                                                         |
 | created                    | DateTime                                                        |
@@ -96,22 +96,22 @@ To show a Staff member's contact points (email, phone, etc.), the `telecom` attr
 
 ### StaffContactPoint
 
-| Field Name         | Type                                                                  |
-|--------------------|-----------------------------------------------------------------------|
-| id                 | UUID                                                                  |
-| dbid               | Integer                                                               |
-| system             | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
-| value              | String                                                                |
-| use                | String                                                                |
-| use_notes          | String                                                                |
-| rank               | Integer                                                               |
-| state              | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
-| staff              | [Staff](#staff)                                                       |
+| Field Name | Type                                                                  |
+| ---------- | --------------------------------------------------------------------- |
+| id         | UUID                                                                  |
+| dbid       | Integer                                                               |
+| system     | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
+| value      | String                                                                |
+| use        | String                                                                |
+| use_notes  | String                                                                |
+| rank       | Integer                                                               |
+| state      | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
+| staff      | [Staff](#staff)                                                       |
 
 ### StaffAddress
 
 | Field Name  | Type                                                    |
-|-------------|---------------------------------------------------------|
+| ----------- | ------------------------------------------------------- |
 | id          | UUID                                                    |
 | dbid        | Integer                                                 |
 | line1       | String                                                  |
@@ -132,14 +132,22 @@ To show a Staff member's contact points (email, phone, etc.), the `telecom` attr
 
 ### StaffPhoto
 
-| Field Name  | Type                                                    |
-|-------------|---------------------------------------------------------|
-| dbid        | Integer                                                 |
-| created     | DateTime                                                |
-| modified    | DateTime                                                |
-| staff       | [Staff](#staff)                                         |
-| url         | String                                                  |
-| title       | String                                                  |
+| Field Name | Type            |
+| ---------- | --------------- |
+| dbid       | Integer         |
+| created    | DateTime        |
+| modified   | DateTime        |
+| staff      | [Staff](#staff) |
+| url        | String          |
+| title      | String          |
+
+## Computed properties
+
+### Staff
+
+| Field Name | Type   |
+| ---------- | ------ |
+| photo_url  | String |
 
 <br/>
 <br/>
