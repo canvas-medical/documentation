@@ -92,7 +92,7 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Notes**:
 
-Files can be exluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
+Files can be excluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
 
 Example
 ```md
