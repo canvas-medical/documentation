@@ -165,7 +165,7 @@ request was succcessful.
 
 ### `fdb_code`
 
-Elsewhere in the SDK there are commands that take an `fdb_code` or `new_fdb_code`, like [`AdjustPrescriptionCommand`](/sdk/commands/#adjustprescription), [`MedicationStatementCommand`](/sdk/commands/#medicationstatement),  [`PrescribeCommand`](/sdk/commands/#prescribe), and [`RefillCommand`](/sdk/commands/#refill). The  value to be sent as the `fdb_code` is returned in the search payloads below as the `med_medication_id`.
+Elsewhere in the SDK there are commands that take an `fdb_code` or `new_fdb_code`, some examples being [`AdjustPrescriptionCommand`](/sdk/commands/#adjustprescription), [`MedicationStatementCommand`](/sdk/commands/#medicationstatement),  [`PrescribeCommand`](/sdk/commands/#prescribe), and [`RefillCommand`](/sdk/commands/#refill). The value to be sent as the `fdb_code` is returned in the search payloads below as the `med_medication_id`.
 
 ### Searching for medications
 
