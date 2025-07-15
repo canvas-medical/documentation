@@ -34,4 +34,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_PYTHON_VERSION: ${{ matrix.python-version }}
         run: |
+          # always install the most recent released version of canvas
+          uv lock --upgrade-package canvas
+          uv sync
           uv run ./test-code-blocks.py
