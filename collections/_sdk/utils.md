@@ -163,6 +163,10 @@ In addition to the `json()` method of the response, which you'll use to access
 the response itself, you can also access the `status_code` to verify that the
 request was succcessful.
 
+### `fdb_code`
+
+Elsewhere in the SDK there are commands that take an `fdb_code` or `new_fdb_code`, like `AdjustPrescriptionCommand`, `MedicationStatementCommand`,  `PrescribeCommand`, and `RefillCommand`. The `fdb_code` is returned in the below payloads as the `med_medication_id`.
+
 ### Searching for medications
 
 Plugin authors can search for medications by NDC code, RxNorm RXCUI, or full-text search.
