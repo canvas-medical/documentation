@@ -70,7 +70,7 @@ Command-specific details for each command class can be found below.
 
 | Name           | Type     | Required | Description                          |
 |:---------------|:---------|:---------|:-------------------------------------|
-| `new_fdb_code` | _string_ | `true`   | The FDB code for the new medication. |
+| `new_fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the new medication. |
 
 Check the [Prescribe](#prescribe) command for the other parameters used in the Refill command.
 
@@ -138,7 +138,7 @@ AdjustPrescriptionCommand(
 **Example**:
 
 ```python
-from canvas_sdk.commands import AllergyCommand, AllergenType, Allergen 
+from canvas_sdk.commands.commands.allergy import AllergyCommand, AllergenType, Allergen
 from datetime import date
 
 allergy = AllergyCommand(
@@ -197,7 +197,7 @@ assess = AssessCommand(
 **Example**:
 
 ```python
-from canvas_sdk.commands import ChangeMedicationCommand
+from canvas_sdk.commands.commands.change_medication import ChangeMedicationCommand
 
 change_medication = ChangeMedicationCommand(
     note_uuid='rk786p',
@@ -591,7 +591,7 @@ MedicalHistoryCommand(
 
 | Name       | Type     | Required | Description                               |
 |:-----------|:---------|:---------|:------------------------------------------|
-| `fdb_code` | _string_ | `true`   | The fdb code of the medication.           |
+| `fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication.           |
 | `sig`      | _string_ | `false`  | Administration details of the medication. |
 
 **Example**:
@@ -682,7 +682,7 @@ plan = PlanCommand(
 
 | Name                   | Type                          | Required | Description                                                        |
 |------------------------|-------------------------------|----------|--------------------------------------------------------------------|
-| `fdb_code`             | _string_                      | `true`   | FDB code for the medication.                                       |
+| `fdb_code`             | _string_                      | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication.                                       |
 | `icd10_codes`          | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. |
 | `sig`                  | _string_                      | `true`   | Administration instructions/details of the medication.             |
 | `days_supply`          | _integer_                     | `false`  | Number of days the prescription is intended to cover.              |
@@ -804,8 +804,8 @@ Below is an example that demonstrates how to instantiate a `QuestionnaireCommand
 
 ```python
 import uuid
-from canvas_sdk.commands.questionnaire import QuestionnaireCommand
-from canvas_sdk.commands.questionnaire.question import ResponseOption
+from canvas_sdk.commands.commands.questionnaire import QuestionnaireCommand
+from canvas_sdk.commands.commands.questionnaire.question import ResponseOption
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note
 
@@ -1048,7 +1048,7 @@ RemoveAllergyCommand(
 | `rationale`              | _string_  | `false`  | Additional context.                                                        |
 
 ```python
-from canvas_sdk.commands.commands import ResolveConditionCommand
+from canvas_sdk.commands.commands.resolve_condition import ResolveConditionCommand
 from canvas_sdk.v1.data import Condition
 
 patient_condition = Condition.objects.for_patient(self.event.context["patient"]["id"]).committed().active().first()

@@ -21,7 +21,7 @@ class Protocol(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
     def compute(self):
-        ....
+        ...
 ```
 
 The plugin author can enter custom workflow code into the `compute` method that will execute every time an Allergy Intolerance is created in Canvas.
@@ -1247,7 +1247,7 @@ type: None</pre></td>
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs if a note state change event is updated.</td></tr>
+    <tr><td colspan="2">Occurs if a note state change event is updated. Note state change events are updated when a note is locked and we generate an archived PDF copy of the note; this is done asynchronously.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1505,7 +1505,7 @@ type: None</pre></td>
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>"id": user_seelcted_tasklabel_id
+      <td><pre>"id": user_selected_tasklabel_id
 "type": None</pre></td>
       <td><pre>empty</pre></td>
     </tr>

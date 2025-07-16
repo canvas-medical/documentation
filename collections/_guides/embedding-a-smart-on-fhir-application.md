@@ -167,7 +167,7 @@ simply shows the raw FHIR records retrieved for the patient.
 
 If you want to update the example SMART app to authorize additional data access from the FHIR API, you'll need to add those endpoints to the `scope` values in [launch.html](https://github.com/canvas-medical/example-smart-on-fhir-app/blob/main/launch.html), or wherever your authorize method is called:
 
-```
+```html
     <script>
         FHIR.oauth2.authorize({
             ...

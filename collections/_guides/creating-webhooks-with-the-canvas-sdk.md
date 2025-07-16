@@ -18,7 +18,7 @@ working through this exercise." %}
 The Canvas CLI gives you a great head start when creating a plugin. Simply
 run `canvas init`, and answer the prompt to name your plugin.
 
-```
+```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Task Webhook
 Project created in /Users/andrew/src/canvas-plugins/task_webhook
@@ -66,7 +66,7 @@ Command, or our [FHIR Task Create endpoint](/api/task/#create).
 After you've [installed your plugin](/sdk/canvas_cli/#canvas-install) and
 created a task, you should see this in your log stream:
 
-```
+```sh
 INFO 2024-09-26 17:04:08,396 Starting server, listening on port 50051
 INFO 2024-09-26 17:04:08,396 Loading custom-plugins/task_webhook
 INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.protocols.my_protocol:Protocol'
@@ -123,7 +123,7 @@ class Protocol(BaseProtocol):
 After you've [installed your updated plugin](/sdk/canvas_cli/#canvas-install) and
 created a task, you should see this in your log stream:
 
-```
+```sh
 INFO 2024-09-26 17:18:23,206 Loading custom-plugins/task_webhook
 INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.protocols.my_protocol:Protocol'
 INFO 2024-09-26 17:18:33,850 Successfully notified API of task creation!

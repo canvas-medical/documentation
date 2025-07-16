@@ -181,7 +181,7 @@ sections:
               - name: extension
                 type: array
                 description: >-
-                    This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that the patient has consented to receiving text messages or emails to this contact point. This extension is identified with the <code>url</code> [http://schemas.canvasmedical.com/fhir/extensions/has-consent](http://schemas.canvasmedical.com/fhir/extensions/has-consent). A boolean value can be specified in the <code>valueBoolean</code> attribute.<br><br>
+                    This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that the patient has consented to receiving text messages or emails to this contact point. This extension is identified with the <code>url</code> [https://help.canvasmedical.com/articles/8144965836-manging-patient-consents](https://help.canvasmedical.com/articles/8144965836-manging-patient-consents). A boolean value can be specified in the <code>valueBoolean</code> attribute.<br><br>
                     **Note:** This will not send a verification email or text as is the Canvas UI does. It will bypass this step and mark the contact as verified.
                 attributes:
                   - name: url

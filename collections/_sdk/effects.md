@@ -11,6 +11,8 @@ will be performed with the data provided in the `payload`.
 
 ## Using Effects
 
+### Basic Usage
+
 Effects are returned as a list from the `compute` method of a plugin that inherits from `BaseHandler`. For example:
 
 ```python
@@ -73,6 +75,17 @@ class CustomChartLayout(BaseHandler):
         return [layout.apply()]
 ```
 
+### Disallowed Effect/Event Combinations
+
+Canvas prevents certain combinations of events and effects to avoid infinite loops that could occur when an effect triggers the same event that generated it. The following combinations are specifically disallowed:
+
+| Event Type | Disallowed Effect Types |
+|------------|------------------------|
+| `PATIENT_CHART__CONDITIONS` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
+| `PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
+
+For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
+
 ## Effect Classes
 
 <div class="sdk-card-list">
@@ -106,7 +119,7 @@ The following effects are available to be applied in Canvas.
 | SHOW_PATIENT_CHART_SUMMARY_SECTIONS                | Can be used to reorder or hide the summary sections in a patient chart. Check out [this effect class](/sdk/layout-effect/#patient-summary/).                                                                |
 | SHOW_ACTION_BUTTON                                 | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/).                                                                                                            |
 | LAUNCH_MODAL                                       | Can be used to launch a modal window. Check out [Modals](/sdk/layout-effect/#modals).                                                                                                                       |
-| PORTAL_WIDGET                                      | Can be used to add widgets to patient portal landing page. Check out [Portal Landing Page Widgets](/sdk/layout-effects/#portal-landing-page-widgets)                                                        |
+| PORTAL_WIDGET                                      | Can be used to add widgets to patient portal landing page. Check out [Portal Landing Page Widgets](/sdk/layout-effect/#portal-landing-page-widgets)                                                        |
 | ADD_OR_UPDATE_PROTOCOL_CARD                        | Can be used to generate a ProtocolCard in the Canvas UI. Use the [ProtocolCard](/sdk/effect-protocol-cards/) class in the effects module.                                                                   |
 | ADD_BILLING_LINE_ITEM                              | Can be used to generate a Billing Line Item in a note footer. Use the [AddBillingLineItem](/sdk/effect-billing-line-items/) class in the effects module.                                                    |
 | UPDATE_BILLING_LINE_ITEM                           | Can be used to update an existing Billing Line Item in a note footer. Use the [UpdateBillingLineItem](/sdk/effect-billing-line-items/) class in the effects module.                                         |

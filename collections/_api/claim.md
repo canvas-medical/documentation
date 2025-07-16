@@ -263,7 +263,7 @@ sections:
             create_and_update_description: >-
               If the claim should be a self paying claim, pass the insurance list as 
               
-              ```
+              ```json
                 "insurance": [
                     {
                         "sequence": 1,

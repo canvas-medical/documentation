@@ -55,7 +55,7 @@ Filtering for detected issues is done with the `filter` method on the `DetectedI
 Specify an attribute with `filter` to filter by that attribute:
 
 ```python
-from canvas_sdk.v1.data.detected_issues import DetectedIssue
+from canvas_sdk.v1.data.detected_issue import DetectedIssue
 
 detected_issues = DetectedIssue.objects.filter(status="active")
 ```

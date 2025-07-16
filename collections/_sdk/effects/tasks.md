@@ -73,7 +73,7 @@ To update an existing task, import the `UpdateTask` class and create an instance
 | team_id     | optional | string       | The id of the [team](/sdk/data-team/) the task should be assigned to.                |
 | patient_id  | optional | string       | The id of the [patient](/sdk/data-patient/) the task is associated with.             |
 | title       | optional | string       | The title of the task. This is displayed at the top of a task card in the Canvas UI. |
-| due         | optional | satetime     | A date/time when the task is due.                                                    |
+| due         | optional | datetime     | A date/time when the task is due.                                                    |
 | status      | optional | TaskStatus   | A status of `OPEN`, `CLOSED` or `COMPLETED`. Defaults to `OPEN` if not supplied.     |
 | labels      | optional | list[string] | A list of labels that will be added at the bottom of a task card in the Canvas UI.   |
 
@@ -81,12 +81,17 @@ An example of updating a task to a status of `COMPLETED`:
 
 ```python
 from canvas_sdk.effects.task import UpdateTask, TaskStatus
+from canvas_sdk.handlers.base import BaseHandler
 
-update_task = UpdateTask(
-    id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
-    status=TaskStatus.COMPLETED,
-)
-return [update_task.apply()]
+
+class Protocol(BaseHandler):
+    def compute(self):
+        update_task = UpdateTask(
+            id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
+            status=TaskStatus.COMPLETED,
+        )
+
+        return [update_task.apply()]
 ```
 
 ## Adding a comment to a task
@@ -100,10 +105,15 @@ To add a comment to a task, import the `AddTaskComment` class and create an inst
 
 ```python
 from canvas_sdk.effects.task import AddTaskComment
+from canvas_sdk.handlers.base import BaseHandler
 
-add_task_comment = AddTaskComment(
-    task_id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
-    body="I tried to call the patient but did not get an answer.",
-)
-return [add_task_comment.apply()]
+
+class Protocol(BaseHandler):
+    def compute(self):
+        add_task_comment = AddTaskComment(
+            task_id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
+            body="I tried to call the patient but did not get an answer.",
+        )
+
+        return [add_task_comment.apply()]
 ```

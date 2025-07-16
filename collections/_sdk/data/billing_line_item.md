@@ -69,7 +69,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 ['11901', '00950']
 ```
 
-For examples of how to use the BillingLineItem data class with the BillingLineItem effects, check out [this page](sdk/effect-billing-line-items)
+For examples of how to use the BillingLineItem data class with the BillingLineItem effects, check out [this page](/sdk/effect-billing-line-items)
 
 ## Attributes
 

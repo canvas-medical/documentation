@@ -44,6 +44,7 @@ users = CanvasUser.objects.filter(phone_number="1111111111", email="test@canvasm
 | dbid                     | Integer                                                                   |
 | email                    | String                                                                    |
 | phone_number             | String                                                                    |
+| last_invite_date_time    | DateTime                                                                  |
 
 <br/>
 <br/>

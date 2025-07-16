@@ -65,43 +65,47 @@ The `PatientExternalIdentifier` dataclass represents an external identifier (ID)
 
 ```python
 from canvas_sdk.effects.patient import Patient, PatientContactPoint, PatientExternalIdentifier
+from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.v1.data.common import ContactPointSystem, ContactPointUse, PersonSex
 import datetime
 
-patient = Patient(
-    first_name="Jane",
-    last_name="Doe",
-    middle_name="Marie",
-    birthdate=datetime.date(1980, 1, 15),
-    sex_at_birth=PersonSex.SEX_FEMALE,
-    nickname="Janie",
-    default_location_id="location-uuid",
-    default_provider_id="provider-uuid",
-    contact_points=[
-        PatientContactPoint(
-            system=ContactPointSystem.PHONE,
-            value="555-123-4567",
-            use=ContactPointUse.MOBILE,
-            rank=1,
-            has_consent=True
-        ),
-        PatientContactPoint(
-            system=ContactPointSystem.EMAIL,
-            value="jane.doe@example.com",
-            use=ContactPointUse.WORK,
-            rank=2,
-            has_consent=True
-        )
-    ],
-    external_identifiers=[
-        PatientExternalIdentifier(
-            system="http://www.aaa.com",
-            value="pat_id_123456"
-        )
-    ]
-)
 
-return patient.create()
+class Protocol(BaseHandler):
+    def compute(self):
+        patient = Patient(
+            first_name="Jane",
+            last_name="Doe",
+            middle_name="Marie",
+            birthdate=datetime.date(1980, 1, 15),
+            sex_at_birth=PersonSex.SEX_FEMALE,
+            nickname="Janie",
+            default_location_id="location-uuid",
+            default_provider_id="provider-uuid",
+            contact_points=[
+                PatientContactPoint(
+                    system=ContactPointSystem.PHONE,
+                    value="555-123-4567",
+                    use=ContactPointUse.MOBILE,
+                    rank=1,
+                    has_consent=True
+                ),
+                PatientContactPoint(
+                    system=ContactPointSystem.EMAIL,
+                    value="jane.doe@example.com",
+                    use=ContactPointUse.WORK,
+                    rank=2,
+                    has_consent=True
+                )
+            ],
+            external_identifiers=[
+                PatientExternalIdentifier(
+                    system="http://www.aaa.com",
+                    value="pat_id_123456"
+                )
+            ]
+        )
+
+        return [patient.create()]
 ```
 
 ## Validation

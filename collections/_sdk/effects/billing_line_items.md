@@ -155,4 +155,4 @@ class Protocol(BaseProtocol):
 
 ```
 
-For more information about the BillingLineItem data class, check out [this page](sdk/data-billing-line-item).
+For more information about the BillingLineItem data class, check out [this page](/sdk/data-billing-line-item).

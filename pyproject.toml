@@ -1,0 +1,22 @@
+[project]
+name = "documentation"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "ai-scribe",
+  "canvas>=0.44.2",
+  "marko>=2.1.4",
+  "requests>=2.32.4",
+  "types-requests>=2.32.4.20250611",
+]
+
+[tool.uv]
+override-dependencies = ["canvas>=0.44.2"]
+
+[tool.uv.sources]
+ai-scribe = { git = "https://github.com/Medical-Software-Foundation/canvas.git", subdirectory = "extensions/ai-scribe", rev = "main" }
+
+[dependency-groups]
+dev = [
+    "setuptools>=80.9.0",
+]

@@ -23,7 +23,7 @@ If `authenticate()` returns `True`, the connection is accepted. Otherwise, it is
 
 Clients should connect using a URL that maps to your plugin and channel name:
 
-```
+```generic
 wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin_name>/<channel_name>/
 ```
 
@@ -47,22 +47,22 @@ For connections initiated from within the Canvas browser UI by a logged-in user:
 
 ```python
 def authenticate(self) -> bool:
-  logged_in_user = self.websocket.logged_in_user
-  # Structure looks like:
-  # {
-  #     "id": "abc123",
-  #     "type": "Staff"
-  # }
-  # Where "type" is "Staff" or "Patient"
-  # You could authenticate based on type or check to see if the
-  # individual is in a particular group or team.
-  ...
+    logged_in_user = self.websocket.logged_in_user
+    # Structure looks like:
+    # {
+    #     "id": "abc123",
+    #     "type": "Staff"
+    # }
+    # Where "type" is "Staff" or "Patient"
+    # You could authenticate based on type or check to see if the
+    # individual is in a particular group or team.
+    ...
 ```
 
 ##### APIKey-Based (External Clients)
 For external tools or scripts, pass an auth key as a query parameter:
 
-```python
+```generic
 wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin>/<channel>?api_key=<key>
 ```
 
@@ -91,8 +91,7 @@ Here’s an example using a SimpleAPI HTTP POST route to trigger a broadcast:
 ```python
 from http import HTTPStatus
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.effects.websocket import Broadcast
+from canvas_sdk.effects.simple_api import Broadcast, JSONResponse, Response
 from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
 
 class WebhookAPI(SimpleAPI):

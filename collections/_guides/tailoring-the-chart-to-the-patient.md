@@ -36,7 +36,7 @@ First, we'll need to initialize a new plugin.
 The Canvas CLI gives you a great head start when creating a plugin. Simply
 run `canvas init`, and answer the prompt to name your plugin.
 
-```
+```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Pediatric Patient Chart Customizations
 Project created in /Users/andrew/src/canvas-plugins/pediatric_patient_chart_customizations
@@ -46,7 +46,7 @@ This output shows the location of our freshly generated plugin. In this
 directory, you'll see a default class (`protocols/my_protocol.py`) provided as a starting point for your
 code.
 
-```
+```sh
 $ tree pediatric_patient_chart_customizations/
 pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
@@ -68,7 +68,7 @@ descriptive, and you'll need to update the references to the file in
 I've created a new file, `protocols/pediatric_chart_layout.py`, and I've
 updated my `CANVAS_MANIFEST.json` to reflect it.
 
-```
+```sh
 $ tree pediatric_patient_chart_customizations/
 pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
@@ -252,7 +252,7 @@ updated my `CANVAS_MANIFEST.json` to reflect it.
 
 Here's the updated plugin file structure:
 
-```
+```sh
 $ tree pediatric_patient_chart_customizations/
 pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json

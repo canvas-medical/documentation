@@ -24,7 +24,7 @@ It supports standalone creation, immediate send after creating, edits, and dedic
 
 Before any effect is emitted, the model runs these checks:
 
-- **Sender and Recipient Exist**  
+- **Sender and Recipient Exist**
   Verifies that both `sender_id` and `recipient_id` belong to either a `Patient` or a `Staff` record.
 - **Create vs. Edit Constraints**
   - **Create** and **Create-and-Send** must **not** include `message_id`.
@@ -76,20 +76,26 @@ from canvas_sdk.v1.data.message import Message as MessageModel
 from canvas_sdk.v1.data.patient import Patient
 from canvas_sdk.v1.data.staff import Staff
 
-from canvas_sdk.effects.message import Message
+from canvas_sdk.effects.note.message import Message
 
 staff = Staff.objects.first()
 patient = Patient.objects.first()
+```
 
-# 1. Create (originate) only
+### Create (originate) only
+
+```python
 m1 = Message(
     content="Your lab results are available.",
     sender_id=staff.id,
     recipient_id=patient.id
 )
 effect_create = m1.create()
+```
 
-# 2. Create and send in one step
+### Create and send in one step
+
+```python
 m2 = Message(
     content="Your appointment is confirmed.",
     sender_id=staff.id,
@@ -98,14 +104,21 @@ m2 = Message(
 effect_create_and_send = m2.create_and_send()
 
 m = MessageModel.objects.get(message_id="msg-1234")
+```
 
-# 3. Edit an existing message
+### Edit an existing message
+
+```python
 m3 = Message(
     message_id=m.id,
     content="Updated: Your appointment has moved to 3pm."
 )
 effect_edit = m3.edit()
+```
 
-# 4. Send an already-created message
+### Send an existing message
+
+```python
 m4 = Message(message_id=m.id)
 effect_send = m4.send()
+```

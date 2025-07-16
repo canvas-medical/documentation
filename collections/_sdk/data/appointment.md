@@ -39,7 +39,7 @@ Filtering for appointments is done with the `filter` method on the `Appointment`
 Specify an attribute with `filter` to filter by that attribute:
 
 ```python
-from canvas_sdk.v1.data.appointment import Appointments , AppointmentProgressStatus
+from canvas_sdk.v1.data.appointment import Appointment, AppointmentProgressStatus
 
 appointments = Appointment.objects.filter(status=AppointmentProgressStatus.CONFIRMED)
 ```
@@ -73,7 +73,6 @@ appointment = Appointment.objects.filter(
 | comment                      | String                                                            |
 | note_id                      | Integer                                                           |
 | note_type_id                 | Integer                                                           |
-| status                       | String                                                            |
 | status                       | String                                                            |
 | meeting_link                 | URL                                                               |
 | telehealth_instructions_sent | Boolean                                                           |

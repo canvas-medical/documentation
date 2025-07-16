@@ -114,7 +114,7 @@ have completed.
 The first parameter to the method is an iterable of `BatchableRequest` objects. These can be created with the following
 helper functions:
 
-```
+```generic
 batch_get
 batch_post
 batch_put
@@ -163,6 +163,10 @@ In addition to the `json()` method of the response, which you'll use to access
 the response itself, you can also access the `status_code` to verify that the
 request was succcessful.
 
+### `fdb_code`
+
+Elsewhere in the SDK there are commands that take an `fdb_code` or `new_fdb_code`, some examples being [`AdjustPrescriptionCommand`](/sdk/commands/#adjustprescription), [`MedicationStatementCommand`](/sdk/commands/#medicationstatement),  [`PrescribeCommand`](/sdk/commands/#prescribe), and [`RefillCommand`](/sdk/commands/#refill). The value to be sent as the `fdb_code` is returned in the search payloads below as the `med_medication_id`.
+
 ### Searching for medications
 
 Plugin authors can search for medications by NDC code, RxNorm RXCUI, or full-text search.
@@ -172,7 +176,7 @@ from urllib.parse import urlencode
 from canvas_sdk.utils.http import ontologies_http
 
 # full text search of the medication name, description, and synonyms
-response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({"search": "tylenol"})}").json()
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'search': 'tylenol'})}").json()
 
 # response_json contains a "results" key with this object as the first result:
 # {
@@ -211,7 +215,7 @@ response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({
 # }
 
 # search for a specific RxNorm RXCUI
-response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({"rxnorm_rxcui": 313782})}").json()
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'rxnorm_rxcui': 313782})}").json()
 
 # response_json contains the same general format as above
 

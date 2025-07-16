@@ -40,7 +40,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ### Patient
 
 | Field Name               | Type                                                                      |
-|--------------------------|---------------------------------------------------------------------------|
+| ------------------------ | ------------------------------------------------------------------------- |
 | id                       | String                                                                    |
 | dbid                     | Integer                                                                   |
 | first_name               | String                                                                    |
@@ -102,11 +102,12 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | telecom                  | [PatientContactPoint](#patientcontactpoint)[]                             |
 | metadata                 | [PatientMetadata](#patientmetadata)[]                                     |
 | user                     | [CanvasUser](/sdk/data-user/)[]                                           |
+| business_line            | [BusinessLine](/sdk/data-business-line/)                                  |
 
 ### PatientAddress
 
 | Field Name  | Type                                                    |
-|-------------|---------------------------------------------------------|
+| ----------- | ------------------------------------------------------- |
 | id          | UUID                                                    |
 | dbid        | Integer                                                 |
 | line1       | String                                                  |
@@ -128,7 +129,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ### PatientContactPoint
 
 | Field Name         | Type                                                                  |
-|--------------------|-----------------------------------------------------------------------|
+| ------------------ | --------------------------------------------------------------------- |
 | id                 | UUID                                                                  |
 | dbid               | Integer                                                               |
 | system             | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
@@ -146,7 +147,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ### PatientExternalIdentifier
 
 | Field Name      | Type                |
-|-----------------|---------------------|
+| --------------- | ------------------- |
 | id              | UUID                |
 | dbid            | Integer             |
 | created         | DateTime            |
@@ -162,7 +163,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ### PatientSetting
 
 | Field Name | Type                |
-|------------|---------------------|
+| ---------- | ------------------- |
 | dbid       | Integer             |
 | created    | DateTime            |
 | modified   | DateTime            |
@@ -173,19 +174,18 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ### PatientMetadata
 
 | Field Name | Type                |
-|------------|---------------------|
+| ---------- | ------------------- |
 | dbid       | Integer             |
 | patient    | [Patient](#patient) |
 | key        | String              |
 | value      | String              |
-
 
 ## Enumeration types
 
 ### SexAtBirth
 
 | Value             | Label   |
-|-------------------|---------|
+| ----------------- | ------- |
 | F                 | female  |
 | M                 | male    |
 | O                 | other   |

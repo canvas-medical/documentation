@@ -45,7 +45,7 @@ Navigation path:
 `Home` › `Plugin_IO` › `Plugins` › `(your plugin)`
 
 Or, go directly to:
-```
+```generic
 https://<your_canvas_instance>/admin/plugin_io/plugin/<plugin_id>/change/
 ```
 On this page, you will find input fields for each secret defined in your manifest. 

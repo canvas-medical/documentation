@@ -123,6 +123,7 @@ to the messaging page to request a refill.
 
 A light gray background color and a blue text to ensure it matches the patient portal aesthetic.
 {% raw %}
+
 ```html
 <style>
   .header {
@@ -141,12 +142,14 @@ A light gray background color and a blue text to ensure it matches the patient p
     <div class="header">My Health</div>
 </body>
 ```
+
 {% endraw %}
 
 #### Card Component
 We will add template variables for the medication name and start date, allowing these values to be dynamically updated in the plugin.
 
 {% raw %}
+
 ```html
 <body>
   <div class="widget">
@@ -165,6 +168,7 @@ We will add template variables for the medication name and start date, allowing 
   </script>
 </body>
 ```
+
 {% endraw %}
 
 Let's dive in and add some styles to the card.
@@ -187,8 +191,10 @@ creating a sleek card design with rounded borders and a subtle shadow for a mode
   margin: 4px auto auto;
 }
 ```
+
 Our medication info section will feature a Material UI icon next to the medication name, 
 providing a clear and modern visual representation consistent with the portal's design aesthetic.
+
 ```css
 .medication-info {
   display: flex;
@@ -222,6 +228,7 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
 button:hover {
   background-color: #115293;
 }
@@ -238,7 +245,6 @@ medication_info = {
 }
 
 widget = PortalWidget(content=render_to_string("templates/medication_widget.html", medication_info), size=PortalWidget.Size.COMPACT, priority=10)
-
 ```
 
 <div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/sdk/widgets/patient_medication_widget.png" alt="medication widget" /></div>
@@ -272,8 +278,11 @@ class Protocol(BaseProtocol):
         )
         return [medication_widget.apply()]
 ```
+
 <br>
+
 {% raw %}
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -366,12 +375,9 @@ class Protocol(BaseProtocol):
   </script>
 </body>
 </html>
-
-
 ```
 
 {% endraw %}
-
 
 ## Upcoming appointments Widget provided by Canvas
 
@@ -396,10 +402,6 @@ class UpcomingAppointmentWidget(BaseProtocol):
 ```
 
 <div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/sdk/widgets/upcoming_appointments_widget.png" alt="medication widget" /></div>
-
-
-
-
 
 <br/>
 <br/>
