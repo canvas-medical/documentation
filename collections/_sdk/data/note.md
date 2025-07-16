@@ -64,24 +64,24 @@ In the above code sample, options 1, 2, and 4 produce identical SQL queries.
 ### Determine if a note is locked
 
 To see if a note is presently locked, you can use the [`CurrentNoteStateEvent`](/sdk/data-note/#currentnotestateevent)
-model to check if the current note state is 'LKD'. (See:
+model to check if the current note state is 'Locked'. (See:
 [NoteState](/sdk/data-note/#notestates) for an explanation of the different
 note states you might encounter)
 
 ```python
-from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent
+from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent, NoteStates
 
 note = Note.objects.first()
 
 # You can retrieve the CurrentNoteStateEvent record for the note and check its
 # state attribute.
-if CurrentNoteStateEvent.objects.get(note=note).state == 'LKD':
+if CurrentNoteStateEvent.objects.get(note=note).state == NoteStates.LOCKED:
     # This note is locked!
     pass
 
 # You can skip retrieving the record by just checking if a
-# CurrentNoteStateEvent record exists for that note with the state 'LKD'.
-if CurrentNoteStateEvent.objects.filter(note=note, state='LKD').exists():
+# CurrentNoteStateEvent record exists for that note with the state 'Locked'.
+if CurrentNoteStateEvent.objects.filter(note=note, state=NoteStates.LOCKED).exists():
     # This note is locked!
     pass
 ```
@@ -89,19 +89,26 @@ if CurrentNoteStateEvent.objects.filter(note=note, state='LKD').exists():
 ### Find all open notes
 
 You can find all open notes by retrieving the note records with a current
-state of either 'NEW' (new) or 'ULK' (previously locked, but currently
-unlocked).
+state which indicates it can be edited. (See list below)
 
 ```python
-from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent
+from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent, NoteStates
+
+open_note_states = [
+    NoteStates.NEW,
+    NoteStates.PUSHED,
+    NoteStates.UNLOCKED,
+    NoteStates.RESTORED,
+    NoteStates.UNDELETED,
+]
 
 # This will execute one query per CurrentNoteStateEvent object returned
-open_notes_via_list_comprehension = [event.note for event in CurrentNoteStateEvent.objects.filter(state__in=['NEW', 'ULK'])]
+open_notes_via_list_comprehension = [event.note for event in CurrentNoteStateEvent.objects.filter(state__in=open_note_states)]
 
 # This will always execute two queries: one to find the note ids of open
 # notes, and a second query to fetch the note records by the ids returned in the
 # first query
-open_note_ids = CurrentNoteStateEvent.objects.filter(state__in=['NEW', 'ULK']).values_list('note_id', flat=True)
+open_note_ids = CurrentNoteStateEvent.objects.filter(state__in=open_note_states).values_list('note_id', flat=True)
 open_notes_via_multiple_queries = Note.objects.filter(dbid__in=open_note_ids)
 ```
 
