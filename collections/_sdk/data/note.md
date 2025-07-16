@@ -11,6 +11,8 @@ The `Note` model represents clinical notes that appear on a patient's chart. A `
 
 ## Basic usage
 
+### Retrieve a specific note
+
 To get a note by identifier, use the `get` method on the `Note` model manager:
 
 ```python
@@ -19,6 +21,8 @@ from canvas_sdk.v1.data.note import Note
 note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 ```
 
+### Find all notes for a patient
+
 If you have a patient object, the notes for a patient can be found using the `notes` attribute on the `Patient` instance:
 
 ```python
@@ -26,6 +30,93 @@ from canvas_sdk.v1.data.patient import Patient
 
 patient = Patient.objects.get(id="fd2ecd87c26044a6a755287f296dd17f")
 patient_notes = patient.notes.all()
+```
+
+### Retrieve the audit history for a note
+
+The audit history for a note can be found using the [`NoteStateChangeEvent`](/sdk/data-note/#notestatechangeevent)
+model. You can access this model directly or through the `state_history`
+relation on the note object.
+
+```python
+from canvas_sdk.v1.data.note import Note, NoteStateChangeEvent
+
+note = Note.objects.first()
+
+# Use the state_history relation
+option_1 = note.state_history.all()
+
+# Use the note object to filter the QuerySet
+option_2 = NoteStateChangeEvent.objects.filter(note=note)
+
+# Use the note's UUID to filter the QuerySet, which joins to the note table
+# where the note's dbid column is equal to the note_id column of the note
+# state change event and the note's id column is equal to the note's UUID.
+option_3 = NoteStateChangeEvent.objects.filter(note__id=note.id)
+
+# Use the note's auto-increment database id to filter the QuerySet by the
+# foreign key column without joining to the notes table.
+option_4 = NoteStateChangeEvent.objects.filter(note_id=note.dbid)
+```
+
+In the above code sample, options 1, 2, and 4 produce identical SQL queries.
+
+### Determine if a note is locked
+
+To see if a note is presently locked, you can use the [`CurrentNoteStateEvent`](/sdk/data-note/#currentnotestateevent)
+model to check if the current note state is 'LKD'. (See:
+[NoteState](/sdk/data-note/#notestates) for an explanation of the different
+note states you might encounter)
+
+```python
+from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent
+
+note = Note.objects.first()
+
+# You can retrieve the CurrentNoteStateEvent record for the note and check its
+# state attribute.
+if CurrentNoteStateEvent.objects.get(note=note).state == 'LKD':
+    # This note is locked!
+    pass
+
+# You can skip retrieving the record by just checking if a
+# CurrentNoteStateEvent record exists for that note with the state 'LKD'.
+if CurrentNoteStateEvent.objects.filter(note=note, state='LKD').exists():
+    # This note is locked!
+    pass
+```
+
+### Find all open notes
+
+You can find all open notes by retrieving the note records with a current
+state of either 'NEW' (new) or 'ULK' (previously locked, but currently
+unlocked).
+
+```python
+from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent
+
+# This will execute one query per CurrentNoteStateEvent object returned
+open_notes_via_list_comprehension = [event.note for event in CurrentNoteStateEvent.objects.filter(state__in=['NEW', 'ULK'])]
+
+# This will always execute two queries: one to find the note ids of open
+# notes, and a second query to fetch the note records by the ids returned in the
+# first query
+open_note_ids = CurrentNoteStateEvent.objects.filter(state__in=['NEW', 'ULK']).values_list('note_id', flat=True)
+open_notes_via_multiple_queries = Note.objects.filter(dbid__in=open_note_ids)
+```
+
+### Get the current state of a given note
+
+To get a note's current state, retrieve its
+[`CurrentNoteStateEvent`](/sdk/data-note/#currentnotestateevent) and check the
+`state` attribute.
+
+```python
+from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent
+
+note = Note.objects.first()
+
+current_note_state = CurrentNoteStateEvent.objects.get(note=note).state
 ```
 
 ## Filtering
@@ -91,34 +182,34 @@ commands_in_note = Note.commands.all()
 
 ### NoteType
 
-| Field Name                                  | Type                                      |
-|---------------------------------------------|-------------------------------------------|
-| dbid                                        | Integer                                   |
-| created                                     | DateTime                                  |
-| modified                                    | DateTime                                  |
-| system                                      | String                                    |
-| version                                     | String                                    |
-| code                                        | String                                    |
-| display                                     | String                                    |
-| user_selected                               | Boolean                                   |
-| name                                        | String                                    |
-| icon                                        | String                                    |
-| category                                    | [NoteTypeCategories](#notetypecategories) |
-| rank                                        | Integer                                   |
-| is_default_appointment_type                 | Boolean                                   |
-| is_scheduleable                             | Boolean                                   |
-| is_telehealth                               | Boolean                                   |
-| is_billable                                 | Boolean                                   |
-| defer_place_of_service_to_practice_location | Boolean                                   |
-| available_places_of_service                 | Array[[PracticeLocationPOS](#practicelocationpos)]                |
-| default_place_of_service                    | [PracticeLocationPOS](#practicelocationpos)                       |
-| is_system_managed                           | Boolean                                   |
-| is_visible                                  | Boolean                                   |
-| is_active                                   | Boolean                                   |
-| unique_identifier                           | UUID                                      |
-| deprecated_at                               | DateTime                                  |
-| is_patient_required                         | Boolean                                   |
-| allow_custom_title                          | Boolean                                   |
+| Field Name                                  | Type                                               |
+|---------------------------------------------|----------------------------------------------------|
+| dbid                                        | Integer                                            |
+| created                                     | DateTime                                           |
+| modified                                    | DateTime                                           |
+| system                                      | String                                             |
+| version                                     | String                                             |
+| code                                        | String                                             |
+| display                                     | String                                             |
+| user_selected                               | Boolean                                            |
+| name                                        | String                                             |
+| icon                                        | String                                             |
+| category                                    | [NoteTypeCategories](#notetypecategories)          |
+| rank                                        | Integer                                            |
+| is_default_appointment_type                 | Boolean                                            |
+| is_scheduleable                             | Boolean                                            |
+| is_telehealth                               | Boolean                                            |
+| is_billable                                 | Boolean                                            |
+| defer_place_of_service_to_practice_location | Boolean                                            |
+| available_places_of_service                 | Array[[PracticeLocationPOS](#practicelocationpos)] |
+| default_place_of_service                    | [PracticeLocationPOS](#practicelocationpos)        |
+| is_system_managed                           | Boolean                                            |
+| is_visible                                  | Boolean                                            |
+| is_active                                   | Boolean                                            |
+| unique_identifier                           | UUID                                               |
+| deprecated_at                               | DateTime                                           |
+| is_patient_required                         | Boolean                                            |
+| allow_custom_title                          | Boolean                                            |
 
 ### NoteStateChangeEvent
 
@@ -130,7 +221,7 @@ commands_in_note = Note.commands.all()
 | modified                                    | DateTime                                  |
 | note                                        | [Note](/sdk/data-note/)                   |
 | originator                                  | [CanvasUser](/sdk/data-canvasuser)        |
-| state                                       | String                                    |
+| state                                       | [NoteState](/sdk/data-note/#notestates)   |
 | note_state_document                         | String                                    |
 | note_state_html                             | String                                    |
 
@@ -140,10 +231,32 @@ commands_in_note = Note.commands.all()
 |---------------------------------------------|-------------------------------------------|
 | id                                          | UUID                                      |
 | dbid                                        | Integer                                   |
-| state                                       | String                                    |
+| state                                       | [NoteState](/sdk/data-note/#notestates)   |
 | note                                        | [Note](/sdk/data-note/)                   |
 
 ## Enumeration types
+
+### NoteStates
+
+| Value | Description            | Notes                      |
+|-------|------------------------|----------------------------|
+| NEW   | Created                |                            |
+| PSH   | Pushed the charges for |                            |
+| LKD   | Locked                 |                            |
+| ULK   | Unlocked               |                            |
+| DLT   | Deleted                |                            |
+| RLK   | Relocked               |                            |
+| RST   | Restored               |                            |
+| RCL   | Recalled               |                            |
+| UND   | Undeleted              |                            |
+| DSC   | Discharged             |                            |
+| SCH   | Scheduling             | Used in appointment notes  |
+| BKD   | Booked                 | Used in appointment notes  |
+| CVD   | Converted              | Used in appointment notes  |
+| CLD   | Canceled               | Used in appointment notes  |
+| NSW   | No show                | Used in appointment notes  |
+| RVT   | Reverted               | Used in appointment notes  |
+| CNF   | Confirmed              | Used for CCDA import notes |
 
 ### NoteTypeCategories
 
