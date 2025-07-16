@@ -751,7 +751,7 @@ prescription = PrescribeCommand(
 ### Toggle Questions Feature
 
 The PhysicalExamCommand includes special functionality for toggling questions on/off. 
-When working with a PhysicalExameCommand, the following methods are available:
+When working with a PhysicalExam Command, the following methods are available:
 
 **Methods**:
 
@@ -761,7 +761,69 @@ When working with a PhysicalExameCommand, the following methods are available:
 | `set_question_enabled`      | `question_id: str` or `int, enabled: bool` | `None`    | Enable or disable a specific question.                     |
 | `question_toggles`          | _property_                                 | `dict`    | Get all current toggle states (question_id → enabled).     |
 
-**Example**:
+**Example - Working with Existing Commands**:
+
+A common use case is retrieving existing PhysicalExam commands from a note and modifying their toggle states. Here's how to work with the Canvas SDK data objects:
+
+```python
+from canvas_sdk.commands import PhysicalExamCommand
+from canvas_sdk.v1.data import Command, Note
+
+# Get existing physical exam commands from a note
+note = Note.objects.get(id="ff287601-fff4-46c4-b21f-04760e88adf1")
+physical_exam_commands = Command.objects.filter(
+    note=note,
+    schema_key="exam"  # Physical exam commands have schema_key "exam"
+).all()
+
+effects = []
+for command in physical_exam_commands:
+    # The command.data contains the question responses and skip states
+    # Example structure of command.data:
+    # {
+    #     "questionnaire": {"value": "83d93454-25a9-404d-83a5-e0ed2ec3af00"},
+    #     "question-12": "70",  # Body length response
+    #     "question-13": None,   # Head circumference (no response)
+    #     "skip-12": True,   # Body length is enabled (counterintuitive: skip=True means enabled)
+    #     "skip-13": False,  # Head circumference is disabled
+    # }
+
+    # Create a PhysicalExamCommand instance from the existing command
+    exam = PhysicalExamCommand(command_uuid=str(command.id))
+
+    # The exam.questions property gives you access to all questions with their IDs
+    log.info(f"Processing Physical Exam Command: {exam.command_uuid}")
+    for question in exam.questions:
+        # Each question object has an 'id' property with the question ID
+        question_id = question.id
+        if exam.is_question_enabled(question_id):
+            log.info(f"Question {question_id} is enabled")
+
+            # Check if there's a response in the command data
+            question_key = f"question-{question_id}"
+            if question_key in command.data:
+                response = command.data[question_key]
+                if response:
+                    log.info(f"Response: {response}")
+
+    # Example: Enable all questions that have responses, disable those without
+    for question in exam.questions:
+        question_id = question.id
+        question_key = f"question-{question_id}"
+        # Check if question has a response in command.data
+        has_response = question_key in command.data and command.data[question_key]
+
+        if has_response:
+            exam.set_question_enabled(question_id, True)
+        else:
+            # Optionally disable questions without responses
+            exam.set_question_enabled(question_id, False)
+
+    effects.append(exam.edit())
+```
+
+
+**Example - Creating a New Physical Exam**:
 
 ```python
 from canvas_sdk.commands import PhysicalExamCommand
@@ -1125,6 +1187,8 @@ ResolveConditionCommand(
 
 The ReviewOfSystemsCommand includes the same toggle functionality as PhysicalExamCommand, 
 allowing practitioners to enable or disable specific system review questions based on patient relevance.
+You can find an extra example of this functionality on the [Physical Exam Command Documentation](#physicalexam).
+
 
 **Methods**:
 
