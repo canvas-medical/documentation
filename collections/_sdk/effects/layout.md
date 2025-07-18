@@ -153,6 +153,76 @@ Values in the `PatientProfileConfiguration.Section` enum are:
 <br/>
 <br/>
 
+## Panel Configuration
+
+This effect allows you to define which panel buttons should be displayed on the main page or the patient page.
+
+The order of the buttons in the array will determine their order on the panel.
+
+![Before and after](/assets/images/sdk/panel-configuration-before-after.png)
+
+```python
+from canvas_sdk.effects.panel_configuration import PanelConfiguration
+
+PanelConfiguration(sections=[
+    PanelConfiguration.PanelPatientSection.REFILL_REQUEST,
+    PanelConfiguration.PanelPatientSection.LAB_REPORT,
+    PanelConfiguration.PanelPatientSection.CHANGE_REQUEST,
+    PanelConfiguration.PanelPatientSection.TASK,
+], page=PanelConfiguration.Page.PATIENT).apply()]
+
+```
+
+## Structure
+
+### **PanelConfiguration**
+
+A PanelConfiguration effect consists of the following properties:
+
+#### Attributes
+
+| Attribute          | Type   | Description                                                  |
+|--------------------|--------|--------------------------------------------------------------|
+| `sections`         |`list[PanelPatientSection] or list[PanelGlobalSection]`   | list of section items. |
+| `page`             |`Page`                                                    | PATIENT or GLOBAL. |
+
+
+Values in the `PanelGlobalSection` enum are:
+
+| Constant | Description |
+| -------- | ----------- |
+| APPOINTMENT | appointment |
+| CHANGE_REQUEST | changeRequest |
+| IMAGING_REPORT | imagingReport |
+| INPATIENT_STAY | inpatientStay |
+| LAB_REPORT | labReport |
+| MESSAGE | message |
+| OUTSTANDING_REFERRAL | outstandingReferral |
+| PRESCRIPTION_ALERT | prescriptionAlert |
+| RECALL_APPOINTMENT | recallAppointment |
+| REFERRAL_REPORT | referralReport |
+| REFILL_REQUEST | refillRequest |
+| TASK | task |
+| UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
+
+Values in the `PanelPatientSection` enum are:
+
+| Constant | Description |
+| -------- | ----------- |
+| CHANGE_REQUEST | changeRequest |
+| COMMAND | command |
+| IMAGING_REPORT | imagingReport |
+| INPATIENT_STAY | inpatientStay |
+| LAB_REPORT | labReport |
+| PRESCRIPTION_ALERT | prescriptionAlert |
+| REFERRAL_REPORT | referralReport |
+| REFILL_REQUEST | refillRequest |
+| TASK | task |
+| UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
+
+<br/>
+<br/>
+
 ## Modals
 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
