@@ -494,7 +494,6 @@ curl --request POST \
             }
         }
     ]
-  }
 }'
 ```
     {% endtab %}
