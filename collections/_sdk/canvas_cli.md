@@ -90,6 +90,16 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
+**Notes**:
+
+Files can be excluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
+
+Example
+```md
+# Exclude test files
+test_*.py
+```
+
 ### `canvas uninstall`
 
 Uninstall a plugin from a Canvas instance.
