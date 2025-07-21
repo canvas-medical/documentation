@@ -41,7 +41,7 @@ for the next step.
 Create a file at the path `~/.canvas/credentials.ini`.
 Here is what its contents should look like:
 
-```
+```ini
 [buttered-popcorn]
 client_id=butter
 client_secret=salt
@@ -67,7 +67,7 @@ will be considered default.
 The Canvas CLI gives you a great head start when creating a plugin. Simply
 run `canvas init`, and answer the prompt to name your plugin.
 
-```
+```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Paperwork Eviscerator
 Project created in /Users/andrew/src/canvas-plugins/paperwork_eviscerator
@@ -79,7 +79,7 @@ This output shows the location of our freshly generated plugin.
 
 Let's take a look at what was generated for us.
 
-```
+```sh
 $ tree paperwork_eviscerator/
 paperwork_eviscerator/
 |-- CANVAS_MANIFEST.json

@@ -52,18 +52,30 @@ class Protocol(BaseProtocol):
 Using this value, the `Command` model can be queried to fetch additional data about the command. Two main fields to pay attention to here are the `schema_key` and `data` fields. The `schema_key` field contains the type of the command, while the `data` field contains a JSON object with command data as key/value pairs:
 
 ```python
-    command_instance = Command.objects.get(id=self.target)
-    log.info(command_instance.schema_key)
-    log.info(command_instance.data)
+import json
+from canvas_sdk.v1.data.command import Command
+
+command_instance = Command.objects.get(id=self.target)
+log.info(command_instance.schema_key)
+log.info(json.dumps(command_instance.data, indent=2))
 ```
 
 For example, for a _Reason For Visit_ command, the preceding code would log the following lines:
 
-```
+```sh
 reasonForVisit
 
-{'coding': {'text': 'Accident-prone', 'extra': None, 'value': '165002', 'disabled': False, 'annotations': None, 'description': None},
-'comment': 'Patient would like to discuss condition.'}
+{
+  "coding": {
+    "text": "Accident-prone",
+    "extra": null,
+    "value": "165002",
+    "disabled": false,
+    "annotations": null,
+    "description": null
+  },
+  "comment": "Patient would like to discuss condition."
+}
 ```
 
 The following table shows the different command `schema_key` values with links to their respective [Command Modules](/sdk/commands). The attributes shown in each corresponding entry contain the structure that will appear in the `data` JSON field of each `Command`.

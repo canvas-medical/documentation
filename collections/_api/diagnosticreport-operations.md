@@ -17,7 +17,7 @@ To mark a lab value as abnormal, an optional `interpretation` attribute can be a
 
 For the values/units in each `labValue` object, either a `valueQuantity` or `valueString` can be supplied in the payload. For example:
 
-```
+```json
 ...,
 "valueQuantity": {
     "value": "0.7",
@@ -29,7 +29,7 @@ For the values/units in each `labValue` object, either a `valueQuantity` or `val
 
 or
 
-```
+```json
 ...,
 "valueString": "Normal",
 ...
@@ -37,7 +37,7 @@ or
 
 If using `valueQuantity` and a comparator value is needed (i.e. `<1.0`), the comparator value can be passed in a `comparator` key like so:
 
-```
+```json
 ...,
 "valueQuantity": {
     "value": "1.0",

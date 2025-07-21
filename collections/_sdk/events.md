@@ -21,7 +21,7 @@ class Protocol(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
     def compute(self):
-        ....
+        ...
 ```
 
 The plugin author can enter custom workflow code into the `compute` method that will execute every time an Allergy Intolerance is created in Canvas.

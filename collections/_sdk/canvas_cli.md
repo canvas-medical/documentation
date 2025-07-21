@@ -16,7 +16,7 @@ Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas 
 
 **Example:**
 
-```
+```ini
 [buttered-popcorn]
 client_id=butter
 client_secret=salt
@@ -89,6 +89,16 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
+
+**Notes**:
+
+Files can be excluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
+
+Example
+```md
+# Exclude test files
+test_*.py
+```
 
 ### `canvas uninstall`
 

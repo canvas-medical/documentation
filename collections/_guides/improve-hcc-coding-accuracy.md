@@ -25,7 +25,7 @@ A key use case is surfacing potential codings gaps that come from external sourc
 
 The workflow within Canvas is centered around issues created with the `DetectedIssue.code` set to `CODINGGAP`. Although we are leveraging it in our R4 endpoint, `CODINGGAP` was introduced to the value set in R5, and can be used for surfacing conditions that may be present on historical claims but not yet diagnosed within the current year, suspect conditions, or condition data from external sources. The code should be structured as follows:
 
-```
+```json
     "code": {
         "coding": [
             {
@@ -49,7 +49,7 @@ There is no built in UI feature in Canvas that surfaces coding gaps that have ye
 
 The protocol will surface in each patient's chart and staff can also leverage the population page as a work list. 
 
-``` python
+```python
 from canvas_sdk.protocols.clinical_quality_measure import ClinicalQualityMeasure
 from canvas_sdk.events import EventType
 from canvas_sdk.effects.protocol_card import ProtocolCard
@@ -159,7 +159,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 
 ICD_CODES = {
-    "HCC": {"A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202","ADDMORECODES..."}
+    "HCC": {"A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202", "ADD_MORE_CODES..."}
 }
 
 
@@ -221,8 +221,7 @@ from canvas_sdk.protocols import BaseProtocol
 
 ICD_CODES = {
     "HCC": {
-        "A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202",
-        ,"ADDMORECODES...", 
+        "A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202", "ADD_MORE_CODES...", 
     }
 
 }
