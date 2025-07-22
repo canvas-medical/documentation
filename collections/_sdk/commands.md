@@ -73,7 +73,7 @@ from uuid import uuid4
 from canvas_sdk.commands import DiagnoseCommand
 
 def compute():
-    note_uuid = 'rk786p'
+    note_uuid = '550e8400-e29b-41d4-a716-446655440000'
     
     diagnose_command = DiagnoseCommand(
         note_uuid=note_uuid,
