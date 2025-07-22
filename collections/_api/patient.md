@@ -216,10 +216,16 @@ sections:
               The date of birth for the individual, formatted as YYYY-MM-DD.
             create_and_update_description: >-
               The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
+          - name: deceasedDateTime (a change in the near future will introduce this field)
+            type: datetime
+            required: false
+            description: >-
+              Indicates the decease date of the individual.<br><br>If this value is not available, `deceasedBoolean` will be provided instead.
           - name: deceasedBoolean
             type: boolean
             required: false
-            description: Indicates if the individual is deceased or not.
+            description: >-
+              Indicates if the individual is deceased or not.<br><br>This value will only be shown if `deceasedDateTime` is not available.
           - name: address
             type: array[json]
             required: false
