@@ -87,7 +87,7 @@ Stay up to date on the latest important dates for the Canvas platform.
     <tr>
       <td>FHIR API: Patient deceasedBoolean field</td>
       <td style="color: red;">Breaking Change</td>
-      <td>USCDIv3 requirements dictate that FHIR APIs support the <code>deceasedDateTime</code> field of the <code>Patient</code> resource.<br><br>Starting on the release date of this change, Canvas by default will provide the <code>deceasedDateTime</code> value for any given patient, if it is available. If it is not, the API will continue providing the <code>deceasedBoolean</code> value. Please note that the FHIR standard only allows one, not both, of these values to be returned.</td>
+      <td>USCDIv3 requirements dictate that FHIR APIs support the <code>deceasedDateTime</code> field of the <code>Patient</code> resource.<br><br>Starting on the release date of this change, Canvas by default will provide the <code>deceasedDateTime</code> value for any given patient, if it is available. If it is not, the API will continue providing the <code>deceasedBoolean</code> value. Please note that the FHIR standard only allows one, not both, of these values to be returned.<br><br>Client code will need to be adjusted to consume either value.</td>
       <td>08/22/2025</td>
       <td></td>
     </tr>
