@@ -12,6 +12,11 @@ The following Python standard library modules and their allowed imports are avai
 Provides access to features from future Python versions for backwards compatibility. [read more](https://docs.python.org/3/library/__future__.html)
 - `annotations`
 
+##### `abc`
+Provides infrastructure for defining Abstract Base Classes (ABCs) to enforce interfaces and create structured inheritance hierarchies. [read more](https://docs.python.org/3/library/abc.html)
+- `ABC`
+- `abstractmethod`
+
 ##### `base64`
 Provides functions for encoding and decoding data in base64 format, commonly used for data transmission and storage. [read more](https://docs.python.org/3/library/base64.html)
 - `b64decode`
@@ -107,6 +112,7 @@ Provides support for type hints and static type checking to improve code clarity
 - `Final`
 - `Iterable`
 - `List`
+- `Literal`
 - `NamedTuple`
 - `NotRequired`
 - `Protocol`
