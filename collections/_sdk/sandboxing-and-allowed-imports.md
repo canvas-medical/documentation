@@ -2,7 +2,7 @@
 title: "Sandboxing and Allowed Imports"
 ---
 
-Plugins developed with the Canvas SDK execute safely and securely in a sandbox that restricts access to the host operating system, filesystem, and database. This precaution reduces the likelihood of accidents or malicious use of the platform that might put patient data at risk.
+Plugins developed with the Canvas SDK operate within a sandboxed environment. This sandbox strictly limits access to the host operating system, filesystem, and database. This security measure is designed to mitigate risks associated with accidental misconfigurations or malicious activities, thereby safeguarding sensitive patient data.
 
 ## Standard Library Modules
 
@@ -116,10 +116,12 @@ Provides support for type hints and static type checking to improve code clarity
 - `NamedTuple`
 - `NotRequired`
 - `Protocol`
+- `Optional`
 - `Sequence`
 - `Tuple`
 - `Type`
 - `TypedDict`
+- `Union`
 
 ##### `urllib`
 Provides modules for working with URLs, including URL parsing and manipulation. [read more](https://docs.python.org/3/library/urllib.html)
@@ -248,3 +250,21 @@ Plus all the standard safe builtins from RestrictedPython including basic types 
 If there is a library or function not on this list that you wish to import in your plugin, reach out on the [Canvas developer forum](https://github.com/canvas-medical/canvas-plugins/discussions). Additional imports can often be added after a security review.
 
 The allowed imports are defined in the [Canvas Plugins repository](https://github.com/canvas-medical/canvas-plugins/blob/main/plugin_runner/sandbox.py) and are regularly updated to support common development needs while maintaining security.
+
+## Policy on Vendor-Specific Libraries:
+
+The current policy strongly discourages the inclusion of vendor-specific libraries. Introducing such libraries presents several challenges:
+
+* Vendor Prioritization: It risks implicitly favoring one vendor over others, which can be problematic in a multi-vendor ecosystem.
+
+* Dependency Bloat: Incorporating libraries for each vendor within a specific category (e.g., AI model providers like OpenAI, Anthropic) leads to a significant increase in overall dependencies.
+
+## Technical Implications of Excessive Dependencies:
+
+Adding a multitude of vendor-specific libraries can result in:
+
+* Increased Memory Usage: Each additional library contributes to the application's memory footprint.
+
+* Dependency Conflicts: Different libraries may require different versions of shared dependencies, leading to versioning conflicts and system instability.
+
+Given these considerations, the platform maintains a strict and judicious approach to approving and incorporating external libraries or imports.
