@@ -488,7 +488,7 @@ imaging_order = ImagingOrderCommand(
 **Example**:
 
 ```python
-from canvas_sdk.commands import ImmunizationStatementCommand
+from canvas_sdk.commands.commands.immunization_statement import ImmunizationStatementCommand
 from datetime import date
 
 immunization_statement = ImmunizationStatementCommand(
