@@ -49,7 +49,6 @@ class Protocol(BaseProtocol):
         return []
 ```
 
-
 ### Record lifecycle events
 
 These events fire as a result of records being created, updated, or deleted.
@@ -317,6 +316,46 @@ These events fire as a result of records being created, updated, or deleted.
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
+  </tbody>
+</table>
+
+#### Patient Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient's metadata is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientmetadata_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient's metadata is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientmetadata_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
   </tbody>
 </table>
 
