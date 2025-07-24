@@ -1589,6 +1589,80 @@ type: None</pre></td>
   </tbody>
 </table>
 
+#### Staff
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a staff is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staff_id
+"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a staff is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staff_id
+"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_ACTIVATED</th></tr>
+    <tr><td colspan="2">Occurs when a staff record is created with active=True, or a staff record's active field is updated from False to True.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staff_id
+"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_DEACTIVATED</th></tr>
+    <tr><td colspan="2">Occurs when a staff record's active field is updated from True to False.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staff_id
+"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Vital Signs
 
 <table>
