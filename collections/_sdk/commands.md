@@ -474,6 +474,33 @@ imaging_order = ImagingOrderCommand(
 
 ---
 
+## ImmunizationStatement
+
+**Command-specific parameters**:
+
+| Name               | Type    | Required | Description                                                      |
+|--------------------|---------|----------|------------------------------------------------------------------|
+| `cpt_code`         | _string_| `true`   | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation. |
+| `cvx_code`         | _string_| `true`   | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation. |
+| `approximate_date` | _date_  | `false`  | The approximate date when the immunization was administered.     |
+| `comments`         | _string_| `false`  | Additional comments about the immunization (max 255 characters). |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ImmunizationStatementCommand
+from datetime import date
+
+immunization_statement = ImmunizationStatementCommand(
+    cpt_code="90724",
+    cvx_code="88",
+    approximate_date=date(2024, 1, 15),
+    comments="Patient received influenza vaccine"
+)
+```
+
+---
+
 ## Instruct
 
 **Command-specific parameters**:
