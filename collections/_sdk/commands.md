@@ -707,20 +707,24 @@ plan = PlanCommand(
 
 **Command-specific parameters**:
 
-| Name                   | Type                          | Required | Description                                                        |
-|------------------------|-------------------------------|----------|--------------------------------------------------------------------|
-| `fdb_code`             | _string_                      | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication.                                       |
-| `icd10_codes`          | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. |
-| `sig`                  | _string_                      | `true`   | Administration instructions/details of the medication.             |
-| `days_supply`          | _integer_                     | `false`  | Number of days the prescription is intended to cover.              |
-| `quantity_to_dispense` | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                              |
-| `type_to_dispense`     | _ClinicalQuantity_            | `true`   | Information about the form or unit of the medication to dispense.  |
-| `refills`              | _integer_                     | `true`   | Number of refills allowed for the prescription.                    |
-| `substitutions`        | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed. |
-| `pharmacy`             | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent.    |
-| `prescriber_id`        | _string_                      | `true`   | The key of the prescriber.                     |
-| `supervising_provider_id` | _string_                   | `true`   | The key of the supervising provider of the presciber.           |
-| `note_to_pharmacist`   | _string_                      | `false`  | Additional notes or instructions for the pharmacist.               |
+| Name                        | Type                          | Required | Description                                                         |
+|-----------------------------|-------------------------------|----------|---------------------------------------------------------------------|
+| `fdb_code`                  | _string_                      | `false`* | The [FDB code](/sdk/utils/#fdb_code) of the medication.             |
+| `compound_medication_id`    | _string_                      | `false`* | The ID of an existing compound medication to prescribe.             |
+| `compound_medication_data`  | `CompoundMedicationData`      | `false`* | Data for creating a new compound medication inline.                 |
+| `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription.  |
+| `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication.              |
+| `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
+| `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                               |
+| `type_to_dispense`          | _ClinicalQuantity_            | `true`   | Information about the form or unit of the medication to dispense.   |
+| `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription.                     |
+| `substitutions`             | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed.  |
+| `pharmacy`                  | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. |
+| `prescriber_id`             | _string_                      | `true`   | The key of the prescriber.                                          |
+| `supervising_provider_id`   | _string_                      | `true`   | The key of the supervising provider of the presciber.               |
+| `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist.                |
+
+*Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
 
 **Enums and Types**
 
@@ -738,9 +742,24 @@ Represents the detailed information about the form or unit of the medication.
 | `representative_ndc`            | _string_ | National Drug Code (NDC) representing the medication. |
 | `ncpdp_quantity_qualifier_code` | _string_ | NCPDP code indicating the quantity qualifier.         |
 
+**CompoundMedicationData**:
+Data for creating a compound medication inline within a prescription.
 
-**Example**
+| Field Name                 | Type     | Description                                               | Required |
+|----------------------------|----------|-----------------------------------------------------------|----------|
+| `formulation`              | _string_ | The compound medication formulation (max 105 characters)  | `true`   |
+| `potency_unit_code`        | _string_ | The unit of measurement for the medication                | `true`   |
+| `controlled_substance`     | _string_ | The controlled substance schedule                         | `true`   |
+| `controlled_substance_ndc` | _string_ | NDC for controlled substances (dashes removed)            | `false`* |
+| `active`                   | _bool_   | Whether the compound medication is active (default: true) | `false`  |
 
+
+*Required when controlled_substance is not "N" (None)
+
+
+**Examples**
+
+***Option 1: Standard Prescription (FDB Code)***
 ```python
 from canvas_sdk.commands.constants import ClinicalQuantity
 from canvas_sdk.commands import PrescribeCommand
@@ -763,6 +782,82 @@ prescription = PrescribeCommand(
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
+
+***Option 2: Existing Compound Medication (by ID)***
+```python
+from canvas_sdk.commands.constants import ClinicalQuantity
+from canvas_sdk.commands import PrescribeCommand
+
+from canvas_sdk.v1.data.compound_medication import CompoundMedication as CompoundMedicationModel
+
+# Get an existing compound medication (let's assume it exists in the database)
+compound_med = CompoundMedicationModel.objects.filter(
+    active=True,
+    formulation="Testosterone 200mg/mL in Grapeseed Oil"
+).first()
+
+prescription = PrescribeCommand(
+    compound_medication_id=str(compound_med.id),
+    icd10_codes=["R51"],
+    sig="Take one tablet daily after meals",
+    days_supply=30,
+    quantity_to_dispense=30,
+    type_to_dispense=ClinicalQuantity(
+        representative_ndc="12843016128",
+        ncpdp_quantity_qualifier_code="C48542"
+    ),
+    refills=3,
+    substitutions=PrescribeCommand.Substitutions.ALLOWED,
+    pharmacy="Main Street Pharmacy",
+    prescriber_id="provider_123",
+    supervising_provider_id='provider_456',
+    note_to_pharmacist="Please verify patient's insurance before processing."
+```
+
+***Option 3: Create New Compound Medication Inline***
+```python
+from canvas_sdk.commands.constants import ClinicalQuantity
+from canvas_sdk.commands import PrescribeCommand
+
+from canvas_sdk.v1.data.compound_medication import CompoundMedication
+
+compound_medication_data = CompoundMedicationData(
+    formulation="Testosterone 200mg/mL in Grapeseed Oil",
+    potency_unit_code=CompoundMedication.PotencyUnits.GRAM,
+    controlled_substance=CompoundMedication.ControlledSubstanceOptions.SCHEDULE_III,
+    controlled_substance_ndc="12345678901",
+    active=True,
+)
+
+prescription = PrescribeCommand(
+    compound_medication_data=compound_medication_data,
+    icd10_codes=["M79.3"],
+    sig="Apply thin layer to affected area twice daily",
+    days_supply=30,
+    quantity_to_dispense=30,
+    type_to_dispense=ClinicalQuantity(
+        representative_ndc="12843016128",
+        ncpdp_quantity_qualifier_code="C48542"
+    ),
+    refills=3,
+    substitutions=PrescribeCommand.Substitutions.ALLOWED,
+    pharmacy="Main Street Pharmacy",
+    prescriber_id="provider_123",
+    supervising_provider_id='provider_456',
+    note_to_pharmacist="Please verify patient's insurance before processing."
+```
+
+**Validation Notes**
+
+* Medication Type Validation: Exactly one of fdb_code, compound_medication_id, or compound_medication_data must be provided
+* Compound Medication ID: When using compound_medication_id, the system validates that the compound medication exists
+* Compound Medication Data: When using compound_medication_data:
+  * All required fields in the dataclass must be provided
+  * If controlled substance is not "N" (None), then controlled_substance_ndc is required
+  * The formulation is limited to 105 characters
+  * Any dashes in the NDC are automatically removed
+  * Before creating a new compound medication, the system checks if a compound with the same formulation and potency unit code already exists. If it does, it reuses the existing compound medication instead of creating a new one.
+* Potency Unit and Controlled Substance Values: Must use valid enum values from PotencyUnit and ControlledSubstanceSchedule
 
 ---
 

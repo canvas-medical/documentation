@@ -575,6 +575,9 @@ effects_module:
  - title: "Billing Line Items"
    url: /sdk/effect-billing-line-items/
    description: Add, modify, or remove billing codes on a note.
+ - title: "Compound Medications"
+   url: /sdk/effect-compound-medication/
+   description: Create or update compound medications.
  - title: "Form Result"
    url: /sdk/form-result-effect
    description: Effect for dynamically displaying forms in the Patient Portal.
@@ -643,6 +646,9 @@ data_module:
  - title: "Common Enumeration Types"
    url: /sdk/data-enumeration-types/
    description: Common choice classes used in multiple models.
+ - title: "Compound Medication"
+   url: /sdk/data-compound-medication/
+   description: Compound medications, which are custom-made medications tailored to a patient's specific needs.
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
