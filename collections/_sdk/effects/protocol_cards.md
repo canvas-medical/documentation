@@ -159,24 +159,14 @@ class Protocol(BaseProtocol):
 
 The following commands from the [commands module](/sdk/commands/) are currently supported for insertion from Protocol Cards:
 
-- Allergy
 - Assess
 - Diagnose
-- FollowUp
 - Goal
 - HistoryOfPresentIllness
-- Image
-- Immunize
 - Instruct
-- LabOrder
 - MedicationStatement
 - Perform
 - Plan
 - Prescribe
 - Questionnaire
 - ReasonForVisit
-- Refer
-- StructuredAssessment
-- Task
-- ValidateCodingGap
-- Vitals
