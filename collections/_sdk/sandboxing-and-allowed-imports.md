@@ -180,9 +180,16 @@ Django's functional programming utilities including caching and lazy evaluation 
 A library for encoding and decoding JSON Web Tokens (JWT) for secure data transmission and authentication. [read more](https://pyjwt.readthedocs.io/en/stable/)
 - `decode`
 - `encode`
+- `ExpiredSignatureError`
+- `InvalidTokenError`
+- `PyJWKClient`
 
 ##### `pydantic`
 A data validation library using Python type annotations for parsing and validating data structures. [read more](https://docs.pydantic.dev/)
+- `BaseModel`
+- `conint`
+- `constr`
+- `Field`
 - `ValidationError`
 
 ##### `rapidfuzz`
