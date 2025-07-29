@@ -62,6 +62,35 @@ def compute():
     return [existing_plan.edit(), new_plan.originate()]
 ```
 
+## Chaining Methods with a User-set UUID
+
+A common use case is to originate and also commit a command in a single plugin action. However, attempting to commit a command without a `command_uuid` will throw an error. Because the `originate` method executes asynchronously, there is not currently a clean way to get the `command_uuid` back from the originate action and use it for the commit action in the same operation.
+
+The solution is to set the UUID in the plugin and pass it through to both the originate and commit actions. This is accomplished by manually setting the `command_uuid` before calling the methods:
+
+```python
+from uuid import uuid4
+from canvas_sdk.commands import DiagnoseCommand
+
+def compute():
+    note_uuid = '550e8400-e29b-41d4-a716-446655440000'
+    
+    diagnose_command = DiagnoseCommand(
+        note_uuid=note_uuid,
+        icd10_code='E11.9'
+    )
+    
+    # To chain command effects, you must know what the command's id
+    # is. To accomplish that, we set the id ourselves rather than
+    # allow the database to assign one.
+    diagnose_command.command_uuid = str(uuid4())
+    
+    # Now we can both originate and commit in a single operation
+    return [diagnose_command.originate(), diagnose_command.commit()]
+```
+
+This pattern ensures that both the originate and commit operations use the same `command_uuid`, allowing them to be chained together reliably in a single plugin execution.
+
 Command-specific details for each command class can be found below.
 
 ## AdjustPrescription
