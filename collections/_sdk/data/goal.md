@@ -14,7 +14,7 @@ The `Goal` model represents a patient Goal in Canvas, which is always associated
 To get a goal by identifier, use the `get` method on the `Goal` model manager:
 
 ```python
-from canvas_sdk.v1.data.goal import Goal
+from canvas_sdk.v1.data import Goal
 
 goal = Goal.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 ```
@@ -22,8 +22,7 @@ goal = Goal.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 If you have a patient object, or note object, the goals for a patient or note can be accessed with the `goals` attribute on a `Patient` or `Note` object:
 
 ```python
-from canvas_sdk.v1.data.patient import Patient
-from canvas_sdk.v1.data.note import Note
+from canvas_sdk.v1.data import Patient, Note
 
 patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 goals = patient.goals.all()
@@ -43,7 +42,7 @@ Filtering for goals is done with the `filter` method on the `Goal` model manager
 Specify an attribute with `filter` to filter by that attribute:
 
 ```python
-from canvas_sdk.v1.data.goal import Goal, GoalAchievementStatus
+from canvas_sdk.v1.data import Goal, GoalAchievementStatus
 
 goals = Goal.objects.filter(achievement_status=GoalAchievementStatus.IN_PROGRESS)
 ```
