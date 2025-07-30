@@ -3,9 +3,9 @@ permalink: /product-updates/release-notes/
 layout: releasenotes-index
 title: "Release Notes"
 ---
-# Release Notes
+# Changelog
 
-Check out the latest features and fixes for Canvas. This page covers releases beginning in December of 2023. 
+Stay up to date with the latest features, fixes, and breaking changes in Canvas.
 <br>
 <br>
 
