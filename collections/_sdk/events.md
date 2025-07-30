@@ -808,6 +808,46 @@ type: None</pre></td>
   </tbody>
 </table>
 
+#### Devices
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEVICE_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a device is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": device_id
+"type": None</pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEVICE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a device is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": device_id
+"type": None</pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Document References
 
 <table>
@@ -860,46 +900,6 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": document_reference_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Devices
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEVICE_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a device is created.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": device_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEVICE_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a device is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": device_id
 "type": None</pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
