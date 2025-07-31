@@ -45,7 +45,7 @@ class CompoundMedicationCreator(BaseHandler):
     compound_med = CompoundMedicationEffect(
       formulation="Testosterone 200mg/mL in Grapeseed Oil",
       potency_unit_code=CompoundMedicationModel.PotencyUnit.Milliliter,
-      controlled_substance=CompoundMedicationModel.ControlledSubstanceSchedule.N,
+      controlled_substance=CompoundMedicationModel.ControlledSubstanceSchedule.SCHEDULE_NOT_SCHEDULED,
       active=True
     )
 
