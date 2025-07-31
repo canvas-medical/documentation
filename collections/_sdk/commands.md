@@ -812,6 +812,7 @@ prescription = PrescribeCommand(
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
+)
 ```
 
 ***Option 3: Create New Compound Medication Inline***
@@ -845,6 +846,7 @@ prescription = PrescribeCommand(
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
+)
 ```
 
 **Validation Notes**
