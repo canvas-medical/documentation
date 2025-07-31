@@ -79,7 +79,7 @@ The `UpdateCompoundMedication` effect modifies an existing compound medication f
 ### Example Usage
 
 ```python
-from canvas_sdk.effects.compound_medication import CompoundMedication as CompoundMedicationEffect
+from canvas_sdk.effects.compound_medications import CompoundMedication as CompoundMedicationEffect
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.v1.data.compound_medication import CompoundMedication as CompoundMedicationModel
 from canvas_sdk.events import EventType
