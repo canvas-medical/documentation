@@ -818,7 +818,7 @@ prescription = PrescribeCommand(
 ***Option 3: Create New Compound Medication Inline***
 ```python
 from canvas_sdk.commands.constants import ClinicalQuantity
-from canvas_sdk.commands import PrescribeCommand
+from canvas_sdk.commands.prescribe import PrescribeCommand, CompoundMedicationData 
 
 from canvas_sdk.v1.data.compound_medication import CompoundMedication
 
