@@ -69,29 +69,77 @@ def compute():
 ```
 
 ## Command Actions
-All commands support the following generic actions through the Canvas UI:
 
-### print
+All commands support user-triggered actions through the Canvas UI. 
+These actions appear as buttons or menu items that users can click to perform specific operations on commands.
+
+Commands have two types of actions:
+- **Generic actions** (available on all commands): print, audit history
+- **Command-specific actions** (vary by command type): documented in each command's respective section below
+
+### Customizing Action Availability
+
+Developers can programmatically control command actions by:
+- **Hiding actions** based on user permissions, roles, or command state
+- **Reordering actions** to prioritize commonly used operations
+- **Conditional display** depending on workflow requirements or business logic
+
+Action customization is handled through plugin code that modifies the available action set accordingly.
+
+### Generic Actions
+
+The following actions are available on all command types:
+
+#### print
 Generates a printable version of the command for documentation or external sharing purposes.
 
-### audit_history
+#### audit_history
 Displays the complete audit trail for the command, showing all modifications, state changes, and user interactions over time.
 
-All command actions can be hidden and sorted.
+#### carry_forward
+Populates the command with the last known data for this command type and patient, allowing users to quickly recreate similar commands based on previous entries.
 
-Example usage to remove the print action from a plan command
+### Command-Specific Actions
+
+Individual command types have additional actions tailored to their functionality. These actions are documented in each command's respective section below.
+
+{% include alert.html type="info" content="The send action is the only command action available through the SDK and is limited to LabOrder and Prescribe commands only." %}
+
+### Example
 ```python
 import json
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.events import EventType
+from canvas_sdk.v1.data import Staff
 
 class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__AVAILABLE_ACTIONS)
     def compute(self) -> list[Effect]:
-        payload = [action for action in self.context["actions"] if action["name"] != "print"]
+        actions = self.context["actions"]
+        user_id = self.context["user"]["staff"]
 
-        return [Effect(type=EffectType.COMMAND_AVAILABLE_ACTIONS_RESULTS, payload=json.dumps(payload))]
+        # Filter actions based on user permissions
+        try:
+            staff = Staff.objects.get(id=user_id)
+
+            # Example: Hide print action for specific user
+            if staff.first_name == "Larry":
+                filtered_actions = [
+                    action for action in actions
+                    if action["name"] != "print"
+                ]
+            else:
+                filtered_actions = actions
+
+        except Staff.DoesNotExist:
+            # If staff not found, return original actions
+            filtered_actions = actions
+
+        return [Effect(
+            type=EffectType.COMMAND_AVAILABLE_ACTIONS_RESULTS,
+            payload=json.dumps(filtered_actions)
+        )]
    
  ```
 
