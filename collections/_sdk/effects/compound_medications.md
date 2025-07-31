@@ -30,7 +30,7 @@ The `CreateCompoundMedication` effect creates a new compound medication formulat
 ### Example Usage
 
 ```python
-from canvas_sdk.effects.compound_medication import CompoundMedication as CompoundMedicationEffect
+from canvas_sdk.effects.compound_medications import CompoundMedication as CompoundMedicationEffect
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.events import EventType
 
