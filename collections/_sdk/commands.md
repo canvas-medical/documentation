@@ -44,6 +44,12 @@ Returns an Effect that deletes an existing, non-committed command from the note 
 
 Returns an Effect that commits an existing, non-committed command to the note body.
 
+#### send
+
+Returns an Effect that sends a signed command.
+
+**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
+
 #### enter_in_error
 
 Returns an effect that enter-in-errors an existing, committed command in the note body.
@@ -61,6 +67,81 @@ def compute():
 
     return [existing_plan.edit(), new_plan.originate()]
 ```
+
+## Command Actions
+
+All commands support user-triggered actions through the Canvas UI. 
+These actions appear as buttons or menu items that users can click to perform specific operations on commands.
+
+Commands have two types of actions:
+- **Generic actions** (available on all commands): print, audit history
+- **Command-specific actions** (vary by command type): documented in each command's respective section below
+
+### Customizing Action Availability
+
+Developers can programmatically control command actions by:
+- **Hiding actions** based on user permissions, roles, or command state
+- **Reordering actions** to prioritize commonly used operations
+- **Conditional display** depending on workflow requirements or business logic
+
+Action customization is handled through plugin code that modifies the available action set accordingly.
+
+### Generic Actions
+
+The following actions are available on all command types:
+
+#### print
+Generates a printable version of the command for documentation or external sharing purposes.
+
+#### audit_history
+Displays the complete audit trail for the command, showing all modifications, state changes, and user interactions over time.
+
+#### carry_forward
+Populates the command with the last known data for this command type and patient, allowing users to quickly recreate similar commands based on previous entries.
+
+### Command-Specific Actions
+
+Individual command types have additional actions tailored to their functionality. These actions are documented in each command's respective section below.
+
+{% include alert.html type="info" content="The send action is the only command action available through the SDK and is limited to LabOrder and Prescribe commands only." %}
+
+### Example
+```python
+import json
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects import Effect, EffectType
+from canvas_sdk.events import EventType
+from canvas_sdk.v1.data import Staff
+
+class Handler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__AVAILABLE_ACTIONS)
+    def compute(self) -> list[Effect]:
+        actions = self.context["actions"]
+        user_id = self.context["user"]["staff"]
+
+        # Filter actions based on user permissions
+        try:
+            staff = Staff.objects.get(id=user_id)
+
+            # Example: Hide print action for specific user
+            if staff.first_name == "Larry":
+                filtered_actions = [
+                    action for action in actions
+                    if action["name"] != "print"
+                ]
+            else:
+                filtered_actions = actions
+
+        except Staff.DoesNotExist:
+            # If staff not found, return original actions
+            filtered_actions = actions
+
+        return [Effect(
+            type=EffectType.COMMAND_AVAILABLE_ACTIONS_RESULTS,
+            payload=json.dumps(filtered_actions)
+        )]
+   
+ ```
 
 ## Chaining Methods with a User-set UUID
 
@@ -101,7 +182,7 @@ Command-specific details for each command class can be found below.
 |:---------------|:---------|:---------|:-------------------------------------|
 | `new_fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the new medication. |
 
-Check the [Prescribe](#prescribe) command for the other parameters used in the Refill command.
+Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command.
 
 ```python
 from canvas_sdk.commands import AdjustPrescriptionCommand, PrescribeCommand
@@ -262,6 +343,34 @@ close_goal = CloseGoalCommand(
 
 ---
 
+## Diagnose
+
+**Command-specific parameters**:
+
+| Name                        | Type       | Required | Description                                                |
+|:----------------------------|:-----------|:---------|:-----------------------------------------------------------|
+| `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed.              |
+| `background`                | _string_   | `false`  | Background information about the diagnosis.                |
+| `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
+| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition. |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import DiagnoseCommand
+from datetime import datetime
+
+diagnose = DiagnoseCommand(
+    note_uuid='rk786p',
+    icd10_code='M54.50',
+    background='lifted heavy box',
+    approximate_date_of_onset=datetime(2012, 1, 1),
+    today_assessment='unable to sleep lately'
+)
+```
+
+---
+
 ## FamilyHistory
 
 **Command-specific parameters**:
@@ -331,34 +440,6 @@ unstructured = FollowUpCommand(
   comment='also wants to discuss treatment options'
 )
 
-```
-
----
-
-## Diagnose
-
-**Command-specific parameters**:
-
-| Name                        | Type       | Required | Description                                                |
-|:----------------------------|:-----------|:---------|:-----------------------------------------------------------|
-| `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed.              |
-| `background`                | _string_   | `false`  | Background information about the diagnosis.                |
-| `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
-| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition. |
-
-**Example**:
-
-```python
-from canvas_sdk.commands import DiagnoseCommand
-from datetime import datetime
-
-diagnose = DiagnoseCommand(
-    note_uuid='rk786p',
-    icd10_code='M54.50',
-    background='lifted heavy box',
-    approximate_date_of_onset=datetime(2012, 1, 1),
-    today_assessment='unable to sleep lately'
-)
 ```
 
 ---
@@ -451,6 +532,18 @@ hpi = HistoryOfPresentIllnessCommand(
 | `ordering_provider_key` | _string_          | `true`   | The key for the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
 
+**Command-specific actions**:
+
+| Action Name        | Available When       | Description                                                       |
+|--------------------|----------------------|-------------------------------------------------------------------|
+| `delegate_action`  | command is staged    | Delegates the order by creating a task.                           |
+| `sign_action`      | command is staged    | Signs the order, transitioning it from staged to committed state. |
+| `print_specialist` | command is committed | Prints the order using a specialist-focused template.             |
+| `print_patient`    | command is committed | Prints the order using a patient-friendly template.               |
+| `fax`              | command is committed | Transmits the order electronically via fax.                       |
+
+
+
 **Enums and Types**:
 
 **`Priority`**
@@ -474,7 +567,7 @@ Represents the detailed information of the service provider.
 | business_phone   | _Optional[string]_ | Business phone number (optional, max length 512)       |
 | business_address | _Optional[string]_ | Business address (optional, max length 512)            |
 | notes            | _Optional[string]_ | Additional notes (optional, max length 512)            |
- 
+
 **Example**:
 
 ```python
@@ -571,6 +664,11 @@ Built-in validations ensure that:
 - The specified lab partner exists (whether provided by name or ID).
 - The ordered tests are available for the chosen lab partner.
 
+**Electronic ordering:** LabOrder commands support the `send()` method for electronic ordering of signed orders directly to lab partners. However, electronic ordering has additional requirements:
+
+- Only lab partners with electronic ordering enabled support the `send()` method.
+- The command must be committed/signed before it can be sent electronically.
+
 **Command-specific parameters**:
 
 | Name                    | Type           | Required | Description                                                                                                                                                      |
@@ -582,7 +680,27 @@ Built-in validations ensure that:
 | `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.                                                                                                                  |
 | `comment`               | _string_       | `false`  | Additional comments related to the lab order.                                                                                                                    |
 
-## Validations
+**Command-specific actions**:
+
+| Action Name              | Available When       | Description                                                               |
+|--------------------------|----------------------|---------------------------------------------------------------------------|
+| `sign_send_action`       | command is staged    | Signs and immediately sends the order electronically to the lab partner.  |
+| `send_action`            | command is staged    | Sends the order electronically to the chosen lab partner.                 | 
+| `sign_action`            | command is staged    | Signs the order, transitioning it from staged to committed state.         |
+| `print_requisition_form` | command is committed | Prints the order using a requisition-focused template for lab submission. |
+| `print_specimen_label`   | command is committed | Prints the template using a specimen-focused template.                    |
+| `fax_requisition_form`   | command is committed | Transmits the order electronically via fax.                               |
+
+**ABN Workflow Actions**
+
+When the ABN (Advance Beneficiary Notice) workflow is enabled, additional actions become available:
+
+| Action Name       | Available When    | Description                                                       |
+|-------------------|-------------------|-------------------------------------------------------------------|
+| `send_abn_signed` | command is staged | Sends the order electronically after ABN requirements are met.    |
+| `make_changes`    | command is staged | Allows modifications to complete ABN requirements before sending. |
+
+### Validations
 
 - **Lab Partner Validation:**
   The system checks that the provided `lab_partner` (by name or ID) exists in the system. If no matching lab partner is
@@ -734,6 +852,12 @@ plan = PlanCommand(
 
 ## Prescribe
 
+**Electronic prescribing:** Prescribe commands support the `send()` method for electronic transmission of signed prescriptions. However, electronic prescribing has additional validations:
+
+- A pharmacy must be specified on the command before it can be sent.
+- The command must be committed/signed before it can be sent electronically.
+
+
 **Command-specific parameters**:
 
 | Name                        | Type                          | Required | Description                                                         |
@@ -754,6 +878,16 @@ plan = PlanCommand(
 | `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist.                |
 
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
+
+**Command-specific actions**:
+
+| Action Name        | Available When       | Description                                                              |
+|--------------------|----------------------|--------------------------------------------------------------------------|
+| `sign_send_action` | command is in review | Signs and immediately sends the prescription electronically.             |
+| `sign_action`      | command is in review | Signs the prescription, transitioning it from staged to committed state. |
+| `print_action`     | command is in review | Prints and commits the command.                                          |
+| `make_changes`     | command is in review | Allow users to revert the command to staged state and make changes.      |
+| `send_action`      | command is committed | Sends the prescription electronically.                                   |
 
 **Enums and Types**
 
@@ -1059,7 +1193,7 @@ questionnaire = QuestionnaireCommand(
 )
 ```
 
-## Usage Example
+### Usage Example
 
 Below is an example that demonstrates how to instantiate a `QuestionnaireCommand`, retrieve the questions, and add responses to them based on their type:
 
@@ -1180,6 +1314,16 @@ unstructured_rfv = ReasonForVisitCommand(
 | `include_visit_note`  | _boolean_               | `false`  | Flag indicating whether the visit note should be included in the referral.                   |
 | `comment`             | _string_                | `false`  | An optional comment providing further details about the referral.                            |
 | `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command.                                       |
+
+**Command-specific actions**:
+
+| Action Name        | Available When       | Description                                                       |
+|--------------------|----------------------|-------------------------------------------------------------------|
+| `delegate_action`  | command is staged    | Delegates the order by creating a task.                           |
+| `sign_action`      | command is staged    | Signs the order, transitioning it from staged to committed state. |
+| `print_specialist` | command is committed | Prints the order using a specialist-focused template.             |
+| `print_patient`    | command is committed | Prints the order using a patient-friendly template.               |
+| `fax`              | command is committed | Transmits the order electronically via fax.                       |
 
 **Enums and Types**:
 
