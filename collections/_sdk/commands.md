@@ -869,7 +869,7 @@ plan = PlanCommand(
 | `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication.              |
 | `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
 | `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                               |
-| `type_to_dispense`          | _ClinicalQuantity_            | `true`   | Information about the form or unit of the medication to dispense.   |
+| `type_to_dispense`          | _ClinicalQuantity_            | `true`** | Information about the form or unit of the medication to dispense.   |
 | `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription.                     |
 | `substitutions`             | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed.  |
 | `pharmacy`                  | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. |
@@ -878,6 +878,8 @@ plan = PlanCommand(
 | `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist.                |
 
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
+
+**`ClinicalQuantity` is only required when `fdb_code` is provided. It is optional for compound medications.
 
 **Command-specific actions**:
 
