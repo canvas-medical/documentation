@@ -1322,7 +1322,6 @@ type: None</pre></td>
 
 #### Notes
 
-
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
