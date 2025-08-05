@@ -1322,10 +1322,12 @@ type: None</pre></td>
 
 #### Notes
 
+For more information about note states, see [NoteStates](/sdk/data-note/#notestates).
+
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs as a note traverses through its state machine.</td></tr>
+    <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the note states, like locking and unlocking.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1345,7 +1347,7 @@ type: None</pre></td>
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs if a note state change event is updated. Note state change events are updated when a note is locked and we generate an archived PDF copy of the note; this is done asynchronously.</td></tr>
+    <tr><td colspan="2">Occurs if a note state change event is updated. This event should be used when the note is locked AND when user needs the PDF. Note state change events are updated when a note is locked and we generate an archived PDF copy of the note; this is done asynchronously.</td></tr>
   </thead>
   <tbody>
     <tr>
