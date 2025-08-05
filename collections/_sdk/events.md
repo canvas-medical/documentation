@@ -1325,7 +1325,7 @@ type: None</pre></td>
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the [note state](/sdk/data-note/#notestates), including locking and unlocking.</td></tr>
+    <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the <a href="/sdk/data-note/#notestates">note state</a>, including locking and unlocking.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1337,7 +1337,7 @@ type: None</pre></td>
 "type": NoteStateChangeEvent</pre></td>
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
-"state": str</pre></td>
+"state": <a href="https://docs.canvasmedical.com/sdk/data-note/#notestates">str</a></pre></td>
     </tr>
   </tbody>
 </table>
