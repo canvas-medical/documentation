@@ -1327,7 +1327,7 @@ For more information about note states, see [NoteStates](/sdk/data-note/#notesta
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the note states, like locking and unlocking.</td></tr>
+    <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the [note state](/sdk/data-note/#notestates), including locking and unlocking.</td></tr>
   </thead>
   <tbody>
     <tr>
