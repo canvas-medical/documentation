@@ -70,7 +70,7 @@ def compute():
 
 ## Command Actions
 
-All commands support user-triggered actions through the Canvas UI. 
+All commands support user-triggered actions through the Canvas UI.
 These actions appear as buttons or menu items that users can click to perform specific operations on commands.
 
 Commands have two types of actions:
@@ -140,7 +140,7 @@ class Handler(BaseHandler):
             type=EffectType.COMMAND_AVAILABLE_ACTIONS_RESULTS,
             payload=json.dumps(filtered_actions)
         )]
-   
+
  ```
 
 ## Chaining Methods with a User-set UUID
@@ -155,17 +155,17 @@ from canvas_sdk.commands import DiagnoseCommand
 
 def compute():
     note_uuid = '550e8400-e29b-41d4-a716-446655440000'
-    
+
     diagnose_command = DiagnoseCommand(
         note_uuid=note_uuid,
         icd10_code='E11.9'
     )
-    
+
     # To chain command effects, you must know what the command's id
     # is. To accomplish that, we set the id ourselves rather than
     # allow the database to assign one.
     diagnose_command.command_uuid = str(uuid4())
-    
+
     # Now we can both originate and commit in a single operation
     return [diagnose_command.originate(), diagnose_command.commit()]
 ```
@@ -526,7 +526,7 @@ hpi = HistoryOfPresentIllnessCommand(
 | `image_code`            | _string_          | `true`   | Code identifier of the imaging order.                                         |
 | `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order.                          |
 | `priority`              | _Priority enum_   | `false`  | Priority of the imaging order. Must be one of `ImagingOrderCommand.Priority`. |
-| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              | 
+| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              |
 | `service_provider`      | _ServiceProvider_ | `true`   | Service provider of the imaging order.                                        |
 | `comment`               | _string_          | `false`  | Additional comments.                                                          |
 | `ordering_provider_key` | _string_          | `true`   | The key for the provider ordering the imaging.                                |
@@ -685,7 +685,7 @@ Built-in validations ensure that:
 | Action Name              | Available When       | Description                                                               |
 |--------------------------|----------------------|---------------------------------------------------------------------------|
 | `sign_send_action`       | command is staged    | Signs and immediately sends the order electronically to the lab partner.  |
-| `send_action`            | command is staged    | Sends the order electronically to the chosen lab partner.                 | 
+| `send_action`            | command is staged    | Sends the order electronically to the chosen lab partner.                 |
 | `sign_action`            | command is staged    | Signs the order, transitioning it from staged to committed state.         |
 | `print_requisition_form` | command is committed | Prints the order using a requisition-focused template for lab submission. |
 | `print_specimen_label`   | command is committed | Prints the template using a specimen-focused template.                    |
@@ -874,7 +874,7 @@ plan = PlanCommand(
 | `substitutions`             | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed.  |
 | `pharmacy`                  | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. |
 | `prescriber_id`             | _string_                      | `true`   | The key of the prescriber.                                          |
-| `supervising_provider_id`   | _string_                      | `true`   | The key of the supervising provider of the presciber.               |
+| `supervising_provider_id`   | _string_                      | `false`   | The key of the supervising provider of the prescriber.               |
 | `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist.                |
 
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
@@ -983,7 +983,7 @@ prescription = PrescribeCommand(
 ***Option 3: Create New Compound Medication Inline***
 ```python
 from canvas_sdk.commands.constants import ClinicalQuantity
-from canvas_sdk.commands.commands.prescribe import PrescribeCommand, CompoundMedicationData 
+from canvas_sdk.commands.commands.prescribe import PrescribeCommand, CompoundMedicationData
 
 from canvas_sdk.v1.data.compound_medication import CompoundMedication
 
@@ -1039,7 +1039,7 @@ prescription = PrescribeCommand(
 
 ### Toggle Questions Feature
 
-The PhysicalExamCommand includes special functionality for toggling questions on/off. 
+The PhysicalExamCommand includes special functionality for toggling questions on/off.
 When working with a PhysicalExam Command, the following methods are available:
 
 **Methods**:
@@ -1126,16 +1126,16 @@ exam = PhysicalExamCommand(
 questions = exam.questions  # Retrieve the list of questions
 # Returns: [
 #               Question(
-#                       self.name='question-12', 
+#                       self.name='question-12',
 #                       self.label='Body length (in)',
-#                       self.type='TXT', 
-#                       self.options=[ResponseOption(self.dbid=38, self.name='Body length (in)', self.code='8306-3', self.value='')], 
+#                       self.type='TXT',
+#                       self.options=[ResponseOption(self.dbid=38, self.name='Body length (in)', self.code='8306-3', self.value='')],
 #                       self.response=None
-#               ), 
+#               ),
 #               Question(
-#                       self.name='question-13', 
-#                       self.label='Head circumference (cm)', 
-#                       self.type='TXT', self.options=[ResponseOption(self.dbid=39, self.name='Head circumference (cm)', self.code='8287-5', self.value='')], 
+#                       self.name='question-13',
+#                       self.label='Head circumference (cm)',
+#                       self.type='TXT', self.options=[ResponseOption(self.dbid=39, self.name='Head circumference (cm)', self.code='8287-5', self.value='')],
 #                       self.response=None
 #               )
 
@@ -1144,7 +1144,7 @@ if exam.is_question_enabled("12"):
   print("Body length question is enabled.")
 
 # Disable irrelevant questions
-exam.set_question_enabled("13", False) 
+exam.set_question_enabled("13", False)
 
 # Get all toggle states
 states = exam.question_toggles
@@ -1240,13 +1240,13 @@ class Protocol(BaseHandler):
               question.add_response(option=first_option, selected=True, comment="Don't panic")
               question.add_response(option=last_option, selected=True)
 
-      # Because we're directly setting a command_uuid, we can return both originate and edit. 
+      # Because we're directly setting a command_uuid, we can return both originate and edit.
       return [command.originate(), command.edit()]
 ```
 
 ### Explanation
 
-- **Retrieving Questions:**  
+- **Retrieving Questions:**
   The `questions` property returns a list of question objects created from the questionnaire's data.
 
 
@@ -1312,7 +1312,7 @@ unstructured_rfv = ReasonForVisitCommand(
 | `diagnosis_codes`     | _list[string]_          | `true`   | A list of relevant ICD-10 Diagnosis.                                                         |
 | `clinical_question`   | _ClinicalQuestion enum_ | `true`   | The clinical question prompting the referral. Must be one of `ReferCommand.ClinicalQuestion` |
 | `priority`            | _Priority enum_         | `false`  | Priority of the imaging order. Must be one of `ReferCommand.Priority`.                       |
-| `notes_to_specialist` | _string_                | `true`   | Notes or additional information directed to the specialist.                                  | 
+| `notes_to_specialist` | _string_                | `true`   | Notes or additional information directed to the specialist.                                  |
 | `include_visit_note`  | _boolean_               | `false`  | Flag indicating whether the visit note should be included in the referral.                   |
 | `comment`             | _string_                | `false`  | An optional comment providing further details about the referral.                            |
 | `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command.                                       |
@@ -1360,7 +1360,7 @@ Represents the detailed information of the service provider.
 | business_phone   | _Optional[string]_ | Business phone number (optional, max length 512)       |
 | business_address | _Optional[string]_ | Business address (optional, max length 512)            |
 | notes            | _Optional[string]_ | Additional notes (optional, max length 512)            |
- 
+
 **Example**:
 
 ```python
@@ -1484,7 +1484,7 @@ ResolveConditionCommand(
 
 ### Toggle Questions Feature
 
-The ReviewOfSystemsCommand includes the same toggle functionality as PhysicalExamCommand, 
+The ReviewOfSystemsCommand includes the same toggle functionality as PhysicalExamCommand,
 allowing practitioners to enable or disable specific system review questions based on patient relevance.
 You can find an extra example of this functionality on the [Physical Exam Command Documentation](#physicalexam).
 
@@ -1511,16 +1511,16 @@ ros = ReviewOfSystemsCommand(
 questions = ros.questions  # Retrieve the list of questions
 # Returns: [
 #               Question(
-#                       self.name='question-14', 
+#                       self.name='question-14',
 #                       self.label='Recurrent fever or chills',
-#                       self.type='TXT', 
-#                       self.options=[]], 
+#                       self.type='TXT',
+#                       self.options=[]],
 #                       self.response=None
-#               ), 
+#               ),
 #               Question(
-#                       self.name='question-25', 
-#                       self.label='Other', 
-#                       self.type='TXT', self.options=[], 
+#                       self.name='question-25',
+#                       self.label='Other',
+#                       self.type='TXT', self.options=[],
 #                       self.response=None
 #               )
 
@@ -1529,7 +1529,7 @@ if ros.is_question_enabled("14"):
   print("Recurrent fever or chills question is enabled.")
 
 # Disable irrelevant questions
-ros.set_question_enabled("25", False) 
+ros.set_question_enabled("25", False)
 
 # Get all toggle states
 states = ros.question_toggles
