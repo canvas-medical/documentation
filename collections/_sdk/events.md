@@ -1337,7 +1337,7 @@ type: None</pre></td>
 "type": NoteStateChangeEvent</pre></td>
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
-"state": <a href="https://docs.canvasmedical.com/sdk/data-note/#notestates">str</a></pre></td>
+"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -1357,7 +1357,7 @@ type: None</pre></td>
 "type": NoteStateChangeEvent</pre></td>
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
-"state": <a href="https://docs.canvasmedical.com/sdk/data-note/#notestates">str</a></pre></td>
+"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
     </tr>
   </tbody>
 </table>
