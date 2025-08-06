@@ -1325,7 +1325,7 @@ type: None</pre></td>
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs as a note traverses through its state machine.</td></tr>
+    <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the <a href="/sdk/data-note/#notestates">note state</a>, including locking and unlocking.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1337,7 +1337,7 @@ type: None</pre></td>
 "type": NoteStateChangeEvent</pre></td>
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
-"state": str</pre></td>
+"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -1345,7 +1345,7 @@ type: None</pre></td>
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs if a note state change event is updated. Note state change events are updated when a note is locked and we generate an archived PDF copy of the note; this is done asynchronously.</td></tr>
+    <tr><td colspan="2">Occurs if a note state change event is updated. Locking and unlocking both trigger an update event, and there is an *additional* update event when an archived PDF copy of the note finishes generating; this is done asynchronously.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1357,7 +1357,7 @@ type: None</pre></td>
 "type": NoteStateChangeEvent</pre></td>
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
-"state": str</pre></td>
+"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
     </tr>
   </tbody>
 </table>
