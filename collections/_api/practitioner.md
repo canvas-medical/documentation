@@ -476,7 +476,7 @@ curl --request POST \
                 }
             ],
             "code": {
-                "code": "STATE"
+                "text": "STATE"
             },
             "period": {
                 "start": "2020-01-01",
@@ -654,7 +654,7 @@ payload = {
                 }
             ],
             "code": {
-                "code": "STATE"
+                "text": "STATE"
             },
             "period": {
                 "start": "2020-01-01",
@@ -847,7 +847,7 @@ print(response.text)
                 }
             ],
             "code": {
-                "code": "STATE"
+                "text": "STATE"
             },
             "period": {
                 "start": "2020-01-01",
@@ -1086,7 +1086,7 @@ curl --request PUT \
                 }
             ],
             "code": {
-                "code": "STATE"
+                "text": "STATE"
             },
             "period": {
                 "start": "2020-01-01",
@@ -1270,7 +1270,7 @@ payload = {
                 }
             ],
             "code": {
-                "code": "STATE"
+                "text": "STATE"
             },
             "period": {
                 "start": "2020-01-01",
@@ -1463,7 +1463,7 @@ print(response.text)
                 }
             ],
             "code": {
-                "code": "STATE"
+                "text": "STATE"
             },
             "period": {
                 "start": "2020-01-01",
