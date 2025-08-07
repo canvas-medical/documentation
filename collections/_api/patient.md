@@ -92,6 +92,13 @@ sections:
           <br><br>
           For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.<br><br>
 
+          **`tribalAffiliation`**
+          <br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-tribal-affiliation.html)<br><br>
+          An extension to specify the tribe or band with which a person associates.
+          <br><br>
+          For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation**. Additionally, a `valueCodeableConcept` with a list of codings representing the tribal affiliation.<br><br>
+
           **`timezone`**
           <br><br>
           [http://hl7.org/fhir/StructureDefinition/tz-code](https://build.fhir.org/ig/HL7/fhir-extensions/StructureDefinition-tz-code.html)
@@ -496,6 +503,26 @@ curl --request POST \
             ]
         },
         {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
             "valueCode": "America/New_York"
         },
@@ -806,6 +833,26 @@ payload = {
             ]
         },
         {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
             "valueCode": "America/New_York"
         },
@@ -1072,6 +1119,7 @@ print(response.text)
             "valueCode": "20430005"
         },
         {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
             "extension":
             [
                 {
@@ -1087,10 +1135,10 @@ print(response.text)
                     "url": "text",
                     "valueString": "Other Race"
                 }
-            ],
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+            ]
         },
         {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
             "extension":
             [
                 {
@@ -1106,8 +1154,27 @@ print(response.text)
                     "url": "text",
                     "valueString": "Not Hispanic or Latino"
                 }
-            ],
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
+                    }
+                }
+            ]
         },
         {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
@@ -1122,6 +1189,7 @@ print(response.text)
             "valueString": "I am an administrative caption from a Create message"
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
             "extension":
             [
                 {
@@ -1140,8 +1208,7 @@ print(response.text)
                     "url": "default",
                     "valueBoolean": false
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
+            ]
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
@@ -1562,6 +1629,26 @@ curl --request PUT \
             ]
         },
         {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
             "valueCode": "America/New_York"
         },
@@ -1871,6 +1958,26 @@ payload = {
             ]
         },
         {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
             "valueCode": "America/New_York"
         },
@@ -2163,6 +2270,7 @@ print(response.text)
                         "valueCode": "20430005"
                     },
                     {
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
                         "extension":
                         [
                             {
@@ -2178,10 +2286,10 @@ print(response.text)
                                 "url": "text",
                                 "valueString": "Other Race"
                             }
-                        ],
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+                        ]
                     },
                     {
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
                         "extension":
                         [
                             {
@@ -2197,8 +2305,27 @@ print(response.text)
                                 "url": "text",
                                 "valueString": "Not Hispanic or Latino"
                             }
-                        ],
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+                        ]
+                    },
+                    {
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+                        "extension":
+                        [
+                            {
+                                "url": "tribalAffiliation",
+                                "valueCodeableConcept":
+                                {
+                                    "coding":
+                                    [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                            "code": "187",
+                                            "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
                     },
                     {
                         "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
@@ -2213,6 +2340,7 @@ print(response.text)
                         "valueString": "I am an administrative caption from a Create message"
                     },
                     {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
                         "extension":
                         [
                             {
@@ -2231,8 +2359,7 @@ print(response.text)
                                 "url": "default",
                                 "valueBoolean": false
                             }
-                        ],
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
+                        ]
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
