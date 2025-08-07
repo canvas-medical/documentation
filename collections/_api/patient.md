@@ -16,7 +16,7 @@ sections:
 
           **`birthsex`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex)
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-birthsex.html)
           <br><br>
           A code classifying the person’s sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC). This extension aligns with the C-CDA Birth Sex Observation (LOINC 76689-9). After version 6.0.0, this extension is no longer a USCDI Requirement.
           <br><br>
@@ -29,9 +29,25 @@ sections:
             | **OTH** | Other       |
             | **UNK** | Unknown     |
 
+          **`sex`**
+          <br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-sex.html)
+          <br><br>
+          Reflects the the documentation of a person's sex. It is intended to support the exchange of a sex value that is not characterized as sex assigned at birth or birth sex. 
+          <br><br>
+          Supported values are:
+
+            | value              | description                              |
+            | :----              | ---------                                |
+            | **184115007**      | Patient sex unknown  (finding)           |
+            | **248152002**      | Female (finding)                         |
+            | **248153007**      | Male (finding)                           |
+            | **33791000087105** | Identifies as nonbinary gender (finding) |
+            | **asked-declined** | Asked But Declined                       |
+
           **`genderIdentity`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity)
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-genderIdentity.html)
           <br><br>
           This extension provides concepts to describe the gender a person identifies as.
           <br><br>
@@ -64,14 +80,14 @@ sections:
 
           **`race`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](http://hl7.org/fhir/us/core/StructureDefinition/us-core-race)<br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-race.html)<br><br>
           An extension to specify the races of a patient.
           <br><br>
           For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-race**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.<br><br>
 
           **`ethnicity`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity)<br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-ethnicity.html)<br><br>
           An extension to specify the ethnicities of a patient.
           <br><br>
           For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.<br><br>
@@ -401,6 +417,10 @@ curl --request POST \
             "valueCode": "F"
         },
         {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
+        },
+        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -705,6 +725,10 @@ payload = {
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
+        },
+        {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
@@ -1023,6 +1047,10 @@ print(response.text)
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
+        },
+        {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
@@ -1455,6 +1483,10 @@ curl --request PUT \
             "valueCode": "F"
         },
         {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
+        },
+        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -1762,6 +1794,10 @@ payload = {
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
+        },
+        {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
@@ -2102,6 +2138,10 @@ print(response.text)
                     {
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
                         "valueCode": "F"
+                    },
+                    {
+                        "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+                        "valueCode" : "248152002"
                     },
                     {
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
