@@ -410,7 +410,7 @@ sections:
                 exclude_in: create, update
                 description: >-
                   Actual component result.<br><br>
-                  Used when a component is represented by a value that is a reference to one or more terminologies or ontologies, or defined by the provision of text.
+                  Used when a component is represented by a value that is a reference to one or more terminologies or ontologies.
                 attributes:
                   - name: coding
                     description: Code defined by a terminology system.
