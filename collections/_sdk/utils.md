@@ -220,12 +220,14 @@ response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({
 # response_json contains the same general format as above
 
 # search for a specific FDB code (med_medication_id)
-response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'med_medication_id': 123456})}").json()
+med_medication_id = 123456
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/{med_medication_id}/").json()
 
 # response_json contains the same general format as above
 
 # search for multiple FDB codes (med_medication_ids)
-response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'med_medication_ids': [123456, 234567]})}").json()
+med_medication_ids = [123456, 123457]
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/{','.join(med_medication_ids)}/").json()
 
 # response_json contains the same general format as above
 
