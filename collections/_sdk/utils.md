@@ -169,7 +169,7 @@ Elsewhere in the SDK there are commands that take an `fdb_code` or `new_fdb_code
 
 ### Searching for medications
 
-Plugin authors can search for medications by NDC code, RxNorm RXCUI, or full-text search.
+Plugin authors can search for medications by NDC code, RxNorm RXCUI, FDB code, or full-text search.
 
 ```python
 from urllib.parse import urlencode
@@ -216,6 +216,16 @@ response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({
 
 # search for a specific RxNorm RXCUI
 response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'rxnorm_rxcui': 313782})}").json()
+
+# response_json contains the same general format as above
+
+# search for a specific FDB code (med_medication_id)
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'med_medication_id': 123456})}").json()
+
+# response_json contains the same general format as above
+
+# search for multiple FDB codes (med_medication_ids)
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'med_medication_ids': [123456, 234567]})}").json()
 
 # response_json contains the same general format as above
 
