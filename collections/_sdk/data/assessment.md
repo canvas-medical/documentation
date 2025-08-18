@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Assessment` model represents a cClinical assessment or evaluation of a patient's medical `Condition`.
+The `Assessment` model represents a clinical assessment or evaluation of a patient's medical `Condition`.
 
 ## Basic usage
 
