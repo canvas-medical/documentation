@@ -61,29 +61,29 @@ tasks = referral.get_task_objects().all()
 
 ### Referral
 
-| Field Name            | Type                                                          |
-|-----------------------|---------------------------------------------------------------|
-| id                    | UUID                                                          |
-| dbid                  | Integer                                                       |
-| created               | DateTime                                                      |
-| modified              | DateTime                                                      |
-| originator            | [CanvasUser](/sdk/data-canvasuser)                            |
-| deleted               | Boolean                                                       |
-| committer             | [CanvasUser](/sdk/data-canvasuser)                            |
-| entered_in_error      | [CanvasUser](/sdk/data-canvasuser)                            |
-| patient               | [Patient](/sdk/data-patient/#patient)                         |
-| note                  | [Note](/sdk/data-note/#note)                                  |
-| assessments           | [Assessment](/sdk/data-assessment/#assessment)                |
-| service_provider      | [ServiceProvider](/sdk/data-serviceprovider/#serviceprovider) |
-| clinical_question     | String                                                        |
-| priority              | String                                                        |
-| include_visit_note    | Boolean                                                       |
-| notes                 | String                                                        |
-| date_referred         | DateTime                                                      |
-| internal_comment      | String                                                        |
-| forwarded             | Boolean                                                       |
-| internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)                    |
-| task_ids              | String                                                        |
+| Field Name            | Type                                                            |
+|-----------------------|-----------------------------------------------------------------|
+| id                    | UUID                                                            |
+| dbid                  | Integer                                                         |
+| created               | DateTime                                                        |
+| modified              | DateTime                                                        |
+| originator            | [CanvasUser](/sdk/data-canvasuser)                              |
+| deleted               | Boolean                                                         |
+| committer             | [CanvasUser](/sdk/data-canvasuser)                              |
+| entered_in_error      | [CanvasUser](/sdk/data-canvasuser)                              |
+| patient               | [Patient](/sdk/data-patient/#patient)                           |
+| note                  | [Note](/sdk/data-note/#note)                                    |
+| assessments           | [Assessment](/sdk/data-assessment/#assessment)                  |
+| service_provider      | [ServiceProvider](/sdk/data-serviceprovider/#service-pprovider) |
+| clinical_question     | String                                                          |
+| priority              | String                                                          |
+| include_visit_note    | Boolean                                                         |
+| notes                 | String                                                          |
+| date_referred         | DateTime                                                        |
+| internal_comment      | String                                                          |
+| forwarded             | Boolean                                                         |
+| internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)                      |
+| task_ids              | String                                                          |
 
 ### ReferralReport
 

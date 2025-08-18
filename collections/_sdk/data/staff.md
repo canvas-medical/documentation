@@ -156,17 +156,17 @@ clinical_role_abbreviation = staff.top_role_abbreviation
 
 ### StaffRole
 
-| Field Name             | Type                      |
-|------------------------|---------------------------|
-| dbid                   | Integer                   |
-| staff                  | [Staff](#staff)           |
-| internal_code          | String                    |
-| public_abbreviation    | String                    |
-| domain                 | [RoleDomain](#roledomain) |
-| name                   | String                    |
-| domain_privilege_level | Integer                   |
-| permissions            | JSON                      |
-| role_type              | [RoleType](#roletype)     |
+| Field Name             | Type                       |
+|------------------------|----------------------------|
+| dbid                   | Integer                    |
+| staff                  | [Staff](#staff)            |
+| internal_code          | String                     |
+| public_abbreviation    | String                     |
+| domain                 | [RoleDomain](#role-domain) |
+| name                   | String                     |
+| domain_privilege_level | Integer                    |
+| permissions            | JSON                       |
+| role_type              | [RoleType](#role-type)     |
 
 
 ### Enumeration types
