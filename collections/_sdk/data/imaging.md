@@ -64,28 +64,28 @@ tasks = imaging_order.get_task_objects().all()
 
 ### ImagingOrder
 
-| Field Name          | Type                                                          |
-|---------------------|---------------------------------------------------------------|
-| id                  | UUID                                                          |
-| dbid                | Integer                                                       |
-| created             | DateTime                                                      |
-| modified            | DateTime                                                      |
-| originator          | [CanvasUser](/sdk/data-canvasuser)                            |
-| deleted             | Boolean                                                       |
-| committer           | [CanvasUser](/sdk/data-canvasuser)                            |
-| entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                            |
-| patient             | [Patient](/sdk/data-patient/#patient)                         |
-| note                | [Note](/sdk/data-note/#note)                                  |
-| imaging             | String                                                        |
-| imaging_center      | [ServiceProvider](/sdk/data-serviceprovider/#serviceprovider) |
-| note_to_radiologist | String                                                        |
-| internal_comment    | String                                                        |
-| status              | [OrderStatus](/sdk/data-enumeration-types/#orderstatus)       |
-| date_time_ordered   | DateTime                                                      |
-| ordering_provider   | [Staff](/sdk/data-staff/#staff)                               |
-| priority            | String                                                        |
-| delegated           | Boolean                                                       |
-| task_ids            | String                                                        |
+| Field Name          | Type                                                           |
+|---------------------|----------------------------------------------------------------|
+| id                  | UUID                                                           |
+| dbid                | Integer                                                        |
+| created             | DateTime                                                       |
+| modified            | DateTime                                                       |
+| originator          | [CanvasUser](/sdk/data-canvasuser)                             |
+| deleted             | Boolean                                                        |
+| committer           | [CanvasUser](/sdk/data-canvasuser)                             |
+| entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                             |
+| patient             | [Patient](/sdk/data-patient/#patient)                          |
+| note                | [Note](/sdk/data-note/#note)                                   |
+| imaging             | String                                                         |
+| imaging_center      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
+| note_to_radiologist | String                                                         |
+| internal_comment    | String                                                         |
+| status              | [OrderStatus](/sdk/data-enumeration-types/#orderstatus)        |
+| date_time_ordered   | DateTime                                                       |
+| ordering_provider   | [Staff](/sdk/data-staff/#staff)                                |
+| priority            | String                                                         |
+| delegated           | Boolean                                                        |
+| task_ids            | String                                                         |
 
 ### ImagingReview
 

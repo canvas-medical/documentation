@@ -63,7 +63,7 @@ assessments = Assessment.objects.filter(patient__id="1eed3ea2a8d546a1b681a2a45de
 | note             | [Note](/sdk/data-note/#note)                    |
 | condition        | [Condition](/sdk/data-condition/#condition)     |
 | interview        | [Interview](/sdk/data-questionnaire/#interview) |
-| status           | [AssessmentStatus](#assessmentstatus)           |
+| status           | [AssessmentStatus](#assessment-status)          |
 | narrative        | String                                          |
 | background       | String                                          |
 | care_team        | String                                          |
