@@ -39,7 +39,14 @@ from canvas_sdk.v1.data.service_provider import ServiceProvider
 
 service_provider = ServiceProvider.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 full_name = service_provider.full_name
-full_name_and_speciality = service_provider.full_name_and_speciality
+To show a `ServiceProvider` full name or full name with specialty use the properties `full_name` or `full_name_and_specialty`
+
+```python
+from canvas_sdk.v1.data.service_provider import ServiceProvider
+
+service_provider = ServiceProvider.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+full_name = service_provider.full_name
+full_name_and_specialty = service_provider.full_name_and_specialty
 
 ```
 
