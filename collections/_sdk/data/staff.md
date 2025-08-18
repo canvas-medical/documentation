@@ -49,7 +49,7 @@ To show a `Staff` full name, credentialed name, the topmost clinical role or top
 from canvas_sdk.v1.data.staff import Staff
 
 staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
-full_name= staff.full_name
+full_name = staff.full_name
 credentialed_name = staff.credentialed_name
 clinical_role = staff.top_clinical_role
 clinical_role_abbreviation = staff.top_role_abbreviation
