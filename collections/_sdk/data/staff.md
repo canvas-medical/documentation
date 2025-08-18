@@ -35,12 +35,24 @@ staff.creator_tasks.all()
 To show a Staff member's contact points (email, phone, etc.), the `telecom` attribute can be used. For example:
 
 ```python
->>> from canvas_sdk.v1.data.staff import Staff
+from canvas_sdk.v1.data.staff import Staff
 
->>> staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
 
->>> [(t.system, t.value,) for t in staff.telecom.all()]
-[('phone', '8005551416'), ('email', 'support@canvasmedical.com')]
+[(t.system, t.value,) for t in staff.telecom.all()]
+# [('phone', '8005551416'), ('email', 'support@canvasmedical.com')]
+```
+
+To show a `Staff` full name, credentialed name, the topmost clinical role or top role abbreviation use the properties `full_name`, `credentialed_name`, `top_clinical_role` or `top_role_abbreviation`. 
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+full_name= staff.full_name
+credentialed_name = staff.credentialed_name
+clinical_role = staff.top_clinical_role
+clinical_role_abbreviation = staff.top_role_abbreviation
 ```
 
 ## Attributes
@@ -140,6 +152,41 @@ To show a Staff member's contact points (email, phone, etc.), the `telecom` attr
 | staff       | [Staff](#staff)                                         |
 | url         | String                                                  |
 | title       | String                                                  |
+
+
+### StaffRole
+
+| Field Name             | Type                      |
+|------------------------|---------------------------|
+| dbid                   | Integer                   |
+| staff                  | [Staff](#staff)           |
+| internal_code          | String                    |
+| public_abbreviation    | String                    |
+| domain                 | [RoleDomain](#roledomain) |
+| name                   | String                    |
+| domain_privilege_level | Integer                   |
+| permissions            | JSON                      |
+| role_type              | [RoleType](#roletype)     |
+
+
+### Enumeration types
+
+## Role Domain
+
+| Value          | Abbreviation | Description    |
+|----------------|--------------|----------------|
+| CLINICAL       | CLI          | Clinical       |
+| ADMINISTRATIVE | ADM          | Administrative |
+| HYBRID         | HYB          | Hybrid         |
+
+
+## Role Type
+
+| Value        | Description  |
+|--------------|--------------|
+| NON_LICENSED | Non-Licensed |
+| LICENSED     | Licensed     |
+| PROVIDER     | Provider     |
 
 <br/>
 <br/>

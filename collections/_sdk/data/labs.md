@@ -199,7 +199,9 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | committer                 | [CanvasUser](/sdk/data-canvasuser)                |
 | entered_in_error          | [CanvasUser](/sdk/data-canvasuser)                |
 | patient                   | [Patient](/sdk/data-patient/#patient)             |
+| note                      | [Note](/sdk/data-note/#note)                      |
 | ontology_lab_partner      | String                                            |
+| ordering_provider         | [Staff](/sdk/data-staff/#staff)                   |
 | comment                   | String                                            |
 | requisition_number        | String                                            |
 | is_patient_bill           | Boolean                                           |
