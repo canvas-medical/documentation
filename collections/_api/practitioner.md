@@ -253,7 +253,6 @@ sections:
                       - value: STATE
                       - value: TAXONOMY
                       - value: OTHER
-                      - value: License
               - name: period
                 type: object[json]
                 required_in: create, update
