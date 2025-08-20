@@ -44,6 +44,11 @@ Other information you can define about your application is the `scope`
 (`"patient_specific"` or `"global"`), which determines if the application is
 visible only in a patient chart or outside of charts.
 
+If you want to increase your application’s visibility and display it alongside
+other panel buttons (instead of in the applications drawer), you can add
+the `show_in_panel` attribute. If you’ve added more than one application
+to that panel, you can set their priorities using the `panel_priority` attribute.
+
 For security reasons you also need to specify the domains that will be loaded within the iframe, or they will not be
 rendered. For more info on the format of the `url_permissions` field, check the [Additional Configuration](/sdk/layout-effect/#additional-configuration) for `LaunchModalEffect`.
 
@@ -70,6 +75,8 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
                 "description": "Test App for patients",
                 "icon" : "/assets/cappuccino.png",
                 "scope": "patient_specific"
+                "show_in_panel": true
+                "panel_priority": 100
             }
         ],
         "commands": [],
