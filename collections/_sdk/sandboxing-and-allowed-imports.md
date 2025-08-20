@@ -188,6 +188,7 @@ A library for encoding and decoding JSON Web Tokens (JWT) for secure data transm
 A data validation library using Python type annotations for parsing and validating data structures. [read more](https://docs.pydantic.dev/)
 - `BaseModel`
 - `conint`
+- `ConfigDict`
 - `constr`
 - `Field`
 - `ValidationError`
