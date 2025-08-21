@@ -215,7 +215,19 @@ sections:
                 "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e",
                 "display": "Kathy Fielding, MD"
             }
-        }
+        },
+      {
+            "extension": [
+                {
+                   "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
+                   "valueBoolean": false
+                }
+            ],
+            "member": {
+                "reference": "Organization/8ab7cc3c-86f5-4723-ba26-7baf1f906ec7",
+                "display": "Example Organization"
+            }
+      }
     ]
 }
 ```
@@ -521,6 +533,18 @@ print(response.text)
                             "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e",
                             "display": "Kathy Fielding, MD"
                         }
+                    },
+                    {
+                          "extension": [
+                              {
+                                 "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
+                                 "valueBoolean": false
+                              }
+                          ],
+                          "member": {
+                              "reference": "Organization/8ab7cc3c-86f5-4723-ba26-7baf1f906ec7",
+                              "display": "Example Organization"
+                          }
                     }
                 ]
             }
