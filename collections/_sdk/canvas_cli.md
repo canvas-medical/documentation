@@ -56,6 +56,8 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `list`: List all plugins from a Canvas instance
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
+- `config list`: List all secrets from a plugin
+- `config set`: Configure plugin secrets
 
 ### `canvas init`
 
@@ -87,6 +89,7 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Options**:
 
+- `--secret TEXT`:  Secrets to set, e.g. Key=value
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
@@ -116,6 +119,7 @@ $ canvas uninstall [OPTIONS] NAME
 
 **Options**:
 
+- `--force`: Force uninstallation of the plugin
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
@@ -199,6 +203,47 @@ Subscribes to a log stream and prints to your console.
 ```console
 $ canvas logs [OPTIONS]
 ```
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+
+### `canvas config list`
+
+List all secrets from a plugin.
+
+**Usage**:
+
+```console
+$ canvas config list [OPTIONS] PLUGIN
+```
+
+**Arguments**:
+
+ - `PLUGIN`:  Plugin name to list secrets for
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+
+### `canvas config set`
+
+Configure plugin secrets.
+
+**Usage**:
+
+```console
+$ canvas config set [OPTIONS] PLUGIN
+```
+
+**Arguments**:
+
+ - `PLUGIN`:  Plugin name to list secrets for
+ - `SECRETS...`: Secrets to set, e.g. Key=value 
 
 **Options**:
 
