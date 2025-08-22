@@ -53,7 +53,7 @@ sections:
           - name: participant
             description_for_all_endpoints: >-
               Members of the team.<br><br>
-              Canvas allows practitioners and organizations to be members of a patient CareTeam. A practitioner can only have one role on a CareTeam, and only one practitioner can have a given role on a CareTeam. Organizations cannot be the lead of a CareTeam. <br><br>
+              Canvas allows either internal practitioners or external organizations to be members of a patient CareTeam. A practitioner can only have one role on a CareTeam, and only one practitioner can have a given role on a CareTeam. Organizations cannot be the lead of a CareTeam. <br><br>
             update_description: >-
               If `participant` is omitted or sent as an empty list, Canvas will inactivate any care team participants it finds for the given subject.
             type: array[json]
