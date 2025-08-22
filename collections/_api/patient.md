@@ -262,8 +262,10 @@ sections:
                 attributes:
                   - name: start
                     type: date
+                    description: Starting date with inclusive boundary
                   - name: end
                     type: date
+                    description: End date with inclusive boundary, if not ongoing
           - name: photo
             type: array[json]
             description: >-

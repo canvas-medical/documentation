@@ -41,8 +41,8 @@ sections:
                   - name: system
                     description: The system url of the coding.
                     enum_options: 
-                      - value: <blank>
                       - value: http://terminology.hl7.org/CodeSystem/v3-RoleCode
+                      - value: Empty string
                     type: string
                   - name: code
                     description: >-
