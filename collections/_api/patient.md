@@ -134,6 +134,9 @@ sections:
           If using business line functionality, create and update actions should include a json object with the `url` attribute equal to **http://schemas.canvasmedical.com/fhir/extensions/business-line** and the `valueId` set to the externallyExposableId of the business line in Canvas.
 
         attributes:
+          - name: resourceType
+            description: The FHIR Resource name.
+            type: string
           - name: id
             type: string
             description: Unique Canvas identifier for this resource
@@ -168,13 +171,13 @@ sections:
             type: array[json]
             required_in: create,update
             description: >-
-                The identifier of the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` attribute will populate the patient's suffix <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.<br><br> In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will be ignored.
+                A name associated with the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` attribute will populate the patient's suffix <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.<br><br> In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will be ignored.
           - name: telecom
             type: array[json]
             required: false
             description: Contact details for the individual.
             create_and_update_description: >-
-                Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
+                Telecom is an optional list of objects where you can provide the child attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
             attributes:
               - name: id
                 type: string
@@ -240,7 +243,7 @@ sections:
                 type: string
                 description: Supported values are **both**, **physical** and **postal**. If omitted, the default value is **both**.
               - name: line
-                type: string
+                type: array[string]
                 description:  List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
               - name: city
                 type: string

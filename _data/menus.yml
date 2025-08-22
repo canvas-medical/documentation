@@ -387,6 +387,11 @@ api_questionnaireresponse:
    url: /api/questionnaireresponse/#update
  - title: "QuestionnaireResponse Search"
    url: /api/questionnaireresponse/#search
+api_relatedperson:
+ - title: "RelatedPerson Read"
+   url: /api/relatedperson/#update
+ - title: "RelatedPerson Search"
+   url: /api/relatedperson/#search
 api_schedule:
  - title: "Schedule Search"
    url: /api/schedule/#search
