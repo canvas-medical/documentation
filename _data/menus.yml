@@ -141,6 +141,9 @@ api_resources:
  - title: "QuestionnaireResponse"
    url: /api/questionnaireresponse/
    identifier: api_questionnaireresponse
+ - title: "RelatedPerson"
+   url: /api/relatedperson/
+   identifier: api_relatedperson
  - title: "Schedule"
    url: /api/schedule/
    identifier: api_schedule
@@ -389,7 +392,7 @@ api_questionnaireresponse:
    url: /api/questionnaireresponse/#search
 api_relatedperson:
  - title: "RelatedPerson Read"
-   url: /api/relatedperson/#update
+   url: /api/relatedperson/#read
  - title: "RelatedPerson Search"
    url: /api/relatedperson/#search
 api_schedule:
