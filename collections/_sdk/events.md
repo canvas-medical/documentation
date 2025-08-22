@@ -331,7 +331,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": patientexternalidentifier_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientexternalidentifier'>PatientExternalIdentifier</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -350,7 +350,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": patientexternalidentifier_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientexternalidentifier'>PatientExternalIdentifier</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -369,7 +369,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": patientexternalidentifier_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientexternalidentifier'>PatientExternalIdentifier</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
