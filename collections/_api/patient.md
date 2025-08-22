@@ -16,7 +16,7 @@ sections:
 
           **`birthsex`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex)
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-birthsex.html)
           <br><br>
           A code classifying the person’s sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC). This extension aligns with the C-CDA Birth Sex Observation (LOINC 76689-9). After version 6.0.0, this extension is no longer a USCDI Requirement.
           <br><br>
@@ -29,9 +29,25 @@ sections:
             | **OTH** | Other       |
             | **UNK** | Unknown     |
 
+          **`sex`**
+          <br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-sex.html)
+          <br><br>
+          Reflects the the documentation of a person's sex. It is intended to support the exchange of a sex value that is not characterized as sex assigned at birth or birth sex. 
+          <br><br>
+          Supported values are:
+
+            | value              | description                              |
+            | :----              | ---------                                |
+            | **184115007**      | Patient sex unknown  (finding)           |
+            | **248152002**      | Female (finding)                         |
+            | **248153007**      | Male (finding)                           |
+            | **33791000087105** | Identifies as nonbinary gender (finding) |
+            | **asked-declined** | Asked But Declined                       |
+
           **`genderIdentity`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity)
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-genderIdentity.html)
           <br><br>
           This extension provides concepts to describe the gender a person identifies as.
           <br><br>
@@ -64,17 +80,24 @@ sections:
 
           **`race`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](http://hl7.org/fhir/us/core/StructureDefinition/us-core-race)<br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-race.html)<br><br>
           An extension to specify the races of a patient.
           <br><br>
           For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-race**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.<br><br>
 
           **`ethnicity`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity)<br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-ethnicity.html)<br><br>
           An extension to specify the ethnicities of a patient.
           <br><br>
           For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.<br><br>
+
+          **`tribalAffiliation`**
+          <br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-tribal-affiliation.html)<br><br>
+          An extension to specify the tribe or band with which a person associates.
+          <br><br>
+          For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation**. Additionally, a `valueCodeableConcept` with a list of codings representing the tribal affiliation.<br><br>
 
           **`timezone`**
           <br><br>
@@ -219,7 +242,7 @@ sections:
               The date of birth for the individual, formatted as YYYY-MM-DD.
             create_and_update_description: >-
               The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
-          - name: deceasedDateTime (a change in the near future will introduce this field)
+          - name: deceasedDateTime
             type: datetime
             required: false
             description: >-
@@ -406,6 +429,10 @@ curl --request POST \
             "valueCode": "F"
         },
         {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
+        },
+        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -476,6 +503,26 @@ curl --request POST \
                     {
                         "code": "2186-5",
                         "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
                     }
                 }
             ]
@@ -712,6 +759,10 @@ payload = {
             "valueCode": "F"
         },
         {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
+        },
+        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -782,6 +833,26 @@ payload = {
                     {
                         "code": "2186-5",
                         "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
                     }
                 }
             ]
@@ -1030,6 +1101,10 @@ print(response.text)
             "valueCode": "F"
         },
         {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
+        },
+        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -1049,6 +1124,7 @@ print(response.text)
             "valueCode": "20430005"
         },
         {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
             "extension":
             [
                 {
@@ -1064,10 +1140,10 @@ print(response.text)
                     "url": "text",
                     "valueString": "Other Race"
                 }
-            ],
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+            ]
         },
         {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
             "extension":
             [
                 {
@@ -1083,8 +1159,27 @@ print(response.text)
                     "url": "text",
                     "valueString": "Not Hispanic or Latino"
                 }
-            ],
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
+                    }
+                }
+            ]
         },
         {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
@@ -1099,6 +1194,7 @@ print(response.text)
             "valueString": "I am an administrative caption from a Create message"
         },
         {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
             "extension":
             [
                 {
@@ -1117,8 +1213,7 @@ print(response.text)
                     "url": "default",
                     "valueBoolean": false
                 }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
+            ]
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
@@ -1460,6 +1555,10 @@ curl --request PUT \
             "valueCode": "F"
         },
         {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
+        },
+        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -1530,6 +1629,26 @@ curl --request PUT \
                     {
                         "code": "2186-5",
                         "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
                     }
                 }
             ]
@@ -1769,6 +1888,10 @@ payload = {
             "valueCode": "F"
         },
         {
+            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+            "valueCode" : "248152002"
+        },
+        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -1835,6 +1958,26 @@ payload = {
                     {
                         "code": "2186-5",
                         "system": "urn:oid:2.16.840.1.113883.6.238"
+                    }
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+            "extension":
+            [
+                {
+                    "url": "tribalAffiliation",
+                    "valueCodeableConcept":
+                    {
+                        "coding":
+                        [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                "code": "187",
+                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                            }
+                        ]
                     }
                 }
             ]
@@ -2109,6 +2252,10 @@ print(response.text)
                         "valueCode": "F"
                     },
                     {
+                        "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
+                        "valueCode" : "248152002"
+                    },
+                    {
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
                         "valueCodeableConcept":
                         {
@@ -2128,6 +2275,7 @@ print(response.text)
                         "valueCode": "20430005"
                     },
                     {
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
                         "extension":
                         [
                             {
@@ -2143,10 +2291,10 @@ print(response.text)
                                 "url": "text",
                                 "valueString": "Other Race"
                             }
-                        ],
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+                        ]
                     },
                     {
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
                         "extension":
                         [
                             {
@@ -2162,8 +2310,27 @@ print(response.text)
                                 "url": "text",
                                 "valueString": "Not Hispanic or Latino"
                             }
-                        ],
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+                        ]
+                    },
+                    {
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
+                        "extension":
+                        [
+                            {
+                                "url": "tribalAffiliation",
+                                "valueCodeableConcept":
+                                {
+                                    "coding":
+                                    [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
+                                            "code": "187",
+                                            "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
                     },
                     {
                         "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
@@ -2178,6 +2345,7 @@ print(response.text)
                         "valueString": "I am an administrative caption from a Create message"
                     },
                     {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
                         "extension":
                         [
                             {
@@ -2196,8 +2364,7 @@ print(response.text)
                                 "url": "default",
                                 "valueBoolean": false
                             }
-                        ],
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
+                        ]
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",

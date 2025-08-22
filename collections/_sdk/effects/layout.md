@@ -170,9 +170,8 @@ PanelConfiguration(
     PanelConfiguration.PanelPatientSection.LAB_REPORT,
     PanelConfiguration.PanelPatientSection.CHANGE_REQUEST,
     PanelConfiguration.PanelPatientSection.TASK,
-  ],
-  page=PanelConfiguration.Page.PATIENT
-).apply()
+], page=PanelConfiguration.Page.PATIENT).apply()
+
 ```
 
 ## Structure

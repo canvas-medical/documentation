@@ -55,6 +55,33 @@ On this page, you will find input fields for each secret defined in your manifes
 </div>
 
 
+### Configuring Secrets in the CLI
+
+You can set secrets either after a plugin is installed or as part of the install.
+Secrets must be listed under the secrets field in the plugin’s `CANVAS_MANIFEST.json`.
+
+Set (or update) secrets on an installed plugin:
+```console
+$ canvas config set <plugin_name> API_TOKEN=your_api_token_value
+```
+
+Provide secrets during install:
+```console
+$ canvas install <plugin_name> --secret API_TOKEN=your_api_token_value
+```
+
+Set multiple secrets:
+
+```console
+# Pass multiple key=value pairs. 
+$ canvas config set <plugin_name> API_TOKEN=abc123 OTHER_KEY=xyz
+
+# For installs, repeat --secret
+$ canvas install <plugin_name> \
+  --secret API_TOKEN=abc123 \
+  --secret OTHER_KEY=xyz
+```
+
 ### Accessing Secrets in Your Plugin
 
 Secrets defined in your manifest and configured in the admin UI are exposed to your plugin code through the `self.secrets`. 
