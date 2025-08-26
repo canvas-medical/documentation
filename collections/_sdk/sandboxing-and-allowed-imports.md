@@ -191,6 +191,7 @@ A data validation library using Python type annotations for parsing and validati
 - `ConfigDict`
 - `constr`
 - `Field`
+- `RootModel`
 - `ValidationError`
 
 ##### `rapidfuzz`
