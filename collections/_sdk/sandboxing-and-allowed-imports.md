@@ -238,6 +238,7 @@ The following Python builtin functions are available within the sandbox:
 - `dict`
 - `enumerate`
 - `filter`
+- `getattr`
 - `hasattr`
 - `iter`
 - `list`
