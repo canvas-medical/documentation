@@ -625,6 +625,9 @@ data_module:
  - title: "Appointment"
    url: /sdk/data-appointment/
    description: A scheduled meeting between a patient and a provider.
+ - title: "Assessment"
+   url: /sdk/data-assessment/
+   description: Clinical assessment of a patient's condition.
  - title: "Banner Alert"
    url: /sdk/data-banner-alert/
    description: An alert notification linked to a patient.
@@ -715,6 +718,12 @@ data_module:
  - title: "Reason For Visit"
    url: /sdk/data-reason-for-visit/
    description: The reason for a patient's visit.
+ - title: "Referral"
+   url: /sdk/data-referral/
+   description: A referral directing a specific patient to another provider or specialist.
+ - title: "Service Provider"
+   url: /sdk/data-serviceprovider/
+   description: Data associated with Service Providers.
  - title: "Staff"
    url: /sdk/data-staff
    description: Data associated with Staff members.

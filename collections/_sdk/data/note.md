@@ -126,6 +126,17 @@ note = Note.objects.first()
 current_note_state = CurrentNoteStateEvent.objects.get(note=note).state
 ```
 
+### Get the current claim of a given note
+You can retrieve the current claim using the method `get_claim()` presented in the Note object.
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.first()
+claim = note.get_claim()
+
+```
+
 ## Filtering
 
 ### By attribute
