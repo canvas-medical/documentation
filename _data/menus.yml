@@ -551,6 +551,8 @@ sdk_overview:
    url: /sdk/secrets/
  - title: "Utils Module"
    url: /sdk/utils/
+ - title: "Testing Utilities"
+   url: /sdk/testing-utils/
 
 sdk_handlers:
   - title: "Action Buttons"
