@@ -319,6 +319,63 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_EXTERNAL_IDENTIFIER_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an external identifier is created for a patient.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientexternalidentifier_id
+"type": <a href='/sdk/data-patient/#patientexternalidentifier'>PatientExternalIdentifier</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_EXTERNAL_IDENTIFIER_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when an external identifier for a patient is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientexternalidentifier_id
+"type": <a href='/sdk/data-patient/#patientexternalidentifier'>PatientExternalIdentifier</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_EXTERNAL_IDENTIFIER_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when an external identifier for a patient is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientexternalidentifier_id
+"type": <a href='/sdk/data-patient/#patientexternalidentifier'>PatientExternalIdentifier</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Patient Metadata
 
 <table>
@@ -848,6 +905,65 @@ type: None</pre></td>
   </tbody>
 </table>
 
+#### Document References
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REFERENCE_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a document reference is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_reference_id
+"type": None</pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REFERENCE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a document reference is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_reference_id
+"type": None</pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REFERENCE_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a document reference is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_reference_id
+"type": None</pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Encounters
 
 <table>
@@ -1266,7 +1382,7 @@ type: None</pre></td>
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs as a note traverses through its state machine.</td></tr>
+    <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the <a href="/sdk/data-note/#notestates">note state</a>, including locking and unlocking.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1278,7 +1394,7 @@ type: None</pre></td>
 "type": NoteStateChangeEvent</pre></td>
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
-"state": str</pre></td>
+"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -1286,7 +1402,7 @@ type: None</pre></td>
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs if a note state change event is updated. Note state change events are updated when a note is locked and we generate an archived PDF copy of the note; this is done asynchronously.</td></tr>
+    <tr><td colspan="2">Occurs if a note state change event is updated. Locking and unlocking both trigger an update event, and there is an *additional* update event when an archived PDF copy of the note finishes generating; this is done asynchronously.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1298,7 +1414,7 @@ type: None</pre></td>
 "type": NoteStateChangeEvent</pre></td>
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
-"state": str</pre></td>
+"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -1769,6 +1885,10 @@ These events fire during the command lifecycle.
       <td>POST_COMMAND_INSERTED_INTO_NOTE</td>
       <td>After a command is added to a note in the UI.</td>
     </tr>
+    <tr>
+      <td>AVAILABLE_ACTIONS</td>
+      <td>When a command is rendered in the UI, after any update to data, state, or other changes</td>
+    </tr>
   </tbody>
 </table>
 
@@ -1902,6 +2022,27 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -2465,6 +2606,27 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 <table>
   <thead>
+    <tr><th colspan="2">ALLERGY_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">ALLERGY_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -2846,6 +3008,27 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 <table>
   <thead>
+    <tr><th colspan="2">ASSESS_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">ASSESS_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -3158,6 +3341,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td></td>
     </tr>
     <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__AVAILABLE_ACTIONS</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>CANCEL_PRESCRIPTION_COMMAND__PRE_EXECUTE_ACTION</td>
       <td></td>
     </tr>
@@ -3245,6 +3432,27 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -3556,6 +3764,27 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CLIPBOARD_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -3872,6 +4101,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CLOSE_GOAL_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -4207,6 +4457,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DIAGNOSE_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -4555,6 +4826,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -4886,6 +5178,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -5254,6 +5567,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">FOLLOW_UP_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -5647,6 +5981,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">GOAL_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">GOAL_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -5958,6 +6313,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -6241,6 +6617,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMAGING_ORDER_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -6730,6 +7127,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">IMMUNIZATION_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -7082,6 +7500,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMMUNIZE_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -7517,6 +7956,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">INSTRUCT_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">INSTRUCT_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -7839,6 +8299,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -8322,6 +8803,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -8771,6 +9273,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -9081,6 +9604,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PERFORM_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -9396,6 +9940,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -9698,6 +10263,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">PLAN_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">PLAN_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -9990,6 +10576,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -10497,6 +11104,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">QUESTIONNAIRE_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -10811,6 +11439,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -10858,6 +11507,29 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <thead>
     <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "coding": dict
+  "comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -11142,6 +11814,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -11658,6 +12351,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">REFILL_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">REFILL_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -12161,6 +12875,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -12474,6 +13209,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -12798,6 +13554,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">ROS_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">ROS_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -13083,6 +13860,10 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <td></td>
   </tr>
   <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__AVAILABLE_ACTIONS</td>
+    <td></td>
+  </tr>
+  <tr>
     <td>SNOOZE_PROTOCOL_COMMAND__PRE_EXECUTE_ACTION</td>
     <td></td>
   </tr>
@@ -13171,6 +13952,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STOP_MEDICATION_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -13486,6 +14288,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -13796,6 +14619,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -14149,6 +14993,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">TASK_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -14519,6 +15384,10 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td></td>
     </tr>
     <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__AVAILABLE_ACTIONS</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>UPDATE_DIAGNOSIS_COMMAND__PRE_EXECUTE_ACTION</td>
       <td></td>
     </tr>
@@ -14623,6 +15492,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_GOAL_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -15018,6 +15908,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "id": pt_id</pre></td>
     </tr>
   </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VITALS_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr> 
+    <tr> 
+      <td><pre>"id": command_uuid 
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>  
 </table>
 
 <table>
@@ -15941,6 +16852,10 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
       <td>A patient chart's summary section is loading.</td>
+    </tr>
+    <tr>
+      <td>PANEL_SECTIONS_CONFIGURATION</td>
+      <td>The panel section is loading.</td>
     </tr>
     <tr>
       <td>PLUGIN_CREATED</td>

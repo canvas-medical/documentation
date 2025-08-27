@@ -44,6 +44,12 @@ Returns an Effect that deletes an existing, non-committed command from the note 
 
 Returns an Effect that commits an existing, non-committed command to the note body.
 
+#### send
+
+Returns an Effect that sends a signed command.
+
+**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
+
 #### enter_in_error
 
 Returns an effect that enter-in-errors an existing, committed command in the note body.
@@ -62,6 +68,110 @@ def compute():
     return [existing_plan.edit(), new_plan.originate()]
 ```
 
+## Command Actions
+
+All commands support user-triggered actions through the Canvas UI.
+These actions appear as buttons or menu items that users can click to perform specific operations on commands.
+
+Commands have two types of actions:
+- **Generic actions** (available on all commands): print, audit history
+- **Command-specific actions** (vary by command type): documented in each command's respective section below
+
+### Customizing Action Availability
+
+Developers can programmatically control command actions by:
+- **Hiding actions** based on user permissions, roles, or command state
+- **Reordering actions** to prioritize commonly used operations
+- **Conditional display** depending on workflow requirements or business logic
+
+Action customization is handled through plugin code that modifies the available action set accordingly.
+
+### Generic Actions
+
+The following actions are available on all command types:
+
+#### print
+Generates a printable version of the command for documentation or external sharing purposes.
+
+#### audit_history
+Displays the complete audit trail for the command, showing all modifications, state changes, and user interactions over time.
+
+#### carry_forward
+Populates the command with the last known data for this command type and patient, allowing users to quickly recreate similar commands based on previous entries.
+
+### Command-Specific Actions
+
+Individual command types have additional actions tailored to their functionality. These actions are documented in each command's respective section below.
+
+{% include alert.html type="info" content="The send action is the only command action available through the SDK and is limited to LabOrder and Prescribe commands only." %}
+
+### Example
+```python
+import json
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects import Effect, EffectType
+from canvas_sdk.events import EventType
+from canvas_sdk.v1.data import Staff
+
+class Handler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__AVAILABLE_ACTIONS)
+    def compute(self) -> list[Effect]:
+        actions = self.context["actions"]
+        user_id = self.context["user"]["staff"]
+
+        # Filter actions based on user permissions
+        try:
+            staff = Staff.objects.get(id=user_id)
+
+            # Example: Hide print action for specific user
+            if staff.first_name == "Larry":
+                filtered_actions = [
+                    action for action in actions
+                    if action["name"] != "print"
+                ]
+            else:
+                filtered_actions = actions
+
+        except Staff.DoesNotExist:
+            # If staff not found, return original actions
+            filtered_actions = actions
+
+        return [Effect(
+            type=EffectType.COMMAND_AVAILABLE_ACTIONS_RESULTS,
+            payload=json.dumps(filtered_actions)
+        )]
+
+ ```
+
+## Chaining Methods with a User-set UUID
+
+A common use case is to originate and also commit a command in a single plugin action. However, attempting to commit a command without a `command_uuid` will throw an error. Because the `originate` method executes asynchronously, there is not currently a clean way to get the `command_uuid` back from the originate action and use it for the commit action in the same operation.
+
+The solution is to set the UUID in the plugin and pass it through to both the originate and commit actions. This is accomplished by manually setting the `command_uuid` before calling the methods:
+
+```python
+from uuid import uuid4
+from canvas_sdk.commands import DiagnoseCommand
+
+def compute():
+    note_uuid = '550e8400-e29b-41d4-a716-446655440000'
+
+    diagnose_command = DiagnoseCommand(
+        note_uuid=note_uuid,
+        icd10_code='E11.9'
+    )
+
+    # To chain command effects, you must know what the command's id
+    # is. To accomplish that, we set the id ourselves rather than
+    # allow the database to assign one.
+    diagnose_command.command_uuid = str(uuid4())
+
+    # Now we can both originate and commit in a single operation
+    return [diagnose_command.originate(), diagnose_command.commit()]
+```
+
+This pattern ensures that both the originate and commit operations use the same `command_uuid`, allowing them to be chained together reliably in a single plugin execution.
+
 Command-specific details for each command class can be found below.
 
 ## AdjustPrescription
@@ -72,7 +182,7 @@ Command-specific details for each command class can be found below.
 |:---------------|:---------|:---------|:-------------------------------------|
 | `new_fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the new medication. |
 
-Check the [Prescribe](#prescribe) command for the other parameters used in the Refill command.
+Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command.
 
 ```python
 from canvas_sdk.commands import AdjustPrescriptionCommand, PrescribeCommand
@@ -233,6 +343,34 @@ close_goal = CloseGoalCommand(
 
 ---
 
+## Diagnose
+
+**Command-specific parameters**:
+
+| Name                        | Type       | Required | Description                                                |
+|:----------------------------|:-----------|:---------|:-----------------------------------------------------------|
+| `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed.              |
+| `background`                | _string_   | `false`  | Background information about the diagnosis.                |
+| `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
+| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition. |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import DiagnoseCommand
+from datetime import datetime
+
+diagnose = DiagnoseCommand(
+    note_uuid='rk786p',
+    icd10_code='M54.50',
+    background='lifted heavy box',
+    approximate_date_of_onset=datetime(2012, 1, 1),
+    today_assessment='unable to sleep lately'
+)
+```
+
+---
+
 ## FamilyHistory
 
 **Command-specific parameters**:
@@ -302,34 +440,6 @@ unstructured = FollowUpCommand(
   comment='also wants to discuss treatment options'
 )
 
-```
-
----
-
-## Diagnose
-
-**Command-specific parameters**:
-
-| Name                        | Type       | Required | Description                                                |
-|:----------------------------|:-----------|:---------|:-----------------------------------------------------------|
-| `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed.              |
-| `background`                | _string_   | `false`  | Background information about the diagnosis.                |
-| `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
-| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition. |
-
-**Example**:
-
-```python
-from canvas_sdk.commands import DiagnoseCommand
-from datetime import datetime
-
-diagnose = DiagnoseCommand(
-    note_uuid='rk786p',
-    icd10_code='M54.50',
-    background='lifted heavy box',
-    approximate_date_of_onset=datetime(2012, 1, 1),
-    today_assessment='unable to sleep lately'
-)
 ```
 
 ---
@@ -416,11 +526,23 @@ hpi = HistoryOfPresentIllnessCommand(
 | `image_code`            | _string_          | `true`   | Code identifier of the imaging order.                                         |
 | `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order.                          |
 | `priority`              | _Priority enum_   | `false`  | Priority of the imaging order. Must be one of `ImagingOrderCommand.Priority`. |
-| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              | 
+| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              |
 | `service_provider`      | _ServiceProvider_ | `true`   | Service provider of the imaging order.                                        |
 | `comment`               | _string_          | `false`  | Additional comments.                                                          |
 | `ordering_provider_key` | _string_          | `true`   | The key for the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
+
+**Command-specific actions**:
+
+| Action Name        | Available When       | Description                                                       |
+|--------------------|----------------------|-------------------------------------------------------------------|
+| `delegate_action`  | command is staged    | Delegates the order by creating a task.                           |
+| `sign_action`      | command is staged    | Signs the order, transitioning it from staged to committed state. |
+| `print_specialist` | command is committed | Prints the order using a specialist-focused template.             |
+| `print_patient`    | command is committed | Prints the order using a patient-friendly template.               |
+| `fax`              | command is committed | Transmits the order electronically via fax.                       |
+
+
 
 **Enums and Types**:
 
@@ -445,7 +567,7 @@ Represents the detailed information of the service provider.
 | business_phone   | _Optional[string]_ | Business phone number (optional, max length 512)       |
 | business_address | _Optional[string]_ | Business address (optional, max length 512)            |
 | notes            | _Optional[string]_ | Additional notes (optional, max length 512)            |
- 
+
 **Example**:
 
 ```python
@@ -542,6 +664,11 @@ Built-in validations ensure that:
 - The specified lab partner exists (whether provided by name or ID).
 - The ordered tests are available for the chosen lab partner.
 
+**Electronic ordering:** LabOrder commands support the `send()` method for electronic ordering of signed orders directly to lab partners. However, electronic ordering has additional requirements:
+
+- Only lab partners with electronic ordering enabled support the `send()` method.
+- The command must be committed/signed before it can be sent electronically.
+
 **Command-specific parameters**:
 
 | Name                    | Type           | Required | Description                                                                                                                                                      |
@@ -553,7 +680,27 @@ Built-in validations ensure that:
 | `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.                                                                                                                  |
 | `comment`               | _string_       | `false`  | Additional comments related to the lab order.                                                                                                                    |
 
-## Validations
+**Command-specific actions**:
+
+| Action Name              | Available When       | Description                                                               |
+|--------------------------|----------------------|---------------------------------------------------------------------------|
+| `sign_send_action`       | command is staged    | Signs and immediately sends the order electronically to the lab partner.  |
+| `send_action`            | command is staged    | Sends the order electronically to the chosen lab partner.                 |
+| `sign_action`            | command is staged    | Signs the order, transitioning it from staged to committed state.         |
+| `print_requisition_form` | command is committed | Prints the order using a requisition-focused template for lab submission. |
+| `print_specimen_label`   | command is committed | Prints the template using a specimen-focused template.                    |
+| `fax_requisition_form`   | command is committed | Transmits the order electronically via fax.                               |
+
+**ABN Workflow Actions**
+
+When the ABN (Advance Beneficiary Notice) workflow is enabled, additional actions become available:
+
+| Action Name       | Available When    | Description                                                       |
+|-------------------|-------------------|-------------------------------------------------------------------|
+| `send_abn_signed` | command is staged | Sends the order electronically after ABN requirements are met.    |
+| `make_changes`    | command is staged | Allows modifications to complete ABN requirements before sending. |
+
+### Validations
 
 - **Lab Partner Validation:**
   The system checks that the provided `lab_partner` (by name or ID) exists in the system. If no matching lab partner is
@@ -705,22 +852,44 @@ plan = PlanCommand(
 
 ## Prescribe
 
+**Electronic prescribing:** Prescribe commands support the `send()` method for electronic transmission of signed prescriptions. However, electronic prescribing has additional validations:
+
+- A pharmacy must be specified on the command before it can be sent.
+- The command must be committed/signed before it can be sent electronically.
+
+
 **Command-specific parameters**:
 
-| Name                   | Type                          | Required | Description                                                        |
-|------------------------|-------------------------------|----------|--------------------------------------------------------------------|
-| `fdb_code`             | _string_                      | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication.                                       |
-| `icd10_codes`          | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. |
-| `sig`                  | _string_                      | `true`   | Administration instructions/details of the medication.             |
-| `days_supply`          | _integer_                     | `false`  | Number of days the prescription is intended to cover.              |
-| `quantity_to_dispense` | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                              |
-| `type_to_dispense`     | _ClinicalQuantity_            | `true`   | Information about the form or unit of the medication to dispense.  |
-| `refills`              | _integer_                     | `true`   | Number of refills allowed for the prescription.                    |
-| `substitutions`        | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed. |
-| `pharmacy`             | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent.    |
-| `prescriber_id`        | _string_                      | `true`   | The key of the prescriber.                     |
-| `supervising_provider_id` | _string_                   | `true`   | The key of the supervising provider of the presciber.           |
-| `note_to_pharmacist`   | _string_                      | `false`  | Additional notes or instructions for the pharmacist.               |
+| Name                        | Type                          | Required | Description                                                         |
+|-----------------------------|-------------------------------|----------|---------------------------------------------------------------------|
+| `fdb_code`                  | _string_                      | `false`* | The [FDB code](/sdk/utils/#fdb_code) of the medication.             |
+| `compound_medication_id`    | _string_                      | `false`* | The ID of an existing compound medication to prescribe.             |
+| `compound_medication_data`  | `CompoundMedicationData`      | `false`* | Data for creating a new compound medication inline.                 |
+| `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription.  |
+| `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication.              |
+| `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
+| `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                               |
+| `type_to_dispense`          | _ClinicalQuantity_            | `true`** | Information about the form or unit of the medication to dispense.   |
+| `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription.                     |
+| `substitutions`             | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed.  |
+| `pharmacy`                  | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. |
+| `prescriber_id`             | _string_                      | `true`   | The key of the prescriber.                                          |
+| `supervising_provider_id`   | _string_                      | `false`   | The key of the supervising provider of the prescriber.               |
+| `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist.                |
+
+*Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
+
+**`ClinicalQuantity` is only required when `fdb_code` is provided. It is optional for compound medications.
+
+**Command-specific actions**:
+
+| Action Name        | Available When       | Description                                                              |
+|--------------------|----------------------|--------------------------------------------------------------------------|
+| `sign_send_action` | command is in review | Signs and immediately sends the prescription electronically.             |
+| `sign_action`      | command is in review | Signs the prescription, transitioning it from staged to committed state. |
+| `print_action`     | command is in review | Prints and commits the command.                                          |
+| `make_changes`     | command is in review | Allow users to revert the command to staged state and make changes.      |
+| `send_action`      | command is committed | Sends the prescription electronically.                                   |
 
 **Enums and Types**
 
@@ -738,9 +907,24 @@ Represents the detailed information about the form or unit of the medication.
 | `representative_ndc`            | _string_ | National Drug Code (NDC) representing the medication. |
 | `ncpdp_quantity_qualifier_code` | _string_ | NCPDP code indicating the quantity qualifier.         |
 
+**CompoundMedicationData**:
+Data for creating a compound medication inline within a prescription.
 
-**Example**
+| Field Name                 | Type     | Description                                               | Required |
+|----------------------------|----------|-----------------------------------------------------------|----------|
+| `formulation`              | _string_ | The compound medication formulation (max 105 characters)  | `true`   |
+| `potency_unit_code`        | _string_ | The unit of measurement for the medication                | `true`   |
+| `controlled_substance`     | _string_ | The controlled substance schedule                         | `true`   |
+| `controlled_substance_ndc` | _string_ | NDC for controlled substances (dashes removed)            | `false`* |
+| `active`                   | _bool_   | Whether the compound medication is active (default: true) | `false`  |
 
+
+*Required when controlled_substance is not "N" (None)
+
+
+**Examples**
+
+***Option 1: Standard Prescription (FDB Code)***
 ```python
 from canvas_sdk.commands.constants import ClinicalQuantity
 from canvas_sdk.commands import PrescribeCommand
@@ -764,6 +948,84 @@ prescription = PrescribeCommand(
 )
 ```
 
+***Option 2: Existing Compound Medication (by ID)***
+```python
+from canvas_sdk.commands.constants import ClinicalQuantity
+from canvas_sdk.commands import PrescribeCommand
+
+from canvas_sdk.v1.data.compound_medication import CompoundMedication as CompoundMedicationModel
+
+# Get an existing compound medication (let's assume it exists in the database)
+compound_med = CompoundMedicationModel.objects.filter(
+    active=True,
+    formulation="Testosterone 200mg/mL in Grapeseed Oil"
+).first()
+
+prescription = PrescribeCommand(
+    compound_medication_id=str(compound_med.id),
+    icd10_codes=["R51"],
+    sig="Take one tablet daily after meals",
+    days_supply=30,
+    quantity_to_dispense=30,
+    type_to_dispense=ClinicalQuantity(
+        representative_ndc="12843016128",
+        ncpdp_quantity_qualifier_code="C48542"
+    ),
+    refills=3,
+    substitutions=PrescribeCommand.Substitutions.ALLOWED,
+    pharmacy="Main Street Pharmacy",
+    prescriber_id="provider_123",
+    supervising_provider_id='provider_456',
+    note_to_pharmacist="Please verify patient's insurance before processing."
+)
+```
+
+***Option 3: Create New Compound Medication Inline***
+```python
+from canvas_sdk.commands.constants import ClinicalQuantity
+from canvas_sdk.commands.commands.prescribe import PrescribeCommand, CompoundMedicationData
+
+from canvas_sdk.v1.data.compound_medication import CompoundMedication
+
+compound_medication_data = CompoundMedicationData(
+    formulation="Testosterone 200mg/mL in Grapeseed Oil",
+    potency_unit_code=CompoundMedication.PotencyUnits.GRAM,
+    controlled_substance=CompoundMedication.ControlledSubstanceOptions.SCHEDULE_III,
+    controlled_substance_ndc="12345678901",
+    active=True,
+)
+
+prescription = PrescribeCommand(
+    compound_medication_data=compound_medication_data,
+    icd10_codes=["M79.3"],
+    sig="Apply thin layer to affected area twice daily",
+    days_supply=30,
+    quantity_to_dispense=30,
+    type_to_dispense=ClinicalQuantity(
+        representative_ndc="12843016128",
+        ncpdp_quantity_qualifier_code="C48542"
+    ),
+    refills=3,
+    substitutions=PrescribeCommand.Substitutions.ALLOWED,
+    pharmacy="Main Street Pharmacy",
+    prescriber_id="provider_123",
+    supervising_provider_id='provider_456',
+    note_to_pharmacist="Please verify patient's insurance before processing."
+)
+```
+
+**Validation Notes**
+
+* Medication Type Validation: Exactly one of fdb_code, compound_medication_id, or compound_medication_data must be provided
+* Compound Medication ID: When using compound_medication_id, the system validates that the compound medication exists
+* Compound Medication Data: When using compound_medication_data:
+  * All required fields in the dataclass must be provided
+  * If controlled substance is not "N" (None), then controlled_substance_ndc is required
+  * The formulation is limited to 105 characters
+  * Any dashes in the NDC are automatically removed
+  * Before creating a new compound medication, the system checks if a compound with the same formulation and potency unit code already exists. If it does, it reuses the existing compound medication instead of creating a new one.
+* Potency Unit and Controlled Substance Values: Must use valid enum values from PotencyUnit and ControlledSubstanceSchedule
+
 ---
 
 ## PhysicalExam
@@ -777,7 +1039,7 @@ prescription = PrescribeCommand(
 
 ### Toggle Questions Feature
 
-The PhysicalExamCommand includes special functionality for toggling questions on/off. 
+The PhysicalExamCommand includes special functionality for toggling questions on/off.
 When working with a PhysicalExam Command, the following methods are available:
 
 **Methods**:
@@ -864,16 +1126,16 @@ exam = PhysicalExamCommand(
 questions = exam.questions  # Retrieve the list of questions
 # Returns: [
 #               Question(
-#                       self.name='question-12', 
+#                       self.name='question-12',
 #                       self.label='Body length (in)',
-#                       self.type='TXT', 
-#                       self.options=[ResponseOption(self.dbid=38, self.name='Body length (in)', self.code='8306-3', self.value='')], 
+#                       self.type='TXT',
+#                       self.options=[ResponseOption(self.dbid=38, self.name='Body length (in)', self.code='8306-3', self.value='')],
 #                       self.response=None
-#               ), 
+#               ),
 #               Question(
-#                       self.name='question-13', 
-#                       self.label='Head circumference (cm)', 
-#                       self.type='TXT', self.options=[ResponseOption(self.dbid=39, self.name='Head circumference (cm)', self.code='8287-5', self.value='')], 
+#                       self.name='question-13',
+#                       self.label='Head circumference (cm)',
+#                       self.type='TXT', self.options=[ResponseOption(self.dbid=39, self.name='Head circumference (cm)', self.code='8287-5', self.value='')],
 #                       self.response=None
 #               )
 
@@ -882,7 +1144,7 @@ if exam.is_question_enabled("12"):
   print("Body length question is enabled.")
 
 # Disable irrelevant questions
-exam.set_question_enabled("13", False) 
+exam.set_question_enabled("13", False)
 
 # Get all toggle states
 states = exam.question_toggles
@@ -933,7 +1195,7 @@ questionnaire = QuestionnaireCommand(
 )
 ```
 
-## Usage Example
+### Usage Example
 
 Below is an example that demonstrates how to instantiate a `QuestionnaireCommand`, retrieve the questions, and add responses to them based on their type:
 
@@ -978,13 +1240,13 @@ class Protocol(BaseHandler):
               question.add_response(option=first_option, selected=True, comment="Don't panic")
               question.add_response(option=last_option, selected=True)
 
-      # Because we're directly setting a command_uuid, we can return both originate and edit. 
+      # Because we're directly setting a command_uuid, we can return both originate and edit.
       return [command.originate(), command.edit()]
 ```
 
 ### Explanation
 
-- **Retrieving Questions:**  
+- **Retrieving Questions:**
   The `questions` property returns a list of question objects created from the questionnaire's data.
 
 
@@ -1050,10 +1312,20 @@ unstructured_rfv = ReasonForVisitCommand(
 | `diagnosis_codes`     | _list[string]_          | `true`   | A list of relevant ICD-10 Diagnosis.                                                         |
 | `clinical_question`   | _ClinicalQuestion enum_ | `true`   | The clinical question prompting the referral. Must be one of `ReferCommand.ClinicalQuestion` |
 | `priority`            | _Priority enum_         | `false`  | Priority of the imaging order. Must be one of `ReferCommand.Priority`.                       |
-| `notes_to_specialist` | _string_                | `true`   | Notes or additional information directed to the specialist.                                  | 
+| `notes_to_specialist` | _string_                | `true`   | Notes or additional information directed to the specialist.                                  |
 | `include_visit_note`  | _boolean_               | `false`  | Flag indicating whether the visit note should be included in the referral.                   |
 | `comment`             | _string_                | `false`  | An optional comment providing further details about the referral.                            |
 | `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command.                                       |
+
+**Command-specific actions**:
+
+| Action Name        | Available When       | Description                                                       |
+|--------------------|----------------------|-------------------------------------------------------------------|
+| `delegate_action`  | command is staged    | Delegates the order by creating a task.                           |
+| `sign_action`      | command is staged    | Signs the order, transitioning it from staged to committed state. |
+| `print_specialist` | command is committed | Prints the order using a specialist-focused template.             |
+| `print_patient`    | command is committed | Prints the order using a patient-friendly template.               |
+| `fax`              | command is committed | Transmits the order electronically via fax.                       |
 
 **Enums and Types**:
 
@@ -1088,7 +1360,7 @@ Represents the detailed information of the service provider.
 | business_phone   | _Optional[string]_ | Business phone number (optional, max length 512)       |
 | business_address | _Optional[string]_ | Business address (optional, max length 512)            |
 | notes            | _Optional[string]_ | Additional notes (optional, max length 512)            |
- 
+
 **Example**:
 
 ```python
@@ -1212,7 +1484,7 @@ ResolveConditionCommand(
 
 ### Toggle Questions Feature
 
-The ReviewOfSystemsCommand includes the same toggle functionality as PhysicalExamCommand, 
+The ReviewOfSystemsCommand includes the same toggle functionality as PhysicalExamCommand,
 allowing practitioners to enable or disable specific system review questions based on patient relevance.
 You can find an extra example of this functionality on the [Physical Exam Command Documentation](#physicalexam).
 
@@ -1239,16 +1511,16 @@ ros = ReviewOfSystemsCommand(
 questions = ros.questions  # Retrieve the list of questions
 # Returns: [
 #               Question(
-#                       self.name='question-14', 
+#                       self.name='question-14',
 #                       self.label='Recurrent fever or chills',
-#                       self.type='TXT', 
-#                       self.options=[]], 
+#                       self.type='TXT',
+#                       self.options=[]],
 #                       self.response=None
-#               ), 
+#               ),
 #               Question(
-#                       self.name='question-25', 
-#                       self.label='Other', 
-#                       self.type='TXT', self.options=[], 
+#                       self.name='question-25',
+#                       self.label='Other',
+#                       self.type='TXT', self.options=[],
 #                       self.response=None
 #               )
 
@@ -1257,7 +1529,7 @@ if ros.is_question_enabled("14"):
   print("Recurrent fever or chills question is enabled.")
 
 # Disable irrelevant questions
-ros.set_question_enabled("25", False) 
+ros.set_question_enabled("25", False)
 
 # Get all toggle states
 states = ros.question_toggles

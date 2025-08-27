@@ -46,7 +46,7 @@ algorithm, and set the redirect uri for your SMART application.
 
 ## Creating an application
 
-We encourage you to read our more compresensive guide on [creating applications via the
+We encourage you to read our more comprehensive guide on [creating applications via the
 Canvas SDK](/guides/your-first-application/), but we can provide an abridged
 version here.
 
@@ -118,6 +118,9 @@ We can set this initial URL and launch params in the `on_open` method found in
 clicks the application's launch icon.
 
 ```python
+import json
+
+from base64 import b64encode
 from urllib.parse import urlencode
 
 from canvas_sdk.effects import Effect
@@ -128,12 +131,17 @@ from canvas_sdk.handlers.application import Application
 class MyApplication(Application):
 
     def on_open(self) -> Effect:
+        launch_context = {
+            "patient": self.context["patient"]["id"]
+        }
+        encoded_launch_context = b64encode(json.dumps(launch_context).encode()).decode()
+
         launch_params = {
             "iss": f"https://fumage-{self.environment['CUSTOMER_IDENTIFIER']}.canvasmedical.com",
-            "aud": f"https://fumage-{self.environment['CUSTOMER_IDENTIFIER']}.canvasmedical.com",
-            "launch": self.context["patient"]["id"]
+            "launch": encoded_launch_context
         }
         encoded_launch_params = urlencode(launch_params)
+
         return LaunchModalEffect(
             url=f"https://canvas-medical.github.io/example-smart-on-fhir-app/launch.html?{encoded_launch_params}",
             target=LaunchModalEffect.TargetType.RIGHT_CHART_PANE,

@@ -498,6 +498,12 @@ guides_list:
    uses:
      - sdk
 
+ - title: "Customize your panel buttons"
+   url: /guides/customize-panel-buttons/
+   description: Add, hide and reorder the main and patient page panel buttons
+   uses:
+     - sdk
+
  - title: "Additional fields on patient profile"
    url: /guides/profile-additional-fields/
    description: How to add additional fields to the patient profile
@@ -566,33 +572,27 @@ simple_api_handlers:
     url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
- - title: "Protocol Cards"
-   url: /sdk/effect-protocol-cards/
-   description: Calls to action in a patient's chart, commonly used for decision support intervention.
  - title: "Banner Alerts"
    url: /sdk/effect-banner-alerts/
    description: Contextual information in a patient's chart.
  - title: "Billing Line Items"
    url: /sdk/effect-billing-line-items/
    description: Add, modify, or remove billing codes on a note.
+ - title: "Compound Medications"
+   url: /sdk/effect-compound-medication/
+   description: Create or update compound medications.
  - title: "Form Result"
    url: /sdk/form-result-effect
    description: Effect for dynamically displaying forms in the Patient Portal.
- - title: "Patient Metadata Create Form"
-   url: /sdk/patient-metadata-create-form-effect
-   description: Effect for dynamically displaying forms in the Patient profile.
  - title: "Layout Effects"
    url: /sdk/layout-effect/
    description: Modify or interact with the layout in Canvas.
- - title: "Questionnaires"
-   url: /sdk/effect-questionnaires/
-   description: Interact with questionnaires and interviews.
- - title: "Tasks"
-   url: /sdk/effect-tasks/
-   description: Create or update tasks.
- - title: "Patient Portal"
-   url: /sdk/patient-portal/
-   description: Customize your Patient Portal.
+ - title: "Messages"
+   url: /sdk/effect-messages/
+   description: Interact with messages in Canvas.
+ - title: "Notes"
+   url: /sdk/effect-notes/
+   description: Interact with notes in Canvas.
  - title: "Patient"
    url: /sdk/effect-patient/
    description: Interact with patient data.
@@ -605,12 +605,21 @@ effects_module:
  - title: "Patient Metadata"
    url: /sdk/effect-patient-metadata/
    description: Interact with patient metadata.
- - title: "Notes"
-   url: /sdk/effect-notes/
-   description: Interact with notes in Canvas.
- - title: "Messages"
-   url: /sdk/effect-messages/
-   description: Interact with messages in Canvas.
+ - title: "Patient Metadata Create Form"
+   url: /sdk/patient-metadata-create-form-effect
+   description: Effect for dynamically displaying forms in the Patient profile.
+ - title: "Patient Portal"
+   url: /sdk/patient-portal/
+   description: Customize your Patient Portal.
+ - title: "Protocol Cards"
+   url: /sdk/effect-protocol-cards/
+   description: Calls to action in a patient's chart, commonly used for decision support intervention.
+ - title: "Questionnaires"
+   url: /sdk/effect-questionnaires/
+   description: Interact with questionnaires and interviews.
+ - title: "Tasks"
+   url: /sdk/effect-tasks/
+   description: Create or update tasks.
 
 data_module:
  - title: "Allergy Intolerance"
@@ -619,6 +628,9 @@ data_module:
  - title: "Appointment"
    url: /sdk/data-appointment/
    description: A scheduled meeting between a patient and a provider.
+ - title: "Assessment"
+   url: /sdk/data-assessment/
+   description: Clinical assessment of a patient's condition.
  - title: "Banner Alert"
    url: /sdk/data-banner-alert/
    description: An alert notification linked to a patient.
@@ -646,6 +658,9 @@ data_module:
  - title: "Common Enumeration Types"
    url: /sdk/data-enumeration-types/
    description: Common choice classes used in multiple models.
+ - title: "Compound Medication"
+   url: /sdk/data-compound-medication/
+   description: Compound medications, which are custom-made medications tailored to a patient's specific needs.
  - title: "Condition"
    url: /sdk/data-condition/
    description: Condition, diagnosis, or reason for seeking medical attention.
@@ -706,6 +721,12 @@ data_module:
  - title: "Reason For Visit"
    url: /sdk/data-reason-for-visit/
    description: The reason for a patient's visit.
+ - title: "Referral"
+   url: /sdk/data-referral/
+   description: A referral directing a specific patient to another provider or specialist.
+ - title: "Service Provider"
+   url: /sdk/data-serviceprovider/
+   description: Data associated with Service Providers.
  - title: "Staff"
    url: /sdk/data-staff
    description: Data associated with Staff members.
@@ -730,7 +751,7 @@ releasenotes:
 
 
 releasenotes_product_updates:
- - title: "Release Notes"
+ - title: "Changelog"
    url: /product-updates/release-notes
  - title: "Important Dates"
    url: /product-updates/important-dates
