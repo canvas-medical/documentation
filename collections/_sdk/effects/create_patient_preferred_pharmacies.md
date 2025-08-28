@@ -20,6 +20,12 @@ Creates preferred pharmacies for a patient.
 
 The `PatientPreferredPharmacy` dataclass represents a patient's preferred pharmacy, and if it's their default pharmacy.
 
+### Validation
+
+When this effect is interpreted, Canvas validates the `ncpdp_id` before setting the preferred pharmacy. If the `ncpdp_id` is invalid or does not exist, the effect will fail.
+
+To ensure the `ncpdp_id` exists before using this effect, you can verify it using Canvas's [pharmacy HTTP utility](/sdk/utils/#making-requests-to-the-pharmacy-service) to check the pharmacy beforehand.
+
 #### Attributes
 
 | Attribute  | Type   | Description                                          | Required                |
@@ -27,11 +33,6 @@ The `PatientPreferredPharmacy` dataclass represents a patient's preferred pharma
 | `ncpdp_id` | `str`  | The NCPDC identifier of the pharmacy.                | Yes                     |
 | `default`  | `bool` | Indicates if this is the patient's default pharmacy. | No, defaults to `False` |
 
-### Validation
-
-When this effect is interpreted, Canvas validates the `ncpdp_id` before setting the preferred pharmacy. If the `ncpdp_id` is invalid or does not exist, the effect will fail.
-
-To ensure the `ncpdp_id` exists before using this effect, you can verify it using Canvas's [pharmacy HTTP utility](/sdk/utils/#making-requests-to-the-pharmacy-service) to check the pharmacy beforehand.
 
 ### Example
 
