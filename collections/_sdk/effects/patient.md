@@ -65,10 +65,12 @@ The `PatientAddress` dataclass represents a patient's address information.
 | Attribute     | Type         | Description                    | Required |
 |---------------|--------------|--------------------------------|----------|
 | `line1`       | `str`        | Street address line 1          | Yes      |
+| `line2`       | `str` or `None` | Street address line 2       | No       |
 | `city`        | `str`        | City name                      | Yes      |
 | `state_code`  | `str`        | State code (e.g., "CA", "NY")   | Yes      |
 | `postal_code` | `str`        | Postal/ZIP code                | Yes      |
 | `country`     | `str`        | Country code                   | Yes      |
+| `use`         | `AddressUse` | Address type (e.g., home, work) | Yes      |
 
 ⚠️ **Important**: Address updates are **replace-based**. When updating a patient's addresses, the provided address list will completely replace all existing addresses. If you provide an empty list, all existing addresses will be deleted.
 
