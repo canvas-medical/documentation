@@ -524,6 +524,9 @@ sdk:
 sdk_overview:
  - title: "Introduction"
    url: /sdk/
+ - title: "Example Plugins"
+   url: /sdk/examples/
+   identifier: example_plugins
  - title: "Caching Module"
    url: /sdk/caching/
  - title: "Command Line Interface"
@@ -553,6 +556,14 @@ sdk_overview:
    url: /sdk/utils/
  - title: "Testing Utilities"
    url: /sdk/testing-utils/
+
+example_plugins:
+  - title: "API Samples"
+    url: /sdk/example-api_samples/
+  - title: "Charting API Examples"
+    url: /sdk/example-charting_api_examples/
+  - title: "Example Patient Portal Page"
+    url: /sdk/example-example_patient_portal_page/
 
 sdk_handlers:
   - title: "Action Buttons"

@@ -191,6 +191,13 @@ def main():
         if "node_modules" in markdown_file:
             continue
 
+        # Choosing to skip generated example plugin documentation.
+        # These docs include whole files directly from the plugin, which may
+        # reference other files within that plugin package. Those imports will
+        # not resolve.
+        if "collections/_sdk/examples/" in markdown_file:
+            continue
+
         content = Path(markdown_file).read_text()
         code_blocks = extract_code_blocks(content)
 
