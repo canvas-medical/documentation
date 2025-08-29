@@ -1,28 +1,13 @@
 ---
-title: 'upsert_patient_metadata'
+title: 'Upsert Patient Metadata'
 slug: 'example-upsert_patient_metadata'
 ---
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/upsert_patient_metadata' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-upsert_patient_metadata
-=======================
+This plugin showcases how to store patient metadata key/value pairs from a plugin using the Canvas SDK.
 
-## Description
-
-Extracts key-value pairs from plan update narratives and stores them as patient metadata.
-
-Parses narrative text for patterns like "key=somekey*value=somevalue" where the separator
-can be any non-alphanumeric character. If both key and value are found, creates or updates
-the corresponding patient metadata entry.
-
-Triggers on: PLAN_COMMAND__POST_UPDATE events
-Effects: PatientMetadata upsert operations
-
-### Important Note!
-
-The CANVAS_MANIFEST.json is used when installing your plugin. Please ensure it
-gets updated if you add, remove, or rename protocols.
+In this example, we extract key-value pairs from a plan command's narrative and store them as patient metadata.
 
 ## CANVAS_MANIFEST.json
 
@@ -63,15 +48,10 @@ gets updated if you add, remove, or rename protocols.
 ### __init__.py
 
 This file is empty.
+
 ### my_protocol.py
 
-**Overview**
-
-This file defines a Canvas plugin protocol that listens for specific events related to care plan updates. When a user updates a plan and includes certain key-value data in the narrative, this protocol extracts that information and saves it as patient metadata in Canvas.
-
-**Event Trigger**
-
-The code responds to PLAN_COMMAND__POST_UPDATE events. These are fired after an update is made to a patient's care plan.
+This file defines a Canvas plugin handler that uses the update of a plan command as an excuse to trigger. When a user updates a plan command and includes certain key-value data in the narrative, this handler extracts that information and saves it as patient metadata.
 
 **Narrative Parsing**
 
@@ -90,14 +70,6 @@ If both a key and value are found in the narrative:
 - It returns a list containing one Effect: an upsert (create or update) of patient metadata (via PatientMetadata) for that patient, saving the found key and value.
 
 If either the key or value is missing, no action is performed.
-
-**SDK Integration**
-
-The protocol uses Canvas SDK's Effect, PatientMetadata, and BaseHandler classes. It conforms to the Canvas plugin event handling pattern for easily adding new workflow-dependent behaviors to the Canvas environment.
-
-**Logging**
-
-The code logs each attempt to upsert patient metadata, which helps with debugging and auditing usage for this protocol.
 
 ```python
 import re
