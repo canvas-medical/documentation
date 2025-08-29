@@ -54,7 +54,7 @@ dependencies = [
 or install directly via `uv`:
 
 ```bash
-uv install canvas[test-utils]
+uv add canvas[test-utils]
 ````
 
 You can now run your test suite using:
