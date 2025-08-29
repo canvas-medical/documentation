@@ -37,8 +37,8 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.PROJECT_AND_REPO_PAT }}
-          branch: generate-example-plugin-docs
-          title: Generate Example Plugin Docs
+          branch: generate-docs-${{ GITHUB_RUN_ID }}-${{ GITHUB_RUN_ATTEMPT }}
+          title: Generate Example Plugin Docs ${{ GITHUB_RUN_ID }}-${{ GITHUB_RUN_ATTEMPT }}
           commit-message: "Generate docs for recently changed example plugins"
           body: |
             ## TODO
