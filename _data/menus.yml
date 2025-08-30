@@ -564,6 +564,8 @@ example_plugins:
     url: /sdk/example-charting_api_examples/
   - title: "Example Patient Portal Page"
     url: /sdk/example-example_patient_portal_page/
+  - title: "Upsert Patient Metadata"
+    url: /sdk/example-upsert_patient_metadata/
 
 sdk_handlers:
   - title: "Action Buttons"
