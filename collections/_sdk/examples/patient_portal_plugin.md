@@ -1,16 +1,13 @@
 ---
-title: 'patient_portal_plugin'
-slug: 'example-patient_portal_plugin'
+title: 'Patient Portal Widgets'
+slug: 'example-patient_portal_widgets_plugin'
 ---
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-patient_portal_portal_plugin
-============================
-
 ## Description
 
-The Patient Portal Plugin is a simple plugin that provides various widgets for the patient portal.
+The Patient Portal Widgets Plugin provides various widgets for the patient portal.
 The plugin listens to the `PATIENT_PORTAL__WIDGET_CONFIGURATION` event.
 
 
@@ -50,11 +47,6 @@ In order to deal with `SECRETS` take a look at the
 [SDK documentation](https://docs.canvasmedical.com/sdk/secrets/).
 
 
-## Important Note!
-
-The CANVAS_MANIFEST.json is used when installing your plugin. Please ensure it
-gets updated if you add, remove, or rename protocols.
-
 ## CANVAS_MANIFEST.json
 
 ```json
@@ -67,12 +59,7 @@ gets updated if you add, remove, or rename protocols.
         "protocols": [
             {
                 "class": "patient_portal_plugin.handlers.patient_portal_handler:PatientPortalHandler",
-                "description": "The handler that listens for the patient portal `PATIENT_PORTAL__WIDGET_CONFIGURATION` and responds with the patient portal widgets",
-                "data_access": {
-                    "event": "",
-                    "read": [],
-                    "write": []
-                }
+                "description": "The handler that listens for the patient portal `PATIENT_PORTAL__WIDGET_CONFIGURATION` and responds with the patient portal widgets"
             }
         ],
         "commands": [],
@@ -258,7 +245,7 @@ class PatientPortalHandler(BaseHandler):
         return self.secrets.get("EMERGENCY_CONTACT") or self.DEFAULT_EMERGENCY_CONTACT
 ```
 
-### __init__.py
+### \___init__.py
 
 This file is empty.
 <br/>
