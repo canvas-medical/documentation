@@ -316,7 +316,6 @@ The __init__.py file is responsible for including and registering the handlers (
 
 ```python
 # vitals_visualizer_plugin handlers
-
 <br/>
 <br/>
 <br/>
