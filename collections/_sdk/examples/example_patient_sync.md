@@ -1,6 +1,6 @@
 ---
-title: 'Patient Create Platform Sync'
-slug: 'example-example_patient_sync'
+title: 'Patient Creation Platform Sync'
+slug: 'example-patient_creation_platform_sync'
 ---
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_patient_sync' target='_blank'>View the source</a> for this plugin on GitHub." %}
