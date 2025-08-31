@@ -5,7 +5,7 @@ slug: 'example-portal-customization-launch_application'
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_patient_portal_page' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-This plugin demonstrates how to embed custom patient facing content and tools to the Canvas patient portal. It provides an example of how to expose new patient-facing content or features via the portal, such as educational materials, forms, or interactive tools. On open, the plugin can launch an application and return effects to update the portal UI or patient data as needed.
+This plugin demonstrates how to embed custom patient facing content and tools to the Canvas patient portal. It provides an example of how to expose new patient-facing content or features, such as educational materials, forms, or interactive tools. On open, the plugin can launch an application and return effects to update the portal UI or patient data as needed.
 
 ## CANVAS_MANIFEST.json
 
