@@ -5,8 +5,6 @@ slug: 'example-example_patient_sync'
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_patient_sync' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-example_patient_sync
-==========================
 
 ## Description
 
@@ -74,20 +72,10 @@ This is the authorization needed for Canvas when using APIKeyAuthMixin. [Read mo
             {
                 "class": "example_patient_sync.handlers.patient_sync:PatientSync",
                 "description": "Create or update patients in an external system based on Canvas events",
-                "data_access": {
-                    "event": "",
-                    "read": [],
-                    "write": []
-                }
             },
             {
                 "class": "example_patient_sync.routes.patient_create_api:PatientCreateApi",
                 "description": "Create a patient in Canvas when a user is created in an external system",
-                "data_access": {
-                    "event": "",
-                    "read": [],
-                    "write": []
-                }
             }
         ],
 
