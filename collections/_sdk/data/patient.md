@@ -162,7 +162,7 @@ from logger import log
 
 patient_id = "d7af3e356368446c85b40a5d6ff7288e"
 patient = Patient.objects.get(id=patient_id)
-patient_contacts = patient.contact_points.all()
+patient_contacts = patient.telecom.all()
 
 for contact in patient_contacts:
    log.info(f"Patient contact: {contact.contact_point_system.id}")
