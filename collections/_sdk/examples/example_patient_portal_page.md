@@ -34,12 +34,7 @@ This plugin demonstrates how to embed custom patient facing content and tools to
         "protocols": [
             {
                 "class": "example_patient_portal_page.handlers.my_web_app:MyWebApp",
-                "description": "Serves the application",
-                "data_access": {
-                    "event": "",
-                    "read": [],
-                    "write": []
-                }
+                "description": "Serves the application"
             }
         ],
         "commands": [],
