@@ -568,6 +568,8 @@ example_plugins:
     url: /sdk/example-example_patient_sync/
   - title: "Upsert Patient Metadata"
     url: /sdk/example-upsert_patient_metadata/
+  - title: "Vitals Visualizer"
+    url: /sdk/example-vitals_visualizer_plugin/
 
 sdk_handlers:
   - title: "Action Buttons"
