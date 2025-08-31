@@ -312,33 +312,10 @@ class VitalsVisualizerButton(ActionButton):
 
 ### __init__.py
 
-**Overview**
-
-The file vitals_visualizer_plugin/__init__.py serves as the initialization file for a Canvas plugin named "vitals_visualizer_plugin." It defines and registers handlers for the plugin, allowing it to interact with the Canvas Medical system by exposing custom endpoints, views, or resources.
-
-**Handler Registration**
-
-By convention in Canvas SDK plugins, a __init__.py file may import and register request handlers (such as API endpoints or webhooks) that enable custom plugin functionality. The comment # vitals_visualizer_plugin handlers suggests that the file either directly defines or imports the handlers needed for the plugin to work.
-
-**Typical Content (Assumed)**
-
-While you haven't shown the actual file content, the presence of this comment at the top, alongside standard Canvas SDK practices, implies that:
-
-- The file imports handler classes or functions from other files within the plugin (such as views.py, handlers.py, or api.py).
-- It might use a Canvas API like sdk.register_handler to let Canvas know about the plugin’s endpoints.
-- This is a setup step required for the plugin to interface with the Canvas platform and handle HTTP requests/events.
-
-**Canvas SDK Context**
-
-The Canvas SDK requires plugins to define at least one handler that responds to requests. The __init__.py acts as the entry point where these handlers are initialized or registered.
-
-**Summary**
-
 The __init__.py file is responsible for including and registering the handlers (API endpoints or other callable objects) that empower the "vitals_visualizer_plugin" to provide its intended functionality within the Canvas Medical application. It ensures that the plugin integrates properly with the Canvas framework by exposing its custom logic via the required handlers.
 
 ```python
 # vitals_visualizer_plugin handlers
-```
 
 <br/>
 <br/>
