@@ -1,6 +1,6 @@
 ---
-title: 'Example Patient Portal Page'
-slug: 'example-example_patient_portal_page'
+title: 'Customize Patient Portal Page'
+slug: 'example-customize_patient_portal_page'
 ---
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_patient_portal_page' target='_blank'>View the source</a> for this plugin on GitHub." %}

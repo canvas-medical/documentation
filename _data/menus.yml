@@ -562,8 +562,8 @@ example_plugins:
     url: /sdk/example-api_samples/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
-  - title: "Example Patient Portal Page"
-    url: /sdk/example-example_patient_portal_page/
+  - title: "Customize Patient Portal Page"
+    url: /sdk/example-customize_patient_portal_page/
   - title: "Patient Create Platform Sync"
     url: /sdk/example-example_patient_sync/
   - title: "Upsert Patient Metadata"
