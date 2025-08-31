@@ -21,12 +21,7 @@ In this example, we extract key-value pairs from a plan command's narrative and 
         "protocols": [
             {
                 "class": "upsert_patient_metadata.protocols.my_protocol:Protocol",
-                "description": "A protocol that does xyz...",
-                "data_access": {
-                    "event": "",
-                    "read": [],
-                    "write": []
-                }
+                "description": "A protocol that does xyz..."
             }
         ],
         "commands": [],
@@ -45,7 +40,7 @@ In this example, we extract key-value pairs from a plan command's narrative and 
 
 ## protocols/
 
-### __init__.py
+### \___init__.py
 
 This file is empty.
 

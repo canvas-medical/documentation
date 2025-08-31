@@ -1,5 +1,5 @@
 ---
-title: 'vitals_visualizer_plugin'
+title: 'Vitals Visualizer'
 slug: 'example-vitals_visualizer_plugin'
 ---
 
