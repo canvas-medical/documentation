@@ -562,14 +562,20 @@ example_plugins:
     url: /sdk/example-api_samples/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
-  - title: "Customize Patient Portal Page"
-    url: /sdk/example-customize_patient_portal_page/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
   - title: "Upsert Patient Metadata"
     url: /sdk/example-upsert_patient_metadata/
   - title: "Vitals Visualizer"
     url: /sdk/example-vitals_visualizer_plugin/
+  - title: "Patient Portal Customization"
+    identifier: portal_customization
+
+portal_customization:
+  - title: "Launch an Application"
+    url: /sdk/example-portal-customization-launch_application/
+  - title: "Customize with Widgets"
+    url: /sdk/example-portal-customization-widgets/
 
 sdk_handlers:
   - title: "Action Buttons"
