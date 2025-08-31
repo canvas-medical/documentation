@@ -40,6 +40,10 @@ In this example, we extract key-value pairs from a plan command's narrative and 
 
 ## protocols/
 
+### \___init__.py
+
+This file is empty.
+
 ### my_protocol.py
 
 This file defines a Canvas plugin handler that uses the update of a plan command as an excuse to trigger. When a user updates a plan command and includes certain key-value data in the narrative, this handler extracts that information and saves it as patient metadata.
