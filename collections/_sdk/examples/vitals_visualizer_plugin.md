@@ -314,8 +314,6 @@ class VitalsVisualizerButton(ActionButton):
 
 The __init__.py file is responsible for including and registering the handlers (API endpoints or other callable objects) that empower the "vitals_visualizer_plugin" to provide its intended functionality within the Canvas Medical application. It ensures that the plugin integrates properly with the Canvas framework by exposing its custom logic via the required handlers.
 
-```python
-# vitals_visualizer_plugin handlers
 <br/>
 <br/>
 <br/>
