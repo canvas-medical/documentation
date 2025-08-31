@@ -126,6 +126,18 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | state       | String                                                  |
 | patient     | [Patient](#patient)                                     |
 
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+patient_addresses = patient.addresses.all()
+
+for addr in patient_addresses:
+  log.info(f"Patient address: {addr.city}, {addr.state_code}, {addr.postal_code}")
+```
+
 ### PatientContactPoint
 
 | Field Name         | Type                                                                  |
@@ -144,6 +156,18 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | verification_token | String                                                                |
 | opted_out          | Boolean                                                               |
 
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+patient_contacts = patient.contact_points.all()
+
+for contact in patient_contacts:
+   log.info(f"Patient contact: {contact.contact_point_system.id}")
+```
+
 ### PatientExternalIdentifier
 
 | Field Name      | Type                |
@@ -159,6 +183,18 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | value           | String              |
 | issued_date     | Date                |
 | expiration_date | Date                |
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+patient_external_identifiers = patient.patient_external_identifiers.all()
+
+for identifier in patient_external_identifiers:
+   log.info(f"Patient external identifier: {identifier.system}, {identifier.value}")
+```
 
 ### PatientSetting
 
@@ -179,6 +215,18 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | patient    | [Patient](#patient) |
 | key        | String              |
 | value      | String              |
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+patient_metadata = patient.patient_metadata.all()
+
+for metadata in patient_metadata:
+   log.info(f"Patient metadata: {metadata.key}, {metadata.value}")
+```
 
 ## Enumeration types
 
