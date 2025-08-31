@@ -5,9 +5,6 @@ slug: 'example-vitals_visualizer_plugin'
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/vitals_visualizer_plugin' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-=============================
-Vitals Visualizer Plugin
-=============================
 
 A Canvas plugin that displays a "Visualize" button in the vitals section of the chart summary and shows interactive vital signs visualizations.
 
