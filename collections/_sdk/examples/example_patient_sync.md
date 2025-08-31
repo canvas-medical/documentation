@@ -1,5 +1,5 @@
 ---
-title: 'example_patient_sync'
+title: 'Patient Create Platform Sync'
 slug: 'example-example_patient_sync'
 ---
 
