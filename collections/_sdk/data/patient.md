@@ -229,6 +229,14 @@ for metadata in patient_metadata:
    log.info(f"Patient metadata: {metadata.key}, {metadata.value}") # favorite_color - red
 ```
 
+### PatientFacilityAddress
+
+| Field Name     | Type                              |
+| -------------- | --------------------------------- |
+| patientaddress | [PatientAddress](#PatientAddress) |
+| facility       | [Facility](#facility)             |
+| room_number    | String                            |
+
 ## Enumeration types
 
 ### SexAtBirth
