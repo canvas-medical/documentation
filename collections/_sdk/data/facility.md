@@ -33,6 +33,7 @@ Specify attributes with `filter` to filter by those attributes:
 from canvas_sdk.v1.data.facility import Facility
 
 facilities = Facility.objects.filter(name="General Hospital", city="Metropolis")
+```
 
 ### Facility
 
@@ -52,4 +53,3 @@ facilities = Facility.objects.filter(name="General Hospital", city="Metropolis")
 | npi_number   | String   |
 | phone_number | String   |
 | active       | Boolean  |
-```
