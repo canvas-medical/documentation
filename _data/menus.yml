@@ -724,6 +724,9 @@ data_module:
   - title: "Medication"
     url: /sdk/data-medication/
     description: A record of a medication that is being consumed by a patient, either now, in the past, or in the future.
+  - title: "Medication Statement"
+    url: /sdk/data-medication-statement/
+    description: A record of a medication statement by a patient from the past.
   - title: "Message"
     url: /sdk/data-message/
     description: Messages sent to and from Canvas.
@@ -757,6 +760,9 @@ data_module:
   - title: "ProtocolOverride"
     url: /sdk/data-protocol-override/
     description: A record of a protocol being snoozed for a patient.
+  - title: "Stop Medication Event"
+    url: /sdk/data-stop-medication-event
+    description: A record of a Stop Medication Event, when a medication is removed from a patient's medication list.
   - title: "Questionnaire"
     url: /sdk/data-questionnaire
     description: Groups of coded questions and the coded patient responses.
