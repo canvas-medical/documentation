@@ -16,7 +16,7 @@ To get a stop medication event by identifier, use the `get` method on the `StopM
 ```python
 from canvas_sdk.v1.data import StopMedicationEvent
 
-stopped_medication = StopMedicationEvent.objects.get(dbid=13561)
+stopped_medication = StopMedicationEvent.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
 ```
 
 If you have a patient object, the stop medication events for a patient can be accessed with the `stopped_medications` attribute on a `Patient` object:
@@ -33,7 +33,7 @@ You can also access the referenced medication with the `medication` attribute:
 ```python
 from canvas_sdk.v1.data import StopMedicationEvent
 
-stopped_medication = StopMedicationEvent.objects.get(dbid=13561)
+stopped_medication = StopMedicationEvent.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
 medication = stopped_medication.medication
 ```
 
@@ -52,6 +52,7 @@ stopped_medication_events = medication.stopmedicationevent_set.all()
 
 | Field Name       | Type                                  |
 | ---------------- | ------------------------------------- |
+| id               | UUID                                  |
 | dbid             | Integer                               |
 | patient          | [Patient](/sdk/data-patient/#patient) |
 | note             | [Note](/sdk/data-note)                |

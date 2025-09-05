@@ -16,7 +16,7 @@ To get a medication statement by identifier, use the `get` method on the `Medica
 ```python
 from canvas_sdk.v1.data import MedicationStatement
 
-medication_statement = MedicationStatement.objects.get(dbid=13561)
+medication_statement = MedicationStatement.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
 ```
 
 If you have a patient object, the medication statements for a patient can be accessed with the `medication_statements` attribute on a `Patient` object:
@@ -33,7 +33,7 @@ You can also access the referenced medication with the `medication` attribute:
 ```python
 from canvas_sdk.v1.data import MedicationStatement
 
-medication_statement = MedicationStatement.objects.get(dbid=13561)
+medication_statement = MedicationStatement.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
 medication = medication_statement.medication
 ```
 
@@ -52,6 +52,7 @@ medication_statements = medication.medication_statements.all()
 
 | Field Name                | Type                                  |
 | ------------------------- | ------------------------------------- |
+| id                        | UUID                                  |
 | dbid                      | Integer                               |
 | patient                   | [Patient](/sdk/data-patient/#patient) |
 | note                      | [Note](/sdk/data-note)                |
