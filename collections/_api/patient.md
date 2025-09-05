@@ -312,7 +312,7 @@ sections:
                     type: string
               - name: relationship
                 type: array[json]
-                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry can contain a text string attribute and a coding list. The text attribute is a free text string representing the relationship to the patient. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
+                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry contains a coding list. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
                 attributes:
                   - name: text
                     type: string
@@ -324,12 +324,6 @@ sections:
                     type: string
                   - name: value
                     type: string
-              - name: extension
-                type: array[json]
-                description: >-
-                  An extension that includes the following values:<br><br>
-                  - Emergency Contact<br>
-                  - Authorized for Release of Information
           - name: communication
             type: array[json]
             description: A language which may be used to communicate with the patient about his or her health.
@@ -618,6 +612,11 @@ curl --request POST \
                 {
                     "coding": [
                         {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "SPS",
+                            "display": "spouse"
+                        }
+                        {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
                             "display": "Authorized for release of information"
@@ -633,7 +632,6 @@ curl --request POST \
                             "display": "Emergency contact"
                         }
                     ],
-                    "text": "Spouse"
                 }
             ],
             "telecom":
@@ -641,17 +639,6 @@ curl --request POST \
                 {
                     "system": "email",
                     "value": "danjones@example.com"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": true
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": true
                 }
             ]
         },
@@ -663,7 +650,13 @@ curl --request POST \
             "relationship":
             [
                 {
-                    "text": "Mother"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "MTH",
+                            "display": "mother"
+                        }
+                    ]
                 }
             ],
             "telecom":
@@ -671,17 +664,6 @@ curl --request POST \
                 {
                     "system": "phone",
                     "value": "5557327068"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": false
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": false
                 }
             ]
         },
@@ -693,7 +675,13 @@ curl --request POST \
             "relationship":
             [
                 {
-                    "text": "Father"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "FTH",
+                            "display": "father"
+                        }
+                    ]
                 }
             ],
             "telecom":
@@ -701,17 +689,6 @@ curl --request POST \
                 {
                     "system": "email",
                     "value": "j.stewart@example.com"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": false
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": false
                 }
             ]
         }
@@ -948,6 +925,11 @@ payload = {
                 {
                     "coding": [
                         {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "SPS",
+                            "display": "spouse"
+                        },
+                        {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
                             "display": "Authorized for release of information"
@@ -962,8 +944,7 @@ payload = {
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ],
-                    "text": "Spouse"
+                    ]
                 }
             ],
             "telecom":
@@ -971,17 +952,6 @@ payload = {
                 {
                     "system": "email",
                     "value": "danjones@example.com"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": True
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": True
                 }
             ]
         },
@@ -993,7 +963,13 @@ payload = {
             "relationship":
             [
                 {
-                    "text": "Mother"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "MTH",
+                            "display": "mother"
+                        }
+                    ]
                 }
             ],
             "telecom":
@@ -1001,17 +977,6 @@ payload = {
                 {
                     "system": "phone",
                     "value": "5557327068"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": False
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": False
                 }
             ]
         },
@@ -1023,7 +988,13 @@ payload = {
             "relationship":
             [
                 {
-                    "text": "Father"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "FTH",
+                            "display": "father"
+                        }
+                    ]
                 }
             ],
             "telecom":
@@ -1031,17 +1002,6 @@ payload = {
                 {
                     "system": "email",
                     "value": "j.stewart@example.com"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": False
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": False
                 }
             ]
         }
@@ -1355,21 +1315,15 @@ print(response.text)
     [
         {
             "id": "1ba81cb4-7f97-429d-b0d8-4c4f067b11a5",
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": true
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": true
-                }
-            ],
             "relationship":
             [
                 {
                     "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "SPS",
+                            "display": "spouse"
+                        },
                         {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
@@ -1386,7 +1340,6 @@ print(response.text)
                             "display": "Emergency contact"
                         }
                     ],
-                    "text": "Spouse"
                 }
             ],
             "name":
@@ -1403,21 +1356,16 @@ print(response.text)
         },
         {
             "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": false
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": false
-                }
-            ],
             "relationship":
             [
                 {
-                    "text": "Mother"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "MTH",
+                            "display": "mother"
+                        }
+                    ]
                 }
             ],
             "name":
@@ -1434,21 +1382,16 @@ print(response.text)
         },
         {
             "id": "30639a10-18c2-4222-8d26-32b2ca36a1bb",
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": false
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": false
-                }
-            ],
             "relationship":
             [
                 {
-                    "text": "Father"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "FTH",
+                            "display": "father"
+                        }
+                    ]
                 }
             ],
             "name":
@@ -1745,6 +1688,11 @@ curl --request PUT \
                 {
                     "coding": [
                         {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "SPS",
+                            "display": "spouse"
+                        },
+                        {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
                             "display": "Authorized for release of information"
@@ -1759,8 +1707,7 @@ curl --request PUT \
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ],
-                    "text": "Spouse"
+                    ]
                 }
             ],
             "telecom":
@@ -1768,17 +1715,6 @@ curl --request PUT \
                 {
                     "system": "email",
                     "value": "danjones@example.com"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": true
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": true
                 }
             ]
         },
@@ -1791,7 +1727,13 @@ curl --request PUT \
             "relationship":
             [
                 {
-                    "text": "Mother"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "MTH",
+                            "display": "mother"
+                        }
+                    ]
                 }
             ],
             "telecom":
@@ -1799,17 +1741,6 @@ curl --request PUT \
                 {
                     "system": "phone",
                     "value": "5557327068"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": false
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": false
                 }
             ]
         },
@@ -1822,7 +1753,13 @@ curl --request PUT \
             "relationship":
             [
                 {
-                    "text": "Father"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "FTH",
+                            "display": "father"
+                        }
+                    ]
                 }
             ],
             "telecom":
@@ -1830,17 +1767,6 @@ curl --request PUT \
                 {
                     "system": "email",
                     "value": "j.stewart@example.com"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": false
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": false
                 }
             ]
         }
@@ -2074,6 +2000,11 @@ payload = {
                 {
                     "coding": [
                         {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "SPS",
+                            "display": "spouse"
+                        },
+                        {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
                             "display": "Authorized for release of information"
@@ -2089,7 +2020,6 @@ payload = {
                             "display": "Emergency contact"
                         }
                     ],
-                    "text": "Spouse"
                 }
             ],
             "telecom":
@@ -2097,17 +2027,6 @@ payload = {
                 {
                     "system": "email",
                     "value": "danjones@example.com"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": True
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": True
                 }
             ]
         },
@@ -2120,7 +2039,13 @@ payload = {
             "relationship":
             [
                 {
-                    "text": "Mother"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "MTH",
+                            "display": "mother"
+                        }
+                    ]
                 }
             ],
             "telecom":
@@ -2128,17 +2053,6 @@ payload = {
                 {
                     "system": "phone",
                     "value": "5557327068"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": False
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": False
                 }
             ]
         },
@@ -2151,7 +2065,13 @@ payload = {
             "relationship":
             [
                 {
-                    "text": "Father"
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                            "code": "FTH",
+                            "display": "father"
+                        }
+                    ]
                 }
             ],
             "telecom":
@@ -2159,17 +2079,6 @@ payload = {
                 {
                     "system": "email",
                     "value": "j.stewart@example.com"
-                }
-            ],
-            "extension":
-            [
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                    "valueBoolean": False
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                    "valueBoolean": False
                 }
             ]
         }
@@ -2500,21 +2409,15 @@ print(response.text)
                 [
                     {
                         "id": "1ba81cb4-7f97-429d-b0d8-4c4f067b11a5",
-                        "extension":
-                        [
-                            {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                                "valueBoolean": true
-                            },
-                            {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                                "valueBoolean": true
-                            }
-                        ],
                         "relationship":
                         [
                             {
                                 "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                                        "code": "SPS",
+                                        "display": "spouse"
+                                    },
                                     {
                                         "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                                         "code": "ARI",
@@ -2530,8 +2433,7 @@ print(response.text)
                                         "code": "EMC",
                                         "display": "Emergency contact"
                                     }
-                                ],
-                                "text": "Spouse"
+                                ]
                             }
                         ],
                         "name":
@@ -2547,22 +2449,17 @@ print(response.text)
                         ]
                     },
                     {
-                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
-                        "extension":
-                        [
-                            {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                                "valueBoolean": false
-                            },
-                            {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                                "valueBoolean": false
-                            }
-                        ],
+                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3"
                         "relationship":
                         [
                             {
-                                "text": "Mother"
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                                        "code": "MTH",
+                                        "display": "mother"
+                                    }                                    
+                                ]
                             }
                         ],
                         "name":
@@ -2579,21 +2476,16 @@ print(response.text)
                     },
                     {
                         "id": "30639a10-18c2-4222-8d26-32b2ca36a1bb",
-                        "extension":
-                        [
-                            {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
-                                "valueBoolean": false
-                            },
-                            {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
-                                "valueBoolean": false
-                            }
-                        ],
                         "relationship":
                         [
                             {
-                                "text": "Father"
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                                        "code": "FTH",
+                                        "display": "father"
+                                    }
+                                ]
                             }
                         ],
                         "name":
