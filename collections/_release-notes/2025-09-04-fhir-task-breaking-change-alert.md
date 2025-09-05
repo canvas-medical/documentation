@@ -1,6 +1,6 @@
 ---
-title: Upcoming Breaking Change - Phase 1 of changes to the FHIR Task update endpoint
-date: 2025-09-04 08:00:00
+title: Upcoming Breaking Change - Phase 1 of Changes to the FHIR Task Update Endpoint
+date: 2025-09-05
 layout: productupdates
 tags: breaking-change
 ---
