@@ -97,6 +97,7 @@ from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent, NoteStates
 open_note_states = [
     NoteStates.NEW,
     NoteStates.PUSHED,
+    NoteStates.CONVERTED,
     NoteStates.UNLOCKED,
     NoteStates.RESTORED,
     NoteStates.UNDELETED,
@@ -116,7 +117,9 @@ open_notes_via_multiple_queries = Note.objects.filter(dbid__in=open_note_ids)
 
 To get a note's current state, retrieve its
 [`CurrentNoteStateEvent`](/sdk/data-note/#currentnotestateevent) and check the
-`state` attribute.
+`state` attribute. If you are trying to assess if the current note state represents
+that note as being editable, you can call the `editable()` method on the
+`CurrentNoteStateEvent` object.
 
 ```python
 from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent
@@ -124,6 +127,18 @@ from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent
 note = Note.objects.first()
 
 current_note_state = CurrentNoteStateEvent.objects.get(note=note).state
+is_editable = current_note_state.editable()
+```
+
+### Get the current claim of a given note
+You can retrieve the current claim using the method `get_claim()` presented in the Note object.
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.first()
+claim = note.get_claim()
+
 ```
 
 ## Filtering

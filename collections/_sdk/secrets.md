@@ -23,12 +23,7 @@ These declared secrets become available for configuration in the Canvas Admin UI
     "protocols": [
       {
         "class": "live_notifications.protocols.my_protocol:Protocol",
-        "description": "A protocol that does xyz...",
-        "data_access": {
-          "event": "",
-          "read": [],
-          "write": []
-        }
+        "description": "A protocol that does xyz..."
       }
     ]
   },

@@ -70,25 +70,30 @@ run `canvas init`, and answer the prompt to name your plugin.
 ```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Paperwork Eviscerator
-Project created in /Users/andrew/src/canvas-plugins/paperwork_eviscerator
+Project created in /Users/andrew/src/canvas-plugins/paperwork-eviscerator
 ```
 
-This output shows the location of our freshly generated plugin.
+This output shows the location of our freshly generated plugin project.
 
 ## 4. Navigate the structure of a plugin
 
 Let's take a look at what was generated for us.
 
 ```sh
-$ tree paperwork_eviscerator/
-paperwork_eviscerator/
-|-- CANVAS_MANIFEST.json
-|-- README.md
-`-- protocols
-    |-- __init__.py
-    `-- my_protocol.py
+$ tree paperwork-eviscerator/
+paperwork-eviscerator/
+├── paperwork_eviscerator
+│    ├── CANVAS_MANIFEST.json
+│    ├── README.md
+│    └── protocols
+│         ├── __init__.py
+│         └── my_protocol.py
+├── pyproject.toml
+└── tests
+    ├── __init__.py
+    └── test_models.py
 
-2 directories, 4 files
+5 directories, 9 files
 ```
 
 ### CANVAS_MANIFEST.json
@@ -216,8 +221,8 @@ instance.
 
 ## 7. Deploy and use your plugin
 
-When your plugin is just the way you'd like it, deploying is simple. Simply
-run `canvas install <path/to/plugin>` and your plugin will be packaged,
+When your plugin is just the way you'd like it, deploying is simple. Simply navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and
+run `canvas install <path/to/plugin_package>` (i.e. `canvas install paperwork_eviscerator`) and your plugin will be packaged,
 uploaded, installed, and enabled. As you make changes to your plugin, run the
 same command to update the code of the installed plugin.
 

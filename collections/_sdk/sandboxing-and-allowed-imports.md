@@ -191,6 +191,7 @@ A data validation library using Python type annotations for parsing and validati
 - `ConfigDict`
 - `constr`
 - `Field`
+- `RootModel`
 - `ValidationError`
 
 ##### `rapidfuzz`
@@ -238,6 +239,7 @@ The following Python builtin functions are available within the sandbox:
 - `dict`
 - `enumerate`
 - `filter`
+- `getattr`
 - `hasattr`
 - `iter`
 - `list`

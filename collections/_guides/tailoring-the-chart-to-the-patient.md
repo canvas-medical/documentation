@@ -39,11 +39,11 @@ run `canvas init`, and answer the prompt to name your plugin.
 ```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Pediatric Patient Chart Customizations
-Project created in /Users/andrew/src/canvas-plugins/pediatric_patient_chart_customizations
+Project created in /Users/andrew/src/canvas-plugins/pediatric-patient-chart-customizations
 ```
 
-This output shows the location of our freshly generated plugin. In this
-directory, you'll see a default class (`protocols/my_protocol.py`) provided as a starting point for your
+This output shows the location of our freshly generated plugin project. In this
+directory, you'll see a default class (`pediatric_patient_chart_customizations/protocols/my_protocol.py`) provided as a starting point for your
 code.
 
 ```sh
