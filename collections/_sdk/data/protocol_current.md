@@ -1,7 +1,7 @@
 ---
-title: "ProtocolCurrent"
+title: "Protocol Current"
 slug: "data-protocol-current"
-excerpt: "Canvas SDK ProtocolCurrent"
+excerpt: "Canvas SDK Protocol Current"
 hidden: false
 ---
 
