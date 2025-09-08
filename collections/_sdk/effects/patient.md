@@ -74,7 +74,7 @@ The `PatientAddress` dataclass represents a patient's address information.
 | `country`     | `str`        | Country code                   | Yes      |
 | `use`         | `AddressUse` | Address type (e.g., home, work) | Yes      |
 
-{% include alert.html type="warning" content="Address updates are **replace-based**. When updating a patient's addresses, the provided address list will completely replace all existing addresses. If you provide an empty list, all existing addresses will be deleted." %}
+{% include alert.html type="warning" content="Address updates are <b>replace-based</b>. When updating a patient's addresses, the provided address list will completely replace all existing addresses. If you provide an empty list, all existing addresses will be deleted." %}
 
 
 ## PatientPreferredPharmacy
