@@ -62,6 +62,17 @@ staff.top_role_abbreviation
 # MD
 ```
 
+To get `Staff` licenses. 
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+staff.licenses.all()
+# <QuerySet [<StaffLicense: CA License for Larry Weed>]>
+
+```
+
 ## Attributes
 
 ### Staff
@@ -149,6 +160,22 @@ staff.top_role_abbreviation
 | state       | String                                                  |
 | staff       | [Staff](#staff)                                         |
 
+### StaffLicense
+
+| Field Name                          | Type                         |
+|-------------------------------------|------------------------------|
+| id                                  | UUID                         |      
+| dbid                                | Integer                      |
+| staff                               | [Staff](#staff)              |
+| issuing_authority_long_name         | String                       |
+| issuing_authority_url               | URL                          |
+| license_or_certification_identifier | String                       |
+| issuance_date                       | Date                         |
+| expiration_date                     | Date                         |
+| license_type                        | [LicenseType](#license-type) |
+| primary                             | Boolean                      |
+| state                               | String                       |
+
 ### StaffPhoto
 
 | Field Name | Type            |
@@ -174,9 +201,22 @@ staff.top_role_abbreviation
 | permissions            | JSON                       |
 | role_type              | [RoleType](#role-type)     |
 
-### Enumeration types
 
-## Role Domain
+## Enumeration types
+
+### License Type
+
+| Value         | Description   |
+|---------------|---------------|
+| CLIA          | CLIA          |
+| DEA           | DEA           |
+| PTAN          | PTAN          |
+| STATE_LICENSE | State License |
+| TAXONOMY      | Taxonomy      |
+| SPI           | SPI           |
+| OTHER         | Other         |
+
+### Role Domain
 
 | Value          | Abbreviation | Description    |
 | -------------- | ------------ | -------------- |
@@ -184,7 +224,7 @@ staff.top_role_abbreviation
 | ADMINISTRATIVE | ADM          | Administrative |
 | HYBRID         | HYB          | Hybrid         |
 
-## Role Type
+### Role Type
 
 | Value        | Description  |
 | ------------ | ------------ |
@@ -192,11 +232,12 @@ staff.top_role_abbreviation
 | LICENSED     | Licensed     |
 | PROVIDER     | Provider     |
 
+
+
 ## Computed Properties
 
-### Staff
-
 - `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
+
 
 <br/>
 <br/>
