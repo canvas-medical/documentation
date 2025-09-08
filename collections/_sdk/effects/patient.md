@@ -29,6 +29,7 @@ The `Patient` effect enables the creation of patient records within the Canvas s
 | `previous_names`         | `list[str]` or `None`                        | List of patient's previous names            | No       |
 | `contact_points`         | `list[PatientContactPoint]` or `None`        | Patient's contact information               | No       |
 | `external_identifiers`   | `list[PatientExternalIdentifier]` or `None`  | Patient's external identifiers              | No       |
+| `preferred_pharmacies`   | `list[PatientPreferredPharmacy]` or `None`   | Patient's preferred pharmacies              | No       |
 
 ## PatientContactPoint
 
@@ -53,6 +54,15 @@ The `PatientExternalIdentifier` dataclass represents an external identifier (ID)
 |-------------|--------|--------------------------------------------------------------------------------------------|----------|
 | `system`    | `str`  | URL of the system of origin for the external ID (e.g., `http://hl7.org/fhir/sid/us-ssn`)   | Yes      |
 | `value`     | `str`  | The external ID or membership number/value                                                 | Yes      |
+
+## PatientPreferredPharmacy
+
+The `PatientPreferredPharmacy` dataclass represents a patient's preferred pharmacy, and if it's their default pharmacy.
+
+| Attribute  | Type   | Description                       | Required |
+|------------|--------|-----------------------------------|----------|
+| `ncpdp_id` | `str`  | The ncpdp ID of the pharmacy      | Yes      |
+| `default`  | `bool` | True if it's the default pharmacy | Yes      |
 
 ## Implementation Details
 

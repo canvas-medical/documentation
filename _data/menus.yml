@@ -624,6 +624,9 @@ effects_module:
  - title: "Patient External ID"
    url: /sdk/effect-create-patient-external-identifier/
    description: Create a new external identifier for a patient.
+ - title: "Patient Preferred Pharmacies"
+   url: /sdk/effect-create-patient-preferred-pharmacies/
+   description: Interact with a patient's preferred pharmacies.
  - title: "Patient Metadata"
    url: /sdk/effect-patient-metadata/
    description: Interact with patient metadata.
