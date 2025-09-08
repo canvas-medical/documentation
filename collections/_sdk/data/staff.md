@@ -62,6 +62,17 @@ staff.top_role_abbreviation
 # MD
 ```
 
+To get `Staff` licenses. 
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+staff.licenses.all()
+# <QuerySet [<StaffLicense: CA License for Larry Weed>]>
+
+```
+
 ## Attributes
 
 ### Staff
@@ -176,6 +187,24 @@ staff.top_role_abbreviation
 | role_type              | [RoleType](#role-type)     |
 
 
+### StaffLicense
+
+| Field Name                          | Type                         |
+|-------------------------------------|------------------------------|
+| id                                  | UUID                         |      
+| dbid                                | Integer                      |
+| staff                               | [Staff](#staff)              |
+| issuing_authority_long_name         | String                       |
+| issuing_authority_url               | URL                          |
+| license_or_certification_identifier | String                       |
+| issuance_date                       | Date                         |
+| expiration_date                     | Date                         |
+| license_type                        | [LicenseType](#license-type) |
+| primary                             | Boolean                      |
+| state                               | String                       |
+
+
+
 ### Enumeration types
 
 ## Role Domain
@@ -194,6 +223,18 @@ staff.top_role_abbreviation
 | NON_LICENSED | Non-Licensed |
 | LICENSED     | Licensed     |
 | PROVIDER     | Provider     |
+
+## License Type
+
+| Value         | Description   |
+|---------------|---------------|
+| CLIA          | CLIA          |
+| DEA           | DEA           |
+| PTAN          | PTAN          |
+| STATE_LICENSE | State License |
+| TAXONOMY      | Taxonomy      |
+| SPI           | SPI           |
+| OTHER         | Other         |
 
 <br/>
 <br/>
