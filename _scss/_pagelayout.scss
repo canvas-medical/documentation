@@ -16,6 +16,12 @@
             max-width: 800px;
             max-height: var(--body-height);
             overflow-y: auto;
+            
+            // Ensure images stay within content boundaries
+            img {
+                max-width: 100%;
+                height: auto;
+            }
         }
     }
     // Centered layout with ToC and side panels
@@ -44,6 +50,12 @@
             }    
             @media (max-width: $breakpoint-sm) {
                 min-width: 70%;
+            }
+            
+            // Ensure images stay within content boundaries
+            img {
+                max-width: 100%;
+                height: auto;
             }
         }
         .sidepanels {
