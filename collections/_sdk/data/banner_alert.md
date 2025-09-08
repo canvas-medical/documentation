@@ -1,7 +1,7 @@
 ---
-title: "Banner Alert"
+title: "BannerAlert"
 slug: "data-banner-alert"
-excerpt: "Canvas SDK Banner Alert"
+excerpt: "Canvas SDK BannerAlert"
 hidden: false
 ---
 
@@ -39,41 +39,41 @@ The `filter` method can be used to filter by desired attributes. The following e
 
 ### BannerAlert
 
-| Field Name   | Type                                             |
-| ------------ | ------------------------------------------------ |
-| dbid         | Integer                                          |
-| created      | DateTime                                         |
-| modified     | DateTime                                         |
-| patient      | [Patient](/sdk/data-patient/#patient)            |
-| plugin_name  | String                                           |
-| key          | String                                           |
-| narrative    | String                                           |
-| placement    | [BannerAlertPlacement](#banneralertplacement)[]  |
-| intent       | [BannerAlertIntent](#banneralertintent)          |
-| href         | String                                           |
-| status       | [BannerAlertStatus](#banneralertstatus)          |
+| Field Name  | Type                                            |
+| ----------- | ----------------------------------------------- |
+| dbid        | Integer                                         |
+| created     | DateTime                                        |
+| modified    | DateTime                                        |
+| patient     | [Patient](/sdk/data-patient/#patient)           |
+| plugin_name | String                                          |
+| key         | String                                          |
+| narrative   | String                                          |
+| placement   | [BannerAlertPlacement](#banneralertplacement)[] |
+| intent      | [BannerAlertIntent](#banneralertintent)         |
+| href        | String                                          |
+| status      | [BannerAlertStatus](#banneralertstatus)         |
 
 ## Enumeration types
 
 ### BannerAlertStatus
 
 | Value    | Label    |
-| -------  | -------  |
+| -------- | -------- |
 | active   | Active   |
 | inactive | Inactive |
 
 ### BannerAlertIntent
 
-| Value    | Label    |
-| -------  | -------  |
-| info     | Info     |
-| warning  | Warning  |
-| alert    | Alert    |
+| Value   | Label   |
+| ------- | ------- |
+| info    | Info    |
+| warning | Warning |
+| alert   | Alert   |
 
 ### BannerAlertPlacement
 
 | Value            | Label            |
-| -------          | -------          |
+| ---------------- | ---------------- |
 | chart            | Chart            |
 | timeline         | Timeline         |
 | appointment_card | Appointment Card |

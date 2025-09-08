@@ -1,7 +1,7 @@
 ---
-title: "Protocol Override"
+title: "ProtocolOverride"
 slug: "data-protocol-override"
-excerpt: "Canvas SDK Protocol Override"
+excerpt: "Canvas SDK ProtocolOverride"
 hidden: false
 ---
 
@@ -56,7 +56,7 @@ overrides = ProtocolOverride.objects.filter(status="active")
 ### ProtocolOverride
 
 | Field Name       | Type                                  |
-|------------------|---------------------------------------|
+| ---------------- | ------------------------------------- |
 | id               | UUID                                  |
 | dbid             | Integer                               |
 | created          | DateTime                              |
@@ -83,7 +83,7 @@ overrides = ProtocolOverride.objects.filter(status="active")
 ### IntervalUnit
 
 | Value  | Label  |
-|--------|--------|
+| ------ | ------ |
 | days   | days   |
 | months | months |
 | years  | years  |
@@ -91,7 +91,7 @@ overrides = ProtocolOverride.objects.filter(status="active")
 ### Status
 
 | Value    | Label    |
-|----------|----------|
+| -------- | -------- |
 | active   | active   |
 | inactive | inactive |
 
