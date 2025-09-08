@@ -1,7 +1,7 @@
 ---
-title: "Billing Line Item"
+title: "BillingLineItem"
 slug: "data-billing-line-item"
-excerpt: "Canvas SDK Billing Line Item"
+excerpt: "Canvas SDK BillingLineItem"
 hidden: false
 ---
 

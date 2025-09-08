@@ -1,7 +1,7 @@
 ---
-title: "Compound Medication"
+title: "CompoundMedication"
 slug: "data-compound-medication"
-excerpt: "Canvas SDK Compound Medication"
+excerpt: "Canvas SDK CompoundMedication"
 hidden: false
 ---
 
@@ -65,7 +65,7 @@ controlled_active = CompoundMedication.objects.filter(
 ### CompoundMedication
 
 | Field Name               | Type                                                        |
-|--------------------------|-------------------------------------------------------------|
+| ------------------------ | ----------------------------------------------------------- |
 | dbid                     | Integer                                                     |
 | active                   | Boolean                                                     |
 | formulation              | String                                                      |
@@ -78,7 +78,7 @@ controlled_active = CompoundMedication.objects.filter(
 ### PotencyUnit
 
 | Value   | Label       |
-|---------|-------------|
+| ------- | ----------- |
 | C62412  | Applicator  |
 | C54564  | Blister     |
 | C64696  | Caplet      |
@@ -111,7 +111,7 @@ controlled_active = CompoundMedication.objects.filter(
 ### ControlledSubstanceSchedule
 
 | Key                    | Value | Label        |
-|------------------------|-------|--------------|
+| ---------------------- | ----- | ------------ |
 | SCHEDULE_NOT_SCHEDULED | N     | None         |
 | SCHEDULE_II            | II    | Schedule II  |
 | SCHEDULE_III           | III   | Schedule III |

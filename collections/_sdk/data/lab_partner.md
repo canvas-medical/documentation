@@ -1,7 +1,7 @@
 ---
-title: "Lab Partner & Lab Partner Test"
+title: "LabPartner & LabPartnerTest"
 slug: "data-lab-partner-and-test"
-excerpt: "Canvas SDK Lab Partner and Lab Partner Test models"
+excerpt: "Canvas SDK LabPartner and LabPartnerTest models"
 hidden: false
 ---
 
@@ -60,7 +60,7 @@ tests_with_code = LabPartnerTest.objects.filter(order_code="XYZ123")
 ### LabPartner
 
 | Field Name                  | Type    | Description                                                         |
-|-----------------------------|---------|---------------------------------------------------------------------|
+| --------------------------- | ------- | ------------------------------------------------------------------- |
 | id                          | UUID    | The universally unique identifier for the lab partner.              |
 | dbid                        | Integer | The internal database identifier (primary key) for the lab partner. |
 | name                        | String  | The name of the lab partner.                                        |
@@ -72,7 +72,7 @@ tests_with_code = LabPartnerTest.objects.filter(order_code="XYZ123")
 ### LabPartnerTest Attributes
 
 | Field Name  | Type       | Description                                                                                  |
-|-------------|------------|----------------------------------------------------------------------------------------------|
+| ----------- | ---------- | -------------------------------------------------------------------------------------------- |
 | id          | UUID       | The universally unique identifier for the test record.                                       |
 | dbid        | Integer    | The internal database identifier (primary key) for the test record.                          |
 | lab_partner | ForeignKey | A reference to the related `LabPartner` (accessible via the related name `available_tests`). |

@@ -1,7 +1,7 @@
 ---
-title: "Detected Issue"
+title: "DetectedIssue"
 slug: "data-detected-issue"
-excerpt: "Canvas SDK Detected Issue"
+excerpt: "Canvas SDK DetectedIssue"
 hidden: false
 ---
 
@@ -65,7 +65,7 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 ### DetectedIssue
 
 | Field Name              | Type                                              |
-|-------------------------|---------------------------------------------------|
+| ----------------------- | ------------------------------------------------- |
 | id                      | UUID                                              |
 | dbid                    | Integer                                           |
 | created                 | DateTime                                          |
@@ -87,18 +87,16 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 
 ### DetectedIssueEvidence
 
-
-| Field Name     | Type                                                    |
-|----------------|---------------------------------------------------------|
-| id             | UUID                                                    |
-| dbid           | Integer                                                 |
-| system         | String                                                  |
-| version        | String                                                  |
-| code           | String                                                  |
-| display        | String                                                  |
-| user_selected  | Boolean                                                 |
+| Field Name     | Type                                                     |
+| -------------- | -------------------------------------------------------- |
+| id             | UUID                                                     |
+| dbid           | Integer                                                  |
+| system         | String                                                   |
+| version        | String                                                   |
+| code           | String                                                   |
+| display        | String                                                   |
+| user_selected  | Boolean                                                  |
 | detected_issue | [DetectedIssue](/sdk/data-detected-issue/#detectedissue) |
-
 
 <br/>
 <br/>
