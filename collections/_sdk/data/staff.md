@@ -43,7 +43,7 @@ staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
 # [('phone', '8005551416'), ('email', 'support@canvasmedical.com')]
 ```
 
-To show a `Staff` full name, credentialed name, the topmost clinical role or top role abbreviation use the properties `full_name`, `credentialed_name`, `top_clinical_role` or `top_role_abbreviation`. 
+To show a `Staff` full name, credentialed name, the topmost clinical role or top role abbreviation use the properties `full_name`, `credentialed_name`, `top_clinical_role` or `top_role_abbreviation`.
 
 ```python
 from canvas_sdk.v1.data.staff import Staff
@@ -78,7 +78,7 @@ staff.licenses.all()
 ### Staff
 
 | Field Name                 | Type                                                            |
-|----------------------------|-----------------------------------------------------------------|
+| -------------------------- | --------------------------------------------------------------- |
 | id                         | UUID                                                            |
 | dbid                       | Integer                                                         |
 | created                    | DateTime                                                        |
@@ -126,22 +126,22 @@ staff.licenses.all()
 
 ### StaffContactPoint
 
-| Field Name         | Type                                                                  |
-|--------------------|-----------------------------------------------------------------------|
-| id                 | UUID                                                                  |
-| dbid               | Integer                                                               |
-| system             | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
-| value              | String                                                                |
-| use                | String                                                                |
-| use_notes          | String                                                                |
-| rank               | Integer                                                               |
-| state              | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
-| staff              | [Staff](#staff)                                                       |
+| Field Name | Type                                                                  |
+| ---------- | --------------------------------------------------------------------- |
+| id         | UUID                                                                  |
+| dbid       | Integer                                                               |
+| system     | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
+| value      | String                                                                |
+| use        | String                                                                |
+| use_notes  | String                                                                |
+| rank       | Integer                                                               |
+| state      | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
+| staff      | [Staff](#staff)                                                       |
 
 ### StaffAddress
 
 | Field Name  | Type                                                    |
-|-------------|---------------------------------------------------------|
+| ----------- | ------------------------------------------------------- |
 | id          | UUID                                                    |
 | dbid        | Integer                                                 |
 | line1       | String                                                  |
@@ -160,33 +160,6 @@ staff.licenses.all()
 | state       | String                                                  |
 | staff       | [Staff](#staff)                                         |
 
-### StaffPhoto
-
-| Field Name  | Type                                                    |
-|-------------|---------------------------------------------------------|
-| dbid        | Integer                                                 |
-| created     | DateTime                                                |
-| modified    | DateTime                                                |
-| staff       | [Staff](#staff)                                         |
-| url         | String                                                  |
-| title       | String                                                  |
-
-
-### StaffRole
-
-| Field Name             | Type                       |
-|------------------------|----------------------------|
-| dbid                   | Integer                    |
-| staff                  | [Staff](#staff)            |
-| internal_code          | String                     |
-| public_abbreviation    | String                     |
-| domain                 | [RoleDomain](#role-domain) |
-| name                   | String                     |
-| domain_privilege_level | Integer                    |
-| permissions            | JSON                       |
-| role_type              | [RoleType](#role-type)     |
-
-
 ### StaffLicense
 
 | Field Name                          | Type                         |
@@ -203,28 +176,35 @@ staff.licenses.all()
 | primary                             | Boolean                      |
 | state                               | String                       |
 
+### StaffPhoto
+
+| Field Name | Type            |
+| ---------- | --------------- |
+| dbid       | Integer         |
+| created    | DateTime        |
+| modified   | DateTime        |
+| staff      | [Staff](#staff) |
+| url        | String          |
+| title      | String          |
+
+### StaffRole
+
+| Field Name             | Type                       |
+| ---------------------- | -------------------------- |
+| dbid                   | Integer                    |
+| staff                  | [Staff](#staff)            |
+| internal_code          | String                     |
+| public_abbreviation    | String                     |
+| domain                 | [RoleDomain](#role-domain) |
+| name                   | String                     |
+| domain_privilege_level | Integer                    |
+| permissions            | JSON                       |
+| role_type              | [RoleType](#role-type)     |
 
 
-### Enumeration types
+## Enumeration types
 
-## Role Domain
-
-| Value          | Abbreviation | Description    |
-|----------------|--------------|----------------|
-| CLINICAL       | CLI          | Clinical       |
-| ADMINISTRATIVE | ADM          | Administrative |
-| HYBRID         | HYB          | Hybrid         |
-
-
-## Role Type
-
-| Value        | Description  |
-|--------------|--------------|
-| NON_LICENSED | Non-Licensed |
-| LICENSED     | Licensed     |
-| PROVIDER     | Provider     |
-
-## License Type
+### License Type
 
 | Value         | Description   |
 |---------------|---------------|
@@ -235,6 +215,29 @@ staff.licenses.all()
 | TAXONOMY      | Taxonomy      |
 | SPI           | SPI           |
 | OTHER         | Other         |
+
+### Role Domain
+
+| Value          | Abbreviation | Description    |
+| -------------- | ------------ | -------------- |
+| CLINICAL       | CLI          | Clinical       |
+| ADMINISTRATIVE | ADM          | Administrative |
+| HYBRID         | HYB          | Hybrid         |
+
+### Role Type
+
+| Value        | Description  |
+| ------------ | ------------ |
+| NON_LICENSED | Non-Licensed |
+| LICENSED     | Licensed     |
+| PROVIDER     | Provider     |
+
+
+
+## Computed Properties
+
+- `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
+
 
 <br/>
 <br/>

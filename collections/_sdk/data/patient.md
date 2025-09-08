@@ -229,6 +229,14 @@ for metadata in patient_metadata:
    log.info(f"Patient metadata: {metadata.key}, {metadata.value}") # favorite_color - red
 ```
 
+### PatientFacilityAddress
+
+| Field Name     | Type                              |
+| -------------- | --------------------------------- |
+| patientaddress | [PatientAddress](#PatientAddress) |
+| facility       | [Facility](#facility)             |
+| room_number    | String                            |
+
 ## Enumeration types
 
 ### SexAtBirth
@@ -240,6 +248,16 @@ for metadata in patient_metadata:
 | O                 | other   |
 | UNK               | unknown |
 | "" (empty string) | ""      |
+
+## Computed Properties
+
+### Patient
+
+- `full_name`: The full name of the patient, combining first, middle, and last names.
+- `preferred_pharmacy`: The patient's preferred pharmacy for medication fulfillment.
+- `preferred_full_name`: The patient's preferred full name, if different from the legal name.
+- `preferred_first_name`: The patient's preferred first name, if different from the legal first name.
+- `primary_phone_number`: The patient's primary contact number.
 
 <br/>
 <br/>
