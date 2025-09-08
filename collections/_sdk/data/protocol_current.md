@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `ProtocolCurrent` object represents the current state of clinical protocols applied to patients within Canvas. Protocols are structured plans or guidelines that outline specific medical interventions, treatments, or care pathways for managing various health conditions. The `ProtocolCurrent` object contains essential information about the protocol's status, associated patient, and relevant clinical details.
+The `ProtocolCurrent` object represents the current state of clinical protocols applied to patients within Canvas. Protocols are typically structured plans or guidelines that outline specific medical interventions, treatments, or care pathways for managing various health conditions. The `ProtocolCurrent` object contains essential information about the protocol's status, associated patient, and relevant clinical details.
 
 ## Basic Usage
 
