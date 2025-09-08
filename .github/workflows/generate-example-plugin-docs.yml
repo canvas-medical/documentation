@@ -37,8 +37,11 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.PROJECT_AND_REPO_PAT }}
-          branch: generate-example-plugin-docs
-          title: Generate Example Plugin Docs
+          branch: generate-docs-${{ github.run_id }}-${{ github.run_attempt }}
+          title: Generate Example Plugin Docs ${{ github.run_id }}-${{ github.run_attempt }}
           commit-message: "Generate docs for recently changed example plugins"
           body: |
-            Generate docs for recently changed example plugins
+            ## TODO
+            - [ ] Remove redundant header if the plugin's readme also specifies a header
+            - [ ] Review content for accuracy and edit to seem a little less generated. Make sure the content is actually useful and relevant. Remember, this is just a starting point.
+            - [ ] Add an entry to `_data/menus.yml` (This could be automated, but it would resort every list in that file, which is not desireable.)

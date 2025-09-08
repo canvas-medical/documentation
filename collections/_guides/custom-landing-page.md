@@ -31,7 +31,7 @@ The Canvas CLI gives you a great head start when creating a plugin. Simply run
   canvas init
 ```
 
-Then, follow the prompts to name and configure your new plugin.
+Then, follow the prompts to name and configure your new plugin project.
 
 
 ### Step 2: Update you protocol

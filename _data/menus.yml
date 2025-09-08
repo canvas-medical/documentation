@@ -524,6 +524,9 @@ sdk:
 sdk_overview:
  - title: "Introduction"
    url: /sdk/
+ - title: "Example Plugins"
+   url: /sdk/examples/
+   identifier: example_plugins
  - title: "Caching Module"
    url: /sdk/caching/
  - title: "Command Line Interface"
@@ -551,6 +554,28 @@ sdk_overview:
    url: /sdk/secrets/
  - title: "Utils Module"
    url: /sdk/utils/
+ - title: "Testing Utilities"
+   url: /sdk/testing-utils/
+
+example_plugins:
+  - title: "API Samples"
+    url: /sdk/example-api_samples/
+  - title: "Charting API Examples"
+    url: /sdk/example-charting_api_examples/
+  - title: "Patient Creation Platform Sync"
+    url: /sdk/example-patient_creation_platform_sync/
+  - title: "Upsert Patient Metadata"
+    url: /sdk/example-upsert_patient_metadata/
+  - title: "Vitals Visualizer"
+    url: /sdk/example-vitals_visualizer_plugin/
+  - title: "Patient Portal Customization"
+    identifier: portal_customization
+
+portal_customization:
+  - title: "Launch an Application"
+    url: /sdk/example-portal-customization-launch_application/
+  - title: "Customize with Widgets"
+    url: /sdk/example-portal-customization-widgets/
 
 sdk_handlers:
   - title: "Action Buttons"

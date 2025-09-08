@@ -26,10 +26,14 @@ puts
 
 # Define a method to get an external consultation on what a file's purpose is
 def get_llm_explanation_of_python_code(python_file)
+  raise "You must set OPENAI_API_KEY" if OPENAI_API_KEY.nil?
+
   filename = python_file.basename.to_s
   file_content = python_file.readlines.join
 
-  raise "You must set OPENAI_API_KEY" if OPENAI_API_KEY.nil?
+  if file_content.strip.empty?
+    return nil
+  end
 
   uri = URI('https://api.openai.com/v1/responses')
 
@@ -134,7 +138,12 @@ ALERTHTML
           # If it's a python file, ensure the syntax highlighting is set to
           # python when dumping the contents
           elsif child_path.extname == ".py"
-            file.puts(get_llm_explanation_of_python_code(child_path))
+            llm_explanation = get_llm_explanation_of_python_code(child_path)
+            if llm_explanation.nil?
+              file.puts("This file is empty.")
+              next
+            end
+            file.puts(llm_explanation)
             file.puts()
             file.puts("```python")
             child_path.readlines.each do |line|

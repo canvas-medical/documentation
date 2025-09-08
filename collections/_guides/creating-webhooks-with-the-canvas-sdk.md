@@ -21,7 +21,7 @@ run `canvas init`, and answer the prompt to name your plugin.
 ```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Task Webhook
-Project created in /Users/andrew/src/canvas-plugins/task_webhook
+Project created in /Users/andrew/src/canvas-plugins/task-webhook
 ```
 
 This output shows the location of our freshly generated plugin.
