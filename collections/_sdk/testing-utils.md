@@ -8,7 +8,7 @@ Canvas SDK provides a streamlined testing environment and local database support
 
 This guide covers two key capabilities:
 
-1. [`canvas[test-utils]`](#canstest-utils-easy-transactional-plugin-testing) — a set of tools and dependencies for writing database-backed tests.
+1. [Plugin testing with pytest](#plugin-testing-with-pytest) — `canvas[test-utils]` introduces a set of tools and dependencies for writing database-backed tests.
 2. [Database seeding in CLI](#local-db-seeding-via-run-plugin) — populate or reset your local database when running plugins locally.
 
 ---
@@ -54,7 +54,7 @@ dependencies = [
 or install directly via `uv`:
 
 ```bash
-uv install canvas[test-utils]
+uv add "canvas[test-utils]"
 ````
 
 You can now run your test suite using:
