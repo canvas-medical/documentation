@@ -31,6 +31,7 @@ The `Patient` effect enables the creation and updating of patient records within
 | `external_identifiers`   | `list[PatientExternalIdentifier]` or `None`  | Patient's external identifiers              | No       |
 | `patient_id`             | `str` or `None`                              | Patient ID (required for updates only)      | No       |
 | `addresses`              | `list[PatientAddress]` or `None`             | Patient's addresses                         | No       |
+| `preferred_pharmacies`   | `list[PatientPreferredPharmacy]` or `None`   | Patient's preferred pharmacies              | No       |
 
 ## PatientContactPoint
 
@@ -56,6 +57,7 @@ The `PatientExternalIdentifier` dataclass represents an external identifier (ID)
 | `system`    | `str`  | URL of the system of origin for the external ID (e.g., `http://hl7.org/fhir/sid/us-ssn`)   | Yes      |
 | `value`     | `str`  | The external ID or membership number/value                                                 | Yes      |
 
+
 ## PatientAddress
 
 The `PatientAddress` dataclass represents a patient's address information.
@@ -73,6 +75,16 @@ The `PatientAddress` dataclass represents a patient's address information.
 | `use`         | `AddressUse` | Address type (e.g., home, work) | Yes      |
 
 ⚠️ **Important**: Address updates are **replace-based**. When updating a patient's addresses, the provided address list will completely replace all existing addresses. If you provide an empty list, all existing addresses will be deleted.
+
+## PatientPreferredPharmacy
+
+The `PatientPreferredPharmacy` dataclass represents a patient's preferred pharmacy, and if it's their default pharmacy.
+
+| Attribute  | Type   | Description                       | Required |
+|------------|--------|-----------------------------------|----------|
+| `ncpdp_id` | `str`  | The ncpdp ID of the pharmacy      | Yes      |
+| `default`  | `bool` | True if it's the default pharmacy | Yes      |
+
 
 ## Implementation Details
 
