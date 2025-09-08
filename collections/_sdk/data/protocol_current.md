@@ -25,6 +25,7 @@ protocol = ProtocolCurrent.objects.get(id="12345678-1234-1234-1234-123456789012"
 from canvas_sdk.v1.data.protocol_current import ProtocolCurrent
 
 protocols = ProtocolCurrent.objects.filter(status="active", patient_id="b80b1cdc2e6a4aca90ccebc02e683f35")
+```
 
 ## Attributes
 
@@ -55,4 +56,3 @@ protocols = ProtocolCurrent.objects.filter(status="active", patient_id="b80b1cdc
 | patient_id             | UUID          |
 | result_hash            | String        |
 | snooze_date            | DateTime      |
-```
