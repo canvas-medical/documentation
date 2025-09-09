@@ -1,7 +1,7 @@
 ---
-title: "Patient Consent"
+title: "PatientConsent"
 slug: "data-patient-consent"
-excerpt: "Canvas SDK Patient Consent"
+excerpt: "Canvas SDK PatientConsent"
 hidden: false
 ---
 

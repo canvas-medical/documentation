@@ -8,554 +8,551 @@ main:
   - title: Product Updates
     url: /product-updates/release-notes
 api:
- - title: "Canvas FHIR"
-   identifier: api_canvas_fhir
- - title: "FHIR Resources"
-   identifier: api_resources
- - title: "Custom APIs"
-   identifier: api_custom_apis
+  - title: "Canvas FHIR"
+    identifier: api_canvas_fhir
+  - title: "FHIR Resources"
+    identifier: api_resources
+  - title: "Custom APIs"
+    identifier: api_custom_apis
 
 api_canvas_fhir:
- - title: "Introduction"
-   url: /api/
- - title: "Software Requirements"
-   url: /api/software-requirements/
- - title: "Quickstart"
-   url: /api/quickstart/
- - title: "Customer Authentication"
-   url: /api/customer-authentication/
- - title: Authentication Best Practices
-   url: /api/authentication-best-practices/
- - title: "Conditional Requests"
-   url: /api/conditional-requests/
- - title: "Pagination"
-   url: /api/pagination
- - title: "Date Filtering"
-   url: /api/date-filtering
- - title: "Errors"
-   url: /api/errors/
- - title: "Service Base URLs"
-   url: /api/service-base-urls/
-
+  - title: "Introduction"
+    url: /api/
+  - title: "Software Requirements"
+    url: /api/software-requirements/
+  - title: "Quickstart"
+    url: /api/quickstart/
+  - title: "Customer Authentication"
+    url: /api/customer-authentication/
+  - title: Authentication Best Practices
+    url: /api/authentication-best-practices/
+  - title: "Conditional Requests"
+    url: /api/conditional-requests/
+  - title: "Pagination"
+    url: /api/pagination
+  - title: "Date Filtering"
+    url: /api/date-filtering
+  - title: "Errors"
+    url: /api/errors/
+  - title: "Service Base URLs"
+    url: /api/service-base-urls/
 
 api_resources:
- - title: "Allergen"
-   url: /api/allergen/
-   identifier: api_allergen
- - title: "AllergyIntolerance"
-   url: /api/allergyintolerance/
-   identifier: api_allergyintolerance
- - title: "Appointment"
-   url: /api/appointment/
-   identifier: api_appointment
- - title: "CarePlan"
-   url: /api/careplan/
-   identifier: api_careplan
- - title: "CareTeam"
-   url: /api/careteam/
-   identifier: api_careteam
- - title: "Claim"
-   url: /api/claim/
-   identifier: api_claim
- - title: "Communication"
-   url: /api/communication/
-   identifier: api_communication
- - title: "Condition"
-   url: /api/condition/
-   identifier: api_condition
- - title: "Consent"
-   url: /api/consent/
-   identifier: api_consent
- - title: "Coverage"
-   url: /api/coverage/
-   identifier: api_coverage
- - title: "CoverageEligibilityRequest"
-   url: /api/coverageeligibilityrequest/
-   identifier: api_coverageeligibilityrequest
- - title: "CoverageEligibilityResponse"
-   url: /api/coverageeligibilityresponse/
-   identifier: api_coverageeligibilityresponse
- - title: "DetectedIssue"
-   url: /api/detectedissue/
-   identifier: api_detectedissue
- - title: "Device"
-   url: /api/device/
-   identifier: api_device
- - title: "DiagnosticReport"
-   url: /api/diagnosticreport/
-   identifier: api_diagnosticreport
- - title: "DocumentReference"
-   url: /api/documentreference/
-   identifier: api_documentreference
- - title: "Encounter"
-   url: /api/encounter/
-   identifier: api_encounter
- - title: "Goal"
-   url: /api/goal/
-   identifier: api_goal
- - title: "Group"
-   url: /api/group/
-   identifier: api_group
- - title: "Immunization"
-   url: /api/immunization/
-   identifier: api_immunization
- - title: "Location"
-   url: /api/location/
-   identifier: api_location
- - title: "Media"
-   url: /api/media/
-   identifier: api_media
- - title: "Medication"
-   url: /api/medication/
-   identifier: api_medication
- - title: "MedicationRequest"
-   url: /api/medicationrequest/
-   identifier: api_medicationrequest
- - title: "MedicationStatement"
-   url: /api/medicationstatement/
-   identifier: api_medicationstatement
- - title: "Observation"
-   url: /api/observation/
-   identifier: api_observation
- - title: "Organization"
-   url: /api/organization/
-   identifier: api_organization
- - title: "Patient"
-   url: /api/patient/
-   identifier: api_patient
- - title: "PaymentNotice"
-   url: /api/paymentnotice/
-   identifier: api_paymentnotice
- - title: "Practitioner"
-   url: /api/practitioner/
-   identifier: api_practitioner
- - title: "Procedure"
-   url: /api/procedure/
-   identifier: api_procedure
- - title: "Provenance"
-   url: /api/provenance/
-   identifier: api_provenance
- - title: "Questionnaire"
-   url: /api/questionnaire/
-   identifier: api_questionnaire
- - title: "QuestionnaireResponse"
-   url: /api/questionnaireresponse/
-   identifier: api_questionnaireresponse
- - title: "Schedule"
-   url: /api/schedule/
-   identifier: api_schedule
- - title: "Slot"
-   url: /api/slot/
-   identifier: api_slot
- - title: "Task"
-   url: /api/task/
-   identifier: api_task
+  - title: "Allergen"
+    url: /api/allergen/
+    identifier: api_allergen
+  - title: "AllergyIntolerance"
+    url: /api/allergyintolerance/
+    identifier: api_allergyintolerance
+  - title: "Appointment"
+    url: /api/appointment/
+    identifier: api_appointment
+  - title: "CarePlan"
+    url: /api/careplan/
+    identifier: api_careplan
+  - title: "CareTeam"
+    url: /api/careteam/
+    identifier: api_careteam
+  - title: "Claim"
+    url: /api/claim/
+    identifier: api_claim
+  - title: "Communication"
+    url: /api/communication/
+    identifier: api_communication
+  - title: "Condition"
+    url: /api/condition/
+    identifier: api_condition
+  - title: "Consent"
+    url: /api/consent/
+    identifier: api_consent
+  - title: "Coverage"
+    url: /api/coverage/
+    identifier: api_coverage
+  - title: "CoverageEligibilityRequest"
+    url: /api/coverageeligibilityrequest/
+    identifier: api_coverageeligibilityrequest
+  - title: "CoverageEligibilityResponse"
+    url: /api/coverageeligibilityresponse/
+    identifier: api_coverageeligibilityresponse
+  - title: "DetectedIssue"
+    url: /api/detectedissue/
+    identifier: api_detectedissue
+  - title: "Device"
+    url: /api/device/
+    identifier: api_device
+  - title: "DiagnosticReport"
+    url: /api/diagnosticreport/
+    identifier: api_diagnosticreport
+  - title: "DocumentReference"
+    url: /api/documentreference/
+    identifier: api_documentreference
+  - title: "Encounter"
+    url: /api/encounter/
+    identifier: api_encounter
+  - title: "Goal"
+    url: /api/goal/
+    identifier: api_goal
+  - title: "Group"
+    url: /api/group/
+    identifier: api_group
+  - title: "Immunization"
+    url: /api/immunization/
+    identifier: api_immunization
+  - title: "Location"
+    url: /api/location/
+    identifier: api_location
+  - title: "Media"
+    url: /api/media/
+    identifier: api_media
+  - title: "Medication"
+    url: /api/medication/
+    identifier: api_medication
+  - title: "MedicationRequest"
+    url: /api/medicationrequest/
+    identifier: api_medicationrequest
+  - title: "MedicationStatement"
+    url: /api/medicationstatement/
+    identifier: api_medicationstatement
+  - title: "Observation"
+    url: /api/observation/
+    identifier: api_observation
+  - title: "Organization"
+    url: /api/organization/
+    identifier: api_organization
+  - title: "Patient"
+    url: /api/patient/
+    identifier: api_patient
+  - title: "PaymentNotice"
+    url: /api/paymentnotice/
+    identifier: api_paymentnotice
+  - title: "Practitioner"
+    url: /api/practitioner/
+    identifier: api_practitioner
+  - title: "Procedure"
+    url: /api/procedure/
+    identifier: api_procedure
+  - title: "Provenance"
+    url: /api/provenance/
+    identifier: api_provenance
+  - title: "Questionnaire"
+    url: /api/questionnaire/
+    identifier: api_questionnaire
+  - title: "QuestionnaireResponse"
+    url: /api/questionnaireresponse/
+    identifier: api_questionnaireresponse
+  - title: "Schedule"
+    url: /api/schedule/
+    identifier: api_schedule
+  - title: "Slot"
+    url: /api/slot/
+    identifier: api_slot
+  - title: "Task"
+    url: /api/task/
+    identifier: api_task
 
 api_allergen:
- - title: "Allergen Read"
-   url: /api/allergen/#read
- - title: "Allergen Search"
-   url: /api/allergen/#search
+  - title: "Allergen Read"
+    url: /api/allergen/#read
+  - title: "Allergen Search"
+    url: /api/allergen/#search
 api_allergyintolerance:
- - title: "AllergyIntolerance Create"
-   url: /api/allergyintolerance/#create
- - title: "AllergyIntolerance Read"
-   url: /api/allergyintolerance/#read
- - title: "AllergyIntolerance Update"
-   url: /api/allergyintolerance/#update
- - title: "AllergyIntolerance Search"
-   url: /api/allergyintolerance/#search
+  - title: "AllergyIntolerance Create"
+    url: /api/allergyintolerance/#create
+  - title: "AllergyIntolerance Read"
+    url: /api/allergyintolerance/#read
+  - title: "AllergyIntolerance Update"
+    url: /api/allergyintolerance/#update
+  - title: "AllergyIntolerance Search"
+    url: /api/allergyintolerance/#search
 api_appointment:
- - title: "Appointment Create"
-   url: /api/appointment/#create
- - title: "Appointment Read"
-   url: /api/appointment/#read
- - title: "Appointment Update"
-   url: /api/appointment/#update
- - title: "Appointment Search"
-   url: /api/appointment/#search
+  - title: "Appointment Create"
+    url: /api/appointment/#create
+  - title: "Appointment Read"
+    url: /api/appointment/#read
+  - title: "Appointment Update"
+    url: /api/appointment/#update
+  - title: "Appointment Search"
+    url: /api/appointment/#search
 api_careplan:
- - title: "CarePlan Read"
-   url: /api/careplan/#read
- - title: "CarePlan Search"
-   url: /api/careplan/#search
+  - title: "CarePlan Read"
+    url: /api/careplan/#read
+  - title: "CarePlan Search"
+    url: /api/careplan/#search
 api_careteam:
- - title: "CareTeam Read"
-   url: /api/careteam/#read
- - title: "CareTeam Update"
-   url: /api/careteam/#update
- - title: "CareTeam Search"
-   url: /api/careteam/#search
+  - title: "CareTeam Read"
+    url: /api/careteam/#read
+  - title: "CareTeam Update"
+    url: /api/careteam/#update
+  - title: "CareTeam Search"
+    url: /api/careteam/#search
 api_claim:
- - title: "Claim Create"
-   url: /api/claim/#create
- - title: "Claim Read"
-   url: /api/claim/#read
- - title: "Claim Update"
-   url: /api/claim/#update
- - title: "Claim Search"
-   url: /api/claim/#search
- - title: "Claim Operations"
-   url: /api/claim-operations
+  - title: "Claim Create"
+    url: /api/claim/#create
+  - title: "Claim Read"
+    url: /api/claim/#read
+  - title: "Claim Update"
+    url: /api/claim/#update
+  - title: "Claim Search"
+    url: /api/claim/#search
+  - title: "Claim Operations"
+    url: /api/claim-operations
 api_communication:
- - title: "Communication Create"
-   url: /api/communication/#create
- - title: "Communication Read"
-   url: /api/communication/#read
- - title: "Communication Search"
-   url: /api/communication/#search
+  - title: "Communication Create"
+    url: /api/communication/#create
+  - title: "Communication Read"
+    url: /api/communication/#read
+  - title: "Communication Search"
+    url: /api/communication/#search
 api_condition:
- - title: "Condition Create"
-   url: /api/condition/#create
- - title: "Condition Read"
-   url: /api/condition/#read
- - title: "Condition Update"
-   url: /api/condition/#update
- - title: "Condition Search"
-   url: /api/condition/#search
+  - title: "Condition Create"
+    url: /api/condition/#create
+  - title: "Condition Read"
+    url: /api/condition/#read
+  - title: "Condition Update"
+    url: /api/condition/#update
+  - title: "Condition Search"
+    url: /api/condition/#search
 api_consent:
- - title: "Consent Create"
-   url: /api/consent/#create
- - title: "Consent Read"
-   url: /api/consent/#read
- - title: "Consent Search"
-   url: /api/consent/#search
+  - title: "Consent Create"
+    url: /api/consent/#create
+  - title: "Consent Read"
+    url: /api/consent/#read
+  - title: "Consent Search"
+    url: /api/consent/#search
 api_coverage:
- - title: "Coverage Create"
-   url: /api/coverage/#create
- - title: "Coverage Read"
-   url: /api/coverage/#read
- - title: "Coverage Update"
-   url: /api/coverage/#update
- - title: "Coverage Search"
-   url: /api/coverage/#search
+  - title: "Coverage Create"
+    url: /api/coverage/#create
+  - title: "Coverage Read"
+    url: /api/coverage/#read
+  - title: "Coverage Update"
+    url: /api/coverage/#update
+  - title: "Coverage Search"
+    url: /api/coverage/#search
 api_coverageeligibilityrequest:
- - title: "CoverageEligibilityRequest Create"
-   url: /api/coverageeligibilityrequest/#create
+  - title: "CoverageEligibilityRequest Create"
+    url: /api/coverageeligibilityrequest/#create
 api_coverageeligibilityresponse:
- - title: "CoverageEligibilityResponse Read"
-   url: /api/coverageeligibilityresponse/#read
- - title: "CoverageEligibilityResponse Search"
-   url: /api/coverageeligibilityresponse/#search
+  - title: "CoverageEligibilityResponse Read"
+    url: /api/coverageeligibilityresponse/#read
+  - title: "CoverageEligibilityResponse Search"
+    url: /api/coverageeligibilityresponse/#search
 api_detectedissue:
- - title: "DetectedIssue Create"
-   url: /api/detectedissue/#create
- - title: "DetectedIssue Read"
-   url: /api/detectedissue/#read
- - title: "DetectedIssue Update"
-   url: /api/detectedissue/#update
- - title: "DetectedIssue Search"
-   url: /api/detectedissue/#search
+  - title: "DetectedIssue Create"
+    url: /api/detectedissue/#create
+  - title: "DetectedIssue Read"
+    url: /api/detectedissue/#read
+  - title: "DetectedIssue Update"
+    url: /api/detectedissue/#update
+  - title: "DetectedIssue Search"
+    url: /api/detectedissue/#search
 api_device:
- - title: "Device Read"
-   url: /api/device/#read
- - title: "Device Search"
-   url: /api/device/#search
+  - title: "Device Read"
+    url: /api/device/#read
+  - title: "Device Search"
+    url: /api/device/#search
 api_diagnosticreport:
- - title: "DiagnosticReport Read"
-   url: /api/diagnosticreport/#read
- - title: "DiagnosticReport Search"
-   url: /api/diagnosticreport/#search
- - title: "DiagnosticReport Operations"
-   url: /api/diagnosticreport-operations
+  - title: "DiagnosticReport Read"
+    url: /api/diagnosticreport/#read
+  - title: "DiagnosticReport Search"
+    url: /api/diagnosticreport/#search
+  - title: "DiagnosticReport Operations"
+    url: /api/diagnosticreport-operations
 api_documentreference:
- - title: "DocumentReference Create"
-   url: /api/documentreference/#create
- - title: "DocumentReference Read"
-   url: /api/documentreference/#read
- - title: "DocumentReference Search"
-   url: /api/documentreference/#search
+  - title: "DocumentReference Create"
+    url: /api/documentreference/#create
+  - title: "DocumentReference Read"
+    url: /api/documentreference/#read
+  - title: "DocumentReference Search"
+    url: /api/documentreference/#search
 api_encounter:
- - title: "Encounter Read"
-   url: /api/encounter/#read
- - title: "Encounter Search"
-   url: /api/encounter/#search
+  - title: "Encounter Read"
+    url: /api/encounter/#read
+  - title: "Encounter Search"
+    url: /api/encounter/#search
 api_goal:
- - title: "Goal Read"
-   url: /api/goal/#read
- - title: "Goal Search"
-   url: /api/goal/#search
+  - title: "Goal Read"
+    url: /api/goal/#read
+  - title: "Goal Search"
+    url: /api/goal/#search
 api_group:
- - title: "Group Create"
-   url: /api/group/#create
- - title: "Group Read"
-   url: /api/group/#read
- - title: "Group Update"
-   url: /api/group/#update
- - title: "Group Search"
-   url: /api/group/#search
+  - title: "Group Create"
+    url: /api/group/#create
+  - title: "Group Read"
+    url: /api/group/#read
+  - title: "Group Update"
+    url: /api/group/#update
+  - title: "Group Search"
+    url: /api/group/#search
 api_immunization:
- - title: "Immunization Create"
-   url: /api/immunization/#create
- - title: "Immunization Read"
-   url: /api/immunization/#read
- - title: "Immunization Update"
-   url: /api/immunization/#update
- - title: "Immunization Search"
-   url: /api/immunization/#search
+  - title: "Immunization Create"
+    url: /api/immunization/#create
+  - title: "Immunization Read"
+    url: /api/immunization/#read
+  - title: "Immunization Update"
+    url: /api/immunization/#update
+  - title: "Immunization Search"
+    url: /api/immunization/#search
 api_location:
- - title: "Location Read"
-   url: /api/location/#read
- - title: "Location Search"
-   url: /api/location/#search
+  - title: "Location Read"
+    url: /api/location/#read
+  - title: "Location Search"
+    url: /api/location/#search
 api_media:
- - title: "Media Create"
-   url: /api/media/#create
- - title: "Media Read"
-   url: /api/media/#read
- - title: "Media Search"
-   url: /api/media/#search
+  - title: "Media Create"
+    url: /api/media/#create
+  - title: "Media Read"
+    url: /api/media/#read
+  - title: "Media Search"
+    url: /api/media/#search
 api_medication:
- - title: "Medication Read"
-   url: /api/medication/#read
- - title: "Medication Search"
-   url: /api/medication/#search
+  - title: "Medication Read"
+    url: /api/medication/#read
+  - title: "Medication Search"
+    url: /api/medication/#search
 api_medicationrequest:
- - title: "MedicationRequest Read"
-   url: /api/medicationrequest/#read
- - title: "MedicationRequest Search"
-   url: /api/medicationrequest/#search
+  - title: "MedicationRequest Read"
+    url: /api/medicationrequest/#read
+  - title: "MedicationRequest Search"
+    url: /api/medicationrequest/#search
 api_medicationstatement:
- - title: "MedicationStatement Create"
-   url: /api/medicationstatement/#create
- - title: "MedicationStatement Read"
-   url: /api/medicationstatement/#read
- - title: "MedicationStatement Update"
-   url: /api/medicationstatement/#update
- - title: "MedicationStatement Search"
-   url: /api/medicationstatement/#search
+  - title: "MedicationStatement Create"
+    url: /api/medicationstatement/#create
+  - title: "MedicationStatement Read"
+    url: /api/medicationstatement/#read
+  - title: "MedicationStatement Update"
+    url: /api/medicationstatement/#update
+  - title: "MedicationStatement Search"
+    url: /api/medicationstatement/#search
 api_observation:
- - title: "Observation Create"
-   url: /api/observation/#create
- - title: "Observation Read"
-   url: /api/observation/#read
- - title: "Observation Search"
-   url: /api/observation/#search
+  - title: "Observation Create"
+    url: /api/observation/#create
+  - title: "Observation Read"
+    url: /api/observation/#read
+  - title: "Observation Search"
+    url: /api/observation/#search
 api_organization:
- - title: "Organization Read"
-   url: /api/organization/#read
- - title: "Organization Search"
-   url: /api/organization/#search
+  - title: "Organization Read"
+    url: /api/organization/#read
+  - title: "Organization Search"
+    url: /api/organization/#search
 api_patient:
- - title: "Patient Create"
-   url: /api/patient/#create
- - title: "Patient Read"
-   url: /api/patient/#read
- - title: "Patient Update"
-   url: /api/patient/#update
- - title: "Patient Search"
-   url: /api/patient/#search
+  - title: "Patient Create"
+    url: /api/patient/#create
+  - title: "Patient Read"
+    url: /api/patient/#read
+  - title: "Patient Update"
+    url: /api/patient/#update
+  - title: "Patient Search"
+    url: /api/patient/#search
 api_paymentnotice:
- - title: "PaymentNotice Create"
-   url: /api/paymentnotice/#create
- - title: PaymentNotice Read
-   url: /api/paymentnotice/#read
- - title: "PaymentNotice Search"
-   url: /api/paymentnotice/#search
+  - title: "PaymentNotice Create"
+    url: /api/paymentnotice/#create
+  - title: PaymentNotice Read
+    url: /api/paymentnotice/#read
+  - title: "PaymentNotice Search"
+    url: /api/paymentnotice/#search
 api_practitioner:
- - title: "Practitioner Create"
-   url: /api/practitioner/#create
- - title: "Practitioner Read"
-   url: /api/practitioner/#read
- - title: "Practitioner Update"
-   url: /api/practitioner/#update
- - title: "Practitioner Search"
-   url: /api/practitioner/#search
- - title: "Practitioner Operations"
-   url: /api/practitioner-operations
+  - title: "Practitioner Create"
+    url: /api/practitioner/#create
+  - title: "Practitioner Read"
+    url: /api/practitioner/#read
+  - title: "Practitioner Update"
+    url: /api/practitioner/#update
+  - title: "Practitioner Search"
+    url: /api/practitioner/#search
+  - title: "Practitioner Operations"
+    url: /api/practitioner-operations
 api_procedure:
- - title: "Procedure Read"
-   url: /api/procedure/#read
- - title: "Procedure Search"
-   url: /api/procedure/#search
+  - title: "Procedure Read"
+    url: /api/procedure/#read
+  - title: "Procedure Search"
+    url: /api/procedure/#search
 api_provenance:
- - title: "Provenance Read"
-   url: /api/provenance/#read
- - title: "Provenance Search"
-   url: /api/provenance/#search
+  - title: "Provenance Read"
+    url: /api/provenance/#read
+  - title: "Provenance Search"
+    url: /api/provenance/#search
 api_questionnaire:
- - title: "Questionnaire Read"
-   url: /api/questionnaire/#read
- - title: "Questionnaire Search"
-   url: /api/questionnaire/#search
+  - title: "Questionnaire Read"
+    url: /api/questionnaire/#read
+  - title: "Questionnaire Search"
+    url: /api/questionnaire/#search
 api_questionnaireresponse:
- - title: "QuestionnaireResponse Create"
-   url: /api/questionnaireresponse/#create
- - title: "QuestionnaireResponse Read"
-   url: /api/questionnaireresponse/#read
- - title: "QuestionnaireResponse Update"
-   url: /api/questionnaireresponse/#update
- - title: "QuestionnaireResponse Search"
-   url: /api/questionnaireresponse/#search
+  - title: "QuestionnaireResponse Create"
+    url: /api/questionnaireresponse/#create
+  - title: "QuestionnaireResponse Read"
+    url: /api/questionnaireresponse/#read
+  - title: "QuestionnaireResponse Update"
+    url: /api/questionnaireresponse/#update
+  - title: "QuestionnaireResponse Search"
+    url: /api/questionnaireresponse/#search
 api_schedule:
- - title: "Schedule Search"
-   url: /api/schedule/#search
+  - title: "Schedule Search"
+    url: /api/schedule/#search
 api_slot:
- - title: "Slot Search"
-   url: /api/slot/#search
+  - title: "Slot Search"
+    url: /api/slot/#search
 api_task:
- - title: "Task Create"
-   url: /api/task/#create
- - title: "Task Read"
-   url: /api/task/#read
- - title: "Task Update"
-   url: /api/task/#update
- - title: "Task Search"
-   url: /api/task/#search
-
+  - title: "Task Create"
+    url: /api/task/#create
+  - title: "Task Read"
+    url: /api/task/#read
+  - title: "Task Update"
+    url: /api/task/#update
+  - title: "Task Search"
+    url: /api/task/#search
 
 api_custom_apis:
- - title: "CCDA"
-   url: /api/ccda
- - title: "Letter"
-   url: /api/letter
- - title: "Note"
-   url: /api/note
+  - title: "CCDA"
+    url: /api/ccda
+  - title: "Letter"
+    url: /api/letter
+  - title: "Note"
+    url: /api/note
 
 guides:
- - title: "Guides"
-   identifier: guides_list
+  - title: "Guides"
+    identifier: guides_list
 
 guides_list:
- - title: "Your First Plugin"
-   url: /guides/your-first-plugin/
-   description: Customize the behavior of Canvas using plugins
-   uses:
-     - sdk
+  - title: "Your First Plugin"
+    url: /guides/your-first-plugin/
+    description: Customize the behavior of Canvas using plugins
+    uses:
+      - sdk
 
- - title: "Building a Custom Portal Landing Page"
-   url: /guides/custom-landing-page/
-   description: Customize a patient's landing page with interactive and relevant widgets
-   uses:
-    - sdk
+  - title: "Building a Custom Portal Landing Page"
+    url: /guides/custom-landing-page/
+    description: Customize a patient's landing page with interactive and relevant widgets
+    uses:
+      - sdk
 
- - title: "Creating Webhooks"
-   url: /guides/creating-webhooks-with-the-canvas-sdk/
-   description: Make automatic API requests based on Canvas events
-   uses:
-     - sdk
+  - title: "Creating Webhooks"
+    url: /guides/creating-webhooks-with-the-canvas-sdk/
+    description: Make automatic API requests based on Canvas events
+    uses:
+      - sdk
 
- - title: "Customize Search Results"
-   url: /guides/customize-search-results/
-   description: Add your own logic to surface the right options with the appropriate context
-   uses:
-     - sdk
+  - title: "Customize Search Results"
+    url: /guides/customize-search-results/
+    description: Add your own logic to surface the right options with the appropriate context
+    uses:
+      - sdk
 
- - title: "Embedding a SMART on FHIR App"
-   url: /guides/embedding-a-smart-on-fhir-application/
-   description: Embed a SMART app into Canvas
-   uses:
-     - sdk
-     - fhir_api
+  - title: "Embedding a SMART on FHIR App"
+    url: /guides/embedding-a-smart-on-fhir-application/
+    description: Embed a SMART app into Canvas
+    uses:
+      - sdk
+      - fhir_api
 
- - title: "Creating, Implementing, and Extending a Scribe Parser"
-   url: /guides/scribe-ai-parser/
-   description: Creating, Implementing, and Extending a Scribe Parser
-   uses:
-     - sdk
+  - title: "Creating, Implementing, and Extending a Scribe Parser"
+    url: /guides/scribe-ai-parser/
+    description: Creating, Implementing, and Extending a Scribe Parser
+    uses:
+      - sdk
 
- - title: "Implementing Patient Portal Forms"
-   url: /guides/patient-portal-forms
-   description: Surface Forms Within the Patient Portal
-   uses:
-     - sdk
+  - title: "Implementing Patient Portal Forms"
+    url: /guides/patient-portal-forms
+    description: Surface Forms Within the Patient Portal
+    uses:
+      - sdk
 
- - title: "Improve HCC Coding Accuracy"
-   url: /guides/improve-hcc-coding-accuracy/
-   description: Make HCC coding more intuitive and efficient in Canvas
-   uses:
-     - sdk
-     - fhir_api
+  - title: "Improve HCC Coding Accuracy"
+    url: /guides/improve-hcc-coding-accuracy/
+    description: Make HCC coding more intuitive and efficient in Canvas
+    uses:
+      - sdk
+      - fhir_api
 
- - title: "Staying on Top of Tasks"
-   url: /guides/staying-on-top-of-tasks/
-   description: Create tasks via API? Listen for completion with a plugin!
-   uses:
-     - sdk
-     - fhir_api
+  - title: "Staying on Top of Tasks"
+    url: /guides/staying-on-top-of-tasks/
+    description: Create tasks via API? Listen for completion with a plugin!
+    uses:
+      - sdk
+      - fhir_api
 
- - title: "Submit a Full Vital Panel via FHIR"
-   url: /guides/submit-vitals-via-fhir/
-   description: Learn how to document a full vitals panel via FHIR
-   uses:
-     - fhir_api
+  - title: "Submit a Full Vital Panel via FHIR"
+    url: /guides/submit-vitals-via-fhir/
+    description: Learn how to document a full vitals panel via FHIR
+    uses:
+      - fhir_api
 
- - title: "Tailoring the Chart to Your Patient"
-   url: /guides/tailoring-the-chart-to-the-patient/
-   description: Customize a patient's chart so the features most relevant to them are front-and-center
-   uses:
-     - sdk
+  - title: "Tailoring the Chart to Your Patient"
+    url: /guides/tailoring-the-chart-to-the-patient/
+    description: Customize a patient's chart so the features most relevant to them are front-and-center
+    uses:
+      - sdk
 
- - title: "Visualizing Data Within the Canvas Chart"
-   url: /guides/growth-charts/
-   description: Visualizing observations as pediatric growth charts
-   uses:
-     - sdk
+  - title: "Visualizing Data Within the Canvas Chart"
+    url: /guides/growth-charts/
+    description: Visualizing observations as pediatric growth charts
+    uses:
+      - sdk
 
- - title: "Your First Application"
-   url: /guides/your-first-application
-   description: Install and customize embeddable applications in Canvas
-   uses:
-     - sdk
+  - title: "Your First Application"
+    url: /guides/your-first-application
+    description: Install and customize embeddable applications in Canvas
+    uses:
+      - sdk
 
- - title: "Customize your panel buttons"
-   url: /guides/customize-panel-buttons/
-   description: Add, hide and reorder the main and patient page panel buttons
-   uses:
-     - sdk
+  - title: "Customize your panel buttons"
+    url: /guides/customize-panel-buttons/
+    description: Add, hide and reorder the main and patient page panel buttons
+    uses:
+      - sdk
 
- - title: "Additional fields on patient profile"
-   url: /guides/profile-additional-fields/
-   description: How to add additional fields to the patient profile
-   uses:
-     - sdk
-
+  - title: "Additional fields on patient profile"
+    url: /guides/profile-additional-fields/
+    description: How to add additional fields to the patient profile
+    uses:
+      - sdk
 
 guides_templates:
- - title: "Behavioral Health"
-   url: /guides/bh
-   description: tktk
-   identifier: guides_care-models-bh
+  - title: "Behavioral Health"
+    url: /guides/bh
+    description: tktk
+    identifier: guides_care-models-bh
 
 sdk:
- - title: "SDK Overview"
-   identifier: sdk_overview
+  - title: "SDK Overview"
+    identifier: sdk_overview
 
 sdk_overview:
- - title: "Introduction"
-   url: /sdk/
- - title: "Example Plugins"
-   url: /sdk/examples/
-   identifier: example_plugins
- - title: "Caching Module"
-   url: /sdk/caching/
- - title: "Command Line Interface"
-   url: /sdk/canvas_cli/
- - title: "Commands Module"
-   url: /sdk/commands/
- - title: "Data Module"
-   url: /sdk/data/
-   identifier: data_module
- - title: "Effects Module"
-   url: /sdk/effects/
-   identifier: effects_module
- - title: "Events Module"
-   url: /sdk/events/
- - title: "Handlers Module"
-   url: /sdk/handlers/
-   identifier: sdk_handlers
- - title: "Protocols Module"
-   url: /sdk/protocols/
- - title: "Questionnaires"
-   url: /sdk/questionnaires/
- - title: "Sandboxing and Allowed Imports"
-   url: /sdk/sandboxing-and-allowed-imports/
- - title: "Secrets"
-   url: /sdk/secrets/
- - title: "Utils Module"
-   url: /sdk/utils/
- - title: "Testing Utilities"
-   url: /sdk/testing-utils/
+  - title: "Introduction"
+    url: /sdk/
+  - title: "Example Plugins"
+    url: /sdk/examples/
+    identifier: example_plugins
+  - title: "Caching Module"
+    url: /sdk/caching/
+  - title: "Command Line Interface"
+    url: /sdk/canvas_cli/
+  - title: "Commands Module"
+    url: /sdk/commands/
+  - title: "Data Module"
+    url: /sdk/data/
+    identifier: data_module
+  - title: "Effects Module"
+    url: /sdk/effects/
+    identifier: effects_module
+  - title: "Events Module"
+    url: /sdk/events/
+  - title: "Handlers Module"
+    url: /sdk/handlers/
+    identifier: sdk_handlers
+  - title: "Protocols Module"
+    url: /sdk/protocols/
+  - title: "Questionnaires"
+    url: /sdk/questionnaires/
+  - title: "Sandboxing and Allowed Imports"
+    url: /sdk/sandboxing-and-allowed-imports/
+  - title: "Secrets"
+    url: /sdk/secrets/
+  - title: "Utils Module"
+    url: /sdk/utils/
+  - title: "Testing Utilities"
+    url: /sdk/testing-utils/
 
 example_plugins:
   - title: "API Samples"
@@ -597,199 +594,204 @@ simple_api_handlers:
     url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
- - title: "Banner Alerts"
-   url: /sdk/effect-banner-alerts/
-   description: Contextual information in a patient's chart.
- - title: "Billing Line Items"
-   url: /sdk/effect-billing-line-items/
-   description: Add, modify, or remove billing codes on a note.
- - title: "Compound Medications"
-   url: /sdk/effect-compound-medication/
-   description: Create or update compound medications.
- - title: "Form Result"
-   url: /sdk/form-result-effect
-   description: Effect for dynamically displaying forms in the Patient Portal.
- - title: "Layout Effects"
-   url: /sdk/layout-effect/
-   description: Modify or interact with the layout in Canvas.
- - title: "Messages"
-   url: /sdk/effect-messages/
-   description: Interact with messages in Canvas.
- - title: "Notes"
-   url: /sdk/effect-notes/
-   description: Interact with notes in Canvas.
- - title: "Patient"
-   url: /sdk/effect-patient/
-   description: Interact with patient data.
- - title: "Patient External ID"
-   url: /sdk/effect-create-patient-external-identifier/
-   description: Create a new external identifier for a patient.
- - title: "Patient Metadata"
-   url: /sdk/effect-patient-metadata/
-   description: Interact with patient metadata.
- - title: "Patient Metadata Create Form"
-   url: /sdk/patient-metadata-create-form-effect
-   description: Effect for dynamically displaying forms in the Patient profile.
- - title: "Patient Portal"
-   url: /sdk/patient-portal/
-   description: Customize your Patient Portal.
- - title: "Protocol Cards"
-   url: /sdk/effect-protocol-cards/
-   description: Calls to action in a patient's chart, commonly used for decision support intervention.
- - title: "Questionnaires"
-   url: /sdk/effect-questionnaires/
-   description: Interact with questionnaires and interviews.
- - title: "Tasks"
-   url: /sdk/effect-tasks/
-   description: Create or update tasks.
+  - title: "Banner Alerts"
+    url: /sdk/effect-banner-alerts/
+    description: Contextual information in a patient's chart.
+  - title: "Billing Line Items"
+    url: /sdk/effect-billing-line-items/
+    description: Add, modify, or remove billing codes on a note.
+  - title: "Compound Medications"
+    url: /sdk/effect-compound-medication/
+    description: Create or update compound medications.
+  - title: "Form Result"
+    url: /sdk/form-result-effect
+    description: Effect for dynamically displaying forms in the Patient Portal.
+  - title: "Layout Effects"
+    url: /sdk/layout-effect/
+    description: Modify or interact with the layout in Canvas.
+  - title: "Messages"
+    url: /sdk/effect-messages/
+    description: Interact with messages in Canvas.
+  - title: "Notes"
+    url: /sdk/effect-notes/
+    description: Interact with notes in Canvas.
+  - title: "Patient"
+    url: /sdk/effect-patient/
+    description: Interact with patient data.
+  - title: "Patient External ID"
+    url: /sdk/effect-create-patient-external-identifier/
+    description: Create a new external identifier for a patient.
+  - title: "Patient Metadata"
+    url: /sdk/effect-patient-metadata/
+    description: Interact with patient metadata.
+  - title: "Patient Metadata Create Form"
+    url: /sdk/patient-metadata-create-form-effect
+    description: Effect for dynamically displaying forms in the Patient profile.
+  - title: "Patient Portal"
+    url: /sdk/patient-portal/
+    description: Customize your Patient Portal.
+  - title: "Protocol Cards"
+    url: /sdk/effect-protocol-cards/
+    description: Calls to action in a patient's chart, commonly used for decision support intervention.
+  - title: "Questionnaires"
+    url: /sdk/effect-questionnaires/
+    description: Interact with questionnaires and interviews.
+  - title: "Tasks"
+    url: /sdk/effect-tasks/
+    description: Create or update tasks.
 
 data_module:
- - title: "Allergy Intolerance"
-   url: /sdk/data-allergy-intolerance/
-   description: Harmful or undesired physiological responses associated with exposure to a substance.
- - title: "Appointment"
-   url: /sdk/data-appointment/
-   description: A scheduled meeting between a patient and a provider.
- - title: "Assessment"
-   url: /sdk/data-assessment/
-   description: Clinical assessment of a patient's condition.
- - title: "Banner Alert"
-   url: /sdk/data-banner-alert/
-   description: An alert notification linked to a patient.
- - title: "Billing Line Item"
-   url: /sdk/data-billing-line-item/
-   description: A billable code linked to a patient note.
- - title: "Business Line"
-   url: /sdk/data-business-line/
-   description: A group of patients that share a common brand under an organization.
- - title: "CanvasUser"
-   url: /sdk/data-canvasuser/
-   description: User accounts associated with other records.
- - title: "Care Team"
-   url: /sdk/data-care-team/
-   description: Teams assigned for patient care.
- - title: "Charge Description Master"
-   url: /sdk/data-charge-description-master/
-   description: Billing charges in Canvas that can be added to the note footer.
- - title: "Claim"
-   url: /sdk/data-claim/
-   description: A healthcare claim.
- - title: "Command"
-   url: /sdk/data-command/
-   description: Structured units of documentation in a patient's chart.
- - title: "Common Enumeration Types"
-   url: /sdk/data-enumeration-types/
-   description: Common choice classes used in multiple models.
- - title: "Compound Medication"
-   url: /sdk/data-compound-medication/
-   description: Compound medications, which are custom-made medications tailored to a patient's specific needs.
- - title: "Condition"
-   url: /sdk/data-condition/
-   description: Condition, diagnosis, or reason for seeking medical attention.
- - title: "Coverage"
-   url: /sdk/data-coverage/
-   description: Patient insurance coverage.
- - title: "Detected Issue"
-   url: /sdk/data-detected-issue/
-   description: Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient.
- - title: "Device"
-   url: /sdk/data-device/
-   description: Type of a manufactured item that is used in the provision of healthcare.
- - title: "Imaging"
-   url: /sdk/data-imaging/
-   description: Analysis of imaging tests to obtain information about the health of a patient.
- - title: "Labs"
-   url: /sdk/data-labs/
-   description: Analysis of clinical specimens to obtain information about the health of a patient.
- - title: "Lab Partner"
-   url: /sdk/data-lab-partner-and-test/
-   description: Lab partners and the tests they offer within Canvas.
- - title: "Medication"
-   url: /sdk/data-medication/
-   description: A record of a medication that is being consumed by a patient, either now, in the past, or in the future.
- - title: "Message"
-   url: /sdk/data-message/
-   description: Messages sent to and from Canvas.
- - title: "Note"
-   url: /sdk/data-note/
-   description: Clinical notes on patient charts.
- - title: "Observation"
-   url: /sdk/data-observation/
-   description: Measurements and simple assertions made about a patient.
- - title: "Organization"
-   url: /sdk/data-organization/
-   description: The clinical organization present in the Canvas EMR.
- - title: "Patient"
-   url: /sdk/data-patient/
-   description: Data used to categorize individuals for identification, records matching, and other purposes.
- - title: "Patient Consent"
-   url: /sdk/data-patient-consent/
-   description: Documented patient consents that ensure legal compliance and protect patient rights.
- - title: "Payor Specific Charge"
-   url: /sdk/data-payor-specific-charge/
-   description: A billing charge specific to a certain transactor in Canvas.
- - title: "Posting"
-   url: /sdk/data-posting/
-   description: Payments and postings associated with healthcare claims.
- - title: "PracticeLocation"
-   url: /sdk/data-practicelocation/
-   description: The practice locations present in the Canvas EMR.
- - title: "ProtocolOverride"
-   url: /sdk/data-protocol-override/
-   description: A record of a protocol being snoozed for a patient.
- - title: "Questionnaire"
-   url: /sdk/data-questionnaire
-   description: Groups of coded questions and the coded patient responses.
- - title: "Reason For Visit"
-   url: /sdk/data-reason-for-visit/
-   description: The reason for a patient's visit.
- - title: "Referral"
-   url: /sdk/data-referral/
-   description: A referral directing a specific patient to another provider or specialist.
- - title: "Service Provider"
-   url: /sdk/data-serviceprovider/
-   description: Data associated with Service Providers.
- - title: "Staff"
-   url: /sdk/data-staff
-   description: Data associated with Staff members.
- - title: "Task"
-   url: /sdk/data-task
-   description: Data associated with Tasks.
- - title: "Team"
-   url: /sdk/data-team
-   description: Data associated with Teams.
- - title: "User"
-   url: /sdk/data-user
-   description: Data associated with Users.
- - title: "Value Sets"
-   url: /sdk/data-value-sets/
-   description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
+  - title: "AllergyIntolerance"
+    url: /sdk/data-allergy-intolerance/
+    description: Harmful or undesired physiological responses associated with exposure to a substance.
+  - title: "Appointment"
+    url: /sdk/data-appointment/
+    description: A scheduled meeting between a patient and a provider.
+  - title: "Assessment"
+    url: /sdk/data-assessment/
+    description: Clinical assessment of a patient's condition.
+  - title: "BannerAlert"
+    url: /sdk/data-banner-alert/
+    description: An alert notification linked to a patient.
+  - title: "BillingLineItem"
+    url: /sdk/data-billing-line-item/
+    description: A billable code linked to a patient note.
+  - title: "BusinessLine"
+    url: /sdk/data-business-line/
+    description: A group of patients that share a common brand under an organization.
+  - title: "CanvasUser"
+    url: /sdk/data-canvasuser/
+    description: User accounts associated with other records.
+  - title: "CareTeam"
+    url: /sdk/data-care-team/
+    description: Teams assigned for patient care.
+  - title: "ChargeDescriptionMaster"
+    url: /sdk/data-charge-description-master/
+    description: Billing charges in Canvas that can be added to the note footer.
+  - title: "Claim"
+    url: /sdk/data-claim/
+    description: A healthcare claim.
+  - title: "Command"
+    url: /sdk/data-command/
+    description: Structured units of documentation in a patient's chart.
+  - title: "CommonEnumerationTypes"
+    url: /sdk/data-enumeration-types/
+    description: Common choice classes used in multiple models.
+  - title: "CompoundMedication"
+    url: /sdk/data-compound-medication/
+    description: Compound medications, which are custom-made medications tailored to a patient's specific needs.
+  - title: "Condition"
+    url: /sdk/data-condition/
+    description: Condition, diagnosis, or reason for seeking medical attention.
+  - title: "Coverage"
+    url: /sdk/data-coverage/
+    description: Patient insurance coverage.
+  - title: "DetectedIssue"
+    url: /sdk/data-detected-issue/
+    description: Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient.
+  - title: "Device"
+    url: /sdk/data-device/
+    description: Type of a manufactured item that is used in the provision of healthcare.
+  - title: "Facility"
+    url: /sdk/data-facility/
+    description: A location where healthcare services are provided.
+  - title: "Imaging"
+    url: /sdk/data-imaging/
+    description: Analysis of imaging tests to obtain information about the health of a patient.
+  - title: "Labs"
+    url: /sdk/data-labs/
+    description: Analysis of clinical specimens to obtain information about the health of a patient.
+  - title: "LabPartner"
+    url: /sdk/data-lab-partner-and-test/
+    description: Lab partners and the tests they offer within Canvas.
+  - title: "Medication"
+    url: /sdk/data-medication/
+    description: A record of a medication that is being consumed by a patient, either now, in the past, or in the future.
+  - title: "Message"
+    url: /sdk/data-message/
+    description: Messages sent to and from Canvas.
+  - title: "Note"
+    url: /sdk/data-note/
+    description: Clinical notes on patient charts.
+  - title: "Observation"
+    url: /sdk/data-observation/
+    description: Measurements and simple assertions made about a patient.
+  - title: "Organization"
+    url: /sdk/data-organization/
+    description: The clinical organization present in the Canvas EMR.
+  - title: "Patient"
+    url: /sdk/data-patient/
+    description: Data used to categorize individuals for identification, records matching, and other purposes.
+  - title: "PatientConsent"
+    url: /sdk/data-patient-consent/
+    description: Documented patient consents that ensure legal compliance and protect patient rights.
+  - title: "PayorSpecificCharge"
+    url: /sdk/data-payor-specific-charge/
+    description: A billing charge specific to a certain transactor in Canvas.
+  - title: "Posting"
+    url: /sdk/data-posting/
+    description: Payments and postings associated with healthcare claims.
+  - title: "PracticeLocation"
+    url: /sdk/data-practicelocation/
+    description: The practice locations present in the Canvas EMR.
+  - title: "ProtocolCurrent"
+    url: /sdk/data-protocol-current/
+    description: The current state of clinical protocols applied to patients within Canvas.
+  - title: "ProtocolOverride"
+    url: /sdk/data-protocol-override/
+    description: A record of a protocol being snoozed for a patient.
+  - title: "Questionnaire"
+    url: /sdk/data-questionnaire
+    description: Groups of coded questions and the coded patient responses.
+  - title: "ReasonForVisit"
+    url: /sdk/data-reason-for-visit/
+    description: The reason for a patient's visit.
+  - title: "Referral"
+    url: /sdk/data-referral/
+    description: A referral directing a specific patient to another provider or specialist.
+  - title: "ServiceProvider"
+    url: /sdk/data-serviceprovider/
+    description: Data associated with Service Providers.
+  - title: "Staff"
+    url: /sdk/data-staff
+    description: Data associated with Staff members.
+  - title: "Task"
+    url: /sdk/data-task
+    description: Data associated with Tasks.
+  - title: "Team"
+    url: /sdk/data-team
+    description: Data associated with Teams.
+  - title: "User"
+    url: /sdk/data-user
+    description: Data associated with Users.
+  - title: "ValueSets"
+    url: /sdk/data-value-sets/
+    description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
 
 releasenotes:
- - title: "Product Updates"
-   identifier: releasenotes_product_updates
- - title: "Beta Programs"
-   identifier: releasenotes_betas
-
+  - title: "Product Updates"
+    identifier: releasenotes_product_updates
+  - title: "Beta Programs"
+    identifier: releasenotes_betas
 
 releasenotes_product_updates:
- - title: "Changelog"
-   url: /product-updates/release-notes
- - title: "Important Dates"
-   url: /product-updates/important-dates
- - title: "Roadmap"
-   url: /product-updates/roadmap
- - title: "Recently Released"
-   url: /product-updates/recently-released
+  - title: "Changelog"
+    url: /product-updates/release-notes
+  - title: "Important Dates"
+    url: /product-updates/important-dates
+  - title: "Roadmap"
+    url: /product-updates/roadmap
+  - title: "Recently Released"
+    url: /product-updates/recently-released
 
 releasenotes_betas:
- - title: "CancelRX"
-   url: /product-updates/cancelrx
- - title: "Commands API"
-   url: /product-updates/commands-api
- - title: "Commands Module"
-   url: /product-updates/commands-module
- - title: "Note API"
-   url: /product-updates/note-api
- - title: "Patient Portal"
-   url: /product-updates/patient-portal
+  - title: "CancelRX"
+    url: /product-updates/cancelrx
+  - title: "Commands API"
+    url: /product-updates/commands-api
+  - title: "Commands Module"
+    url: /product-updates/commands-module
+  - title: "Note API"
+    url: /product-updates/note-api
+  - title: "Patient Portal"
+    url: /product-updates/patient-portal

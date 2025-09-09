@@ -7,7 +7,7 @@ hidden: false
 
 # Patient Effect
 
-The `Patient` effect enables the creation of patient records within the Canvas system. This effect captures demographic information, contact details, and clinical associations necessary for patient registration.
+The `Patient` effect enables the creation and updating of patient records within the Canvas system. This effect captures demographic information, contact details, and clinical associations necessary for patient registration and updates.
 
 ## Attributes
 
@@ -29,6 +29,9 @@ The `Patient` effect enables the creation of patient records within the Canvas s
 | `previous_names`         | `list[str]` or `None`                        | List of patient's previous names            | No       |
 | `contact_points`         | `list[PatientContactPoint]` or `None`        | Patient's contact information               | No       |
 | `external_identifiers`   | `list[PatientExternalIdentifier]` or `None`  | Patient's external identifiers              | No       |
+| `patient_id`             | `str` or `None`                              | Patient ID (required for updates only)      | No       |
+| `addresses`              | `list[PatientAddress]` or `None`             | Patient's addresses                         | No       |
+| `preferred_pharmacies`   | `list[PatientPreferredPharmacy]` or `None`   | Patient's preferred pharmacies              | No       |
 
 ## PatientContactPoint
 
@@ -54,12 +57,45 @@ The `PatientExternalIdentifier` dataclass represents an external identifier (ID)
 | `system`    | `str`  | URL of the system of origin for the external ID (e.g., `http://hl7.org/fhir/sid/us-ssn`)   | Yes      |
 | `value`     | `str`  | The external ID or membership number/value                                                 | Yes      |
 
+
+## PatientAddress
+
+The `PatientAddress` dataclass represents a patient's address information.
+
+### Attributes
+
+| Attribute     | Type         | Description                    | Required |
+|---------------|--------------|--------------------------------|----------|
+| `line1`       | `str`        | Street address line 1          | Yes      |
+| `line2`       | `str` or `None` | Street address line 2       | No       |
+| `city`        | `str`        | City name                      | Yes      |
+| `state_code`  | `str`        | State code (e.g., "CA", "NY")   | Yes      |
+| `postal_code` | `str`        | Postal/ZIP code                | Yes      |
+| `country`     | `str`        | Country code                   | Yes      |
+| `use`         | `AddressUse` | Address type (e.g., home, work) | Yes      |
+
+{% include alert.html type="warning" content="Address updates are <b>replace-based</b>. When updating a patient's addresses, the provided address list will completely replace all existing addresses. If you provide an empty list, all existing addresses will be deleted." %}
+
+
+## PatientPreferredPharmacy
+
+The `PatientPreferredPharmacy` dataclass represents a patient's preferred pharmacy, and if it's their default pharmacy.
+
+| Attribute  | Type   | Description                       | Required |
+|------------|--------|-----------------------------------|----------|
+| `ncpdp_id` | `str`  | The ncpdp ID of the pharmacy      | Yes      |
+| `default`  | `bool` | True if it's the default pharmacy | Yes      |
+
+
 ## Implementation Details
 
+- **Creation**: Creates new patient records when `patient_id` is not provided
+- **Updates**: Updates existing patient records when `patient_id` is provided
 - Validates that referenced practice locations exist in the system
 - Verifies that referenced healthcare providers exist in the system
 - Structures contact information through the `PatientContactPoint` dataclass
 - Structures external identifier through the `PatientExternalIdentifier` dataclass
+- Structures address information through the `PatientAddress` dataclass
 
 ## Example Usage
 
@@ -108,14 +144,56 @@ class Protocol(BaseHandler):
         return [patient.create()]
 ```
 
+# Patient Update Example
+
+```python
+from canvas_sdk.effects.patient import Patient, PatientAddress
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        # Update an existing patient
+        updated_patient = Patient(
+            patient_id="existing-patient-uuid",
+            first_name="Jane",
+            last_name="Smith",  # Changed last name
+            addresses=[
+                PatientAddress(
+                    line1="456 Updated Street",
+                    line2="Suite 200",
+                    city="Updated City",
+                    state_code="CA",
+                    postal_code="90210",
+                    country="US",
+                    use=AddressUse.HOME
+                )
+            ],
+            external_identifiers=[
+                PatientExternalIdentifier(
+                    system="http://www.updated-system.com",
+                    value="new_patient_id_789"
+                )
+            ]
+        )
+
+        return [updated_patient.update()]
+```
+
+
 ## Validation
 
 The effect performs validation before execution to ensure data integrity:
 
-1. **Required Fields**: Validates that mandatory fields like `first_name` and `last_name` are provided
+1. **Required Fields**: 
+   - For creation: Validates that mandatory fields like `first_name` and `last_name` are provided
+   - For updates: Requires `patient_id` to be provided and verifies the patient exists in the database
 2. **Referenced Entity Validation**: Confirms that any referenced entities exist in the system:
    - Verifies that the specified default practice location exists
    - Ensures that the specified default provider exists
 3. **Data Format Validation**: Ensures that provided values conform to expected formats:
    - Date fields must be valid dates
    - Enumerated types like `PersonSex`, `ContactPointSystem`, and `ContactPointUse` must contain valid values
+4. **Update-Specific Validation**:
+   - Ensures `patient_id` is not provided during patient creation
+   - Validates that the patient exists before attempting updates

@@ -1,7 +1,7 @@
 ---
-title: "Service Provider"
+title: "ServiceProvider"
 slug: "data-serviceprovider"
-excerpt: "Data model for a Service Provider in Canvas SDK"
+excerpt: "Data model for a ServiceProvider in Canvas SDK"
 hidden: false
 ---
 
@@ -48,7 +48,7 @@ full_name_and_specialty = service_provider.full_name_and_specialty
 ### Fields
 
 | Name             | Type    |
-|------------------|---------|
+| ---------------- | ------- |
 | id               | UUID    |
 | dbid             | Integer |
 | first_name       | String  |
