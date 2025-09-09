@@ -57,15 +57,11 @@ In order to generate a CCDA for a known patient key, you'll need to do a GET req
 ## Example and Response
 
 Here's a cURL example of a request for a continuity of care document, filtered for 2020-01-01 to 2020-12-31, and with a generation date of 2022-01-01, at 16:30 UTC:
-```json
-{
-  "codes": [
-    {
-      "code": "curl --request GET \\\n     --header \"Authorization: Bearer YOUR_AUTHORIZATION_TOKEN\"\n     {YOUR_EHR_INSTANCE}/api/data-export/ccda/{PATIENT_KEY}?document=continuity\\\n     &start_date=2020-01-01\\\n     &end_date=2020-12-31\\\n     &generation_date=2022-01-01T16:30:00",
-      "language": "curl"
-    }
-  ]
-}
+
+```sh
+curl --request GET \
+  --header "Authorization: Bearer YOUR_AUTHORIZATION_TOKEN" \
+  "{YOUR_EHR_INSTANCE}/api/data-export/ccda/{PATIENT_KEY}?document=continuity&start_date=2020-01-01&end_date=2020-12-31&generation_date=2022-01-01T16:30:00"
 ```
 
 A valid request will always return a XML with the requested document as the response. 
