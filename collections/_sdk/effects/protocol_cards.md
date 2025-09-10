@@ -157,16 +157,7 @@ class Protocol(BaseProtocol):
 
 ### Supported Commands
 
-The following commands from the [commands module](/sdk/commands/) are currently supported for insertion from Protocol Cards:
+All commands from the [commands module](/sdk/commands/) are currently supported for insertion from Protocol Cards.
 
-- Assess
-- Diagnose
-- Goal
-- HistoryOfPresentIllness
-- Instruct
-- MedicationStatement
-- Perform
-- Plan
-- Prescribe
-- Questionnaire
-- ReasonForVisit
+<br/>
+<br/>
