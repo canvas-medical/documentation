@@ -168,6 +168,10 @@ class Protocol(BaseHandler):
         schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
         schedule_event_effect.duration_minutes = 60
         schedule_event_effect.description = "Rescheduled team meeting"
+        external_identifiers=[
+                AppointmentIdentifier(system="test_system", value="123TEST")
+        ]
+        appointment.external_identifiers = external_identifiers
 
         return [schedule_event_effect.update()]
 ```
