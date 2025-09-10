@@ -1,7 +1,7 @@
 ---
-title: "Reason For Visit"
+title: "ReasonForVisit"
 slug: "data-reason-for-visit"
-excerpt: "Canvas SDK Reason For Visit and its codings"
+excerpt: "Canvas SDK ReasonForVisit and its codings"
 hidden: false
 ---
 
@@ -31,7 +31,7 @@ codings = ReasonForVisitSettingCoding.objects.filter(system="http://snomed.info/
 ### ReasonForVisitSettingCoding
 
 | Field Name | Type              | Description                                                                       |
-|------------|-------------------|-----------------------------------------------------------------------------------|
+| ---------- | ----------------- | --------------------------------------------------------------------------------- |
 | id         | UUID              | The universally unique identifier for this coding record.                         |
 | dbid       | Integer           | The database identifier for this coding record.                                   |
 | code       | String            | The code representing the concept.                                                |

@@ -1,7 +1,7 @@
 ---
-title: "Value Sets"
+title: "ValueSets"
 slug: "data-value-sets"
-excerpt: "Canvas SDK Value Sets"
+excerpt: "Canvas SDK ValueSets"
 hidden: false
 ---
 
@@ -48,10 +48,9 @@ if patient_dementia_medications:
         log.info(medication.codings.all().values())
 ```
 
-
 **Filtering with more than one Value Set**
 
-Sometimes it may be desirable to filter using more than one Value Set. For example, finding all of a patient's conditions that belong within `EssentialHypertension` *or* `DiagnosisOfHypertension`. In this case, the `find` supports the pipe (`|`) operator to filter conditions that match the codings in either Value Set:
+Sometimes it may be desirable to filter using more than one Value Set. For example, finding all of a patient's conditions that belong within `EssentialHypertension` _or_ `DiagnosisOfHypertension`. In this case, the `find` supports the pipe (`|`) operator to filter conditions that match the codings in either Value Set:
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
@@ -91,8 +90,8 @@ class MyCustomValueSet(ValueSet):
 The valid code system constants that can be used to define sets of codes in Value Sets are:
 
 | Name           | URL                                           |
-|:---------------|:----------------------------------------------|
-| `CPT`          |  `http://www.ama-assn.org/go/cpt`             |
+| :------------- | :-------------------------------------------- |
+| `CPT`          | `http://www.ama-assn.org/go/cpt`              |
 | `HCPCSLEVELII` | `https://coder.aapc.com/hcpcs-codes`          |
 | `CVX`          | `http://hl7.org/fhir/sid/cvx`                 |
 | `LOINC`        | `http://loinc.org`                            |

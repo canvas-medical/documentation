@@ -1,7 +1,7 @@
 ---
-title: "Care Team"
+title: "CareTeam"
 slug: "data-care-team"
-excerpt: "Canvas SDK Care Team"
+excerpt: "Canvas SDK CareTeam"
 hidden: false
 ---
 
@@ -35,7 +35,7 @@ The `CareTeamMembership` model connects patients, staff members and their associ
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter care team data:
 
-__Find a patient's care team lead__
+**Find a patient's care team lead**
 
 ```python
 >>> from canvas_sdk.v1.data.patient import Patient
@@ -47,7 +47,7 @@ __Find a patient's care team lead__
 (<Staff: Steven Magee>, <CareTeamRole: Primary care physician>)
 ```
 
-__Find all Patients that have a Certain Staff Member on their Care Team__
+**Find all Patients that have a Certain Staff Member on their Care Team**
 
 ```python
 >>> from canvas_sdk.v1.data.staff import Staff
@@ -63,7 +63,7 @@ __Find all Patients that have a Certain Staff Member on their Care Team__
 ### CareTeamRole
 
 | Field Name    | Type                                                            |
-|---------------|-----------------------------------------------------------------|
+| ------------- | --------------------------------------------------------------- |
 | dbid          | Integer                                                         |
 | system        | String                                                          |
 | version       | String                                                          |
@@ -76,7 +76,7 @@ __Find all Patients that have a Certain Staff Member on their Care Team__
 ### CareTeamMembership
 
 | Field Name   | Type                                                  |
-|--------------|-------------------------------------------------------|
+| ------------ | ----------------------------------------------------- |
 | id           | UUID                                                  |
 | dbid         | Integer                                               |
 | created      | DateTime                                              |
@@ -95,7 +95,7 @@ __Find all Patients that have a Certain Staff Member on their Care Team__
 ### CareTeamMembershipStatus
 
 | Value            | Label            |
-|------------------|------------------|
+| ---------------- | ---------------- |
 | proposed         | Proposed         |
 | active           | Active           |
 | suspended        | Suspended        |
