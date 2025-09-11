@@ -13,10 +13,15 @@ The Canvas SDK provides effects to facilitate creating, updating, and managing *
 
 The `Note` effect facilitates the creation and updating of visit notes for patients.
 
-### Attributes
+### Create Note
+
+Creates a new note. Can be passed an optional UUID as `instance_id` from the `uuid.uuid4` library, or will be assigned one if not present. Passing a user-set UUID as the `instance_id` allows for [assigning commands to the note](/sdk/commands/#chaining-methods-with-a-user-set-uuid) in the same plugin action.
+
+#### Attributes
 
 | Attribute              | Type                | Description                          | Required |
 |------------------------|---------------------|--------------------------------------|----------|
+| `instance_id`          | `UUID` or `str`     | Identifier for the note              | No       |
 | `note_type_id`         | `UUID` or `str`     | Identifier for the note type         | Yes      |
 | `datetime_of_service`  | `datetime.datetime` | When the service was provided        | Yes      |
 | `patient_id`           | `str`               | Identifier for the patient           | Yes      |
@@ -24,13 +29,13 @@ The `Note` effect facilitates the creation and updating of visit notes for patie
 | `provider_id`          | `str`               | Identifier for the provider          | Yes      |
 | `title`                | `str` or `None`     | Optional title for the note          | No       |
 
-### Implementation Details
+#### Implementation Details
 
 - Validates that the note type exists and has an appropriate category
 - Ensures the patient exists in the system
 - Verifies that the practice location and provider are valid
 
-### Example Usage
+#### Example Usage
 
 ```python
 import datetime
