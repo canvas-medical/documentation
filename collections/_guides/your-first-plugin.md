@@ -221,10 +221,14 @@ instance.
 
 ## 7. Deploy and use your plugin
 
-When your plugin is just the way you'd like it, deploying is simple. Simply navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and
+When your plugin is just the way you'd like it, deploying is simple. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and
 run `canvas install <path/to/plugin_package>` (i.e. `canvas install paperwork_eviscerator`) and your plugin will be packaged,
 uploaded, installed, and enabled. As you make changes to your plugin, run the
 same command to update the code of the installed plugin.
+
+## 8. Tail the logs
+
+For more visibility into what's happening with your plugin, run `canvas logs --host buttered-popcorn-dev` (replace with your Canvas instance name). This will tail the logs for all plugins installed on that instance.
 
 <br/>
 <br/>
