@@ -1,12 +1,10 @@
 ---
-title: 'ai_note_titles'
+title: 'AI Note Titles'
 slug: 'example-ai_note_titles'
 ---
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/ai_note_titles' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-AI Note Titles
-==============
 
 ## Description
 
