@@ -163,7 +163,8 @@ Updates an existing schedule event by creating a new event and cancelling the or
 ```python
 import datetime
 
-from canvas_sdk.effects.note.appointment import ScheduleEvent, AppointmentIdentifier
+from canvas_sdk.effects.note.appointment import ScheduleEvent
+from canvas_sdk.effects.note.base import AppointmentIdentifier
 from canvas_sdk.handlers.base import BaseHandler
 
 
