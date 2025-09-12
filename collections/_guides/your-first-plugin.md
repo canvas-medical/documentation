@@ -228,7 +228,7 @@ same command to update the code of the installed plugin.
 
 ## 8. Tail the logs
 
-For more visibility into what's happening with your plugin, run `canvas logs --host buttered-popcorn-dev` (replace with your Canvas instance name). This will tail the logs for all plugins installed on that instance.
+To view logs and to surface any errors with your plugin, run `canvas logs --host buttered-popcorn-dev` (replace with your Canvas instance name). This will tail the logs for all plugins installed on that instance.
 
 <br/>
 <br/>
