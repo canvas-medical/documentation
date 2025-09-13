@@ -130,24 +130,109 @@ def extract_doctest_blocks(text: str) -> list[str]:
     return blocks
 
 
-def find_missing_imports(snippet: str, filename: str) -> set[str]:
-    src = textwrap.dedent(snippet)
+def _walk_tables(t: symtable.SymbolTable) -> Any:
+    yield t
+
+    for c in t.get_children():
+        yield from _walk_tables(c)
+
+
+def _missing_via_symtable(src: str, filename: str) -> set[str]:
+    """Real refs that aren't imported/assigned/params in their scope."""
     top = symtable.symtable(src, filename, "exec")
+    missing: set[str] = set()
 
-    missing = set()
+    def rec(tbl: symtable.SymbolTable, inherited: set[str]) -> None:
+        local_defined = {
+            s.get_name()
+            for s in tbl.get_symbols()
+            if s.is_imported() or s.is_parameter() or s.is_assigned() or s.is_namespace()
+        }
 
-    for sym in top.get_symbols():
-        name = sym.get_name()
+        visible = inherited | local_defined | BUILTINS
 
-        if name in BUILTINS:
-            continue
+        for s in tbl.get_symbols():
+            n = s.get_name()
 
-        if sym.is_referenced() and not (
-            sym.is_imported() or sym.is_assigned() or sym.is_parameter() or sym.is_namespace()
-        ):
-            missing.add(name)
+            if s.is_referenced() and n not in visible:
+                missing.add(n)
+
+        for child in tbl.get_children():
+            rec(child, visible)
+
+    rec(top, set())
 
     return missing
+
+
+class _AnnOnly(ast.NodeVisitor):
+    """collect names that appear *only* in annotations (skip bodies)."""
+
+    def __init__(self) -> None:
+        self.names: set[str] = set()
+
+    def visit_Name(self, node: ast.Name) -> None:
+        self.names.add(node.id)
+
+    def visit_Subscript(self, node: ast.Subscript) -> None:
+        self.visit(node.value)
+        # py3.9+: slice is an expr
+        if hasattr(node, "slice") and isinstance(node.slice, ast.AST):
+            self.visit(node.slice)
+
+    def _anno(self, a: Any) -> None:
+        if not a:
+            return
+
+        # handle stringified annotations
+        if isinstance(a, ast.Constant) and isinstance(a.value, str):
+            try:
+                a = ast.parse(a.value, mode="eval").body
+            except Exception:
+                return
+
+        self.visit(a)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        for a in node.args.args + node.args.kwonlyargs:
+            self._anno(a.annotation)
+        if node.args.vararg:
+            self._anno(node.args.vararg.annotation)
+        if node.args.kwarg:
+            self._anno(node.args.kwarg.annotation)
+
+        self._anno(node.returns)
+        # do NOT generic_visit: we intentionally skip the body
+
+    visit_AsyncFunctionDef = visit_FunctionDef  # type: ignore[assignment]
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        self._anno(node.annotation)
+        # skip value
+
+
+def find_missing_imports(snippet: str, filename: str = "<doc>") -> set[str]:
+    src = textwrap.dedent(snippet)
+
+    # 1) true free names via symtable (handles class bodies, params, scopes)
+    miss = _missing_via_symtable(src, filename)
+
+    # 2) names used only in annotations
+    tree = ast.parse(src, filename=filename, mode="exec")
+    ann = _AnnOnly()
+    ann.visit(tree)
+
+    # union of all defined names across all scopes
+    top = symtable.symtable(src, filename, "exec")
+    defined: set[str] = set()
+    for tbl in _walk_tables(top):
+        for s in tbl.get_symbols():
+            if s.is_imported() or s.is_parameter() or s.is_assigned() or s.is_namespace():
+                defined.add(s.get_name())
+
+    ann_miss = {n for n in ann.names if n not in defined and n not in BUILTINS}
+
+    return (miss | ann_miss) - BUILTINS
 
 
 def check_code(
