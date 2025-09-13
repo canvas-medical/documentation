@@ -91,37 +91,23 @@ def extract_code_blocks(
         info = (tok.info or "").strip().lower()
         lang = info.split()[0] if info else ""
 
+        kind: Kind | None = None
+
         if not lang:
-            code_blocks.append(
-                (
-                    "MISSING",
-                    tok.content,
-                    cast(tuple[int, int] | None, tok.map) or (-1, -1),
-                )
-            )
+            kind = "MISSING"
         elif lang.lower() == "python":
-            code_blocks.append(
-                (
-                    "PYTHON",
-                    tok.content,
-                    cast(tuple[int, int] | None, tok.map) or (-1, -1),
-                )
-            )
+            kind = "PYTHON"
         elif lang.lower() == "python?partial=true":
-            # sometimes we want to quote portions of snippets from a larger
-            # snippet to provide larger context without the full imports,
-            # setting the language to python?partial=true allows rendering with
-            # rogue but we can ignore it from syntax checking
+            kind = "PYTHON_IMPORTS_ONLY"
+
+        if kind:
             code_blocks.append(
                 (
-                    "PYTHON_IMPORTS_ONLY",
+                    kind,
                     tok.content,
                     cast(tuple[int, int] | None, tok.map) or (-1, -1),
                 )
             )
-        else:
-            # we could also parse JSON, XML, etc. if desired
-            continue
 
     return code_blocks
 
