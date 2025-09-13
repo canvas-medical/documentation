@@ -16,6 +16,8 @@ To make plugin code react to an event, you can add the event types listed below 
 
 ```python
 from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
@@ -39,7 +41,9 @@ yourself by logging it out.
 
 ```python
 from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
 from logger import log
+
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]

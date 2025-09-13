@@ -45,7 +45,7 @@ from canvas_sdk.protocols import BaseProtocol
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
-    
+
     def compute(self):
         widget = PortalWidget(
           content="Hello World", 
@@ -63,30 +63,35 @@ creates a new widget with a simple "Hello World" message, a compact size, and a 
 This widget will show the last medication and CTA to request a refill.
 
 So let's update the example above to:
+
 - Fetch the patient's medication.
 - Leverage [HTML templating](/sdk/layout-effect/#custom-html-and-django-templates) to display the necessary information
 
 ### Step 1: Fetch patient medication
 
-Since the event includes the patient object, you can easily access all the necessary data. 
+Since the event includes the patient object, you can easily access all the necessary data.
 Add the following snippet to your compute method to retrieve the patient's details:
-```python
+
+```python?partial=true
 patient = Patient.objects.get(id=self.target)
 last_medication = patient.medications.last()
 ```
 
 ### Step 2: Prepare HTML template
 
-Create a `templates` folder inside your plugin's folder
+Create a `templates` folder inside your plugin's folder:
+
 ```bash
   mkdir templates
 ```
-Add HTML file.
+
+Add the HTML file:
 
 ```bash
   touch medication_widget.html
 ```
-And add the following html:
+
+And add the following HTML:
 
 ```html
 <!DOCTYPE html>
@@ -238,7 +243,7 @@ button:hover {
 
 Update your plugin's `compute` method to pass the desired values for medication name and start date using `render_to_string` function
 
-```python
+```python?partial=True
 medication_info = {
     "start_date": last_medication.start_date.strftime("%B %d, %Y"),
     "name": last_medication.codings.first().display

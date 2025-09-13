@@ -37,17 +37,19 @@ To ensure the `ncpdp_id` exists before using this effect, you can verify it usin
 ### Example
 
 ```python
-from canvas_sdk.effects.patient import CreatePatientPreferredPharmacies
+from canvas_sdk.effects.patient import CreatePatientPreferredPharmacies, PatientPreferredPharmacy
 from canvas_sdk.v1.data import Patient as PatientModel
 
 first_patient_id = PatientModel.objects.values_list("id", flat=True).first()
+
 preferred_pharmacies_effect = CreatePatientPreferredPharmacies(
                                 pharmacies=[PatientPreferredPharmacy(ncpdp_id="0586163", default=True)],
                                 patient_id=first_patient_id
 )
 
-effect.create()
+preferred_pharmacies_effect.create()
 ```
 
-This effect will create a new preferred pharmacy for the specified patient. 
+This effect will create a new preferred pharmacy for the specified patient.
+
 Since the `default` attribute is set to `True`, it will mark this pharmacy as the patient's default preferred pharmacy.

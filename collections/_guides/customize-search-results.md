@@ -94,6 +94,9 @@ This code can be broken down into the following sections:
 ### Register interest in the correct search event
 
 ```python
+from canvas_sdk.protocols import BaseProtocol
+
+
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 

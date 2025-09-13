@@ -35,14 +35,18 @@ In the following steps, we'll show you how we used the Canvas SDK to create it.
 To add a button to the vital signs section, you’ll implement an [`ActionButton`](/sdk/handlers-action-buttons) handler. In your handler class, you’ll set the `BUTTON_LOCATION` constant to `ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION` to make the action button appear in the corresponding summary section of the chart.
 
 ```python
+from canvas_sdk.handlers.action_button import ActionButton
+from canvas_sdk.effects import Effect
+
+
 class GenerateVitalsGraphs(ActionButton):
     BUTTON_TITLE = "Growth Charts"
     BUTTON_KEY = "show_growth_charts"
     BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION
 
-def handle(self) -> list[Effect]:
-    # This method is invoked when the button is clicked.
-    pass
+    def handle(self) -> list[Effect]:
+        # This method is invoked when the button is clicked.
+        pass
 ```
 
 ## Launching a modal when the button is clicked
@@ -54,7 +58,9 @@ In this guide, we are launching a modal, but this click action can result in any
 Here’s an example of a simple plugin using the `LaunchModalEffect` to display a “Hello World” message.
 
 ```python
+from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.action_button import ActionButton
 
 
 class HelloWorld(ActionButton):
@@ -108,14 +114,21 @@ To retrieve the patient data we use the [Data Module](/sdk/data/). Specifically,
 Here, we can use `self.target`, which is the patient's `id`, to retrieve the patient and their observations by filtering for the values we need — such as weight, height, etc.
 
 ```python
-patient = Patient.objects.get(id=self.target)
-sex_at_birth = patient.sex_at_birth
-birth_date = patient.birth_date
 
-observation_weight = Observation.objects.for_patient(self.target).filter(name="weight")
-observation_length = Observation.objects.for_patient(self.target).filter(name="length")
-observation_bmi = Observation.objects.for_patient(self.target).filter(name="bmi")
-observation_head_circumference = Observation.objects.for_patient(self.target).filter(name="head_circumference")
+from canvas_sdk.effects import Effect
+from canvas_sdk.v1.data.observation import Observation
+from canvas_sdk.v1.data.patient import Patient
+
+
+def handle(self) -> list[Effect]:
+    patient = Patient.objects.get(id=self.target)
+    sex_at_birth = patient.sex_at_birth
+    birth_date = patient.birth_date
+
+    observation_weight = Observation.objects.for_patient(self.target).filter(name="weight")
+    observation_length = Observation.objects.for_patient(self.target).filter(name="length")
+    observation_bmi = Observation.objects.for_patient(self.target).filter(name="bmi")
+    observation_head_circumference = Observation.objects.for_patient(self.target).filter(name="head_circumference")
 ```
 
 ## Tying it all together
@@ -150,6 +163,12 @@ In addition to the percentile data series, we of course need to plot the
 patient observation data series. To do this, we create a lists of x and y values corresponding to the patient’s age and measurements. You can see this in more detail in the [GitHub repo](https://github.com/Medical-Software-Foundation/canvas/blob/5e8a3dfdb18307e596d2da2d9fce33a3e379cd11/extensions/growth_charts/protocols/growth_charts.py#L80), but here's an excerpt:
 
 ```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.v1.data.note import Note
+from canvas_sdk.v1.data.observation import Observation
+from canvas_sdk.v1.data.patient import Patient
+
+
 def handle(self) -> list[Effect]:
     graphs = []
     patient = Patient.objects.get(id=self.target)

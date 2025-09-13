@@ -247,9 +247,12 @@ attribute on the handler. The request method, path, query parameters, content ty
 available as attributes on the request object:
 
 ```python
+
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+
+from logger import log
 
 
 class MyAPI(SimpleAPIRoute):
@@ -290,7 +293,7 @@ class MyAPI(SimpleAPIRoute):
 
         # Body parsed as form data
         form_data = request.form_data()
-        
+
         return [
             JSONResponse({"message": "Hello world!"})
         ]
@@ -309,7 +312,7 @@ key. If you want the other values, you will need to use different methods to acc
 
 Here is an example showing how to access the additional values:
 
-```python
+```python?partial=true
 # Request sent to /route?value1=a&value1=b&value2=c
 query_params = request.query_params
 
@@ -344,7 +347,7 @@ each `FormPart` object may represent either a simple string value or a file.
 Here is an example of how to use the `form_data` method to iterate over the subparts of a request
 body with form data:
 
-```python
+```python?partial=true
 form_data = request.form_data()
 
 # To iterate over all parts, we have to use the multi_items method because there may be more than
@@ -365,7 +368,7 @@ for name, part in form_data.multi_items():
 If you know the name of the subparts you are looking for, you can also access the subparts directly
 by looking up the name in the mapping returned by `form_data`:
 
-```python
+```python?partial=true
 form_data = request.form_data()
 
 # Get the first part named "my-part-name"

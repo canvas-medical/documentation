@@ -39,6 +39,7 @@ Similar to the `Condition` example above, the `find` method can also utilize Val
 ```python
 from canvas_sdk.v1.data.patient import Patient
 from canvas_sdk.value_set.v2022.medication import DementiaMedications
+from logger import log
 
 patient = Patient.objects.get(id="6cbc40b408294a5f9b41f57ba1b2b487")
 patient_dementia_medications = patient.medications.find(DementiaMedications)
@@ -55,6 +56,7 @@ Sometimes it may be desirable to filter using more than one Value Set. For examp
 ```python
 from canvas_sdk.v1.data.patient import Patient
 from canvas_sdk.value_set.v2022.condition import EssentialHypertension, DiagnosisOfHypertension
+from logger import log
 
 patient = Patient.objects.get(id="6cbc40b408294a5f9b41f57ba1b2b487")
 patient_hypertension_conditions = patient.conditions.find(EssentialHypertension | DiagnosisOfHypertension)
@@ -75,6 +77,8 @@ from canvas_sdk.value_set.value_set import ValueSet
 A new class containing Python sets of coding values can be defined like so:
 
 ```python
+from canvas_sdk.value_set.value_set import ValueSet
+
 class MyCustomValueSet(ValueSet):
     VALUE_SET_NAME = "My Custom Value Set"
 

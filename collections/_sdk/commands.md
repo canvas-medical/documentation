@@ -1057,6 +1057,7 @@ A common use case is retrieving existing PhysicalExam commands from a note and m
 ```python
 from canvas_sdk.commands import PhysicalExamCommand
 from canvas_sdk.v1.data import Command, Note
+from logger import log
 
 # Get existing physical exam commands from a note
 note = Note.objects.get(id="ff287601-fff4-46c4-b21f-04760e88adf1")
@@ -1458,7 +1459,9 @@ RemoveAllergyCommand(
 from canvas_sdk.commands.commands.resolve_condition import ResolveConditionCommand
 from canvas_sdk.v1.data import Condition
 
-patient_condition = Condition.objects.for_patient(self.event.context["patient"]["id"]).committed().active().first()
+patient_id = '<a patient ID from your instance>'
+
+patient_condition = Condition.objects.for_patient(patient_id).committed().active().first()
 
 ResolveConditionCommand(
    condition_id=patient_condition.id,
@@ -1467,8 +1470,6 @@ ResolveConditionCommand(
    note_uuid="rk786p",
 )
 ```
-
-
 
 ---
 
