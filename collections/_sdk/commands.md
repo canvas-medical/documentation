@@ -1204,8 +1204,9 @@ Below is an example that demonstrates how to instantiate a `QuestionnaireCommand
 import uuid
 from canvas_sdk.commands.commands.questionnaire import QuestionnaireCommand
 from canvas_sdk.commands.commands.questionnaire.question import ResponseOption
+from canvas_sdk.effects import Effect
 from canvas_sdk.handlers import BaseHandler
-from canvas_sdk.v1.data import Note
+from canvas_sdk.v1.data import Note, Questionnaire
 
 class Protocol(BaseHandler):
 
@@ -1224,17 +1225,17 @@ class Protocol(BaseHandler):
 
       # Record responses for each question.
       for question in questions:
-          if question.type == RO.TYPE_TEXT:
+          if question.type == ResponseOption.TYPE_TEXT:
               # For text questions, pass a 'text' keyword argument.
               question.add_response(text=f"Thanks for all the fish")
-          elif question.type == RO.TYPE_INTEGER:
+          elif question.type == ResponseOption.TYPE_INTEGER:
               # For integer questions, pass an 'integer' keyword argument.
               question.add_response(integer=42)
-          elif question.type == RO.TYPE_RADIO:
+          elif question.type == ResponseOption.TYPE_RADIO:
               # For radio questions, pass an 'option' keyword argument (a ResponseOption instance).
               first_option = question.options[0]
               question.add_response(option=first_option)
-          elif question.type == RO.TYPE_CHECKBOX:
+          elif question.type == ResponseOption.TYPE_CHECKBOX:
               # For checkbox questions, add responses with option, selected flag, and optionally a comment.
               first_option = question.options[0]
               last_option = question.options[-1]

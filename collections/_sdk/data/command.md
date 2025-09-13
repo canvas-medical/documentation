@@ -41,6 +41,9 @@ When events are fired as part of [Command Lifecycle Events](/sdk/events/#command
 
 ```python
 from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from logger import log
 
 
 class Protocol(BaseProtocol):
@@ -56,6 +59,7 @@ Using this value, the `Command` model can be queried to fetch additional data ab
 
 ```python
 import json
+from canvas_sdk.effects import Effect
 from canvas_sdk.protocols import BaseProtocol
 from canvas_sdk.v1.data.command import Command
 from logger import log

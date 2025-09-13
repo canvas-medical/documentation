@@ -621,6 +621,7 @@ authentication values out of the request headers:
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import Response
 from canvas_sdk.handlers.simple_api import Credentials, SimpleAPIRoute
+from canvas_sdk.handlers.simple_api.api import Request
 
 
 class MyCredentials(Credentials):
@@ -660,7 +661,7 @@ manifest file, and then set the secrets on your instance after you deploy your p
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import BasicAuthMixin, SimpleAPIRoute
 
 
@@ -691,7 +692,7 @@ After you set your secret, you can use the `APIKeyAuthMixin`:
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
 
 
@@ -712,7 +713,7 @@ staff member, just that they are staff, and that they are logged in.
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import StaffSessionAuthMixin, SimpleAPIRoute
 
 
@@ -733,7 +734,7 @@ patient, just that they are a patient, and that they are logged in.
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
 
 

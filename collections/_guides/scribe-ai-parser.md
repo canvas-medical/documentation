@@ -108,6 +108,11 @@ The `Protocol` class intercepts events and processes the transcript using a pars
 
 ```python
 from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+
+
+class ScribeParser: ...  # explained in section 2 below, "ScribeParser"
 
 
 class Protocol(BaseProtocol):
@@ -212,16 +217,13 @@ class AppointmentsParser(CommandParser):
 Add the `AppointmentsParser` to the `section_parsers` dictionary.
 
 ```python
+class AppointmentsParser: ... # defined above
+
+
 class ScribeParser:
     """A parser for transcripts."""
 
     section_parsers = {
-        "plan": PlanParser(),
-        "vitals": VitalsParser(),
-        "chief_complaint": ReasonForVisitParser(),
-        "history_of_present_illness": HistoryPresentIllnessParser(),
-        "past_medical_history": PastMedicalHistoryParser(),
-        "assessment": AssessmentParser(),
         "appointments": AppointmentsParser()
     }
 ```
@@ -250,6 +252,10 @@ Replace the parser in the `Protocol` class:
 
 ```python
 from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects import Effect
+
+
+class CustomParser: ... # defined above
 
 
 class Protocol(BaseProtocol):

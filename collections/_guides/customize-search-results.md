@@ -94,6 +94,7 @@ This code can be broken down into the following sections:
 ### Register interest in the correct search event
 
 ```python
+from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 
 

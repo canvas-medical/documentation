@@ -61,6 +61,7 @@ Here’s an example of a simple plugin using the `LaunchModalEffect` to display 
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.action_button import ActionButton
+from canvas_sdk.templates import render_to_string
 
 
 class HelloWorld(ActionButton):
@@ -69,7 +70,7 @@ class HelloWorld(ActionButton):
     BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_HEADER
 
     def handle(self) -> list[Effect]:
-        launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { title: 'hello world' }))
+        launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { "title": "hello world" }))
 
         return [launch_modal.apply()]
 ```
@@ -163,11 +164,24 @@ In addition to the percentile data series, we of course need to plot the
 patient observation data series. To do this, we create a lists of x and y values corresponding to the patient’s age and measurements. You can see this in more detail in the [GitHub repo](https://github.com/Medical-Software-Foundation/canvas/blob/5e8a3dfdb18307e596d2da2d9fce33a3e379cd11/extensions/growth_charts/protocols/growth_charts.py#L80), but here's an excerpt:
 
 ```python
+import arrow
+import datetime
+
 from canvas_sdk.effects import Effect
 from canvas_sdk.v1.data.note import Note
 from canvas_sdk.v1.data.observation import Observation
 from canvas_sdk.v1.data.patient import Patient
 
+def convert_oz_to_kg(oz: str) -> float:
+    return float(oz) * 0.0283495
+
+def get_age_in_months(birth_date: datetime.date, date: datetime.date = datetime.datetime.now()) -> int:
+    now = arrow.get(date)
+    date = arrow.get(birth_date)
+    year_difference = now.year - date.year
+    month_difference = now.month - date.month
+
+    return year_difference * 12 + month_difference
 
 def handle(self) -> list[Effect]:
     graphs = []
@@ -206,11 +220,16 @@ Finally, we create a list of graphs with the necessary variables and data, which
 ```python
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.templates import render_to_string
+
+who_boys_length_age = ... # from growth_charts.graphs.who_boys_length_age
 
 
 class Protocol(BaseHandler):
     def compute(self):
         # list of graphs
+        length_for_age = {} # filled in the actual implementation, see linked GitHub repository
+
         graphs = [
             {
                 "data": who_boys_length_age, # the data from the graph file
