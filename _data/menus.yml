@@ -107,6 +107,9 @@ api_resources:
   - title: "Medication"
     url: /api/medication/
     identifier: api_medication
+  - title: "MedicationDispense"
+    url: /api/medicationdispense/
+    identifier: api_medicationdispense
   - title: "MedicationRequest"
     url: /api/medicationrequest/
     identifier: api_medicationrequest
@@ -309,6 +312,11 @@ api_medication:
     url: /api/medication/#read
   - title: "Medication Search"
     url: /api/medication/#search
+api_medicationdispense:
+  - title: "MedicationDispense Read"
+    url: /api/medicationdispense/#read
+  - title: "MedicationDispense Search"
+    url: /api/medicationdispense/#search
 api_medicationrequest:
   - title: "MedicationRequest Read"
     url: /api/medicationrequest/#read
