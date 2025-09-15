@@ -147,7 +147,7 @@ class Handler(BaseHandler):
 
 A common use case is to originate and also commit a command in a single plugin action. However, attempting to commit a command without a `command_uuid` will throw an error. Because the `originate` method executes asynchronously, there is not currently a clean way to get the `command_uuid` back from the originate action and use it for the commit action in the same operation.
 
-The solution is to set the UUID in the plugin and pass it through to both the originate and commit actions. This is accomplished by manually setting the `command_uuid` before calling the methods:
+The solution is to set the UUID in the plugin -- using a valid Version 4 UUID -- and pass it through to both the originate and commit actions. This is accomplished by manually setting the `command_uuid` before calling the methods:
 
 ```python
 from uuid import uuid4
