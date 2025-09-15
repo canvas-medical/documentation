@@ -700,6 +700,9 @@ data_module:
   - title: "Imaging"
     url: /sdk/data-imaging/
     description: Analysis of imaging tests to obtain information about the health of a patient.
+  - title: "Immunization"
+    url: /sdk/data-immunization/
+    description: A record of a vaccination that is being administered to a patient, either now, in the past, or in the future.
   - title: "Labs"
     url: /sdk/data-labs/
     description: Analysis of clinical specimens to obtain information about the health of a patient.
