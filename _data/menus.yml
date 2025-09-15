@@ -508,6 +508,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Additional fields on schedule appointment"
+    url: /guides/appointments-additional_fields/
+    description: How to add additional fields when scheduling an appointment
+    uses:
+      - sdk
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh
@@ -596,6 +602,12 @@ simple_api_handlers:
     url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
+  - title: "Appointment Metadata"
+    url: /sdk/effect-appointment-metadata/
+    description: Interact with appointment metadata.
+  - title: "Appointment Metadata Create Form"
+    url: /sdk/appointment-metadata-create-form-effect
+    description: Effect for dynamically displaying forms when scheduling an appointment.
   - title: "Banner Alerts"
     url: /sdk/effect-banner-alerts/
     description: Contextual information in a patient's chart.
