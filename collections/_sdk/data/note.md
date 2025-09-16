@@ -202,7 +202,7 @@ commands_in_note = Note.commands.all()
 | related_data        | JSON                                  | Can contain one key, `roomNumber`, if the Note is an inpatient stay. |
 | datetime_of_service | DateTime                              |                                                                      |
 | place_of_service    | String                                |                                                                      |
-| encounter_uuid      | UUID                                  |                                                                      |
+| encounter           | [Encounter](/sdk/data-encounter)      |                                                                      |
 
 ### NoteType
 
