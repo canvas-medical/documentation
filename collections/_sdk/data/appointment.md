@@ -28,6 +28,19 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 appointments = patient.appointments.all()
 ```
 
+To get appointments part of a recurrence.
+```python
+from canvas_sdk.v1.data.appointment import Appointment
+
+appointment = Appointment.objects.get(id="f53626e4-0683-43ac-a1b7-c52815639ce2")
+
+# parent appointment
+parent_appointment = appointment.parent_appointment
+
+# children appointments
+children = parent_appointment.children.all()
+```
+
 ## Filtering
 
 Appointments can be filtered by any attribute that exists on the model.
@@ -67,6 +80,7 @@ appointment = Appointment.objects.filter(
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)                                |
 | patient                      | [Patient](/sdk/data-patient/#patient)                             |
 | appointment_rescheduled_from | [Appointment](#appointment)                                       |
+| parent_appointment           | [Appointment](#appointment)                                       |
 | provider                     | [Staff](#/sdk/data-staff/#staff)                                  |
 | start_time                   | DateTime                                                          |
 | duration_minutes             | Integer                                                           |
