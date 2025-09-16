@@ -39,7 +39,26 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td>09/30/25</td>
       <td></td>
     </tr>
-        <tr>
+    <tr>
+      <td>UI & FHIR API: Patient Contact Relationship</td>
+      <td style="color: red;">Breaking Change</td>
+      <td>
+        On the release date, the following will be updated: <code>Prefer: note-append</code> header.
+        <ul>
+          <li>UI: Relationship field is being removed from contacts section of patient profile page</li>
+          <li>Data migration: Data in Relationship field will be migrated to / appended to the Comments field</li>
+          <li>FHIR Patient
+            <ul>
+              <li>Support will be discontinued for free text <code>contact[].relationship[].text</code> field; Relationship will now be represented by expanded use of contact categories</li>
+              <li>Support will be discontinued for <strong>emergency contact</strong> and <strong>authorized for release of information</strong> extensions</li>
+            </ul>
+          </li>
+        </ul>
+      </td>
+      <td>09/30/25</td>
+      <td></td>
+    </tr>  
+    <tr>
       <td>Workflow SDK</td>
       <td style="color: green;">New Version</td>
       <td>The Workflow SDK has been deprecated, and will only receive fixes for defects or security issues. We are replacing its functionality with the Canvas SDK and its plugins, and will not set a date for the removal of the Workflow SDK until the Canvas SDK reaches feature parity. At that time we will present a migration plan to convert Workflow SDK Protocols into Canvas Plugins.</td>
