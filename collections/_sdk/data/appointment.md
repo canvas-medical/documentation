@@ -93,6 +93,7 @@ appointment = Appointment.objects.filter(
 | location                     | [PracticeLocation](#/sdk/data-practicelocation/#practicelocation) |
 | description                  | String                                                            |
 | external_identifiers         | [AppointmentExternalIdentifier](#appointmentexternalidentifier)[] |
+| metadata                     | [AppointmentMetadata](#appointmentmetadata)[]                     |
 
 
 ### AppointmentExternalIdentifier
@@ -110,6 +111,28 @@ appointment = Appointment.objects.filter(
 | issued_date     | Date                        |
 | expiration_date | Date                        |
 | appointment     | [Appointment](#appointment) |
+
+### AppointmentMetadata
+
+| Field Name  | Type                        |
+|-------------|-----------------------------|
+| id          | UUID                        |
+| dbid        | Integer                     |
+| appointment | [Appointment](#appointment) |
+| key         | String                      |
+| value       | String                      |
+
+```python
+from canvas_sdk.v1.data.appointment import Appointment
+from logger import log
+
+appointment_id = "f53626e4-0683-43ac-a1b7-c52815639ce2"
+appointment = Appointment.objects.get(id=appointment_id)
+appointment_metadata = appointment.metadata.all()
+
+for metadata in appointment_metadata:
+   log.info(f"Appointment metadata: {metadata.key}, {metadata.value}")
+```
 
 <br/>
 <br/>
