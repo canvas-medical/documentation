@@ -244,6 +244,7 @@ The following effects are available to be applied in Canvas.
 | UPSERT_APPOINTMENT_METADATA                              | Can be used to add additional metadata when creating or updating an appointment                                                                                                                             |
 | RESCHEDULE_APPOINTMENT                                   | Can be used to reschedule an appointment. Check out [Appointment Effects](/sdk/effect-notes/#reschedule-appointment).                                                                                       |
 | RESCHEDULE_SCHEDULE_EVENT                                | Can be used to reschedule a schedule event. Check out [Schedule Event Effects](/sdk/effect-notes/#reschedule-schedule-event).                                                                               |
+| APPOINTMENT__SLOTS__POST_SEARCH_RESULTS                  | Can be used to modify slot availability when scheduling an appointment                                                                                                                                      |
 
 <br/>
 <br/>

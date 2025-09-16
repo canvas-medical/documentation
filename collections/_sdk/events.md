@@ -578,6 +578,23 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <thead>
+    <tr><th colspan="2">APPOINTMENT__SLOTS__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when requesting slot availability when scheduling an appointment.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre></pre></td>
+       <td><pre>"slots_by_provider": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">APPOINTMENT__FORM__PROVIDERS__PRE_SEARCH</th></tr>
     <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
   </thead>
