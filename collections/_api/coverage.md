@@ -625,9 +625,9 @@ payload = {
         ]
       },
       "value": "Subgroup 2"
-    },
-    "order": 1
-  ]
+    }
+  ],
+  "order": 1
 }
 headers = {
     "accept": "application/json",
