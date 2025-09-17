@@ -572,6 +572,243 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__PROVIDERS__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__PROVIDERS__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"providers": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__LOCATIONS__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__LOCATIONS__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"locations": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__VISIT_TYPES__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__VISIT_TYPES__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"visit_types": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__DURATIONS__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__DURATIONS__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"durations": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__REASON_FOR_VISIT__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__REASON_FOR_VISIT__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"reason_for_visit": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__GET_ADDITIONAL_FIELDS</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Appointment Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an appointment's metadata is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": appointmentmetadata_id
+"type": None</pre></td>
+      <td><pre>"appointment":
+    "id": appt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when an appointment's metadata is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": appointmentmetadata_id
+"type": None</pre></td>
+      <td><pre>"appointment":
+    "id": appt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Billing Line Items
 
 <table>
