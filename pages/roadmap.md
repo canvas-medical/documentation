@@ -1,6 +1,6 @@
 ---
 permalink: /product-updates/roadmap/
-layout: productupdates	
+layout: roadmap	
 hidden: true
 date: 2023-01-08
 hidden_last_updated: true
