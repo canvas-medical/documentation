@@ -588,7 +588,10 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre></pre></td>
-       <td><pre>"slots_by_provider": list[dict]</pre></td>
+       <td>
+        <pre>"slots_by_provider": list[dict]</pre>
+        <pre>"selected_values": dict</pre>
+      </td>
     </tr>
   </tbody>
 </table>
