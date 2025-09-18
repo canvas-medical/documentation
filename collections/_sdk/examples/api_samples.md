@@ -1,11 +1,56 @@
 ---
-title: 'API Samples'
+title: 'api_samples'
 slug: 'example-api_samples'
 ---
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/api_samples' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-Showcases the usage of the SimpleAPI handler
+API Samples
+===========
+
+## Description
+
+Showcases the usage of the SimpleAPI handler. The sample requests below assume the value of my-api-key is configured to 'test123' in your Canvas instance plugin secrets via the UI or [Console](https://docs.canvasmedical.com/sdk/canvas_cli/#canvas-config-set).
+
+GET
+- Adds an API endpoint that returns "Hello World"
+
+Sample request:
+```
+curl --request GET \
+  --url https://xpc-dev.canvasmedical.com/plugin-io/api/api_samples/hello-world \
+  --header 'authorization: test123'
+```
+
+POST
+- Adds an API endpoint that accepts a JSON body and creates a Task in Canvas
+
+Sample request:
+```
+curl --request POST \
+  --url https://xpc-dev.canvasmedical.com/plugin-io/api/api_samples/crm-webhooks/email-bounce \
+  --header 'authorization: test123' \
+  --header 'content-type: application/json' \
+  --data '{
+  "mrn": "abc123",
+  "email": "test@example.com"
+}'
+```
+
+PUT
+- Adds an API endpoint with a unique identifier in the url that accepts appointment data and calls an Appointment .update() effect.
+
+Sample request:
+```
+curl --request PUT \
+  --url https://xpc-dev.canvasmedical.com/plugin-io/api/api_samples/appointments/1140 \
+  --header 'authorization: test123' \
+  --header 'content-type: application/json' \
+  --data '{
+  "meetingLink": "https://www.example.com/video-link",
+  "patientId": "d7af3e356368446c85b40a5d6ff7288e"
+}'
+```
 
 ## Configuration
 
@@ -17,7 +62,7 @@ authenticated requests.
 ```json
 {
     "sdk_version": "0.1.4",
-    "plugin_version": "0.0.1",
+    "plugin_version": "0.0.2",
     "name": "api_samples",
     "description": "Example usages of the SimpleAPI handler",
     "components": {
@@ -29,6 +74,10 @@ authenticated requests.
             {
                 "class": "api_samples.routes.email_bounce:EmailBounceAPI",
                 "description": "Creates a task to confirm patient contact info"
+            },
+            {
+                "class": "api_samples.routes.appointment_updater:AppointmentAPI",
+                "description": "Updates an existing appointment"
             }
         ],
         "commands": [],
@@ -47,31 +96,93 @@ authenticated requests.
 
 ## routes/
 
+### hello_world.py
+
+**Purpose**
+
+This code defines a simple API endpoint using the Canvas SDK. The endpoint responds to HTTP GET requests by returning a JSON object that contains the message "Hello world!".
+
+**Endpoint Details**
+
+- The endpoint is available at the path: /hello-world
+- It uses API key authentication: the request must include an Authorization header whose value matches the secret "my-api-key".
+- Upon successful authentication, a GET request to this endpoint responds with:
+  ```json
+  {"message": "Hello world!"}
+  ```
+
+**Authentication Logic**
+
+- The authenticate method checks if the API key provided in the request matches the one stored in the plugin's secrets under the key "my-api-key".
+
+**Usage**
+
+- This file would be part of a plugin for Canvas Medical that provides a demonstration endpoint for testing integrations, verifying connectivity, or serving as a template for further development.
+
+**Summary**
+
+In short, hello_world.py implements a secure, authenticated "Hello World" API endpoint as a quick example of using the Canvas SDK to create custom plugin routes.
+
+```python
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+
+# GET /plugin-io/api/api_samples/hello-world
+# Headers: "Authorization <your value for 'my-api-key'>"
+
+class HelloWorldAPI(SimpleAPIRoute):
+    """API endpoint that returns 'Hello world!'."""
+    PATH = "/hello-world"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        """Simple API key authentication."""
+        return credentials.key == self.secrets["my-api-key"]
+
+    def get(self) -> list[Response]:
+        """Return a message."""
+        return [JSONResponse({"message": "Hello world!"})]
+```
+
 ### email_bounce.py
 
-The code defines an endpoint for handling bounced email events.
+**Summary**
 
-**Endpoint**
+This file defines an API endpoint (using the Canvas SDK) to process "email bounce" webhook requests from a CRM system.
 
-- **Path:** `/crm-webhooks/email-bounce`
-- **Method:** POST
-- **Expected Body:** JSON containing `{"mrn": "valid patient MRN"}`
-- **Authorization:** Requires an API key in the `Authorization` header that matches the plugin secret `'my-api-key'`.
+**API Endpoint Details**
 
-**Core Functionality**
+- **Path**: `/crm-webhooks/email-bounce`
+- **Method**: POST
+- **Expected Request Body**: JSON containing a single key, `"mrn"`, which should be a valid patient Medical Record Number (MRN).
+- **Headers**: Requires an `"Authorization"` header with an API key.
 
-- When a POST request is received:
-  - It authenticates the request by verifying the provided API key against a stored secret.
-  - It retrieves the `Patient` object from the database with the given MRN (Medical Record Number) from the request body.
-  - It schedules a new open task for that patient:
-    - **Title:** `"Please confirm contact information."`
-    - **Due Date:** 5 days from the current UTC date
-    - **Label:** `"CRM"`
-- Returns a response indicating both the creation of the task and a confirmation JSON message.
+**Authentication**
 
-**Intended Use**
+- Uses API key-based authentication. The provided key is checked against a secret stored as `"my-api-key"`.
 
-This endpoint provides an automated workflow to prompt staff to confirm and update patient contact information in response to an email bounce event, improving contact data quality in clinical operations.
+**Functionality**
+
+- When a POST request with valid authentication is received:
+    - Extracts the MRN from the JSON body.
+    - Retrieves the corresponding `Patient` object from the database.
+    - Calculates a due date five days in the future.
+    - Creates a task for the patient with:
+        - Title: "Please confirm contact information."
+        - Due date: 5 days from now
+        - Status: Open
+        - Label: "CRM"
+    - Applies (creates) the task using the Canvas task system.
+    - Returns a JSON response confirming that the task was created.
+
+**Dependencies and SDK Usage**
+
+- Uses parts of the Canvas SDK for authentication, routing, processing tasks, and serializing responses.
+- Uses the Arrow library to manipulate date and time.
+- Relies on the Canvas data model for retrieving a patient by MRN.
+
+**Intended Purpose**
+
+- To allow external CRM systems to notify Canvas when an email sent to a patient bounces, so that clinic staff can follow up and confirm or update the patient’s contact information.
 
 ```python
 import arrow
@@ -81,21 +192,22 @@ from canvas_sdk.effects.task import AddTask, TaskStatus
 from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
 from canvas_sdk.v1.data import Patient
 
-#
 # POST /plugin-io/api/api_samples/crm-webhooks/email-bounce
 # Body: { "mrn": "valid patient MRN" }
 # Headers: "Authorization <your value for 'my-api-key'>"
-#
-
 
 class EmailBounceAPI(SimpleAPIRoute):
+    """API endpoint to handle email bounce webhooks from a CRM system."""
     PATH = "/crm-webhooks/email-bounce"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        """Simple API key authentication."""
         return credentials.key == self.secrets["my-api-key"]
 
     def post(self) -> list[Response]:
-        patient = Patient.objects.get(mrn=self.request.json()["mrn"])
+        """Create a task for the patient with the given MRN."""
+        mrn_from_json = self.request.json()["mrn"]
+        patient = Patient.objects.get(mrn=mrn_from_json)
         five_days_from_now = arrow.utcnow().shift(days=5).datetime
 
         task_effect = AddTask(
@@ -109,42 +221,95 @@ class EmailBounceAPI(SimpleAPIRoute):
         return [task_effect.apply(), JSONResponse({"message": "Task Created"})]
 ```
 
-### hello_world.py
+### appointment_updater.py
 
-This code defines a simple API endpoint which handles requests to the path `/hello-world`. When a GET request is made to this endpoint, the API responds with a JSON message that says "Hello world!".
+**Purpose**
 
-**Authentication**
+This file defines an API endpoint, using the Canvas SDK, for updating appointment records in a plugin for Canvas Medical.
 
-The endpoint requires an API key for authentication. The client must provide an API key (as a header called `Authorization`). The provided key is compared to a value stored in `self.secrets["my-api-key"]`. If the keys match, authentication is successful and the request is allowed; otherwise, it will be denied.
+**Endpoint Definition**
 
-**Response**
+- Route: `PUT /appointments/<id>`
+- Authentication: API Key (checked in request headers via APIKeyAuthMixin)
 
-A GET request to `/plugin-io/api/api_samples/hello-world` (when authenticated) returns a JSON response in the following format:
+**Core Logic**
 
-```json
-{
-  "message": "Hello world!"
-}
-```
+- Retrieves the appointment ID from the request URL.
+- Extracts the "meetingLink" value from the JSON request body.
+- Looks up the appointment record(s) in the database whose `note_id` matches the provided ID.
+    - Uses the most recent record if there are multiple.
+- If no appointment is found, returns a 404 Not Found error.
+- Otherwise:
+    - Creates an effect object for updating the appointment.
+    - Sets the new meeting link on the appointment.
+    - Adds (for demonstration) an external identifier to the appointment (e.g., links to an external scheduling system).
+    - Returns a list with two items:
+        - An effect instructing Canvas to perform the update.
+        - A response with HTTP 202 (Accepted) status to indicate the update request is being processed.
+
+**Key Canvas SDK Features Used**
+
+- `SimpleAPIRoute`/`APIKeyAuthMixin` for simplified, authenticated API route definition.
+- `AppointmentData` to query appointment objects.
+- `Appointment` effect to build the update operation.
+- `AppointmentIdentifier` to attach external identifiers to the appointment.
+- `Response` for HTTP response construction.
+
+**Summary**
+
+This module handles update requests for appointments, allowing specific fields (like meeting links and external identifiers) to be set or updated through a simple, authenticated API endpoint using the Canvas SDK. If the appointment is found, it schedules the update and replies with HTTP 202; if not, it responds with HTTP 404.
 
 ```python
-from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+from http import HTTPStatus
 
-#
-# GET /plugin-io/api/api_samples/hello-world
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.note.appointment import Appointment
+from canvas_sdk.effects.note.base import AppointmentIdentifier
+from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+from canvas_sdk.v1.data.appointment import Appointment as AppointmentData
+
+# PUT /plugin-io/api/api_samples/appointments/<id>
 # Headers: "Authorization <your value for 'my-api-key'>"
-#
 
+# Authentication is handled by the APIKeyAuthMixin, which checks the API key in the request headers
+# https://docs.canvasmedical.com/sdk/handlers-simple-api-http/#api-key-1
 
-class HelloWorldAPI(SimpleAPIRoute):
-    PATH = "/hello-world"
+class AppointmentAPI(APIKeyAuthMixin, SimpleAPIRoute):
+    """API for managing appointment updates."""
+    PATH = "/appointments/<id>"
 
-    def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        return credentials.key == self.secrets["my-api-key"]
+    def put(self) -> list[Response | Effect]:
+        """Update an existing appointment."""
+        note_dbid = self.request.path_params.get("id")
+        body = self.request.json()
 
-    def get(self) -> list[Response]:
-        return [JSONResponse({"message": "Hello world!"})]
+        meeting_link = str(body.get("meetingLink"))
+
+        appointments = AppointmentData.objects.filter(note_id=note_dbid)
+        # or this can be a UUID if you have it
+        # appointment = AppointmentData.objects.get(note__id=note_uuid)
+        # the current appointment is the last one after any reschedules / updates
+        appointment = appointments.last()
+
+        if not appointment:
+            return [Response(status_code=HTTPStatus.NOT_FOUND, content={"error": "Appointment not found"})]
+
+        # set up the meeting effect to update the appointment
+        appointment_effect = Appointment(instance_id=appointment.id)
+
+        # add the meeting link to the appointment
+        appointment_effect.meeting_link = meeting_link
+
+        # let's also add some external identifiers for fun
+        # for example, this could be an ID from an external scheduling system
+        external_identifiers=[
+            AppointmentIdentifier(system="https://www.example.com", value="123TEST")
+        ]
+
+        appointment_effect.external_identifiers = external_identifiers
+
+        return [appointment_effect.update(), Response(status_code=HTTPStatus.ACCEPTED)]
 ```
 
 <br/>
