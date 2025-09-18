@@ -36,8 +36,6 @@ sections:
                       - value: MB
                   - name: display
                     description: The display name of the coding.
-                    enum_options:
-                      - value: Member Number
               - name: value
                 description: Insurance member ID value
                 type: string
