@@ -74,7 +74,7 @@ Stay up to date on the latest important dates for the Canvas platform.
         </ul>
         API client code must be updated by the release date to avoid disruption.
       </td>
-      <td>TBD</td>
+      <td>10/14/25</td>
       <td></td>
     </tr>
     <tr>
