@@ -66,11 +66,12 @@ Stay up to date on the latest important dates for the Canvas platform.
         <ul>
           <li>Insurance member ID will no longer be provided in the <code>subscriberId</code> attribute. The member ID will now be presented in the <code>identifier</code> attribute instead, and the <code>subscriberId</code> attribute will now represent the identifier for the subscriber, not the member. This will apply for create, read, update, and search endpoints.</li>
           <li>The <code>subscriberid</code> search parameter will no longer search member IDs; it will now instead search subscriber IDs. The new <code>identifier</code> search parameter will now search member IDs.</li>
-        </ul><br>
+        </ul>
         To facilitate this change, the following changes have already been made to FHIR Coverage resource and endpoints:
         <ul>
           <li>The insurance member ID is being populated into and consumed from the <code>identifier</code> attribute.</li>
-          <li>Member IDs can be searched using the new <code>identifier</code> search parameter.</li><br>
+          <li>Member IDs can be searched using the new <code>identifier</code> search parameter.</li>
+        </ul>
         API client code must be updated by the release date to avoid disruption.
       </td>
       <td>TBD</td>
