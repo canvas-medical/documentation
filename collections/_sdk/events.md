@@ -17091,6 +17091,10 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
       <td>The conditions are loaded within the patient summary</td>
     </tr>
     <tr>
+      <td>PATIENT_CHART__MEDICATIONS</td>
+      <td>The medications are loaded within the patient summary</td>
+    </tr>
+    <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
       <td>A patient chart's summary section is loading.</td>
     </tr>

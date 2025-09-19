@@ -1,0 +1,50 @@
+---
+title: "Patient chart group"
+slug: "patient-chart-group-effect"
+excerpt: "Effect for grouping items on a patient chart section"
+hidden: false
+---
+
+## Overview
+
+This effect allows developers to group items in a patient chart section. You can define multiple groups with a name, priority, and the items that belong to each group.
+
+Currently, we are only supporting this for the Conditions and Medications sections.
+
+```python
+from canvas_sdk.effects.patient_chart_group import PatientChartGroup
+from canvas_sdk.effects.group import Group
+
+PatientChartGroup(items=[
+  {
+    "Psychiatry": Group(priority=100, items=[...], name="Psychiatry")
+  },
+  {
+    "General": Group(priority=200, items=[...], name="General")
+  }
+])
+```
+
+## Structure
+
+### **Group**
+
+A Group consists of the following properties:
+
+#### Attributes
+
+| Attribute  | Type   | Description                              |
+|------------|--------|------------------------------------------|
+| `items`    | `list` | list of items for each group             |
+| `priority` | `int`  | the group’s priority within the section. |
+| `name`     | `str`  | the group label.                         |
+
+### **PatientChartGroup**
+
+A PatientChartGroup consists of the following properties:
+
+#### Attributes
+
+| Attribute  | Type               | Description    |
+|------------|--------------------|----------------|
+| `items`    | `dict[str, Group]` | list of Groups |
