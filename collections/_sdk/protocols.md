@@ -158,6 +158,8 @@ class AbnormalPotassiumMeasure(ClinicalQualityMeasure):
 
 ```
 
+![ProtocolCard]("/assets/images/sdk/handlers/protocol_card_example.png")
+
 When a CQM protocol that returns a single ProtocolCard effect is uploaded to Canvas, you can select the protocol as an option in the Campaigns module and view the population of patients, create campaigns, etc. More details on Populations and Campaigns can be found [here](https://help.canvasmedical.com/articles/3097826946-campaigns-populations-patients).
 
 ### Caveats & notes
