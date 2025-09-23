@@ -57,19 +57,23 @@ class SimpleFollowUpProtocol(BaseProtocol):
 
 `ClinicalQualityMeasure` is the base class for clinical quality measure (CQM) protocols. CQMs are patient-centric protocols used to evaluate, detect, or surface clinical conditions, gaps in care, and population-level metrics. Plugin authors create concrete subclasses that implement the clinical logic and return Effects in response to incoming Events.
 
+When using `ClinicalQualityMeasure`, you have the option to utilize the [Campaigns](https://help.canvasmedical.com/articles/3097826946-campaigns-populations-patients) module in Canvas. However, the `ClinicalQualityMeasure` must return a single [`ProtocolCard`](/sdk/effect-protocol-cards/) effect in order to for patients to be included in the population for that CQM.
+
 ### Meta properties
 
 Subclasses should populate the `Meta` inner class. Common meta fields include:
 
 - `title` (str): Human-readable title for the protocol.
-- `identifiers` (list[str]): One or more external identifiers for the measure (for example, CMS/QDM ids).
+- `identifiers` (list[str]): One or more external identifiers for the measure (for example, CMS/QDM ids). These will show in the subtitle of the protocol card.
 - `description` (str): A short description of what the measure evaluates.
 - `information` (str): Longer contextual information or rationale.
-- `references` (list[str]): Links or identifiers for authoritative references.
-- `source_attributes` (dict[str, str]): Map of attribute names used by the protocol to source fields on data models.
-- `types` (list[str]): Tags or classification strings for the measure.
+- `references` (list[str]): Links or identifiers for authoritative references. These are visible in the info button on the protocol card.
+- `source_attributes` (dict[str, str]): Map of the 13 or 31 source attributes that certified health IT developers must reference when implementing DSI or PDSI. These are visible in the info button on the protocol card.
+- `types` (list[str]): Tags or classification strings for the measure, like "CQM" or "HCC". These are visible in the subtitle of the protocol card.
 - `authors` (list[str]): Authors or maintainers of the protocol.
-- `show_in_chart`, `show_in_population`, `can_be_snoozed` (bool): UI/behavior flags.
+- `show_in_chart` (bool): Determines whether the protocol card will show on the patient's chart.
+- `show_in_population` (bool): Determines whether the protocol will be included in the Campaigns module of Canvas.
+- `can_be_snoozed` (bool): Determines whether a user can snooze the protocol card to be addressed at a later date.
 - `is_abstract`, `is_predictive` (bool): Behavioral flags for the framework.
 
 The `ClinicalQualityMeasure._meta()` classmethod merges the base `Meta` and subclass `Meta` into a single dictionary that is used by the framework for display and routing.
@@ -92,19 +96,27 @@ The `ClinicalQualityMeasure._meta()` classmethod merges the base `Meta` and subc
 This example shows a protocol that reacts to `LAB_REPORT_CREATED` events, uses `patient_id_from_target` to determine which patient the report belongs to, and emits an Effect when a particular lab value is out of range. Note the example avoids heavy synchronous DB work and emits an Effect for the platform to handle asynchronously.
 
 ```python
-from canvas_sdk.events import EventType
-from canvas_sdk.effects.task import AddTask
 from datetime import datetime
 
+from canvas_sdk.commands import TaskCommand
+from canvas_sdk.effects.protocol_card import ProtocolCard
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols.clinical_quality_measure import ClinicalQualityMeasure
+
+
 class AbnormalPotassiumMeasure(ClinicalQualityMeasure):
+    """Detects clinically significant potassium abnormalities and surfaces follow-up tasks."""
+
     class Meta:
         title = "Abnormal Potassium Alert"
         identifiers = ["CQM-K-001"]
-        description = "Creates a task when a potassium lab report shows hypokalemia or hyperkalemia."
-        information = "Detects clinically significant potassium abnormalities and surfaces follow-up tasks."
-        references = ["https://example.org/guideline/potassium"]
-        source_attributes = {"reported_at": "https://example.org/guideline/potassium"}
-        types = ["electrolyte", "urgent"]
+        description = "Creates a task recommendation when a potassium lab report shows hypokalemia or hyperkalemia."
+        information = (
+            "Detects clinically significant potassium abnormalities and surfaces follow-up tasks."
+        )
+        references = ["Potassium Guideline https://example.org/guideline/potassium"]
+        source_attributes = {"Canvas Medical": "Canvas Medical https://www.canvasmedical.com"}
+        types = ["CQM"]
         authors = ["Clinical Team"]
         show_in_chart = True
         show_in_population = True
@@ -126,12 +138,27 @@ class AbnormalPotassiumMeasure(ClinicalQualityMeasure):
         k = self.relative_float(str(potassium_value))
 
         if k < 3.5 or k > 5.5:
-            # Emit an effect — e.g., send an alert or create a task. Keep heavy work to platform handlers.
-            return [AddTask(patient_id=patient_id, title=f"Abnormal potassium: {k}", due=datetime.now()).apply()]
+            # Emit an effect — e.g., create a task. Keep heavy work to platform handlers.
+            task = TaskCommand(
+                title="Follow-up on abnormal potassium",
+                due_date=datetime.now().date(),
+            )
+            return [
+                ProtocolCard(
+                    patient_id=patient_id,
+                    title=f"Abnormal potassium: {k}",
+                    due=datetime.now(),
+                    key="abnormal_potassium",
+                    narrative="Talk to patient about potassium",
+                    recommendations=[task.recommend(title="Follow-up on abnormal potassium")],
+                ).apply()
+            ]
 
         return []
 
 ```
+
+When a CQM protocol that returns a single ProtocolCard effect is uploaded to Canvas, you can select the protocol as an option in the Campaigns module and view the population of patients, create campaigns, etc. More details on Populations and Campaigns can be found [here](https://help.canvasmedical.com/articles/3097826946-campaigns-populations-patients).
 
 ### Caveats & notes
 
