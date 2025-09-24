@@ -27,7 +27,7 @@ Alternatively, to find all of the `Coverage` instances issed by a particular iss
 ```python
 >>> from canvas_sdk.v1.data.coverage import Coverage, Transactor
 >>> transactor_1 = Transactor.objects.get(payer_id="AVA03")
-transactor_coverages = Coverage.objects.filter(issuer=transactor_1)
+>>> transactor_coverages = Coverage.objects.filter(issuer=transactor_1)
 >>> print(transactor_coverages)
 <QuerySet [<Coverage: id=89793979-dbff-4a53-b928-75db973c2bdc>, <Coverage: id=423c0f77-8083-4cc1-8e29-2c7d348281e4>]>
 >>>

@@ -23,6 +23,8 @@ rfv_coding = ReasonForVisitSettingCoding.objects.get(id="e2b1e1e3-3f52-4a0a-bb3a
 You can also filter records by attributes. For example, to get all codings from a specific coding system:
 
 ```python
+from canvas_sdk.v1.data import ReasonForVisitSettingCoding
+
 codings = ReasonForVisitSettingCoding.objects.filter(system="http://snomed.info/sct")
 ```
 
