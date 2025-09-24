@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.11"
 
 [manifest]
-overrides = [{ name = "canvas", specifier = ">=0.44.2" }]
+overrides = [{ name = "canvas", specifier = ">=0.64.0" }]
 
 [[package]]
 name = "ai-scribe"
@@ -87,7 +87,7 @@ wheels = [
 
 [[package]]
 name = "canvas"
-version = "0.62.0"
+version = "0.64.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cookiecutter" },
@@ -119,9 +119,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "websocket-client" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a8/7d/2739175228ef66910bcd67f5da0208bb833250e0330e5e805c51fae4e420/canvas-0.62.0.tar.gz", hash = "sha256:8ac45f0badc71e07e2c3c3d6ae619db263eebadcd3e73fda2f5b23e39770e213", size = 925121, upload-time = "2025-09-09T15:15:49.906Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bc/7f/ec232ffba4dfb237743cab479fee7dbab0c93ccac87442d323422e86d8d0/canvas-0.64.0.tar.gz", hash = "sha256:428e46f7bdb022996aed8289df86d4dddd32b4323ba908334afb552108d79dda", size = 931575, upload-time = "2025-09-23T17:53:59.119Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6c/ab/05bb92dbce809e28165ef8e45a109e231b255cf0deacb77e40575844955a/canvas-0.62.0-py3-none-any.whl", hash = "sha256:2fb0ead5883b3be84cbe79415952f0d52762d6f67ec7b6e6a1c567c3fde7c262", size = 1074668, upload-time = "2025-09-09T15:15:48.206Z" },
+    { url = "https://files.pythonhosted.org/packages/0b/df/afd0b5c3a66b8061442478702a56b9e1f440f9d4c2ce45bc9b5a72e3c93f/canvas-0.64.0-py3-none-any.whl", hash = "sha256:f01d3057d825d9326c185ff424dce1d7c1d2e7e50956a83e31480415d566da97", size = 1085446, upload-time = "2025-09-23T17:53:57.537Z" },
 ]
 
 [[package]]
@@ -468,7 +468,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "ai-scribe", git = "https://github.com/Medical-Software-Foundation/canvas.git?subdirectory=extensions%2Fai-scribe&rev=main" },
-    { name = "canvas", specifier = ">=0.44.2" },
+    { name = "canvas", specifier = ">=0.64.0" },
     { name = "click", specifier = ">=8.2.1" },
     { name = "markdown-it-py", extras = ["plugins"], specifier = ">=3.0.0" },
     { name = "requests", specifier = ">=2.32.4" },
