@@ -131,6 +131,7 @@ is_editable = current_note_state.editable()
 ```
 
 ### Get the current claim of a given note
+
 You can retrieve the current claim using the method `get_claim()` presented in the Note object.
 
 ```python
@@ -185,7 +186,7 @@ commands_in_note = Note.commands.all()
 ### Note
 
 | Field Name          | Type                                  | Notes                                                                |
-|---------------------|---------------------------------------|----------------------------------------------------------------------|
+| ------------------- | ------------------------------------- | -------------------------------------------------------------------- |
 | id                  | UUID                                  |                                                                      |
 | dbid                | Integer                               |                                                                      |
 | created             | DateTime                              |                                                                      |
@@ -201,11 +202,12 @@ commands_in_note = Note.commands.all()
 | related_data        | JSON                                  | Can contain one key, `roomNumber`, if the Note is an inpatient stay. |
 | datetime_of_service | DateTime                              |                                                                      |
 | place_of_service    | String                                |                                                                      |
+| encounter           | [Encounter](/sdk/data-encounter)      |                                                                      |
 
 ### NoteType
 
 | Field Name                                  | Type                                               |
-|---------------------------------------------|----------------------------------------------------|
+| ------------------------------------------- | -------------------------------------------------- |
 | dbid                                        | Integer                                            |
 | created                                     | DateTime                                           |
 | modified                                    | DateTime                                           |
@@ -235,33 +237,33 @@ commands_in_note = Note.commands.all()
 
 ### NoteStateChangeEvent
 
-| Field Name                                  | Type                                      |
-|---------------------------------------------|-------------------------------------------|
-| id                                          | UUID                                      |
-| dbid                                        | Integer                                   |
-| created                                     | DateTime                                  |
-| modified                                    | DateTime                                  |
-| note                                        | [Note](/sdk/data-note/)                   |
-| originator                                  | [CanvasUser](/sdk/data-canvasuser)        |
-| state                                       | [NoteState](/sdk/data-note/#notestates)   |
-| note_state_document                         | String                                    |
-| note_state_html                             | String                                    |
+| Field Name          | Type                                    |
+| ------------------- | --------------------------------------- |
+| id                  | UUID                                    |
+| dbid                | Integer                                 |
+| created             | DateTime                                |
+| modified            | DateTime                                |
+| note                | [Note](/sdk/data-note/)                 |
+| originator          | [CanvasUser](/sdk/data-canvasuser)      |
+| state               | [NoteState](/sdk/data-note/#notestates) |
+| note_state_document | String                                  |
+| note_state_html     | String                                  |
 
 ### CurrentNoteStateEvent
 
-| Field Name                                  | Type                                      |
-|---------------------------------------------|-------------------------------------------|
-| id                                          | UUID                                      |
-| dbid                                        | Integer                                   |
-| state                                       | [NoteState](/sdk/data-note/#notestates)   |
-| note                                        | [Note](/sdk/data-note/)                   |
+| Field Name | Type                                    |
+| ---------- | --------------------------------------- |
+| id         | UUID                                    |
+| dbid       | Integer                                 |
+| state      | [NoteState](/sdk/data-note/#notestates) |
+| note       | [Note](/sdk/data-note/)                 |
 
 ## Enumeration types
 
 ### NoteStates
 
 | Value | Description            | Notes                      |
-|-------|------------------------|----------------------------|
+| ----- | ---------------------- | -------------------------- |
 | NEW   | Created                |                            |
 | PSH   | Pushed the charges for |                            |
 | LKD   | Locked                 |                            |
@@ -283,7 +285,7 @@ commands_in_note = Note.commands.all()
 ### NoteTypeCategories
 
 | Value          | Description          |
-|----------------|----------------------|
+| -------------- | -------------------- |
 | message        | Message              |
 | letter         | Letter               |
 | inpatient      | Inpatient Visit Note |
@@ -298,7 +300,7 @@ commands_in_note = Note.commands.all()
 ### PracticeLocationPOS
 
 | Value | Description                                              |
-|-------|----------------------------------------------------------|
+| ----- | -------------------------------------------------------- |
 | 01    | Pharmacy                                                 |
 | 02    | Telehealth                                               |
 | 03    | Education Facility                                       |

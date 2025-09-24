@@ -706,6 +706,9 @@ data_module:
   - title: "Device"
     url: /sdk/data-device/
     description: Type of a manufactured item that is used in the provision of healthcare.
+  - title: "Encounter"
+    url: /sdk/data-encounter/
+    description: A patient Encounter connected to a Note in Canvas.
   - title: "Facility"
     url: /sdk/data-facility/
     description: A location where healthcare services are provided.
