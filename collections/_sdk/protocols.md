@@ -17,7 +17,6 @@ Protocols respond to [Events](/sdk/events/) and return zero, one, or many [Effec
 
 ### Purpose & lifecycle
 
-- A protocol is instantiated with an incoming `Event` and optional `secrets` and `environment` dictionaries.
 - The framework will call `compute()` on the protocol instance when an event should be handled. `compute()` must
   return a list of `Effect` objects that the runtime will apply.
 - Protocols must override the `compute()` method.
@@ -32,7 +31,6 @@ Protocols respond to [Events](/sdk/events/) and return zero, one, or many [Effec
 - Instance attributes available to protocol authors:
   - `self.event` — The `Event` instance.
   - `self.secrets` — Secrets provided to the protocol (defaults to {}).
-  - `self.environment` — Environment values (defaults to {}).
 
 ### Example
 
@@ -45,9 +43,9 @@ class SimpleFollowUpProtocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.IMAGING_REPORT_CREATED)
 
     def compute(self):
-        # Use self.event, self.secrets, and self.environment
+        # Use self.event, self.secrets
         patient_id = self.event.context["patient"]["id"]
-        imaging_report_id = self.event.target["id"]
+        imaging_report_id = self.event.target.id
 
         # Create a follow-up task effect
         return [AddTask(patient_id=patient_id, title="Follow-up", linked_object_type=AddTask.LinkableObjectType.IMAGING, linked_object_id=imaging_report_id).apply()]
@@ -75,8 +73,6 @@ Subclasses should populate the `Meta` inner class. Common meta fields include:
 - `show_in_population` (bool): Determines whether the protocol will be included in the Campaigns module of Canvas.
 - `can_be_snoozed` (bool): Determines whether a user can snooze the protocol card to be addressed at a later date.
 - `is_abstract`, `is_predictive` (bool): Behavioral flags for the framework.
-
-The `ClinicalQualityMeasure._meta()` classmethod merges the base `Meta` and subclass `Meta` into a single dictionary that is used by the framework for display and routing.
 
 ### Key methods
 
