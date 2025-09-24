@@ -19,14 +19,16 @@ This guide explains how to add additional fields that will appear when schedulin
 To create the form, we need to specify which items will be included. For this, we use the [`FormField`](/sdk/appointment-metadata-create-form-effect/#formfield) class, where we can define our inputs and their attributes.
 
 ```python
-    FormField(
-        key='state',
-        label='State',
-        type=InputType.TEXT,
-        required=False,
-        editable=True,
-        value="CA"
-    ),
+from canvas_sdk.effects.appointments_metadata import FormField, InputType
+
+FormField(
+    key='state',
+    label='State',
+    type=InputType.TEXT,
+    required=False,
+    editable=True,
+    value="CA"
+),
 ```
 
 #### 2. AppointmentMetadataCreateFormEffect
@@ -34,7 +36,9 @@ To create the form, we need to specify which items will be included. For this, w
 The next step is to add these fields to the effect so they can be used to build the form.
 
 ```python
-AppointmentMetadataCreateFormEffect(form_fields=[
+from canvas_sdk.effects.appointments_metadata import AppointmentsMetadataCreateFormEffect, FormField, InputType
+
+AppointmentsMetadataCreateFormEffect(form_fields=[
     FormField(
         key='state',
         label='State',
@@ -63,7 +67,7 @@ class Protocol(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.APPOINTMENT__FORM__GET_ADDITIONAL_FIELDS)
 
     def compute(self) -> list[Effect]:
-        form = AppointmentMetadataCreateFormEffect(form_fields=[
+        form = AppointmentsMetadataCreateFormEffect(form_fields=[
             FormField(
                 key='state',
                 label='State',

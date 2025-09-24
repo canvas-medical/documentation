@@ -90,19 +90,19 @@ class CompoundMedicationUpdater(BaseHandler):
 
   def compute(self):
     # Find a compound medication to update
-    compound_med_model = CompoundMedicationModel.objects.filter(
-      formulation__contains="Testosterone"
+    compound_med = CompoundMedicationModel.objects.filter(
+        formulation__contains="Testosterone"
     ).first()
 
     if compound_med:
-      # Update to make it a controlled substance
-      update_effect = CompoundMedicationEffect(
-        compound_medication_id=str(compound_med_model.id),
-        controlled_substance="III",
-        controlled_substance_ndc="98765432101"
-      )
+        # Update to make it a controlled substance
+        update_effect = CompoundMedicationEffect(
+            compound_medication_id=str(compound_med.id),
+            controlled_substance="III",
+            controlled_substance_ndc="98765432101"
+        )
 
-      return [update_effect.update()]
+        return [update_effect.update()]
 
     return []
 ```

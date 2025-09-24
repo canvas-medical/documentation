@@ -164,6 +164,7 @@ recent_notes = Note.objects.filter(
 The `NoteType` model can also be used to find notes by type.
 
 ```python
+from canvas_sdk.v1.data.note import Note
 from canvas_sdk.v1.data.note import NoteType
 from canvas_sdk.v1.data.patient import Patient
 

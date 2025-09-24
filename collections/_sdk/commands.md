@@ -1057,6 +1057,7 @@ A common use case is retrieving existing PhysicalExam commands from a note and m
 ```python
 from canvas_sdk.commands import PhysicalExamCommand
 from canvas_sdk.v1.data import Command, Note
+from logger import log
 
 # Get existing physical exam commands from a note
 note = Note.objects.get(id="ff287601-fff4-46c4-b21f-04760e88adf1")
@@ -1203,8 +1204,9 @@ Below is an example that demonstrates how to instantiate a `QuestionnaireCommand
 import uuid
 from canvas_sdk.commands.commands.questionnaire import QuestionnaireCommand
 from canvas_sdk.commands.commands.questionnaire.question import ResponseOption
+from canvas_sdk.effects import Effect
 from canvas_sdk.handlers import BaseHandler
-from canvas_sdk.v1.data import Note
+from canvas_sdk.v1.data import Note, Questionnaire
 
 class Protocol(BaseHandler):
 
@@ -1223,17 +1225,17 @@ class Protocol(BaseHandler):
 
       # Record responses for each question.
       for question in questions:
-          if question.type == RO.TYPE_TEXT:
+          if question.type == ResponseOption.TYPE_TEXT:
               # For text questions, pass a 'text' keyword argument.
               question.add_response(text=f"Thanks for all the fish")
-          elif question.type == RO.TYPE_INTEGER:
+          elif question.type == ResponseOption.TYPE_INTEGER:
               # For integer questions, pass an 'integer' keyword argument.
               question.add_response(integer=42)
-          elif question.type == RO.TYPE_RADIO:
+          elif question.type == ResponseOption.TYPE_RADIO:
               # For radio questions, pass an 'option' keyword argument (a ResponseOption instance).
               first_option = question.options[0]
               question.add_response(option=first_option)
-          elif question.type == RO.TYPE_CHECKBOX:
+          elif question.type == ResponseOption.TYPE_CHECKBOX:
               # For checkbox questions, add responses with option, selected flag, and optionally a comment.
               first_option = question.options[0]
               last_option = question.options[-1]
@@ -1458,7 +1460,9 @@ RemoveAllergyCommand(
 from canvas_sdk.commands.commands.resolve_condition import ResolveConditionCommand
 from canvas_sdk.v1.data import Condition
 
-patient_condition = Condition.objects.for_patient(self.event.context["patient"]["id"]).committed().active().first()
+patient_id = '<a patient ID from your instance>'
+
+patient_condition = Condition.objects.for_patient(patient_id).committed().active().first()
 
 ResolveConditionCommand(
    condition_id=patient_condition.id,
@@ -1467,8 +1471,6 @@ ResolveConditionCommand(
    note_uuid="rk786p",
 )
 ```
-
-
 
 ---
 

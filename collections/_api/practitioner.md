@@ -673,7 +673,7 @@ payload = {
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
-                        "valueBoolean": true
+                        "valueBoolean": True
                     }
                 ]
             }
@@ -1289,7 +1289,7 @@ payload = {
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
-                        "valueBoolean": true
+                        "valueBoolean": True
                     }
                 ]
             }

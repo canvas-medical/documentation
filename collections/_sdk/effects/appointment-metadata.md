@@ -127,6 +127,8 @@ effect = metadata.upsert("CA")
    ```python
    from canvas_sdk.effects.appointments_metadata.base import AppointmentsMetadata
 
+   consented = True
+
    metadata = AppointmentsMetadata(
        appointment_id="550e8400e29b41d4a716446655440001",
        key="boolean_value"
