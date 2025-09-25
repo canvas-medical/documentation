@@ -60,6 +60,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | gender_identity_code     | String                                                                    |
 | preferred_pronouns       | String                                                                    |
 | biological_race_codes    | Array[String]                                                             |
+| cultural_ethnicity_codes | Array[String]                                                             |
 | last_known_timezone      | String                                                                    |
 | mrn                      | String                                                                    |
 | active                   | Boolean                                                                   |

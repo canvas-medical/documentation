@@ -147,8 +147,9 @@ class Protocol(BaseHandler):
 # Patient Update Example
 
 ```python
-from canvas_sdk.effects.patient import Patient, PatientAddress
+from canvas_sdk.effects.patient import Patient, PatientAddress, PatientExternalIdentifier
 from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data.common import AddressUse
 
 
 class Protocol(BaseHandler):

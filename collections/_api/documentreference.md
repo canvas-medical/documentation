@@ -540,11 +540,11 @@ payload = {
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
-            "valueBoolean": true,
+            "valueBoolean": True,
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-requires-signature",
-            "valueBoolean": true,
+            "valueBoolean": True,
         }
     ],
     "status": "current",

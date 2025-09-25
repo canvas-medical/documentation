@@ -418,20 +418,20 @@ class PediatricConditionSearch(BaseHandler):
         # compare the codings of the options with our list of adult-only
         # diagnosis codes. If it's an adult only code, remove it from the
         # list.
-        
+
         return []
 ```
 
 Once again you see some code that optimizes for performance over readability.
 If you're not familiar with the Django ORM, this code:
 
-```python
+```python?partialtrue
 patient_id = Command.objects.filter(id=self.target).values_list('patient__id', flat=True).first()
 ```
 
 Is equivalent to this code, which you may find more readable:
 
-```python
+```python?partialtrue
 command = Command.objects.get(id=self.target)
 patient_id = command.patient.id
 ```

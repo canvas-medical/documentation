@@ -154,7 +154,7 @@ You can use the `questionnaire_from_yaml` function from `canvas_sdk.questionnair
 The function takes the path to the YAML file as an argument and returns a dictionary containing the questionnaire definition.
 
 ```python
-def questionnaire_from_yaml(questionnaire_name: str, **kwargs: Any) -> QuestionnaireConfig | None:
+def questionnaire_from_yaml(questionnaire_name: str, **kwargs):
     """Load a Questionnaire configuration from a YAML file.
 
     Args:

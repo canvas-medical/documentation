@@ -32,7 +32,7 @@ class MyEventHandler(BaseHandler):
 You can respond to one event, or several. To respond to multiple events, set
 `RESPONDS_TO` to a list of [event types](/sdk/events/).
 
-```python
+```python?partial=true
 # Respond when tasks are created:
 RESPONDS_TO = EventType.Name(EventType.TASK_CREATED)
 
