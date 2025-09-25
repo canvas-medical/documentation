@@ -80,7 +80,7 @@ instance of it, and return the `.apply()` method from compute.
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
-from canvas_sdk.v1.data import Command, BillingLineItem
+from canvas_sdk.v1.data import Assessment, Command, BillingLineItem
 from canvas_sdk.effects.billing_line_item import UpdateBillingLineItem
 
 

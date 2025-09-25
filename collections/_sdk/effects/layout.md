@@ -294,6 +294,8 @@ The `PortalWidget` class has the following properties:
 To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect` or `PortalWidget`.
 
 ```python
+from typing import Any
+
 def render_to_string(template_name: str, context: dict[str, Any] | None = None) -> str | None:
     """Load a template and render it with the given context.
 

@@ -28,7 +28,6 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 assessments = patient.assessments.all()
 ```
 
-
 ## Filtering
 
 Assessments can be filtered by any attribute that exists on the model.
@@ -49,35 +48,35 @@ assessments = Assessment.objects.filter(patient__id="1eed3ea2a8d546a1b681a2a45de
 
 ### Assessment
 
-| Field Name       | Type                                            |
-|------------------|-------------------------------------------------|
-| id               | UUID                                            |
-| dbid             | Integer                                         |
-| created          | DateTime                                        |
-| modified         | DateTime                                        |
-| originator       | [CanvasUser](/sdk/data-canvasuser)              |                                                                            |
-| deleted          | Boolean                                         |
-| entered_in_error | [CanvasUser](/sdk/data-canvasuser)              |
-| committer        | [CanvasUser](/sdk/data-canvasuser)              |
-| patient          | [Patient](/sdk/data-patient/#patient)           |
-| note             | [Note](/sdk/data-note/#note)                    |
-| condition        | [Condition](/sdk/data-condition/#condition)     |
-| interview        | [Interview](/sdk/data-questionnaire/#interview) |
-| status           | [AssessmentStatus](#assessment-status)          |
-| narrative        | String                                          |
-| background       | String                                          |
-| care_team        | String                                          |
+| Field Name        | Type                                                    |
+| ----------------- | ------------------------------------------------------- | --- |
+| id                | UUID                                                    |
+| dbid              | Integer                                                 |
+| created           | DateTime                                                |
+| modified          | DateTime                                                |
+| originator        | [CanvasUser](/sdk/data-canvasuser)                      |     |
+| deleted           | Boolean                                                 |
+| entered_in_error  | [CanvasUser](/sdk/data-canvasuser)                      |
+| committer         | [CanvasUser](/sdk/data-canvasuser)                      |
+| patient           | [Patient](/sdk/data-patient/#patient)                   |
+| note              | [Note](/sdk/data-note/#note)                            |
+| condition         | [Condition](/sdk/data-condition/#condition)             |
+| interview         | [Interview](/sdk/data-questionnaire/#interview)         |
+| status            | [AssessmentStatus](#assessment-status)                  |
+| narrative         | String                                                  |
+| background        | String                                                  |
+| care_team         | String                                                  |
+| treatments_stated | [MedicationStatement](/sdk/data-medication-statement)[] |
 
 ## Enumeration types
 
 ### Assessment Status
 
 | Value                | Label        |
-|----------------------|--------------|
+| -------------------- | ------------ |
 | STATUS_IMPROVING     | Improved     |
 | STATUS_STABLE        | Unchanged    |
 | STATUS_DETERIORATING | Deteriorated |
-
 
 <br/>
 <br/>

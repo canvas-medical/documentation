@@ -245,7 +245,7 @@ class PatientChartConditionAnnotation(BaseProtocol):
 
         payload = {}
         for condition in self.context:
-            icd10_code = next((coding.get("code") for coding in condition.get("codings", []) if coding.get("system") == ICD10), None)
+            icd10_code = next((coding.get("code") for coding in condition.get("codings", []) if coding.get("system") == "ICD10"), None)
             if not icd10_code:
                 continue
 
@@ -271,7 +271,7 @@ class ClaimConditionAnnotation(BaseProtocol):
 
         payload = {}
         for condition in self.context:
-            icd10_code = next((coding.get("code") for coding in condition.get("codings", []) if coding.get("system") == ICD10), None)
+            icd10_code = next((coding.get("code") for coding in condition.get("codings", []) if coding.get("system") == "ICD10"), None)
             if not icd10_code:
                 continue
 

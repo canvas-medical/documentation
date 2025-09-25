@@ -17,7 +17,7 @@ The `PatientConsent` model can be used to find all of the patient consents for a
 >>> from canvas_sdk.v1.data import PatientConsent, Patient, Organization
 >>> patient_1 = Patient.objects.get(id="aebe4d3f5d18410388dc69c4b5169fc3")
 >>> organization_1 = Organization.objects.first()
->>> patient_1_consents = PatientConsent.objects.filter(patient=patient_1, organization=organization)
+>>> patient_1_consents = PatientConsent.objects.filter(patient=patient_1, organization=organization_1)
 >>> print([consent.category.display for consent in patient_1_consents])
 ['Surgical Consent Form', 'Telehealth', 'HIPAA']
 ```
@@ -25,7 +25,7 @@ The `PatientConsent` model can be used to find all of the patient consents for a
 You can also access a patient's consents from the `Patient` model:
 
 ```python
->>> from canvas_sdk.v1.data import PatientConsent
+>>> from canvas_sdk.v1.data import PatientConsent, Patient
 >>> patient_1 = Patient.objects.get(id="aebe4d3f5d18410388dc69c4b5169fc3")
 >>> patient_1_consents = patient_1.patient_consent.all()
 >>> print([consent.category.display for consent in patient_1_consents])
