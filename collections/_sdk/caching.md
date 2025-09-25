@@ -32,13 +32,13 @@ cache = get_cache()
 
 Retrieve a value from the cache:
 
-```python
+```python?partial=true
 user = cache.get("key")
 ```
 
 You can specify a fallback if the key doesn't exist:
 
-```python
+```python?partial=true
 user = cache.get("key", default="default_value")
 ```
 
@@ -48,7 +48,7 @@ user = cache.get("key", default="default_value")
 
 Store a value in the cache:
 
-```python
+```python?partial=true
 cache.set("key", {"name": "Alice"}, timeout_seconds=600)
 ```
 
@@ -58,7 +58,7 @@ cache.set("key", {"name": "Alice"}, timeout_seconds=600)
 
 Fetch a value or set it if not present:
 
-```python
+```python?partial=true
 value = cache.get_or_set("key", default=lambda: compute_value(), timeout_seconds=300)
 ```
 
@@ -68,7 +68,7 @@ value = cache.get_or_set("key", default=lambda: compute_value(), timeout_seconds
 
 Set multiple values at once:
 
-```python
+```python?partial=true
 cache.set_many({
     "key1": {"name": "Alice"},
     "key2": {"name": "Bob"}
@@ -81,7 +81,7 @@ cache.set_many({
 
 Fetch multiple values in one operation:
 
-```python
+```python?partial=true
 users = cache.get_many(["key1", "key2"])
 ```
 
@@ -91,7 +91,7 @@ users = cache.get_many(["key1", "key2"])
 
 Remove a key from the cache:
 
-```python
+```python?partial=true
 cache.delete("key")
 ```
 
@@ -101,7 +101,7 @@ cache.delete("key")
 
 Check if a key exists in cache:
 
-```python
+```python?partial=true
 if "key" in cache:
     ...
 ```

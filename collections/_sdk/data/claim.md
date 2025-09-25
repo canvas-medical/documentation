@@ -19,9 +19,23 @@ from canvas_sdk.v1.data.claim import Claim
 claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
 ```
 
+To access diagnosis codes for a claim:
+
+```python
+from canvas_sdk.v1.data.claim import Claim
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+diagnosis_codes = claim.diagnosis_codes.all().order_by("rank")
+
+for diagnosis in diagnosis_codes:
+    print(f"Rank {diagnosis.rank}: {diagnosis.code} - {diagnosis.display}")
+```
+
 ## Filtering
 
 ```python
+from canvas_sdk.v1.data.claim import Claim
+
 # Active claims only
 active_claims = Claim.objects.active()
 ```
@@ -57,6 +71,7 @@ Represents a complete healthcare claim.
 | aggregate\_coverage\_balance | Decimal                             |
 | created                      | DateTime                            |
 | modified                     | DateTime                            |
+| diagnosis\_codes             | [ClaimDiagnosisCode](#claimdiagnosiscode)[] |
 
 **Computed Properties**:
 
@@ -141,6 +156,21 @@ Links a claim to a specific insurance coverage.
 | payer\_icn                            | String                                                                   |
 | created                               | DateTime                                                                 |
 | modified                              | DateTime                                                                 |
+
+### ClaimDiagnosisCode
+
+Represents diagnosis codes associated with a claim, ordered by rank.
+
+| Field Name | Type                |
+|------------|---------------------|
+| id         | UUID                |
+| dbid       | Integer             |
+| claim      | [Claim](#claim)     |
+| rank       | Integer             |
+| code       | String              |
+| display    | String              |
+| created    | DateTime            |
+| modified   | DateTime            |
 
 ### ClaimQueue
 
