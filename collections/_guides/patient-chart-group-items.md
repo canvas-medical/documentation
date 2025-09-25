@@ -24,6 +24,8 @@ Here’s an example of a plugin that groups conditions based on their codes - he
 ```python
 
 from canvas_sdk.effects.patient_chart_group import PatientChartGroup
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.group import Group
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.commands.constants import CodeSystems

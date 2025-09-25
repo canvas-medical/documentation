@@ -15,12 +15,28 @@ Currently, we are only supporting this for the Conditions and Medications sectio
 from canvas_sdk.effects.patient_chart_group import PatientChartGroup
 from canvas_sdk.effects.group import Group
 
+conditions = [{
+    "id": 1,
+    "codings": {
+      "code": "111",
+      "system": "ICD-10",
+      "display": "Ophiasis",
+    }
+  }, {
+    "id": 2,
+    "codings": {
+      "code": "112",
+      "system": "ICD-10",
+      "display": "Acute angle-closure glaucoma",
+    }
+}]
+
 PatientChartGroup(items=[
   {
-    "Psychiatry": Group(priority=100, items=[...], name="Psychiatry")
+    "Psychiatry": Group(priority=100, items=conditions, name="Psychiatry")
   },
   {
-    "General": Group(priority=200, items=[...], name="General")
+    "General": Group(priority=200, items=conditions, name="General")
   }
 ])
 ```
@@ -35,7 +51,7 @@ A Group consists of the following properties:
 
 | Attribute  | Type   | Description                              |
 |------------|--------|------------------------------------------|
-| `items`    | `list` | list of items for each group             |
+| `items`    | `list` | list of items for each group, ex: [Condition] or [Medication]            |
 | `priority` | `int`  | the group’s priority within the section. |
 | `name`     | `str`  | the group label.                         |
 

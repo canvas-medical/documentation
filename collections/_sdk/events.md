@@ -17062,6 +17062,55 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+### Patient Chart Configuration
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_CHART__CONDITIONS</th></tr>
+    <tr><td colspan="2">Occurs when the conditions are loaded on the patient chart.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_id
+"type": <a href='/sdk/patient/'>Patient</a></pre></td>
+      <td><pre>"conditions":
+    "id": condition id
+    "codings": 
+      "code": str
+      "system": str
+      "display": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_CHART__MEDICATIONS</th></tr>
+    <tr><td colspan="2">Occurs when the medications are loaded on the patient chart.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_id
+"type": <a href='/sdk/patient/'>Patient</a></pre></td>
+      <td><pre>"medications":
+    "id": medication id
+    "codings": 
+      "code": str
+      "system": str
+      "display": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+
 ### Other Events
 
 <table>
@@ -17085,14 +17134,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>CLAIM__CONDITIONS</td>
       <td>The conditions are loaded within the claim summary.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_CHART__CONDITIONS</td>
-      <td>The conditions are loaded within the patient summary</td>
-    </tr>
-    <tr>
-      <td>PATIENT_CHART__MEDICATIONS</td>
-      <td>The medications are loaded within the patient summary</td>
     </tr>
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
