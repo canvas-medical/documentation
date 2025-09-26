@@ -18,6 +18,27 @@ sections:
             exclude_in: create
             description: The identifier of the Coverage.
             type: string
+          - name: identifier
+            description: An identifier for the insured of an insurance policy, usually assigned by the insurance carrier.
+            type: array[json]
+            attributes:
+              - name: type
+                description: Insurance member ID description
+                type: json
+                attributes:
+                  - name: system
+                    description: The system url of the coding.
+                    enum_options:
+                      - value: http://terminology.hl7.org/CodeSystem/v2-0203
+                  - name: code
+                    description: The code of the insurance member ID description.
+                    enum_options:
+                      - value: MB
+                  - name: display
+                    description: The display name of the coding.
+              - name: value
+                description: Insurance member ID value
+                type: string
           - name: status
             type: enum [ active | cancelled ]
             description_for_all_endpoints: The status of the Coverage. <br><br>In Canvas, the status of `active` means it appears in the Patient's Profile page either under the main or other coverage sections, while a status of `cancelled` means it was removed and no longer appears on the page. An expired coverage will still show as `active`, so be sure to set/read the `period.end` attribute.
@@ -172,10 +193,6 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
-          - name: subscriberId
-            description: The insurer-assigned ID for the subscriber.
-            type: string
-            required_in: create,update
           - name: beneficiary
             description: >-
               Who benefits from the coverage; the patient when products or services are provided.
@@ -368,9 +385,9 @@ sections:
           - name: patient
             type: string
             description: Retrieve coverages for a patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
-          - name: subscriberid
+          - name: identifier
             type: string
-            description: Retrieve all coverages with a specific subscriberID
+            description: Retrieve all coverages with a specific member ID
           - name: status
             type: string
             description: Retrieve coverages by a specific status.
@@ -408,7 +425,20 @@ curl --request POST \
      --data '
 {
   "resourceType": "Coverage",
-  "order": 1,
+  "identifier": [
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MB",
+            "display": "Member Number"
+          }
+        ]
+      },
+      "value": "1234"
+    }
+  ],
   "status": "active",
   "type": {
     "coding": [
@@ -422,7 +452,6 @@ curl --request POST \
   "subscriber": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34"
   },
-  "subscriberId": "1234",
   "beneficiary": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3"
   },
@@ -490,7 +519,8 @@ curl --request POST \
       },
       "value": "Subgroup 2"
     }
-  ]
+  ],
+  "order": 1
 }
 '
 ```
@@ -504,7 +534,20 @@ url = "https://fumage-example.canvasmedical.com/Coverage"
 
 payload = {
   "resourceType": "Coverage",
-  "order": 1,
+  "identifier": [
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MB",
+            "display": "Member Number"
+          }
+        ]
+      },
+      "value": "1234"
+    }
+  ],
   "status": "active",
   "type": {
     "coding": [
@@ -516,7 +559,6 @@ payload = {
     ]
   },
   "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
-  "subscriberId": "1234",
   "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
   "relationship": {
     "coding": [
@@ -582,7 +624,8 @@ payload = {
       },
       "value": "Subgroup 2"
     }
-  ]
+  ],
+  "order": 1
 }
 headers = {
     "accept": "application/json",
@@ -616,6 +659,20 @@ print(response.text)
 {
   "resourceType": "Coverage",
   "id": "a7c6af04-a22f-47bf-9cc8-d41158b2ad62",
+  "identifier": [
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MB",
+            "display": "Member Number"
+          }
+        ]
+      },
+      "value": "12345"
+    }
+  ],
   "status": "active",
   "type": {
     "coding": [
@@ -630,7 +687,6 @@ print(response.text)
     "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
     "type": "Patient"
   },
-  "subscriberId": "12345",
   "beneficiary": {
     "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
     "type": "Patient"
@@ -773,7 +829,20 @@ curl --request PUT \
      --data '
 {
   "resourceType": "Coverage",
-  "order": 1,
+  "identifier": [
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MB",
+            "display": "Member Number"
+          }
+        ]
+      },
+      "value": "1234"
+    }
+  ],
   "status": "active",
   "type": {
     "coding": [
@@ -787,7 +856,6 @@ curl --request PUT \
   "subscriber": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34"
   },
-  "subscriberId": "1234",
   "beneficiary": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3"
   },
@@ -855,7 +923,8 @@ curl --request PUT \
       },
       "value": "Subgroup 2"
     }
-  ]
+  ],
+  "order": 1
 }
 '
 ```
@@ -869,7 +938,20 @@ url = "https://fumage-example.canvasmedical.com/Coverage/<id>"
 
 payload = {
   "resourceType": "Coverage",
-  "order": 1,
+  "identifier": [
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MB",
+            "display": "Member Number"
+          }
+        ]
+      },
+      "value": "1234"
+    }
+  ],
   "status": "active",
   "type": {
     "coding": [
@@ -881,7 +963,6 @@ payload = {
     ]
   },
   "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
-  "subscriberId": "1234",
   "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
   "relationship": {
     "coding": [
@@ -947,7 +1028,8 @@ payload = {
       },
       "value": "Subgroup 2"
     }
-  ]
+  ],
+  "order": 1
 }
 headers = {
     "accept": "application/json",
@@ -970,7 +1052,7 @@ print(response.text)
 </div>
 
 <div id="coverage-search-request">
-{% include search-request.html resource_type="Coverage" search_string="subscriberid=12345&patient=Patient/b3084f7e884e4af2b7e23b1dca494abd" %}
+{% include search-request.html resource_type="Coverage" search_string="identifier=12345&patient=Patient/b3084f7e884e4af2b7e23b1dca494abd" %}
 </div>
 
 <div id="coverage-search-response">
@@ -984,15 +1066,15 @@ print(response.text)
   "link": [
     {
         "relation": "self",
-        "url": "/Coverage?subscriberid=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
     },
     {
         "relation": "first",
-        "url": "/Coverage?subscriberid=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
     },
     {
         "relation": "last",
-        "url": "/Coverage?subscriberid=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
     }
   ],
   "entry": [
@@ -1000,12 +1082,25 @@ print(response.text)
       "resource": {
         "resourceType": "Coverage",
         "id": "171a7243-f568-48cb-8052-3f2990dac1cd",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MB",
+                  "display": "Member Number"
+                }
+              ]
+            },
+            "value": "11111"
+          }
+        ],
         "status": "cancelled",
         "subscriber": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
         },
-        "subscriberId": "11111",
         "beneficiary": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
@@ -1037,12 +1132,25 @@ print(response.text)
       "resource": {
         "resourceType": "Coverage",
         "id": "27f42512-23e6-4c17-8569-80e14792b6f8",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MB",
+                  "display": "Member Number"
+                }
+              ]
+            },
+            "value": "A1"
+          }
+        ],
         "status": "cancelled",
         "subscriber": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
         },
-        "subscriberId": "A1",
         "beneficiary": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
