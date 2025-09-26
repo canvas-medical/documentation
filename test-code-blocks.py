@@ -246,8 +246,6 @@ def code_block_text(code_block: str) -> str:
 @click.option("-f", "--fail-fast", default=False, help="exit on the first failure", is_flag=True)
 @click.option("-q", "--quiet", default=False, help="only log failures", is_flag=True)
 def check(fail_fast: bool = False, quiet: bool = False) -> None:
-    create_check(in_progress=True)
-
     failures = 0
     total_code_blocks = 0
     missing_language = 0
