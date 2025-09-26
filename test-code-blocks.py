@@ -22,7 +22,7 @@ Kind = Literal["PYTHON"] | Literal["PYTHON_IMPORTS_ONLY"] | Literal["MISSING"]
 GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY")
 GITHUB_SHA = os.environ.get("GITHUB_SHA")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
-GITHUB_PYTHON_VERSION = os.environ.get("GITHUB_PYTHON_VERSION")
+GITHUB_PYTHON_VERSION = os.environ.get("GITHUB_PYTHON_VERSION", "unknown")
 
 BUILTINS = set(dir(builtins))
 
@@ -36,16 +36,14 @@ def create_check(
         print("⚠️ skipping check creation since GITHUB_REPOSITORY was unset")
         return
 
-    title = f"Code Block Check: {GITHUB_PYTHON_VERSION}"
-
     payload: dict[str, Any] = {
-        "name": title,
+        "name": f"code-block-check-${GITHUB_PYTHON_VERSION.replace('.', '-')}",
         "head_sha": GITHUB_SHA,
         "status": "completed",
         # one of: success, failure, neutral, cancelled, timed_out, action_required
         "conclusion": conclusion,
         "output": {
-            "title": title,
+            "title": f"Code Block Check: {GITHUB_PYTHON_VERSION}",
             "summary": summary,
             "text": text,
         },
