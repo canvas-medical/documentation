@@ -67,7 +67,7 @@ def create_check(
         json=payload,
     )
 
-    if response.status_code >= 300:
+    if response.status_code != 201:
         print(f"❌ Failed to create check: {response.status_code}")
         print(response.text)
 
