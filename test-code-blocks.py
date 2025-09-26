@@ -28,7 +28,6 @@ BUILTINS = set(dir(builtins))
 
 
 def create_check(
-    in_progress: bool = False,
     conclusion: str | None = None,
     summary: str = "",
     text: str = "",
@@ -42,21 +41,15 @@ def create_check(
     payload: dict[str, Any] = {
         "name": title,
         "head_sha": GITHUB_SHA,
-        "status": "in_progress" if in_progress else "completed",
+        "status": "completed",
+        # one of: success, failure, neutral, cancelled, timed_out, action_required
+        "conclusion": conclusion,
+        "output": {
+            "title": title,
+            "summary": summary,
+            "text": text,
+        },
     }
-
-    if not in_progress:
-        payload.update(
-            {
-                # one of: success, failure, neutral, cancelled, timed_out, action_required
-                "conclusion": conclusion,
-                "output": {
-                    "title": title,
-                    "summary": summary,
-                    "text": text,
-                },
-            }
-        )
 
     response = requests.post(
         f"https://api.github.com/repos/{GITHUB_REPOSITORY}/check-runs",
@@ -67,7 +60,7 @@ def create_check(
         json=payload,
     )
 
-    if response.status_code >= 300:
+    if response.status_code != 201:
         print(f"❌ Failed to create check: {response.status_code}")
         print(response.text)
 
@@ -299,8 +292,6 @@ def code_block_text(code_block: str) -> str:
 @click.option("-f", "--fail-fast", default=False, help="exit on the first failure", is_flag=True)
 @click.option("-q", "--quiet", default=False, help="only log failures", is_flag=True)
 def check(fail_fast: bool = False, quiet: bool = False) -> None:
-    create_check(in_progress=True)
-
     failures = 0
     total_code_blocks = 0
     missing_language = 0
