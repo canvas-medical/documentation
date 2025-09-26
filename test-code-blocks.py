@@ -71,6 +71,10 @@ def create_check(
         print(f"❌ Failed to create check: {response.status_code}")
         print(response.text)
 
+    result = response.json()
+
+    print(result)
+
 
 def extract_code_blocks(
     markdown: str,
