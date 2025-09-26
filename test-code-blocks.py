@@ -5,7 +5,6 @@ from __future__ import annotations
 import ast
 import builtins
 import glob
-import os
 import symtable
 import sys
 import textwrap
@@ -13,63 +12,11 @@ from pathlib import Path
 from typing import Any, Literal, cast
 
 import click
-import requests
 from markdown_it import MarkdownIt
 
 Kind = Literal["PYTHON"] | Literal["PYTHON_IMPORTS_ONLY"] | Literal["MISSING"]
 
-
-GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY")
-GITHUB_SHA = os.environ.get("GITHUB_SHA")
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
-GITHUB_PYTHON_VERSION = os.environ.get("GITHUB_PYTHON_VERSION")
-
 BUILTINS = set(dir(builtins))
-
-
-def create_check(
-    in_progress: bool = False,
-    conclusion: str | None = None,
-    summary: str = "",
-    text: str = "",
-) -> None:
-    if not GITHUB_REPOSITORY:
-        print("⚠️ skipping check creation since GITHUB_REPOSITORY was unset")
-        return
-
-    title = f"Code Block Check: {GITHUB_PYTHON_VERSION}"
-
-    payload: dict[str, Any] = {
-        "name": title,
-        "head_sha": GITHUB_SHA,
-        "status": "in_progress" if in_progress else "completed",
-    }
-
-    if not in_progress:
-        payload.update(
-            {
-                # one of: success, failure, neutral, cancelled, timed_out, action_required
-                "conclusion": conclusion,
-                "output": {
-                    "title": title,
-                    "summary": summary,
-                    "text": text,
-                },
-            }
-        )
-
-    response = requests.post(
-        f"https://api.github.com/repos/{GITHUB_REPOSITORY}/check-runs",
-        headers={
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github+json",
-        },
-        json=payload,
-    )
-
-    if response.status_code >= 300:
-        print(f"❌ Failed to create check: {response.status_code}")
-        print(response.text)
 
 
 def extract_code_blocks(
@@ -299,8 +246,6 @@ def code_block_text(code_block: str) -> str:
 @click.option("-f", "--fail-fast", default=False, help="exit on the first failure", is_flag=True)
 @click.option("-q", "--quiet", default=False, help="only log failures", is_flag=True)
 def check(fail_fast: bool = False, quiet: bool = False) -> None:
-    create_check(in_progress=True)
-
     failures = 0
     total_code_blocks = 0
     missing_language = 0
@@ -363,12 +308,8 @@ def check(fail_fast: bool = False, quiet: bool = False) -> None:
     if failures or missing_language:
         summary += f"💻 {missing_language} code blocks missing language\n"
         summary += f"💥 {failures} code blocks failed"
-
-        create_check(conclusion="failure", summary=summary, text=text_output)
     else:
         summary += "🎉 all code blocks passed!"
-
-        create_check(conclusion="success", summary=summary)
 
     print(summary)
 
