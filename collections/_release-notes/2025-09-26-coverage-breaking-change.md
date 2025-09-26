@@ -13,7 +13,7 @@ On **October 14**, the `subscriberId` field in the FHIR Coverage resource will c
 - The new `identifier` search parameter will return member IDs.
   
 {:refdef: style="text-align: center;"}
-![subscriber id](/assets/images/coverage-subscriber-id.png){:width="60%"}
+![subscriber id](/assets/images/coverage-subscriber-id.png){:width="90%"}
 {: refdef}
 
 
