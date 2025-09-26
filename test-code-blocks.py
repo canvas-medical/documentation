@@ -34,6 +34,7 @@ def create_check(
     text: str = "",
 ) -> None:
     if not GITHUB_REPOSITORY:
+        print("⚠️ skipping check creation since GITHUB_REPOSITORY was unset")
         return
 
     title = f"Code Block Check: {GITHUB_PYTHON_VERSION}"
