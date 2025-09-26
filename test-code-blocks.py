@@ -37,7 +37,7 @@ def create_check(
         return
 
     payload: dict[str, Any] = {
-        "name": f"code-block-check-${GITHUB_PYTHON_VERSION.replace('.', '-')}",
+        "name": f"code-block-check-{GITHUB_PYTHON_VERSION.replace('.', '-')}",
         "head_sha": GITHUB_SHA,
         "status": "completed",
         # one of: success, failure, neutral, cancelled, timed_out, action_required
