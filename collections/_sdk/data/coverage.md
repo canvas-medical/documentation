@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage.
+The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated [`EligibilitySummary`](#eligibilitysummary), which provides the most up-to-date copay and and coinsurance values.
 
 ## Usage
 
@@ -33,11 +33,28 @@ Alternatively, to find all of the `Coverage` instances issed by a particular iss
 >>>
 ```
 
+Find the latest eligibility summary for a patient:
+
+```python
+>>> from canvas_sdk.v1.data.eligibility_summary import EligibilitySummary
+>>> from canvas_sdk.v1.data.coverage import Coverage
+>>>
+>>> coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+>>> elig_summary_from_model = EligibilitySummary.objects.filter(coverage=coverage).first()
+>>> elig_summary_from_cvg = coverage.eligibility_summary
+>>> if elig_summary_from_model:
+        print(elig_summary_from_model.copay_cents, elig_summary_from_model.coinsurance)
+1000 5
+>>> if elig_summary_from_cvg:
+        print(elig_summary_from_cvg.copay_cents, elig_summary_from_cvg.coinsurance)
+1000 5
+```
+
 ## Filtering
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
 
-__Show a Patient's Coverages in order of Rank (Primary, Secondary, etc.)__
+**Show a Patient's Coverages in order of Rank (Primary, Secondary, etc.)**
 
 ```python
 >>> from canvas_sdk.v1.data.patient import Patient
@@ -47,7 +64,7 @@ __Show a Patient's Coverages in order of Rank (Primary, Secondary, etc.)__
 [('AVALON HEALTHCARE SOLUTIONS CAPITAL BLUE CROSS', 1), ('Blue Cross Blue Shield of Arizona Advantage', 2)]
 ```
 
-__Find All Expired Coverages__
+**Find All Expired Coverages**
 
 ```python
 >>> import arrow
@@ -62,7 +79,7 @@ __Find All Expired Coverages__
 ### Coverage
 
 | Field Name                         | Type                                                  |
-|------------------------------------|-------------------------------------------------------|
+| ---------------------------------- | ----------------------------------------------------- |
 | id                                 | UUID                                                  |
 | dbid                               | Integer                                               |
 | created                            | DateTime                                              |
@@ -92,7 +109,7 @@ __Find All Expired Coverages__
 ### Transactor
 
 | Field Name                   | Type                                                |
-|------------------------------|-----------------------------------------------------|
+| ---------------------------- | --------------------------------------------------- |
 | dbid                         | Integer                                             |
 | payer_id                     | String                                              |
 | name                         | String                                              |
@@ -125,7 +142,7 @@ __Find All Expired Coverages__
 ### TransactorAddress
 
 | Field Name  | Type                                                      |
-|-------------|-----------------------------------------------------------|
+| ----------- | --------------------------------------------------------- |
 | id          | UUID                                                      |
 | dbid        | Integer                                                   |
 | created     | DateTime                                                  |
@@ -147,11 +164,10 @@ __Find All Expired Coverages__
 | transactor  | [Transactor](#transactor)                                 |
 | coverages   | [Coverage](/sdk/data-coverage/#coverage)[]                |
 
-
 ### TransactorPhone
 
 | Field Name | Type                                                                |
-|------------|---------------------------------------------------------------------|
+| ---------- | ------------------------------------------------------------------- |
 | id         | UUIDField                                                           |
 | dbid       | Integer                                                             |
 | created    | DateTime                                                            |
@@ -165,28 +181,39 @@ __Find All Expired Coverages__
 | transactor | [Transactor](#transactor)                                           |
 | coverages  | [Coverage](/sdk/data-coverage/#coverage)[]                          |
 
+### EligibilitySummary
+
+| Field Name  | Type                                     |
+| ----------- | ---------------------------------------- |
+| id          | UUIDField                                |
+| dbid        | Integer                                  |
+| created     | DateTime                                 |
+| modified    | DateTime                                 |
+| coverage    | [Coverage](/sdk/data-coverage/#coverage) |
+| copay_cents | Integer                                  |
+| coinsurance | Integer                                  |
 
 ## Enumeration types
 
 ### CoverageStack
 
 | Value   | Label   |
-|---------|---------|
+| ------- | ------- |
 | IN_USE  | In use  |
 | OTHER   | Other   |
 | REMOVED | Removed |
 
 ### CoverageState
 
-| Value      | Label   |
-|------------|---------|
-| active     | Active  |
-| deleted    | Deleted |
+| Value   | Label   |
+| ------- | ------- |
+| active  | Active  |
+| deleted | Deleted |
 
 ### CoverageType
 
 | Value        | Label                     |
-|--------------|---------------------------|
+| ------------ | ------------------------- |
 | commercial   | Commercial                |
 | workerscomp  | Workers Comp              |
 | bcbs         | Blue Cross Blue Shield    |
@@ -202,7 +229,7 @@ __Find All Expired Coverages__
 ### CoverageRelationshipCode
 
 | Value | Label                                                         |
-|-------|---------------------------------------------------------------|
+| ----- | ------------------------------------------------------------- |
 | 18    | Self                                                          |
 | 01    | Spouse                                                        |
 | 19    | Natural Child, insured has financial responsibility           |
@@ -230,7 +257,7 @@ __Find All Expired Coverages__
 ### TransactorCoverageType
 
 | Value      | Label                                  |
-|------------|----------------------------------------|
+| ---------- | -------------------------------------- |
 | ANNU       | annuity policy                         |
 | AUTOPOL    | automobile                             |
 | CHAR       | charity program                        |
@@ -288,7 +315,7 @@ __Find All Expired Coverages__
 ### TransactorType
 
 | Value              | Label                  |
-|--------------------|------------------------|
+| ------------------ | ---------------------- |
 | commercial         | Commercial             |
 | workerscomp        | Workers Comp           |
 | champus            | Tricare/Champus        |
