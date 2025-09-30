@@ -1901,9 +1901,13 @@ type: None</pre></td>
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>"id": user_selected_tasklabel_id
-"type": None</pre></td>
-      <td><pre>empty</pre></td>
+      <td><pre>"id": task_label_id
+"type": <a href='/sdk/data-task/#tasklabel/'>TaskLabel</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id
+"task":
+    "id": task_id
+"action": literal["add", "remove"]</pre></td>
     </tr>
   </tbody>
 </table>
