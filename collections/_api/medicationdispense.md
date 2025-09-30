@@ -106,16 +106,6 @@ sections:
               - name: code
                 type: string
                 description: Coded form of the unit.
-          - name: daysSupply
-            description: The amount of medication expressed as a timing amount.
-            type: json
-            attributes:
-              - name: value
-                type: integer
-                description: Numerical value of the days supply.
-              - name: unit
-                type: string
-                description: Unit representation (typically "days").
           - name: whenHandedOver
             description: When the medication was handed over to the patient or their representative. SHALL be present if the status is "completed".
             type: datetime
@@ -126,6 +116,13 @@ sections:
                 - name: text
                   type: string
                   description: Free text dosage instructions.
+                - name: timing
+                  type: json
+                  description: When medication should be administered.
+                  attributes:
+                    - name: event
+                      type: array[string]
+                      description: Identifies specific times when the event takes place.
                 - name: doseAndRate
                   type: array[json]
                   description: Amount of medication administered.
@@ -218,14 +215,15 @@ sections:
         "system": "http://unitsofmeasure.org",
         "code": "mL"
     },
-    "daysSupply": {
-        "value": 30,
-        "unit": "days"
-    },
     "whenHandedOver": "2023-09-21T18:35:00.000+00:00",
     "dosageInstruction": [
         {
             "text": "take 1 daily",
+            "timing": {
+              "event": [
+                "2025-09-10T10:44:13.842370+00:00"
+              ]
+            },
             "doseAndRate": [
                 {
                     "doseQuantity": {
@@ -375,14 +373,15 @@ sections:
                     "system": "http://unitsofmeasure.org",
                     "code": "mL"
                 },
-                "daysSupply": {
-                    "value": 30,
-                    "unit": "days"
-                },
                 "whenHandedOver": "2023-09-21T18:35:00.000+00:00",
                 "dosageInstruction": [
                     {
                         "text": "take 1 daily",
+                        "timing": {
+                            "event": [
+                                "2025-09-10T10:44:13.842370+00:00"
+                            ]
+                        },
                         "doseAndRate": [
                             {
                                 "doseQuantity": {
