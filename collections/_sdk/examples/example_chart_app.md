@@ -1,14 +1,38 @@
 ---
-title: 'example_chart_app'
+title: 'Example Chart App'
 slug: 'example-example_chart_app'
 ---
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_chart_app' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-example_chart_app
-==================
+An example custom UI for the patient chart.
 
-An example custom UI for the patient chart
+## SDK Features
+- Creates a `GET` [Simple API](/sdk/handlers-simple-api-http/) endpoint that gets the logged in [Staff user](/sdk/data-staff/) from the event context, [renders a template](/sdk/layout-effect/#custom-html-and-django-templates), and returns HTML content
+- Creates a `POST` [Simple API](/sdk/handlers-simple-api-http/) endpoint that [creates a task](/sdk/effect-tasks/#adding-a-task)
+- Defines a custom template containing JavaScript that makes a REST call to the user-defined `POST` endpoint above
+- Adds an [Application](/sdk/handlers-applications/) effect that, when opened, returns a [LaunchModalEffect](/sdk/layout-effect/#modals) in the right chart pane with content from the `GET` endpoint
+
+## Configuration
+
+These SimpleAPI endpoints use the [StaffSessionAuthMixin](/sdk/handlers-simple-api-http/#staff-session)
+
+The `CANVAS_MANIFEST.json` file defines attributes specific to the Application, including scope (`patient_specific`) and icon image.
+
+## Structure
+
+```
+example_chart_app/
+├── applications/
+│   ├── __init__.py
+│   ├── my_application.py     # Defines API endpoints and Application
+├── assets
+|   ├──rx.png                 # Image file
+├── templates/
+│   └── custom_ui.html        # HTML template for visualization UI
+├── CANVAS_MANIFEST.json      # Plugin configuration
+└── README.md                 # Documentation
+```
 
 ## CANVAS_MANIFEST.json
 
@@ -58,11 +82,11 @@ An example custom UI for the patient chart
 
 ### custom-ui.html
 
+This is the html template called by the [`render_to_string` function](/sdk/layout-effect/#custom-html-and-django-templates) with a `logged_in_staff` object. It contains styling and custom Javascript to call the user-defined POST endpoint when a specific element is clicked.
+
 ## applications/
 
 ### my_application.py
-
-**Overview**
 
 This file defines an application plugin for Canvas Medical using the Canvas SDK. It includes a custom application (`MyChartApplication`) and an API (`MyApi`) for rendering a modal user interface pane and handling related actions, such as adding tasks.
 
@@ -162,12 +186,11 @@ class MyApi(StaffSessionAuthMixin, SimpleAPI):
         ]
 ```
 
-### __init__.py
-
-This file is empty.
 ## assets/
 
 ### rx.png
+
+This is an image file used as the Application icon within the Canvas UI.
 
 <br/>
 <br/>
