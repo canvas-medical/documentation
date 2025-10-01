@@ -164,7 +164,8 @@ The order of the buttons in the array will determine their order on the panel.
 ```python
 from canvas_sdk.effects.panel_configuration import PanelConfiguration
 
-PanelConfiguration(sections=[
+PanelConfiguration(
+  sections=[
     PanelConfiguration.PanelPatientSection.REFILL_REQUEST,
     PanelConfiguration.PanelPatientSection.LAB_REPORT,
     PanelConfiguration.PanelPatientSection.CHANGE_REQUEST,
