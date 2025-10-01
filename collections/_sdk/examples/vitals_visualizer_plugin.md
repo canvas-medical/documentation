@@ -8,6 +8,16 @@ slug: 'example-vitals_visualizer_plugin'
 
 A Canvas plugin that displays a "Visualize" button in the vitals section of the chart summary and shows interactive vital signs visualizations.
 
+
+## SDK Features
+- Creates a [Simple API](sdk/handlers-simple-api-http/) endpoint that [renders a template](https://docs.canvasmedical.com/sdk/layout-effect/#custom-html-and-django-templates) and returns HTML content
+  - Parses [Observation](https://docs.canvasmedical.com/sdk/data-observation/) object to attain vitals data and format into readable content
+- Adds a "Visualize" [Action Button](https://docs.canvasmedical.com/sdk/handlers-action-buttons/) to the vitals section of the patient chart summary. When clicked, returns a [LaunchModalEffect](https://docs.canvasmedical.com/sdk/layout-effect/#modals) in the right chart pane with content from the vitals endpoint.
+
+## Configuration
+
+This SimpleAPI endpoint uses the [StaffSessionAuthMixin](/sdk/handlers-simple-api-http/#staff-session)
+
 ## Structure
 
 ```
@@ -21,21 +31,6 @@ vitals_visualizer_plugin/
 ├── CANVAS_MANIFEST.json      # Plugin configuration
 └── README.md                 # Documentation
 ```
-
-## Features
-
-- Adds a "Visualize" button to the vitals section of the chart summary
-- When clicked, opens a modal in the right chart pane displaying:
-  - Dropdown selector for vital signs (weight, body temperature, o2sat)
-  - Interactive line graph with modern styling and tooltips
-  - Tabular display of the same data below the chart
-  - Shows all historical vital signs data
-
-## Vital Signs Supported
-
-- **Weight**: Patient weight measurements over time
-- **Body Temperature**: Temperature readings with different measurement sites
-- **Oxygen Saturation (O2Sat)**: Oxygen saturation percentage readings
 
 ## CANVAS_MANIFEST.json
 
@@ -82,25 +77,23 @@ vitals_visualizer_plugin/
 
 ### vitals_visualization.html
 
+This is the html template called by the[ `render_to_string` function](/sdk/layout-effect/#custom-html-and-django-templates) with a `vitals_data object. It contains styling and custom Javascript to form the chart.
+
 ## handlers/
 
 ### vitals_api.py
 
-**Summary of What the Code Does**
-
 The `vitals_api.py` file defines a class-based API endpoint called `VitalsVisualizerAPI` for a Canvas Medical plugin. This endpoint provides both a user interface (HTML) and data (as JSON) for visualizing patient vitals—specifically weight, body temperature, and oxygen saturation.
 
-**Key Functionalities**
-
-- **API Endpoint**:  
+- **API Endpoint**:
   The endpoint is accessed at `/visualize`, and requires staff authentication via `StaffSessionAuthMixin`.
-  
-- **Request Handling**:  
+
+- **Request Handling**:
   The main entry point is the `get()` method, which expects a `patient_id` as a query parameter.
     - If `patient_id` is missing, it returns a 400 JSON error response.
     - If present, it fetches and compiles the patient's vital sign data, then generates and returns an HTML interface for visualization.
 
-- **Vitals Data Extraction**:  
+- **Vitals Data Extraction**:
   The `_get_vitals_data(patient_id)` method:
     - Queries Canvas Medical's `Observation` resource for the specified patient.
     - Filters for observations in the "vital-signs" category that are not deleted, not entered in error, and are not “Vital Signs Panel” summary records.
@@ -109,13 +102,13 @@ The `vitals_api.py` file defines a class-based API endpoint called `VitalsVisual
         - **Body Temperature** (with default units °F if missing),
         - **Oxygen Saturation** (with default units % if missing).
     - Organizes the data into a dictionary keyed by vital sign name, each containing a list of timestamped values.
-        
-- **HTML Visualization Rendering**:  
+
+- **HTML Visualization Rendering**:
   The `_generate_visualization_html(vitals_data)` method:
     - Serializes the vitals data as JSON.
     - Passes it as context to a template called `vitals_visualization.html` for rendering the UI.
-  
-- **Error Handling and Logging**:  
+
+- **Error Handling and Logging**:
   All major steps have try/except blocks, logging errors and returning JSON error responses if needed.
 
 **How the Components Work Together**
@@ -251,9 +244,7 @@ class VitalsVisualizerAPI(StaffSessionAuthMixin, SimpleAPIRoute):
 
 ### vitals_button.py
 
-**Purpose**
-
-The code defines a custom action button for the Canvas Medical application. The button, labeled "Visualize," appears in the chart summary's vitals section for a patient.
+This file adds a "Visualize" button to the patient chart's vitals section, which, when clicked, opens a modal with a visual representation of the patient’s vitals data, using the Canvas plugin and effect framework.
 
 **Class Details**
 
@@ -274,30 +265,25 @@ The code defines a custom action button for the Canvas Medical application. The 
     - `LaunchModalEffect` to open a modal window within the Canvas UI.
     - The effect is returned in a list, as required by the SDK’s handler pattern.
 
-**Summary**
-
-This file adds a "Visualize" button to the patient chart's vitals section, which, when clicked, opens a modal with a visual representation of the patient’s vitals data, using the Canvas plugin and effect framework.
-
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.action_button import ActionButton
 
-
 class VitalsVisualizerButton(ActionButton):
     """A button that opens the vitals visualization modal."""
-    
+
     BUTTON_TITLE = "Visualize"
     BUTTON_KEY = "vitals_visualizer_button"
     BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION
     PRIORITY = 1
-    
+
     def handle(self) -> list[Effect]:
         """Handle button click by opening vitals visualization modal."""
         # The API endpoint will be at /plugin-io/api/vitals_visualizer_plugin/visualize
         # We need to pass the patient ID in the URL
         patient_id = self.target
-        
+
         return [
             LaunchModalEffect(
                 url=f"/plugin-io/api/vitals_visualizer_plugin/visualize?patient_id={patient_id}",
@@ -306,10 +292,6 @@ class VitalsVisualizerButton(ActionButton):
             ).apply()
         ]
 ```
-
-### \___init__.py
-
-This file is blank.
 
 <br/>
 <br/>
