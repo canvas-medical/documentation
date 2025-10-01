@@ -1265,6 +1265,10 @@ class Protocol(BaseHandler):
    When creating a new questionnaire command, you must explicitly set a unique `command_uuid`. Providing this UUID enables you to originate the command within the note and then subsequently edit it with detailed responses in the same protocol execution.
 
  - This approach is necessary because given the dynamic nature of the questionnaire command, the initial creation (origination) only includes the questionnaire ID. Once the command has been originated, you can immediately follow up with an edit to populate it with the patient's responses.
+ - If you are looking to insert a committed questionnaire command, you'll need to return three effects:
+   - An `.originate()` to insert the command and select the questionnaire
+   - An `.edit()` to populate the responses
+   - A `.commit()` to commit the command
 
 ---
 
