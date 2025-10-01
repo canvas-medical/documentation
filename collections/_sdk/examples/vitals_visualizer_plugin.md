@@ -77,7 +77,7 @@ vitals_visualizer_plugin/
 
 ### vitals_visualization.html
 
-This is the html template called by the[ `render_to_string` function](/sdk/layout-effect/#custom-html-and-django-templates) with a `vitals_data object. It contains styling and custom Javascript to form the chart.
+This is the html template called by the[ `render_to_string` function](/sdk/layout-effect/#custom-html-and-django-templates) with a `vitals_data` object. It contains styling and custom Javascript to form the chart.
 
 ## handlers/
 
