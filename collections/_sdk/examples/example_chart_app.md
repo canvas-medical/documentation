@@ -1,5 +1,5 @@
 ---
-title: 'Example Chart App'
+title: 'Example Chart Application'
 slug: 'example-example_chart_app'
 ---
 
