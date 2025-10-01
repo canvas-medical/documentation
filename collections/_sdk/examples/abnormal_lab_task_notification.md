@@ -1,5 +1,5 @@
 ---
-title: 'abnormal_lab_task_notification'
+title: 'Abnormal Lab Task Notification'
 slug: 'example-abnormal_lab_task_notification'
 ---
 
@@ -9,57 +9,12 @@ slug: 'example-abnormal_lab_task_notification'
 
 This Canvas EMR plugin automatically creates task notifications whenever lab results with abnormal values are received, ensuring critical lab findings are flagged for prompt clinical review.
 
-## What This Plugin Does
-
-When lab results come into Canvas EMR, this plugin:
-
-1. **Monitors all incoming lab reports** - Automatically checks every new lab report
-2. **Identifies abnormal values** - Looks for lab values flagged as abnormal by the lab
-3. **Creates immediate notifications** - Generates tasks that appear in your Canvas task list
-4. **Prioritizes for review** - Labels tasks as "abnormal-lab" and "urgent-review" for easy filtering
-
-## Why Use This Plugin
-
-- **Never miss critical results** - Ensures abnormal lab values don't get overlooked
-- **Saves time** - No manual checking required - the plugin does it automatically  
-- **Improves patient safety** - Faster response to abnormal results leads to better care
-- **Easy integration** - Works seamlessly with your existing Canvas workflow
-
-## Example Scenario
-
-**Without this plugin:**
-- Lab results come in and sit in the lab section
-- Providers must manually review all lab reports
-- Abnormal values might be missed during busy periods
-
-**With this plugin:**
-- Lab results with abnormal values immediately generate tasks
-- Tasks appear in your task list with clear titles like "Review Abnormal Lab Values (3 abnormal)"
-- You can filter tasks by "abnormal-lab" label to see all abnormal results at once
-
-## Task Details
-
-When abnormal lab values are found, the plugin creates a task with:
-
-- **Clear title** showing how many abnormal values were found
-- **Patient association** so the task appears in the correct patient's workflow
-- **Priority labels** ("abnormal-lab", "urgent-review") for easy filtering and sorting
-- **Open status** ensuring the task requires attention
-
-## Setup
-
-This plugin requires no configuration - it works automatically once installed. It will:
-
-- Monitor all lab reports (except test reports and junked reports)
-- Create tasks only when abnormal values are present
-- Associate tasks with the correct patient automatically
-
 ## Technical Details
 
-**Event Triggered By:** New lab reports entering the Canvas system  
-**Detection Method:** Checks the `abnormal_flag` field on lab values  
-**Task Creation:** Uses Canvas SDK's AddTask effect  
-**Labels Applied:** "abnormal-lab", "urgent-review"  
+**Event Triggered By:** New lab reports entering the Canvas system
+**Detection Method:** Checks the `abnormal_flag` field on lab values
+**Task Creation:** Uses Canvas SDK's AddTask effect
+**Labels Applied:** "abnormal-lab", "urgent-review"
 
 The plugin is designed to be safe and efficient:
 - Filters out test-only and invalid lab reports
@@ -103,41 +58,9 @@ The plugin is designed to be safe and efficient:
 }
 ```
 
-## __init__.py
-
-This file is empty.
 ## tests/
 
-### __init__.py
-
-This file is empty.
-### test_abnormal_lab_protocol.py
-
-**Purpose**
-
-This file provides tests for a plugin that creates tasks when abnormal laboratory values are detected in patient lab reports. Its goal is to validate that the plugin works as intended in different scenarios, such as when a new lab report is created, when abnormal values are present or absent, and when filtering out non-relevant reports.
-
-**Main Test Functions**
-
-- `test_plugin_responds_to_correct_event`: Validates that the plugin is triggered by the `LAB_REPORT_CREATED` event, ensuring proper event binding.
-
-- `test_abnormal_lab_detection`: Checks logic used to identify abnormal lab values. It tests normal, abnormal, blank, and `None` abnormal flags to ensure robust abnormality detection.
-
-- `test_task_creation_logic`: Tests the construction of an `AddTask` command with the correct attributes, like patient ID, title (which reflects the abnormal count), task status, and labels such as `abnormal-lab` and `urgent-review`.
-
-- `test_task_apply_method`: Ensures that the `AddTask` object has an `apply()` method, which is necessary for integration with the protocol (even if the actual method cannot be executed in this context).
-
-- `test_filtered_reports`: Confirms that the plugin correctly filters out lab reports marked as test-only or junked, so tasks are not created for non-clinical data.
-
-- `test_multiple_abnormal_values`: Validates that the logic for counting, summarizing, and reporting multiple abnormal lab values in a single report works as expected, and that the task title generated is accurate.
-
-**Mocks and Utilities**
-
-- `MockLabValue` and `MockLabReport` are lightweight stand-ins for the real Lab Value and Lab Report objects, simulating essential behavior required for the tests (like attribute presence and value iteration).
-
-**Test Execution**
-
-At the bottom, the file defines a simple runner that will execute all test cases if the file is run directly. If all assertions pass, it prints "All tests passed!".
+This example plugin contains tests for the plugin core functionality.
 
 **Key Plugins/SDK Components Used**
 
@@ -194,15 +117,15 @@ def test_abnormal_lab_detection():
     # Test case 1: Normal values (no abnormal flag)
     normal_value = MockLabValue(abnormal_flag="")
     assert not normal_value.abnormal_flag.strip()
-    
+
     # Test case 2: Abnormal values (has abnormal flag)
     abnormal_value = MockLabValue(abnormal_flag="HIGH")
     assert abnormal_value.abnormal_flag.strip()
-    
+
     # Test case 3: Whitespace only abnormal flag (should be treated as normal)
     whitespace_value = MockLabValue(abnormal_flag="   ")
     assert not whitespace_value.abnormal_flag.strip()
-    
+
     # Test case 4: None abnormal flag (defensive programming)
     none_value = MockLabValue(abnormal_flag=None)
     # Simulate getattr with None fallback
@@ -219,7 +142,7 @@ def test_task_creation_logic():
         status=TaskStatus.OPEN,
         labels=["abnormal-lab", "urgent-review"]
     )
-    
+
     assert task.patient_id == "test-patient-id"
     assert task.title == "Review Abnormal Lab Values (2 abnormal)"
     assert task.status == TaskStatus.OPEN
@@ -234,11 +157,11 @@ def test_task_apply_method():
         title="Test Task",
         status=TaskStatus.OPEN
     )
-    
+
     # Verify apply method exists
     assert hasattr(task, 'apply')
     assert callable(getattr(task, 'apply'))
-    
+
     # Note: We can't actually call apply() without Django environment
     # but we can verify the method exists for the protocol to use
 
@@ -248,11 +171,11 @@ def test_filtered_reports():
     # Test case 1: Test-only report should be filtered
     test_report = MockLabReport(for_test_only=True)
     assert test_report.for_test_only
-    
+
     # Test case 2: Junked report should be filtered
     junked_report = MockLabReport(junked=True)
     assert junked_report.junked
-    
+
     # Test case 3: Normal report should not be filtered
     normal_report = MockLabReport(for_test_only=False, junked=False)
     assert not normal_report.for_test_only and not normal_report.junked
@@ -265,11 +188,11 @@ def test_multiple_abnormal_values():
         MockLabValue(abnormal_flag="LOW", value="9.2", units="g/dL", reference_range="12-16"),
         MockLabValue(abnormal_flag="CRITICAL", value="2.1", units="mmol/L", reference_range="3.5-5.0")
     ]
-    
+
     # Count abnormal values
     abnormal_count = len([v for v in abnormal_values if v.abnormal_flag.strip()])
     assert abnormal_count == 3
-    
+
     # Test title generation
     expected_title = f"Review Abnormal Lab Values ({abnormal_count} abnormal)"
     assert expected_title == "Review Abnormal Lab Values (3 abnormal)"
@@ -288,9 +211,6 @@ if __name__ == "__main__":
 
 ## protocols/
 
-### __init__.py
-
-This file is empty.
 ### abnormal_lab_protocol.py
 
 **Purpose and Functionality**
@@ -359,10 +279,10 @@ class AbnormalLabProtocol(BaseProtocol):
                 junked=False,
                 patient__isnull=False
             ).first()
-            
+
             if not lab_report:
                 return []
-            
+
             patient_id = lab_report.patient.id
 
             # Check all lab values for abnormal flags

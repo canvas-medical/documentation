@@ -579,6 +579,8 @@ example_plugins:
     url: /sdk/example-ai_note_titles/
   - title: "API Samples"
     url: /sdk/example-api_samples/
+  - title: "Abnormal Lab Task Notification"
+    url: /sdk/example-abnormal_lab_task_notification/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
   - title: "Patient Creation Platform Sync"
