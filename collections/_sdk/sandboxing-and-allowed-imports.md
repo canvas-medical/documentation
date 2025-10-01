@@ -122,6 +122,7 @@ Provides support for type hints and static type checking to improve code clarity
 - `Type`
 - `TypeGuard`
 - `TypedDict`
+- `TypeGuard`
 - `Union`
 
 ##### `urllib`
