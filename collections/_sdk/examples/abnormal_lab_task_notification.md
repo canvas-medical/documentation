@@ -5,21 +5,13 @@ slug: 'example-abnormal_lab_task_notification'
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/abnormal_lab_task_notification' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-# Abnormal Lab Task Notification Plugin
-
 This Canvas EMR plugin automatically creates task notifications whenever lab results with abnormal values are received, ensuring critical lab findings are flagged for prompt clinical review.
 
-## Technical Details
+## SDK Features
 
-**Event Triggered By:** New lab reports entering the Canvas system
-**Detection Method:** Checks the `abnormal_flag` field on lab values
-**Task Creation:** Uses Canvas SDK's AddTask effect
-**Labels Applied:** "abnormal-lab", "urgent-review"
-
-The plugin is designed to be safe and efficient:
-- Filters out test-only and invalid lab reports
-- Handles missing data gracefully
-- Includes comprehensive error logging for troubleshooting
+* Responds to `LAB_REPORT_CREATED` [event](/sdk/events/#labs)
+* Parses the Lab Report [data model](/sdk/data-labs/#labreport) to identify lab results flagged as abnormal
+* Returns a [task effect](/sdk/effect-tasks/#adding-a-task)
 
 ## CANVAS_MANIFEST.json
 
@@ -64,12 +56,12 @@ The plugin is designed to be safe and efficient:
 
 **Purpose and Functionality**
 
-This file defines a protocol called AbnormalLabProtocol for use with the Canvas Medical SDK. Its primary function is to monitor for the creation of new laboratory reports (LAB_REPORT_CREATED events). When such an event occurs, the protocol inspects the report to determine if it contains any abnormal lab values. If abnormal results are found, it automatically creates a task for prompt clinical review.
+This file defines a protocol called AbnormalLabProtocol for use with the Canvas Medical SDK. Its primary function is to monitor for the creation of new laboratory reports (`LAB_REPORT_CREATED` events). When such an event occurs, the protocol inspects the report to determine if it contains any abnormal lab values. If abnormal results are found, it automatically creates a task for prompt clinical review.
 
 **Event Handling**
 
 - The protocol listens for the LAB_REPORT_CREATED event.
-- When triggered, it examines the relevant lab report for any values marked as abnormal.
+- When triggered, it examines the relevant [lab report(/sdk/data-labs/#labreport)] for any values marked as abnormal.
 
 **Core Logic**
 
