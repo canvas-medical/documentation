@@ -498,6 +498,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Group items within a Patient Chart Section"
+    url: /guides/patient-chart-group-items/
+    description: How to group items on the patient chart
+    uses:
+      - sdk
+
   - title: "Your First Application"
     url: /guides/your-first-application
     description: Install and customize embeddable applications in Canvas
@@ -661,6 +667,9 @@ effects_module:
   - title: "Tasks"
     url: /sdk/effect-tasks/
     description: Create or update tasks.
+  - title: "Patient Chart Group"
+    url: /sdk/patient-chart-group-effect/
+    description: Effect for grouping items on a patient chart section.
 
 data_module:
   - title: "AllergyIntolerance"
