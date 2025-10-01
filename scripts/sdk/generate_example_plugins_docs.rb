@@ -80,7 +80,7 @@ changed_plugins.each do |plugin_name|
   File.open("collections/_sdk/examples/#{plugin_name}.md", 'w') do |file|
     # Add the front matter
     file.puts("---")
-    file.puts("title: '#{plugin_name}'")
+    file.puts("title: '#{plugin_name.gsub('_', ' ').split.map(&:capitalize).join(' ')}'")
     file.puts("slug: 'example-#{plugin_name}'")
     file.puts("---")
     file.puts("")
@@ -102,7 +102,7 @@ ALERTHTML
     # This is a method which is called recursively to walk the plugin
     # directory structure. It recreates the tree as nested headers, which are
     # used to generate the table of contents.
-    # 
+    #
     # Some files may be listed as a header but without having their content
     # displayed. We only display content of the manifest and files ending in .py.
     def print_directory_contents(directory_path, file, level = 0)
