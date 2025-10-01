@@ -5,13 +5,13 @@ slug: 'example-example_chart_app'
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_chart_app' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-An example custom UI for the patient chart.
+An example custom UI Application for the patient chart. This particular application loads the active staff user and displays some attributes about them (ex: their name), and it also loads templated HTML and JavaScript to make a REST call to a user-defined endpoint, right in the Canvas EMR.
 
 ## SDK Features
-- Creates a `GET` [Simple API](/sdk/handlers-simple-api-http/) endpoint that gets the logged in [Staff user](/sdk/data-staff/) from the event context, [renders a template](/sdk/layout-effect/#custom-html-and-django-templates), and returns HTML content
+- Creates a `GET` [Simple API](/sdk/handlers-simple-api-http/) endpoint that retrieves the logged in [Staff user](/sdk/data-staff/) from the event context, [renders a template](/sdk/layout-effect/#custom-html-and-django-templates), and returns HTML content
 - Creates a `POST` [Simple API](/sdk/handlers-simple-api-http/) endpoint that [creates a task](/sdk/effect-tasks/#adding-a-task)
 - Defines a custom template containing JavaScript that makes a REST call to the user-defined `POST` endpoint above
-- Adds an [Application](/sdk/handlers-applications/) effect that, when opened, returns a [LaunchModalEffect](/sdk/layout-effect/#modals) in the right chart pane with content from the `GET` endpoint
+- Adds an [Application](/sdk/handlers-applications/) effect that, on open, returns a [LaunchModalEffect](/sdk/layout-effect/#modals) in the right chart pane with content from the `GET` endpoint
 
 ## Configuration
 
@@ -104,7 +104,7 @@ This file defines an application plugin for Canvas Medical using the Canvas SDK.
 **GET /custom-ui**
 
 - Endpoint: `/custom-ui`
-- Retrieves the logged-in staff user via the header `"canvas-logged-in-user-id"`.
+- Retrieves the logged-in staff user via the header `"canvas-logged-in-user-id"` and the Canvas SDK Staff data model (but it could retrieve any data!)
 - Renders a template (`templates/custom-ui.html`) with context including the logged-in staff and the selected patient ID.
 - Returns the rendered HTML as an `HTMLResponse` with HTTP 200 (OK) status.
 
