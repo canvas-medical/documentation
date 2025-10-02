@@ -25,7 +25,7 @@ For more, visit the [Canvas SDK documentation](https://docs.canvasmedical.com/sd
 It is used to display a compact widget in the Patient Portal that lists the
 active care team members for a patient.
 
-It renders a scrollable list in a compact plugin format of all active members. 
+It renders a scrollable list in a compact plugin format of all active members.
 
 For more information, visit the [Canvas SDK documentation](https://docs.canvasmedical.com/sdk/data-care-team/).
 
@@ -101,11 +101,11 @@ The handler is triggered (via RESPONDS_TO) when the event type PATIENT_PORTAL__W
 
 **Widgets Produced**
 
-- **Header Widget**:  
+- **Header Widget**:
   Collects basic patient information (first name, last name, etc.), constructs a "preferred full name," and passes it to an HTML template along with a configurable background color (using either a secret or a default).
-- **Care Team Widget**:  
+- **Care Team Widget**:
   Fetches the patient's active care team members. For each member, gathers name components, professional role, profile photo URL, and composes formatted display strings. This list is rendered in a compact widget, styled with the background color as a title color.
-- **Footer Widget**:  
+- **Footer Widget**:
   Renders a footer using a background color and an emergency contact number, both customizable via secrets, falling back to sensible defaults if not specified.
 
 **Widget Rendering**
@@ -245,9 +245,6 @@ class PatientPortalHandler(BaseHandler):
         return self.secrets.get("EMERGENCY_CONTACT") or self.DEFAULT_EMERGENCY_CONTACT
 ```
 
-### \___init__.py
-
-This file is empty.
 <br/>
 <br/>
 <br/>

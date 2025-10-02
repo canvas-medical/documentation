@@ -63,15 +63,15 @@ The app uses session credentials to check if a user is logged in before providin
 
 **Endpoints**
 
-- **/app/patient-portal-application**:  
+- **/app/patient-portal-application**:
   - Retrieves the current logged-in Patient using an ID supplied in the request headers.
   - Renders an HTML template ("static/index.html") and supplies the patient's first and last name as context variables.
   - Returns a rendered HTML page as the response.
 
-- **/app/main.js**:  
+- **/app/main.js**:
   - Serves the contents of "static/main.js" as JavaScript.
 
-- **/app/styles.css**:  
+- **/app/styles.css**:
   - Serves the contents of "static/styles.css" as CSS.
 
 **Template Rendering**
@@ -191,10 +191,6 @@ class MyApplication(Application):
             target=LaunchModalEffect.TargetType.PAGE,
         ).apply()
 ```
-
-### \__init__.py
-
-This file is empty.
 
 ## static/
 
