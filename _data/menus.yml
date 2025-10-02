@@ -397,6 +397,11 @@ api_relatedperson:
 api_schedule:
   - title: "Schedule Search"
     url: /api/schedule/#search
+api_servicerequest:
+  - title: "ServiceRequest Read"
+    url: /api/servicerequest/#read
+  - title: "ServiceRequest Search"
+    url: /api/servicerequest/#search
 api_slot:
   - title: "Slot Search"
     url: /api/slot/#search
