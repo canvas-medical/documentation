@@ -36,18 +36,16 @@ Alternatively, to find all of the `Coverage` instances issed by a particular iss
 Find the latest eligibility summary for a patient:
 
 ```python
->>> from canvas_sdk.v1.data.eligibility_summary import EligibilitySummary
->>> from canvas_sdk.v1.data.coverage import Coverage
->>>
->>> coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
->>> elig_summary_from_model = EligibilitySummary.objects.filter(coverage=coverage).first()
->>> elig_summary_from_cvg = coverage.eligibility_summary
->>> if elig_summary_from_model:
-        print(elig_summary_from_model.copay_cents, elig_summary_from_model.coinsurance)
-1000 5
->>> if elig_summary_from_cvg:
-        print(elig_summary_from_cvg.copay_cents, elig_summary_from_cvg.coinsurance)
-1000 5
+    from canvas_sdk.v1.data.eligibility_summary import EligibilitySummary
+    from canvas_sdk.v1.data.coverage import Coverage
+
+    coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+    elig_summary_from_model = EligibilitySummary.objects.filter(coverage=coverage).first()
+    elig_summary_from_cvg = coverage.eligibility_summary
+    if elig_summary_from_model:
+        print(elig_summary_from_model.copay_cents, elig_summary_from_model.coinsurance) # 1000 5
+    if elig_summary_from_cvg:
+        print(elig_summary_from_cvg.copay_cents, elig_summary_from_cvg.coinsurance) # 1000 5
 ```
 
 ## Filtering
