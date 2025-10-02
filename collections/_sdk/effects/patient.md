@@ -32,7 +32,7 @@ The `Patient` effect enables the creation and updating of patient records within
 | `patient_id`             | `str` or `None`                             | Patient ID (required for updates only)      | No       |
 | `addresses`              | `list[PatientAddress]` or `None`            | Patient's addresses                         | No       |
 | `preferred_pharmacies`   | `list[PatientPreferredPharmacy]` or `None`  | Patient's preferred pharmacies              | No       |
-| `preferred_pharmacies`   | `list[Metadata]` or `None`                  | Patient metadata                            | No       |
+| `preferred_pharmacies`   | `list[PatientMetadata]` or `None`           | Patient metadata                            | No       |
 
 ## PatientContactPoint
 
@@ -86,9 +86,9 @@ The `PatientPreferredPharmacy` dataclass represents a patient's preferred pharma
 | `ncpdp_id` | `str`  | The ncpdp ID of the pharmacy      | Yes      |
 | `default`  | `bool` | True if it's the default pharmacy | Yes      |
 
-## Metadata
+## PatientMetadata
 
-The `Metadata` dataclass represents a custom key-value pair for a patient.
+The `PatientMetadata` dataclass represents a custom key-value pair for a patient.
 
 | Attribute | Type  | Description               | Required |
 | --------- | ----- | ------------------------- | -------- |
@@ -104,12 +104,12 @@ The `Metadata` dataclass represents a custom key-value pair for a patient.
 - Structures contact information through the `PatientContactPoint` dataclass
 - Structures external identifier through the `PatientExternalIdentifier` dataclass
 - Structures address information through the `PatientAddress` dataclass
-- Structures metadata through the `Metadata` dataclass
+- Structures metadata through the `PatientMetadata` dataclass
 
 ## Example Usage
 
 ```python
-from canvas_sdk.effects.patient import Patient, PatientContactPoint, PatientExternalIdentifier, Metadata
+from canvas_sdk.effects.patient import Patient, PatientContactPoint, PatientExternalIdentifier, PatientMetadata
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.v1.data.common import ContactPointSystem, ContactPointUse, PersonSex
 import datetime
@@ -149,8 +149,8 @@ class Protocol(BaseHandler):
                 )
             ],
             metadata = [
-                Metadata(key="source", value="plugin")
-                Metadata(key="created_on", value=datetime.datetime.now().isoformat())
+                PatientMetadata(key="source", value="plugin")
+                PatientMetadata(key="created_on", value=datetime.datetime.now().isoformat())
             ]
         )
 
