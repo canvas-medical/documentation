@@ -537,13 +537,13 @@ guides_templates:
 sdk:
   - title: "SDK Overview"
     identifier: sdk_overview
+  - title: "Example Plugins"
+    url: /sdk/examples/
+    identifier: example_plugins
 
 sdk_overview:
   - title: "Introduction"
     url: /sdk/
-  - title: "Example Plugins"
-    url: /sdk/examples/
-    identifier: example_plugins
   - title: "Caching Module"
     url: /sdk/caching/
   - title: "Command Line Interface"
@@ -569,6 +569,9 @@ sdk_overview:
     url: /sdk/sandboxing-and-allowed-imports/
   - title: "Secrets"
     url: /sdk/secrets/
+  - title: "SimpleAPI"
+    url: /sdk/handlers-simple-api/
+    identifier: simple_api_handlers
   - title: "Utils Module"
     url: /sdk/utils/
   - title: "Testing Utilities"
@@ -609,9 +612,6 @@ sdk_handlers:
     url: /sdk/handlers-basehandler/
   - title: "CronTask"
     url: /sdk/handlers-crontask/
-  - title: "SimpleAPI"
-    url: /sdk/handlers-simple-api/
-    identifier: simple_api_handlers
 
 simple_api_handlers:
   - title: "HTTP API"
@@ -650,6 +650,9 @@ effects_module:
   - title: "Patient"
     url: /sdk/effect-patient/
     description: Interact with patient data.
+  - title: "Patient Chart Group"
+    url: /sdk/patient-chart-group-effect/
+    description: Effect for grouping items on a patient chart section.
   - title: "Patient External ID"
     url: /sdk/effect-create-patient-external-identifier/
     description: Create a new external identifier for a patient.
@@ -671,9 +674,6 @@ effects_module:
   - title: "Tasks"
     url: /sdk/effect-tasks/
     description: Create or update tasks.
-  - title: "Patient Chart Group"
-    url: /sdk/patient-chart-group-effect/
-    description: Effect for grouping items on a patient chart section.
 
 data_module:
   - title: "AllergyIntolerance"
