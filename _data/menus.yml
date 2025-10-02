@@ -537,13 +537,13 @@ guides_templates:
 sdk:
   - title: "SDK Overview"
     identifier: sdk_overview
+  - title: "Example Plugins"
+    url: /sdk/examples/
+    identifier: example_plugins
 
 sdk_overview:
   - title: "Introduction"
     url: /sdk/
-  - title: "Example Plugins"
-    url: /sdk/examples/
-    identifier: example_plugins
   - title: "Caching Module"
     url: /sdk/caching/
   - title: "Command Line Interface"
