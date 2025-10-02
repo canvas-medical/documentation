@@ -149,7 +149,7 @@ class Protocol(BaseHandler):
                 )
             ],
             metadata = [
-                PatientMetadata(key="source", value="plugin")
+                PatientMetadata(key="source", value="plugin"),
                 PatientMetadata(key="created_on", value=datetime.datetime.now().isoformat())
             ]
         )
