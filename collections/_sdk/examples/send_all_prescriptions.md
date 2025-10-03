@@ -1,5 +1,5 @@
 ---
-title: 'Send All Prescriptions to Pharmacy'
+title: 'Send All Prescriptions'
 slug: 'example-send_all_prescriptions'
 ---
 

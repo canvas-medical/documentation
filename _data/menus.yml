@@ -590,7 +590,7 @@ example_plugins:
     url: /sdk/example-example_chart_app/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
-  - title: "Send All Prescriptions to Pharmacy"
+  - title: "Send All Prescriptions"
     url: /sdk/example-send_all_prescriptions/
   - title: "Upsert Patient Metadata"
     url: /sdk/example-upsert_patient_metadata/
