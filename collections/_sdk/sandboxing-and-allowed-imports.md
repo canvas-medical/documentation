@@ -120,7 +120,9 @@ Provides support for type hints and static type checking to improve code clarity
 - `Sequence`
 - `Tuple`
 - `Type`
+- `TypeGuard`
 - `TypedDict`
+- `TypeGuard`
 - `Union`
 
 ##### `urllib`

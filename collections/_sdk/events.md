@@ -16,6 +16,8 @@ To make plugin code react to an event, you can add the event types listed below 
 
 ```python
 from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
@@ -39,7 +41,9 @@ yourself by logging it out.
 
 ```python
 from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
 from logger import log
+
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
@@ -568,6 +572,243 @@ These events fire as a result of records being created, updated, or deleted.
 "type": None</pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__PROVIDERS__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__PROVIDERS__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"providers": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__LOCATIONS__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__LOCATIONS__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"locations": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__VISIT_TYPES__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__VISIT_TYPES__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"visit_types": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__DURATIONS__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__DURATIONS__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"durations": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__REASON_FOR_VISIT__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__REASON_FOR_VISIT__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+       <td><pre>"reason_for_visit": list[dict]
+"selected_values": dict</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__GET_ADDITIONAL_FIELDS</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Appointment Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an appointment's metadata is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": appointmentmetadata_id
+"type": None</pre></td>
+      <td><pre>"appointment":
+    "id": appt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when an appointment's metadata is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": appointmentmetadata_id
+"type": None</pre></td>
+      <td><pre>"appointment":
+    "id": appt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16821,6 +17062,55 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+### Patient Chart Configuration
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_CHART__CONDITIONS</th></tr>
+    <tr><td colspan="2">Occurs when the conditions are loaded on the patient chart.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_id
+"type": <a href='/sdk/patient/'>Patient</a></pre></td>
+      <td><pre>"conditions":
+    "id": condition id
+    "codings": 
+      "code": str
+      "system": str
+      "display": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_CHART__MEDICATIONS</th></tr>
+    <tr><td colspan="2">Occurs when the medications are loaded on the patient chart.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_id
+"type": <a href='/sdk/patient/'>Patient</a></pre></td>
+      <td><pre>"medications":
+    "id": medication id
+    "codings": 
+      "code": str
+      "system": str
+      "display": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+
 ### Other Events
 
 <table>
@@ -16844,10 +17134,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>CLAIM__CONDITIONS</td>
       <td>The conditions are loaded within the claim summary.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_CHART__CONDITIONS</td>
-      <td>The conditions are loaded within the patient summary</td>
     </tr>
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>

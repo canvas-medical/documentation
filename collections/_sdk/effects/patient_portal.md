@@ -140,9 +140,12 @@ This effect is intended for updating a user’s phone number or email. In the fu
 
 
 ```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.update_user import UpdateUserEffect
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import PatientContactPoint
+
 
 class ContactPoint(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.PATIENT_CONTACT_POINT_UPDATED)]
@@ -172,6 +175,8 @@ This effect triggers a portal invitation that allows the patient to register or 
 
 
 ```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.send_invite import SendInviteEffect
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import PatientContactPoint

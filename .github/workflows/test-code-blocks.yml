@@ -29,9 +29,6 @@ jobs:
 
       - name: Test code blocks
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_SHA: ${{ github.sha }}
           GITHUB_PYTHON_VERSION: ${{ matrix.python-version }}
         run: |
           # always install the most recent released version of canvas

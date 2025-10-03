@@ -22,12 +22,16 @@ practice_location = PracticeLocation.objects.filter(full_name__icontains="downto
 To retrieve a list of all practice locations:
 
 ```python
+from canvas_sdk.v1.data.practicelocation import PracticeLocation
+
 practice_locations = PracticeLocation.objects.all()
 ```
 
 Each `PracticeLocation` has location-specific settings that control certain behavior within the EMR application. To retrieve the available settings for a `PracticeLocation` instance, the `settings` attribute can be used to retrieve a list of names:
 
 ```python
+from canvas_sdk.v1.data.practicelocation import PracticeLocation
+
 practice_location = PracticeLocation.objects.first()
 
 available_settings = practice_location.settings.values_list('name', flat=True)
@@ -36,6 +40,8 @@ available_settings = practice_location.settings.values_list('name', flat=True)
 Additionally, a setting's value can be found by accessing the `value` attribute on the `PracticeLocationSetting`:
 
 ```python
+from canvas_sdk.v1.data.practicelocation import PracticeLocation
+
 practice_location = PracticeLocation.objects.first()
 
 preferred_lab_partner_text = practice_location.settings.get(name="preferredLabPartner").value

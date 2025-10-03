@@ -35,14 +35,18 @@ In the following steps, we'll show you how we used the Canvas SDK to create it.
 To add a button to the vital signs section, you’ll implement an [`ActionButton`](/sdk/handlers-action-buttons) handler. In your handler class, you’ll set the `BUTTON_LOCATION` constant to `ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION` to make the action button appear in the corresponding summary section of the chart.
 
 ```python
+from canvas_sdk.handlers.action_button import ActionButton
+from canvas_sdk.effects import Effect
+
+
 class GenerateVitalsGraphs(ActionButton):
     BUTTON_TITLE = "Growth Charts"
     BUTTON_KEY = "show_growth_charts"
     BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION
 
-def handle(self) -> list[Effect]:
-    # This method is invoked when the button is clicked.
-    pass
+    def handle(self) -> list[Effect]:
+        # This method is invoked when the button is clicked.
+        pass
 ```
 
 ## Launching a modal when the button is clicked
@@ -54,7 +58,10 @@ In this guide, we are launching a modal, but this click action can result in any
 Here’s an example of a simple plugin using the `LaunchModalEffect` to display a “Hello World” message.
 
 ```python
+from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.action_button import ActionButton
+from canvas_sdk.templates import render_to_string
 
 
 class HelloWorld(ActionButton):
@@ -63,7 +70,7 @@ class HelloWorld(ActionButton):
     BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_HEADER
 
     def handle(self) -> list[Effect]:
-        launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { title: 'hello world' }))
+        launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { "title": "hello world" }))
 
         return [launch_modal.apply()]
 ```
@@ -108,14 +115,21 @@ To retrieve the patient data we use the [Data Module](/sdk/data/). Specifically,
 Here, we can use `self.target`, which is the patient's `id`, to retrieve the patient and their observations by filtering for the values we need — such as weight, height, etc.
 
 ```python
-patient = Patient.objects.get(id=self.target)
-sex_at_birth = patient.sex_at_birth
-birth_date = patient.birth_date
 
-observation_weight = Observation.objects.for_patient(self.target).filter(name="weight")
-observation_length = Observation.objects.for_patient(self.target).filter(name="length")
-observation_bmi = Observation.objects.for_patient(self.target).filter(name="bmi")
-observation_head_circumference = Observation.objects.for_patient(self.target).filter(name="head_circumference")
+from canvas_sdk.effects import Effect
+from canvas_sdk.v1.data.observation import Observation
+from canvas_sdk.v1.data.patient import Patient
+
+
+def handle(self) -> list[Effect]:
+    patient = Patient.objects.get(id=self.target)
+    sex_at_birth = patient.sex_at_birth
+    birth_date = patient.birth_date
+
+    observation_weight = Observation.objects.for_patient(self.target).filter(name="weight")
+    observation_length = Observation.objects.for_patient(self.target).filter(name="length")
+    observation_bmi = Observation.objects.for_patient(self.target).filter(name="bmi")
+    observation_head_circumference = Observation.objects.for_patient(self.target).filter(name="head_circumference")
 ```
 
 ## Tying it all together
@@ -150,6 +164,25 @@ In addition to the percentile data series, we of course need to plot the
 patient observation data series. To do this, we create a lists of x and y values corresponding to the patient’s age and measurements. You can see this in more detail in the [GitHub repo](https://github.com/Medical-Software-Foundation/canvas/blob/5e8a3dfdb18307e596d2da2d9fce33a3e379cd11/extensions/growth_charts/protocols/growth_charts.py#L80), but here's an excerpt:
 
 ```python
+import arrow
+import datetime
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.v1.data.note import Note
+from canvas_sdk.v1.data.observation import Observation
+from canvas_sdk.v1.data.patient import Patient
+
+def convert_oz_to_kg(oz: str) -> float:
+    return float(oz) * 0.0283495
+
+def get_age_in_months(birth_date: datetime.date, date: datetime.date = datetime.datetime.now()) -> int:
+    now = arrow.get(date)
+    date = arrow.get(birth_date)
+    year_difference = now.year - date.year
+    month_difference = now.month - date.month
+
+    return year_difference * 12 + month_difference
+
 def handle(self) -> list[Effect]:
     graphs = []
     patient = Patient.objects.get(id=self.target)
@@ -187,11 +220,16 @@ Finally, we create a list of graphs with the necessary variables and data, which
 ```python
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.templates import render_to_string
+
+who_boys_length_age = ... # from growth_charts.graphs.who_boys_length_age
 
 
 class Protocol(BaseHandler):
     def compute(self):
         # list of graphs
+        length_for_age = {} # filled in the actual implementation, see linked GitHub repository
+
         graphs = [
             {
                 "data": who_boys_length_age, # the data from the graph file

@@ -8,6 +8,7 @@ The Canvas SDK offers a helper class for completing HTTP calls.
 
 ```python
 from canvas_sdk.utils import Http
+
 http = Http()
 ```
 
@@ -25,6 +26,8 @@ Sends a GET request.
 **Example**:
 
 ```python
+from canvas_sdk.utils import Http
+
 http = Http()
 http.get("https://my-url.com/", headers={"Authorization": f"Bearer token"})
 ```
@@ -45,6 +48,8 @@ Sends a POST request.
 **Example**:
 
 ```python
+from canvas_sdk.utils import Http
+
 http = Http()
 http.post(
     "https://my-url.com/",
@@ -70,6 +75,8 @@ Sends a PUT request.
 **Example**:
 
 ```python
+from canvas_sdk.utils import Http
+
 http = Http()
 http.put(
     "https://my-url.com/",
@@ -95,6 +102,8 @@ Sends a PATCH request.
 **Example**:
 
 ```python
+from canvas_sdk.utils import Http
+
 http = Http()
 http.patch(
     "https://my-url.com/",

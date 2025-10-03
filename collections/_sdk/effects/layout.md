@@ -164,7 +164,8 @@ The order of the buttons in the array will determine their order on the panel.
 ```python
 from canvas_sdk.effects.panel_configuration import PanelConfiguration
 
-PanelConfiguration(sections=[
+PanelConfiguration(
+  sections=[
     PanelConfiguration.PanelPatientSection.REFILL_REQUEST,
     PanelConfiguration.PanelPatientSection.LAB_REPORT,
     PanelConfiguration.PanelPatientSection.CHANGE_REQUEST,
@@ -293,6 +294,8 @@ The `PortalWidget` class has the following properties:
 To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect` or `PortalWidget`.
 
 ```python
+from typing import Any
+
 def render_to_string(template_name: str, context: dict[str, Any] | None = None) -> str | None:
     """Load a template and render it with the given context.
 

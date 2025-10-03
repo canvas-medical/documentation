@@ -1,0 +1,14 @@
+---
+layout: default
+---
+<div class="pagelayout pagelayout__fullwidth">
+  <div class="sidenav sidenavtoc">
+    <!-- <div class="sidenav__toggle">
+      {% include icons/horizontal-toggle.svg %}
+    </div> -->
+    {% include toc.html menu=site.menus.releasenotes %}
+  </div>
+  <div class="pagelayout__fullwidth__content">
+    {% include article.html %}
+  </div>
+</div>

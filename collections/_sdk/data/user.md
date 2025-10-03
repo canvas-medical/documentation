@@ -16,7 +16,7 @@ To get a user by identifier, use the `get` method on the `CanvasUser` model mana
 ```python
 from canvas_sdk.v1.data import CanvasUser
 
-user = CanvasUser.objects.get(dbid="b80b1cdc2e6a4aca90ccebc02e683f35")
+user = CanvasUser.objects.get(dbid=123)
 ```
 
 ## Filtering
