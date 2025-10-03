@@ -8,8 +8,8 @@ slug: 'example-send_all_prescriptions'
 A Canvas plugin that adds a "Send Prescriptions" button to note footers, allowing healthcare providers to send all committed prescriptions in a note with a single click.
 
 ## SDK Features
-* Creates an ActionButton that uses the Note context to get all committed prescribe Commands in a Note
-* Returns a list of PrescribeCommand effects with `send` action request
+* Creates an [ActionButton](/sdk/handlers-action-buttons/) that uses the [Note](/sdk/data-note/) context to get all committed prescribe [Commands](/sdk/data-command/) in a Note
+* Returns a list of [PrescribeCommand](sdk/commands/#prescribe) effects with [`send`](/sdk/commands/#send) action request
 
 ## Structure
 
@@ -59,7 +59,7 @@ send_all_prescriptions/
 
 ### handler.py
 
-This file defines a custom button handler for the Canvas Medical platform, which uses the Canvas SDK. It provides functionality to send all prescription commands associated with a specific note when the button is activated.
+This file defines a custom button handler. It provides functionality to send all prescription commands associated with a specific note when the button is activated.
 
 - The main class, `SendPrescriptionButtonHandler`, inherits from `ActionButton` and represents a custom action button shown in the UI (specifically, at the note footer).
 - The button is labeled "Send Prescriptions" and assigned a unique key "SEND_ALL_PRESCRIPTIONS".
@@ -71,7 +71,6 @@ This file defines a custom button handler for the Canvas Medical platform, which
 - It queries the database for all commands of type `"prescribe"` that are committed (i.e., have an associated committer) and belong to the given note.
 - For each qualifying command, it creates a `PrescribeCommand`, sets its UUID to match the command, and calls `send()`, which returns an `Effect`.
 - All created effects are collected into a list and returned; these effects trigger the actual process of sending prescriptions.
-
 
 ```python
 from canvas_sdk.commands import PrescribeCommand
