@@ -36,8 +36,7 @@ Alternatively, to find all of the `Coverage` instances issed by a particular iss
 Find the latest eligibility summary for a patient:
 
 ```python
-    from canvas_sdk.v1.data.eligibility_summary import EligibilitySummary
-    from canvas_sdk.v1.data.coverage import Coverage
+    from canvas_sdk.v1.data.coverage import Coverage, EligibilitySummary
 
     coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
     elig_summary_from_model = EligibilitySummary.objects.filter(coverage=coverage).first()
