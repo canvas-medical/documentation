@@ -39,7 +39,7 @@ class Protocol(BaseProtocol):
 
     def compute(self) -> list[Effect]:
         contact_point_id = self.event.target
-        verification_effect = SendContactVerificationEffec(contact_point_id=contact_point_id)
+        verification_effect = SendContactVerificationEffect(contact_point_id=contact_point_id)
         return [verification_effect.apply()]
 ```
 
