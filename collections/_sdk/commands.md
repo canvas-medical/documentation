@@ -375,22 +375,55 @@ diagnose = DiagnoseCommand(
 
 **Command-specific parameters**:
 
-| Name             | Type     | Required | Description                                           |
-|:-----------------|:---------|:---------|:------------------------------------------------------|
-| `family_history` | _string_ | `true`   | A description of the family history being documented. |
-| `relative`       | _string_ | `false`  | A description of the relative (e.g., mother, uncle).  |
-| `note`           | _string_ | `false`  | Additional notes or context about the family history. |
+| Name             | Type                 | Required | Description                                           |
+|:-----------------|:---------------------|:---------|:------------------------------------------------------|
+| `family_history` | _string_ or _Coding_ | `true`   | A description of the family history being documented. |
+| `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle).  |
+| `note`           | _string_             | `false`  | Additional notes or context about the family history. |
+
+**Coding Support**:
+
+The `family_history` parameter accepts either:
+- **String**: Searches for matching family history condition
+- **Coding object**: Allows structured or unstructured coding
+  - Supported systems: `SNOMED`, `UNSTRUCTURED`
+  - Required fields: `system`, `code`
+  - Optional field: `display`
 
 **Example**:
 
 ```python
 from canvas_sdk.commands import FamilyHistoryCommand
+from canvas_sdk.commands.constants import CodeSystems, Coding
 
+# Using a string (searches for matching conditions)
 family_history = FamilyHistoryCommand(
     note_uuid="rk786p",
     family_history="Diabetes Type 2",
     relative="Mother",
     note="Diagnosed at age 45"
+)
+
+# Using a SNOMED code
+family_history_snomed = FamilyHistoryCommand(
+    note_uuid="rk786p",
+    family_history=Coding(
+        system=CodeSystems.SNOMED,
+        code="44054006",
+        display="Diabetes Type 2"
+    ),
+    relative="Mother",
+    note="Diagnosed at age 45"
+)
+
+# Using unstructured (free text)
+family_history_unstructured = FamilyHistoryCommand(
+    note_uuid="rk786p",
+    family_history=Coding(
+        system=CodeSystems.UNSTRUCTURED,
+        code="Family history of heart disease"
+    ),
+    relative="Father"
 )
 ```
 
@@ -763,20 +796,51 @@ MedicalHistoryCommand(
 
 **Command-specific parameters**:
 
-| Name       | Type     | Required | Description                               |
-|:-----------|:---------|:---------|:------------------------------------------|
-| `fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication.           |
-| `sig`      | _string_ | `false`  | Administration details of the medication. |
+| Name       | Type                 | Required | Description                                            |
+|:-----------|:---------------------|:---------|:-------------------------------------------------------|
+| `fdb_code` | _string_ or _Coding_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
+| `sig`      | _string_             | `false`  | Administration details of the medication.              |
+
+**Coding Support**:
+
+The `fdb_code` parameter accepts either:
+- **String (FDB code)**: Looks up the medication in the FDB system
+- **Coding object**: Allows structured or unstructured coding
+  - Supported systems: `FDB`, `UNSTRUCTURED`
+  - Required fields: `system`, `code`
+  - Optional field: `display`
 
 **Example**:
 
 ```python
 from canvas_sdk.commands import MedicationStatementCommand
+from canvas_sdk.commands.constants import CodeSystems, Coding
 
+# Using an FDB code string (recommended for FDB medications)
 medication_statement = MedicationStatementCommand(
     note_uuid='rk786p',
     fdb_code='198698',
     sig='two pills taken orally'
+)
+
+# Using an FDB Coding object
+medication_statement_fdb = MedicationStatementCommand(
+    note_uuid='rk786p',
+    fdb_code=Coding(
+        system=CodeSystems.FDB,
+        code='198698',
+        display='aspirin 81 mg oral tablet'
+    ),
+    sig='two pills taken orally'
+)
+
+# Using unstructured (free text medication)
+medication_statement_unstructured = MedicationStatementCommand(
+    note_uuid='rk786p',
+    fdb_code=Coding(
+        system=CodeSystems.UNSTRUCTURED,
+        code='Herbal supplement for joint health'
+    )
 )
 ```
 
@@ -786,22 +850,53 @@ medication_statement = MedicationStatementCommand(
 
 **Command-specific parameters**:
 
-| Name                    | Type     | Required | Description                                        |
-|-------------------------|----------|----------|----------------------------------------------------|
-| `past_surgical_history` | _string_ | `true`   | A description of the past surgical procedure.      |
-| `approximate_date`      | _date_   | `false`  | Approximate date of the surgery.                   |
-| `comment`               | _string_ | `false`  | Additional comments (max length: 1000 characters). |
+| Name                    | Type                 | Required | Description                                        |
+|-------------------------|----------------------|----------|----------------------------------------------------|
+| `past_surgical_history` | _string_ or _Coding_ | `true`   | A description of the past surgical procedure.      |
+| `approximate_date`      | _date_               | `false`  | Approximate date of the surgery.                   |
+| `comment`               | _string_             | `false`  | Additional comments (max length: 1000 characters). |
+
+**Coding Support**:
+
+The `past_surgical_history` parameter accepts either:
+- **String**: Searches for matching surgical procedures
+- **Coding object**: Allows structured or unstructured coding
+  - Supported systems: `SNOMED`, `UNSTRUCTURED`
+  - Required fields: `system`, `code`
+  - Optional field: `display`
 
 **Example**:
 
 ```python
 from canvas_sdk.commands import PastSurgicalHistoryCommand
+from canvas_sdk.commands.constants import CodeSystems, Coding
 from datetime import date
 
+# Using a string (searches for matching procedures)
 PastSurgicalHistoryCommand(
     past_surgical_history="Appendectomy",
     approximate_date=date(2008, 6, 15),
     comment="No complications reported."
+)
+
+# Using a SNOMED code
+surgical_history_snomed = PastSurgicalHistoryCommand(
+    past_surgical_history=Coding(
+        system=CodeSystems.SNOMED,
+        code="80146002",
+        display="Appendectomy"
+    ),
+    approximate_date=date(2008, 6, 15),
+    comment="No complications reported."
+)
+
+# Using unstructured (free text)
+surgical_history_unstructured = PastSurgicalHistoryCommand(
+    past_surgical_history=Coding(
+        system=CodeSystems.UNSTRUCTURED,
+        code="Minor outpatient procedure on left knee"
+    ),
+    approximate_date=date(2020, 3, 10)
 )
 ```
 
@@ -811,19 +906,49 @@ PastSurgicalHistoryCommand(
 
 **Command-specific parameters**:
 
-| Name       | Type     | Required | Description                                          |
-|------------|----------|----------|------------------------------------------------------|
-| `cpt_code` | _string_ | `true`   | The CPT code of the procedure or action performed.   |
-| `notes`    | _string_ | `false`  | Additional notes related to the performed procedure. |
+| Name       | Type                 | Required | Description                                          |
+|------------|----------------------|----------|------------------------------------------------------|
+| `cpt_code` | _string_ or _Coding_ | `true`   | The CPT code of the procedure or action performed.   |
+| `notes`    | _string_             | `false`  | Additional notes related to the performed procedure. |
+
+**Coding Support**:
+
+The `cpt_code` parameter accepts either:
+- **String**: Searches for matching procedures
+- **Coding object**: Allows structured or unstructured coding
+  - Supported systems: `CPT`, `UNSTRUCTURED`
+  - Required fields: `system`, `code`
+  - Optional field: `display`
 
 **Example**:
 
 ```python
 from canvas_sdk.commands import PerformCommand
+from canvas_sdk.commands.constants import CodeSystems, Coding
 
+# Using a string (searches for matching procedures)
 PerformCommand(
     cpt_code="99213",
     notes="Patient presented with a common cold."
+)
+
+# Using a CPT code
+perform_cpt = PerformCommand(
+    cpt_code=Coding(
+        system=CodeSystems.CPT,
+        code="99213",
+        display="Office visit, established patient"
+    ),
+    notes="Annual wellness visit"
+)
+
+# Using unstructured (free text)
+perform_unstructured = PerformCommand(
+    cpt_code=Coding(
+        system=CodeSystems.UNSTRUCTURED,
+        code="Custom procedure performed"
+    ),
+    notes="Non-standard procedure documentation"
 )
 ```
 
