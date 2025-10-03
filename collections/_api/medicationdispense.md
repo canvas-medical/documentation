@@ -7,7 +7,7 @@ sections:
         name: MedicationDispense
         article: "a"
         description: >-
-          Indicates that a medication product is to be or has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication. The medication dispense is the result of a pharmacy system responding to a medication order.<br><br>
+          Indicates that a medication product is to be or has been dispensed for a named person/patient. This includes a description of the medication product (supply) provided and the instructions for administering the medication.<br><br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-medicationdispense.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-medicationdispense.html)<br><br>
         attributes:
           - name: resourceType
@@ -17,10 +17,14 @@ sections:
             description: The identifier of the MedicationDispense.
             type: string
           - name: status
-            description: A code specifying the state of the dispense event. When status is "completed", whenHandedOver SHALL be present.
-            type: enum [ preparation | in-progress | on-hold | completed | entered-in-error | stopped | declined | unknown ]
+            description: A code specifying the state of the dispense event.
+            type: string
+            enum_options:
+              - value: completed
+              - value: entered-in-error
+              - value: stopped
           - name: medicationCodeableConcept
-            description: Identifies the medication that was dispensed. This is either a link to a resource representing the details of the medication or a simple attribute carrying a code that identifies the medication from a known list of medications.
+            description: Identifies the medication being requested. This is simply an attribute carrying a code that identifies the medication from a known list of medications.
             type: json
             attributes:
                 - name: coding
@@ -40,7 +44,7 @@ sections:
                       description: The display name of the coding.
                       type: string
           - name: subject
-            description: A link to the resource representing the patient to whom the medication will be given.
+            description: Who the dispense is for.
             type: json
             attributes:
               - name: reference
@@ -50,7 +54,7 @@ sections:
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
           - name: performer
-            description: Indicates who or what performed the dispense.
+            description: Indicates who performed the dispense.
             type: array[json]
             attributes:
               - name: actor
@@ -77,37 +81,18 @@ sections:
             description: Indicates the type of dispensing event that is being performed.
             type: json
             attributes:
-              - name: coding
-                description: Code defined by a terminology system.
-                type: array[json]
-                attributes: 
-                  - name: system
-                    description: The system url of the coding.
-                    type: string
-                  - name: code
-                    description: The code of the dispense type.
-                    type: string
-                  - name: display
-                    description: The display name of the coding.
-                    type: string
+              - name: text
+                description: Plain text representation of the concept
+                type: string
           - name: quantity
-            description: The amount of medication that has been dispensed. Includes unit of measure.
+            description: The amount of medication that has been dispensed.
             type: json
             attributes:
               - name: value
                 type: decimal
                 description: Numerical value of the quantity.
-              - name: unit
-                type: string
-                description: Unit representation (e.g., "Tablet", "ml", "mg").
-              - name: system
-                type: string
-                description: System that defines the coded form of the unit.
-              - name: code
-                type: string
-                description: Coded form of the unit.
           - name: whenHandedOver
-            description: When the medication was handed over to the patient or their representative. SHALL be present if the status is "completed".
+            description: When the medication was handed over to the patient.
             type: datetime
           - name: dosageInstruction
             description: Indicates how the medication is to be used by the patient.
@@ -115,14 +100,14 @@ sections:
             attributes:
                 - name: text
                   type: string
-                  description: Free text dosage instructions.
+                  description: Free text dosage instructions. In Canvas this text comes from the `SIG` or  `DIRECTIONS` field on the associated command.
                 - name: timing
                   type: json
                   description: When medication should be administered.
                   attributes:
                     - name: event
                       type: array[string]
-                      description: Identifies specific times when the event takes place.
+                      description: Identifies the specific times when the medication should be administered.
                 - name: doseAndRate
                   type: array[json]
                   description: Amount of medication administered.
@@ -131,6 +116,9 @@ sections:
                       type: json
                       description: Amount of medication per dose.
                       attributes:
+                        - name: value
+                          description: Numerical value
+                          type: decimal
                         - name: unit
                           description: Unit representation. 
                           type: string
@@ -139,7 +127,7 @@ sections:
             description: The identifier of the MedicationDispense.
             type: string
           - name: patient
-            description: The patient reference associated to the Medication Dispense in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            description: The patient reference associated with the MedicationDispense in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
         endpoints: [read, search]
         read:
@@ -201,19 +189,10 @@ sections:
         }
     ],
     "type": {
-        "coding": [
-            {
-                "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-                "code": "RFP",
-                "display": "Refill - Part Fill"
-            }
-        ]
+        "text": "Office-supplied"
     },
     "quantity": {
-        "value": 30,
-        "unit": "Tablet",
-        "system": "http://unitsofmeasure.org",
-        "code": "mL"
+        "value": 30
     },
     "whenHandedOver": "2023-09-21T18:35:00.000+00:00",
     "dosageInstruction": [
@@ -221,12 +200,13 @@ sections:
             "text": "take 1 daily",
             "timing": {
               "event": [
-                "2025-09-10T10:44:13.842370+00:00"
+                "2023-09-21T18:35:00.000+00:00"
               ]
             },
             "doseAndRate": [
                 {
                     "doseQuantity": {
+                        "value": 5,
                         "unit": "Tablet"
                     }
                 }
@@ -359,19 +339,10 @@ sections:
                     }
                 ],
                 "type": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-                            "code": "RFP",
-                            "display": "Refill - Part Fill"
-                        }
-                    ]
+                    "text": "Office-supplied"
                 },
                 "quantity": {
-                    "value": 30,
-                    "unit": "Tablet",
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mL"
+                    "value": 30
                 },
                 "whenHandedOver": "2023-09-21T18:35:00.000+00:00",
                 "dosageInstruction": [
@@ -379,12 +350,13 @@ sections:
                         "text": "take 1 daily",
                         "timing": {
                             "event": [
-                                "2025-09-10T10:44:13.842370+00:00"
+                                "2023-09-21T18:35:00.000+00:00"
                             ]
                         },
                         "doseAndRate": [
                             {
                                 "doseQuantity": {
+                                    "value": 5,
                                     "unit": "Tablet"
                                 }
                             }
