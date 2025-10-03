@@ -8,9 +8,10 @@ slug: 'example-patient_summary_chart_groups'
 A plugin that groups Psychiatry conditions and medications in the patient summary chart.
 
 ## SDK Features
-* Responds to `PATIENT_CHART__CONDITIONS` [event](/sdk/events/#patient-chart-configuration)
-* Loads the patient conditions using [Condition data model](/sdk/data-condition/)
-* Iterates on conditions to retrieve the ICD10 CodeSystem and assigns to a [Group effect](/sdk/patient-chart-group-effect/#group) using plugin-defined logic
+* Responds to `PATIENT_CHART__CONDITIONS` and `PATIENT_CHART__MEDICATIONS` [events](/sdk/events/#patient-chart-configuration)
+* Loads the patient conditions and medications using event context
+* Iterates through conditions to retrieve the ICD10 CodeSystem and assigns to a [Group effect](/sdk/patient-chart-group-effect/#group) list of items
+* Iterates through medications to find an RxNorm match on a list of plugin-defined medication codes and assigns to a [Group effect](/sdk/patient-chart-group-effect/#group) list of items
 * Returns the [`PatientChartGroup` effect](/sdk/patient-chart-group-effect/) with `.apply()` called
 
 ## CANVAS_MANIFEST.json
@@ -146,7 +147,6 @@ class Medications(BaseHandler):
 ## Customize
 
 - The protocol is extensible: additional groups or more refined code logic could be added in the future.
-- Patient medications can also be grouped.
 <br/>
 <br/>
 <br/>

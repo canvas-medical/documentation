@@ -10,7 +10,7 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
 ## SDK Features
 
 * Responds to `LAB_REPORT_CREATED` [event](/sdk/events/#labs)
-* Loads and parses the [Lab Report data model](/sdk/data-labs/#labreport) to identify lab results flagged as abnormal
+* Loads and parses the [Lab Report data model](/sdk/data-labs/#labreport) to identify [lab values](/sdk/data-labs/#labvalue) flagged as abnormal
 * Returns a [task effect](/sdk/effect-tasks/#adding-a-task)
 
 ## CANVAS_MANIFEST.json
