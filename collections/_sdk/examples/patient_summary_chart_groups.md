@@ -1,21 +1,17 @@
 ---
-title: 'patient_summary_chart_groups'
+title: 'Group Items in Patient Chart'
 slug: 'example-patient_summary_chart_groups'
 ---
 
 {% include alert.html type="github" content="<a href='https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_summary_chart_groups' target='_blank'>View the source</a> for this plugin on GitHub." %}
 
-chart_groups
-============
-
-## Description
-
 A plugin that groups Psychiatry conditions and medications in the patient summary chart.
 
-### Important Note!
-
-The CANVAS_MANIFEST.json is used when installing your plugin. Please ensure it
-gets updated if you add, remove, or rename protocols.
+## SDK Features
+* Responds to `PATIENT_CHART__CONDITIONS` [event](/sdk/events/#patient-chart-configuration)
+* Loads the patient conditions using [Condition data model](/sdk/data-condition/)
+* Iterates on conditions to retrieve the ICD10 CodeSystem and assigns to a [Group effect](/sdk/patient-chart-group-effect/#group) using plugin-defined logic
+* Returns the [`PatientChartGroup` effect](/sdk/patient-chart-group-effect/) with `.apply()` called
 
 ## CANVAS_MANIFEST.json
 
@@ -52,12 +48,7 @@ gets updated if you add, remove, or rename protocols.
 
 ## protocols/
 
-### __init__.py
-
-This file is empty.
 ### my_protocol.py
-
-**Summary**
 
 This file defines two custom protocol handlers, `Protocol` and `Medications`, using the Canvas SDK. These handlers listen for specific events related to a patient's medical chart and group relevant diagnoses or medications into a "Psychiatry" category, returning these as effects for further processing or display in the Canvas UI.
 
@@ -78,22 +69,16 @@ This file defines two custom protocol handlers, `Protocol` and `Medications`, us
   - If the coding system is RxNorm (`CodeSystems.RXNORM`) and the code (converted to integer) is in the handler's medication list, the medication is added to the "Psychiatry" group.
 - The resulting group is returned using a `PatientChartGroup` effect, again allowing psychiatric medications to be grouped in the UI.
 
-**Section: Purpose and Usecase**
-
-- The code is meant to be part of a Canvas Medical plugin designed to enhance how psychiatric data (conditions and medications) are organized and/or displayed.
-- It automatically identifies and groups psychiatric diagnoses and medications from a patient’s chart, facilitating focused review or workflow actions by clinicians or staff using the Canvas platform.
-
 **Section: Canvas SDK Constructs Used**
 
 - **Events:** Listens for specific event types (patient chart conditions or medications).
 - **Effects:** Returns grouping instructions as `PatientChartGroup` effects, making downstream processing or UI changes possible.
-- **Grouping:** Uses the `Group` object to label and prioritize (with `priority=100`) psychiatric items, and the `PatientChartGroup` to wrap effect logic for patient chart groupings. 
+- **Grouping:** Uses the `Group` object to label and prioritize (with `priority=100`) psychiatric items, and the `PatientChartGroup` to wrap effect logic for patient chart groupings.
 
 **Section: Implementation Details**
 
 - The handlers use dictionary storage for groups but always construct only a single "Psychiatry" group.
 - ICD-10 and RxNorm code checks strictly conform to predefined domain ranges or explicit code lists.
-- The protocol is extensible: additional groups or more refined code logic could be added in the future.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -158,6 +143,10 @@ class Medications(BaseHandler):
         return [PatientChartGroup(items=groups).apply()]
 ```
 
+## Customize
+
+- The protocol is extensible: additional groups or more refined code logic could be added in the future.
+- Patient medications can also be grouped.
 <br/>
 <br/>
 <br/>

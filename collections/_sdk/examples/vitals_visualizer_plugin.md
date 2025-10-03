@@ -8,9 +8,10 @@ slug: 'example-vitals_visualizer_plugin'
 A Canvas plugin that displays a "Visualize" button in the vitals section of the chart summary and shows interactive vital signs visualizations.
 
 ## SDK Features
-- Creates a [Simple API](/sdk/handlers-simple-api-http/) endpoint that [renders a template](/sdk/layout-effect/#custom-html-and-django-templates) and returns HTML content
-  - Parses [Observation](/sdk/data-observation/) object to attain vitals data and format into readable content
-- Adds a "Visualize" [Action Button](/sdk/handlers-action-buttons/) to the vitals section of the patient chart summary. When clicked, returns a [LaunchModalEffect](/sdk/layout-effect/#modals) in the right chart pane with content from the vitals endpoint.
+- Creates and responds to a [Simple API](/sdk/handlers-simple-api-http/) endpoint that [renders a template](/sdk/layout-effect/#custom-html-and-django-templates) and returns HTML content
+- Parses [Observation data model](/sdk/data-observation/) to obtain vitals data and format into readable content
+- Adds a "Visualize" [Action Button](/sdk/handlers-action-buttons/) to the vitals section of the patient chart summary.
+- Returns a [LaunchModalEffect](/sdk/layout-effect/#modals) in the right chart pane with content from the vitals endpoint.
 
 ## Configuration
 
