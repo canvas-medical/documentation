@@ -163,6 +163,7 @@ Updates an existing schedule event by creating a new event and cancelling the or
 ```python
 import datetime
 
+from canvas_sdk.effects.note import AppointmentIdentifier
 from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.effects.note.base import AppointmentIdentifier
 from canvas_sdk.handlers.base import BaseHandler
@@ -174,10 +175,9 @@ class Protocol(BaseHandler):
         schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
         schedule_event_effect.duration_minutes = 60
         schedule_event_effect.description = "Rescheduled team meeting"
-        external_identifiers=[
+        schedule_event_effect.external_identifiers = [
             AppointmentIdentifier(system="test_system", value="123TEST")
         ]
-        schedule_event_effect.external_identifiers = external_identifiers
 
         return [schedule_event_effect.update()]
 ```
@@ -273,6 +273,8 @@ Updates an existing appointment by creating a new appointment and cancelling the
 #### Example Usage
 
 ```python
+import datetime
+
 from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 

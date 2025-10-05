@@ -41,7 +41,7 @@ Specify an attribute with `filter` to filter by that attribute:
 ```python
 from canvas_sdk.v1.data.device import Device
 
-devices = Devices.objects.filter(manufacturer="ACME Biomedical", lot_number="M320")
+devices = Device.objects.filter(manufacturer="ACME Biomedical", lot_number="M320")
 ```
 
 ## Attributes

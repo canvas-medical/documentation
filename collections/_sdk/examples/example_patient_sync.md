@@ -398,9 +398,6 @@ class PatientSync(BaseHandler):
             return [] # Done!
 ```
 
-### \___init__.py
-
-This file is empty.
 <br/>
 <br/>
 <br/>

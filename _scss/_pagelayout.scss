@@ -76,6 +76,35 @@
             display: none;
         }
     }
+    // Full-width layout with TOC on left and content utilizing remaining space
+    &__fullwidth {
+        display: grid;
+        grid-template-columns: 100%;
+        grid-column-gap: $container-padding;
+        word-wrap: break-word;
+        width: 100%;
+        min-height: 100vh;
+        
+        @media (min-width: $breakpoint-md) {
+            grid-template-columns: 280px 1fr;
+            grid-column-gap: 14px;
+        }
+        
+        &__content {
+            max-height: var(--body-height);
+            overflow-y: auto;
+            padding: 20px;
+            min-width: 0; // Prevents content from overflowing grid
+            
+            @media (min-width: $breakpoint-md) {
+                padding: 40px;
+            }
+            
+            @media (min-width: $breakpoint-lg) {
+                padding: 40px 60px;
+            }
+        }
+    }
     // Layout for Release Notes
     &__index {
         &__container {

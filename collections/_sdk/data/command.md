@@ -40,6 +40,12 @@ commands = Command.objects.filter(state="committed")
 When events are fired as part of [Command Lifecycle Events](/sdk/events/#command-lifecycle-events), the `self.target` value that is available within a plugin will contain the `id` value of the command. For example:
 
 ```python
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from logger import log
+
+
 class Protocol(BaseProtocol):
     RESPONDS_TO = [
         EventType.Name(EventType.REASON_FOR_VISIT_COMMAND__POST_UPDATE),
@@ -53,11 +59,17 @@ Using this value, the `Command` model can be queried to fetch additional data ab
 
 ```python
 import json
+from canvas_sdk.effects import Effect
+from canvas_sdk.protocols import BaseProtocol
 from canvas_sdk.v1.data.command import Command
+from logger import log
 
-command_instance = Command.objects.get(id=self.target)
-log.info(command_instance.schema_key)
-log.info(json.dumps(command_instance.data, indent=2))
+
+class Protocol(BaseProtocol):
+    def compute(self) -> list[Effect]:
+        command_instance = Command.objects.get(id=self.target)
+        log.info(command_instance.schema_key)
+        log.info(json.dumps(command_instance.data, indent=2))
 ```
 
 For example, for a _Reason For Visit_ command, the preceding code would log the following lines:

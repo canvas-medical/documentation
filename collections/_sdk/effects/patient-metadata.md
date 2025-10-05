@@ -154,6 +154,7 @@ class NarrativeMetadataExtractor(BaseHandler):
    # Storing JSON data
    import json
    from canvas_sdk.effects.patient_metadata import PatientMetadata
+
    metadata = PatientMetadata(
        patient_id="550e8400e29b41d4a716446655440000",
        key="result"
@@ -163,8 +164,10 @@ class NarrativeMetadataExtractor(BaseHandler):
    ```
 
 2. **Boolean Values**: Store as "true" or "false" strings for consistency
-   from canvas_sdk.effects.patient_metadata import PatientMetadata
    ```python
+   from canvas_sdk.effects.patient_metadata import PatientMetadata
+
+   patient_consented = False
    metadata = PatientMetadata(
        patient_id="550e8400e29b41d4a716446655440000",
        key="boolean_value"

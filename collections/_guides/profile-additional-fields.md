@@ -19,13 +19,15 @@ This guide explains how to create additional fields that will appear on the pati
 To create the form, we need to specify which items will be included. For this, we use the [`FormField`](/sdk/patient-metadata-create-form-effect/#formfield) class, where we can define our inputs and their attributes.
 
 ```python
-    FormField(
-        key='musicGenre',
-        label='Preferred music genre',
-        type=InputType.TEXT,
-        required=False,
-        editable=True,
-    ),
+from canvas_sdk.effects.patient_metadata import InputType, FormField
+
+FormField(
+    key='musicGenre',
+    label='Preferred music genre',
+    type=InputType.TEXT,
+    required=False,
+    editable=True,
+)
 ```
 
 #### 2. PatientMetadataCreateFormEffect
@@ -33,6 +35,8 @@ To create the form, we need to specify which items will be included. For this, w
 The next step is to add these fields to the effect so they can be used to build the form.
 
 ```python
+from canvas_sdk.effects.patient_metadata import PatientMetadataCreateFormEffect, InputType, FormField
+
 PatientMetadataCreateFormEffect(form_fields=[
     FormField(
         key='musicGenre',

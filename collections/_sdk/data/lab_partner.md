@@ -28,6 +28,8 @@ lab_partner = LabPartner.objects.get(id="your-uuid-here")
 You can also filter lab partners by attributes. For example, to list all active lab partners:
 
 ```python
+from canvas_sdk.v1.data.lab import LabPartner
+
 active_lab_partners = LabPartner.objects.filter(active=True)
 ```
 
