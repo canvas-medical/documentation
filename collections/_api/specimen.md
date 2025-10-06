@@ -7,7 +7,7 @@ sections:
         name: Specimen
         article: "a"
         description: >-
-          Sample to be used for analysis.<br><br>
+          A sample to be used for analysis.<br><br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-specimen.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-specimen.html)
         attributes:
           - name: resourceType
@@ -33,9 +33,6 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. `Patient`).
-              - name: display
-                type: string
-                description: Human-readable display name for the patient reference.
         search_parameters:
           - name: _id
             type: string
@@ -75,7 +72,6 @@ sections:
   "subject": {
     "reference": "Patient/1c8c6f27551d4d01aa3bf2477a4d5259",
     "type": "Patient",
-    "display": "Doe, Alex"
   }
 }
 ```
@@ -181,7 +177,6 @@ sections:
         "subject": {
           "reference": "Patient/1c8c6f27-551d4d01aa3bf2477a4d5259",
           "type": "Patient",
-          "display": "Doe, Alex"
         }
       }
     }
