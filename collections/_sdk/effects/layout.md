@@ -51,7 +51,7 @@ other context.
 Values in the `PatientChartSummaryConfiguration.Section` enum are:
 
 | Constant            | Description         |
-|---------------------|---------------------|
+| ------------------- | ------------------- |
 | SOCIAL_DETERMINANTS | social_determinants |
 | GOALS               | goals               |
 | CONDITIONS          | conditions          |
@@ -65,14 +65,14 @@ Values in the `PatientChartSummaryConfiguration.Section` enum are:
 | CODING_GAPS         | coding_gaps         |
 
 ### Action Buttons
-Each section of the patient chart can also be customized with action buttons. Please refer to the [Action Buttons](/sdk/handlers-action-buttons/) documentation for more information.
 
+Each section of the patient chart can also be customized with action buttons. Please refer to the [Action Buttons](/sdk/handlers-action-buttons/) documentation for more information.
 
 ## Patient Profile
 
-The ``PatientProfileConfiguration`` class allows you to reorder, hide, and/or specificy whether sections load expanded or collapsed.
+The `PatientProfileConfiguration` class allows you to reorder, hide, and/or specificy whether sections load expanded or collapsed.
 
-``` python
+```python
 import json
 
 from canvas_sdk.effects import Effect, EffectType
@@ -133,18 +133,21 @@ other context.
 
 Values in the `PatientProfileConfiguration.Section` enum are:
 
-| Constant | Description |
-| -------- | ----------- |
-| DEMOGRAPHICS | demographics |
-| PREFERENCES | preferences |
+| Constant             | Description          |
+| -------------------- | -------------------- |
+| DEMOGRAPHICS         | demographics         |
+| PREFERENCES          | preferences          |
 | PREFERRED_PHARMACIES | preferred_pharmacies |
-| PATIENT_CONSENTS | patient_consents |
-| CARE_TEAM | care_team |
-| PARENT_GUARDIAN | parent_guardian |
-| ADDRESSES | addresses |
-| TELECOM | telecom |
-| CONTACTS | contacts |
+| PATIENT_CONSENTS     | patient_consents     |
+| CARE_TEAM            | care_team            |
+| PARENT_GUARDIAN      | parent_guardian      |
+| ADDRESSES            | addresses            |
+| TELECOM              | telecom              |
+| CONTACTS             | contacts             |
 
+<br/>
+<br/>
+<br/>
 
 ## Panel Configuration
 
@@ -171,43 +174,42 @@ A PanelConfiguration effect consists of the following properties:
 
 ### Attributes
 
-| Attribute          | Type   | Description                                                  |
-|--------------------|--------|--------------------------------------------------------------|
-| `sections`         |`list[PanelPatientSection] or list[PanelGlobalSection]`   | list of section items. |
-| `page`             |`Page`                                                    | PATIENT or GLOBAL. |
-
+| Attribute  | Type                                                    | Description            |
+| ---------- | ------------------------------------------------------- | ---------------------- |
+| `sections` | `list[PanelPatientSection] or list[PanelGlobalSection]` | list of section items. |
+| `page`     | `Page`                                                  | PATIENT or GLOBAL.     |
 
 Values in the `PanelGlobalSection` enum are:
 
-| Constant | Description |
-| -------- | ----------- |
-| APPOINTMENT | appointment |
-| CHANGE_REQUEST | changeRequest |
-| IMAGING_REPORT | imagingReport |
-| INPATIENT_STAY | inpatientStay |
-| LAB_REPORT | labReport |
-| MESSAGE | message |
-| OUTSTANDING_REFERRAL | outstandingReferral |
-| PRESCRIPTION_ALERT | prescriptionAlert |
-| RECALL_APPOINTMENT | recallAppointment |
-| REFERRAL_REPORT | referralReport |
-| REFILL_REQUEST | refillRequest |
-| TASK | task |
+| Constant               | Description           |
+| ---------------------- | --------------------- |
+| APPOINTMENT            | appointment           |
+| CHANGE_REQUEST         | changeRequest         |
+| IMAGING_REPORT         | imagingReport         |
+| INPATIENT_STAY         | inpatientStay         |
+| LAB_REPORT             | labReport             |
+| MESSAGE                | message               |
+| OUTSTANDING_REFERRAL   | outstandingReferral   |
+| PRESCRIPTION_ALERT     | prescriptionAlert     |
+| RECALL_APPOINTMENT     | recallAppointment     |
+| REFERRAL_REPORT        | referralReport        |
+| REFILL_REQUEST         | refillRequest         |
+| TASK                   | task                  |
 | UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
 
 Values in the `PanelPatientSection` enum are:
 
-| Constant | Description |
-| -------- | ----------- |
-| CHANGE_REQUEST | changeRequest |
-| COMMAND | command |
-| IMAGING_REPORT | imagingReport |
-| INPATIENT_STAY | inpatientStay |
-| LAB_REPORT | labReport |
-| PRESCRIPTION_ALERT | prescriptionAlert |
-| REFERRAL_REPORT | referralReport |
-| REFILL_REQUEST | refillRequest |
-| TASK | task |
+| Constant               | Description           |
+| ---------------------- | --------------------- |
+| CHANGE_REQUEST         | changeRequest         |
+| COMMAND                | command               |
+| IMAGING_REPORT         | imagingReport         |
+| INPATIENT_STAY         | inpatientStay         |
+| LAB_REPORT             | labReport             |
+| PRESCRIPTION_ALERT     | prescriptionAlert     |
+| REFERRAL_REPORT        | referralReport        |
+| REFILL_REQUEST         | refillRequest         |
+| TASK                   | task                  |
 | UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
 
 ## Modals
@@ -241,6 +243,28 @@ The `LaunchModalEffect` class has the following properties:
   - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
 - **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 
+### Closing Modals from Applications
+
+When building applications with the Canvas SDK, you may encounter scenarios where you need to programmatically dismiss modals. This can be particularly useful in automated testing or when creating user flows that require closing modals based on certain conditions.When building applications with the Canvas SDK, you may encounter scenarios where you need to programmatically dismiss modals. This can be particularly useful in automated testing or when creating user flows that require closing modals based on certain conditions.
+
+Here's a simple example of how to dismiss modals from your applications using JavaScript.
+
+```html
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    window.postMessage({ type: "CLOSE_MODAL" }, "*");
+  });
+</script>
+```
+
+And that's it! This script listens for the `DOMContentLoaded` event and sends a message to close any open modals when the application loads. You can customize the event listener to trigger the modal dismissal based on your specific requirements.
+
+While developers might find odd to be sending a message to themselves, this is the current method supported by the Canvas SDK for dismissing modals, in order to avoid potential security issues with cross-origin messaging and flooding the main application with messages.
+
+This twist on the _Holywood Principle_ ensures that your application remains secure while still providing the functionality needed to manage modals effectively.
+
+<br/>
+<br/>
 
 ## Portal Landing Page Widgets
 
@@ -264,8 +288,8 @@ class PortalWidgetHandler:
 The `PortalWidget` class has the following properties:
 
 - **url**: A string containing the URL to load within the widget. If either `content` or `component` is specified, an error will be raised.
-- **content**: A string containing the content to be displayed directly within the widget. If either `url` or  `component` is provided, an error will be raised.
-- **component**: Choose one of ready-made widgets made by Canvas. If either `url` or  `content` is provided, an error will be raised. The available ready-made widgets include:
+- **content**: A string containing the content to be displayed directly within the widget. If either `url` or `component` is provided, an error will be raised.
+- **component**: Choose one of ready-made widgets made by Canvas. If either `url` or `content` is provided, an error will be raised. The available ready-made widgets include:
   - `APPOINTMENTS`: Displays upcoming appointments.
   - `MESSAGING`: Enables quick messaging.
 - **Size**: Determines the widget's layout on the frontend grid:
@@ -304,18 +328,20 @@ def render_to_string(template_name: str, context: dict[str, Any] | None = None) 
 
 Consider a simple HTML file named `templates/custom_content.html`:
 {% raw %}
+
 ```html
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>{{ title }}</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>{{ heading }}</h1>
     <p>{{ message }}</p>
-</body>
+  </body>
 </html>
 ```
+
 {% endraw %}
 
 This template uses Django template placeholders like {% raw %} `{{ title }}`, `{{ heading }}`, and `{{ message }}` {% endraw %} to dynamically render content based on the provided context.
@@ -372,6 +398,7 @@ class PortalWidgetHandler:
 ```
 
 ## Additional Configuration
+
 To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, additional security configurations must be specified in the `CANVAS_MANIFEST.json` file of your plugin.
 
 - **Allowing URLs**: URLs specified in the **url** property must be added to the `url_permissions` section of the `CANVAS_MANIFEST.json` in order for the URL to load properly.
@@ -384,19 +411,19 @@ The URLs must match the format available [here](https://developer.mozilla.org/en
 
 ```json
 {
-    "sdk_version": "0.1.4",
-    "plugin_version": "0.0.1",
-    "name": "custom_html",
-    "description": "...",
-    "url_permissions": [
-        {
-            "url": "https://example.com/info",
-            "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "CAMERA"]
-        },
-        {
-            "url": "https://d3js.org/d3.v4.js",
-            "permissions": ["SCRIPTS"]
-        }
-    ]
+  "sdk_version": "0.1.4",
+  "plugin_version": "0.0.1",
+  "name": "custom_html",
+  "description": "...",
+  "url_permissions": [
+    {
+      "url": "https://example.com/info",
+      "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "CAMERA"]
+    },
+    {
+      "url": "https://d3js.org/d3.v4.js",
+      "permissions": ["SCRIPTS"]
+    }
+  ]
 }
 ```
