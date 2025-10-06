@@ -97,7 +97,6 @@ sections:
                       - value: MENTPOL
                       - value: MENTPRG
                       - value: MILITARY
-                      - value: pay
                       - value: POS
                       - value: PPO
                       - value: PNC
@@ -155,7 +154,6 @@ sections:
                       - value: Mental health policy
                       - value: Mental health program
                       - value: Military health program
-                      - value: Pay
                       - value: Point of service policy
                       - value: Preferred provider organization policy
                       - value: Property and casualty insurance policy
