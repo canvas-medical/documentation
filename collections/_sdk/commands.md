@@ -576,7 +576,7 @@ structured = FollowUpCommand(
   comment='also wants to discuss treatment options'
 )
 
-# Example with a UUID string referencing a [Coding](#coding) record
+# Example with a UUID string referencing a Coding record
 structured2 = FollowUpCommand(
   note_uuid='rk786p',
   structured=True,
@@ -1424,7 +1424,7 @@ structured_rfv = ReasonForVisitCommand(
   comment='also wants to discuss treatment options'
 )
 
-# Example with a UUID string referencing a [Coding](#coding) record
+# Example with a UUID string referencing a Coding record
 structured_rfv2 = ReasonForVisitCommand(
   note_uuid='rk786p',
   structured=True,
