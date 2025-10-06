@@ -578,12 +578,18 @@ sdk_overview:
     url: /sdk/testing-utils/
 
 example_plugins:
-  - title: "AI Note Titles"
-    url: /sdk/example-ai_note_titles/
   - title: "API Samples"
     url: /sdk/example-api_samples/
+  - title: "Charting Interface"
+    identifier: charting
+  - title: "Patient Portal Customization"
+    identifier: portal_customization
+
+charting:
   - title: "Abnormal Lab Task Notification"
     url: /sdk/example-abnormal_lab_task_notification/
+  - title: "AI Note Titles"
+    url: /sdk/example-ai_note_titles/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
   - title: "Example Chart Application"
@@ -598,8 +604,6 @@ example_plugins:
     url: /sdk/example-upsert_patient_metadata/
   - title: "Vitals Visualizer"
     url: /sdk/example-vitals_visualizer_plugin/
-  - title: "Patient Portal Customization"
-    identifier: portal_customization
 
 portal_customization:
   - title: "Launch an Application"
