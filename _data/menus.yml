@@ -673,6 +673,9 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Send Contact Verification"
+    url: /sdk/effect-send-contact-verification/
+    description: Effect to send a verification message to a patient contact.
   - title: "Tasks"
     url: /sdk/effect-tasks/
     description: Create or update tasks.
@@ -729,6 +732,9 @@ data_module:
   - title: "Device"
     url: /sdk/data-device/
     description: Type of a manufactured item that is used in the provision of healthcare.
+  - title: "EligibilitySummary"
+    url: /sdk/data-coverage/#eligilibitysummary
+    description: Summary of copay and coinsurance for a Coverage.
   - title: "Encounter"
     url: /sdk/data-encounter/
     description: A patient Encounter connected to a Note in Canvas.

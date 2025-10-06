@@ -1901,9 +1901,13 @@ type: None</pre></td>
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>"id": user_selected_tasklabel_id
-"type": None</pre></td>
-      <td><pre>empty</pre></td>
+      <td><pre>"id": task_label_id
+"type": <a href='/sdk/data-task/#tasklabel/'>TaskLabel</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id
+"task":
+    "id": task_id
+"action": literal["add", "remove"]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17161,7 +17165,13 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     </tr>
     <tr>
       <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>
-      <td>Patient Profile is loading. See <a href="{% link _guides/profile-additional-fields.md %}" target="_blank">How to add patient profile additional fields</a> for examples of how to use this event.</td>
+      <td>Patient Profile is loading. See <a href="{% link _guides/profile-additional-fields.md %}" target="_blank">How to add patient profile additional fields</a> for examples of how to use this event.
+      <br />Context object: 
+      <pre>"patient": 
+    "id": str
+"user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
   </tbody>
 </table>
