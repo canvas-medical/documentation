@@ -68,6 +68,159 @@ def compute():
     return [existing_plan.edit(), new_plan.originate()]
 ```
 
+## Command Constants
+
+The `canvas_sdk.commands.constants` module provides essential classes and enumerations used across various Canvas SDK command implementations. These constants ensure consistency and provide structured data types for common medical and administrative elements.
+
+### ClinicalQuantity
+
+`ClinicalQuantity` represents detailed information about the form or unit of medication, particularly for prescription-related commands.
+
+| Field Name                      | Type     | Description                                           |
+|---------------------------------|----------|-------------------------------------------------------|
+| `representative_ndc`            | _string_ | National Drug Code (NDC) representing the medication. |
+| `ncpdp_quantity_qualifier_code` | _string_ | NCPDP code indicating the quantity qualifier.         |
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+from canvas_sdk.commands.constants import ClinicalQuantity
+
+# Using ClinicalQuantity in a prescription
+clinical_quantity = ClinicalQuantity(
+    representative_ndc="12843016128",
+    ncpdp_quantity_qualifier_code="C48542"
+)
+
+prescribe = PrescribeCommand(
+    note_uuid="rk786p",
+    fdb_code="216092",
+    icd10_codes=["R51"],
+    sig="Take one tablet daily after meals",
+    days_supply=30,
+    quantity_to_dispense=30,
+    type_to_dispense=clinical_quantity,
+    refills=3,
+    substitutions=PrescribeCommand.Substitutions.ALLOWED
+)
+```
+
+### ServiceProvider
+
+`ServiceProvider` represents detailed information about healthcare service providers, used in referral and imaging order commands.
+
+| Field Name       | Type               | Description                                            |
+|------------------|--------------------|--------------------------------------------------------|
+| `first_name`     | _string_           | Service provider's first name (max length 512)         |
+| `last_name`      | _string_           | Service provider's last name (max length 512)          |
+| `specialty`      | _string_           | Provider's specialty (max length 512)                  |
+| `practice_name`  | _string_           | Name of the practice (max length 512)                  |
+| `business_fax`   | _Optional[string]_ | Business fax number (optional, max length 512)         |
+| `business_phone` | _Optional[string]_ | Business phone number (optional, max length 512)       |
+| `business_address` | _Optional[string]_ | Business address (optional, max length 512)          |
+| `notes`          | _Optional[string]_ | Additional notes (optional, max length 512)            |
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands import ReferCommand
+from canvas_sdk.commands.constants import ServiceProvider
+
+# Creating a referral with service provider information
+service_provider = ServiceProvider(
+    first_name="John",
+    last_name="Smith",
+    specialty="Cardiology",
+    practice_name="Heart Health Center",
+    business_phone="555-0123",
+    business_address="123 Medical Plaza, Suite 100"
+)
+
+refer = ReferCommand(
+    note_uuid="rk786p",
+    diagnosis_codes=["E119"],
+    priority=ReferCommand.Priority.ROUTINE,
+    clinical_question=ReferCommand.ClinicalQuestion.DIAGNOSTIC_UNCERTAINTY,
+    notes_to_specialist="Patient needs cardiac evaluation",
+    service_provider=service_provider
+)
+```
+
+### CodeSystems
+
+`CodeSystems` provides standardized medical coding system identifiers used throughout Canvas for consistent medical code classification.
+
+**Available Code Systems**:
+
+| Code System    | Description                                                    |
+|----------------|----------------------------------------------------------------|
+| `ICD10`        | International Classification of Diseases, 10th Revision       |
+| `SNOMED`       | Systematized Nomenclature of Medicine Clinical Terms           |
+| `RXNORM`       | RxNorm - standardized nomenclature for medications            |
+| `UNSTRUCTURED` | Canvas-specific system for unstructured or custom codes       |
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands.constants import CodeSystems, Coding
+
+# Using different code systems
+icd10_coding = Coding(
+    system=CodeSystems.ICD10, 
+    code="E11.9", 
+    display="Type 2 diabetes mellitus without complications"
+)
+
+snomed_coding = Coding(
+    system=CodeSystems.SNOMED, 
+    code="65921008", 
+    display="Drink plenty of fluids"
+)
+
+unstructured_coding = Coding(
+    system=CodeSystems.UNSTRUCTURED, 
+    code="Custom instruction text"
+)
+```
+
+### Coding
+
+`Coding` represents a coded value from a medical terminology system, providing structured representation of medical concepts.
+
+| Field Name | Type     | Description                                    |
+|------------|----------|------------------------------------------------|
+| `system`   | _string_ | The coding system identifier (e.g., ICD-10, SNOMED) |
+| `code`     | _string_ | The specific code within the system            |
+| `display`  | _Optional[string]_ | Human-readable description of the code   |
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands import InstructCommand
+from canvas_sdk.commands.constants import CodeSystems, Coding
+
+# Using structured coding with SNOMED
+instruct_snomed = InstructCommand(
+    note_uuid="rk786p",
+    coding=Coding(
+        system=CodeSystems.SNOMED,
+        code="65921008",
+        display="Drink plenty of fluids"
+    ),
+    comment="To address mild dehydration symptoms"
+)
+
+# Using unstructured coding for custom instructions
+instruct_custom = InstructCommand(
+    note_uuid="rk786p",
+    coding=Coding(
+        system=CodeSystems.UNSTRUCTURED,
+        code="Physical medicine neuromuscular training"
+    )
+)
+```
+
 ## Command Actions
 
 All commands support user-triggered actions through the Canvas UI.
