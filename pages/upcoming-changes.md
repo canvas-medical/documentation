@@ -65,7 +65,7 @@ Stay up to date on the latest important dates for the Canvas platform.
         On the release date, several corrections will be made to the FHIR Coverage resource. The meaning of the <code>subscriberId</code> attribute in the resource is changing, resulting in the following updates:<br>
         <ul>
           <li>Insurance member ID will no longer be provided in the <code>subscriberId</code> attribute. The member ID will now be presented in the <code>identifier</code> attribute instead, and the <code>subscriberId</code> attribute will now represent the identifier for the subscriber, not the member. This will apply for create, read, update, and search endpoints.</li>
-          <li> The <code>subscriberid</code>  will represent a new optional field within Canvas 
+          <li>The <code>subscriberid</code> will represent a new optional field within Canvas.</li>
           <li>The <code>subscriberid</code> search parameter will no longer search member IDs; it will now instead search subscriber IDs. The new <code>identifier</code> search parameter will now search member IDs.</li>
         </ul>
         To facilitate this change, the following changes have already been made to FHIR Coverage resource and endpoints:
@@ -73,8 +73,14 @@ Stay up to date on the latest important dates for the Canvas platform.
           <li>The insurance member ID is being populated into and consumed from the <code>identifier</code> attribute.</li>
           <li>Member IDs can be searched using the new <code>identifier</code> search parameter.</li>
         </ul>
-      Examples and documentation for the <code>identifier</code> field are available in the <a href="/api/coverage/">FHIR Coverage API documentation</a>.<br><br>
-      API client code must be updated by the release date to avoid disruption.
+        Additionally, we will be making several corrections to code systems in Coverage resources that are returned by read/search endpoints, and consumed by create/update endpoints:
+        <ul>
+          <li><code>http://hl7.org/fhir/ValueSet/coverage-type</code> will be changing to either <code>http://terminology.hl7.org/CodeSystem/coverage-selfpay</code> (for code value <code>pay</code> or <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> (for all other codes).</li>
+          <li><code>http://hl7.org/fhir/ValueSet/subscriber-relationship</code> will be changing to <code>http://terminology.hl7.org/CodeSystem/subscriber-relationship</code></li>
+          <li><code>http://hl7.org/fhir/ValueSet/coverage-class</code> will be changing to <code>http://terminology.hl7.org/CodeSystem/coverage-class</code></li>
+        </ul>
+        Examples and documentation for the <code>identifier</code> field and the new code system values are available in the <a href="/api/coverage/">FHIR Coverage API documentation</a>.<br><br>
+        API client code must be updated by the release date to avoid disruption.
       </td>
       <td>10/14/25</td>
       <td></td>
