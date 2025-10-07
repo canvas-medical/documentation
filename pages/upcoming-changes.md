@@ -68,16 +68,17 @@ Stay up to date on the latest important dates for the Canvas platform.
           <li>The <code>subscriberid</code> will represent a new optional field within Canvas.</li>
           <li>The <code>subscriberid</code> search parameter will no longer search member IDs; it will now instead search subscriber IDs. The new <code>identifier</code> search parameter will now search member IDs.</li>
         </ul>
-        To facilitate this change, the following changes have already been made to FHIR Coverage resource and endpoints:
-        <ul>
-          <li>The insurance member ID is being populated into and consumed from the <code>identifier</code> attribute.</li>
-          <li>Member IDs can be searched using the new <code>identifier</code> search parameter.</li>
-        </ul>
         Additionally, we will be making several corrections to code systems in Coverage resources that are returned by read/search endpoints, and consumed by create/update endpoints:
         <ul>
           <li><code>http://hl7.org/fhir/ValueSet/coverage-type</code> will be changing to either <code>http://terminology.hl7.org/CodeSystem/coverage-selfpay</code> (for code value <code>pay</code> or <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> (for all other codes).</li>
           <li><code>http://hl7.org/fhir/ValueSet/subscriber-relationship</code> will be changing to <code>http://terminology.hl7.org/CodeSystem/subscriber-relationship</code></li>
           <li><code>http://hl7.org/fhir/ValueSet/coverage-class</code> will be changing to <code>http://terminology.hl7.org/CodeSystem/coverage-class</code></li>
+        </ul>
+        To facilitate these changes, the following changes have already been made to FHIR Coverage resource and endpoints:
+        <ul>
+          <li>The insurance member ID is being populated into and consumed from the <code>identifier</code> attribute.</li>
+          <li>Member IDs can be searched using the new <code>identifier</code> search parameter.</li>
+          <li>The correct codings listed above have been added to responses from read/search endpoints, and are being consumed by create/update endpoints. On the release date, the incorrect codings will be removed.</li>
         </ul>
         Examples and documentation for the <code>identifier</code> field and the new code system values are available in the <a href="/api/coverage/">FHIR Coverage API documentation</a>.<br><br>
         API client code must be updated by the release date to avoid disruption.
