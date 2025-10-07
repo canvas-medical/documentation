@@ -155,6 +155,9 @@ sections:
                       type: json
                       description: Amount of medication per dose.
                       attributes:
+                        - name: value
+                          description: Numerical value
+                          type: decimal
                         - name: unit
                           description: Unit representation. 
                           type: string
@@ -209,7 +212,7 @@ sections:
                 - value: filler-order
             type: string
           - name: patient
-            description: The patient reference associated to the Medication Request in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            description: The patient reference associated with the MedicationRequest in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
           - name: requester
             description: The Practitioner reference associated to the MedicationRequest.requester attribute in the format `Practitioner/6c20b7152cf7421791c5ab4113060b3f`.
@@ -308,6 +311,7 @@ sections:
             "doseAndRate": [
                 {
                     "doseQuantity": {
+                        "value": 5,
                         "unit": "Tablet"
                     }
                 }
@@ -483,6 +487,7 @@ sections:
                         "doseAndRate": [
                             {
                                 "doseQuantity": {
+                                    "value": 5,
                                     "unit": "Tablet"
                                 }
                             }
