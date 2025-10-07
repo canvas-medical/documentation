@@ -863,7 +863,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"patient":
   "id": pt_id
 "note":
-  "id": note_id</pre></td>
+  "uuid": note_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -884,7 +884,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"patient":
   "id": pt_id
 "note":
-  "id": note_id</pre></td>
+  "uuid": note_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2354,9 +2354,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -2364,7 +2364,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -2934,9 +2934,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -2944,7 +2944,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3336,9 +3336,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -3346,7 +3346,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -3764,9 +3764,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -3774,7 +3774,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4096,9 +4096,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -4106,7 +4106,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4433,9 +4433,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -4443,7 +4443,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -4789,9 +4789,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -4799,7 +4799,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5154,9 +5154,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -5164,7 +5164,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5510,9 +5510,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -5520,7 +5520,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -5899,9 +5899,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -5909,7 +5909,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -6309,9 +6309,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -6319,7 +6319,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
