@@ -62,7 +62,8 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td>FHIR API: Coverage member identifier moving from subscriberId attribute to identifier attribute</td>
       <td style="color: red;">Breaking Change</td>
       <td>
-        On the release date, several corrections will be made to the FHIR Coverage resource. The meaning of the <code>subscriberId</code> attribute in the resource is changing, resulting in the following updates:<br>
+        On the release date, several corrections will be made to the FHIR Coverage resource to comply with USCDI v3 requirements.<br><br>
+        The meaning of the <code>subscriberId</code> attribute in the resource is changing, resulting in the following updates:<br>
         <ul>
           <li>Insurance member ID will no longer be provided in the <code>subscriberId</code> attribute. The member ID will now be presented in the <code>identifier</code> attribute instead, and the <code>subscriberId</code> attribute will now represent the identifier for the subscriber, not the member. This will apply for create, read, update, and search endpoints.</li>
           <li>The <code>subscriberid</code> will represent a new optional field within Canvas.</li>
@@ -83,7 +84,7 @@ Stay up to date on the latest important dates for the Canvas platform.
         Examples and documentation for the <code>identifier</code> field and the new code system values are available in the <a href="/api/coverage/">FHIR Coverage API documentation</a>.<br><br>
         API client code must be updated by the release date to avoid disruption.
       </td>
-      <td>10/14/25</td>
+      <td>10/21/25</td>
       <td></td>
     </tr>
     <tr>
