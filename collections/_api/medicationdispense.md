@@ -24,7 +24,7 @@ sections:
               - value: entered-in-error
               - value: stopped
           - name: medicationCodeableConcept
-            description: Identifies the medication being requested. This is simply an attribute carrying a code that identifies the medication from a known list of medications.
+            description: Identifies the medication that was dispensed. This is simply an attribute carrying a code that identifies the medication from a known list of medications.
             type: json
             attributes:
                 - name: coding
