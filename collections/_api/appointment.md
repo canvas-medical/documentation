@@ -11,7 +11,7 @@ sections:
           [https://hl7.org/fhir/R4/appointment.html](https://hl7.org/fhir/R4/appointment.html)
           <br><br>
           This may result in one or more [Encounters](/api/encounter).<br><br>
-          The appointment resource maps to both [patient appointments](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management) as well as [other events](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management#scheduling-other-events-30) in Canvas. Instructions for configuring appointment and note types can be found [here](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types).
+          The appointment resource maps to both [patient appointments](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management) as well as [other events](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management#scheduling-other-events-30) in Canvas. Instructions for configuring event and note types can be found [here](https://canvas-medical.help.usepylon.com/articles/6785045644-appointment-event-note-types).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -145,7 +145,7 @@ sections:
           - name: appointmentType
             type: json
             description_for_all_endpoints: >-
-              The style of appointment or patient that has been booked in the slot (not service type). Canvas supports configurable [apppointment and note types](/documentation/appointment-and-note-types/).
+              The style of appointment or patient that has been booked in the slot (not service type). Canvas supports configurable [event and note types](https://canvas-medical.help.usepylon.com/articles/6785045644-appointment-event-note-types).
             create_description: >-
               There are a few things to note with this attribute: <br><br>
 
@@ -172,7 +172,7 @@ sections:
                   - name: code
                     description: >-
                       The code of the appointment. <br><br>
-                      This needs to match a coding in the Appointment and Note Types Canvas Settings and be deemed as Is Scheduleable.
+                      This needs to match a coding in the Event and Note Types Canvas Settings and be deemed as Is Scheduleable.
                     type: string
                   - name: display
                     exclude_in: create, update
