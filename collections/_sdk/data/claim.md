@@ -44,7 +44,7 @@ active_claims = Claim.objects.active()
 
 ### Claim
 
-Represents a complete healthcare claim.
+Represents a complete healthcare claim. Claim belongs to a Note and has a one-to-one relationship with a ClaimPatient.
 
 | Field Name                   | Type                                |
 |------------------------------|-------------------------------------|
@@ -72,6 +72,7 @@ Represents a complete healthcare claim.
 | created                      | DateTime                            |
 | modified                     | DateTime                            |
 | diagnosis\_codes             | [ClaimDiagnosisCode](#claimdiagnosiscode)[] |
+| patient                      | [ClaimPatient](#claimpatient)  |
 
 **Computed Properties**:
 
