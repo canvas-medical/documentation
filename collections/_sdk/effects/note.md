@@ -144,7 +144,7 @@ class Protocol(BaseHandler):
 
 ### Update Schedule Event
 
-Updates an existing schedule event by creating a new event and cancelling the original.
+Updates an existing schedule event in place.
 
 #### Attributes
 
@@ -180,6 +180,43 @@ class Protocol(BaseHandler):
         ]
 
         return [schedule_event_effect.update()]
+```
+
+### Reschedule Schedule Event
+
+Reschedules an existing schedule event by creating a new event and cancelling the original. This maintains the event history and ensures proper tracking of rescheduled events.
+
+#### Attributes
+
+| Attribute              | Type                                    | Description                             | Required |
+|------------------------|-----------------------------------------|-----------------------------------------|----------|
+| `instance_id`          | `UUID` or `str`                         | Identifier of the event to reschedule   | Yes      |
+| `start_time`           | `datetime.datetime`                     | New start time                          | No       |
+| `duration_minutes`     | `int`                                   | New duration in minutes                 | No       |
+| `description`          | `str` or `None`                         | Updated description                     | No       |
+| `practice_location_id` | `UUID` or `str`                         | New practice location                   | No       |
+| `provider_id`          | `str`                                   | New provider                            | No       |
+| `status`               | `AppointmentProgressStatus` or `None`   | Updated status                          | No       |
+| `external_identifiers` | `list[AppointmentIdentifier]` or `None` | Updated external identifiers            | No       |
+
+**Note**: At least one field (besides `instance_id`) must be modified.
+
+#### Example Usage
+
+```python
+import datetime
+
+from canvas_sdk.effects.note.appointment import ScheduleEvent
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
+        schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=3)
+        schedule_event_effect.duration_minutes = 45
+
+        return [schedule_event_effect.reschedule()]
 ```
 
 ### Delete Schedule Event
@@ -253,7 +290,7 @@ class Protocol(BaseHandler):
 
 ### Update Appointment
 
-Updates an existing appointment by creating a new appointment and cancelling the original. This maintains the appointment history and ensures proper tracking of rescheduled appointments.
+Updates an existing appointment in place.
 
 #### Attributes
 
@@ -287,6 +324,43 @@ class Protocol(BaseHandler):
         appointment_effect.meeting_link = "https://new-meeting-link.com"
 
         return appointment_effect.update()
+```
+
+### Reschedule Appointment
+
+Reschedules an existing appointment by creating a new appointment and cancelling the original. This maintains the appointment history and ensures proper tracking of rescheduled appointments.
+
+#### Attributes
+
+| Attribute                  | Type                                    | Description                          | Required |
+|----------------------------|-----------------------------------------|--------------------------------------|----------|
+| `instance_id`              | `UUID` or `str`                         | Identifier of appointment to reschedule | Yes   |
+| `start_time`               | `datetime.datetime`                     | New start time                       | No       |
+| `duration_minutes`         | `int`                                   | New duration in minutes              | No       |
+| `meeting_link`             | `str` or `None`                         | Updated meeting link                 | No       |
+| `practice_location_id`     | `UUID` or `str`                         | New practice location                | No       |
+| `provider_id`              | `str`                                   | New provider                         | No       |
+| `status`                   | `AppointmentProgressStatus` or `None`   | Updated status                       | No       |
+| `external_identifiers`     | `list[AppointmentIdentifier]` or `None` | Updated external identifiers         | No       |
+
+**Note**: At least one field (besides `instance_id`) must be modified. `patient_id` cannot be updated after creation.
+
+#### Example Usage
+
+```python
+import datetime
+
+from canvas_sdk.effects.note.appointment import Appointment
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        appointment_effect = Appointment(instance_id="existing-appointment-uuid")
+        appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
+        appointment_effect.duration_minutes = 60
+
+        return appointment_effect.reschedule()
 ```
 
 ### Cancel Appointment
