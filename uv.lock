@@ -2,7 +2,10 @@ version = 1
 requires-python = ">=3.11"
 
 [manifest]
-overrides = [{ name = "canvas", specifier = ">=0.64.0" }]
+overrides = [
+    { name = "canvas", specifier = ">=0.64.0" },
+    { name = "psycopg2", specifier = "==2.9.6" },
+]
 
 [[package]]
 name = "ai-scribe"
