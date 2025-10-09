@@ -71,7 +71,7 @@ Stay up to date on the latest important dates for the Canvas platform.
         </ul>
         Additionally, we will be making several corrections to code systems in Coverage resources that are returned by read/search endpoints, and consumed by create/update endpoints:
         <ul>
-          <li><code>http://hl7.org/fhir/ValueSet/coverage-type</code> will be changing to either <code>http://terminology.hl7.org/CodeSystem/coverage-selfpay</code> (for code value <code>pay</code> or <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> (for all other codes).</li>
+          <li><code>http://hl7.org/fhir/ValueSet/coverage-type</code> will be changing to either <code>http://terminology.hl7.org/CodeSystem/coverage-selfpay</code> (for code value <code>pay</code>) or <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> (for all other code values).</li>
           <li><code>http://hl7.org/fhir/ValueSet/subscriber-relationship</code> will be changing to <code>http://terminology.hl7.org/CodeSystem/subscriber-relationship</code></li>
           <li><code>http://hl7.org/fhir/ValueSet/coverage-class</code> will be changing to <code>http://terminology.hl7.org/CodeSystem/coverage-class</code></li>
         </ul>
