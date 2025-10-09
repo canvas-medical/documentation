@@ -82,7 +82,7 @@ Stay up to date on the latest important dates for the Canvas platform.
           <li>The correct codings listed above have been added to responses from read/search endpoints, and are being consumed by create/update endpoints. On the release date, the incorrect codings will be removed.</li>
         </ul>
         Examples and documentation for the <code>identifier</code> field and the new code system values are available in the <a href="/api/coverage/">FHIR Coverage API documentation</a>.<br><br>
-        API client code must be updated by the release date to avoid disruption.
+        <strong>API client code must be updated by the release date to avoid disruption.</strong>
       </td>
       <td>10/21/25</td>
       <td></td>
