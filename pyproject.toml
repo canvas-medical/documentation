@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [tool.uv]
-override-dependencies = ["canvas>=0.64.0"]
+override-dependencies = ["canvas>=0.64.0", "psycopg>=3.2.10"]
 
 [tool.uv.sources]
 ai-scribe = { git = "https://github.com/Medical-Software-Foundation/canvas.git", subdirectory = "extensions/ai-scribe", rev = "main" }
