@@ -68,6 +68,159 @@ def compute():
     return [existing_plan.edit(), new_plan.originate()]
 ```
 
+## Command Constants
+
+The `canvas_sdk.commands.constants` module provides essential classes and enumerations used across various Canvas SDK command implementations. These constants ensure consistency and provide structured data types for common medical and administrative elements.
+
+### ClinicalQuantity
+
+`ClinicalQuantity` represents detailed information about the form or unit of medication, particularly for prescription-related commands.
+
+| Field Name                      | Type     | Description                                           |
+|---------------------------------|----------|-------------------------------------------------------|
+| `representative_ndc`            | _string_ | National Drug Code (NDC) representing the medication. |
+| `ncpdp_quantity_qualifier_code` | _string_ | NCPDP code indicating the quantity qualifier.         |
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+from canvas_sdk.commands.constants import ClinicalQuantity
+
+# Using ClinicalQuantity in a prescription
+clinical_quantity = ClinicalQuantity(
+    representative_ndc="12843016128",
+    ncpdp_quantity_qualifier_code="C48542"
+)
+
+prescribe = PrescribeCommand(
+    note_uuid="rk786p",
+    fdb_code="216092",
+    icd10_codes=["R51"],
+    sig="Take one tablet daily after meals",
+    days_supply=30,
+    quantity_to_dispense=30,
+    type_to_dispense=clinical_quantity,
+    refills=3,
+    substitutions=PrescribeCommand.Substitutions.ALLOWED
+)
+```
+
+### ServiceProvider
+
+`ServiceProvider` represents detailed information about healthcare service providers, used in referral and imaging order commands.
+
+| Field Name       | Type               | Description                                            |
+|------------------|--------------------|--------------------------------------------------------|
+| `first_name`     | _string_           | Service provider's first name (max length 512)         |
+| `last_name`      | _string_           | Service provider's last name (max length 512)          |
+| `specialty`      | _string_           | Provider's specialty (max length 512)                  |
+| `practice_name`  | _string_           | Name of the practice (max length 512)                  |
+| `business_fax`   | _Optional[string]_ | Business fax number (optional, max length 512)         |
+| `business_phone` | _Optional[string]_ | Business phone number (optional, max length 512)       |
+| `business_address` | _Optional[string]_ | Business address (optional, max length 512)          |
+| `notes`          | _Optional[string]_ | Additional notes (optional, max length 512)            |
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands import ReferCommand
+from canvas_sdk.commands.constants import ServiceProvider
+
+# Creating a referral with service provider information
+service_provider = ServiceProvider(
+    first_name="John",
+    last_name="Smith",
+    specialty="Cardiology",
+    practice_name="Heart Health Center",
+    business_phone="555-0123",
+    business_address="123 Medical Plaza, Suite 100"
+)
+
+refer = ReferCommand(
+    note_uuid="rk786p",
+    diagnosis_codes=["E119"],
+    priority=ReferCommand.Priority.ROUTINE,
+    clinical_question=ReferCommand.ClinicalQuestion.DIAGNOSTIC_UNCERTAINTY,
+    notes_to_specialist="Patient needs cardiac evaluation",
+    service_provider=service_provider
+)
+```
+
+### CodeSystems
+
+`CodeSystems` provides standardized medical coding system identifiers used throughout Canvas for consistent medical code classification.
+
+**Available Code Systems**:
+
+| Code System    | Description                                                    |
+|----------------|----------------------------------------------------------------|
+| `ICD10`        | International Classification of Diseases, 10th Revision       |
+| `SNOMED`       | Systematized Nomenclature of Medicine Clinical Terms           |
+| `RXNORM`       | RxNorm - standardized nomenclature for medications            |
+| `UNSTRUCTURED` | Canvas-specific system for unstructured or custom codes       |
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands.constants import CodeSystems, Coding
+
+# Using different code systems
+icd10_coding = Coding(
+    system=CodeSystems.ICD10, 
+    code="E11.9", 
+    display="Type 2 diabetes mellitus without complications"
+)
+
+snomed_coding = Coding(
+    system=CodeSystems.SNOMED, 
+    code="65921008", 
+    display="Drink plenty of fluids"
+)
+
+unstructured_coding = Coding(
+    system=CodeSystems.UNSTRUCTURED, 
+    code="Custom instruction text"
+)
+```
+
+### Coding
+
+`Coding` represents a coded value from a medical terminology system, providing structured representation of medical concepts.
+
+| Field Name | Type     | Description                                    |
+|------------|----------|------------------------------------------------|
+| `system`   | _string_ | The coding system identifier (e.g., ICD-10, SNOMED) |
+| `code`     | _string_ | The specific code within the system            |
+| `display`  | _Optional[string]_ | Human-readable description of the code   |
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands import InstructCommand
+from canvas_sdk.commands.constants import CodeSystems, Coding
+
+# Using structured coding with SNOMED
+instruct_snomed = InstructCommand(
+    note_uuid="rk786p",
+    coding=Coding(
+        system=CodeSystems.SNOMED,
+        code="65921008",
+        display="Drink plenty of fluids"
+    ),
+    comment="To address mild dehydration symptoms"
+)
+
+# Using unstructured coding for custom instructions
+instruct_custom = InstructCommand(
+    note_uuid="rk786p",
+    coding=Coding(
+        system=CodeSystems.UNSTRUCTURED,
+        code="Physical medicine neuromuscular training"
+    )
+)
+```
+
 ## Command Actions
 
 All commands support user-triggered actions through the Canvas UI.
@@ -405,7 +558,7 @@ family_history = FamilyHistoryCommand(
 | `structured`     | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
 | `requested_date` | _date_                   | `false`                   | The desired follow up date.                                                                                                                                                                                                |
 | `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment.                                                                                                                                                                                           |
-| `coding`         | _Coding_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full Coding object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a Coding is provided, it is validated against existing records |
+| `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing records |
 | `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
 
 **Example**:
@@ -527,7 +680,7 @@ hpi = HistoryOfPresentIllnessCommand(
 | `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order.                          |
 | `priority`              | _Priority enum_   | `false`  | Priority of the imaging order. Must be one of `ImagingOrderCommand.Priority`. |
 | `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              |
-| `service_provider`      | _ServiceProvider_ | `true`   | Service provider of the imaging order.                                        |
+| `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order.                                        |
 | `comment`               | _string_          | `false`  | Additional comments.                                                          |
 | `ordering_provider_key` | _string_          | `true`   | The key for the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
@@ -552,21 +705,6 @@ hpi = HistoryOfPresentIllnessCommand(
 |:----------|:---------------------------|
 | `ROUTINE` | Indicates a routine order. |
 | `URGENT`  | Indicates un urgent order. |
-
-**`ServiceProvider`**:
-
-Represents the detailed information of the service provider.
-
-| Field Name       | Type               | Description                                            |
-|------------------|--------------------|--------------------------------------------------------|
-| first_name       | _string_           | Service provider's first name (max length 512)         |
-| last_name        | _string_           | Service provider's last name (max length 512)          |
-| specialty        | _string_           | Provider's specialty (max length 512)                  |
-| practice_name    | _string_           | Name of the practice (max length 512)                  |
-| business_fax     | _Optional[string]_ | Business fax number (optional, max length 512)         |
-| business_phone   | _Optional[string]_ | Business phone number (optional, max length 512)       |
-| business_address | _Optional[string]_ | Business address (optional, max length 512)            |
-| notes            | _Optional[string]_ | Additional notes (optional, max length 512)            |
 
 **Example**:
 
@@ -629,7 +767,7 @@ immunization_statement = ImmunizationStatementCommand(
 
 | Name      | Type       | Required | Description                                                           |
 |-----------|------------|----------|-----------------------------------------------------------------------|
-| `coding`  | __Coding__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. |
+| `coding`  | __[Coding](#coding)__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. |
 | `comment` | _string_   | `false`  | Additional comments related to the instruction.                       |
 
 **Example**:
@@ -869,7 +1007,7 @@ plan = PlanCommand(
 | `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication.              |
 | `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
 | `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                               |
-| `type_to_dispense`          | _ClinicalQuantity_            | `true`** | Information about the form or unit of the medication to dispense.   |
+| `type_to_dispense`          | _[ClinicalQuantity](#clinicalquantity)_            | `true`** | Information about the form or unit of the medication to dispense.   |
 | `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription.                     |
 | `substitutions`             | _Substitutions Enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed.  |
 | `pharmacy`                  | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. |
@@ -879,7 +1017,7 @@ plan = PlanCommand(
 
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
 
-**`ClinicalQuantity` is only required when `fdb_code` is provided. It is optional for compound medications.
+**[ClinicalQuantity](#clinicalquantity) is only required when `fdb_code` is provided. It is optional for compound medications.
 
 **Command-specific actions**:
 
@@ -898,14 +1036,6 @@ plan = PlanCommand(
 | `ALLOWED`     | `"allowed"`     | Generic or substitute medications are permitted. |
 | `NOT_ALLOWED` | `"not_allowed"` | Only the prescribed brand is allowed.            |
 
-**ClinicalQuantity**:
-
-Represents the detailed information about the form or unit of the medication.
-
-| Field Name                      | Type     | Description                                           |
-|---------------------------------|----------|-------------------------------------------------------|
-| `representative_ndc`            | _string_ | National Drug Code (NDC) representing the medication. |
-| `ncpdp_quantity_qualifier_code` | _string_ | NCPDP code indicating the quantity qualifier.         |
 
 **CompoundMedicationData**:
 Data for creating a compound medication inline within a prescription.
@@ -1279,7 +1409,7 @@ class Protocol(BaseHandler):
 | Name         | Type                     | Required                  | Description                                                                                                                                                                                                                |
 |:-------------|:-------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `structured` | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
-| `coding`     | _Coding_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full Coding object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a Coding is provided, it is validated against existing records |
+| `coding`     | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing records |
 | `comment`    | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
 
 **Example**:
@@ -1314,7 +1444,7 @@ unstructured_rfv = ReasonForVisitCommand(
 
 | Name                  | Type                    | Required | Description                                                                                  |
 |:----------------------|:------------------------|:---------|:---------------------------------------------------------------------------------------------|
-| `service_provider`    | _ServiceProvider_       | `true`   | The service provider associated with the referral command.                                   |
+| `service_provider`    | _[ServiceProvider](#serviceprovider)_       | `true`   | The service provider associated with the referral command.                                   |
 | `diagnosis_codes`     | _list[string]_          | `true`   | A list of relevant ICD-10 Diagnosis.                                                         |
 | `clinical_question`   | _ClinicalQuestion enum_ | `true`   | The clinical question prompting the referral. Must be one of `ReferCommand.ClinicalQuestion` |
 | `priority`            | _Priority enum_         | `false`  | Priority of the imaging order. Must be one of `ReferCommand.Priority`.                       |
@@ -1351,21 +1481,6 @@ unstructured_rfv = ReasonForVisitCommand(
 | SPECIALIZED_INTERVENTION           | Specialized intervention               |
 | DIAGNOSTIC_UNCERTAINTY             | Diagnostic Uncertainty                 |
 
-
-**`ServiceProvider`**:
-
-Represents the detailed information of the service provider.
-
-| Field Name       | Type               | Description                                            |
-|------------------|--------------------|--------------------------------------------------------|
-| first_name       | _string_           | Service provider's first name (max length 512)         |
-| last_name        | _string_           | Service provider's last name (max length 512)          |
-| specialty        | _string_           | Provider's specialty (max length 512)                  |
-| practice_name    | _string_           | Name of the practice (max length 512)                  |
-| business_fax     | _Optional[string]_ | Business fax number (optional, max length 512)         |
-| business_phone   | _Optional[string]_ | Business phone number (optional, max length 512)       |
-| business_address | _Optional[string]_ | Business address (optional, max length 512)            |
-| notes            | _Optional[string]_ | Additional notes (optional, max length 512)            |
 
 **Example**:
 
