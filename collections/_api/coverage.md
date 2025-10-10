@@ -59,70 +59,72 @@ sections:
                     description: The system url of the coding.
                     required_in: create,update
                     enum_options:
-                      - value: http://hl7.org/fhir/ValueSet/coverage-type
+                      - value: http://terminology.hl7.org/CodeSystem/coverage-selfpay
+                      - value: http://terminology.hl7.org/CodeSystem/v3-ActCode
                     type: string
                   - name: code
                     description: The code of the coverage type.
                     type: string
                     required_in: create,update
                     enum_options:
-                       - value: ANNU
-                       - value: AUTOPOL
-                       - value: CHAR
-                       - value: COL
-                       - value: CRIME
-                       - value: DENTAL
-                       - value: DENTPRG
-                       - value: DIS
-                       - value: DISEASE
-                       - value: DRUGPOL
-                       - value: EAP
-                       - value: EWB
-                       - value: ENDRENAL
-                       - value: EHCPOL
-                       - value: FLEXP
-                       - value: GOVEMP
-                       - value: HIP
-                       - value: HMO
-                       - value: HSAPOL
-                       - value: HIRISK
-                       - value: HIVAIDS
-                       - value: IND
-                       - value: LIFE
-                       - value: LTC
-                       - value: MCPOL
-                       - value: MANDPOL
-                       - value: MENTPOL
-                       - value: MENTPRG
-                       - value: MILITARY
-                       - value: pay
-                       - value: POS
-                       - value: PPO
-                       - value: PNC
-                       - value: DISEASEPRG
-                       - value: PUBLICPOL
-                       - value: REI
-                       - value: RETIRE
-                       - value: SAFNET
-                       - value: SOCIAL
-                       - value: SUBSIDIZ
-                       - value: SUBSIDMC
-                       - value: SUBSUPP
-                       - value: SUBPOL
-                       - value: SUBPRG
-                       - value: SURPL
-                       - value: TLIFE
-                       - value: UMBRL
-                       - value: UNINSMOT
-                       - value: ULIFE
-                       - value: VET
-                       - value: VISPOL
-                       - value: CANPRG
-                       - value: WCBPOL
+                      - value: pay
+                      - value: ANNU
+                      - value: AUTOPOL
+                      - value: CHAR
+                      - value: COL
+                      - value: CRIME
+                      - value: DENTAL
+                      - value: DENTPRG
+                      - value: DIS
+                      - value: DISEASE
+                      - value: DRUGPOL
+                      - value: EAP
+                      - value: EWB
+                      - value: ENDRENAL
+                      - value: EHCPOL
+                      - value: FLEXP
+                      - value: GOVEMP
+                      - value: HIP
+                      - value: HMO
+                      - value: HSAPOL
+                      - value: HIRISK
+                      - value: HIVAIDS
+                      - value: IND
+                      - value: LIFE
+                      - value: LTC
+                      - value: MCPOL
+                      - value: MANDPOL
+                      - value: MENTPOL
+                      - value: MENTPRG
+                      - value: MILITARY
+                      - value: POS
+                      - value: PPO
+                      - value: PNC
+                      - value: DISEASEPRG
+                      - value: PUBLICPOL
+                      - value: REI
+                      - value: RETIRE
+                      - value: SAFNET
+                      - value: SOCIAL
+                      - value: SUBSIDIZ
+                      - value: SUBSIDMC
+                      - value: SUBSUPP
+                      - value: SUBPOL
+                      - value: SUBPRG
+                      - value: SURPL
+                      - value: TLIFE
+                      - value: UMBRL
+                      - value: UNINSMOT
+                      - value: ULIFE
+                      - value: VET
+                      - value: VISPOL
+                      - value: CANPRG
+                      - value: WCBPOL
                   - name: display
                     description: The display name of the coding.
                     type: string
                     enum_options:
+                      - value: Pay
                       - value: Annuity policy
                       - value: Automobile
                       - value: Charity program
@@ -152,7 +154,6 @@ sections:
                       - value: Mental health policy
                       - value: Mental health program
                       - value: Military health program
-                      - value: Pay
                       - value: Point of service policy
                       - value: Preferred provider organization policy
                       - value: Property and casualty insurance policy
@@ -223,7 +224,7 @@ sections:
                     description: The system url of the coding.
                     required_in: create,update
                     enum_options:
-                      - value: http://hl7.org/fhir/ValueSet/subscriber-relationship
+                      - value: http://terminology.hl7.org/CodeSystem/subscriber-relationship
                     type: string
                   - name: code
                     description: The code of the relationship.
@@ -358,7 +359,7 @@ sections:
                         description: The system url of the coding.
                         required_in: create,update
                         enum_options:
-                          - value: http://hl7.org/fhir/ValueSet/coverage-class
+                          - value: http://terminology.hl7.org/CodeSystem/coverage-class
                         type: string
                       - name: code
                         description: The code of the class.
@@ -449,7 +450,7 @@ curl --request POST \
   "type": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
         "code": "MILITARY",
         "display": "military health program"
       }
@@ -465,7 +466,7 @@ curl --request POST \
   "relationship": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
         "code": "self"
       }
     ]
@@ -486,7 +487,7 @@ curl --request POST \
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "plan"
           }
         ]
@@ -497,7 +498,7 @@ curl --request POST \
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "subplan"
           }
         ]
@@ -508,7 +509,7 @@ curl --request POST \
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "group"
           }
         ]
@@ -519,7 +520,7 @@ curl --request POST \
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "subgroup"
           }
         ]
@@ -559,7 +560,7 @@ payload = {
   "type": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
         "code": "MILITARY",
         "display": "military health program"
       }
@@ -571,7 +572,7 @@ payload = {
   "relationship": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
         "code": "self"
       }
     ]
@@ -592,7 +593,7 @@ payload = {
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "plan"
           }
         ]
@@ -603,7 +604,7 @@ payload = {
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "subplan"
           }
         ]
@@ -614,7 +615,7 @@ payload = {
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "group"
           }
         ]
@@ -625,7 +626,7 @@ payload = {
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "subgroup"
           }
         ]
@@ -685,7 +686,7 @@ print(response.text)
   "type": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
         "code": "MILITARY",
         "display": "Military health program"
       }
@@ -703,7 +704,7 @@ print(response.text)
   "relationship": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
         "code": "self",
         "display": "Self"
       }
@@ -725,7 +726,7 @@ print(response.text)
         "type": {
           "coding": [
             {
-              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+              "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
               "code": "plan"
             }
           ]
@@ -736,7 +737,7 @@ print(response.text)
         "type": {
           "coding": [
             {
-              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+              "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
               "code": "subplan"
             }
           ]
@@ -747,7 +748,7 @@ print(response.text)
         "type": {
           "coding": [
             {
-              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+              "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
               "code": "group"
             }
           ]
@@ -758,7 +759,7 @@ print(response.text)
         "type": {
           "coding": [
             {
-              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+              "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
               "code": "subgroup"
             }
           ]
@@ -856,7 +857,7 @@ curl --request PUT \
   "type": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
         "code": "MILITARY",
         "display": "military health program"
       }
@@ -872,7 +873,7 @@ curl --request PUT \
   "relationship": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
         "code": "self"
       }
     ]
@@ -893,7 +894,7 @@ curl --request PUT \
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "plan"
           }
         ]
@@ -904,7 +905,7 @@ curl --request PUT \
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "subplan"
           }
         ]
@@ -915,7 +916,7 @@ curl --request PUT \
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "group"
           }
         ]
@@ -926,7 +927,7 @@ curl --request PUT \
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "subgroup"
           }
         ]
@@ -966,7 +967,7 @@ payload = {
   "type": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
         "code": "MILITARY",
         "display": "military health program"
       }
@@ -978,7 +979,7 @@ payload = {
   "relationship": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
         "code": "self"
       }
     ]
@@ -999,7 +1000,7 @@ payload = {
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "plan"
           }
         ]
@@ -1010,7 +1011,7 @@ payload = {
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "subplan"
           }
         ]
@@ -1021,7 +1022,7 @@ payload = {
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "group"
           }
         ]
@@ -1032,7 +1033,7 @@ payload = {
       "type": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
+            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
             "code": "subgroup"
           }
         ]
@@ -1120,7 +1121,7 @@ print(response.text)
         "relationship": {
           "coding": [
             {
-              "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
               "code": "self",
               "display": "Self"
             }
@@ -1171,7 +1172,7 @@ print(response.text)
         "relationship": {
           "coding": [
             {
-              "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
+              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
               "code": "self",
               "display": "Self"
             }

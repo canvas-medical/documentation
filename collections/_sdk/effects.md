@@ -242,6 +242,9 @@ The following effects are available to be applied in Canvas.
 | APPOINTMENT__FORM__REASON_FOR_VISIT__POST_SEARCH_RESULTS | Can be used to modify the reason for visit field in the appointment scheduling form after a search is performed                                                                                             |
 | APPOINTMENT__FORM__CREATE_ADDITIONAL_FIELDS              | Can be used to show additional fields on the appointment scheduling form                                                                                                                                    |
 | UPSERT_APPOINTMENT_METADATA                              | Can be used to add additional metadata when creating or updating an appointment                                                                                                                             |
+| RESCHEDULE_APPOINTMENT                                   | Can be used to reschedule an appointment. Check out [Appointment Effects](/sdk/effect-notes/#reschedule-appointment).                                                                                       |
+| RESCHEDULE_SCHEDULE_EVENT                                | Can be used to reschedule a schedule event. Check out [Schedule Event Effects](/sdk/effect-notes/#reschedule-schedule-event).                                                                               |
+| APPOINTMENT__SLOTS__POST_SEARCH_RESULTS                  | Can be used to modify slot availability when scheduling an appointment                                                                                                                                      |
 
 <br/>
 <br/>

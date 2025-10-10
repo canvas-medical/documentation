@@ -578,6 +578,26 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <thead>
+    <tr><th colspan="2">APPOINTMENT__SLOTS__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when requesting slot availability when scheduling an appointment.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre></pre></td>
+       <td>
+        <pre>"slots_by_provider": list[dict]</pre>
+        <pre>"selected_values": dict</pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">APPOINTMENT__FORM__PROVIDERS__PRE_SEARCH</th></tr>
     <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
   </thead>
@@ -589,6 +609,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+      <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -607,7 +628,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"providers": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -625,6 +647,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -643,7 +666,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"locations": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -661,6 +685,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -679,7 +704,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"visit_types": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -697,6 +723,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -715,7 +742,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"durations": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -733,6 +761,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -751,7 +780,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"reason_for_visit": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -769,6 +799,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
