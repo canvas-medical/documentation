@@ -39,6 +39,11 @@ from canvas_sdk.handlers.payment_processors.card import CardPaymentProcessor
 In the plugin, this is implemented as:
 
 ```python
+from canvas_sdk.handlers.payment_processors.card import (
+    CardPaymentProcessor,
+)
+
+
 class PayTheoryPaymentProcessor(CardPaymentProcessor):
     ...  # Your implementation here
 ```
@@ -66,6 +71,11 @@ Triggered when a user selects the credit card payment option.
 This method should return the HTML form used to collect and tokenize the payment details.
 
 ```python
+from canvas_sdk.effects.payment_processor import PaymentProcessorForm
+from canvas_sdk.templates import render_to_string
+from canvas_sdk.v1.data import Patient
+
+
 def payment_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
     content = render_to_string("templates/payment_form.html")
     return PaymentProcessorForm(intent="pay", content=content)
@@ -79,6 +89,11 @@ Triggered when a user initiates the process of adding a new card to a patient's 
 This method should return the HTML form used to collect and tokenize the new card information.
 
 ```python
+from canvas_sdk.effects.payment_processor import PaymentProcessorForm
+from canvas_sdk.templates import render_to_string
+from canvas_sdk.v1.data import Patient
+
+
 def add_payment_method_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
     content = render_to_string(
         "templates/add_card_form.html",
@@ -94,6 +109,15 @@ def add_payment_method_form(self, patient: Patient | None = None) -> PaymentProc
 Handles the actual payment. This method is triggered after tokenization and is responsible for charging the card:
 
 ```python
+from decimal import Decimal
+from canvas_sdk.effects.payment_processor import (
+  CardTransaction, 
+  PaymentProcessorForm
+)
+from canvas_sdk.templates import render_to_string
+from canvas_sdk.v1.data import Patient
+
+
 def charge(self, token: str, patient: Patient, amount: Decimal) -> CardTransaction:
     payload = {
         "token": token,
@@ -119,6 +143,10 @@ These methods define how Canvas lists, stores, and deletes saved cards associate
 #### 4.1 List
 
 ```python
+from canvas_sdk.effects.payment_processor import PaymentMethod
+from canvas_sdk.v1.data import Patient
+
+
 def list_payment_methods(self, patient: Patient) -> list[PaymentMethod]:
    return [
             PaymentMethod(
@@ -136,15 +164,23 @@ def list_payment_methods(self, patient: Patient) -> list[PaymentMethod]:
 #### 4.2. Add
 
 ```python
+from canvas_sdk.effects.payment_processor import AddPaymentMethodResponse
+from canvas_sdk.v1.data import Patient
+
+
 def add_payment_method(self, token: str, patient: Patient) -> AddPaymentMethodResponse:
-    return AddPaymentMethodResponse(success=success)
+    return AddPaymentMethodResponse(success=True)
 ```
 
 #### 4.3. Remove
 
 ```python
+from canvas_sdk.effects.payment_processor import RemovePaymentMethodResponse
+from canvas_sdk.v1.data import Patient
+
+
 def remove_payment_method(self, payment_method_id: str, patient: Patient) -> RemovePaymentMethodResponse:
-    return RemovePaymentMethodResponse(success=success)
+    return RemovePaymentMethodResponse(success=True)
 ```
 
 ---
