@@ -633,17 +633,37 @@ imaging_order = ImagingOrderCommand(
 
 **Command-specific parameters**:
 
-| Name               | Type    | Required | Description                                                      |
-|--------------------|---------|----------|------------------------------------------------------------------|
-| `cpt_code`         | _string_| `true`   | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation. |
-| `cvx_code`         | _string_| `true`   | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation. |
-| `approximate_date` | _date_  | `false`  | The approximate date when the immunization was administered.     |
-| `comments`         | _string_| `false`  | Additional comments about the immunization (max 255 characters). |
+| Name               | Type                 | Required | Description                                                                                                         |
+|--------------------|----------------------|----------|---------------------------------------------------------------------------------------------------------------------|
+| `cpt_code`         | _string_ or _Coding_ | `false`* | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation. |
+| `cvx_code`         | _string_ or _Coding_ | `false`* | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation.   |
+| `unstructured`     | _Coding_             | `false`* | Free-text immunization description.                                                                                 |
+| `approximate_date` | _date_               | `false`  | The approximate date when the immunization was administered.                                                        |
+| `comments`         | _string_             | `false`  | Additional comments about the immunization (max 255 characters).                                                    |
 
-**Example**:
+*Must provide either both `cpt_code` and `cvx_code` together, or `unstructured` alone (cannot mix structured and unstructured).
+
+**Coding Support**:
+
+The `cpt_code` and `cvx_code` parameters accept either:
+- **String**: Looks up the code in the respective system (CPT or CVX)
+- **Coding object**: Allows structured coding
+  - `cpt_code` must use system: `CPT`
+  - `cvx_code` must use system: `CVX`
+  - Required fields: `system`, `code`
+  - Optional field: `display`
+
+The `unstructured` parameter:
+- **Coding object**: For free-text immunizations
+  - Required system: `UNSTRUCTURED`
+  - Required fields: `system`, `code`
+  - Optional field: `display`
+
+**Examples**:
 
 ```python
 from canvas_sdk.commands.commands.immunization_statement import ImmunizationStatementCommand
+from canvas_sdk.commands.constants import CodeSystems, Coding
 from datetime import date
 
 immunization_statement = ImmunizationStatementCommand(
@@ -651,6 +671,29 @@ immunization_statement = ImmunizationStatementCommand(
     cvx_code="88",
     approximate_date=date(2024, 1, 15),
     comments="Patient received influenza vaccine"
+)
+
+# Using Coding objects for structured codes
+immunization_statement_coded = ImmunizationStatementCommand(
+    cpt_code=Coding(
+        system=CodeSystems.CPT,
+        code="90724"
+    ),
+    cvx_code=Coding(
+        system=CodeSystems.CVX,
+        code="88"
+    ),
+    approximate_date=date(2024, 1, 15),
+    comments="Patient received influenza vaccine"
+)
+
+# Using unstructured (free text immunization)
+immunization_statement_unstructured = ImmunizationStatementCommand(
+    unstructured=Coding(
+        system=CodeSystems.UNSTRUCTURED,
+        code="COVID-19 booster at pharmacy"
+    ),
+    approximate_date=date(2024, 1, 15)
 )
 ```
 
