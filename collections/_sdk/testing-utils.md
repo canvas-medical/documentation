@@ -45,6 +45,8 @@ Add the following to your `pyproject.toml`:
 
 ```toml
 [project]
+name = "canvas-plugins"
+version = "1.0"
 dependencies = [
     "canvas[test-utils]",
     # other dependencies...
