@@ -20,7 +20,7 @@ Creates a new note. Can be passed an optional UUID as `instance_id` from the `uu
 #### Attributes
 
 | Attribute              | Type                | Description                          | Required |
-|------------------------|---------------------|--------------------------------------|----------|
+| ---------------------- | ------------------- | ------------------------------------ | -------- |
 | `instance_id`          | `UUID` or `str`     | Identifier for the note              | No       |
 | `note_type_id`         | `UUID` or `str`     | Identifier for the note type         | Yes      |
 | `datetime_of_service`  | `datetime.datetime` | When the service was provided        | Yes      |
@@ -63,13 +63,13 @@ Updates an existing note. Only certain fields can be modified after creation.
 
 #### Attributes
 
-| Attribute              | Type                | Description                          | Required | Updatable |
-|------------------------|---------------------|--------------------------------------|----------|-----------|
-| `instance_id`          | `UUID` or `str`     | Identifier of the note to update     | Yes      | No        |
-| `title`                | `str` or `None`     | Updated title for the note           | No       | Yes       |
-| `datetime_of_service`  | `datetime.datetime` | Updated service date/time            | No       | Yes       |
-| `practice_location_id` | `UUID` or `str`     | Updated practice location            | No       | Yes       |
-| `provider_id`          | `str`               | Updated provider                     | No       | Yes       |
+| Attribute              | Type                | Description                      | Required | Updatable |
+| ---------------------- | ------------------- | -------------------------------- | -------- | --------- |
+| `instance_id`          | `UUID` or `str`     | Identifier of the note to update | Yes      | No        |
+| `title`                | `str` or `None`     | Updated title for the note       | No       | Yes       |
+| `datetime_of_service`  | `datetime.datetime` | Updated service date/time        | No       | Yes       |
+| `practice_location_id` | `UUID` or `str`     | Updated practice location        | No       | Yes       |
+| `provider_id`          | `str`               | Updated provider                 | No       | Yes       |
 
 **Note**: `patient_id` and `note_type_id` cannot be updated after creation.
 
@@ -91,6 +91,33 @@ class Protocol(BaseHandler):
         return [note_effect.update()]
 ```
 
+### Push Charges
+
+Pushes the charges from the Note to its associated Claim in the Revenue module. Has the exact same effect as clicking on the `Push charges` button in the Note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to update | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note, and its NoteTypeVersion must have `is_billable` = True.
+
+#### Example Usage
+
+```python
+import datetime
+
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.push_charges()]
+```
+
 ---
 
 ## ScheduleEvent Effect
@@ -100,7 +127,7 @@ The `ScheduleEvent` effect enables creating, updating, and deleting schedule eve
 ### Attributes
 
 | Attribute              | Type                                    | Description                                                         | Required    |
-|------------------------|-----------------------------------------|---------------------------------------------------------------------|-------------|
+| ---------------------- | --------------------------------------- | ------------------------------------------------------------------- | ----------- |
 | `note_type_id`         | `UUID` or `str`                         | Identifier for the note type (must be of category `SCHEDULE_EVENT`) | Yes         |
 | `patient_id`           | `str` or `None`                         | Identifier for the patient (if applicable)                          | Conditional |
 | `description`          | `str` or `None`                         | Custom description for the event                                    | Conditional |
@@ -148,15 +175,15 @@ Updates an existing schedule event in place.
 
 #### Attributes
 
-| Attribute              | Type                                    | Description                          | Required |
-|------------------------|-----------------------------------------|--------------------------------------|----------|
-| `instance_id`          | `UUID` or `str`                         | Identifier of the event to update    | Yes      |
-| `start_time`           | `datetime.datetime`                     | New start time                       | No       |
-| `duration_minutes`     | `int`                                   | New duration in minutes              | No       |
-| `description`          | `str` or `None`                         | Updated description                  | No       |
-| `practice_location_id` | `UUID` or `str`                         | New practice location                | No       |
-| `provider_id`          | `str`                                   | New provider                         | No       |
-| `status`               | `AppointmentProgressStatus` or `None`   | Updated status                       | No       |
+| Attribute              | Type                                  | Description                       | Required |
+| ---------------------- | ------------------------------------- | --------------------------------- | -------- |
+| `instance_id`          | `UUID` or `str`                       | Identifier of the event to update | Yes      |
+| `start_time`           | `datetime.datetime`                   | New start time                    | No       |
+| `duration_minutes`     | `int`                                 | New duration in minutes           | No       |
+| `description`          | `str` or `None`                       | Updated description               | No       |
+| `practice_location_id` | `UUID` or `str`                       | New practice location             | No       |
+| `provider_id`          | `str`                                 | New provider                      | No       |
+| `status`               | `AppointmentProgressStatus` or `None` | Updated status                    | No       |
 
 #### Example Usage
 
@@ -188,16 +215,16 @@ Reschedules an existing schedule event by creating a new event and cancelling th
 
 #### Attributes
 
-| Attribute              | Type                                    | Description                             | Required |
-|------------------------|-----------------------------------------|-----------------------------------------|----------|
-| `instance_id`          | `UUID` or `str`                         | Identifier of the event to reschedule   | Yes      |
-| `start_time`           | `datetime.datetime`                     | New start time                          | No       |
-| `duration_minutes`     | `int`                                   | New duration in minutes                 | No       |
-| `description`          | `str` or `None`                         | Updated description                     | No       |
-| `practice_location_id` | `UUID` or `str`                         | New practice location                   | No       |
-| `provider_id`          | `str`                                   | New provider                            | No       |
-| `status`               | `AppointmentProgressStatus` or `None`   | Updated status                          | No       |
-| `external_identifiers` | `list[AppointmentIdentifier]` or `None` | Updated external identifiers            | No       |
+| Attribute              | Type                                    | Description                           | Required |
+| ---------------------- | --------------------------------------- | ------------------------------------- | -------- |
+| `instance_id`          | `UUID` or `str`                         | Identifier of the event to reschedule | Yes      |
+| `start_time`           | `datetime.datetime`                     | New start time                        | No       |
+| `duration_minutes`     | `int`                                   | New duration in minutes               | No       |
+| `description`          | `str` or `None`                         | Updated description                   | No       |
+| `practice_location_id` | `UUID` or `str`                         | New practice location                 | No       |
+| `provider_id`          | `str`                                   | New provider                          | No       |
+| `status`               | `AppointmentProgressStatus` or `None`   | Updated status                        | No       |
+| `external_identifiers` | `list[AppointmentIdentifier]` or `None` | Updated external identifiers          | No       |
 
 **Note**: At least one field (besides `instance_id`) must be modified.
 
@@ -248,7 +275,7 @@ The `Appointment` effect facilitates creating, updating, and cancelling patient 
 ### Attributes
 
 | Attribute                  | Type                                    | Description                                                                                 | Required |
-|----------------------------|-----------------------------------------|---------------------------------------------------------------------------------------------|----------|
+| -------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------- | -------- |
 | `appointment_note_type_id` | `UUID` or `str`                         | Identifier for the appointment note type (must be of category `ENCOUNTER` and scheduleable) | Yes      |
 | `patient_id`               | `str`                                   | Identifier for the patient                                                                  | Yes      |
 | `meeting_link`             | `str` or `None`                         | Link for virtual appointments                                                               | No       |
@@ -294,16 +321,16 @@ Updates an existing appointment in place.
 
 #### Attributes
 
-| Attribute                  | Type                                    | Description                          | Required |
-|----------------------------|-----------------------------------------|--------------------------------------|----------|
-| `instance_id`              | `UUID` or `str`                         | Identifier of appointment to update  | Yes      |
-| `start_time`               | `datetime.datetime`                     | New start time                       | No       |
-| `duration_minutes`         | `int`                                   | New duration in minutes              | No       |
-| `meeting_link`             | `str` or `None`                         | Updated meeting link                 | No       |
-| `practice_location_id`     | `UUID` or `str`                         | New practice location                | No       |
-| `provider_id`              | `str`                                   | New provider                         | No       |
-| `status`                   | `AppointmentProgressStatus` or `None`   | Updated status                       | No       |
-| `external_identifiers`     | `list[AppointmentIdentifier]` or `None` | Updated external identifiers         | No       |
+| Attribute              | Type                                    | Description                         | Required |
+| ---------------------- | --------------------------------------- | ----------------------------------- | -------- |
+| `instance_id`          | `UUID` or `str`                         | Identifier of appointment to update | Yes      |
+| `start_time`           | `datetime.datetime`                     | New start time                      | No       |
+| `duration_minutes`     | `int`                                   | New duration in minutes             | No       |
+| `meeting_link`         | `str` or `None`                         | Updated meeting link                | No       |
+| `practice_location_id` | `UUID` or `str`                         | New practice location               | No       |
+| `provider_id`          | `str`                                   | New provider                        | No       |
+| `status`               | `AppointmentProgressStatus` or `None`   | Updated status                      | No       |
+| `external_identifiers` | `list[AppointmentIdentifier]` or `None` | Updated external identifiers        | No       |
 
 **Note**: `patient_id` cannot be updated after creation.
 
@@ -332,16 +359,16 @@ Reschedules an existing appointment by creating a new appointment and cancelling
 
 #### Attributes
 
-| Attribute                  | Type                                    | Description                          | Required |
-|----------------------------|-----------------------------------------|--------------------------------------|----------|
-| `instance_id`              | `UUID` or `str`                         | Identifier of appointment to reschedule | Yes   |
-| `start_time`               | `datetime.datetime`                     | New start time                       | No       |
-| `duration_minutes`         | `int`                                   | New duration in minutes              | No       |
-| `meeting_link`             | `str` or `None`                         | Updated meeting link                 | No       |
-| `practice_location_id`     | `UUID` or `str`                         | New practice location                | No       |
-| `provider_id`              | `str`                                   | New provider                         | No       |
-| `status`                   | `AppointmentProgressStatus` or `None`   | Updated status                       | No       |
-| `external_identifiers`     | `list[AppointmentIdentifier]` or `None` | Updated external identifiers         | No       |
+| Attribute              | Type                                    | Description                             | Required |
+| ---------------------- | --------------------------------------- | --------------------------------------- | -------- |
+| `instance_id`          | `UUID` or `str`                         | Identifier of appointment to reschedule | Yes      |
+| `start_time`           | `datetime.datetime`                     | New start time                          | No       |
+| `duration_minutes`     | `int`                                   | New duration in minutes                 | No       |
+| `meeting_link`         | `str` or `None`                         | Updated meeting link                    | No       |
+| `practice_location_id` | `UUID` or `str`                         | New practice location                   | No       |
+| `provider_id`          | `str`                                   | New provider                            | No       |
+| `status`               | `AppointmentProgressStatus` or `None`   | Updated status                          | No       |
+| `external_identifiers` | `list[AppointmentIdentifier]` or `None` | Updated external identifiers            | No       |
 
 **Note**: At least one field (besides `instance_id`) must be modified. `patient_id` cannot be updated after creation.
 
