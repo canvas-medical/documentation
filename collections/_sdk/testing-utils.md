@@ -4,7 +4,7 @@ slug: "testing-utils"
 hidden: false
 ---
 
-Canvas SDK provides a streamlined testing environment and local database support to help developers test their plugins with real data, without needing to mock or manually configure anything.
+Canvas SDK provides a streamlined testing environment and local database support to help developers test their plugins with real data.
 
 This guide covers two key capabilities:
 
@@ -30,11 +30,11 @@ plugin-folder/
 
 ## Plugin Testing with Pytest
 
-Installing the `test-utils` extra provides everything needed to test plugins with pytest. No additional setup is required.
+Installing the `test-utils` extra provides everything needed to test plugins with pytest.
 
 ### Features
 
-* `pytest` ready out of the box.
+* `pytest` with `factoryboy` style fixtures
 * Each test is wrapped in a transaction and rolled back automatically.
 * Use actual models or prebuilt factories to generate test data.
 * No need for mocks or fake database layers.
@@ -46,7 +46,8 @@ Add the following to your `pyproject.toml`:
 ```toml
 [project]
 name = "canvas-plugins"
-version = "1.0"
+version = "0.1.0"
+requires-python = ">=3.11,<3.13"
 dependencies = [
     "canvas[test-utils]",
     # other dependencies...
@@ -104,8 +105,22 @@ All factories are available from:
 from canvas_sdk.test_utils import factories
 ```
 
-Developers are encouraged to add new factories for their own models.
+Developers are encouraged to add new factories for their own models, and to submit PRs with contributions.
 
+At this time, Canvas has factory support for the following models:
+* Claim
+* Claim Diagnosis Code
+* Facility
+* Medication History
+* Note
+* Organization
+* Patient
+* PracticeLocation
+* ProtocolCurrent
+* Staff
+* User
+
+A complete list of available factories is located [here](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/test_utils/factories).
 
 ## Local DB Seeding via `run-plugin`
 
