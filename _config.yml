@@ -32,6 +32,9 @@ collections:
   sdk:
     output: true
     permalink: /:collection/:title/
+  dev:
+    output: true
+    permalink: /:collection/:title/
 
 defaults:
   - scope:

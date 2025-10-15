@@ -419,8 +419,8 @@ api_custom_apis:
   - title: "Note"
     url: /api/note
 
-orientation:
-  - title: "Developer Orientation"
+education:
+  - title: "Developer Education"
     url: /dev/
     description: Get started building with the Canvas SDK
   - title: "Overview"
