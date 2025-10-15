@@ -1,0 +1,25 @@
+{% assign orientation_links = "" %}
+{% for item in site.orientations %}
+  {% for orientation_url in item.orientation_for %}
+    {% if orientation_url == page.url %}
+      {% capture link %}
+    <p>
+        {% if item.url %}
+          <a href="{{ item.url }}">{{ item.title }}</a>
+        {% else %}
+          <strong>{{ item.title }}</strong>
+        {% endif %}
+        <br />
+      {% endcapture %}
+    </p>
+      {% assign orientation_links = orientation_links | append: link %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+
+{% if orientation_links != "" %}
+  <div class="panel panel__container">
+    <h5>{{ site.data.globals.panels.orientations }}</h5>
+    {{ orientation_links }}
+  </div>
+{% endif %}

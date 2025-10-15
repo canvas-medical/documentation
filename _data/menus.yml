@@ -7,6 +7,7 @@ main:
     url: /guides/
   - title: Product Updates
     url: /product-updates/release-notes
+
 api:
   - title: "Canvas FHIR"
     identifier: api_canvas_fhir
@@ -417,6 +418,14 @@ api_custom_apis:
     url: /api/letter
   - title: "Note"
     url: /api/note
+
+orientation:
+  - title: "Developer Orientation"
+    url: /dev/
+    description: Get started building with the Canvas SDK
+  - title: "Overview"
+    url: /dev/overview/
+    description: Learn the basics of the Canvas SDK
 
 guides:
   - title: "Guides"
