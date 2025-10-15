@@ -20,9 +20,9 @@ canvas = { git = "https://github.com/canvas-medical/canvas-plugins.git", rev = "
 
 [dependency-groups]
 dev = [
-  "mypy>=1.16.1",
+  "mypy>=1.18.2",
   "mypy-extensions>=1.1.0,<2",
-  "ruff>=0.13.0",
+  "ruff>=0.14.0",
   "setuptools>=80.9.0",
   "types-requests>=2.32.4.20250611",
 ]
