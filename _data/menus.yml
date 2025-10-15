@@ -426,6 +426,9 @@ orientation:
   - title: "Overview"
     url: /dev/overview/
     description: Learn the basics of the Canvas SDK
+  - title: "Setup"
+    url: /dev/setup/
+    description: Set up your developer environment
 
 guides:
   - title: "Guides"
