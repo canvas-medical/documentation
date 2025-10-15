@@ -216,17 +216,17 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr>
       <td>Structured Assessment</td>
-      <td><span class="complete"> Released - GA </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Refer</td>
-      <td><span class="complete"> Released - GA </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Follow Up</td>
-      <td><span class="complete"> Released - GA </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr>
