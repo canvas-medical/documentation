@@ -252,7 +252,7 @@ The `LaunchModalEffect` class has the following properties:
 
 ### Closing Modals from Applications
 
-When building applications with the Canvas SDK, you may encounter scenarios where you need to programmatically dismiss modals. This can be particularly useful in automated testing or when creating user flows that require closing modals based on certain conditions.When building applications with the Canvas SDK, you may encounter scenarios where you need to programmatically dismiss modals. This can be particularly useful in automated testing or when creating user flows that require closing modals based on certain conditions.
+When building applications with the Canvas SDK, you may encounter scenarios where you need to programmatically dismiss modals. This can be particularly useful in automated testing or when creating user flows that require closing modals based on certain conditions.
 
 Here's a simple example of how to dismiss modals from your applications using JavaScript.
 
