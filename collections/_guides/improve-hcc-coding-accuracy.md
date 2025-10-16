@@ -203,12 +203,13 @@ class AnnotateSearchResults(BaseProtocol):
 
 ```
 
-### Adding "HCC" to the Condition List and on Claims
+### Adding Annotations to Conditions and Detected Issues
 
-The following event/effect pairings can be leveraged to add the `HCC` tag to conditions in the patient summary as well as on the claim using the protocol code below. 
+The following event/effect pairings can be leveraged to add annotations (such as the `HCC` tag) to conditions and detected issues in the patient summary as well as on claims using the protocol code below.
 
 - `CLAIM__CONDITIONS` and `ANNOTATE_CLAIM_CONDITION_RESULTS`
 - `PATIENT_CHART__CONDITIONS` and `ANNOTATE_PATIENT_CHART_CONDITION_RESULTS`
+- `PATIENT_CHART__DETECTED_ISSUES` and `ANNOTATE_PATIENT_CHART_DETECTED_ISSUE_RESULTS`
 
 
 ``` python
@@ -279,6 +280,33 @@ class ClaimConditionAnnotation(BaseProtocol):
                 payload[condition["id"]] = [HCC]
 
         return [Effect(type=EffectType.ANNOTATE_CLAIM_CONDITION_RESULTS, payload=json.dumps(payload))]
+
+
+class DetectedIssueAnnotation(BaseProtocol):
+    """
+    Annotate Detected Issues in the Patient Chart with ICD-10 codes from evidence
+    """
+
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__DETECTED_ISSUES)
+
+    def compute(self):
+        """
+        Annotate patient summary detected issues with their ICD-10 code from evidence
+        """
+        payload = {}
+        for detected_issue in self.context:
+            # Get the first ICD-10 code from evidence if available
+            evidence_code = None
+            if detected_issue.get("evidence"):
+                for evidence in detected_issue["evidence"]:
+                    if evidence.get("code"):
+                        evidence_code = evidence["code"]
+                        break
+
+            if evidence_code:
+                payload[detected_issue["id"]] = [evidence_code]
+
+        return [Effect(type=EffectType.ANNOTATE_PATIENT_CHART_DETECTED_ISSUE_RESULTS, payload=json.dumps(payload))]
 
 
 ```
