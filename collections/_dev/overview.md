@@ -87,7 +87,7 @@ Key Handler Types to Know:
 - **`SimpleAPI`**: For custom HTTP interactions. You implement an `authenticate` method and a method for each request path, annotated with the path and verb (e.g., GET, POST), resulting in a custom endpoint IN YOUR CANVAS INSTANCE…!
 - **`Application`**: Used to embed custom user interfaces or launch modals within the EMR. You provide an icon and title, and implement the `on_open` method.
 
-These handlers allow you to build everything from small quality-of-life automations (like **AI note titles**) to complex integrations (**Syncing patients between systems**).
+These handlers allow you to build everything from small quality-of-life automations (like [AI note titles](https://docs.canvasmedical.com/sdk/example-ai_note_titles/)) to complex integrations ([Syncing patients between systems](https://docs.canvasmedical.com/sdk/example-patient_creation_platform_sync/)).
 
 ### Summary
 
@@ -102,3 +102,4 @@ In this overview, you learned about:
 
 ## Next Steps
 [Next: let’s set up your developer environment](/dev/setup)!
+
