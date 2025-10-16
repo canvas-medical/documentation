@@ -57,7 +57,10 @@ defaults:
       path          : "collections/_sdk/**/*"
     values:
       layout        : "sdk"
-
+  - scope:
+      path          : "collections/_dev/**/*"
+    values:
+      layout        : "dev"
 
 ### Feed settings
 feed:
