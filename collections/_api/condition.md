@@ -9,7 +9,7 @@ sections:
         article: "a"
         description: >-
           A clinical condition, problem, diagnosis, or other event, situation, issue, or clinical concept that has risen to a level of concern.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-condition.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-condition.html)
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html)
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -152,23 +152,29 @@ sections:
                         - value: http://terminology.hl7.org/CodeSystem/condition-category
                       type: string
                     - name: code
-                      description: The code of the clinical status.
+                      description: The category code.
                       required_in: create, update
                       type: string
                       enum_options: 
                         - value: encounter-diagnosis
+                        - value: problem-list-item
+                        - value: health-concern
                     - name: display
                       description: The display name of the coding.
                       exclude_in: create, update
                       type: string
                       enum_options: 
                         - value: Encounter Diagnosis
+                        - value: Problem List Item
+                        - value: Health Concern
                 - name: text
                   description: Plain text representation of the concept.
                   exclude_in: create, update
                   type: string
                   enum_options: 
                         - value: Encounter Diagnosis
+                        - value: Problem List Item
+                        - value: Health Concern
           - name: code
             description_for_all_endpoints: Identification of the condition, problem or diagnosis.
             create_description: Canvas will not validate the coding supplied in the payload, instead Canvas will just save the system, code, and display as provided. We highly recommend supplying a coding with the `system` of `http://hl7.org/fhir/sid/icd-10-cm`.
@@ -269,6 +275,10 @@ sections:
             search_options: 
               - value: entered-in-error
               - value: provisional
+          - name: category
+            description: >-
+              The category of the condition. Filters by the code and/or system under `category.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code` (e.g. `http://terminology.hl7.org/CodeSystem/condition-category|health-concern`).
+            type: string
         endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
@@ -802,7 +812,7 @@ print(response.text)
 </div>
 
 <div id="condition-search-request">
-{% include search-request.html resource_type="Condition" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="Condition" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0&category=http://terminology.hl7.org/CodeSystem/condition-category|health-concern" %}
 </div>
 
 <div id="condition-search-response">
