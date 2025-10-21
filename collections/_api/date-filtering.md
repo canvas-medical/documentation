@@ -32,3 +32,17 @@ We support the following date search modifiers:
     Example: `"?date=ne2021-01-01"`<br><br>
 
 You can supply multiple date search parameters to search in a range. For example if we want to find all the records within 2024-04-11 and 2024-04-20, we can pass `?date=ge2024-04-11&date=le2024-04-20`
+
+The API endpoints that support date search parameters include:
+* [AllergyIntolerance](/api/allergyintolerance/) (/AllergyIntolerance) - Filter by recorded date
+* Appointment (/Appointment) - Filter by appointment date
+* CarePlan (/CarePlan) - Filter by care plan date/period
+* CareTeam (/CareTeam) - Filter by care team period
+* Consent (/Consent) - Filter by consent date
+* DiagnosticReport (/DiagnosticReport) - Filter by report date
+* DocumentReference (/DocumentReference) - Filter by document date
+* Encounter (/Encounter) - Filter by encounter date/period
+* Immunization (/Immunization) - Filter by immunization date
+* Observation (/Observation) - Filter by observation date/time
+* Procedure (/Procedure) - Filter by procedure date
+
