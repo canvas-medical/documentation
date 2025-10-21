@@ -35,14 +35,14 @@ You can supply multiple date search parameters to search in a range. For example
 
 The API endpoints that support date search parameters include:
 * [AllergyIntolerance](/api/allergyintolerance/) (/AllergyIntolerance) - Filter by recorded date
-* Appointment (/Appointment) - Filter by appointment date
-* CarePlan (/CarePlan) - Filter by care plan date/period
-* CareTeam (/CareTeam) - Filter by care team period
-* Consent (/Consent) - Filter by consent date
-* DiagnosticReport (/DiagnosticReport) - Filter by report date
-* DocumentReference (/DocumentReference) - Filter by document date
-* Encounter (/Encounter) - Filter by encounter date/period
-* Immunization (/Immunization) - Filter by immunization date
-* Observation (/Observation) - Filter by observation date/time
-* Procedure (/Procedure) - Filter by procedure date
+* [Appointment](/api/appointment/) (/Appointment) - Filter by appointment date
+* [CarePlan](/api/careplan/) (/CarePlan) - Filter by care plan date/period
+* [CareTeam](/api/careteam/) (/CareTeam) - Filter by care team period
+* [Consent](/api/consent/) (/Consent) - Filter by consent date
+* [DiagnosticReport](/api/diagnosticreport/) (/DiagnosticReport) - Filter by report date
+* [DocumentReference](/api/documentreference/) (/DocumentReference) - Filter by document date
+* [Encounter](/api/encounter/) (/Encounter) - Filter by encounter date/period
+* [Immunization](/api/immunization/) (/Immunization) - Filter by immunization date
+* [Observation](/api/observation/) (/Observation) - Filter by observation date/time
+* [Procedure](/api/procedure/) (/Procedure) - Filter by procedure date
 
