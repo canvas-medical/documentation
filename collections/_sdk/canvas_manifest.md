@@ -1,7 +1,5 @@
 ---
-layout: page
-title: Canvas Manifest Reference
-permalink: /canvas-manifest/
+title: "Canvas Manifest"
 ---
 
 # Canvas Manifest Reference
