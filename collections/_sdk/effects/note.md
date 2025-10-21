@@ -91,6 +91,73 @@ class Protocol(BaseHandler):
         return [note_effect.update()]
 ```
 
+### Fax Note
+
+Sends an existing note via fax to a specified recipient. This effect allows you to transmit patient notes to external healthcare providers or facilities.
+
+#### Attributes
+
+| Attribute               | Type            | Description                                                   | Required |
+|-------------------------|-----------------|---------------------------------------------------------------|----------|
+| `note_id`               | `UUID` or `str` | Identifier of the note to fax                                 | Yes      |
+| `recipient_name`        | `str`           | Name of the fax recipient                                     | Yes      |
+| `recipient_fax_number`  | `str`           | Fax number of the recipient                                   | Yes      |
+| `include_coversheet`    | `bool`          | Whether to include a coversheet with the fax                  | No       |
+| `subject`               | `str` or `None` | Subject line for the coversheet (required if coversheet used) | No       |
+| `comment`               | `str` or `None` | Additional comments for coversheet (required if coversheet used) | No    |
+| `location_id`           | `UUID` or `str` or `None` | Practice location ID (required if coversheet used)  | No       |
+
+#### Implementation Details
+
+- Validates that the note exists in the system
+- If `include_coversheet` is `True`, the following fields become required:
+  - `subject`: The subject line for the coversheet
+  - `comment`: Additional comments to include on the coversheet
+  - `location_id`: The practice location identifier (must exist in the system)
+- Validates that the practice location exists if provided
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.fax.note import FaxNoteEffect
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        # Basic fax without coversheet
+        fax_effect = FaxNoteEffect(
+            note_id="existing-note-uuid",
+            recipient_name="Dr. Jane Smith",
+            recipient_fax_number="5551234567"
+        )
+
+        return [fax_effect.apply()]
+```
+
+#### Example with Coversheet
+
+```python
+from canvas_sdk.effects.fax.note import FaxNoteEffect
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        # Fax with coversheet
+        fax_effect = FaxNoteEffect(
+            note_id="existing-note-uuid",
+            recipient_name="Dr. Jane Smith",
+            recipient_fax_number="5551234567",
+            include_coversheet=True,
+            subject="Patient Referral - Follow-up Care",
+            comment="Please review attached consultation notes for continuing care.",
+            location_id="practice-location-uuid"
+        )
+
+        return [fax_effect.apply()]
+```
+
 ---
 
 ## ScheduleEvent Effect
