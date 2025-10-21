@@ -683,6 +683,8 @@ sdk_overview:
     url: /sdk/
   - title: "Caching Module"
     url: /sdk/caching/
+  - title: "Canvas Manifest"
+    url: /sdk/canvas_manifest/
   - title: "Clients Module"
     url: /sdk/clients/
     identifier: clients_module
