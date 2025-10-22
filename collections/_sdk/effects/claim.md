@@ -13,13 +13,12 @@ The Canvas SDK provides effects to manage claim labels, which includes creating,
 
 The `AddClaimLabel` effect facilitates adding a label to an existing claim, and optionally creating a new label before assigning it to the claim.
 
-| Attribute      | Type            | Description                                                             | Required |
-| -------------- | --------------- | ----------------------------------------------------------------------- | -------- |
-| `claim_id`     | `UUID` or `str` | Identifier for the claim                                                | Yes      |
-| `label_id`     | `UUID` or `str` | Identifier for the label                                                | No\*     |
-| `label_values` | [Label](#label) | Values for creating a brand new label before assigning it to the claim. | No\*     |
+| Attribute  | Type                 | Description                                                                 | Required |
+| ---------- | -------------------- | --------------------------------------------------------------------------- | -------- |
+| `claim_id` | `UUID` or `str`      | Identifier for the claim                                                    | Yes      |
+| `labels`   | `list[str or Label]` | List of label names and [Label](#label) dataclasses\* to apply to the claim | Yes      |
 
-\*Either `label_id` or `label_values` is required in order to apply this effect. If `label_values` is provided, a new label will be created; otherwise `label_id` is used.
+\*Labels passed in by name must currently exist as a Label in your Canvas instance. Labels passed in as a Label dataclass will be created in your Canvas instance, and then applied to the specified claim. However, if a label already exists with the same properties as the Label dataclass, it will add this existing label to the claim to avoid creating a duplicate.
 
 ## Label
 
@@ -35,9 +34,9 @@ The `Label` dataclass represents a new label to be created in Canvas.
 
 #### Implementation Details
 
-- Validates `claim_id` is provided and that the associated claim exists
-- Validates that `label_id` or `label_values` is provided.
-- If `label_id` provided, validates that the associated label exists
+- Validates `claim_id` is provided and that the associated claim exists.
+- Validates that `labels` are provided.
+- Validates that `labels` identified by name exist in your Canvas instance.
 
 #### Example Usage
 
@@ -47,7 +46,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 
 from canvas_sdk.effects.claim_label import AddClaimLabel, Label
-from canvas_sdk.v1.data import Note, TaskLabel
+from canvas_sdk.v1.data import Note
 from canvas_sdk.v1.data.common import ColorEnum
 
 
@@ -63,12 +62,11 @@ class Protocol(BaseProtocol):
         if state == "PSH":
             add = AddClaimLabel(
                 claim_id=claim.id,
-                label_values=Label(color=ColorEnum.PINK, name="pushed not locked"),
+                labels=[Label(color=ColorEnum.PINK, name="pushed not locked")],
             )
             return [add.apply()]
         elif state == "LKD":
-            urgent_label = TaskLabel.objects.filter(name="Urgent").first()
-            add_urgent = AddClaimLabel(claim_id=claim.id, label_id=urgent_label.id)
+            add_urgent = AddClaimLabel(claim_id=claim.id, labels=["Urgent"])
             return [add_urgent.apply()]
 
         return []
@@ -80,15 +78,15 @@ The `RemoveClaimLabel` effect removes an existing label from a claim.
 
 #### Attributes
 
-| Attribute  | Type            | Description              | Required |
-| ---------- | --------------- | ------------------------ | -------- |
-| `claim_id` | `UUID` or `str` | Identifier for the claim | Yes      |
-| `label_id` | `UUID` or `str` | Identifier for the label | Yes      |
+| Attribute  | Type            | Description                               | Required |
+| ---------- | --------------- | ----------------------------------------- | -------- |
+| `claim_id` | `UUID` or `str` | Identifier for the claim                  | Yes      |
+| `labels`   | `list[str]`     | List of label names to apply to the claim | Yes      |
 
 #### Implementation Details
 
 - Validates `claim_id` is provided and that the associated claim exists
-- Validates `label_id` is provided and that the associated label exists
+- Validates `labels` is provided and that the associated labels exist
 
 #### Example Usage
 
@@ -110,8 +108,7 @@ class Protocol(BaseProtocol):
         claim = note.get_claim()
         state = self.event.context["state"]
         if state == "LKD":
-            if label := TaskLabel.objects.filter(name="pushed not locked").first():
-                remove = RemoveClaimLabel(claim_id=claim.id, label_id=label.id)
-                return [remove.apply()]
+            remove = RemoveClaimLabel(claim_id=claim.id, labels=["pushed not locked"])
+            return [remove.apply()]
         return []
 ```
