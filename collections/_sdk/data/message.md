@@ -36,7 +36,7 @@ Represents an individual message record.
 | `sender`    | `ForeignKey(CanvasUser)` | The user who sent the message. May be null.                   |
 | `recipient` | `ForeignKey(CanvasUser)` | The user who received the message. May be null.               |
 | `note`      | `ForeignKey(Note)`       | Associated note (if any) for contextual linkage. May be null. |
-| `read`      | `BooleanField`           | Indicates whether the recipient has read the message.         |
+| `read`      | `DateTimeField`          | Timestamp when the recipient read the message. Null if unread. |
 
 ## MessageAttachment
 
