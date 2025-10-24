@@ -7,7 +7,9 @@ hidden: false
 
 # Claim Effects
 
-The Canvas SDK provides effects to manage claim labels, which includes creating, adding, and removing labels.
+The Canvas SDK provides effects to:
+
+- manage claim labels, which includes [creating, adding](#addclaimlabel), and [removing](#removeclaimlabel) labels.
 
 ## AddClaimLabel
 
@@ -18,11 +20,11 @@ The `AddClaimLabel` effect facilitates adding a label to an existing claim, and 
 | `claim_id` | `UUID` or `str`      | Identifier for the claim                                                    | Yes      |
 | `labels`   | `list[str or Label]` | List of label names and [Label](#label) dataclasses\* to apply to the claim | Yes      |
 
-\*Labels passed in by name must currently exist as a Label in your Canvas instance. Labels passed in as a Label dataclass will be created in your Canvas instance, and then applied to the specified claim. However, if a label already exists with the same properties as the Label dataclass, it will add this existing label to the claim to avoid creating a duplicate.
+\*Labels can be passed in by name or as a Label dataclass. If the label with the provided values does not exist in your Canvas instance, it will be created and then applied to the specified claim. However, if a label already exists with the provided name/properties, it will add this existing label to the claim.
 
 ## Label
 
-The `Label` dataclass represents a new label to be created in Canvas.
+The `Label` dataclass represents a label with specific properties, including color, name, and position.
 
 ### Attributes
 
@@ -35,8 +37,7 @@ The `Label` dataclass represents a new label to be created in Canvas.
 #### Implementation Details
 
 - Validates `claim_id` is provided and that the associated claim exists.
-- Validates that `labels` are provided.
-- Validates that `labels` identified by name exist in your Canvas instance.
+- Validates that `labels` are provided and non-empty.
 
 #### Example Usage
 
@@ -78,15 +79,15 @@ The `RemoveClaimLabel` effect removes an existing label from a claim.
 
 #### Attributes
 
-| Attribute  | Type            | Description                               | Required |
-| ---------- | --------------- | ----------------------------------------- | -------- |
-| `claim_id` | `UUID` or `str` | Identifier for the claim                  | Yes      |
-| `labels`   | `list[str]`     | List of label names to apply to the claim | Yes      |
+| Attribute  | Type            | Description                                  | Required |
+| ---------- | --------------- | -------------------------------------------- | -------- |
+| `claim_id` | `UUID` or `str` | Identifier for the claim                     | Yes      |
+| `labels`   | `list[str]`     | List of label names to remove from the claim | Yes      |
 
 #### Implementation Details
 
 - Validates `claim_id` is provided and that the associated claim exists
-- Validates `labels` is provided and that the associated labels exist
+- Validates `labels` is provided and non-empty
 
 #### Example Usage
 
