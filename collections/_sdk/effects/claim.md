@@ -9,7 +9,8 @@ hidden: false
 
 The Canvas SDK provides effects to:
 
-- manage claim labels, which includes [creating, adding](#addclaimlabel), and [removing](#removeclaimlabel) labels.
+- manage claim labels, which includes [creating, adding](#addclaimlabel), and [removing](#removeclaimlabel) labels
+- [move a claim to a specific queue](#moveclaimtoqueue)
 
 ## AddClaimLabel
 
@@ -112,4 +113,45 @@ class Protocol(BaseProtocol):
             remove = RemoveClaimLabel(claim_id=claim.id, labels=["pushed not locked"])
             return [remove.apply()]
         return []
+```
+
+### MoveClaimToQueue
+
+The `MoveClaimToQueue` effect moves a specific claim to a queue.
+
+#### Attributes
+
+| Attribute  | Type            | Description                                | Required |
+| ---------- | --------------- | ------------------------------------------ | -------- |
+| `claim_id` | `UUID` or `str` | Identifier for the claim                   | Yes      |
+| `queue`    | `str`           | The name of the queue to move the claim to | Yes      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- Validates `queue` is provided and the queue with that name exists
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+
+from canvas_sdk.effects.claim_queue import MoveClaimToQueue
+from canvas_sdk.v1.data import Note
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        if self.event.context["state"] == "ULK":
+            note = Note.objects.get(id=self.event.context["note_id"])
+            claim = note.get_claim()
+            move = MoveClaimToQueue(
+                claim_id=str(claim.id), queue="NeedsClinicianReview"
+            )
+            return [move.apply()]
+
 ```
