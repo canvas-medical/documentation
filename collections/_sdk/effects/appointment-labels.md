@@ -21,8 +21,8 @@ The `AddAppointmentLabel` effect adds one or more labels to an existing appointm
 
 | Attribute        | Type      | Description                                                             | Required |
 |------------------|-----------|-------------------------------------------------------------------------|----------|
-| `appointment_id` | `str`     | ID of the appointment to add labels to                                 | Yes      |
-| `labels`         | `set[str]`| Set of label names to add (1-3 labels total per appointment)          | Yes      |
+| `appointment_id` | `str`     | ID of the appointment to add labels to                                  | Yes      |
+| `labels`         | `set[str]`| Set of label names to add (1-3 labels total per appointment)            | Yes      |
 
 ### Methods
 
@@ -97,7 +97,7 @@ The `RemoveAppointmentLabel` effect removes one or more labels from an existing 
 | Attribute        | Type      | Description                                                             | Required |
 |------------------|-----------|-------------------------------------------------------------------------|----------|
 | `appointment_id` | `str`     | ID of the appointment to remove labels from                             | Yes      |
-| `labels`         | `set[str]`| Set of label names to remove                                          | Yes      |
+| `labels`         | `set[str]`| Set of label names to remove                                            | Yes      |
 
 ### Methods
 
