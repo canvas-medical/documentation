@@ -66,7 +66,7 @@ The `AddAppointmentLabel` effect adds one or more labels to an existing appointm
 
 #### Basic Usage
 
-```python
+```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel
 from canvas_sdk.handlers.base import BaseHandler
 
@@ -83,7 +83,13 @@ class MyProtocol(BaseHandler):
 
 #### Error Handling
 
-```python
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel
+from canvas_sdk.exceptions import ValidationError
+import logging
+
+logger = logging.getLogger(__name__)
+
 def add_labels_safely(self, appointment_id, labels):
     try:
         effect = AddAppointmentLabel(
@@ -103,7 +109,7 @@ The `RemoveAppointmentLabel` effect removes one or more labels from an existing 
 
 #### Basic Usage
 
-```python
+```python?partial=true
 from canvas_sdk.effects.note.appointment import RemoveAppointmentLabel
 from canvas_sdk.handlers.base import BaseHandler
 
@@ -143,9 +149,10 @@ This event is fired when one or more labels are added to an appointment.
 
 #### Responding to the Event
 
-```python
+```python?partial=true
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects.patient.base import PatientMetadata
 
 class LabelAddedProtocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.APPOINTMENT_LABEL_ADDED)
@@ -189,9 +196,10 @@ This event is fired when one or more labels are removed from an appointment.
 
 #### Responding to the Event
 
-```python
+```python?partial=true
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects.patient.base import PatientMetadata
 
 class LabelRemovedProtocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.APPOINTMENT_LABEL_REMOVED)
@@ -234,7 +242,7 @@ This plugin automatically manages "MISSING_COVERAGE" labels based on patient ins
 
 #### Implementation Highlights
 
-```python
+```python?partial=true
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
@@ -382,7 +390,7 @@ The two plugins work together to create a complete automation workflow:
 
 ### Insurance Verification Workflow
 
-```python
+```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel
 from canvas_sdk.handlers.base import BaseHandler
 
@@ -406,7 +414,7 @@ class InsuranceVerificationProtocol(BaseHandler):
 
 ### Appointment Status Tracking
 
-```python
+```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
 from canvas_sdk.handlers.base import BaseHandler
 
@@ -444,7 +452,9 @@ class StatusTrackingProtocol(BaseHandler):
 
 ### Multi-Label Management
 
-```python
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
+
 def replace_all_labels(self, appointment_id, new_labels):
     """Replace all existing labels with new ones."""
     # First remove all common labels
@@ -468,7 +478,13 @@ def replace_all_labels(self, appointment_id, new_labels):
 
 Always handle validation errors gracefully:
 
-```python
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel
+from canvas_sdk.exceptions import ValidationError
+import logging
+
+logger = logging.getLogger(__name__)
+
 def add_labels_safely(self, appointment_id, labels):
     try:
         effect = AddAppointmentLabel(
@@ -521,7 +537,9 @@ def efficient_label_check(self, appointment_id):
 
 Test your label automation thoroughly:
 
-```python
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
+
 def test_label_automation(self):
     """Test that labels are added/removed correctly."""
     # Test adding labels

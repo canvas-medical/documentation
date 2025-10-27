@@ -617,7 +617,7 @@ For detailed documentation on appointment label management, see [Appointment Lab
 
 ### Quick Example
 
-```python
+```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
 from canvas_sdk.handlers.base import BaseHandler
 

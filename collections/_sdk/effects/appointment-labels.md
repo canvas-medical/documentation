@@ -52,7 +52,7 @@ The effect performs comprehensive validation:
 
 #### Example Usage
 
-```python
+```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel
 from canvas_sdk.handlers.base import BaseHandler
 
@@ -69,17 +69,21 @@ class MyProtocol(BaseHandler):
 
 #### Error Handling
 
-```python
-# Example of handling validation errors
-try:
-    effect = AddAppointmentLabel(
-        appointment_id="invalid-id",
-        labels={"LABEL1", "LABEL2", "LABEL3", "LABEL4"}  # Would exceed limit
-    )
-    return [effect.apply()]
-except ValidationError as e:
-    # Handle validation errors
-    return []
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel
+from canvas_sdk.exceptions import ValidationError
+
+def handle_validation_errors():
+    # Example of handling validation errors
+    try:
+        effect = AddAppointmentLabel(
+            appointment_id="invalid-id",
+            labels={"LABEL1", "LABEL2", "LABEL3", "LABEL4"}  # Would exceed limit
+        )
+        return [effect.apply()]
+    except ValidationError as e:
+        # Handle validation errors
+        return []
 ```
 
 ---
@@ -114,7 +118,7 @@ An `Effect` object configured for removing appointment labels.
 
 #### Example Usage
 
-```python
+```python?partial=true
 from canvas_sdk.effects.note.appointment import RemoveAppointmentLabel
 from canvas_sdk.handlers.base import BaseHandler
 
@@ -158,7 +162,9 @@ The effects provide clear error messages for common issues:
 
 ### Insurance Verification Workflow
 
-```python
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel
+
 # Automatically label appointments for patients without coverage
 def handle_appointment_created(self):
     if not self._patient_has_coverage():
@@ -173,7 +179,9 @@ def handle_appointment_created(self):
 
 ### Appointment Status Tracking
 
-```python
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
+
 # Update labels based on appointment status changes
 def handle_status_change(self):
     effects = []
@@ -205,7 +213,9 @@ def handle_status_change(self):
 
 ### Multi-Label Management
 
-```python
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
+
 # Replace all labels with new ones
 def replace_labels(self, appointment_id, new_labels):
     # First remove all existing labels
