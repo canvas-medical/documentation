@@ -578,6 +578,46 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <thead>
+    <tr><th colspan="2">APPOINTMENT_LABEL_ADDED</th></tr>
+    <tr><td colspan="2">Occurs when one or more labels are added to an appointment.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id
+"label": label_name</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT_LABEL_REMOVED</th></tr>
+    <tr><td colspan="2">Occurs when one or more labels are removed from an appointment.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id
+"label": label_name</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">APPOINTMENT__SLOTS__POST_SEARCH</th></tr>
     <tr><td colspan="2">Occurs when requesting slot availability when scheduling an appointment.</td></tr>
   </thead>
