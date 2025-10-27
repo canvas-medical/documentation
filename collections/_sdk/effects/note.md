@@ -609,6 +609,35 @@ class Protocol(BaseHandler):
         return appointment_effect.cancel()
 ```
 
+## Managing Appointment Labels
+
+Canvas supports adding up to 3 labels per appointment for categorization and workflow automation. Labels can be managed programmatically using the appointment label effects.
+
+For detailed documentation on appointment label management, see [Appointment Label Effects](/sdk/effect-appointment-labels/).
+
+### Quick Example
+
+```python
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
+from canvas_sdk.handlers.base import BaseHandler
+
+class MyProtocol(BaseHandler):
+    def compute(self):
+        # Add labels to an appointment
+        add_effect = AddAppointmentLabel(
+            appointment_id="appointment-uuid",
+            labels={"URGENT", "FOLLOW_UP"}
+        )
+        
+        # Remove labels from an appointment
+        remove_effect = RemoveAppointmentLabel(
+            appointment_id="appointment-uuid",
+            labels={"CANCELLED"}
+        )
+        
+        return [add_effect.apply(), remove_effect.apply()]
+```
+
 ---
 
 ## Validation
