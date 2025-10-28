@@ -1,5 +1,5 @@
 ---
-title: "Appointment Label Automation"
+title: "Appointment and Task Label Automation"
 guide_for:
 - /sdk/effects/appointment-labels/
 - /sdk/events/
@@ -7,29 +7,45 @@ guide_for:
 - /sdk/examples/coverage_metadata_sync/
 ---
 
-# Appointment Label Automation Guide
+# Appointment and Task Label Automation Guide
 
-This guide demonstrates how to automate appointment labels in Canvas using the Canvas SDK. Appointment labels provide visual indicators and enable automated workflows for appointment categorization, insurance verification, and staff notifications.
+This guide demonstrates how to automate appointment and task labels in Canvas using the Canvas SDK. Labels provide visual indicators and enable automated workflows for categorization, insurance verification, staff notifications, and task management.
 
 ## What You'll Learn
 
-- How appointment labels work in Canvas
+- How the unified label system works in Canvas
+- Understanding label modules and filtering
 - Using `AddAppointmentLabel` and `RemoveAppointmentLabel` effects
+- Managing task labels via integration messages
 - Responding to `APPOINTMENT_LABEL_ADDED` and `APPOINTMENT_LABEL_REMOVED` events
 - Building complete automation workflows
-- Best practices for label management
+- Best practices for label management across modules
 
-## Overview: Appointment Labels in Canvas
+## Overview: Labels in Canvas
 
-Appointment labels are visual indicators that help categorize and track appointments beyond their basic scheduling information. Canvas supports up to 3 labels per appointment, and these can be managed both manually through the UI and programmatically through plugins.
+Labels are visual indicators that help categorize and track items beyond their basic information. Canvas uses a unified label system that works across appointments, tasks, and claims. Canvas supports up to 3 labels per appointment, and these can be managed both manually through the UI and programmatically through plugins and integration messages.
 
 ### Key Features
 
-- **Visual indicators**: Labels appear as colored badges on appointments
-- **Categorization**: Organize appointments by type, priority, or status
+- **Visual indicators**: Labels appear as colored badges on appointments and tasks
+- **Categorization**: Organize items by type, priority, or status
 - **Automation**: Labels can be added/removed automatically based on business logic
 - **Integration**: Labels trigger events that other plugins can respond to
 - **Reporting**: Labels can be used for analytics and reporting
+- **Module scoping**: Labels can be restricted to specific modules or shared globally
+
+### Unified Label System
+
+Canvas uses `UserSelectedTaskLabel` as the underlying model for all labels, with a `modules` field that controls where labels appear:
+
+- **Module-specific labels**: `modules=["appointments"]`, `modules=["tasks"]`, or `modules=["claims"]`
+- **Multi-module labels**: `modules=["appointments", "tasks"]` - available in multiple contexts
+- **Global labels**: `modules=[]` - available everywhere
+
+Labels are automatically filtered based on context:
+- Appointment UI shows labels with "appointments" in modules OR empty modules
+- Task UI shows labels with "tasks" in modules OR empty modules
+- Claims UI shows labels with "claims" in modules OR empty modules
 
 For more information on using labels in the Canvas UI, see [Appointment Labels](https://help.canvasmedical.com/articles/9726289513-fs-appointment-labels).
 
@@ -41,6 +57,46 @@ For more information on using labels in the Canvas UI, see [Appointment Labels](
 - **Label format**: Labels are strings, automatically sorted for consistency
 - **Uniqueness**: Labels are stored as a set, preventing duplicates
 - **Case sensitivity**: Label names are case-sensitive
+- **Module filtering**: Labels are filtered based on their `modules` field and current context
+
+### Module Scoping
+
+The `modules` field controls label availability:
+
+```python?partial=true
+from api.models.task import UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
+
+# Appointment-only label
+UserSelectedTaskLabel.objects.create(
+    name="Insurance Verification",
+    position=10,
+    modules=[UserSelectedTaskLabelModuleChoices.APPOINTMENTS]
+)
+
+# Task-only label
+UserSelectedTaskLabel.objects.create(
+    name="Follow-up Required",
+    position=20,
+    modules=[UserSelectedTaskLabelModuleChoices.TASKS]
+)
+
+# Global label (available everywhere)
+UserSelectedTaskLabel.objects.create(
+    name="Urgent",
+    position=5,
+    modules=[]  # Empty = global
+)
+
+# Shared label (appointments and tasks)
+UserSelectedTaskLabel.objects.create(
+    name="High Priority",
+    position=15,
+    modules=[
+        UserSelectedTaskLabelModuleChoices.APPOINTMENTS,
+        UserSelectedTaskLabelModuleChoices.TASKS
+    ]
+)
+```
 
 ### Label Lifecycle
 
@@ -218,6 +274,106 @@ class LabelRemovedProtocol(BaseProtocol):
             ]
         
         return []
+```
+
+## Task Labels via Integration Messages
+
+### Automatic Module Assignment
+
+When tasks are created or updated via integration messages, the system automatically manages label modules to ensure compatibility. This is handled in `data_integration/messages/consumers/task.py`.
+
+#### How It Works
+
+The `set_labels()` function automatically:
+
+1. **Creates new labels** with `modules=["tasks"]`
+2. **Checks existing labels** for compatibility
+3. **Adds "tasks" module** to incompatible labels
+4. **Preserves global labels** (keeps `modules=[]` unchanged)
+5. **Preserves compatible labels** (already have "tasks" in modules)
+
+#### Example Implementation
+
+```python?partial=true
+from api.models.task import Task, UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
+
+def set_labels(task: Task, labels: list[str]) -> None:
+    """Set labels on a task, ensuring module compatibility."""
+    task.labels.clear()
+    
+    for label in labels:
+        task_label = UserSelectedTaskLabel.objects.filter(name=label).first()
+        
+        if task_label is None:
+            # Create new label with tasks module
+            task_label = UserSelectedTaskLabel.objects.create(
+                position=10,
+                name=label,
+                modules=[UserSelectedTaskLabelModuleChoices.TASKS]
+            )
+        else:
+            # Check if label is compatible with tasks
+            is_compatible = (
+                task_label.modules == []  # Global label
+                or UserSelectedTaskLabelModuleChoices.TASKS in task_label.modules
+            )
+            
+            if not is_compatible:
+                # Add tasks module to incompatible label
+                task_label.modules.append(UserSelectedTaskLabelModuleChoices.TASKS)
+                task_label.save(update_fields=["modules"])
+        
+        task.labels.add(task_label)
+    
+    task.save()
+```
+
+#### Integration Message Example
+
+When an integration message creates a task with labels:
+
+```json
+{
+  "integration_message_type": "Task",
+  "integration_payload": {
+    "patient_identifier": {"key": "patient-uuid"},
+    "title": "Follow up on lab results",
+    "labels": ["Urgent", "Lab Review"]
+  }
+}
+```
+
+The system will:
+- Create "Urgent" label with `modules=["tasks"]` if it doesn't exist
+- Create "Lab Review" label with `modules=["tasks"]` if it doesn't exist
+- OR add "tasks" to existing labels if they're appointment-only
+- OR leave them unchanged if they're global or already compatible
+
+### Real-World Example: Chart PDF Export
+
+From `api/actions/chart/export_pdf_with_attachments.py`:
+
+```python?partial=true
+from api.models.task import Task, UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
+
+# Create task for chart PDF
+task = Task.objects.create(
+    patient=patient,
+    title=f"Chart PDF for {patient.display_name}",
+    assignee=requestor_staff
+)
+
+# Get or create label with tasks module
+task_label, _ = UserSelectedTaskLabel.objects.get_or_create(
+    name="Chart PDF",
+    defaults={
+        "position": 57,
+        "modules": [UserSelectedTaskLabelModuleChoices.TASKS]
+    }
+)
+
+# Add label to task
+task_label.tasks.add(task.id)
 ```
 
 ## Complete Example Workflow
@@ -472,7 +628,104 @@ def replace_all_labels(self, appointment_id, new_labels):
     return [remove_effect.apply(), add_effect.apply()]
 ```
 
+## Cross-Module Label Usage
+
+### Scenario: Urgent Items Across Appointments and Tasks
+
+You may want to mark both appointments and tasks as "Urgent" using the same label:
+
+```python?partial=true
+from api.models.task import UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
+
+# Create a shared "Urgent" label
+urgent_label, _ = UserSelectedTaskLabel.objects.get_or_create(
+    name="Urgent",
+    defaults={
+        "position": 1,
+        "modules": [
+            UserSelectedTaskLabelModuleChoices.APPOINTMENTS,
+            UserSelectedTaskLabelModuleChoices.TASKS
+        ]
+    }
+)
+
+# Now the label is available in both contexts
+# Use with appointments
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel
+
+AddAppointmentLabel(
+    appointment_id="appointment-uuid",
+    labels={"Urgent"}
+).apply()
+
+# And with tasks via integration messages
+{
+  "integration_message_type": "Task",
+  "integration_payload": {
+    "labels": ["Urgent"]
+  }
+}
+```
+
+### Scenario: Module-Specific Labels
+
+Some labels should only appear in specific contexts:
+
+```python?partial=true
+# Insurance verification - appointments only
+UserSelectedTaskLabel.objects.get_or_create(
+    name="Missing Coverage",
+    defaults={
+        "position": 10,
+        "modules": [UserSelectedTaskLabelModuleChoices.APPOINTMENTS]
+    }
+)
+
+# Lab result review - tasks only
+UserSelectedTaskLabel.objects.get_or_create(
+    name="Lab Review",
+    defaults={
+        "position": 20,
+        "modules": [UserSelectedTaskLabelModuleChoices.TASKS]
+    }
+)
+```
+
+### Scenario: Converting Label Scope
+
+If you need to make an appointment-only label available for tasks:
+
+```python?partial=true
+from api.models.task import UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
+
+# Get the appointment-only label
+label = UserSelectedTaskLabel.objects.get(name="Follow-up Needed")
+
+# Check current modules
+if UserSelectedTaskLabelModuleChoices.TASKS not in label.modules:
+    # Add tasks module
+    label.modules.append(UserSelectedTaskLabelModuleChoices.TASKS)
+    label.save(update_fields=["modules"])
+
+# Now available in both contexts
+```
+
+Or make it global:
+
+```python?partial=true
+# Make label available everywhere
+label.modules = []
+label.save(update_fields=["modules"])
+```
+
 ## Best Practices
+
+### Module Scoping Strategy
+
+1. **Start specific**: Begin with module-specific labels to avoid clutter
+2. **Promote to global carefully**: Only make labels global when truly needed everywhere
+3. **Use multi-module thoughtfully**: Share labels across modules when the semantic meaning is the same
+4. **Document label purpose**: Make it clear which labels are for which workflows
 
 ### Error Handling
 
@@ -520,6 +773,7 @@ BAD_LABELS = {"X", "123", "temp", "urgent"}  # Case inconsistency
 - **Batch operations**: When possible, add/remove multiple labels in a single effect
 - **Check limits**: Always be aware of the 3-label limit
 - **Efficient queries**: Use proper database queries to check existing labels
+- **Module filtering**: Leverage queryset methods for efficient filtering
 
 ```python
 def efficient_label_check(self, appointment_id):
@@ -531,6 +785,20 @@ def efficient_label_check(self, appointment_id):
         return set()
     
     return set(appointment.labels)
+
+def get_task_labels():
+    """Get all labels available for tasks."""
+    from api.models.task import UserSelectedTaskLabel
+    
+    # Uses efficient queryset filtering
+    return UserSelectedTaskLabel.objects.task_modules().active()
+
+def get_appointment_labels():
+    """Get all labels available for appointments."""
+    from api.models.task import UserSelectedTaskLabel
+    
+    # Uses efficient queryset filtering
+    return UserSelectedTaskLabel.objects.appointment_modules().active()
 ```
 
 ### Testing
@@ -567,26 +835,118 @@ def test_label_automation(self):
 
 Automatically label appointments for patients without insurance coverage to ensure staff can proactively address coverage issues.
 
-### 2. Appointment Categorization
+**Appointment context**: Use `AddAppointmentLabel` effect to add "Missing Coverage" label
+
+### 2. Task Management via Integration
+
+Automatically categorize tasks from external systems using integration message labels.
+
+**Task context**: Integration messages automatically create and assign labels with proper module scoping
+
+### 3. Cross-Module Priority Tracking
+
+Track high-priority items across both appointments and tasks using shared labels.
+
+**Both contexts**: Use global or multi-module labels like "Urgent" or "High Priority"
+
+### 4. Appointment Categorization
 
 Categorize appointments by type (urgent, follow-up, routine) to help staff prioritize their work.
 
-### 3. Staff Notifications
+**Appointment context**: Module-specific labels for appointment workflows
 
-Use labels to trigger notifications or alerts for specific appointment types.
+### 5. Task Categorization
 
-### 4. Reporting and Analytics
+Organize tasks by type (lab review, follow-up, documentation) for efficient task management.
 
-Use labels to generate reports on appointment types, coverage status, or other business metrics.
+**Task context**: Module-specific labels for task workflows
 
-### 5. Workflow Automation
+### 6. Staff Notifications
+
+Use labels to trigger notifications or alerts for specific item types across modules.
+
+**Both contexts**: Event-driven workflows responding to label changes
+
+### 7. Reporting and Analytics
+
+Use labels to generate reports on item types, coverage status, or other business metrics.
+
+**All contexts**: Query labels by module for focused analytics
+
+### 8. Workflow Automation
 
 Create automated workflows that respond to label changes, such as updating patient metadata or sending notifications.
 
+**Both contexts**: Event-driven automation using `APPOINTMENT_LABEL_ADDED`/`REMOVED` events
+
+## Task Label Testing Examples
+
+From the test suite in `data_integration/tests/messages/consumers/test_task_message_consumer.py`:
+
+### Test: New Labels Get Tasks Module
+
+```python?partial=true
+def test_create_task_labels_with_tasks_module():
+    """Test that newly created labels have the TASKS module."""
+    # When a task is created via integration message with labels
+    result = message_handler.handle(integration_message)
+    task = Task.objects.get(externally_exposable_id=result.consumer_result.resource_id)
+    
+    # Verify both labels were created with TASKS module
+    for label_name in integration_message["integration_payload"]["labels"]:
+        label = task.labels.get(name=label_name)
+        assert UserSelectedTaskLabelModuleChoices.TASKS in label.modules
+```
+
+### Test: Incompatible Labels Get Tasks Added
+
+```python?partial=true
+def test_task_labels_add_module_to_existing_incompatible_label():
+    """Test that existing labels without TASKS module get it added."""
+    # Create an existing label with a different module (APPOINTMENTS)
+    existing_label = UserSelectedTaskLabel.objects.create(
+        name="Urgent",
+        modules=[UserSelectedTaskLabelModuleChoices.APPOINTMENTS],
+        position=10,
+    )
+    
+    # Use the label on a task
+    result = message_handler.handle(integration_message)
+    
+    # Refresh the existing label from the database
+    existing_label.refresh_from_db()
+    
+    # Verify TASKS module was added
+    assert UserSelectedTaskLabelModuleChoices.TASKS in existing_label.modules
+    assert UserSelectedTaskLabelModuleChoices.APPOINTMENTS in existing_label.modules
+```
+
+### Test: Global Labels Stay Global
+
+```python?partial=true
+def test_task_labels_preserve_global_labels():
+    """Test that global labels (modules=[]) remain global."""
+    # Create a global label (modules=[])
+    global_label = UserSelectedTaskLabel.objects.create(
+        name="Urgent",
+        modules=[],
+        position=10,
+    )
+    
+    result = message_handler.handle(integration_message)
+    
+    # Refresh the global label
+    global_label.refresh_from_db()
+    
+    # Verify the label remains global
+    assert global_label.modules == []
+```
+
 ## Related Documentation
 
-- [Appointment Label Effects](/sdk/effect-appointment-labels/) - Detailed effect documentation
+- [Appointment and Task Label Effects](/sdk/effect-appointment-labels/) - Detailed effect documentation
 - [Appointment Events](/sdk/events/#appointments) - Event documentation
+- [Task Data Model](/sdk/data/task/) - Task label field documentation
 - [Appointment Coverage Label Example](/sdk/examples/appointment_coverage_label/) - Complete example plugin
 - [Coverage Metadata Sync Example](/sdk/examples/coverage_metadata_sync/) - Metadata synchronization example
 - [Canvas Help: Appointment Labels](https://help.canvasmedical.com/articles/9726289513-fs-appointment-labels) - UI documentation
