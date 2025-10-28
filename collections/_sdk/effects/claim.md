@@ -153,7 +153,7 @@ class Protocol(BaseProtocol):
         return UpdateClaimLineItem(claim_line_item_id=id, charge=charge).apply()
 
     def update_all_items(self, charge: float) -> list[Effect]:
-        return [self.update_charge(line_item.id, 0.00) for line_item in self.get_line_items()]
+        return [self.update_charge(line_item.id, charge) for line_item in self.get_line_items()]
 
     def compute(self) -> list[Effect]:
         if self.event.context["state"] == "ULK":
