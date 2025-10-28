@@ -120,10 +120,10 @@ The `UpdateClaimLineItem` effect allows you to update the `charge` field on a sp
 
 #### Attributes
 
-| Attribute            | Type    | Description                                        | Required |
-| -------------------- | ------- | -------------------------------------------------- | -------- |
-| `claim_line_item_id` | `int`   | Identifier for the claim line item                 | Yes      |
-| `charge`             | `float` | The charge amount to update on the claim line item | No       |
+| Attribute            | Type            | Description                                        | Required |
+| -------------------- | --------------- | -------------------------------------------------- | -------- |
+| `claim_line_item_id` | `UUID` or `str` | Identifier for the claim line item                 | Yes      |
+| `charge`             | `float`         | The charge amount to update on the claim line item | No       |
 
 #### Implementation Details
 
@@ -149,11 +149,11 @@ class Protocol(BaseProtocol):
         claim = note.get_claim()
         return claim.get_active_claim_line_items()
 
-    def update_charge(self, id: int, charge: float) -> Effect:
+    def update_charge(self, id: str, charge: float) -> Effect:
         return UpdateClaimLineItem(claim_line_item_id=id, charge=charge).apply()
 
     def update_all_items(self, charge: float) -> list[Effect]:
-        return [self.update_charge(line_item.dbid, 0.00) for line_item in self.get_line_items()]
+        return [self.update_charge(line_item.id, 0.00) for line_item in self.get_line_items()]
 
     def compute(self) -> list[Effect]:
         if self.event.context["state"] == "ULK":
