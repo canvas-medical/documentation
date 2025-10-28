@@ -20,19 +20,18 @@ The `AddClaimLabel` effect facilitates adding a label to an existing claim, and 
 | `claim_id` | `UUID` or `str`      | Identifier for the claim                                                    | Yes      |
 | `labels`   | `list[str or Label]` | List of label names and [Label](#label) dataclasses\* to apply to the claim | Yes      |
 
-\*Labels can be passed in by name or as a Label dataclass. If the label with the provided values does not exist in your Canvas instance, it will be created and then applied to the specified claim. However, if a label already exists with the provided name/properties, it will add this existing label to the claim.
+\*Labels can be passed in by name or as a Label dataclass. If the label with the provided name or values does not exist in your Canvas instance, it will be created and then applied to the specified claim. However, if a label already exists with the provided name or properties, it will add this existing label to the claim.
 
 ## Label
 
-The `Label` dataclass represents a label with specific properties, including color, name, and position.
+The `Label` dataclass represents a label with specific properties, including color and name.
 
 ### Attributes
 
-| Attribute  | Type                                                | Description                                                                         | Required |
-| ---------- | --------------------------------------------------- | ----------------------------------------------------------------------------------- | -------- |
-| `color`    | [ColorEnum](/sdk/data-enumeration-types/#colorenum) | The color of the label in the UI                                                    | Yes      |
-| `name`     | `str`                                               | The display name of the label                                                       | Yes      |
-| `position` | `int`                                               | The position of the label relative to other labels on the same claim. Defaults to 0 | No       |
+| Attribute | Type                                                | Description                      | Required |
+| --------- | --------------------------------------------------- | -------------------------------- | -------- |
+| `color`   | [ColorEnum](/sdk/data-enumeration-types/#colorenum) | The color of the label in the UI | Yes      |
+| `name`    | `str`                                               | The display name of the label    | Yes      |
 
 #### Implementation Details
 
