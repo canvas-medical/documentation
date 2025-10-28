@@ -75,7 +75,7 @@ The `QuestionnaireResponse` dataclass represents a possible response option for 
 
 ### Basic Questionnaire Creation
 
-```python
+```python?partial=true
 from canvas_sdk.effects.questionnaire import CreateQuestionnaire, QuestionnaireQuestion, QuestionnaireResponse
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.events import EventType
@@ -136,7 +136,7 @@ class DynamicQuestionnaireCreator(BaseHandler):
 
 ### Multi-Question Questionnaire with Different Response Types
 
-```python
+```python?partial=true
 from canvas_sdk.effects.questionnaire import CreateQuestionnaire, QuestionnaireQuestion, QuestionnaireResponse
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.events import EventType
@@ -211,7 +211,7 @@ class ComprehensiveQuestionnaireCreator(BaseHandler):
 
 ### Dynamic Questionnaire Based on Patient Data
 
-```python
+```python?partial=true
 from canvas_sdk.effects.questionnaire import CreateQuestionnaire, QuestionnaireQuestion, QuestionnaireResponse
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.events import EventType
