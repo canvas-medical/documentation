@@ -681,6 +681,9 @@ effects_module:
   - title: "Tasks"
     url: /sdk/effect-tasks/
     description: Create or update tasks.
+  - title: "Task Metadata"
+    url: /sdk/effect-task-metadata/
+    description: Interact with Task metadata.
 
 data_module:
   - title: "AllergyIntolerance"
