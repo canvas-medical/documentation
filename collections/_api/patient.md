@@ -332,8 +332,19 @@ sections:
                 type: array[json]
                 description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry contains a coding list. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
                 attributes:
-                  - name: text
-                    type: string
+                  - name: coding
+                    description: Code defined by a terminology system.
+                    type: array[json]
+                    attributes: 
+                      - name: system
+                        description: The system url of the coding.
+                        type: string
+                      - name: code
+                        description: The code of the relationship.
+                        type: string
+                      - name: display
+                        description: The display name of the coding.
+                        type: string
               - name: telecom
                 type: json
                 description: This is a list of objects where Canvas will take the first system equal to phone and store as the contact's phone number. This value must only be a 10 digit number, no other characters are accepted. Then the first system equal to email will be stored as this contact's email address. The value of the email or phone number is stored in the value field. If any other option is passed in the system field, the data will not be stored.
