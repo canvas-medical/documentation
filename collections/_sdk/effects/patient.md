@@ -108,15 +108,8 @@ The `PatientMetadata` dataclass represents a custom key-value pair for a patient
 
 ## Example Usage
 
-```python?partial=true
-from canvas_sdk.effects.patient.base import (
-    Patient,
-    PatientAddress,
-    PatientContactPoint,
-    PatientExternalIdentifier,
-    PatientMetadata,
-    PatientPreferredPharmacy,
-)
+```python
+from canvas_sdk.effects.patient import Patient, PatientContactPoint, PatientExternalIdentifier, PatientMetadata
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.v1.data.common import ContactPointSystem, ContactPointUse, PersonSex
 import datetime
