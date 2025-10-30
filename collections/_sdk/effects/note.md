@@ -158,7 +158,33 @@ class Protocol(BaseHandler):
         return [fax_effect.apply()]
 ```
 
----
+### Push Charges
+
+Pushes the charges from the Note to its associated Claim in the Revenue module. Has the exact same effect as clicking on the `Push charges` button in the Note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to update | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note, and its NoteTypeVersion must have `is_billable` = True.
+
+#### Example Usage
+
+```python
+import datetime
+
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.push_charges()]
+```
+
 
 ## ScheduleEvent Effect
 
