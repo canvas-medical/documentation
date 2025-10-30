@@ -258,17 +258,6 @@ Labels are automatically filtered based on the current context:
 
 When labels are created programmatically, you can define where they should be available (appointments, tasks, claims, multiple, or global).
 
-### Task Labels via Integration Messages
-
-When tasks are created or updated via integration messages, the system automatically ensures label compatibility with the task context:
-
-- **New labels**: Created so they are available for tasks by default
-- **Existing incompatible labels**: Automatically adjusted to be usable on tasks
-- **Global labels**: Remain global
-- **Compatible labels**: Unchanged if already usable on tasks
-
-This ensures that labels applied to tasks are always available in task contexts.
-
 ## Best Practices
 
 1. **Check appointment existence**: Always verify the appointment exists before adding labels

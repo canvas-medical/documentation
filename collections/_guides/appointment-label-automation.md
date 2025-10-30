@@ -239,8 +239,6 @@ class LabelRemovedProtocol(BaseProtocol):
         return []
 ```
 
-## Task Labels via Integration Messages
-
 ### Automatic Module Assignment
 
 When tasks are created or updated via integration messages, the system automatically manages label modules to ensure compatibility.
@@ -255,27 +253,6 @@ The system automatically:
 4. **Preserves global labels** (keeps `modules=[]` unchanged)
 5. **Preserves compatible labels** (already have "tasks" in modules)
 
-
-#### Integration Message Example
-
-When an integration message creates a task with labels:
-
-```json
-{
-  "integration_message_type": "Task",
-  "integration_payload": {
-    "patient_identifier": {"key": "patient-uuid"},
-    "title": "Follow up on lab results",
-    "labels": ["Urgent", "Lab Review"]
-  }
-}
-```
-
-The system will:
-- Create "Urgent" label with `modules=["tasks"]` if it doesn't exist
-- Create "Lab Review" label with `modules=["tasks"]` if it doesn't exist
-- OR add "tasks" to existing labels if they're appointment-only
-- OR leave them unchanged if they're global or already compatible
 
 ## Complete Example Workflow
 
@@ -450,6 +427,8 @@ The two plugins work together to create a complete automation workflow:
 ```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel
 from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data.coverage import Coverage
+
 
 class InsuranceVerificationProtocol(BaseHandler):
     def compute(self):
@@ -465,7 +444,6 @@ class InsuranceVerificationProtocol(BaseHandler):
         return []
     
     def _patient_has_coverage(self, patient_id):
-        from canvas_sdk.v1.data.coverage import Coverage
         return Coverage.objects.filter(patient__id=patient_id).exists()
 ```
 
@@ -664,70 +642,41 @@ Automatically label appointments for patients without insurance coverage to ensu
 
 **Appointment context**: Use `AddAppointmentLabel` effect to add "Missing Coverage" label
 
-### 2. Task Management via Integration
-
-Automatically categorize tasks from external systems using integration message labels.
-
-**Task context**: Integration messages automatically create and assign labels with proper module scoping
-
-### 3. Cross-Module Priority Tracking
+### 2. Cross-Module Priority Tracking
 
 Track high-priority items across both appointments and tasks using shared labels.
 
 **Both contexts**: Use global or multi-module labels like "Urgent" or "High Priority"
 
-### 4. Appointment Categorization
+### 3. Appointment Categorization
 
 Categorize appointments by type (urgent, follow-up, routine) to help staff prioritize their work.
 
 **Appointment context**: Module-specific labels for appointment workflows
 
-### 5. Task Categorization
+### 4. Task Categorization
 
 Organize tasks by type (lab review, follow-up, documentation) for efficient task management.
 
 **Task context**: Module-specific labels for task workflows
 
-### 6. Staff Notifications
+### 5. Staff Notifications
 
 Use labels to trigger notifications or alerts for specific item types across modules.
 
 **Both contexts**: Event-driven workflows responding to label changes
 
-### 7. Reporting and Analytics
+### 6. Reporting and Analytics
 
 Use labels to generate reports on item types, coverage status, or other business metrics.
 
 **All contexts**: Query labels by module for focused analytics
 
-### 8. Workflow Automation
+### 7. Workflow Automation
 
 Create automated workflows that respond to label changes, such as updating patient metadata or sending notifications.
 
 **Both contexts**: Event-driven automation using `APPOINTMENT_LABEL_ADDED`/`REMOVED` events
-
-## Task Label Integration Examples
-
-### Integration Message Example
-
-When creating a task with labels via integration messages, the system automatically ensures proper module assignment:
-
-```json
-{
-  "integration_message_type": "Task",
-  "integration_payload": {
-    "patient_identifier": {"key": "patient-uuid"},
-    "title": "Follow up on lab results",
-    "labels": ["Urgent", "Lab Review"]
-  }
-}
-```
-
-The system will:
-- Create "Urgent" label with `modules=["tasks"]` if it doesn't exist
-- Create "Lab Review" label with `modules=["tasks"]` if it doesn't exist
-- OR add "tasks" to existing labels if they're appointment-only
-- OR leave them unchanged if they're global or already compatible
 
 ## Related Documentation
 
