@@ -10,6 +10,7 @@ hidden: false
 The Canvas SDK provides effects to:
 
 - manage claim labels, which includes [creating, adding](#addclaimlabel), and [removing](#removeclaimlabel) labels.
+- [update claim line items](#updateclaimlineitem)
 
 ## AddClaimLabel
 
@@ -110,5 +111,54 @@ class Protocol(BaseProtocol):
         if state == "LKD":
             remove = RemoveClaimLabel(claim_id=claim.id, labels=["pushed not locked"])
             return [remove.apply()]
+        return []
+```
+
+### UpdateClaimLineItem
+
+The `UpdateClaimLineItem` effect allows you to update the `charge` field on a specified claim line item.
+
+#### Attributes
+
+| Attribute            | Type            | Description                                        | Required |
+| -------------------- | --------------- | -------------------------------------------------- | -------- |
+| `claim_line_item_id` | `UUID` or `str` | Identifier for the claim line item                 | Yes      |
+| `charge`             | `float`         | The charge amount to update on the claim line item | No       |
+
+#### Implementation Details
+
+- Validates `claim_line_item_id` is provided and that the associated claim line item exists
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.v1.data import Note, ClaimLineItem
+from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
+
+
+class Protocol(BaseProtocol):
+    """When a note is unlocked, update the associated claim's line items to have a charge of $0.00.
+    When a note is locked, update the associated claim's line items to have a charge of $500.00."""
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def get_line_items(self) -> ClaimLineItem:
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        return claim.get_active_claim_line_items()
+
+    def update_charge(self, id: str, charge: float) -> Effect:
+        return UpdateClaimLineItem(claim_line_item_id=id, charge=charge).apply()
+
+    def update_all_items(self, charge: float) -> list[Effect]:
+        return [self.update_charge(line_item.id, charge) for line_item in self.get_line_items()]
+
+    def compute(self) -> list[Effect]:
+        if self.event.context["state"] == "ULK":
+            return self.update_all_items(0.00)
+        if self.event.context["state"] == "LKD":
+            return self.update_all_items(500.00)
         return []
 ```
