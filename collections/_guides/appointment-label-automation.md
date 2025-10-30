@@ -243,11 +243,11 @@ class LabelRemovedProtocol(BaseProtocol):
 
 ### Automatic Module Assignment
 
-When tasks are created or updated via integration messages, the system automatically manages label modules to ensure compatibility. This is handled in `data_integration/messages/consumers/task.py`.
+When tasks are created or updated via integration messages, the system automatically manages label modules to ensure compatibility.
 
 #### How It Works
 
-The `set_labels()` function automatically:
+The system automatically:
 
 1. **Creates new labels** with `modules=["tasks"]`
 2. **Checks existing labels** for compatibility
@@ -706,68 +706,28 @@ Create automated workflows that respond to label changes, such as updating patie
 
 **Both contexts**: Event-driven automation using `APPOINTMENT_LABEL_ADDED`/`REMOVED` events
 
-## Task Label Testing Examples
+## Task Label Integration Examples
 
-From the test suite in `data_integration/tests/messages/consumers/test_task_message_consumer.py`:
+### Integration Message Example
 
-### Test: New Labels Get Tasks Module
+When creating a task with labels via integration messages, the system automatically ensures proper module assignment:
 
-```python?partial=true
-def test_create_task_labels_with_tasks_module():
-    """Test that newly created labels have the TASKS module."""
-    # When a task is created via integration message with labels
-    result = message_handler.handle(integration_message)
-    task = Task.objects.get(externally_exposable_id=result.consumer_result.resource_id)
-    
-    # Verify both labels were created with TASKS module
-    for label_name in integration_message["integration_payload"]["labels"]:
-        label = task.labels.get(name=label_name)
-        assert UserSelectedTaskLabelModuleChoices.TASKS in label.modules
+```json
+{
+  "integration_message_type": "Task",
+  "integration_payload": {
+    "patient_identifier": {"key": "patient-uuid"},
+    "title": "Follow up on lab results",
+    "labels": ["Urgent", "Lab Review"]
+  }
+}
 ```
 
-### Test: Incompatible Labels Get Tasks Added
-
-```python?partial=true
-def test_task_labels_add_module_to_existing_incompatible_label():
-    """Test that existing labels without TASKS module get it added."""
-    # Create an existing label with a different module (APPOINTMENTS)
-    existing_label = UserSelectedTaskLabel.objects.create(
-        name="Urgent",
-        modules=[UserSelectedTaskLabelModuleChoices.APPOINTMENTS],
-        position=10,
-    )
-    
-    # Use the label on a task
-    result = message_handler.handle(integration_message)
-    
-    # Refresh the existing label from the database
-    existing_label.refresh_from_db()
-    
-    # Verify TASKS module was added
-    assert UserSelectedTaskLabelModuleChoices.TASKS in existing_label.modules
-    assert UserSelectedTaskLabelModuleChoices.APPOINTMENTS in existing_label.modules
-```
-
-### Test: Global Labels Stay Global
-
-```python?partial=true
-def test_task_labels_preserve_global_labels():
-    """Test that global labels (modules=[]) remain global."""
-    # Create a global label (modules=[])
-    global_label = UserSelectedTaskLabel.objects.create(
-        name="Urgent",
-        modules=[],
-        position=10,
-    )
-    
-    result = message_handler.handle(integration_message)
-    
-    # Refresh the global label
-    global_label.refresh_from_db()
-    
-    # Verify the label remains global
-    assert global_label.modules == []
-```
+The system will:
+- Create "Urgent" label with `modules=["tasks"]` if it doesn't exist
+- Create "Lab Review" label with `modules=["tasks"]` if it doesn't exist
+- OR add "tasks" to existing labels if they're appointment-only
+- OR leave them unchanged if they're global or already compatible
 
 ## Related Documentation
 
