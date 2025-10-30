@@ -15,21 +15,13 @@ Labels are a powerful way to categorize and track items beyond their basic infor
 
 ### Unified Label System
 
-Canvas uses a unified label system (`UserSelectedTaskLabel`) that can be scoped to specific modules or shared globally:
+Canvas provides a unified label system that supports context scoping. Labels can be:
 
-- **Module-specific labels**: Labels can be restricted to specific modules using the `modules` field
-  - `modules=["appointments"]` - Only available for appointments
-  - `modules=["tasks"]` - Only available for tasks
-  - `modules=["claims"]` - Only available for claims
-  - Labels can have multiple modules: `modules=["appointments", "tasks"]`
-  
-- **Global labels**: Labels with `modules=[]` (empty array) are available across all modules
+- **Appointment-specific**, **task-specific**, or **claim-specific**
+- **Shared across multiple contexts** (e.g., appointments and tasks)
+- **Global** (available everywhere)
 
-- **Automatic filtering**: The system automatically filters labels based on context:
-  - Appointment views show labels where `modules` contains "appointments" OR `modules=[]`
-  - Task views show labels where `modules` contains "tasks" OR `modules=[]`
-
-This allows organizations to create labels that are either shared across the system or specific to particular workflows.
+Labels are automatically filtered to show only where they are applicable, enabling organizations to create labels that are either shared across the system or specific to particular workflows.
 
 ## AddAppointmentLabel Effect
 
@@ -161,7 +153,7 @@ class MyProtocol(BaseHandler):
 - **Label format**: Labels are strings, automatically sorted for consistency
 - **Uniqueness**: Labels are stored as a set, preventing duplicates
 - **Case sensitivity**: Label names are case-sensitive
-- **Module filtering**: Labels are automatically filtered based on their `modules` field and the current context (appointments, tasks, claims)
+- **Context filtering**: Labels are automatically filtered based on the current context (appointments, tasks, claims)
 
 ### Validation Messages
 
@@ -252,71 +244,28 @@ def replace_labels(self, appointment_id, new_labels):
     return [remove_effect.apply(), add_effect.apply()]
 ```
 
-## Module Filtering and Label Availability
+## Label Availability by Context
 
-### How Module Filtering Works
+### How Availability Works
 
 Labels are automatically filtered based on the current context:
 
-- **In appointment contexts**: Only labels with `modules` containing "appointments" or global labels (`modules=[]`) are available
-- **In task contexts**: Only labels with `modules` containing "tasks" or global labels (`modules=[]`) are available
-- **In claims contexts**: Only labels with `modules` containing "claims" or global labels (`modules=[]`) are available
+- **In appointment contexts**: Labels configured for appointments and global labels are available
+- **In task contexts**: Labels configured for tasks and global labels are available
+- **In claims contexts**: Labels configured for claims and global labels are available
 
-### Creating Labels with Module Scope
+### Defining Label Scope
 
-When labels are created programmatically, the `modules` field determines their availability:
-
-```python?partial=true
-from api.models.task import UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
-
-# Create an appointment-only label
-appointment_label, _ = UserSelectedTaskLabel.objects.get_or_create(
-    name="Insurance Verification Needed",
-    defaults={
-        "position": 10,
-        "modules": [UserSelectedTaskLabelModuleChoices.APPOINTMENTS]
-    }
-)
-
-# Create a task-only label
-task_label, _ = UserSelectedTaskLabel.objects.get_or_create(
-    name="Follow-up Required",
-    defaults={
-        "position": 20,
-        "modules": [UserSelectedTaskLabelModuleChoices.TASKS]
-    }
-)
-
-# Create a global label (available everywhere)
-global_label, _ = UserSelectedTaskLabel.objects.get_or_create(
-    name="Urgent",
-    defaults={
-        "position": 5,
-        "modules": []  # Empty array = global
-    }
-)
-
-# Create a label for both appointments and tasks
-shared_label, _ = UserSelectedTaskLabel.objects.get_or_create(
-    name="High Priority",
-    defaults={
-        "position": 15,
-        "modules": [
-            UserSelectedTaskLabelModuleChoices.APPOINTMENTS,
-            UserSelectedTaskLabelModuleChoices.TASKS
-        ]
-    }
-)
-```
+When labels are created programmatically, you can define where they should be available (appointments, tasks, claims, multiple, or global).
 
 ### Task Labels via Integration Messages
 
-When tasks are created or updated via integration messages, the system automatically manages label modules:
+When tasks are created or updated via integration messages, the system automatically ensures label compatibility with the task context:
 
-- **New labels**: Created with `modules=["tasks"]` by default
-- **Existing incompatible labels**: Automatically have "tasks" added to their modules
-- **Global labels**: Remain global (`modules=[]`)
-- **Compatible labels**: Unchanged if they already contain "tasks"
+- **New labels**: Created so they are available for tasks by default
+- **Existing incompatible labels**: Automatically adjusted to be usable on tasks
+- **Global labels**: Remain global
+- **Compatible labels**: Unchanged if already usable on tasks
 
 This ensures that labels applied to tasks are always available in task contexts.
 
@@ -342,46 +291,7 @@ For more information on these events, see [Appointment Events](/sdk/events/#appo
 
 ## Task Label Integration
 
-### Integration Message Handling
-
-The task label system includes automatic module assignment when tasks are created via integration messages. This is handled in `data_integration/messages/consumers/task.py`:
-
-```python?partial=true
-from api.models.task import UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
-
-def set_labels(task, labels):
-    """Set labels on a task, ensuring module compatibility."""
-    task.labels.clear()
-    for label in labels:
-        task_label = UserSelectedTaskLabel.objects.filter(name=label).first()
-        
-        if task_label is None:
-            # Create new label with tasks module
-            task_label = UserSelectedTaskLabel.objects.create(
-                position=10,
-                name=label,
-                modules=[UserSelectedTaskLabelModuleChoices.TASKS]
-            )
-        else:
-            # Check if label is compatible with tasks
-            is_compatible = (
-                task_label.modules == []  # Global label
-                or UserSelectedTaskLabelModuleChoices.TASKS in task_label.modules
-            )
-            
-            if not is_compatible:
-                # Add tasks module to incompatible label
-                task_label.modules.append(UserSelectedTaskLabelModuleChoices.TASKS)
-                task_label.save(update_fields=["modules"])
-        
-        task.labels.add(task_label)
-```
-
-This automatic handling ensures that:
-- Labels are always available in the appropriate context
-- Existing labels can be shared across modules when needed
-- Global labels remain global
-- No manual module management is required for integration messages
+Task label integration behavior ensures labels are compatible with task contexts and requires no manual module management for integration messages.
 
 ## Related Documentation
 

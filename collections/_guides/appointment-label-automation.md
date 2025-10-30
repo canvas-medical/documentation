@@ -32,20 +32,17 @@ Labels are visual indicators that help categorize and track items beyond their b
 - **Automation**: Labels can be added/removed automatically based on business logic
 - **Integration**: Labels trigger events that other plugins can respond to
 - **Reporting**: Labels can be used for analytics and reporting
-- **Module scoping**: Labels can be restricted to specific modules or shared globally
+- **Context scoping**: Labels can be restricted to specific contexts or shared globally
 
 ### Unified Label System
 
-Canvas uses `UserSelectedTaskLabel` as the underlying model for all labels, with a `modules` field that controls where labels appear:
+Canvas provides a unified label system with configurable availability:
 
-- **Module-specific labels**: `modules=["appointments"]`, `modules=["tasks"]`, or `modules=["claims"]`
-- **Multi-module labels**: `modules=["appointments", "tasks"]` - available in multiple contexts
-- **Global labels**: `modules=[]` - available everywhere
+- **Context-specific labels**: appointment-only, task-only, or claim-only
+- **Shared labels**: available in multiple contexts (e.g., appointments and tasks)
+- **Global labels**: available everywhere
 
-Labels are automatically filtered based on context:
-- Appointment UI shows labels with "appointments" in modules OR empty modules
-- Task UI shows labels with "tasks" in modules OR empty modules
-- Claims UI shows labels with "claims" in modules OR empty modules
+Labels are automatically filtered based on context in the UI.
 
 For more information on using labels in the Canvas UI, see [Appointment Labels](https://help.canvasmedical.com/articles/9726289513-fs-appointment-labels).
 
@@ -59,44 +56,10 @@ For more information on using labels in the Canvas UI, see [Appointment Labels](
 - **Case sensitivity**: Label names are case-sensitive
 - **Module filtering**: Labels are filtered based on their `modules` field and current context
 
-### Module Scoping
+### Context Scoping
 
-The `modules` field controls label availability:
-
-```python?partial=true
-from api.models.task import UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
-
-# Appointment-only label
-UserSelectedTaskLabel.objects.create(
-    name="Insurance Verification",
-    position=10,
-    modules=[UserSelectedTaskLabelModuleChoices.APPOINTMENTS]
-)
-
-# Task-only label
-UserSelectedTaskLabel.objects.create(
-    name="Follow-up Required",
-    position=20,
-    modules=[UserSelectedTaskLabelModuleChoices.TASKS]
-)
-
-# Global label (available everywhere)
-UserSelectedTaskLabel.objects.create(
-    name="Urgent",
-    position=5,
-    modules=[]  # Empty = global
-)
-
-# Shared label (appointments and tasks)
-UserSelectedTaskLabel.objects.create(
-    name="High Priority",
-    position=15,
-    modules=[
-        UserSelectedTaskLabelModuleChoices.APPOINTMENTS,
-        UserSelectedTaskLabelModuleChoices.TASKS
-    ]
-)
-```
+Label availability is controlled by their defined context (appointments, tasks, claims, multiple, or global).
+ 
 
 ### Label Lifecycle
 
@@ -292,41 +255,6 @@ The `set_labels()` function automatically:
 4. **Preserves global labels** (keeps `modules=[]` unchanged)
 5. **Preserves compatible labels** (already have "tasks" in modules)
 
-#### Example Implementation
-
-```python?partial=true
-from api.models.task import Task, UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
-
-def set_labels(task: Task, labels: list[str]) -> None:
-    """Set labels on a task, ensuring module compatibility."""
-    task.labels.clear()
-    
-    for label in labels:
-        task_label = UserSelectedTaskLabel.objects.filter(name=label).first()
-        
-        if task_label is None:
-            # Create new label with tasks module
-            task_label = UserSelectedTaskLabel.objects.create(
-                position=10,
-                name=label,
-                modules=[UserSelectedTaskLabelModuleChoices.TASKS]
-            )
-        else:
-            # Check if label is compatible with tasks
-            is_compatible = (
-                task_label.modules == []  # Global label
-                or UserSelectedTaskLabelModuleChoices.TASKS in task_label.modules
-            )
-            
-            if not is_compatible:
-                # Add tasks module to incompatible label
-                task_label.modules.append(UserSelectedTaskLabelModuleChoices.TASKS)
-                task_label.save(update_fields=["modules"])
-        
-        task.labels.add(task_label)
-    
-    task.save()
-```
 
 #### Integration Message Example
 
@@ -348,33 +276,6 @@ The system will:
 - Create "Lab Review" label with `modules=["tasks"]` if it doesn't exist
 - OR add "tasks" to existing labels if they're appointment-only
 - OR leave them unchanged if they're global or already compatible
-
-### Real-World Example: Chart PDF Export
-
-From `api/actions/chart/export_pdf_with_attachments.py`:
-
-```python?partial=true
-from api.models.task import Task, UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
-
-# Create task for chart PDF
-task = Task.objects.create(
-    patient=patient,
-    title=f"Chart PDF for {patient.display_name}",
-    assignee=requestor_staff
-)
-
-# Get or create label with tasks module
-task_label, _ = UserSelectedTaskLabel.objects.get_or_create(
-    name="Chart PDF",
-    defaults={
-        "position": 57,
-        "modules": [UserSelectedTaskLabelModuleChoices.TASKS]
-    }
-)
-
-# Add label to task
-task_label.tasks.add(task.id)
-```
 
 ## Complete Example Workflow
 
@@ -635,30 +536,15 @@ def replace_all_labels(self, appointment_id, new_labels):
 You may want to mark both appointments and tasks as "Urgent" using the same label:
 
 ```python?partial=true
-from api.models.task import UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
-
-# Create a shared "Urgent" label
-urgent_label, _ = UserSelectedTaskLabel.objects.get_or_create(
-    name="Urgent",
-    defaults={
-        "position": 1,
-        "modules": [
-            UserSelectedTaskLabelModuleChoices.APPOINTMENTS,
-            UserSelectedTaskLabelModuleChoices.TASKS
-        ]
-    }
-)
-
-# Now the label is available in both contexts
-# Use with appointments
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel
 
 AddAppointmentLabel(
     appointment_id="appointment-uuid",
     labels={"Urgent"}
 ).apply()
+```
 
-# And with tasks via integration messages
+```json
 {
   "integration_message_type": "Task",
   "integration_payload": {
@@ -667,56 +553,11 @@ AddAppointmentLabel(
 }
 ```
 
-### Scenario: Module-Specific Labels
+### Scenario: Context-Specific Labels
 
 Some labels should only appear in specific contexts:
 
-```python?partial=true
-# Insurance verification - appointments only
-UserSelectedTaskLabel.objects.get_or_create(
-    name="Missing Coverage",
-    defaults={
-        "position": 10,
-        "modules": [UserSelectedTaskLabelModuleChoices.APPOINTMENTS]
-    }
-)
-
-# Lab result review - tasks only
-UserSelectedTaskLabel.objects.get_or_create(
-    name="Lab Review",
-    defaults={
-        "position": 20,
-        "modules": [UserSelectedTaskLabelModuleChoices.TASKS]
-    }
-)
-```
-
-### Scenario: Converting Label Scope
-
-If you need to make an appointment-only label available for tasks:
-
-```python?partial=true
-from api.models.task import UserSelectedTaskLabel, UserSelectedTaskLabelModuleChoices
-
-# Get the appointment-only label
-label = UserSelectedTaskLabel.objects.get(name="Follow-up Needed")
-
-# Check current modules
-if UserSelectedTaskLabelModuleChoices.TASKS not in label.modules:
-    # Add tasks module
-    label.modules.append(UserSelectedTaskLabelModuleChoices.TASKS)
-    label.save(update_fields=["modules"])
-
-# Now available in both contexts
-```
-
-Or make it global:
-
-```python?partial=true
-# Make label available everywhere
-label.modules = []
-label.save(update_fields=["modules"])
-```
+Use appointment-only labels for appointment workflows and task-only labels for task workflows. Promote to shared or global when the same meaning applies across contexts.
 
 ## Best Practices
 
@@ -785,20 +626,6 @@ def efficient_label_check(self, appointment_id):
         return set()
     
     return set(appointment.labels)
-
-def get_task_labels():
-    """Get all labels available for tasks."""
-    from api.models.task import UserSelectedTaskLabel
-    
-    # Uses efficient queryset filtering
-    return UserSelectedTaskLabel.objects.task_modules().active()
-
-def get_appointment_labels():
-    """Get all labels available for appointments."""
-    from api.models.task import UserSelectedTaskLabel
-    
-    # Uses efficient queryset filtering
-    return UserSelectedTaskLabel.objects.appointment_modules().active()
 ```
 
 ### Testing
