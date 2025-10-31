@@ -1,27 +1,17 @@
 ---
-title: "Appointment and Task Labels"
+title: "Appointment Labels"
 slug: "effect-appointment-labels"
-excerpt: "Effects for managing appointment and task labels"
+excerpt: "Effects for managing appointment labels"
 hidden: false
 ---
 
-# Appointment and Task Label Effects
+# Appointment Label Effects
 
-The appointment and task label effects provide programmatic management of labels in Canvas. Labels serve as visual indicators and categorization tools, enabling automated workflows and improved organization across appointments and tasks.
+The appointment label effects provide programmatic management of labels in Canvas. Labels serve as visual indicators and categorization tools, enabling automated workflows and improved organization for appointments.
 
 ## Overview
 
-Labels are a powerful way to categorize and track items beyond their basic information. Canvas supports up to 3 labels per appointment, and these effects allow plugins to automatically manage labels based on business logic.
-
-### Unified Label System
-
-Canvas provides a unified label system that supports context scoping. Labels can be:
-
-- **Appointment-specific**, **task-specific**, or **claim-specific**
-- **Shared across multiple contexts** (e.g., appointments and tasks)
-- **Global** (available everywhere)
-
-Labels are automatically filtered to show only where they are applicable, enabling organizations to create labels that are either shared across the system or specific to particular workflows.
+Labels are a powerful way to categorize and track appointments. Canvas supports up to 3 labels per appointment, and these effects allow plugins to automatically manage labels based on business logic.
 
 ## AddAppointmentLabel Effect
 
@@ -153,7 +143,6 @@ class MyProtocol(BaseHandler):
 - **Label format**: Labels are strings, automatically sorted for consistency
 - **Uniqueness**: Labels are stored as a set, preventing duplicates
 - **Case sensitivity**: Label names are case-sensitive
-- **Context filtering**: Labels are automatically filtered based on the current context (appointments, tasks, claims)
 
 ### Validation Messages
 
@@ -244,20 +233,6 @@ def replace_labels(self, appointment_id, new_labels):
     return [remove_effect.apply(), add_effect.apply()]
 ```
 
-## Label Availability by Context
-
-### How Availability Works
-
-Labels are automatically filtered based on the current context:
-
-- **In appointment contexts**: Labels configured for appointments and global labels are available
-- **In task contexts**: Labels configured for tasks and global labels are available
-- **In claims contexts**: Labels configured for claims and global labels are available
-
-### Defining Label Scope
-
-When labels are created programmatically, you can define where they should be available (appointments, tasks, claims, multiple, or global).
-
 ## Best Practices
 
 1. **Check appointment existence**: Always verify the appointment exists before adding labels
@@ -266,8 +241,6 @@ When labels are created programmatically, you can define where they should be av
 4. **Batch operations**: When possible, add/remove multiple labels in a single effect
 5. **Error handling**: Always handle validation errors to prevent workflow interruption
 6. **Consistent naming**: Use consistent label naming conventions across your organization
-7. **Choose appropriate scope**: Decide whether labels should be module-specific or global based on your workflow needs
-8. **Consider cross-module usage**: Use global labels or multi-module labels when the same categorization applies across different contexts
 
 ## Integration with Events
 
@@ -280,7 +253,5 @@ For more information on these events, see [Appointment Events](/sdk/events/#appo
 
 ## Related Documentation
 
-- [Appointment and Task Label Automation Guide](/guides/appointment-label-automation/) - Complete workflow examples
 - [Appointment Events](/sdk/events/#appointments) - Event documentation
 - [Appointment Coverage Label Example](/sdk/examples/appointment_coverage_label/) - Real-world example plugin
-- [Task Data Model](/sdk/data/task/) - Task label field documentation
