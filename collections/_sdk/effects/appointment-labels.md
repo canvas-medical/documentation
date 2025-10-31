@@ -278,10 +278,6 @@ These effects work seamlessly with appointment label events:
 
 For more information on these events, see [Appointment Events](/sdk/events/#appointments).
 
-## Task Label Integration
-
-Task label integration behavior ensures labels are compatible with task contexts and requires no manual module management for integration messages.
-
 ## Related Documentation
 
 - [Appointment and Task Label Automation Guide](/guides/appointment-label-automation/) - Complete workflow examples

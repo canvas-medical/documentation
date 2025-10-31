@@ -16,14 +16,13 @@ This guide demonstrates how to automate appointment and task labels in Canvas us
 - How the unified label system works in Canvas
 - Understanding label modules and filtering
 - Using `AddAppointmentLabel` and `RemoveAppointmentLabel` effects
-- Managing task labels via integration messages
 - Responding to `APPOINTMENT_LABEL_ADDED` and `APPOINTMENT_LABEL_REMOVED` events
 - Building complete automation workflows
 - Best practices for label management across modules
 
 ## Overview: Labels in Canvas
 
-Labels are visual indicators that help categorize and track items beyond their basic information. Canvas uses a unified label system that works across appointments, tasks, and claims. Canvas supports up to 3 labels per appointment, and these can be managed both manually through the UI and programmatically through plugins and integration messages.
+Labels are visual indicators that help categorize and track items beyond their basic information. Canvas uses a unified label system that works across appointments, tasks, and claims. Canvas supports up to 3 labels per appointment, and these can be managed both manually through the UI and programmatically through plugins.
 
 ### Key Features
 
@@ -59,7 +58,6 @@ For more information on using labels in the Canvas UI, see [Appointment Labels](
 ### Context Scoping
 
 Label availability is controlled by their defined context (appointments, tasks, claims, multiple, or global).
- 
 
 ### Label Lifecycle
 
@@ -238,21 +236,6 @@ class LabelRemovedProtocol(BaseProtocol):
         
         return []
 ```
-
-### Automatic Module Assignment
-
-When tasks are created or updated via integration messages, the system automatically manages label modules to ensure compatibility.
-
-#### How It Works
-
-The system automatically:
-
-1. **Creates new labels** with `modules=["tasks"]`
-2. **Checks existing labels** for compatibility
-3. **Adds "tasks" module** to incompatible labels
-4. **Preserves global labels** (keeps `modules=[]` unchanged)
-5. **Preserves compatible labels** (already have "tasks" in modules)
-
 
 ## Complete Example Workflow
 
@@ -511,25 +494,7 @@ def replace_all_labels(self, appointment_id, new_labels):
 
 ### Scenario: Urgent Items Across Appointments and Tasks
 
-You may want to mark both appointments and tasks as "Urgent" using the same label:
-
-```python?partial=true
-from canvas_sdk.effects.note.appointment import AddAppointmentLabel
-
-AddAppointmentLabel(
-    appointment_id="appointment-uuid",
-    labels={"Urgent"}
-).apply()
-```
-
-```json
-{
-  "integration_message_type": "Task",
-  "integration_payload": {
-    "labels": ["Urgent"]
-  }
-}
-```
+You may want to mark both appointments and tasks as "Urgent" using the same label. The unified label system allows you to create labels that work across different contexts.
 
 ### Scenario: Context-Specific Labels
 
