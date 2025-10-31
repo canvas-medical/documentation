@@ -636,6 +636,9 @@ effects_module:
   - title: "Banner Alerts"
     url: /sdk/effect-banner-alerts/
     description: Contextual information in a patient's chart.
+  - title: "Batch Originate Commands"
+    url: /sdk/effect-batch-originate/
+    description: Efficiently insert multiple commands in a single batch operation.
   - title: "Billing Line Items"
     url: /sdk/effect-billing-line-items/
     description: Add, modify, or remove billing codes on a note.
