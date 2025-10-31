@@ -24,7 +24,7 @@ An `Effect` that can be applied to originate all commands in a single operation.
 
 The batch originate effect processes multiple commands in a single operation:
 
-1. **Command Preparation**: Each command in the list is prepared for the batch insertion using its internal `_originate_for_batch()` method
+1. **Command Preparation**: Each command in the list required all necessary fields for `originate`
 2. **Note Update**: The note is updated once with all command UUIDs, rather than updating for each command individually
 
 This approach minimizes database round-trips and improves overall performance.

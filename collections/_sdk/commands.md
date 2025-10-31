@@ -54,23 +54,6 @@ Returns an Effect that sends a signed command.
 
 Returns an effect that enter-in-errors an existing, committed command in the note body.
 
-#### batch_originate
-
-Returns a `dict` to be used by the `BatchOriginateCommandEffect` that efficiently originates multiple commands in a single batch operation. This method provides significant performance improvements when inserting many commands into a note simultaneously.
-
-**Usage:**
-
-```python
-from canvas_sdk.effects.batch_originate import BatchOriginateCommandEffect
-
-# Create multiple commands
-commands = [command1, command2, command3]
-
-# Batch originate them all at once
-return [BatchOriginateCommandEffect(commands=commands).apply()]
-```
-
-See the [Batch Originate Effects documentation](/sdk/effect-batch-originate/) for detailed usage examples and best practices.
 
 **Example**:
 
