@@ -24,8 +24,6 @@ The `AddAppointmentLabel` effect adds one or more labels to an existing appointm
 | `appointment_id` | `str`     | ID of the appointment to add labels to                                  | Yes      |
 | `labels`         | `set[str]`| Set of label names to add (1-3 labels total per appointment)            | Yes      |
 
-### Methods
-
 ### apply() → Effect
 
 Adds the specified labels to the appointment.
@@ -39,16 +37,9 @@ An `Effect` object configured for adding appointment labels.
 - Labels are added to the appointment if the total count doesn't exceed 3
 - Labels are automatically sorted for consistency
 - Duplicate labels are ignored (labels are stored as a set)
-- If the appointment doesn't exist, an error is returned
-- If adding labels would exceed the 3-label limit, an error is returned
-
-#### Validation
-
-The effect performs comprehensive validation:
-
-- **Appointment existence**: Verifies the appointment exists
-- **Label limit**: Ensures the total number of labels doesn't exceed 3
-- **Label format**: Validates label names are non-empty strings
+- Validates the appointment exists before adding labels
+- Validates label names are non-empty strings
+- Returns an error if adding labels would exceed the 3-label limit
 
 #### Example Usage
 
@@ -99,8 +90,6 @@ The `RemoveAppointmentLabel` effect removes one or more labels from an existing 
 | `appointment_id` | `str`     | ID of the appointment to remove labels from                             | Yes      |
 | `labels`         | `set[str]`| Set of label names to remove                                            | Yes      |
 
-### Methods
-
 ### apply() → Effect
 
 Removes the specified labels from the appointment.
@@ -111,10 +100,9 @@ An `Effect` object configured for removing appointment labels.
 
 #### Behavior
 
-- Labels are removed from the appointment
+- Removes the specified labels from the appointment
 - Non-existent labels are ignored (no error thrown)
-- Labels are automatically sorted for consistency
-- If the appointment doesn't exist, an error is returned
+- Validates the appointment exists before removing labels
 
 #### Example Usage
 
@@ -150,13 +138,6 @@ The effects provide clear error messages for common issues:
 
 - `"Appointment {appointment_id} does not exist"` - When appointment ID is invalid
 - `"Limit reached: Only 3 appointment labels allowed. Attempted to add {count} label(s) to appointment with {existing} existing label(s)."` - When label limit would be exceeded
-
-### Performance Considerations
-
-- Effects validate appointment existence before processing
-- Label operations are atomic
-- Sorting is performed efficiently using Python's built-in sort
-- Database queries are optimized with proper indexing
 
 ## Common Use Cases
 
@@ -218,29 +199,27 @@ from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppoi
 
 # Replace all labels with new ones
 def replace_labels(self, appointment_id, new_labels):
-    # First remove all existing labels
+    # First remove existing labels
     remove_effect = RemoveAppointmentLabel(
         appointment_id=appointment_id,
-        labels={"LABEL1", "LABEL2", "LABEL3"}  # Remove common labels
+        labels={"URGENT", "CANCELLED", "FOLLOW_UP"}  # Remove common labels
     )
-    
+
     # Then add new labels
     add_effect = AddAppointmentLabel(
         appointment_id=appointment_id,
         labels=new_labels
     )
-    
+
     return [remove_effect.apply(), add_effect.apply()]
 ```
 
 ## Best Practices
 
-1. **Check appointment existence**: Always verify the appointment exists before adding labels
-2. **Handle label limits**: Be aware of the 3-label limit and handle validation errors gracefully
-3. **Use meaningful labels**: Choose descriptive label names that clearly indicate their purpose
-4. **Batch operations**: When possible, add/remove multiple labels in a single effect
-5. **Error handling**: Always handle validation errors to prevent workflow interruption
-6. **Consistent naming**: Use consistent label naming conventions across your organization
+1. **Handle validation errors**: The effects automatically validate appointment existence and label limits, so catch `ValidationError` exceptions to handle edge cases gracefully
+2. **Use meaningful labels**: Choose descriptive label names that clearly indicate their purpose
+3. **Batch operations**: When possible, add/remove multiple labels in a single effect
+4. **Consistent naming**: Use consistent label naming conventions across your organization (e.g., all caps, underscores for spaces)
 
 ## Integration with Events
 
