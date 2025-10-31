@@ -54,7 +54,7 @@ class MyProtocol(BaseHandler):
             appointment_id="appointment-uuid",
             labels={"URGENT", "FOLLOW_UP"}
         )
-        
+
         return [effect.apply()]
 ```
 
@@ -117,7 +117,7 @@ class MyProtocol(BaseHandler):
             appointment_id="appointment-uuid",
             labels={"CANCELLED", "RESCHEDULED"}
         )
-        
+
         return [effect.apply()]
 ```
 
@@ -138,90 +138,6 @@ The effects provide clear error messages for common issues:
 
 - `"Appointment {appointment_id} does not exist"` - When appointment ID is invalid
 - `"Limit reached: Only 3 appointment labels allowed. Attempted to add {count} label(s) to appointment with {existing} existing label(s)."` - When label limit would be exceeded
-
-## Common Use Cases
-
-### Insurance Verification Workflow
-
-```python?partial=true
-from canvas_sdk.effects.note.appointment import AddAppointmentLabel
-
-# Automatically label appointments for patients without coverage
-def handle_appointment_created(self):
-    if not self._patient_has_coverage():
-        return [
-            AddAppointmentLabel(
-                appointment_id=self.event.context["appointment"]["id"],
-                labels={"MISSING_COVERAGE"}
-            ).apply()
-        ]
-    return []
-```
-
-### Appointment Status Tracking
-
-```python?partial=true
-from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
-
-# Update labels based on appointment status changes
-def handle_status_change(self):
-    effects = []
-    
-    if self._is_urgent():
-        effects.append(
-            AddAppointmentLabel(
-                appointment_id=self.appointment_id,
-                labels={"URGENT"}
-            ).apply()
-        )
-    
-    if self._is_cancelled():
-        effects.append(
-            RemoveAppointmentLabel(
-                appointment_id=self.appointment_id,
-                labels={"SCHEDULED"}
-            ).apply()
-        )
-        effects.append(
-            AddAppointmentLabel(
-                appointment_id=self.appointment_id,
-                labels={"CANCELLED"}
-            ).apply()
-        )
-    
-    return effects
-```
-
-### Multi-Label Management
-
-```python?partial=true
-from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
-
-# Replace all labels with new ones
-def replace_labels(self, appointment_id, new_labels):
-    # First remove existing labels
-    remove_effect = RemoveAppointmentLabel(
-        appointment_id=appointment_id,
-        labels={"URGENT", "CANCELLED", "FOLLOW_UP"}  # Remove common labels
-    )
-
-    # Then add new labels
-    add_effect = AddAppointmentLabel(
-        appointment_id=appointment_id,
-        labels=new_labels
-    )
-
-    return [remove_effect.apply(), add_effect.apply()]
-```
-
-## Best Practices
-
-1. **Handle validation errors**: The effects automatically validate appointment existence and label limits, so catch `ValidationError` exceptions to handle edge cases gracefully
-2. **Use meaningful labels**: Choose descriptive label names that clearly indicate their purpose
-3. **Batch operations**: When possible, add/remove multiple labels in a single effect
-4. **Consistent naming**: Use consistent label naming conventions across your organization (e.g., all caps, underscores for spaces)
-
-## Integration with Events
 
 These effects work seamlessly with appointment label events:
 
