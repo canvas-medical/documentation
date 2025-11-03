@@ -74,6 +74,7 @@ sections:
                     type: string
                     enum_options:
                       - value: http://terminology.hl7.org/CodeSystem/observation-category
+                      - value: http://hl7.org/fhir/us/core/CodeSystem/us-core-category
                   - name: code
                     description: The code of the observation.
                     type: string
