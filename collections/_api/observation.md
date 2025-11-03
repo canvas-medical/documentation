@@ -87,6 +87,10 @@ sections:
                       - value: exam
                       - value: therapy
                       - value: activity
+                      - value: sdoh
+                      - value: functional-status
+                      - value: cognitive-status
+                      - value: disability-status
                   - name: display
                     description: The display name of the coding.
                     type: string
@@ -101,6 +105,10 @@ sections:
                       - value: Exam
                       - value: Therapy
                       - value: Activity
+                      - value: SDOH
+                      - value: Functional Status
+                      - value: Cognitive Status
+                      - value: Disability Status
           - name: code
             type: json
             exclude_in: read, search
