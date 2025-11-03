@@ -72,6 +72,8 @@ Represents a complete healthcare claim.
 | created                    | DateTime                                    |
 | modified                   | DateTime                                    |
 | diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[] |
+| line_items                 | [ClaimLineItem](#claimlineitem)[]           |
+| labels                     | [TaskLabel](/sdk/data-task/#tasklabel)[]    |
 
 **Computed Properties**:
 
