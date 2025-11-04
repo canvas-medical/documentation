@@ -27,6 +27,8 @@ All commands have the following methods:
 
 Returns an Effect that originates a new command in the note body.
 
+**See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
+
 #### edit
 
 Returns an Effect that edits an existing command with the values set on the command class instance.
