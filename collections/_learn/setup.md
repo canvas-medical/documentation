@@ -11,7 +11,7 @@ hidden: false
 - Python 3.11 or 3.12
 - Developer access to a Canvas EHR instance
 
-If you are not a current Canvas user, visit [Developer Sandbox with XPC Support](https://www.canvasmedical.com/emrs/developer-sandbox) to request access.
+If you are not a current Canvas user, visit the [Developer Sandbox](https://www.canvasmedical.com/emrs/developer-sandbox) to obtain a login.
 
 The following guide will reference these EHR instance variables as follows:
 - `YOUR_CANVAS_EHR_INSTANCE` = the full URL, eg: https://my-clinic.canvasmedical.com
@@ -155,6 +155,7 @@ from canvas_sdk.protocols import BaseProtocol
 from canvas_sdk.events import EventType
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.banner_alert import AddBannerAlert
+from canvas_sdk.v1.data.patient import Patient
 
 class PatientWelcomeBanner(BaseProtocol):
     """Adds a Welcome message to new patient records"""
@@ -163,10 +164,14 @@ class PatientWelcomeBanner(BaseProtocol):
 
     def compute(self) -> list[Effect]:
         """Listens for patient creation and returns an alert banner"""
+        # Load the patient object
+        patient = Patient.objects.get(id=self.target)
+        patient_name = patient.first_name
+
         banner = AddBannerAlert(
             patient_id=self.target,
             key="welcome",
-            narrative="This is a new patient.",
+            narrative=f"{patient_name} is a new patient.",
             placement=[
                 AddBannerAlert.Placement.CHART
             ],
