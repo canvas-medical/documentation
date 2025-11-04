@@ -73,6 +73,9 @@ Represents a complete healthcare claim.
 | modified                   | DateTime                                    |
 | diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[] |
 | comments                   | [ClaimComment](#claimcomment)[]             |
+| line_items                 | [ClaimLineItem](#claimlineitem)[]           |
+| labels                     | [TaskLabel](/sdk/data-task/#tasklabel)[]    |
+| provider                   | [ClaimProvider](#claimprovider)             |
 
 **Computed Properties**:
 
@@ -229,6 +232,72 @@ Captures patient-level data related to a specific claim.
 | country     | String                                     |
 | created     | DateTime                                   |
 | modified    | DateTime                                   |
+
+### ClaimLabel
+
+Represents labels assigned to the claim.
+
+| Field Name | Type                                   |
+| ---------- | -------------------------------------- |
+| id         | UUID                                   |
+| dbid       | Integer                                |
+| claim      | [Claim](#claim)                        |
+| label      | [TaskLabel](/sdk/data-task/#tasklabel) |
+
+
+### ClaimProvider
+
+Captures provider-level data related to a specific claim.
+
+| Field Name                         | Type            |
+| ---------------------------------- | --------------- |
+| id                                 | UUID            |
+| dbid                               | Integer         |
+| claim                              | [Claim](#claim) |
+| clia_number                        | String          |
+| billing_provider_name              | String          |
+| billing_provider_phone             | String          |
+| billing_provider_addr1             | String          |
+| billing_provider_addr2             | String          |
+| billing_provider_city              | String          |
+| billing_provider_state             | String          |
+| billing_provider_zip               | String          |
+| billing_provider_id                | String          |
+| billing_provider_npi               | String          |
+| billing_provider_tax_id            | String          |
+| billing_provider_tax_id_type       | String          |
+| billing_provider_taxonomy          | String          |
+| provider_id                        | String          |
+| provider_first_name                | String          |
+| provider_last_name                 | String          |
+| provider_middle_name               | String          |
+| provider_npi                       | String          |
+| provider_tax_id                    | String          |
+| provider_tax_id_type               | String          |
+| provider_taxonomy                  | String          |
+| provider_ptan_identifier           | String          |
+| referring_provider_id              | String          |
+| referring_provider_first_name      | String          |
+| referring_provider_last_name       | String          |
+| referring_provider_middle_name     | String          |
+| referring_provider_npi             | String          |
+| referring_provider_ptan_identifier | String          |
+| ordering_provider_first_name       | String          |
+| ordering_provider_last_name        | String          |
+| ordering_provider_middle_name      | String          |
+| ordering_provider_npi              | String          |
+| facility_id                        | String          |
+| facility_name                      | String          |
+| facility_npi                       | String          |
+| facility_addr1                     | String          |
+| facility_addr2                     | String          |
+| facility_city                      | String          |
+| facility_state                     | String          |
+| facility_zip                       | String          |
+| hosp_from_date                     | String          |
+| hosp_to_date                       | String          |
+| created                            | DateTime        |
+| modified                           | DateTime        |
 
 ### InstallmentPlan
 
