@@ -72,6 +72,7 @@ Represents a complete healthcare claim.
 | created                    | DateTime                                    |
 | modified                   | DateTime                                    |
 | diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[] |
+| comments                   | [ClaimComment](#claimcomment)[]             |
 | line_items                 | [ClaimLineItem](#claimlineitem)[]           |
 | labels                     | [TaskLabel](/sdk/data-task/#tasklabel)[]    |
 | provider                   | [ClaimProvider](#claimprovider)             |
@@ -159,6 +160,22 @@ Links a claim to a specific insurance coverage.
 | payer_icn                          | String                                                                   |
 | created                            | DateTime                                                                 |
 | modified                           | DateTime                                                                 |
+
+### ClaimComment
+
+Represents a free-text comment made on a Claim.
+
+| Field Name       | Type                               |
+| ---------------- | ---------------------------------- |
+| id               | UUID                               |
+| dbid             | Integer                            |
+| claim            | [Claim](#claim)                    |
+| created          | DateTime                           |
+| modified         | DateTime                           |
+| deleted          | Boolean                            |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
+| committer        | [CanvasUser](/sdk/data-canvasuser) |
+| comment          | String                             |
 
 ### ClaimDiagnosisCode
 
