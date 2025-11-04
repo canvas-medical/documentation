@@ -25,6 +25,17 @@ Stay up to date on the latest important dates for the Canvas platform.
     </tr>
   </thead>
   <tbody>
+  <tr>
+    <td>FHIR API: Condition category code change from encounter-diagnosis to problem-list-item</td>
+      <td style="color: red;">Breaking Change</td>
+      <td>
+        The Condition endpoint now accepts <code>problem-list-item</code> as a valid category code. Developers should begin migrating their code to use <code>problem-list-item</code> instead of <code>encounter-diagnosis</code>.<br><br>
+        Support for <code>encounter-diagnosis</code> will be discontinued in a future release. All Condition resources must use <code>problem-list-item</code> as the category code.<br><br>
+        <strong>API client code must be updated to use <code>problem-list-item</code> to avoid disruption.</strong>
+      </td>
+      <td>TBD</td>
+      <td></td>
+    </tr>
     <tr>
       <td>UI & FHIR API: Patient Contact Relationship</td>
       <td style="color: red;">Breaking Change</td>
