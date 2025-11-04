@@ -47,7 +47,7 @@ sections:
                       description: The display name of the coding.
                       type: string
           - name: subject
-            description: Who or group medication request is for.
+            description: Who the medication request is for.
             type: json
             attributes:
               - name: reference

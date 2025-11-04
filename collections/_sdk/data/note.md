@@ -142,6 +142,24 @@ claim = note.get_claim()
 
 ```
 
+### Get the NoteType of a given note
+
+To get the note type for a specific note, use the `note_type_version` attribute which provides access to the related `NoteType` object:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
+# Get the note type name (e.g., "Office Visit")
+note_type_name = note.note_type_version.name
+
+# Access other note type attributes
+note_type_display = note.note_type_version.display
+note_type_code = note.note_type_version.code
+note_type_system = note.note_type_version.system
+```
+
 ## Filtering
 
 ### By attribute
