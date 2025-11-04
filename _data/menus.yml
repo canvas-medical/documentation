@@ -421,7 +421,9 @@ api_custom_apis:
 
 education:
   - title: "Developer Education"
-    url: /learn/
+    identifier: education_series
+
+education_series:
   - title: "Series 1"
     header: true
   - title: "Overview"
