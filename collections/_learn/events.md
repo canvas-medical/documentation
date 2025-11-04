@@ -1,7 +1,7 @@
 ---
 title: "Events"
 slug: "events"
-layout: devpage
+layout: education
 hidden: false
 ---
 

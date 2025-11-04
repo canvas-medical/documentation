@@ -1,7 +1,7 @@
 ---
 title: "Setup"
 slug: "setup"
-layout: devpage
+layout: education
 hidden: false
 ---
 
@@ -229,4 +229,4 @@ Now that you have authentication configured and your first plugin deployed, you 
 * Traverse Data objects
 * Return various Effect types
 
-Next up: --> [Events](/dev/events)
+Next up: --> [Events](/learn/events)
