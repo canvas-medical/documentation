@@ -578,6 +578,26 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <thead>
+    <tr><th colspan="2">APPOINTMENT__SLOTS__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when requesting slot availability when scheduling an appointment.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre></pre></td>
+       <td>
+        <pre>"slots_by_provider": list[dict]</pre>
+        <pre>"selected_values": dict</pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">APPOINTMENT__FORM__PROVIDERS__PRE_SEARCH</th></tr>
     <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
   </thead>
@@ -589,6 +609,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+      <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -607,7 +628,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"providers": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -625,6 +647,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -643,7 +666,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"locations": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -661,6 +685,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -679,7 +704,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"visit_types": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -697,6 +723,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -715,7 +742,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"durations": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -733,6 +761,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -751,7 +780,8 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": None</pre></td>
        <td><pre>"reason_for_visit": list[dict]
-"selected_values": dict</pre></td>
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -769,6 +799,7 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
        <td><pre>"id": appointment_id
 "type": None</pre></td>
+       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -1618,6 +1649,42 @@ type: None</pre></td>
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">MESSAGE_TRANSMISSION_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a message transmission record is created. Message transmissions track delivery attempts and status for messages sent through various channels (SMS, email, etc.).</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": message_transmission_id
+"type": <a href='/sdk/data-message/#messagetransmission'>MessageTransmission</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">MESSAGE_TRANSMISSION_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a message transmission record is updated (e.g., when delivery status changes).</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": message_transmission_id
+"type": <a href='/sdk/data-message/#messagetransmission'>MessageTransmission</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Notes
 
 <table>
@@ -1901,9 +1968,13 @@ type: None</pre></td>
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>"id": user_selected_tasklabel_id
-"type": None</pre></td>
-      <td><pre>empty</pre></td>
+      <td><pre>"id": task_label_id
+"type": <a href='/sdk/data-task/#tasklabel/'>TaskLabel</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id
+"task":
+    "id": task_id
+"action": literal["add", "remove"]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2747,6 +2818,42 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 <table>
   <thead>
     <tr><th colspan="2">ADJUST_PRESCRIPTION__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBER__PRE_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -11272,6 +11379,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE__PRESCRIBER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE__PRESCRIBER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Questionnaire Command
 
 <table>
@@ -13028,6 +13171,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <thead>
     <tr><th colspan="2">REFILL__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL__PRESCRIBER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL__PRESCRIBER__PRE_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -17161,7 +17340,13 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     </tr>
     <tr>
       <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>
-      <td>Patient Profile is loading. See <a href="{% link _guides/profile-additional-fields.md %}" target="_blank">How to add patient profile additional fields</a> for examples of how to use this event.</td>
+      <td>Patient Profile is loading. See <a href="{% link _guides/profile-additional-fields.md %}" target="_blank">How to add patient profile additional fields</a> for examples of how to use this event.
+      <br />Context object: 
+      <pre>"patient": 
+    "id": str
+"user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
   </tbody>
 </table>
