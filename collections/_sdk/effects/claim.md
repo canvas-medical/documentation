@@ -10,6 +10,7 @@ hidden: false
 The Canvas SDK provides effects to:
 
 - manage claim labels, which includes [creating, adding](#addclaimlabel), and [removing](#removeclaimlabel) labels
+- [update claim line items](#updateclaimlineitem)
 - [move a claim to a specific queue](#moveclaimtoqueue)
 
 ## AddClaimLabel
@@ -21,19 +22,18 @@ The `AddClaimLabel` effect facilitates adding a label to an existing claim, and 
 | `claim_id` | `UUID` or `str`      | Identifier for the claim                                                    | Yes      |
 | `labels`   | `list[str or Label]` | List of label names and [Label](#label) dataclasses\* to apply to the claim | Yes      |
 
-\*Labels can be passed in by name or as a Label dataclass. If the label with the provided values does not exist in your Canvas instance, it will be created and then applied to the specified claim. However, if a label already exists with the provided name/properties, it will add this existing label to the claim.
+\*Labels can be passed in by name or as a Label dataclass. If the label with the provided name or values does not exist in your Canvas instance, it will be created and then applied to the specified claim. However, if a label already exists with the provided name or properties, it will add this existing label to the claim.
 
 ## Label
 
-The `Label` dataclass represents a label with specific properties, including color, name, and position.
+The `Label` dataclass represents a label with specific properties, including color and name.
 
 ### Attributes
 
-| Attribute  | Type                                                | Description                                                                         | Required |
-| ---------- | --------------------------------------------------- | ----------------------------------------------------------------------------------- | -------- |
-| `color`    | [ColorEnum](/sdk/data-enumeration-types/#colorenum) | The color of the label in the UI                                                    | Yes      |
-| `name`     | `str`                                               | The display name of the label                                                       | Yes      |
-| `position` | `int`                                               | The position of the label relative to other labels on the same claim. Defaults to 0 | No       |
+| Attribute | Type                                                | Description                      | Required |
+| --------- | --------------------------------------------------- | -------------------------------- | -------- |
+| `color`   | [ColorEnum](/sdk/data-enumeration-types/#colorenum) | The color of the label in the UI | Yes      |
+| `name`    | `str`                                               | The display name of the label    | Yes      |
 
 #### Implementation Details
 
@@ -115,6 +115,55 @@ class Protocol(BaseProtocol):
         return []
 ```
 
+### UpdateClaimLineItem
+
+The `UpdateClaimLineItem` effect allows you to update the `charge` field on a specified claim line item.
+
+#### Attributes
+
+| Attribute            | Type            | Description                                        | Required |
+| -------------------- | --------------- | -------------------------------------------------- | -------- |
+| `claim_line_item_id` | `UUID` or `str` | Identifier for the claim line item                 | Yes      |
+| `charge`             | `float`         | The charge amount to update on the claim line item | No       |
+
+#### Implementation Details
+
+- Validates `claim_line_item_id` is provided and that the associated claim line item exists
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.v1.data import Note, ClaimLineItem
+from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
+
+
+class Protocol(BaseProtocol):
+    """When a note is unlocked, update the associated claim's line items to have a charge of $0.00.
+    When a note is locked, update the associated claim's line items to have a charge of $500.00."""
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def get_line_items(self) -> ClaimLineItem:
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        return claim.get_active_claim_line_items()
+
+    def update_charge(self, id: str, charge: float) -> Effect:
+        return UpdateClaimLineItem(claim_line_item_id=id, charge=charge).apply()
+
+    def update_all_items(self, charge: float) -> list[Effect]:
+        return [self.update_charge(line_item.id, charge) for line_item in self.get_line_items()]
+
+    def compute(self) -> list[Effect]:
+        if self.event.context["state"] == "ULK":
+            return self.update_all_items(0.00)
+        if self.event.context["state"] == "LKD":
+            return self.update_all_items(500.00)
+        return []
+```
+
 ### MoveClaimToQueue
 
 The `MoveClaimToQueue` effect moves a specific claim to a queue.
@@ -137,7 +186,6 @@ The `MoveClaimToQueue` effect moves a specific claim to a queue.
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
-
 from canvas_sdk.effects.claim_queue import MoveClaimToQueue
 from canvas_sdk.v1.data import Note
 
