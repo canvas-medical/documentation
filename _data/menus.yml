@@ -645,6 +645,12 @@ effects_module:
   - title: "Custom HTML and Django Templates"
     url: /sdk/layout-effect/#custom-html-and-django-templates
     description: Render custom HTML using Django templates.
+  - title: "Create Calendar"
+    url: /sdk/calendar-create-effect/
+    description: Create a calendar for a provider.
+  - title: "Manage Calendar Events"
+    url: /sdk/calendar-event-management-effects/
+    description: Manage calendar events.
   - title: "Form Result"
     url: /sdk/form-result-effect
     description: Effect for dynamically displaying forms in the Patient Portal.
