@@ -72,6 +72,8 @@ Represents a complete healthcare claim.
 | created                    | DateTime                                    |
 | modified                   | DateTime                                    |
 | diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[] |
+| line_items                 | [ClaimLineItem](#claimlineitem)[]           |
+| labels                     | [TaskLabel](/sdk/data-task/#tasklabel)[]    |
 | provider                   | [ClaimProvider](#claimprovider)             |
 
 **Computed Properties**:
@@ -213,6 +215,18 @@ Captures patient-level data related to a specific claim.
 | country     | String                                     |
 | created     | DateTime                                   |
 | modified    | DateTime                                   |
+
+### ClaimLabel
+
+Represents labels assigned to the claim.
+
+| Field Name | Type                                   |
+| ---------- | -------------------------------------- |
+| id         | UUID                                   |
+| dbid       | Integer                                |
+| claim      | [Claim](#claim)                        |
+| label      | [TaskLabel](/sdk/data-task/#tasklabel) |
+
 
 ### ClaimProvider
 
