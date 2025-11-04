@@ -79,6 +79,7 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 | status     | [TaskStatus](#taskstatus)             |
 | comments   | [TaskComment](#taskcomment)[]         |
 | labels     | [TaskLabel](#tasklabel)[]             |
+| metadata   | [TaskMetadata](#taskmetadata)[]       |
 
 ### TaskComment
 
@@ -106,6 +107,28 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 | active           | Boolean                                             |
 | modules          | [TaskLabelModule](#tasklabelmodule)                 |
 | claims           | [Claim](/sdk/data-claim)[]                          |
+
+### TaskMetadata
+
+| Field Name | Type              |
+|------------|-------------------|
+| id         | UUID              |
+| dbid       | Integer           |
+| task       | [Task](#task)     |
+| key        | String            |
+| value      | String            |
+
+```python
+from canvas_sdk.v1.data.task import Task
+from logger import log
+
+task_id = "7895e1db-f8de-4660-a0a3-9e5b43a475c6"
+task = Task.objects.get(id=task_id)
+task_metadata = task.metadata.all()
+
+for metadata in task_metadata:
+   log.info(f"Task metadata: {metadata.key}, {metadata.value}") # external_system_id - EXT-12345
+```
 
 ## Enumeration types
 
