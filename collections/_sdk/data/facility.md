@@ -38,7 +38,7 @@ facilities = Facility.objects.filter(name="General Hospital", city="Metropolis")
 ### Facility
 
 | Field Name   | Type     |
-| ------------ | -------- |
+|--------------|----------|
 | id           | UUID     |
 | dbid         | Integer  |
 | created      | DateTime |
@@ -52,4 +52,5 @@ facilities = Facility.objects.filter(name="General Hospital", city="Metropolis")
 | name         | String   |
 | npi_number   | String   |
 | phone_number | String   |
+| fax_number   | String   |
 | active       | Boolean  |
