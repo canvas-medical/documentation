@@ -9,7 +9,7 @@ hidden: false
 
 This effect allows developers to group items in a patient chart section. You can define multiple groups with a name, priority, and the items that belong to each group.
 
-Currently, we are only supporting this for the Conditions and Medications sections.
+Currently, this is supported for the Conditions, Medications, and Detected Issues sections.
 
 ```python
 from canvas_sdk.effects.patient_chart_group import PatientChartGroup

@@ -1695,6 +1695,42 @@ type: None</pre></td>
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">MESSAGE_TRANSMISSION_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a message transmission record is created. Message transmissions track delivery attempts and status for messages sent through various channels (SMS, email, etc.).</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": message_transmission_id
+"type": <a href='/sdk/data-message/#messagetransmission'>MessageTransmission</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">MESSAGE_TRANSMISSION_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a message transmission record is updated (e.g., when delivery status changes).</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": message_transmission_id
+"type": <a href='/sdk/data-message/#messagetransmission'>MessageTransmission</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Notes
 
 <table>
@@ -2828,6 +2864,42 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 <table>
   <thead>
     <tr><th colspan="2">ADJUST_PRESCRIPTION__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBER__PRE_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -11353,6 +11425,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE__PRESCRIBER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE__PRESCRIBER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Questionnaire Command
 
 <table>
@@ -13109,6 +13217,42 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <thead>
     <tr><th colspan="2">REFILL__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL__PRESCRIBER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL__PRESCRIBER__PRE_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
