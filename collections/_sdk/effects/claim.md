@@ -170,15 +170,15 @@ The `MoveClaimToQueue` effect moves a specific claim to a queue.
 
 #### Attributes
 
-| Attribute  | Type            | Description                                | Required |
-| ---------- | --------------- | ------------------------------------------ | -------- |
-| `claim_id` | `UUID` or `str` | Identifier for the claim                   | Yes      |
-| `queue`    | `str`           | The name of the queue to move the claim to | Yes      |
+| Attribute  | Type            | Description                                                                                            | Required |
+| ---------- | --------------- | ------------------------------------------------------------------------------------------------------ | -------- |
+| `claim_id` | `UUID` or `str` | Identifier for the claim                                                                               | Yes      |
+| `queue`    | `str`           | The name of the queue to move the claim to, which must be a [valid name](/sdk/data-claim/#claimqueues) | Yes      |
 
 #### Implementation Details
 
 - Validates `claim_id` is provided and that the associated claim exists
-- Validates `queue` is provided and the queue with that name exists
+- Validates `queue` is provided and the [queue with that name exists](/sdk/data-claim/#claimqueues)
 
 #### Example Usage
 
