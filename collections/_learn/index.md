@@ -7,7 +7,7 @@ layout: "educationlandingpage"
 ## Introduction
 
 Welcome to the Canvas developer educational series! If you are new to developing with Canvas or ready to take your plugins to the next level, this series is for you. Through a self-paced series of educational content we will walk you through setup, key concepts, and practive exercises for extending and customizing your Canvas instance.
-
+Welcome to the Canvas developer educational series! If you are new to developing with Canvas or ready to take your plugins to the next level, this series is for you. Through a self-paced series of educational content we will walk you through setup, key concepts, and practice exercises for extending and customizing your Canvas instance.
 Ready to dive in? [Get started!](/learn/overview)
 
 ## How to Navigate this Resource
