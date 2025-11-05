@@ -21,7 +21,7 @@ In this overview, we will explore the three core concepts developers need to mas
 
 ### The Plugin Runner: Your Custom Code in the EMR
 
-The core of the SDK is the **plugin runner**, an open-source gRPC server that executes your Python code. Your logic is structured as a set of one or more **handlers**—classes that perform a single responsibility and listen for declared events.
+The core of the SDK is the **plugin runner**, an open-source gRPC server that executes your Python code. Your logic is structured as a set of one or more **handlers**: classes that listen for declared **events** and perform a single responsibility via one or more **effects**.
 
 ![Canvas SDK Architecture](/assets/images/sdk-overview-diagram.png){:width="50%"}
 
@@ -39,6 +39,14 @@ All plugin execution is **event-driven**, starting with an event emitted from th
 - A specific button was clicked or a custom application was launched.
 - A scheduled time was reached (e.g., "It is 7:05 pm").
 - An external HTTP POST was received by a custom defined endpoint.
+
+Some events can be triggered from a variety of sources.
+- A patient was created...
+  * ...from the Canvas provider facing web application
+  * ...via a FHIR API call
+  * ...via an effect returned from a custom defined endpoint, that also sends a webhook to an external system and sets patient metadata
+
+And events provide a direct link back to access their parent object, along with event specific context. In the case of a prescribe command, for example, the event target object tells you the specific command ID, and the context contains relevant fields (medication, indications, days supply, etc.), note ID, and patient ID. All of these can be used to filter to only the events you care about.
 
 By responding to these events, developers can tailor the EMR's behavior to specific operational or clinical workflows.
 
@@ -85,7 +93,9 @@ Key Handler Types to Know:
 - **`SimpleAPI`**: For custom HTTP interactions. You implement an `authenticate` method and a method for each request path, annotated with the path and verb (e.g., GET, POST), resulting in a custom endpoint IN YOUR CANVAS INSTANCE…!
 - **`Application`**: Used to embed custom user interfaces or launch modals within the EMR. You provide an icon and title, and implement the `on_open` method.
 
-These handlers allow you to build everything from small quality-of-life automations (like [AI note titles](https://docs.canvasmedical.com/sdk/example-ai_note_titles/)) to complex integrations ([Syncing patients between systems](https://docs.canvasmedical.com/sdk/example-patient_creation_platform_sync/)).
+A single plugin can contain multiple handlers/protocols, and group handlers of similar functionality together. For example, an ActionButton in the patient charting menu, when launched, makes a GET call to a SimpleAPI endpoint that renders some custom HTML content in a sidebar. (See [Vitals Visualizer Plugin](https://docs.canvasmedical.com/sdk/example-vitals_visualizer_plugin/))
+
+These handlers allow you to build everything from small quality-of-life agentic automations (like [AI note titles](https://docs.canvasmedical.com/sdk/example-ai_note_titles/)) to complex integrations ([Syncing patients between systems](https://docs.canvasmedical.com/sdk/example-patient_creation_platform_sync/)).
 
 ### Summary
 
