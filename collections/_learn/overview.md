@@ -23,8 +23,6 @@ In this overview, we will explore the three core concepts developers need to mas
 
 The core of the SDK is the **plugin runner**, an open-source gRPC server that executes your Python code. Your logic is structured as a set of one or more **handlers**: classes that listen for declared **events** and perform a single responsibility via one or more **effects**.
 
-![Canvas SDK Architecture](/assets/images/sdk-overview-diagram.png){:width="50%"}
-
 Developing a plugin requires a mental model centered around three key concepts: **Events**, **Data**, and **Effects**.
 
 ### 1. Events: The Entry Point for Execution
