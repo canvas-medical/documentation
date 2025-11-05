@@ -19,11 +19,11 @@ If your goal is to deeply customize the EMR’s behavior, implement clinical dec
 
 In this overview, we will explore the three core concepts developers need to master to build effective plugins: **Events**, **Data**, and **Effects**, and we'll look at the specific **Handler** types used to implement your logic.
 
-
-
 ### The Plugin Runner: Your Custom Code in the EMR
 
 The core of the SDK is the **plugin runner**, an open-source gRPC server that executes your Python code. Your logic is structured as a set of one or more **handlers**—classes that perform a single responsibility and listen for declared events.
+
+![Canvas SDK Architecture](/assets/images/sdk-overview-diagram.png)
 
 Developing a plugin requires a mental model centered around three key concepts: **Events**, **Data**, and **Effects**.
 
@@ -47,8 +47,6 @@ By responding to these events, developers can tailor the EMR's behavior to speci
 Within your plugin, you need access to the EMR data. The SDK provides this access through a set of **read-only database views** using the **Django ORM**.
 
 The use of the Django ORM is a significant developer advantage because **Django ORM objects offer a robust opportunity to filter and parse a given data model and any of its defined relationships.** This allows developers to write powerful and concise queries to fetch exactly the patient records, appointments, or clinical data they need for their custom logic.
-
-
 
 **Why Read-Only Database Views?**
 
@@ -102,4 +100,5 @@ In this overview, you learned about:
 
 ## Next Steps
 [Next: let's set up your developer environment](/learn/setup)!
+
 
