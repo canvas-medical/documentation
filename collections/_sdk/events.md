@@ -30,14 +30,22 @@ The plugin author can enter custom workflow code into the `compute` method that 
 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
-## Event Types
+## Event Types and Context
 
 The event `target` object can be accessed within the compute method of the plugin by `self.event.target`. If `self.event.target.type` exists, it provides the same type that would be imported from the Data module. For example, a type of `Condition` would be the same as what you can import from `canvas_sdk.v1.data.condition`.
 
 The event `context` object can be accessed via `self.event.context`. The
 content present in each event's context depends on the event type. The table
-below shows what you can expect for event type, or you could take a look
+below shows what you can expect for each event type, or you could take a look
 yourself by logging it out.
+
+### Common Context Patterns
+
+Many events include common contextual information to help you understand the scope and origin of the event:
+
+- **Patient context**: Most patient-related events include `"patient": {"id": pt_id}` in the context, allowing you to identify which patient the event relates to.
+- **Note context**: Command lifecycle events (PRE_COMMIT, POST_COMMIT, etc.) include `"note": {"uuid": note_id}` in the context, indicating the note where the command was executed.
+- **User context**: All command-related PRE_SEARCH and POST_SEARCH events include `"user": {"staff": staff_key}` in the context, containing the staff key of the user performing the search. This allows you to customize search results based on user-specific preferences, roles, or permissions.
 
 ```python
 from canvas_sdk.events import EventType
@@ -2712,6 +2720,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -2730,6 +2741,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -2748,6 +2762,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -2766,6 +2783,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -2784,6 +2804,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -2802,6 +2825,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -2820,6 +2846,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -2838,6 +2867,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -2856,6 +2888,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -2874,6 +2909,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -2892,6 +2930,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -2910,6 +2951,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -3275,6 +3319,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#allergysearchresult'>AllergySearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -3293,6 +3340,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -3659,6 +3709,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -3677,6 +3730,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -4069,6 +4125,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -4087,6 +4146,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -4747,6 +4809,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -4765,6 +4830,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -5130,6 +5198,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -5148,6 +5219,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -5441,6 +5515,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -5459,6 +5536,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -5477,6 +5557,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -5495,6 +5578,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -5824,6 +5910,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -5842,6 +5931,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -5860,6 +5952,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -5878,6 +5973,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -6231,6 +6329,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -6249,6 +6350,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -6267,6 +6371,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -6285,6 +6392,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -6713,9 +6823,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -6723,7 +6833,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7021,9 +7131,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -7031,7 +7141,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7308,6 +7418,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7326,6 +7439,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7344,6 +7460,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7362,6 +7481,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7380,6 +7502,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7398,6 +7523,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7416,6 +7544,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7434,6 +7565,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7527,9 +7661,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -7537,7 +7671,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -7787,6 +7921,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7805,6 +7942,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -7904,9 +8044,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -7914,7 +8054,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8182,6 +8322,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -8200,6 +8343,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -8218,6 +8364,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -8236,6 +8385,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -8254,6 +8406,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -8272,6 +8427,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -8356,9 +8514,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -8366,7 +8524,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8589,6 +8747,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -8607,6 +8768,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -8703,9 +8867,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -8713,7 +8877,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -8972,6 +9136,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -8990,6 +9157,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9008,6 +9178,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9026,6 +9199,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9044,6 +9220,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9062,6 +9241,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9080,6 +9262,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9098,6 +9283,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9203,9 +9391,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -9213,7 +9401,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9499,6 +9687,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9517,6 +9708,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9535,6 +9729,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9553,6 +9750,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9571,6 +9771,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -9589,6 +9792,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -9673,9 +9879,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -9683,7 +9889,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -9906,6 +10112,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -9924,12 +10133,15 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>
 </table>
 
-#### Perfom Command
+#### Perform Command
 
 <table>
   <thead>
@@ -10008,9 +10220,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -10018,7 +10230,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10241,6 +10453,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -10259,6 +10474,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -10340,9 +10558,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -10350,7 +10568,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10564,6 +10782,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -10582,6 +10803,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -10663,9 +10887,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -10673,7 +10897,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -10980,9 +11204,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -10990,7 +11214,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11294,6 +11518,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11312,6 +11539,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11330,6 +11560,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11348,6 +11581,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11366,6 +11602,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11384,6 +11623,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -11402,6 +11644,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11420,6 +11665,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11438,6 +11686,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11456,6 +11707,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11540,9 +11794,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -11550,7 +11804,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -11773,6 +12027,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11791,6 +12048,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -11875,9 +12135,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -11885,7 +12145,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12131,6 +12391,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12149,6 +12412,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12254,9 +12520,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -12264,7 +12530,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -12550,6 +12816,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12568,6 +12837,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12586,6 +12858,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12604,6 +12879,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12622,6 +12900,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12640,6 +12921,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12658,6 +12942,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12676,6 +12963,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -12787,9 +13077,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -12797,7 +13087,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13101,6 +13391,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13119,6 +13412,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13137,6 +13433,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13155,6 +13454,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13173,6 +13475,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -13191,6 +13496,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13209,6 +13517,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13227,6 +13538,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13245,6 +13559,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13263,6 +13580,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13347,9 +13667,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -13357,7 +13677,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13580,6 +13900,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13598,6 +13921,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13685,9 +14011,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -13695,7 +14021,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -13927,6 +14253,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -13945,6 +14274,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -14026,9 +14358,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -14036,7 +14368,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14250,6 +14582,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -14268,6 +14603,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -14428,9 +14766,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -14438,7 +14776,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14661,6 +14999,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
     </tr>
   </tbody>
@@ -14679,6 +15020,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -14760,9 +15104,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -14770,7 +15114,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -14984,6 +15328,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -15002,6 +15349,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -15095,9 +15445,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -15105,7 +15455,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15355,6 +15705,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -15373,6 +15726,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -15469,9 +15825,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -15479,7 +15835,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -15738,6 +16094,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -15756,6 +16115,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -15774,6 +16136,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -15792,6 +16157,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -15968,9 +16336,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -15978,7 +16346,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -16228,6 +16596,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -16246,6 +16617,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -16264,6 +16638,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
 "results": list[dict]</pre></td>
     </tr>
   </tbody>
@@ -16384,9 +16761,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <tr>
       <td>Target object</td>
       <td>Context object</td>
-    </tr> 
-    <tr> 
-      <td><pre>"id": command_uuid 
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"actions":
   "name": string
@@ -16394,7 +16771,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_id
 </pre></td>
     </tr>
-  </tbody>  
+  </tbody>
 </table>
 
 <table>
@@ -17304,7 +17681,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 "type": <a href='/sdk/patient/'>Patient</a></pre></td>
       <td><pre>"conditions":
     "id": condition id
-    "codings": 
+    "codings":
       "code": str
       "system": str
       "display": str</pre></td>
@@ -17327,7 +17704,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 "type": <a href='/sdk/patient/'>Patient</a></pre></td>
       <td><pre>"medications":
     "id": medication id
-    "codings": 
+    "codings":
       "code": str
       "system": str
       "display": str</pre></td>
@@ -17387,8 +17764,8 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>
       <td>Patient Profile is loading. See <a href="{% link _guides/profile-additional-fields.md %}" target="_blank">How to add patient profile additional fields</a> for examples of how to use this event.
-      <br />Context object: 
-      <pre>"patient": 
+      <br />Context object:
+      <pre>"patient":
     "id": str
 "user":
     "id": str
