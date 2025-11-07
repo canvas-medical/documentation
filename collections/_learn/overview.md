@@ -81,7 +81,7 @@ Key Handler Types to Know:
 
 For example, an ActionButton in the patient charting menu, when launched, makes a GET call to a SimpleAPI endpoint that renders some custom HTML content in a sidebar. The [Vitals Visualizer Plugin](https://docs.canvasmedical.com/sdk/example-vitals_visualizer_plugin/) showcases a composition of handlers that allow you to display custom UIs in response to a user initiated event.
 
-A single plugin can contain multiple handlers, and group handlers of similar functionality together.
+A single plugin can contain multiple handlers, and group handlers of similar functionality together. For example, [Patient Summary Chart Groups](https://docs.canvasmedical.com/sdk/example-patient_summary_chart_groups/) iterates on and organizes patient conditions and also medications.
 
 These handlers allow you to build everything from small quality-of-life agentic automations (like [AI note titles](/sdk/example-ai_note_titles/)) to more complex integrations ([Syncing patients between systems](/sdk/example-patient_creation_platform_sync/)), or even full web applications ([Example Chart Application](/sdk/example-example_chart_app/)).
 
