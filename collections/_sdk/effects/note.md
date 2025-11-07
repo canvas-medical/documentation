@@ -5,8 +5,6 @@ excerpt: "Effects for creating notes, appointments, and schedule events."
 hidden: false
 ---
 
-# Note Effects
-
 The Canvas SDK provides effects to facilitate creating, updating, and managing **visit notes**, **appointments**, and **schedule events**. Below you'll find detailed documentation for each effect type and their operations.
 
 ## Note Effect

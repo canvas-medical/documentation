@@ -624,6 +624,9 @@ simple_api_handlers:
     url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
+  - title: "Appointments"
+    url: /sdk/effect-notes/#appointment-effect
+    description: Create, update, and cancel patient appointments.
   - title: "Appointment Metadata"
     url: /sdk/effect-appointment-metadata/
     description: Interact with appointment metadata.
