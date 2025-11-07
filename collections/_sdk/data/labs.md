@@ -144,13 +144,16 @@ from canvas_sdk.v1.data.lab import LabReport
 # Get a lab report
 lab_report = LabReport.objects.get(id="report-id")
 
-# Access the lab order through the tests
-# Each report can have multiple tests, and each test references its order
-for test in lab_report.tests.all():
-    lab_order = test.order
+# Direct access to all orders via the reverse many-to-many relationship
+for lab_order in lab_report.laborder_set.all():
     print(f"Order ID: {lab_order.id}")
     print(f"Ordered by: {lab_order.ordering_provider.full_name if lab_order.ordering_provider else 'N/A'}")
     print(f"Date ordered: {lab_order.date_ordered}")
+
+# Alternatively, access the order through the tests
+for test in lab_report.tests.all():
+    lab_order = test.order
+    print(f"Order ID: {lab_order.id}")
     break  # Usually all tests in a report share the same order
 ```
 
@@ -162,12 +165,17 @@ from canvas_sdk.v1.data.lab import LabOrder
 # Get a lab order
 lab_order = LabOrder.objects.get(id="order-id")
 
-# Access reports through the tests
+# Direct access to all reports via the many-to-many relationship
+for report in lab_order.reports.all():
+    print(f"Report ID: {report.id}")
+    print(f"Date performed: {report.date_performed}")
+    print(f"Number of values: {report.values.count()}")
+
+# Alternatively, access reports through the tests if you need test-level details
 for test in lab_order.tests.all():
     if test.report:
+        print(f"Test: {test.ontology_test_name}")
         print(f"Report ID: {test.report.id}")
-        print(f"Date performed: {test.report.date_performed}")
-        print(f"Number of values: {test.report.values.count()}")
 ```
 
 ### Working with Lab Reviews
@@ -371,6 +379,7 @@ for report in lab_reports:
 | labcorp_abn_url           | URL                                               |
 | reasons                   | [LabOrderReason](#laborderreason)[]               |
 | tests                     | [LabTest](#labtest)[]                             |
+| reports                   | [LabReport](#labreport)[]                         |
 
 ### LabOrderReason
 
