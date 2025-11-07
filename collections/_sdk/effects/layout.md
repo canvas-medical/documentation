@@ -167,13 +167,9 @@ PanelConfiguration(
 
 ```
 
-## Structure
-
-### **PanelConfiguration**
-
 A PanelConfiguration effect consists of the following properties:
 
-#### Attributes
+### Attributes
 
 | Attribute          | Type   | Description                                                  |
 |--------------------|--------|--------------------------------------------------------------|
