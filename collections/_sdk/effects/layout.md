@@ -251,13 +251,23 @@ Here's a simple example of how to dismiss modals from your applications using Ja
 
 ```html
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    window.postMessage({ type: "CLOSE_MODAL" }, "*");
-  });
+    let messagePort = null;
+
+    // Listen for the port transfer from the Canvas Application
+    window.addEventListener('message', (event) => {
+      // Check if this is the INIT_CHANNEL message with a port
+      if (event.data?.type === 'INIT_CHANNEL' && event.ports[0]) {
+
+        // Store the port for later use
+        messagePort = event.ports[0];
+        messagePort.start();
+        messagePort.postMessage({ type: 'CLOSE_MODAL' });
+      }
+    });
 </script>
 ```
 
-And that's it! This script listens for the `DOMContentLoaded` event and sends a message to close any open modals when the application loads. You can customize the event listener to trigger the modal dismissal based on your specific requirements.
+And that's it! This script establishes a communication channel with the Canvas Application by listening for the `INIT_CHANNEL` event, capturing the message port, and then sending a `CLOSE_MODAL` message through that port to close any open modals when the application loads. You can customize the event listener to trigger the modal dismissal based on your specific requirements.
 
 While developers might find odd to be sending a message to themselves, this is the current method supported by the Canvas SDK for dismissing modals, in order to avoid potential security issues with cross-origin messaging and flooding the main application with messages.
 
