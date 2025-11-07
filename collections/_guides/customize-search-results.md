@@ -187,6 +187,27 @@ The search results in this example follow the MedicationSearchResult structure. 
 
 For complete details about medication search result data contracts and other search result structures, see the [Search Result Data Structures](/sdk/events/#search-result-data-structures) section in the Events documentation.
 
+## Accessing User Context
+
+All command-related PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for fields like prescriber, medication, diagnosis, pharmacy, and many others across various commands.
+
+You can access the user's staff key from the context:
+
+```python
+def compute(self):
+    user_context = self.context.get("user", {})
+    staff_key = user_context.get("staff")
+
+    # Use the staff key to customize search results
+    # based on the user's role, preferences, or permissions
+```
+
+This can be useful for customizing search results based on:
+- User-specific preferences or settings
+- Role-based filtering (e.g., showing different prescriber options based on the user's specialty)
+- Permission-based access control
+- User's organization or practice location
+
 ## Watch Me Build It
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/d3b696bdb482401c82aad2a2347c11ea?sid=07417cab-cb22-4165-ba16-2a2dcc2b3ce5" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div> 
