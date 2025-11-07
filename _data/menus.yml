@@ -624,6 +624,9 @@ simple_api_handlers:
     url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
+  - title: "Appointments"
+    url: /sdk/effect-notes/#appointment-effect
+    description: Create, update, and cancel patient appointments.
   - title: "Appointment Metadata"
     url: /sdk/effect-appointment-metadata/
     description: Interact with appointment metadata.
@@ -639,6 +642,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Custom HTML and Django Templates"
+    url: /sdk/layout-effect/#custom-html-and-django-templates
+    description: Render custom HTML using Django templates.
   - title: "Form Result"
     url: /sdk/form-result-effect
     description: Effect for dynamically displaying forms in the Patient Portal.
