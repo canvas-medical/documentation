@@ -70,7 +70,6 @@ Each section of the patient chart can also be customized with action buttons. Pl
 
 ## Patient Profile
 
-
 The ``PatientProfileConfiguration`` class allows you to reorder, hide, and/or specificy whether sections load expanded or collapsed.
 
 ``` python
@@ -147,20 +146,13 @@ Values in the `PatientProfileConfiguration.Section` enum are:
 | CONTACTS | contacts |
 
 
-
-
-
-<br/>
-<br/>
-<br/>
-
 ## Panel Configuration
 
 This effect allows you to define which panel buttons should be displayed on the main page or the patient page.
 
 The order of the buttons in the array will determine their order on the panel.
 
-![Before and after](/assets/images/sdk/panel-configuration-before-after.png)
+![Before and after](/assets/images/sdk/panel-configuration-before-after.png)(width:70%)
 
 ```python
 from canvas_sdk.effects.panel_configuration import PanelConfiguration
@@ -221,9 +213,6 @@ Values in the `PanelPatientSection` enum are:
 | REFILL_REQUEST | refillRequest |
 | TASK | task |
 | UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
-
-<br/>
-<br/>
 
 ## Modals
 

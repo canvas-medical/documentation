@@ -64,3 +64,7 @@ A PatientChartGroup consists of the following properties:
 | Attribute  | Type               | Description    |
 |------------|--------------------|----------------|
 | `items`    | `dict[str, Group]` | list of Groups |
+
+<br/>
+<br/>
+<br/>

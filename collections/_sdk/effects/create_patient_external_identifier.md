@@ -30,3 +30,7 @@ effect.create()
 ```
 
 This effect will create a new external identifier for the specified patient.
+
+<br/>
+<br/>
+<br/>

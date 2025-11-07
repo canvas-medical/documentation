@@ -491,3 +491,7 @@ All effects perform comprehensive validation before execution:
    - **Notes**: `patient_id` and `note_type_id` are immutable
    - **Appointments**: `patient_id` is immutable
    - **All Effects**: At least one field must be modified for an update operation to succeed
+
+<br/>
+<br/>
+<br/>

@@ -42,6 +42,9 @@ class Protocol(BaseProtocol):
 
 To customize the landing page you can leverage the `Portal Widgets` effect. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples.
 
+## Patient Profile
+
+To configure the patient profile sections (demographics, preferences, care team, etc.), see the [Patient Profile](/sdk/layout-effect/#patient-profile) documentation in Layout Effects.
 
 ## Customize Appointment Cards
 
@@ -121,12 +124,6 @@ class Protocol(BaseProtocol):
         ]
 ```
 
-
-<br/>
-<br/>
-<br/>
-
-
 ## Update User
 
 This effect is intended for updating a user’s phone number or email. In the future, we may expand its capabilities to support additional attributes, but for now, only these two are supported.
@@ -159,11 +156,6 @@ class ContactPoint(BaseHandler):
         ]
 ```
 
-<br/>
-<br/>
-<br/>
-
-
 ## Send Invite
 
 This effect triggers a portal invitation that allows the patient to register or activate their account on the patient portal.
@@ -192,10 +184,6 @@ class ContactPoint(BaseHandler):
             SendInviteEffect(user_dbid=patient.user.dbid).apply(),
         ]
 ```
-
-<br/>
-<br/>
-<br/>
 
 
 ## Send Contact Verification
@@ -238,3 +226,7 @@ class Protocol(BaseProtocol):
 
 - This effect only triggers a verification send for the contact point. It does not mark the contact as verified — verification completion is handled by the platform when the patient completes the challenge.
 - The effect relies on `PatientContactPoint` existing in the database. If your integration creates contact points in the same operation, ensure they are persisted before emitting this effect.
+
+<br/>
+<br/>
+<br/>

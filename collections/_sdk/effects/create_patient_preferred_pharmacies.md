@@ -51,3 +51,7 @@ preferred_pharmacies_effect.create()
 This effect will create a new preferred pharmacy for the specified patient.
 
 Since the `default` attribute is set to `True`, it will mark this pharmacy as the patient's default preferred pharmacy.
+
+<br/>
+<br/>
+<br/>

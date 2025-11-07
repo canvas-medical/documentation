@@ -151,8 +151,6 @@ class Protocol(BaseProtocol):
 
 ```
 
-<br/>
-
 ### Supported Commands
 
 The following commands from the [commands module](/sdk/commands/) are currently supported for insertion from Protocol Cards:
