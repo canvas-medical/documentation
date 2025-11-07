@@ -16,13 +16,11 @@ To configure the patient portal, you can use the `PatientPortalApplicationConfig
 | can_schedule_appointments | bool | If the patient is allowed to book or reschedule appointments |
 
 
-
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.patient_portal.application_configuration import PatientPortalApplicationConfiguration
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
-
 
 
 class Protocol(BaseProtocol):
@@ -38,13 +36,11 @@ class Protocol(BaseProtocol):
 
 ```
 
-## Customize Landing Page
+## Customize Landing Page (Portal Widgets)
 
-To customize the landing page you can leverage the `Portal Widgets` effect. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples.
+To customize the landing page you can leverage the [Portal Widgets](/sdk/layout-effect/#portal-landing-page-widgets) effect.
 
-## Patient Profile
-
-To configure the patient profile sections (demographics, preferences, care team, etc.), see the [Patient Profile](/sdk/layout-effect/#patient-profile) documentation in Layout Effects.
+Visit our guide <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples.
 
 ## Customize Appointment Cards
 
