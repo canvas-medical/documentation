@@ -5,8 +5,6 @@ excerpt: "Effect for creating, editing, and sending messages."
 hidden: false
 ---
 
-# Message Effect
-
 The `Message` effect provides a unified way to create, edit, and transmit messages between users (patients or staff)
 within the Canvas platform.
 It supports standalone creation, immediate send after creating, edits, and dedicated send operations.

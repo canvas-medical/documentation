@@ -5,8 +5,6 @@ excerpt: "Effect to create preferred pharmacies for a patient."
 hidden: false
 ---
 
-## CreatePatientPreferredPharmacies
-
 Creates preferred pharmacies for a patient.
 
 ### Parameters

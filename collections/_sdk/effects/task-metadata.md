@@ -1,11 +1,9 @@
 ---
-title: "TaskMetadata"
+title: "TaskMetadata Effect"
 slug: "effect-task-metadata"
 excerpt: "Effects for task metadata management"
 hidden: false
 ---
-
-# TaskMetadata Effect
 
 The `TaskMetadata` effect provides a flexible key-value storage system for task-specific data within the Canvas
 system.

@@ -6,6 +6,7 @@ hidden: false
 ---
 
 ## Patient Summary
+
 There are many summary sections in a patient's chart, organized by data type.
 While there is a default ordering, you can use an Effect to reorder them or
 hide some of them entirely. The `PatientChartSummaryConfiguration` class helps
@@ -70,7 +71,7 @@ Each section of the patient chart can also be customized with action buttons. Pl
 ## Patient Profile
 
 
-The ``PatientProfileConfiguration`` class allows you to reorder, hide, and/or specificy whether sections load expanded or collapsed. 
+The ``PatientProfileConfiguration`` class allows you to reorder, hide, and/or specificy whether sections load expanded or collapsed.
 
 ``` python
 import json
@@ -87,7 +88,7 @@ class Protocol(BaseProtocol):
 
     The SHOW_PATIENT_PROFILE_SECTIONS payload expects a list of sections where each section is a dict like { "type": str, "start_expanded": bool }
     The accepted values for the "type" are:
-    "demographics", "preferences", "preferred_pharmacies", "patient_consents", 
+    "demographics", "preferences", "preferred_pharmacies", "patient_consents",
     "care_team", "parent_guardian", "addresses", "phone_numbers", "emails", "contacts"
     """
 
@@ -269,7 +270,7 @@ class PortalWidgetHandler:
     def compute(self):
         portal_widget = PortalWidget(
             url="https://example.com/info",
-            size=PortalWidget.Size.COMPACT, 
+            size=PortalWidget.Size.COMPACT,
             priority=25
         )
         return [portal_widget.apply()]
@@ -286,7 +287,7 @@ The `PortalWidget` class has the following properties:
   - `EXPANDED`: Fills an entire row (12 columns).
   - `MEDIUM`: Occupies 8 columns.
   - `COMPACT`: Occupies 4 columns.
-  - **Note: All sizes have a fixed height of 300px.** 
+  - **Note: All sizes have a fixed height of 300px.**
 - **priority**: This value is used to order the widgets within the patient portal. A lower number indicates a higher priority.
 
 ## Custom HTML and Django Templates
@@ -341,7 +342,7 @@ Here’s how you can use the `render_to_string` utility to render the template a
 ```python
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.effects.widgets import PortalWidget
-from canvas_sdk.templates import render_to_string 
+from canvas_sdk.templates import render_to_string
 
 class ModalEffectHandler:
     def compute(self):
@@ -378,7 +379,7 @@ class PortalWidgetHandler:
         # Create a PortalWidget with the rendered content
         portal_widget = PortalWidget(
             content=rendered_html,
-            size=PortalWidget.Size.COMPACT, 
+            size=PortalWidget.Size.COMPACT,
             priority=25
         )
 

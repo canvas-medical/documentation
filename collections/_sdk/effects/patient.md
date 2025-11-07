@@ -1,11 +1,9 @@
 ---
-title: "Patient"
+title: "Patient Effect"
 slug: "effect-patient"
 excerpt: "Effects for patients"
 hidden: false
 ---
-
-# Patient Effect
 
 The `Patient` effect enables the creation and updating of patient records within the Canvas system. This effect captures demographic information, contact details, and clinical associations necessary for patient registration and updates.
 

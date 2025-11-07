@@ -5,8 +5,6 @@ excerpt: "Effect to create a new external identifier for a patient."
 hidden: false
 ---
 
-## CreatePatientExternalIdentifier
-
 Creates a new external identifier for a patient.
 
 ### Parameters

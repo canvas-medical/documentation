@@ -1,5 +1,5 @@
 ---
-title: "Patient chart group"
+title: "Patient Chart Group"
 slug: "patient-chart-group-effect"
 excerpt: "Effect for grouping items on a patient chart section"
 hidden: false

@@ -1,11 +1,9 @@
 ---
-title: "PatientMetadata"
+title: "PatientMetadata Effect"
 slug: "effect-patient-metadata"
 excerpt: "Effects for patient metadata management"
 hidden: false
 ---
-
-# PatientMetadata Effect
 
 The `PatientMetadata` effect provides a flexible key-value storage system for patient-specific data within the Canvas
 system.

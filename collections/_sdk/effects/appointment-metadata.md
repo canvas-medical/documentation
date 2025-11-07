@@ -1,11 +1,9 @@
 ---
-title: "AppointmentMetadata"
+title: "AppointmentMetadata Effect"
 slug: "effect-appointment-metadata"
 excerpt: "Effects for appointment metadata management"
 hidden: false
 ---
-
-# AppointmentMetadata Effect
 
 The `AppointmentMetadata` effect provides a flexible key-value storage system for appointment-specific data within the Canvas
 system.
@@ -113,7 +111,7 @@ effect = metadata.upsert("CA")
    ```python
    import json
    from canvas_sdk.effects.appointments_metadata.base import AppointmentsMetadata
-   
+
    metadata = AppointmentsMetadata(
        appointment_id="550e8400e29b41d4a716446655440001",
        key="result"
