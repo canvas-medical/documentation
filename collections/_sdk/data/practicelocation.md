@@ -30,7 +30,7 @@ practice_locations = PracticeLocation.objects.all()
 To query addresses that are associated with a `PracticeLocation`, related `PracticeLocationAddress` model instances can be accessed by using the `addresses` attribute. For exmample:
 
 ```python
-from canvas_sdk.v1.data.practicelocation import PracticeLocationAddress
+from canvas_sdk.v1.data.practicelocation import PracticeLocation
 
 practice_location = PracticeLocation.objects.first()
 practice_location_addresses = practice_location.addresses.all()
