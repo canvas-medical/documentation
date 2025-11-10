@@ -44,6 +44,12 @@ Returns an Effect that deletes an existing, non-committed command from the note 
 
 Returns an Effect that commits an existing, non-committed command to the note body.
 
+#### review
+
+Returns an Effect that set a command in review.
+
+**Limited availability** The `review()` method can only be called on [Prescribe](#prescribe) commands objects. Other command types do not support this operation.
+
 #### send
 
 Returns an Effect that sends a signed command.
