@@ -26,47 +26,6 @@ Stay up to date on the latest important dates for the Canvas platform.
   </thead>
   <tbody>
     <tr>
-      <td>FHIR API: Condition category handling</td>
-      <td style="color: red;">Breaking Change</td>
-      <td>
-        On the release date, Canvas will handle the <code>category</code> attribute on the FHIR
-        Condition resource differently in order to meet USCDI v3 requirements.<br><br>
-        Currently, the <code>category</code> attribute for all Conditions is set to be
-        <code>encounter-diagnosis</code>. On the release date, the following changes will take
-        effect:<br>
-        <ul>
-          <li>
-            The Condition create and update endpoints will accept <code>encounter-diagnosis</code>,
-            <code>problem-list-item</code>, or <code>health-concern</code> for the <code>code</code>
-            attribute of the category coding.
-          </li>
-          <li>
-            The Condition read and search-type endpoints will return
-            <code>encounter-diagnosis</code>, <code>problem-list-item</code>, or
-            <code>health-concern</code> for the <code>code</code> attribute of the category coding,
-            based on what is stored in the database for the Condition.
-          </li>
-          <li>
-            Conditions created by the Diagnose command will have <code>category</code> set to
-            <code>problem-list-item</code>. The Diagnose command will be enhanced in the future to
-            enable use of the other value options for <code>category</code>.
-          </li>
-          <li>
-            The <code>category</code> for all existing Conditions in the database will be set to
-            <code>problem-list-item</code>.
-          </li>
-        </ul>
-        <strong>What you need to do:</strong> Canvas recommends that all client code that makes use
-        of the Condition create or update endpoints be updated before the release date so that
-        <code>problem-list-item</code> is sent instead of <code>encounter-diagnosis</code>.
-        Additionally, all client code that makes use of the read or search endpoints must be updated
-        if they reference the <code>category</code> attribute. Making these two changes before the
-        release date will ensure that your use of the endpoint will be unaffected by this change.
-      </td>
-      <td>TBD</td>
-      <td></td>
-    </tr>
-    <tr>
       <td>UI & FHIR API: Patient Contact Relationship</td>
       <td style="color: red;">Breaking Change</td>
       <td>
@@ -112,6 +71,47 @@ Stay up to date on the latest important dates for the Canvas platform.
         <strong>API client code must be updated by the release date to avoid disruption.</strong>
       </td>
       <td>10/21/25</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>FHIR API: Condition category handling</td>
+      <td style="color: red;">Breaking Change</td>
+      <td>
+        On the release date, Canvas will handle the <code>category</code> attribute on the FHIR
+        Condition resource differently in order to meet USCDI v3 requirements.<br><br>
+        Currently, the <code>category</code> attribute for all Conditions is set to be
+        <code>encounter-diagnosis</code>. On the release date, the following changes will take
+        effect:<br>
+        <ul>
+          <li>
+            The Condition create and update endpoints will accept <code>encounter-diagnosis</code>,
+            <code>problem-list-item</code>, or <code>health-concern</code> for the <code>code</code>
+            attribute of the category coding.
+          </li>
+          <li>
+            The Condition read and search-type endpoints will return
+            <code>encounter-diagnosis</code>, <code>problem-list-item</code>, or
+            <code>health-concern</code> for the <code>code</code> attribute of the category coding,
+            based on what is stored in the database for the Condition.
+          </li>
+          <li>
+            Conditions created by the Diagnose command will have <code>category</code> set to
+            <code>problem-list-item</code>. The Diagnose command will be enhanced in the future to
+            enable use of the other value options for <code>category</code>.
+          </li>
+          <li>
+            The <code>category</code> for all existing Conditions in the database will be set to
+            <code>problem-list-item</code>.
+          </li>
+        </ul>
+        <strong>What you need to do:</strong> Canvas recommends that all client code that makes use
+        of the Condition create or update endpoints be updated before the release date so that
+        <code>problem-list-item</code> is sent instead of <code>encounter-diagnosis</code>.
+        Additionally, all client code that makes use of the read or search endpoints must be updated
+        if they reference the <code>category</code> attribute. Making these two changes before the
+        release date will ensure that your use of the endpoint will be unaffected by this change.
+      </td>
+      <td>TBD</td>
       <td></td>
     </tr>
     <tr>
