@@ -27,6 +27,8 @@ All commands have the following methods:
 
 Returns an Effect that originates a new command in the note body.
 
+**See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
+
 #### edit
 
 Returns an Effect that edits an existing command with the values set on the command class instance.
@@ -44,6 +46,12 @@ Returns an Effect that deletes an existing, non-committed command from the note 
 
 Returns an Effect that commits an existing, non-committed command to the note body.
 
+#### review
+
+Returns an Effect that sets a command in review.
+
+**Limited availability** The `review()` method can only be called on [Prescribe](#prescribe) commands objects. Other command types do not support this operation.
+
 #### send
 
 Returns an Effect that sends a signed command.
@@ -53,6 +61,7 @@ Returns an Effect that sends a signed command.
 #### enter_in_error
 
 Returns an effect that enter-in-errors an existing, committed command in the note body.
+
 
 **Example**:
 

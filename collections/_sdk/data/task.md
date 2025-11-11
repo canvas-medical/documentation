@@ -63,7 +63,7 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 ### Task
 
 | Field Name | Type                                  |
-|------------|---------------------------------------|
+| ---------- | ------------------------------------- |
 | id         | UUID                                  |
 | dbid       | Integer                               |
 | created    | DateTime                              |
@@ -83,20 +83,20 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 
 ### TaskComment
 
-| Field Name       | Type                            |
-|------------------|---------------------------------|
-| id               | UUID                            |
-| dbid             | Integer                         |
-| created          | DateTime                        |
-| modified         | DateTime                        |
-| creator          | [Staff](/sdk/data-staff/#staff) |
-| task             | [Task](/sdk/data-task/#task)    |
-| body             | String                          |
+| Field Name | Type                            |
+| ---------- | ------------------------------- |
+| id         | UUID                            |
+| dbid       | Integer                         |
+| created    | DateTime                        |
+| modified   | DateTime                        |
+| creator    | [Staff](/sdk/data-staff/#staff) |
+| task       | [Task](/sdk/data-task/#task)    |
+| body       | String                          |
 
 ### TaskLabel
 
 | Field Name       | Type                                                |
-|------------------|-----------------------------------------------------|
+| ---------------- | --------------------------------------------------- |
 | id               | UUID                                                |
 | dbid             | Integer                                             |
 | tasks            | M2M                                                 |
@@ -106,6 +106,7 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 | name             | String                                              |
 | active           | Boolean                                             |
 | modules          | [TaskLabelModule](#tasklabelmodule)                 |
+| claims           | [Claim](/sdk/data-claim)[]                          |
 
 ### TaskMetadata
 
@@ -133,31 +134,31 @@ for metadata in task_metadata:
 
 ### TaskType
 
-| Value    | Label     |
-|----------|-----------|
-| Task     | Task      |
-| Reminder | Reminder  |
+| Value    | Label    |
+| -------- | -------- |
+| Task     | Task     |
+| Reminder | Reminder |
 
 ### EventType
 
 | Value      | Label      |
-|------------|------------|
+| ---------- | ---------- |
 | Chart Open | Chart Open |
 
 ### TaskStatus
 
-| Value       | Label       |
-|-------------|-------------|
-| COMPLETED   | Completed   |
-| CLOSED      | Closed      |
-| OPEN        | Open        |
+| Value     | Label     |
+| --------- | --------- |
+| COMPLETED | Completed |
+| CLOSED    | Closed    |
+| OPEN      | Open      |
 
 ### TaskLabelModule
 
-| Value       | Label       |
-|-------------|-------------|
-| claims      | Claims      |
-| tasks       | Tasks       |
+| Value  | Label  |
+| ------ | ------ |
+| claims | Claims |
+| tasks  | Tasks  |
 
 <br/>
 <br/>

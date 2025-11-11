@@ -16,13 +16,11 @@ To configure the patient portal, you can use the `PatientPortalApplicationConfig
 | can_schedule_appointments | bool | If the patient is allowed to book or reschedule appointments |
 
 
-
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.patient_portal.application_configuration import PatientPortalApplicationConfiguration
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
-
 
 
 class Protocol(BaseProtocol):
@@ -38,10 +36,11 @@ class Protocol(BaseProtocol):
 
 ```
 
-## Customize Landing Page
+## Customize Landing Page (Portal Widgets)
 
-To customize the landing page you can leverage the `Portal Widgets` effect. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples.
+To customize the landing page you can leverage the [Portal Widgets](/sdk/layout-effect/#portal-landing-page-widgets) effect.
 
+Visit our guide <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples.
 
 ## Customize Appointment Cards
 
@@ -66,7 +65,7 @@ class Protocol(BaseProtocol):
     def compute(self) -> list[Effect]:
         return [
           Effect(
-            type=EffectType.PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE, 
+            type=EffectType.PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE,
             payload=json.dumps({"result": False}))
         ]
 
@@ -116,16 +115,10 @@ class Protocol(BaseProtocol):
     def compute(self) -> list[Effect]:
         return [
           Effect(
-            type=EffectType.PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK, 
+            type=EffectType.PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK,
             payload=json.dumps({"result": True}))
         ]
 ```
-
-
-<br/>
-<br/>
-<br/>
-
 
 ## Update User
 
@@ -159,11 +152,6 @@ class ContactPoint(BaseHandler):
         ]
 ```
 
-<br/>
-<br/>
-<br/>
-
-
 ## Send Invite
 
 This effect triggers a portal invitation that allows the patient to register or activate their account on the patient portal.
@@ -192,3 +180,49 @@ class ContactPoint(BaseHandler):
             SendInviteEffect(user_dbid=patient.user.dbid).apply(),
         ]
 ```
+
+
+## Send Contact Verification
+
+The `SendContactVerification` effect instructs Canvas to send a verification (for example, an email or SMS code) to a specific Patient Contact Point. Typical uses are verifying a patient's email address or phone number before enabling patient-portal features that require a verified contact channel.
+
+| Attribute          | Type            | Description                                    |
+|--------------------|-----------------|------------------------------------------------|
+| `contact_point_id` | `str` or `UUID` | The id of the [`PatientContactPoint`](/sdk/effect-patient/#patientcontactpoint) to verify. |
+
+### Validation & Errors
+
+When an effect is prepared, the model validates inputs and returns structured error details if something is invalid.
+
+- **Contact Point Exists** — The effect verifies the provided `contact_point_id` maps to an existing `PatientContactPoint` record. If no matching record exists the effect will include an error detail with message: `Patient Contact Point does not exist`.
+
+### Caveats
+
+- Emitting this effect will trigger a save to the associated `PatientContactPoint`. If your plugin sends `SendContactVerification` in direct response to a `PATIENT_CONTACT_POINT_UPDATED` event, the save triggered by the effect can cause the same event to fire again, producing an infinite event loop. To avoid this, debounce or detect origin (for example, ignore updates originating from the plugin runner or set a transient flag on the model) before emitting the effect in response to contact point update events.
+
+### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.send_contact_verification import SendContactVerificationEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_CONTACT_POINT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        contact_point_id = self.event.target
+        verification_effect = SendContactVerificationEffect(contact_point_id=contact_point_id)
+        return [verification_effect.apply()]
+```
+
+### Notes
+
+- This effect only triggers a verification send for the contact point. It does not mark the contact as verified — verification completion is handled by the platform when the patient completes the challenge.
+- The effect relies on `PatientContactPoint` existing in the database. If your integration creates contact points in the same operation, ensure they are persisted before emitting this effect.
+
+<br/>
+<br/>
+<br/>
