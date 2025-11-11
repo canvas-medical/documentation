@@ -244,4 +244,3 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
 <br/>
 <br/>
 <br/>
-<br/>

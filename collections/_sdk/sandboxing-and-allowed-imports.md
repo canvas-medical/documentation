@@ -27,6 +27,18 @@ Provides specialized container datatypes that extend beyond the built-in types l
 - `Counter`
 - `defaultdict`
 
+##### `dataclasses`
+This module provides a decorator and functions for automatically adding generated special methods such as __init__() and __repr__() to user-defined classes. [read more](https://docs.python.org/3/library/dataclasses.html)
+
+- `asdict`
+- `astuple`
+- `dataclass`
+- `field`
+- `Field`
+- `fields`
+- `InitVar`
+- `replace`
+
 ##### `datetime`
 Provides classes for working with dates and times, essential for medical applications that need to track appointment schedules and patient timelines. [read more](https://docs.python.org/3/library/datetime.html)
 - `date`

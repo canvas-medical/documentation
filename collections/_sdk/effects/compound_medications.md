@@ -1,11 +1,9 @@
 ---
-title: "Compound Medication"
+title: "Compound Medication Effects"
 slug: "effect-compound-medication"
 excerpt: "Effects for managing compound medications"
 hidden: false
 ---
-
-# Compound Medication Effects
 
 The Compound Medication effects enable the creation and management of compound medication formulations within the Canvas
 system. These effects support the customization of medications prepared by compounding pharmacies according to
