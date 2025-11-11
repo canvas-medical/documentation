@@ -94,14 +94,15 @@ Stay up to date on the latest important dates for the Canvas platform.
             even if you send <code>problem-list-item</code>, we will continue returning you
             <code>encounter-diagnosis</code> from read and search endpoints until we make the
             breaking change.
+          </li>
           <li>
             All client code that makes use of the read or search endpoints must be updated if they
             reference the <code>category</code> attribute to flexibly handle either
             <code>encounter-diagnosis</code> or <code>problem-list-item</code>.
           </li>
         </ul><br>
-        Making these two changes before the release date will ensure that your use of the endpoint
-        will be unaffected by this change. 
+        <strong>Making these two changes before the release date will ensure that your use of the endpoint
+        will be unaffected by this change.</strong> 
       </td>
       <td>12/02/25</td>
       <td></td>
