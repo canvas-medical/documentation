@@ -152,6 +152,9 @@ api_resources:
   - title: "Slot"
     url: /api/slot/
     identifier: api_slot
+  - title: "Specimen"
+    url: /api/specimen/
+    identifier: api_specimen
   - title: "Task"
     url: /api/task/
     identifier: api_task
@@ -408,6 +411,11 @@ api_schedule:
 api_slot:
   - title: "Slot Search"
     url: /api/slot/#search
+api_specimen:
+  - title: "Specimen Read"
+    url: /api/specimen/#read
+  - title: "Specimen Search"
+    url: /api/specimen/#search
 api_task:
   - title: "Task Create"
     url: /api/task/#create
