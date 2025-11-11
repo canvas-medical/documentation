@@ -1,11 +1,9 @@
 ---
-title: "PatientMetadata"
+title: "PatientMetadata Effect"
 slug: "effect-patient-metadata"
 excerpt: "Effects for patient metadata management"
 hidden: false
 ---
-
-# PatientMetadata Effect
 
 The `PatientMetadata` effect provides a flexible key-value storage system for patient-specific data within the Canvas
 system.
@@ -180,3 +178,7 @@ class NarrativeMetadataExtractor(BaseHandler):
 - Metadata entries are patient-specific and isolated - the same key can have different values for different patients
 - There is no built-in versioning; updating a key overwrites the previous value
 - The system does not enforce any schema on metadata values - validation is the responsibility of the implementing code
+
+<br/>
+<br/>
+<br/>

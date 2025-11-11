@@ -32,6 +32,103 @@ patient = Patient.objects.get(id="fd2ecd87c26044a6a755287f296dd17f")
 patient_notes = patient.notes.all()
 ```
 
+### Retrieve the content of commands in a note
+
+If you have a note object, the [commands](/sdk/data-command) for that note can be found using the `commands` attribute on the `Note` instance:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+note_commands = note.commands.all()
+```
+
+You can also filter commands by their state or other attributes:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
+# Get only committed commands
+committed_commands = note.commands.filter(state="committed")
+
+# Get commands by schema_key (e.g., prescriptions)
+prescriptions = note.commands.filter(schema_key="prescribe")
+```
+
+To access the content of a command, use the `data` attribute which contains a JSON object with the command's data:
+
+```python
+import json
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
+for command in note.commands.all():
+    # Get the command type
+    command_type = command.schema_key
+
+    # Get the command data as a dictionary
+    command_data = command.data
+
+    # Pretty print the command data
+    print(f"Command Type: {command_type}")
+    print(json.dumps(command_data, indent=2))
+```
+
+For more information about command types and their data structure, see the [Command](/sdk/data-command/) documentation.
+
+### Understanding the note body structure
+
+The `body` field of a note contains a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
+
+```python
+import json
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
+# The body is an array of objects
+print(json.dumps(note.body, indent=2))
+```
+
+The body array contains objects of two types:
+
+1. **Text objects**: Represent free-form text content
+   ```json
+   {"type": "text", "value": "Patient reports feeling better"}
+   ```
+
+2. **Command objects**: Reference commands with their metadata
+   ```json
+   {
+     "type": "command",
+     "value": "reasonForVisit",
+     "data": {
+       "id": 1095,
+       "command_uuid": "691123c4-6c7d-415b-880b-2beefab9f64a"
+     }
+   }
+   ```
+
+The `command_uuid` in a command object corresponds to the `id` field of the [Command](/sdk/data-command/) model, allowing you to retrieve the full command data:
+
+```python
+from canvas_sdk.v1.data.note import Note
+from canvas_sdk.v1.data.command import Command
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
+# Find all command references in the note body
+for item in note.body:
+    if item.get("type") == "command":
+        command_uuid = item["data"]["command_uuid"]
+        command = Command.objects.get(id=command_uuid)
+        print(f"Command type: {command.schema_key}")
+        print(f"Command data: {command.data}")
+```
+
 ### Retrieve the audit history for a note
 
 The audit history for a note can be found using the [`NoteStateChangeEvent`](/sdk/data-note/#notestatechangeevent)
@@ -191,15 +288,6 @@ patient = Patient.objects.get(id="fd2ecd87c26044a6a755287f296dd17f")
 patient_office_visits = Note.objects.filter(patient=patient, note_type_version=note_type)
 ```
 
-All of the [commands](/sdk/data-command) in a `Note` can be found by using the `commands` attribute:
-
-```python
-from canvas_sdk.v1.data.note import Note
-
-note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
-commands_in_note = Note.commands.all()
-```
-
 ## Attributes
 
 ### Note
@@ -213,7 +301,7 @@ commands_in_note = Note.commands.all()
 | patient             | [Patient](/sdk/data-patient/#patient) |                                                                      |
 | note_type_version   | [NoteType](#notetype)                 |                                                                      |
 | title               | String                                |                                                                      |
-| body                | JSON                                  |                                                                      |
+| body                | JSON                                  | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. |
 | originator          | [CanvasUser](/sdk/data-canvasuser)    |                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)       |                                                                      |
 | checksum            | String                                |                                                                      |
@@ -222,6 +310,7 @@ commands_in_note = Note.commands.all()
 | datetime_of_service | DateTime                              |                                                                      |
 | place_of_service    | String                                |                                                                      |
 | encounter           | [Encounter](/sdk/data-encounter)      |                                                                      |
+| commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                               |
 
 ### NoteType
 
