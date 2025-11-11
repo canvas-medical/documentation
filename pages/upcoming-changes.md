@@ -55,6 +55,7 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td></td>
     </tr>
     <tr>
+
       <td>FHIR API: Condition category handling</td>
       <td style="color: red;">Breaking Change</td>
       <td>
