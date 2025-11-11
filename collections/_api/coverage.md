@@ -370,9 +370,12 @@ sections:
                           - value: subplan
                           - value: group
                           - value: subgroup
-                  - name: value
-                    type: string
-                    description: Value associated with the type.
+              - name: value
+                type: string
+                description: Value associated with the type, such as plan or group number.
+              - name: name
+                type: string
+                description: Human readable description of the type and value, such as plan name or group name.
           - name: order
             type: number [ 1-5 ]
             required_in: create,update
