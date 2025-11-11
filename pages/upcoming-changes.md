@@ -26,7 +26,7 @@ Stay up to date on the latest important dates for the Canvas platform.
   </thead>
   <tbody>
     <tr>
-      <td>FHIR API: Condition category code change from encounter-diagnosis to problem-list-item</td>
+      <td>FHIR API: Condition category handling</td>
       <td style="color: red;">Breaking Change</td>
       <td>
         On the release date, Canvas will handle the <code>category</code> attribute on the FHIR
