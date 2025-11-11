@@ -495,7 +495,8 @@ curl --request POST \
           }
         ]
       },
-      "value": "Starfleet HMO"
+      "value": "Starfleet HMO",
+      "name": "Starfleet HMO"
     },
     {
       "type": {
@@ -506,7 +507,8 @@ curl --request POST \
           }
         ]
       },
-      "value": "Stars"
+      "value": "Stars",
+      "name": "Stars"
     },
     {
       "type": {
@@ -517,7 +519,8 @@ curl --request POST \
           }
         ]
       },
-      "value": "Captains Only"
+      "value": "Captains Only",
+      "name": "Captains Only"
     },
     {
       "type": {
@@ -528,7 +531,8 @@ curl --request POST \
           }
         ]
       },
-      "value": "Subgroup 2"
+      "value": "Subgroup 2",
+      "name": "Subgroup 2"
     }
   ],
   "order": 1
@@ -601,7 +605,8 @@ payload = {
           }
         ]
       },
-      "value": "Starfleet HMO"
+      "value": "Starfleet HMO",
+      "name": "Starfleet HMO"
     },
     {
       "type": {
@@ -612,7 +617,8 @@ payload = {
           }
         ]
       },
-      "value": "Stars"
+      "value": "Stars",
+      "name": "Stars"
     },
     {
       "type": {
@@ -623,7 +629,8 @@ payload = {
           }
         ]
       },
-      "value": "Captains Only"
+      "value": "Captains Only",
+      "name": "Captains Only"
     },
     {
       "type": {
@@ -634,7 +641,8 @@ payload = {
           }
         ]
       },
-      "value": "Subgroup 2"
+      "value": "Subgroup 2",
+      "name": "Subgroup 2"
     }
   ],
   "order": 1
@@ -734,7 +742,8 @@ print(response.text)
             }
           ]
         },
-        "value": "Starfleet HMO"
+        "value": "Starfleet HMO",
+        "name": "Starfleet HMO"
       },
       {
         "type": {
@@ -745,7 +754,8 @@ print(response.text)
             }
           ]
         },
-        "value": "Stars"
+        "value": "Stars",
+        "name": "Stars"
       },
       {
         "type": {
@@ -756,7 +766,8 @@ print(response.text)
             }
           ]
         },
-        "value": "Captains Only"
+        "value": "Captains Only",
+        "name": "Captains Only"
       },
       {
         "type": {
@@ -767,7 +778,8 @@ print(response.text)
             }
           ]
         },
-        "value": "Subgroup 2"
+        "value": "Subgroup 2",
+        "name": "Subgroup 2"
       }
   ],
   "order": 1
@@ -902,7 +914,8 @@ curl --request PUT \
           }
         ]
       },
-      "value": "Starfleet HMO"
+      "value": "Starfleet HMO",
+      "name": "Starfleet HMO"
     },
     {
       "type": {
@@ -913,7 +926,8 @@ curl --request PUT \
           }
         ]
       },
-      "value": "Stars"
+      "value": "Stars",
+      "name": "Stars"
     },
     {
       "type": {
@@ -924,7 +938,8 @@ curl --request PUT \
           }
         ]
       },
-      "value": "Captains Only"
+      "value": "Captains Only",
+      "name": "Captains Only"
     },
     {
       "type": {
@@ -935,7 +950,8 @@ curl --request PUT \
           }
         ]
       },
-      "value": "Subgroup 2"
+      "value": "Subgroup 2",
+      "name": "Subgroup 2"
     }
   ],
   "order": 1
@@ -1008,7 +1024,8 @@ payload = {
           }
         ]
       },
-      "value": "Starfleet HMO"
+      "value": "Starfleet HMO",
+      "name": "Starfleet HMO"
     },
     {
       "type": {
@@ -1019,7 +1036,8 @@ payload = {
           }
         ]
       },
-      "value": "Stars"
+      "value": "Stars",
+      "name": "Stars"
     },
     {
       "type": {
@@ -1030,7 +1048,8 @@ payload = {
           }
         ]
       },
-      "value": "Captains Only"
+      "value": "Captains Only",
+      "name": "Captains Only"
     },
     {
       "type": {
@@ -1041,7 +1060,8 @@ payload = {
           }
         ]
       },
-      "value": "Subgroup 2"
+      "value": "Subgroup 2",
+      "name": "Subgroup 2"
     }
   ],
   "order": 1
