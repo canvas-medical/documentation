@@ -26,25 +26,6 @@ Stay up to date on the latest important dates for the Canvas platform.
   </thead>
   <tbody>
     <tr>
-      <td>UI & FHIR API: Patient Contact Relationship</td>
-      <td style="color: red;">Breaking Change</td>
-      <td>
-        On the release date, the following will be updated: <code>Prefer: note-append</code> header.
-        <ul>
-          <li>UI: Relationship field is being removed from contacts section of patient profile page</li>
-          <li>Data migration: Data in Relationship field will be migrated to / appended to the Comments field</li>
-          <li>FHIR Patient
-            <ul>
-              <li>Support will be discontinued for free text <code>contact[].relationship[].text</code> field; Relationship will now be represented by expanded use of contact categories</li>
-              <li>Support will be discontinued for <strong>emergency contact</strong> and <strong>authorized for release of information</strong> extensions</li>
-            </ul>
-          </li>
-        </ul>
-      </td>
-      <td>09/30/25</td>
-      <td></td>
-    </tr>
-    <tr>
       <td>FHIR API: Coverage member identifier moving from subscriberId attribute to identifier attribute</td>
       <td style="color: red;">Breaking Change</td>
       <td>
