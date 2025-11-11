@@ -92,7 +92,7 @@ Stay up to date on the latest important dates for the Canvas platform.
         if they reference the <code>category</code> attribute. Making these two changes before the
         release date will ensure that your use of the endpoint will be unaffected by this change.
       </td>
-      <td>TBD</td>
+      <td>12/02/25</td>
       <td></td>
     </tr>
     <tr>
