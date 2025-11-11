@@ -156,19 +156,25 @@ sections:
                       required_in: create, update
                       type: string
                       enum_options: 
+                        - value: encounter-diagnosis
                         - value: problem-list-item
+                        - value: health-concern
                     - name: display
                       description: The display name of the coding.
                       exclude_in: create, update
                       type: string
                       enum_options: 
+                        - value: Encounter Diagnosis
                         - value: Problem List Item
+                        - value: Health Concern
                 - name: text
                   description: Plain text representation of the concept.
                   exclude_in: create, update
                   type: string
                   enum_options: 
+                        - value: Encounter Diagnosis
                         - value: Problem List Item
+                        - value: Health Concern
           - name: code
             description_for_all_endpoints: Identification of the condition, problem or diagnosis.
             create_description: Canvas will not validate the coding supplied in the payload, instead Canvas will just save the system, code, and display as provided. We highly recommend supplying a coding with the `system` of `http://hl7.org/fhir/sid/icd-10-cm`.
@@ -343,11 +349,11 @@ curl --request POST \
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "problem-list-item",
-                    "display": "Problem List Item"
+                    "code": "encounter-diagnosis",
+                    "display": "Encounter Diagnosis"
                 }
             ],
-            "text": "Problem List Item"
+            "text": "Encounter Diagnosis"
         }
     ],
     "code": {
@@ -426,11 +432,11 @@ payload = {
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "problem-list-item",
-                    "display": "Problem List Item"
+                    "code": "encounter-diagnosis",
+                    "display": "Encounter Diagnosis"
                 }
             ],
-            "text": "Problem List Item"
+            "text": "Encounter Diagnosis"
         }
     ],
     "code": {
@@ -525,11 +531,11 @@ print(response.text)
             [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "problem-list-item",
-                    "display": "Problem List Item"
+                    "code": "encounter-diagnosis",
+                    "display": "Encounter Diagnosis"
                 }
             ],
-            "text": "Problem List Item"
+            "text": "Encounter Diagnosis"
         }
     ],
     "code":
@@ -669,11 +675,11 @@ curl --request PUT \
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "problem-list-item",
-                    "display": "Problem List Item"
+                    "code": "encounter-diagnosis",
+                    "display": "Encounter Diagnosis"
                 }
             ],
-            "text": "Problem List Item"
+            "text": "Encounter Diagnosis"
         }
     ],
     "code": {
@@ -752,11 +758,11 @@ payload = {
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "problem-list-item",
-                    "display": "Problem List Item"
+                    "code": "encounter-diagnosis",
+                    "display": "Encounter Diagnosis"
                 }
             ],
-            "text": "Problem List Item"
+            "text": "Encounter Diagnosis"
         }
     ],
     "code": {
@@ -865,11 +871,11 @@ print(response.text)
                         "coding": [
                             {
                                 "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                                "code": "problem-list-item",
-                                "display": "Problem List Item"
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
                             }
                         ],
-                        "text": "Problem List Item"
+                        "text": "Encounter Diagnosis"
                     }
                 ],
                 "code": {
