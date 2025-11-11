@@ -55,13 +55,12 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td></td>
     </tr>
     <tr>
-
       <td>FHIR API: Condition category handling</td>
       <td style="color: red;">Breaking Change</td>
       <td>
         On the release date, Canvas will handle the <code>category</code> attribute on the FHIR
         Condition resource differently in order to meet USCDI v3 requirements.<br><br>
-        Currently, the <code>category</code> attribute for all Conditions is set to be
+        Currently, the <code>category</code> attribute for all Conditions is required to be
         <code>encounter-diagnosis</code>. On the release date, the following changes will take
         effect:<br>
         <ul>
