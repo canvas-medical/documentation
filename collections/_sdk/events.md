@@ -2083,7 +2083,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2101,7 +2101,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2119,7 +2119,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2137,7 +2137,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
