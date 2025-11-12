@@ -1694,7 +1694,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": message_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
