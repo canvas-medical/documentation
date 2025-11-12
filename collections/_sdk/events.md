@@ -1929,7 +1929,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/'>Task</a></pre></td>
+"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1948,7 +1948,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/'>Task</a></pre></td>
+"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1967,7 +1967,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": taskcomment_id
-"type": <a href='/sdk/data-task/'>TaskComment</a></pre></td>
+"type": <a href='/sdk/data-task/#taskcomment'>TaskComment</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1985,7 +1985,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": taskcomment_id
-"type": <a href='/sdk/data-task/'>TaskComment</a></pre></td>
+"type": <a href='/sdk/data-task/#taskcomment'>TaskComment</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2003,7 +2003,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": taskcomment_id
-"type": <a href='/sdk/data-task/'>TaskComment</a></pre></td>
+"type": <a href='/sdk/data-task/#taskcomment'>TaskComment</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2043,7 +2043,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/'>Task</a></pre></td>
+"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -2062,7 +2062,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/'>Task</a></pre></td>
+"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
