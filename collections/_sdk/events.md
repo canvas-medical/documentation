@@ -2021,7 +2021,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_label_id
-"type": <a href='/sdk/data-task/#tasklabel/'>TaskLabel</a></pre></td>
+"type": <a href='/sdk/data-task/#tasklabel'>TaskLabel</a></pre></td>
       <td><pre>"patient":
    "id": pt_id
 "task":
