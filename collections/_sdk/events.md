@@ -1498,7 +1498,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": interview_id
-"type": <a href='/sdk/data-questionnaire/'>Interview</a></pre></td>
+"type": <a href='/sdk/data-questionnaire/#interview'>Interview</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1517,7 +1517,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": interview_id
-"type": <a href='/sdk/data-questionnaire/'>Interview</a></pre></td>
+"type": <a href='/sdk/data-questionnaire/#interview'>Interview</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
