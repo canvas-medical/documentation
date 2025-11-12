@@ -482,7 +482,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -501,7 +501,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -520,7 +520,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -539,7 +539,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -558,7 +558,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -577,7 +577,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -616,7 +616,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -634,7 +634,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"providers": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -654,7 +654,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -672,7 +672,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"locations": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -692,7 +692,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -710,7 +710,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"visit_types": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -730,7 +730,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -748,7 +748,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"durations": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -768,7 +768,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -786,7 +786,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"reason_for_visit": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -806,7 +806,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -826,9 +826,8 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": appointmentmetadata_id
-"type": None</pre></td>
-      <td><pre>"appointment":
-    "id": appt_id</pre></td>
+<a href='/sdk/data-appointment/#appointmentmetadata/'>AppointmentMetadata</a>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -845,9 +844,8 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": appointmentmetadata_id
-"type": None</pre></td>
-      <td><pre>"appointment":
-    "id": appt_id</pre></td>
+<a href='/sdk/data-appointment/#appointmentmetadata/'>AppointmentMetadata</a>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>

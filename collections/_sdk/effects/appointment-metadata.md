@@ -5,21 +5,17 @@ excerpt: "Effects for appointment metadata management"
 hidden: false
 ---
 
-The `AppointmentMetadata` effect provides a flexible key-value storage system for appointment-specific data within the Canvas
-system.
-This effect enables the creation and updating of custom metadata entries associated with appointment records. This allows for
-extensible appointment information storage beyond standard scheduling fields.
+The `AppointmentMetadata` effect provides a flexible key-value storage system for appointment-specific data within the Canvas system. This effect enables the creation and updating of custom metadata entries associated with appointment records. This allows for extensible appointment information storage beyond standard scheduling fields.
 
 ## Overview
 
-Appointment metadata serves as a powerful extension mechanism for storing custom appointment-related information that doesn't
-fit within the standard appointment data model.
+Appointment metadata serves as a powerful extension mechanism for storing custom appointment-related information that doesn't fit within the standard appointment data model. It uses the `.upsert(value)` method to apply a value to the key attributed with the Metadata effect object.
 
 ## Attributes
 
 | Attribute        | Type  | Description                                                             | Required |
 |------------------|-------|-------------------------------------------------------------------------|----------|
-| `appointment_id` | `str` | Id of the appointment record to associate metadata with                 | Yes      |
+| `appointment_id` | `str` | Id of the [Appointment(/sdk/data-appointment/)] record to associate metadata with                 | Yes      |
 | `key`            | `str` | Unique identifier for the metadata entry within the appointment context | Yes      |
 
 ## Methods
