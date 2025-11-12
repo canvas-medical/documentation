@@ -865,7 +865,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
   <td><pre>"id": claim_id
-"type": <a href='/sdk/data-claim/'>Claim</a></pre></td>
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
       <td><pre>"patient":
   "id": pt_id
 "note":
@@ -886,7 +886,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": claim_id
-"type": Claim</pre></td>
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
       <td><pre>"patient":
   "id": pt_id
 "note":
