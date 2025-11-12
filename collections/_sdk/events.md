@@ -286,7 +286,7 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   <tr>
     <td><pre>"id": contact_point_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientcontactpoint'>PatientContactPoint</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -305,7 +305,7 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   <tr>
     <td><pre>"id": contact_point_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientcontactpoint'>PatientContactPoint</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -324,7 +324,7 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   <tr>
     <td><pre>"id": contact_point_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientcontactpoint'>PatientContactPoint</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
