@@ -1340,7 +1340,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": report_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-imaging/#imagingreport'>ImagingReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1359,7 +1359,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": report_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-imaging/#imagingreport'>ImagingReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
