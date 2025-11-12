@@ -826,7 +826,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": appointmentmetadata_id
-<a href='/sdk/data-appointment/#appointmentmetadata/'>AppointmentMetadata</a>
+"type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -844,7 +844,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": appointmentmetadata_id
-<a href='/sdk/data-appointment/#appointmentmetadata/'>AppointmentMetadata</a>
+"type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
