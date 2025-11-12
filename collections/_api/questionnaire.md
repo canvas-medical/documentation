@@ -112,6 +112,16 @@ sections:
                       description: Value for comparison when the condition references a choice question.
                       type: json
                       attributes:
+                        - name: system
+                          description: The system url of the coding.
+                          type: string
+                          enum_options:
+                            - value: http://loinc.org
+                            - value: http://snomed.info/sct
+                            - value: http://canvasmedical.com
+                            - value: http://www.ama-assn.org/go/cpt
+                            - value: http://hl7.org/fhir/sid/icd-10
+                            - value: http://schemas.{customer_identifier}.canvasmedical.com/fhir/systems/internal
                         - name: code
                           description: The code of the answer option to match.
                           type: string
