@@ -1616,7 +1616,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": medication_id
-"type": <a href='/sdk/data-medication/'>Medication</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1635,7 +1635,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": medication_id
-"type": <a href='/sdk/data-medication/'>Medication</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1654,7 +1654,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-medication/'>Medication</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1673,7 +1673,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-medication/'>Medication</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
