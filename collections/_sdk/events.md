@@ -1047,9 +1047,9 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": consent_id
-type: None</pre></td>
+"type": None</pre></td>
       <td><pre>"patient":
-   id: pt_id</pre></td>
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1066,9 +1066,9 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": consent_id
-type: None</pre></td>
+"type": None</pre></td>
       <td><pre>"patient":
-   id: pt_id</pre></td>
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1087,9 +1087,9 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": coverage_id
-type: <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
+"type": <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
       <td><pre>"patient":
-   id: pt_id</pre></td>
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1106,9 +1106,9 @@ type: <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": coverage_id
-type: <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
+"type": <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
       <td><pre>"patient":
-   id: pt_id</pre></td>
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1127,7 +1127,7 @@ type: <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": detected_issue_id
-type: <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
+"type": <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1146,7 +1146,7 @@ type: <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre><
     </tr>
     <tr>
       <td><pre>"id": detected_issue_id
-type: <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
+"type": <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1203,7 +1203,7 @@ type: <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre><
     </tr>
     <tr>
       <td><pre>"id": device_id
-type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
+"type": <a href='/sdk/data-device/#device'>Device</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1222,7 +1222,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": device_id
-type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
+"type": <a href='/sdk/data-device/#device'>Device</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
