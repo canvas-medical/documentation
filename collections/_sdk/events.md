@@ -1538,7 +1538,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": laborder_id
-"type": <a href='/sdk/data-labs/'>LabOrder</a></pre></td>
+"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1557,7 +1557,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": laborder_id
-"type": <a href='/sdk/data-labs/'>LabOrder</a></pre></td>
+"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1576,7 +1576,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": labreport_id
-"type": <a href='/sdk/data-labs/'>LabReport</a></pre></td>
+"type": <a href='/sdk/data-labs/#labreport'>LabReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1595,7 +1595,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": labreport_id
-"type": <a href='/sdk/data-labs/'>LabReport</a></pre></td>
+"type": <a href='/sdk/data-labs/#labreport'>LabReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
