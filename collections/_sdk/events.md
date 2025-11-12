@@ -910,7 +910,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": billing_line_item_id
-"type": BillingLineItem</pre></td>
+"type": <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItem</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -929,7 +929,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": billing_line_item_id
-"type": BillingLineItem</pre></td>
+"type": <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItem</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
