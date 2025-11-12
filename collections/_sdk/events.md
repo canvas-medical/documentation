@@ -1165,7 +1165,7 @@ type: <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre><
     </tr>
     <tr>
       <td><pre>"id": detected_issue_evidence_id
-type: <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
+"type": <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1183,7 +1183,7 @@ type: <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvi
     </tr>
     <tr>
       <td><pre>"id": detected_issue_evidence_id
-type: <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
+"type": <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
