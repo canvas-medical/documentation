@@ -30,6 +30,27 @@ The plugin author can enter custom workflow code into the `compute` method that 
 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
+## Event Actor
+The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.handlers import BaseHandler
+from logger import log
+
+
+class CustomHandler(BaseHandler):
+    RESPONDS_TO = []
+
+    def compute(self) -> list[Effect]:
+        actor = self.event.actor
+        log.info(actor.dbid)        # The database ID of the actor, if available
+        log.info(actor.instance)  # The corresponding CanvasUser instance
+        log.info(actor.instance.person_subclass) # The corresponding Staff or Patient instance
+    
+        return []
+```
+
 ## Event Types and Context
 
 The event `target` object can be accessed within the compute method of the plugin by `self.event.target`. If `self.event.target.type` exists, it provides the same type that would be imported from the Data module. For example, a type of `Condition` would be the same as what you can import from `canvas_sdk.v1.data.condition`.
