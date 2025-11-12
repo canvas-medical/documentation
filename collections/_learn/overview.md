@@ -2,7 +2,7 @@
 title: "Lesson 1: Overview"
 slug: "overview"
 layout: education
-hidden: false
+hidden: true
 ---
 
 Welcome to Canvas! The Canvas platform is a fully-featured, ONC certified Electronic Medical Record (EMR) that provides robust tools for customization and extension. For developers looking to integrate with or build custom logic within the EMR, the platform offers two main pathways: the **FHIR API** and the **Canvas SDK**.

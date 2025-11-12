@@ -2,6 +2,7 @@
 slug: /
 title: "Developer Education"
 layout: "educationlandingpage"
+hidden: true
 ---
 
 Welcome to the Canvas developer educational series! If you are new to developing with Canvas or ready to take your plugins to the next level, this series is for you. Through a self-paced series of educational content we will walk you through setup, key concepts, and practive exercises for extending and customizing your Canvas instance.

@@ -10,7 +10,7 @@
 
 [![Built with Devbox](https://jetpack.io/img/devbox/shield_galaxy.svg)](https://jetpack.io/devbox/docs/contributor-quickstart/)
 
-1. [Install Devbox](https://www.jetify.com/docs/devbox/installing-devbox)
+1. [Install Devbox](https://www.jetpack.io/devbox/docs/contributor-quickstart/#install-devbox)
 2. Run `devbox run dev`
 
 ### Manually
