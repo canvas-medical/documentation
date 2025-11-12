@@ -1302,7 +1302,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": encounter_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-encounter/#encounter'>Encounter</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1320,7 +1320,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": encounter_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-encounter/#encounter'>Encounter</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
