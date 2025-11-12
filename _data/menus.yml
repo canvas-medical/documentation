@@ -107,6 +107,9 @@ api_resources:
   - title: "Medication"
     url: /api/medication/
     identifier: api_medication
+  - title: "MedicationDispense"
+    url: /api/medicationdispense/
+    identifier: api_medicationdispense
   - title: "MedicationRequest"
     url: /api/medicationrequest/
     identifier: api_medicationrequest
@@ -149,6 +152,9 @@ api_resources:
   - title: "Slot"
     url: /api/slot/
     identifier: api_slot
+  - title: "Specimen"
+    url: /api/specimen/
+    identifier: api_specimen
   - title: "Task"
     url: /api/task/
     identifier: api_task
@@ -312,6 +318,11 @@ api_medication:
     url: /api/medication/#read
   - title: "Medication Search"
     url: /api/medication/#search
+api_medicationdispense:
+  - title: "MedicationDispense Read"
+    url: /api/medicationdispense/#read
+  - title: "MedicationDispense Search"
+    url: /api/medicationdispense/#search
 api_medicationrequest:
   - title: "MedicationRequest Read"
     url: /api/medicationrequest/#read
@@ -400,6 +411,11 @@ api_schedule:
 api_slot:
   - title: "Slot Search"
     url: /api/slot/#search
+api_specimen:
+  - title: "Specimen Read"
+    url: /api/specimen/#read
+  - title: "Specimen Search"
+    url: /api/specimen/#search
 api_task:
   - title: "Task Create"
     url: /api/task/#create
@@ -624,6 +640,9 @@ simple_api_handlers:
     url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
+  - title: "Appointments"
+    url: /sdk/effect-notes/#appointment-effect
+    description: Create, update, and cancel patient appointments.
   - title: "Appointment Metadata"
     url: /sdk/effect-appointment-metadata/
     description: Interact with appointment metadata.
@@ -639,6 +658,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Custom HTML and Django Templates"
+    url: /sdk/layout-effect/#custom-html-and-django-templates
+    description: Render custom HTML using Django templates.
   - title: "Form Result"
     url: /sdk/form-result-effect
     description: Effect for dynamically displaying forms in the Patient Portal.

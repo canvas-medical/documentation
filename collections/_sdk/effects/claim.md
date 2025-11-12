@@ -5,8 +5,6 @@ excerpt: "Effects for claims."
 hidden: false
 ---
 
-# Claim Effects
-
 The Canvas SDK provides effects to:
 
 - manage claim labels, which includes [creating, adding](#addclaimlabel), and [removing](#removeclaimlabel) labels
@@ -203,3 +201,7 @@ class Protocol(BaseProtocol):
             return [move.apply()]
 
 ```
+
+<br/>
+<br/>
+<br/>
