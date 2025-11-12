@@ -44,237 +44,323 @@ active_claims = Claim.objects.active()
 
 ### Claim
 
-Represents a complete healthcare claim.
+Represents a complete healthcare claim. Claim belongs to a Note and has a one-to-one relationship with a ClaimPatient.
 
-| Field Name                   | Type                                |
-|------------------------------|-------------------------------------|
-| id                           | UUID                                |
-| dbid                         | Integer                             |
-| note                         | [Note](/sdk/data-note/)             |
-| installment\_plan            | [InstallmentPlan](#installmentplan) |
-| current\_queue               | [ClaimQueue](#claimqueue)           |
-| current\_coverage            | [ClaimCoverage](#claimcoverage)     |
-| accept\_assign               | Boolean                             |
-| auto\_accident               | Boolean                             |
-| auto\_accident\_state        | String                              |
-| employment\_related          | Boolean                             |
-| other\_accident              | Boolean                             |
-| accident\_code               | String                              |
-| illness\_date                | Date                                |
-| remote\_batch\_id            | String                              |
-| remote\_file\_id             | String                              |
-| prior\_auth                  | String                              |
-| narrative                    | String                              |
-| account\_number              | String                              |
-| snoozed\_until               | Date                                |
-| patient\_balance             | Decimal                             |
-| aggregate\_coverage\_balance | Decimal                             |
-| created                      | DateTime                            |
-| modified                     | DateTime                            |
-| diagnosis\_codes             | [ClaimDiagnosisCode](#claimdiagnosiscode)[] |
+| Field Name                 | Type                                        |
+| -------------------------- | ------------------------------------------- |
+| id                         | UUID                                        |
+| dbid                       | Integer                                     |
+| note                       | [Note](/sdk/data-note/)                     |
+| installment_plan           | [InstallmentPlan](#installmentplan)         |
+| current_queue              | [ClaimQueue](#claimqueue)                   |
+| current_coverage           | [ClaimCoverage](#claimcoverage)             |
+| accept_assign              | Boolean                                     |
+| auto_accident              | Boolean                                     |
+| auto_accident_state        | String                                      |
+| employment_related         | Boolean                                     |
+| other_accident             | Boolean                                     |
+| accident_code              | String                                      |
+| illness_date               | Date                                        |
+| remote_batch_id            | String                                      |
+| remote_file_id             | String                                      |
+| prior_auth                 | String                                      |
+| narrative                  | String                                      |
+| account_number             | String                                      |
+| snoozed_until              | Date                                        |
+| patient_balance            | Decimal                                     |
+| aggregate_coverage_balance | Decimal                                     |
+| created                    | DateTime                                    |
+| modified                   | DateTime                                    |
+| diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[] |
+| comments                   | [ClaimComment](#claimcomment)[]             |
+| line_items                 | [ClaimLineItem](#claimlineitem)[]           |
+| labels                     | [TaskLabel](/sdk/data-task/#tasklabel)[]    |
+| provider                   | [ClaimProvider](#claimprovider)             |
 
 **Computed Properties**:
 
-* `total_charges`: Total charges for active line items
-* `total_paid`: Sum of paid amounts from postings
-* `total_adjusted`: Sum of adjustments and transfers
-* `balance`: Remaining balance (coverage + patient)
-* `total_patient_paid`: Paid amount by the patient
-* `total_payer_paid`: Paid amount by coverages
+- `total_charges`: Total charges for active line items
+- `total_paid`: Sum of paid amounts from postings
+- `total_adjusted`: Sum of adjustments and transfers
+- `balance`: Remaining balance (coverage + patient)
+- `total_patient_paid`: Paid amount by the patient
+- `total_payer_paid`: Paid amount by coverages
 
 ### ClaimLineItem
 
 Represents individual billed procedures or services tied to a claim.
 
-| Field Name          | Type                                                       |
-|---------------------|------------------------------------------------------------|
-| dbid                | Integer                                                    |
-| billing\_line\_item | [BillingLineItem](/sdk/data-billing-line-item/)            |
-| claim               | [Claim](#claim)                                            |
-| status              | [ClaimLineItemStatus](#claimlineitemstatus)                |
-| charge              | Decimal                                                    |
-| from\_date          | String                                                     |
-| thru\_date          | String                                                     |
-| narrative           | String                                                     |
-| ndc\_code           | String                                                     |
-| ndc\_dosage         | String                                                     |
-| ndc\_measure        | String                                                     |
-| place\_of\_service  | [PracticeLocationPOS](/sdk/data-note/#practicelocationpos) |
-| proc\_code          | String                                                     |
-| display             | String                                                     |
-| remote\_chg\_id     | String                                                     |
-| units               | Integer                                                    |
-| epsdt               | String                                                     |
-| family\_planning    | [FamilyPlanningOptions](#familyplanningoptions)            |
-| created             | DateTime                                                   |
-| modified            | DateTime                                                   |
+| Field Name        | Type                                                       |
+| ----------------- | ---------------------------------------------------------- |
+| dbid              | Integer                                                    |
+| billing_line_item | [BillingLineItem](/sdk/data-billing-line-item/)            |
+| claim             | [Claim](#claim)                                            |
+| status            | [ClaimLineItemStatus](#claimlineitemstatus)                |
+| charge            | Decimal                                                    |
+| from_date         | String                                                     |
+| thru_date         | String                                                     |
+| narrative         | String                                                     |
+| ndc_code          | String                                                     |
+| ndc_dosage        | String                                                     |
+| ndc_measure       | String                                                     |
+| place_of_service  | [PracticeLocationPOS](/sdk/data-note/#practicelocationpos) |
+| proc_code         | String                                                     |
+| display           | String                                                     |
+| remote_chg_id     | String                                                     |
+| units             | Integer                                                    |
+| epsdt             | String                                                     |
+| family_planning   | [FamilyPlanningOptions](#familyplanningoptions)            |
+| created           | DateTime                                                   |
+| modified          | DateTime                                                   |
 
 ### ClaimCoverage
 
 Links a claim to a specific insurance coverage.
 
-| Field Name                            | Type                                                                     |
-|---------------------------------------|--------------------------------------------------------------------------|
-| dbid                                  | Integer                                                                  |
-| claim                                 | [Claim](#claim)                                                          |
-| coverage                              | [Coverage](/sdk/data-coverage/)                                          |
-| active                                | Boolean                                                                  |
-| payer\_name                           | String                                                                   |
-| payer\_id                             | String                                                                   |
-| payer\_typecode                       | String                                                                   |
-| payer\_order                          | [ClaimPayerOrder](#claimpayerorder)                                      |
-| payer\_addr1                          | String                                                                   |
-| payer\_addr2                          | String                                                                   |
-| payer\_city                           | String                                                                   |
-| payer\_state                          | String                                                                   |
-| payer\_zip                            | String                                                                   |
-| payer\_plan\_type                     | [ClaimTypeCode](#claimtypecode)                                          |
-| coverage\_type                        | [CoverageType](/data-coverage/#coveragetype)                             |
-| subscriber\_employer                  | String                                                                   |
-| subscriber\_group                     | String                                                                   |
-| subscriber\_number                    | String                                                                   |
-| subscriber\_plan                      | String                                                                   |
-| subscriber\_dob                       | String                                                                   |
-| subscriber\_first\_name               | String                                                                   |
-| subscriber\_last\_name                | String                                                                   |
-| subscriber\_middle\_name              | String                                                                   |
-| subscriber\_phone                     | String                                                                   |
-| subscriber\_sex                       | [PersonSex](/sdk/data-patient/#sexatbirth)                               |
-| subscriber\_addr1                     | String                                                                   |
-| subscriber\_addr2                     | String                                                                   |
-| subscriber\_city                      | String                                                                   |
-| subscriber\_state                     | String                                                                   |
-| subscriber\_zip                       | String                                                                   |
-| subscriber\_country                   | String                                                                   |
-| patient\_relationship\_to\_subscriber | [CoverageRelationshipCode](/sdk/data-coverage/#coveragerelationshipcode) |
-| pay\_to\_addr1                        | String                                                                   |
-| pay\_to\_addr2                        | String                                                                   |
-| pay\_to\_city                         | String                                                                   |
-| pay\_to\_state                        | String                                                                   |
-| pay\_to\_zip                          | String                                                                   |
-| resubmission\_code                    | String                                                                   |
-| payer\_icn                            | String                                                                   |
-| created                               | DateTime                                                                 |
-| modified                              | DateTime                                                                 |
+| Field Name                         | Type                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| dbid                               | Integer                                                                  |
+| claim                              | [Claim](#claim)                                                          |
+| coverage                           | [Coverage](/sdk/data-coverage/)                                          |
+| active                             | Boolean                                                                  |
+| payer_name                         | String                                                                   |
+| payer_id                           | String                                                                   |
+| payer_typecode                     | String                                                                   |
+| payer_order                        | [ClaimPayerOrder](#claimpayerorder)                                      |
+| payer_addr1                        | String                                                                   |
+| payer_addr2                        | String                                                                   |
+| payer_city                         | String                                                                   |
+| payer_state                        | String                                                                   |
+| payer_zip                          | String                                                                   |
+| payer_plan_type                    | [ClaimTypeCode](#claimtypecode)                                          |
+| coverage_type                      | [CoverageType](/data-coverage/#coveragetype)                             |
+| subscriber_employer                | String                                                                   |
+| subscriber_group                   | String                                                                   |
+| subscriber_number                  | String                                                                   |
+| subscriber_plan                    | String                                                                   |
+| subscriber_dob                     | String                                                                   |
+| subscriber_first_name              | String                                                                   |
+| subscriber_last_name               | String                                                                   |
+| subscriber_middle_name             | String                                                                   |
+| subscriber_phone                   | String                                                                   |
+| subscriber_sex                     | [PersonSex](/sdk/data-patient/#sexatbirth)                               |
+| subscriber_addr1                   | String                                                                   |
+| subscriber_addr2                   | String                                                                   |
+| subscriber_city                    | String                                                                   |
+| subscriber_state                   | String                                                                   |
+| subscriber_zip                     | String                                                                   |
+| subscriber_country                 | String                                                                   |
+| patient_relationship_to_subscriber | [CoverageRelationshipCode](/sdk/data-coverage/#coveragerelationshipcode) |
+| pay_to_addr1                       | String                                                                   |
+| pay_to_addr2                       | String                                                                   |
+| pay_to_city                        | String                                                                   |
+| pay_to_state                       | String                                                                   |
+| pay_to_zip                         | String                                                                   |
+| resubmission_code                  | String                                                                   |
+| payer_icn                          | String                                                                   |
+| created                            | DateTime                                                                 |
+| modified                           | DateTime                                                                 |
+
+### ClaimComment
+
+Represents a free-text comment made on a Claim.
+
+| Field Name       | Type                               |
+| ---------------- | ---------------------------------- |
+| id               | UUID                               |
+| dbid             | Integer                            |
+| claim            | [Claim](#claim)                    |
+| created          | DateTime                           |
+| modified         | DateTime                           |
+| deleted          | Boolean                            |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
+| committer        | [CanvasUser](/sdk/data-canvasuser) |
+| comment          | String                             |
 
 ### ClaimDiagnosisCode
 
 Represents diagnosis codes associated with a claim, ordered by rank.
 
-| Field Name | Type                |
-|------------|---------------------|
-| id         | UUID                |
-| dbid       | Integer             |
-| claim      | [Claim](#claim)     |
-| rank       | Integer             |
-| code       | String              |
-| display    | String              |
-| created    | DateTime            |
-| modified   | DateTime            |
+| Field Name | Type            |
+| ---------- | --------------- |
+| id         | UUID            |
+| dbid       | Integer         |
+| claim      | [Claim](#claim) |
+| rank       | Integer         |
+| code       | String          |
+| display    | String          |
+| created    | DateTime        |
+| modified   | DateTime        |
 
 ### ClaimQueue
 
 Defines the metadata for claim queues used in revenue workflows.
 
-| Field Name            | Type                                            |
-|-----------------------|-------------------------------------------------|
-| dbid                  | Integer                                         |
-| queue\_sort\_ordering | Integer                                         |
-| name                  | String                                          |
-| display\_name         | String                                          |
-| description           | String                                          |
-| show\_in\_revenue     | Boolean                                         |
-| visible\_columns      | Array\[[ClaimQueueColumns](#claimqueuecolumns)] |
-| created               | DateTime                                        |
-| modified              | DateTime                                        |
+| Field Name          | Type                                            |
+| ------------------- | ----------------------------------------------- |
+| dbid                | Integer                                         |
+| queue_sort_ordering | Integer                                         |
+| name                | String                                          |
+| display_name        | String                                          |
+| description         | String                                          |
+| show_in_revenue     | Boolean                                         |
+| visible_columns     | Array\[[ClaimQueueColumns](#claimqueuecolumns)] |
+| created             | DateTime                                        |
+| modified            | DateTime                                        |
 
 ### ClaimPatient
 
 Captures patient-level data related to a specific claim.
 
-| Field Name   | Type                                       |
-|--------------|--------------------------------------------|
-| dbid         | Integer                                    |
-| claim        | [Claim](#claim)                            |
-| photo        | String                                     |
-| dob          | String                                     |
-| first\_name  | String                                     |
-| last\_name   | String                                     |
-| middle\_name | String                                     |
-| phone        | String                                     |
-| sex          | [PersonSex](/sdk/data-patient/#sexatbirth) |
-| ssn          | String                                     |
-| addr1        | String                                     |
-| addr2        | String                                     |
-| city         | String                                     |
-| state        | String                                     |
-| zip          | String                                     |
-| country      | String                                     |
-| created      | DateTime                                   |
-| modified     | DateTime                                   |
+| Field Name  | Type                                       |
+| ----------- | ------------------------------------------ |
+| dbid        | Integer                                    |
+| claim       | [Claim](#claim)                            |
+| photo       | String                                     |
+| dob         | String                                     |
+| first_name  | String                                     |
+| last_name   | String                                     |
+| middle_name | String                                     |
+| phone       | String                                     |
+| sex         | [PersonSex](/sdk/data-patient/#sexatbirth) |
+| ssn         | String                                     |
+| addr1       | String                                     |
+| addr2       | String                                     |
+| city        | String                                     |
+| state       | String                                     |
+| zip         | String                                     |
+| country     | String                                     |
+| created     | DateTime                                   |
+| modified    | DateTime                                   |
+
+### ClaimLabel
+
+Represents labels assigned to the claim.
+
+| Field Name | Type                                   |
+| ---------- | -------------------------------------- |
+| id         | UUID                                   |
+| dbid       | Integer                                |
+| claim      | [Claim](#claim)                        |
+| label      | [TaskLabel](/sdk/data-task/#tasklabel) |
+
+
+### ClaimProvider
+
+Captures provider-level data related to a specific claim.
+
+| Field Name                         | Type            |
+| ---------------------------------- | --------------- |
+| id                                 | UUID            |
+| dbid                               | Integer         |
+| claim                              | [Claim](#claim) |
+| clia_number                        | String          |
+| billing_provider_name              | String          |
+| billing_provider_phone             | String          |
+| billing_provider_addr1             | String          |
+| billing_provider_addr2             | String          |
+| billing_provider_city              | String          |
+| billing_provider_state             | String          |
+| billing_provider_zip               | String          |
+| billing_provider_id                | String          |
+| billing_provider_npi               | String          |
+| billing_provider_tax_id            | String          |
+| billing_provider_tax_id_type       | String          |
+| billing_provider_taxonomy          | String          |
+| provider_id                        | String          |
+| provider_first_name                | String          |
+| provider_last_name                 | String          |
+| provider_middle_name               | String          |
+| provider_npi                       | String          |
+| provider_tax_id                    | String          |
+| provider_tax_id_type               | String          |
+| provider_taxonomy                  | String          |
+| provider_ptan_identifier           | String          |
+| referring_provider_id              | String          |
+| referring_provider_first_name      | String          |
+| referring_provider_last_name       | String          |
+| referring_provider_middle_name     | String          |
+| referring_provider_npi             | String          |
+| referring_provider_ptan_identifier | String          |
+| ordering_provider_first_name       | String          |
+| ordering_provider_last_name        | String          |
+| ordering_provider_middle_name      | String          |
+| ordering_provider_npi              | String          |
+| facility_id                        | String          |
+| facility_name                      | String          |
+| facility_npi                       | String          |
+| facility_addr1                     | String          |
+| facility_addr2                     | String          |
+| facility_city                      | String          |
+| facility_state                     | String          |
+| facility_zip                       | String          |
+| hosp_from_date                     | String          |
+| hosp_to_date                       | String          |
+| created                            | DateTime        |
+| modified                           | DateTime        |
 
 ### InstallmentPlan
 
 Represents a payment plan between a patient and provider.
 
-| Field Name             | Type                                            |
-|------------------------|-------------------------------------------------|
-| creator                | [CanvasUser](/sdk/data-user/)                   |
-| patient                | [Patient](/sdk/data-patient/)                   |
-| total\_amount          | Decimal                                         |
-| status                 | [InstallmentPlanStatus](#installmentplanstatus) |
-| expected\_payoff\_date | Date                                            |
-| created\_at            | DateTime                                        |
-| updated\_at            | DateTime                                        |
+| Field Name           | Type                                            |
+| -------------------- | ----------------------------------------------- |
+| creator              | [CanvasUser](/sdk/data-user/)                   |
+| patient              | [Patient](/sdk/data-patient/)                   |
+| total_amount         | Decimal                                         |
+| status               | [InstallmentPlanStatus](#installmentplanstatus) |
+| expected_payoff_date | Date                                            |
+| created_at           | DateTime                                        |
+| updated_at           | DateTime                                        |
 
 ## Enumeration types
 
 ### ClaimLineItemStatus
 
 | Value   | Label   |
-|---------|---------|
+| ------- | ------- |
 | active  | Active  |
 | removed | Removed |
 
 ### LineItemCodes
 
 | Value    |
-|----------|
+| -------- |
 | COPAY    |
 | UNLINKED |
 
 ### FamilyPlanningOptions
 
 | Value | Label |
-|-------|-------|
+| ----- | ----- |
 | Y     | Yes   |
 | N     | No    |
 
 ### ClaimLineItemStatus
 
 | Value   | Label   |
-|---------|---------|
+| ------- | ------- |
 | active  | Active  |
 | removed | Removed |
 
 ### LineItemCodes
 
 | Value    |
-|----------|
+| -------- |
 | COPAY    |
 | UNLINKED |
 
 ### FamilyPlanningOptions
 
 | Value | Label |
-|-------|-------|
+| ----- | ----- |
 | Y     | Yes   |
 | N     | No    |
 
 ### ClaimPayerOrder
 
 | Value      | Label      |
-|------------|------------|
+| ---------- | ---------- |
 | Primary    | Primary    |
 | Secondary  | Secondary  |
 | Tertiary   | Tertiary   |
@@ -284,7 +370,7 @@ Represents a payment plan between a patient and provider.
 ### ClaimTypeCode
 
 | Code | Description                          |
-|------|--------------------------------------|
+| ---- | ------------------------------------ |
 | 12   | Working Aged (Age 65 or older)       |
 | 13   | End-Stage Renal Disease              |
 | 14   | No-fault                             |
@@ -298,7 +384,7 @@ Represents a payment plan between a patient and provider.
 ### ClaimQueueColumns
 
 | Value            | Label             |
-|------------------|-------------------|
+| ---------------- | ----------------- |
 | NoteType         | Note type         |
 | ClaimID          | Claim ID          |
 | DateOfService    | Date of service   |
@@ -317,7 +403,7 @@ Represents a payment plan between a patient and provider.
 ### ClaimQueues
 
 | Value | Label                  |
-|-------|------------------------|
+| ----- | ---------------------- |
 | 1     | Appointment            |
 | 2     | NeedsClinicianReview   |
 | 3     | NeedsCodingReview      |
@@ -332,7 +418,7 @@ Represents a payment plan between a patient and provider.
 ### InstallmentPlanStatus
 
 | Value     | Label     |
-|-----------|-----------|
+| --------- | --------- |
 | active    | Active    |
 | completed | Completed |
 | cancelled | Cancelled |

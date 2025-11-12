@@ -5,8 +5,6 @@ excerpt: "Effects for creating notes, appointments, and schedule events."
 hidden: false
 ---
 
-# Note Effects
-
 The Canvas SDK provides effects to facilitate creating, updating, and managing **visit notes**, **appointments**, and **schedule events**. Below you'll find detailed documentation for each effect type and their operations.
 
 ## Note Effect
@@ -493,3 +491,7 @@ All effects perform comprehensive validation before execution:
    - **Notes**: `patient_id` and `note_type_id` are immutable
    - **Appointments**: `patient_id` is immutable
    - **All Effects**: At least one field must be modified for an update operation to succeed
+
+<br/>
+<br/>
+<br/>
