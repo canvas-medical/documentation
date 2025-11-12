@@ -114,8 +114,8 @@ These events fire as a result of records being created, updated, or deleted.
     <td>Context object</td>
   </tr>
   <tr>
-    <td><pre>"id": care_team_id
-"type": None</pre></td>
+    <td><pre>"id": care_team_membership_id
+"type": <a href='/sdk/data-care-team/#careteammembership'>CareTeamMembership</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -133,8 +133,8 @@ These events fire as a result of records being created, updated, or deleted.
     <td>Context object</td>
   </tr>
   <tr>
-    <td><pre>"id": care_team_id
-"type": None</pre></td>
+    <td><pre>"id": care_team_membership_id
+"type": <a href='/sdk/data-care-team/#careteammembership'>CareTeamMembership</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -152,8 +152,8 @@ These events fire as a result of records being created, updated, or deleted.
     <td>Context object</td>
   </tr>
   <tr>
-    <td><pre>"id": care_team_id
-"type": None</pre></td>
+    <td><pre>"id": care_team_membership_id
+"type": <a href='/sdk/data-care-team/#careteammembership'>CareTeamMembership</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -1087,7 +1087,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": coverage_id
-type: None</pre></td>
+type: <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
       <td><pre>"patient":
    id: pt_id</pre></td>
     </tr>
@@ -1106,7 +1106,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": coverage_id
-type: None</pre></td>
+type: <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
       <td><pre>"patient":
    id: pt_id</pre></td>
     </tr>
@@ -1127,7 +1127,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": detected_issue_id
-"type": None</pre></td>
+type: <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1146,7 +1146,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": detected_issue_id
-"type": None</pre></td>
+type: <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1165,7 +1165,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": detected_issue_evidence_id
-"type": None</pre></td>
+type: <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1183,7 +1183,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": detected_issue_evidence_id
-"type": None</pre></td>
+type: <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1203,7 +1203,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": device_id
-"type": None</pre></td>
+type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1222,7 +1222,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": device_id
-"type": None</pre></td>
+type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
