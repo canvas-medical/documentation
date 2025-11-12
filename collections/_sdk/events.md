@@ -1832,7 +1832,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": protocoloverride_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-protocol-override/#protocoloverride'>ProtocolOverride</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1850,7 +1850,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": protocoloverride_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-protocol-override/#protocoloverride'>ProtocolOverride</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1868,7 +1868,7 @@ type: <a href='/sdk/data-device/#device'>Device</a></pre></td>
     </tr>
     <tr>
       <td><pre>"id": protocoloverride_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-protocol-override/#protocoloverride'>ProtocolOverride</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
