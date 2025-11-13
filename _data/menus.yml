@@ -757,9 +757,6 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
-  - title: "Send Contact Verification"
-    url: /sdk/effect-send-contact-verification/
-    description: Effect to send a verification message to a patient contact.
   - title: "Tasks"
     url: /sdk/effect-tasks/
     description: Create or update tasks.
@@ -906,9 +903,6 @@ data_module:
   - title: "Team"
     url: /sdk/data-team
     description: Data associated with Teams.
-  - title: "User"
-    url: /sdk/data-user
-    description: Data associated with Users.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
