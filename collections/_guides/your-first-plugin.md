@@ -81,19 +81,20 @@ Let's take a look at what was generated for us.
 
 ```sh
 $ tree paperwork-eviscerator/
-paperwork-eviscerator/
+paperwork-eviscerator
 ├── paperwork_eviscerator
-│    ├── CANVAS_MANIFEST.json
-│    ├── README.md
-│    └── protocols
-│         ├── __init__.py
-│         └── my_protocol.py
+│   ├── __init__.py
+│   ├── CANVAS_MANIFEST.json
+│   ├── handlers
+│   │   ├── __init__.py
+│   │   └── event_handlers.py
+│   └── README.md
 ├── pyproject.toml
 └── tests
     ├── __init__.py
-    └── test_models.py
+    └── test_event_handlers.py
 
-5 directories, 9 files
+4 directories, 8 files
 ```
 
 ### CANVAS_MANIFEST.json
@@ -108,15 +109,10 @@ installation of the plugin.
     "name": "paperwork_eviscerator",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
-        "protocols": [
+        "handlers": [
             {
-                "class": "paperwork_eviscerator.protocols.my_protocol:Protocol",
-                "description": "A protocol that does xyz...",
-                "data_access": {
-                    "event": "",
-                    "read": [],
-                    "write": []
-                }
+                "class": "paperwork_eviscerator.handlers.event_handlers:NewOfficeVisitNoteHandler",
+                "description": "A handler that listens for an event and sets an inspirational goal."
             }
         ],
         "commands": [],
@@ -136,7 +132,7 @@ installation of the plugin.
 The name, plugin version, and description are all surfaced in your Canvas
 instance when viewing installed plugins.
 
-Only protocols declared here are invoked by the plugin runner. If they are
+Only handlers declared here are invoked by the plugin runner. If they are
 not declared, they will be ignored.
 
 Secrets can be declared (though not defined) here. Any secrets declared here
@@ -147,45 +143,40 @@ will be initialized on plugin install, and can be set in the plugin listing in t
 Share details about the purpose of your plugins and how it works in this
 README file.
 
-### protocols/my_protocol.py
+### handlers/event_handlers.py
 
-This file contains the protocol class declared in the manifest file. We've included
-some sample content and copious comments for inspiration.
+This file contains the handler class declared in the manifest file. We've included
+some sample content and comments for inspiration.
 
 ```python
+from canvas_sdk.commands import GoalCommand
+from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data.note import Note
+from canvas_sdk.v1.data.patient import Patient
 from logger import log
 
 
-# Inherit from BaseProtocol to properly get registered for events
-class Protocol(BaseProtocol):
-    """
-    You should put a helpful description of this protocol's behavior here.
-    """
+# Inherit from BaseHandler to properly get registered for events
+class NewOfficeVisitNoteHandler(BaseHandler):
+    """Originates goal command when a new office visit note is created."""
 
     # Name the event type you wish to run in response to
-    RESPONDS_TO = EventType.Name(EventType.ASSESS_COMMAND__CONDITION_SELECTED)
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
-    NARRATIVE_STRING = "I was inserted from my plugin's protocol."
-
-    def compute(self):
-        """
-        This method gets called when an event of the type RESPONDS_TO is fired.
-        """
+    def compute(self) -> list[Effect]:
+        """This method gets called when an event of the type RESPONDS_TO is fired."""
         # This class is initialized with several pieces of information you can
         # access.
         #
         # `self.event` is the event object that caused this method to be
         # called.
         #
-        # `self.target` is an identifier for the object that is the subject of
-        # the event. In this case, it would be the identifier of the assess
-        # command. If this was a patient create event, it would be the
-        # identifier of the patient. If this was a task update event, it would
-        # be the identifier of the task. Etc, etc.
+        # `self.event.target.id` is an identifier for the object that is the subject of
+        # the event. In this case, it would be the identifier of the note state.
         #
-        # `self.context` is a python dictionary of additional data that was
+        # `self.event.context` is a python dictionary of additional data that was
         # given with the event. The information given here depends on the
         # event type.
         #
@@ -196,18 +187,38 @@ class Protocol(BaseProtocol):
 
         # You can log things and see them using the Canvas CLI's log streaming
         # function.
-        log.info(self.NARRATIVE_STRING)
+        log.info(f"[NewOfficeVisitNoteHandler] Context: {self.event.context}")
 
-        # Craft a payload to be returned with the effect(s).
-        payload = {
-            "note": {"uuid": self.context["note"]["uuid"]},
-            "data": {"narrative": self.NARRATIVE_STRING},
-        }
+        # Get the note state from context
+        note_state = self.event.context.get("state")
 
-        # Return zero, one, or many effects.
-        # Example:
-        # return [Effect(type=EffectType.LOG, payload=json.dumps(payload))]
-        return []
+        # Check if the note state is NEW
+        if note_state != "NEW":
+            return []
+
+        # Get the note ID from context and fetch the Note object
+        note_id = self.event.context.get("note_id")
+        note = Note.objects.get(id=note_id)
+
+        # Check if note type is OFFICE VISIT
+        note_type_name = note.note_type_version.name
+
+        if note_type_name != "Office visit":
+            return []
+
+        # Get the note UUID from context (it's already a UUID string)
+        note_uuid = note_id
+
+        # Get the patient to create a personalized goal statement
+        patient_id = self.event.context.get("patient_id")
+        patient = Patient.objects.get(id=patient_id)
+        patient_name = patient.first_name
+        goal_statement = f"{patient_name} will build plugins with the Canvas SDK to improve their clinical workflow"
+
+        # Create and originate Goal command with personalized statement
+        goal_command = GoalCommand(note_uuid=note_uuid, goal_statement=goal_statement)
+
+        return [goal_command.originate()]
 ```
 
 ## 5. Listen for an Event
