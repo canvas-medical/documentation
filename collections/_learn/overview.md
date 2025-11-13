@@ -89,7 +89,7 @@ These handlers allow you to build everything from small quality-of-life agentic 
 
 In this overview, you learned about:
 
-- The two primary ways to interact with the Canvas EMR programmatically: The **FHIR API** for general interoperability and the **Canvas SD**K** for deep system customization.
+- The two primary ways to interact with the Canvas EMR programmatically: The **FHIR API** for general interoperability and the **Canvas SDK** for deep system customization.
 - The SDK's **plugin runner**, an open-source gRPC server that executes your custom logic.
 - The three foundational concepts for building plugins: **Events** (the trigger), **Data** (read-only access via Django ORM views), and **Effects** (typed payloads used to persist changes and control the UI).
 - The specific **Handler** classes you can use to implement different kinds of logic, including `BaseHandler`, `CronTask`, and `SimpleAPI`.
