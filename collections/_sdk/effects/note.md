@@ -619,9 +619,13 @@ For detailed documentation on appointment label management, see [Appointment Lab
 
 ```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
+from canvas_sdk.events import EventType
 from canvas_sdk.handlers.base import BaseHandler
 
-class MyProtocol(BaseHandler):
+class MyHandler(BaseHandler):
+
+    RESPONDS_TO = [EventType.Name(EventType.APPOINTMENT_LABEL_ADDED), EventType.Name(EventType.APPOINTMENT_LABEL_REMOVED)]
+
     def compute(self):
         # Add labels to an appointment
         add_effect = AddAppointmentLabel(

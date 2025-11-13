@@ -45,9 +45,13 @@ An `Effect` object configured for adding appointment labels.
 
 ```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel
+from canvas_sdk.events import EventType
 from canvas_sdk.handlers.base import BaseHandler
 
-class MyProtocol(BaseHandler):
+class MyHandler(BaseHandler):
+
+    RESPONDS_TO = [EventType.Name(EventType.APPOINTMENT_CREATED)]
+
     def compute(self):
         # Add labels to an appointment
         effect = AddAppointmentLabel(
@@ -58,7 +62,7 @@ class MyProtocol(BaseHandler):
         return [effect.apply()]
 ```
 
-#### Error Handling
+If more than three labels are attempted to be added, a `ValidationError` will be raised.
 
 ```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel
@@ -108,9 +112,13 @@ An `Effect` object configured for removing appointment labels.
 
 ```python?partial=true
 from canvas_sdk.effects.note.appointment import RemoveAppointmentLabel
+from canvas_sdk.events import EventType
 from canvas_sdk.handlers.base import BaseHandler
 
-class MyProtocol(BaseHandler):
+class MyHandler(BaseHandler):
+
+    RESPONDS_TO = [EventType.Name(EventType.APPOINTMENT_LABEL_REMOVED)]
+
     def compute(self):
         # Remove labels from an appointment
         effect = RemoveAppointmentLabel(
