@@ -305,7 +305,7 @@ Represents a payment plan between a patient and provider.
 
 | Field Name           | Type                                            |
 | -------------------- | ----------------------------------------------- |
-| creator              | [CanvasUser](/sdk/data-user/)                   |
+| creator              | [CanvasUser](/sdk/data-canvasuser/)                   |
 | patient              | [Patient](/sdk/data-patient/)                   |
 | total_amount         | Decimal                                         |
 | status               | [InstallmentPlanStatus](#installmentplanstatus) |

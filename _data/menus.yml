@@ -7,6 +7,7 @@ main:
     url: /guides/
   - title: Product Updates
     url: /product-updates/release-notes
+
 api:
   - title: "Canvas FHIR"
     identifier: api_canvas_fhir
@@ -434,6 +435,65 @@ api_custom_apis:
   - title: "Note"
     url: /api/note
 
+education:
+  - title: "Developer Education"
+    url: /learn/
+    identifier: education_series
+
+education_series:
+  - title: "Series 1"
+    header: true
+  - title: "Overview"
+    url: /learn/overview/
+    description: Learn the basics of the Canvas SDK
+  - title: "Setup"
+    url: /learn/setup/
+    description: Set up your developer environment
+  - title: "Events"
+    url: /learn/events/
+    description: Learn about events in the Canvas SDK
+  - title: "Data"
+    url: /learn/data/
+    description: Learn about data in the Canvas SDK
+  - title: "Effects"
+    url: /learn/effects/
+    description: Learn about effects in the Canvas SDK
+  - title: "SimpleAPI"
+    url: /learn/simpleapi/
+    description: Learn about the SimpleAPI in the Canvas SDK
+  - title: "Questionnaires"
+    url: /learn/questionnaires/
+    description: Learn about the Questionnaires in the Canvas SDK
+  - title: "Series 2"
+    header: true
+  - title: "Development Best Practices"
+    url: /learn/advanced/
+    description: Take your Canvas SDK knowledge to the next level
+  - title: "Handlers"
+    url: /learn/handlers/
+    description: Learn about handlers in the Canvas SDK
+  - title: "Commands"
+    url: /learn/commands/
+    description: Learn about commands in the Canvas SDK
+  - title: "Protocols"
+    url: /learn/protocols/
+    description: Learn about protocols in the Canvas SDK
+  - title: "Testing Utilities"
+    url: /learn/testing-utilities/
+    description: Learn about testing utilities in the Canvas SDK
+  - title: "Sandboxing and Allowed Imports"
+    url: /learn/sandboxing-and-allowed-imports/
+    description: Learn about sandboxing and allowed imports in the Canvas SDK
+  - title: "Secrets"
+    url: /learn/secrets/
+    description: Learn about secrets in the Canvas SDK
+  - title: "Caching"
+    url: /learn/caching/
+    description: Learn about caching in the Canvas SDK
+  - title: "Utils"
+    url: /learn/utils/
+    description: Learn about utils in the Canvas SDK
+
 guides:
   - title: "Guides"
     identifier: guides_list
@@ -697,9 +757,6 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
-  - title: "Send Contact Verification"
-    url: /sdk/effect-send-contact-verification/
-    description: Effect to send a verification message to a patient contact.
   - title: "Tasks"
     url: /sdk/effect-tasks/
     description: Create or update tasks.
@@ -846,9 +903,6 @@ data_module:
   - title: "Team"
     url: /sdk/data-team
     description: Data associated with Teams.
-  - title: "User"
-    url: /sdk/data-user
-    description: Data associated with Users.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
