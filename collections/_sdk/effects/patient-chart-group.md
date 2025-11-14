@@ -1,5 +1,5 @@
 ---
-title: "Patient chart group"
+title: "Patient Chart Group"
 slug: "patient-chart-group-effect"
 excerpt: "Effect for grouping items on a patient chart section"
 hidden: false
@@ -64,3 +64,7 @@ A PatientChartGroup consists of the following properties:
 | Attribute  | Type               | Description    |
 |------------|--------------------|----------------|
 | `items`    | `dict[str, Group]` | list of Groups |
+
+<br/>
+<br/>
+<br/>
