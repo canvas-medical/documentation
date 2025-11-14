@@ -285,7 +285,8 @@ sections:
                   - name: reference
                     required_in: create,update
                     type: string
-                    description: The reference string of the practitioner or patient in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+                    description_for_all_endpoints: The reference string of the practitioner or patient in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
+                    update_description: While the patient is a required attribute, if you try to change the patient from what is already in Canvas, you will get the error message "Cannot change patient for an existing appointment. Please cancel this appointment and create a new one for the new patient."
                     enum_options:
                       - value: Practitioner/id
                       - value: Patient/id
@@ -356,7 +357,7 @@ sections:
           example_request: appointment-read-request
           example_response: appointment-read-response
         update:
-          description: Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database. <br><br>A FHIR Appointment update interaction behaves differently than a rescheduling workflow in the Canvas UI. FHIR updates will directly modify the Appointment referred to by the `id` rather than creating a new appointment.
+          description: Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database. <br><br>A FHIR Appointment update interaction behaves differently than a rescheduling workflow in the Canvas UI. FHIR updates will directly modify the Appointment referred to by the `id` rather than creating a new appointment.<br><br>Canvas prevents updating the patient an appointment is already associated to. Best practices is to cancel the existing appointment and create a new appointment with the correct patient.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: appointment-update-request
           example_response: appointment-update-response
