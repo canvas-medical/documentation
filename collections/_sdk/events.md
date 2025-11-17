@@ -32,6 +32,7 @@ For more information on writing plugins, see the guide [here](/guides/your-first
 
 ## Event Actor
 The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
+It should be available for events that are directly initiated or triggered by a user — for example, SimpleAPI events, command pre- and post-search events, action button events. For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
 
 ```python
 from canvas_sdk.effects import Effect
