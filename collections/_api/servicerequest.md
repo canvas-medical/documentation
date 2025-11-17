@@ -122,6 +122,16 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Practitioner").
+          - name: reasonReference
+            description: Reason for the request. Optional (0...N). References Conditions from Canvas.
+            type: array[json]
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the reason in the format of `"Condition/<id>"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Condition").
         search_parameters:
           - name: _id
             description: The identifier of the ServiceRequest.
@@ -223,7 +233,12 @@ sections:
     "requester": {
       "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14",
       "type": "Practitioner"
-    }
+    },
+    "reasonReference": [
+      {
+        "reference": "Condition/6700a428-6387-458d-8134-0702851da23c"
+      }
+    ]
 }
 ```
     {% endtab %}
@@ -350,7 +365,12 @@ sections:
         "requester": {
           "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14",
           "type": "Practitioner"
-        }
+        },
+        "reasonReference": [
+          {
+            "reference": "Condition/6700a428-6387-458d-8134-0702851da23c"
+          }
+        ]
       }
     },
     {
@@ -396,7 +416,12 @@ sections:
         "requester": {
           "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14",
           "type": "Practitioner"
-        }
+        },
+        "reasonReference": [
+          {
+            "reference": "Condition/2db04232-de4f-4d59-8066-2e5cee1c2a1d"
+          }
+        ]
       }
     },
     {
@@ -437,7 +462,12 @@ sections:
         "requester": {
           "reference": "Practitioner/5eede137ecfe4124b8b773040e33be14",
           "type": "Practitioner"
-        }
+        },
+        "reasonReference": [
+          {
+            "reference": "Condition/691a6afa-a450-425e-a151-26b20f595efb"
+          }
+        ]
       }
     }
   ]
