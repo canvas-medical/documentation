@@ -652,6 +652,8 @@ sdk_overview:
     url: /sdk/utils/
   - title: "Testing Utilities"
     url: /sdk/testing-utils/
+  - title: "Logging"
+    url: /sdk/plugin-logs/
 
 example_plugins:
   - title: "AI Note Titles"
