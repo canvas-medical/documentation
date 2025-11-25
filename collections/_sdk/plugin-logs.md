@@ -21,7 +21,7 @@ Navigation path:
 `Home` › `Plugin_IO` › **Plugin Logs**
 
 The UI lets you:
-- Filter by **source** (e.g., `plugin-runner`, `home-app`)
+- Filter by **source** (e.g., `plugin-runner`, `effect-interpreter`)
 - Filter by **level** (`ERROR`, `WARN`, `INFO`, `DEBUG`)
 - Filter by **time** (start/end)
 - Inspect **full JSON** of a log entry in a modal
