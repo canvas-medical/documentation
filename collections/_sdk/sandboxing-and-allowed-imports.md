@@ -59,6 +59,10 @@ Provides relative time delta calculations for more complex date arithmetic opera
 Provides precise decimal arithmetic for financial and scientific calculations where floating-point accuracy is critical. [read more](https://docs.python.org/3/library/decimal.html)
 - `Decimal`
 
+##### `defusedxml.ElementTree`
+The defusedxml package contains several Python-only workarounds and fixes for denial of service and other vulnerabilities in Python’s XML libraries. [read more](https://pypi.org/project/defusedxml/)
+- `fromstring`
+
 ##### `enum`
 Provides support for enumerations, useful for defining sets of named constants such as status codes or categories. [read more](https://docs.python.org/3/library/enum.html)
 - `Enum`
