@@ -30,7 +30,8 @@ Event(
     recurrence_frequency=EventRecurrence.Weekly,
     recurrence_interval=1,
     recurrence_days=[DaysOfWeek.Monday, DaysOfWeek.Wednesday],
-    recurrence_ends_at=datetime(2025, 12, 31, 23, 59)
+    recurrence_ends_at=datetime(2025, 12, 31, 23, 59),
+    allowed_note_types=["100", "101"]
 ).create()
 
 # Update an existing event

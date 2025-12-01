@@ -716,6 +716,9 @@ data_module:
   - title: "BusinessLine"
     url: /sdk/data-business-line/
     description: A group of patients that share a common brand under an organization.
+  - title: "Calendar"
+    url: /sdk/data-calendar/
+    description: Calendars associated with providers.
   - title: "CanvasUser"
     url: /sdk/data-canvasuser/
     description: User accounts associated with other records.
