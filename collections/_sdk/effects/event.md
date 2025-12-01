@@ -42,9 +42,7 @@ Event(
 ).update()
 
 # Delete an event
-Event(
-    event_id="event-uuid"
-).delete()
+Event(event_id="event-uuid").delete()
 ```
 
 ## Structure

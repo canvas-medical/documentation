@@ -10,14 +10,14 @@ hidden: false
 This allows developers to create calendars for providers in Canvas. Calendars can be either Clinic or Administrative type and can optionally be associated with a location.
 
 ```python
-from canvas_sdk.effects.calendar import CreateCalendar, CalendarType
+from canvas_sdk.effects.calendar import Calendar, CalendarType
 
-CreateCalendar(
+Calendar(
    provider="provider-uuid",
    type=CalendarType.Clinic,
    location="location-uuid",
    description="Primary clinic calendar"
-)
+).create()
 ```
 
 ## Structure
@@ -32,9 +32,9 @@ An enumeration of calendar types:
 | `Administrative`  | Calendar for administrative tasks              |
 
 
-### **CreateCalendar**
+### **Calendar**
 
-A CreateCalendar effect consists of the following properties:
+A Calendar effect consists of the following properties:
 
 #### Attributes
 
