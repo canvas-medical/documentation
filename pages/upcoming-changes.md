@@ -104,7 +104,7 @@ Stay up to date on the latest important dates for the Canvas platform.
         <strong>Making these two changes before the release date will ensure that your use of the endpoint
         will be unaffected by this change.</strong> 
       </td>
-      <td>12/02/25</td>
+      <td>12/08/25</td>
       <td></td>
     </tr>
     <tr>
