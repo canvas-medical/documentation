@@ -917,6 +917,9 @@ data_module:
   - title: "Team"
     url: /sdk/data-team
     description: Data associated with Teams.
+  - title: "Uncategorized Clinical Documents"
+    url: /sdk/data-uncategorized-clinical-document
+    description: Data associated with uncategorized clinical documents and their reviews.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
