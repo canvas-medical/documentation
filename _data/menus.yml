@@ -664,6 +664,8 @@ example_plugins:
     url: /sdk/example-charting_api_examples/
   - title: "Example Chart Application"
     url: /sdk/example-example_chart_app/
+  - title: "Fullscript integration"
+    url: /sdk/example-fullscript/
   - title: "Group Items in Patient Chart"
     url: /sdk/example-patient_summary_chart_groups/
   - title: "Patient Creation Platform Sync"
