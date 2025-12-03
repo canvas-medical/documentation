@@ -150,6 +150,8 @@ sections:
                       required_in: create, update
                       enum_options: 
                         - value: http://terminology.hl7.org/CodeSystem/condition-category
+                        - value: http://hl7.org/fhir/us/core/CodeSystem/condition-category
+                        - value: http://hl7.org/fhir/us/core/CodeSystem/us-core-category
                       type: string
                     - name: code
                       description: The category code.
@@ -159,6 +161,10 @@ sections:
                         - value: encounter-diagnosis
                         - value: problem-list-item
                         - value: health-concern
+                        - value: sdoh
+                        - value: functional-status
+                        - value: disability-status
+                        - value: cognitive-status
                     - name: display
                       description: The display name of the coding.
                       exclude_in: create, update
@@ -167,6 +173,10 @@ sections:
                         - value: Encounter Diagnosis
                         - value: Problem List Item
                         - value: Health Concern
+                        - value: SDOH
+                        - value: Functional Status
+                        - value: Disability Status
+                        - value: Cognitive Status
                 - name: text
                   description: Plain text representation of the concept.
                   exclude_in: create, update
@@ -175,6 +185,10 @@ sections:
                         - value: Encounter Diagnosis
                         - value: Problem List Item
                         - value: Health Concern
+                        - value: SDOH
+                        - value: Functional Status
+                        - value: Disability Status
+                        - value: Cognitive Status
           - name: code
             description_for_all_endpoints: Identification of the condition, problem or diagnosis.
             create_description: Canvas will not validate the coding supplied in the payload, instead Canvas will just save the system, code, and display as provided. We highly recommend supplying a coding with the `system` of `http://hl7.org/fhir/sid/icd-10-cm`.
