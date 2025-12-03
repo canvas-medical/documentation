@@ -16,9 +16,11 @@ sections:
             - CareTeamMembership
             - Condition
             - ConsolidatedImmunization
+            - Coverage
             - Device
             - DiagnosticReport
             - DocumentReference
+            - Encounter
             - Goal
             - Observation
             - Patient
@@ -47,16 +49,17 @@ sections:
                     - value: CarePlan
                     - value: CareTeam
                     - value: Condition
+                    - value: Coverage
                     - value: Device
                     - value: DiagnosticReport
                     - value: DocumentReference
+                    - value: Encounter
                     - value: Goal
                     - value: Immunization
+                    - value: MedicationDispense
                     - value: MedicationRequest
                     - value: Observation
-                    - value: Organization
                     - value: Patient
-                    - value: Practitioner
                     - value: Procedure
                 - name: display
                   type: string
