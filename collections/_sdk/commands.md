@@ -27,6 +27,8 @@ All commands have the following methods:
 
 Returns an Effect that originates a new command in the note body.
 
+**See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
+
 #### edit
 
 Returns an Effect that edits an existing command with the values set on the command class instance.
@@ -44,6 +46,12 @@ Returns an Effect that deletes an existing, non-committed command from the note 
 
 Returns an Effect that commits an existing, non-committed command to the note body.
 
+#### review
+
+Returns an Effect that sets a command in review.
+
+**Limited availability** The `review()` method can only be called on [Prescribe](#prescribe) commands objects. Other command types do not support this operation.
+
 #### send
 
 Returns an Effect that sends a signed command.
@@ -53,6 +61,7 @@ Returns an Effect that sends a signed command.
 #### enter_in_error
 
 Returns an effect that enter-in-errors an existing, committed command in the note body.
+
 
 **Example**:
 
@@ -767,6 +776,53 @@ imaging_order = ImagingOrderCommand(
 
 ---
 
+## ImagingReview
+
+**Command-specific parameters**:
+
+| Name                     | Type                                     | Required | Description                                                                                                    |
+|--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
+| `report_ids`             | _list[string]_                           | `true`   | List of imaging report IDs to review.                                                                          |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReportReviewCommunicationMethod`.       |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+
+**Enums and Types**:
+
+**`ReportReviewCommunicationMethod`**
+
+| Communication Method                | Value | Description                                                |
+|:------------------------------------|:------|:-----------------------------------------------------------|
+| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
+| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
+| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
+| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
+| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ImagingReviewCommand
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+from canvas_sdk.v1.data import ImagingReport, Patient
+
+patient = Patient.objects.get(id="patient-id")
+# Get imaging reports to review
+imaging_reports = ImagingReport.objects.filter(patient=patient, review__isnull=True)
+report_ids = [str(report.id) for report in imaging_reports]
+
+imaging_review = ImagingReviewCommand(
+    note_uuid="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    report_ids=report_ids,
+    message_to_patient="Your imaging results show no abnormalities.",
+    communication_method=ReportReviewCommunicationMethod.DELEGATED_CALL_CAN_LEAVE_MESSAGE,
+    comment="All clear, no follow-up needed."
+)
+```
+
+---
+
 ## ImmunizationStatement
 
 **Command-specific parameters**:
@@ -940,6 +996,53 @@ LabOrderCommand(
   diagnosis_codes=["E119"],
   fasting_required=True,
   comment="Patient should fast for 8 hours before the test."
+)
+```
+
+---
+
+## LabReview
+
+**Command-specific parameters**:
+
+| Name                     | Type                                     | Required | Description                                                                                                    |
+|--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
+| `report_ids`             | _list[string]_                           | `true`   | List of lab report IDs to review.                                                                              |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReportReviewCommunicationMethod`.           |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+
+**Enums and Types**:
+
+**`ReportReviewCommunicationMethod`**
+
+| Communication Method                | Value | Description                                                |
+|:------------------------------------|:------|:-----------------------------------------------------------|
+| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
+| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
+| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
+| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
+| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import LabReviewCommand
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+from canvas_sdk.v1.data import LabReport, Patient
+
+patient = Patient.objects.get(id="patient-id")
+# Get lab reports to review
+lab_reports = LabReport.objects.filter(patient=patient, review__isnull=True)
+report_ids = [str(report.id) for report in lab_reports]
+
+lab_review = LabReviewCommand(
+    note_uuid="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    report_ids=report_ids,
+    message_to_patient="Your lab results are within normal range.",
+    communication_method=ReportReviewCommunicationMethod.DELEGATED_CALL_CAN_LEAVE_MESSAGE,
+    comment="All values normal, no follow-up needed."
 )
 ```
 
@@ -1673,6 +1776,53 @@ refer_command = ReferCommand(
       business_phone="1234569874",
       business_fax="1234569874"
  ),
+)
+```
+
+---
+
+## ReferralReview
+
+**Command-specific parameters**:
+
+| Name                     | Type                                     | Required | Description                                                                                                    |
+|--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
+| `report_ids`             | _list[string]_                           | `true`   | List of referral report IDs to review.                                                                         |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReferralReviewCommand.ReportReviewCommunicationMethod`.      |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+
+**Enums and Types**:
+
+**`ReportReviewCommunicationMethod`**
+
+| Communication Method                | Value | Description                                                |
+|:------------------------------------|:------|:-----------------------------------------------------------|
+| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
+| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
+| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
+| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
+| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferralReviewCommand
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+from canvas_sdk.v1.data import Patient, ReferralReport
+
+patient = Patient.objects.get(id="patient-id")
+# Get referral reports to review
+referral_reports = ReferralReport.objects.filter(patient=patient, review__isnull=True)
+report_ids = [str(report.id) for report in referral_reports]
+
+referral_review = ReferralReviewCommand(
+    note_uuid="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    report_ids=report_ids,
+    message_to_patient="Your referral has been reviewed and approved.",
+    communication_method=ReportReviewCommunicationMethod.DELEGATED_CALL_CAN_LEAVE_MESSAGE,
+    comment="Referral approved, patient notified."
 )
 ```
 

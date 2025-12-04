@@ -30,6 +30,28 @@ The plugin author can enter custom workflow code into the `compute` method that 
 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
+## Event Actor
+The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
+It should be available for events that are directly initiated or triggered by a user — for example, SimpleAPI events, command pre- and post-search events, action button events. For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.handlers import BaseHandler
+from logger import log
+
+
+class CustomHandler(BaseHandler):
+    RESPONDS_TO = []
+
+    def compute(self) -> list[Effect]:
+        actor = self.event.actor
+        log.info(actor.dbid)        # The database ID of the actor, if available
+        log.info(actor.instance)  # The corresponding CanvasUser instance
+        log.info(actor.instance.person_subclass) # The corresponding Staff or Patient instance
+    
+        return []
+```
+
 ## Event Types and Context
 
 The event `target` object can be accessed within the compute method of the plugin by `self.event.target`. If `self.event.target.type` exists, it provides the same type that would be imported from the Data module. For example, a type of `Condition` would be the same as what you can import from `canvas_sdk.v1.data.condition`.
@@ -114,8 +136,8 @@ These events fire as a result of records being created, updated, or deleted.
     <td>Context object</td>
   </tr>
   <tr>
-    <td><pre>"id": care_team_id
-"type": None</pre></td>
+    <td><pre>"id": care_team_membership_id
+"type": <a href='/sdk/data-care-team/#careteammembership'>CareTeamMembership</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -133,8 +155,8 @@ These events fire as a result of records being created, updated, or deleted.
     <td>Context object</td>
   </tr>
   <tr>
-    <td><pre>"id": care_team_id
-"type": None</pre></td>
+    <td><pre>"id": care_team_membership_id
+"type": <a href='/sdk/data-care-team/#careteammembership'>CareTeamMembership</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -152,8 +174,8 @@ These events fire as a result of records being created, updated, or deleted.
     <td>Context object</td>
   </tr>
   <tr>
-    <td><pre>"id": care_team_id
-"type": None</pre></td>
+    <td><pre>"id": care_team_membership_id
+"type": <a href='/sdk/data-care-team/#careteammembership'>CareTeamMembership</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -172,7 +194,7 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   <tr>
     <td><pre>"id": address_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientaddress'>PatientAddress</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -191,7 +213,7 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   <tr>
     <td><pre>"id": address_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientaddress'>PatientAddress</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -210,7 +232,7 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   <tr>
     <td><pre>"id": address_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientaddress'>PatientAddress</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -286,7 +308,7 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   <tr>
     <td><pre>"id": contact_point_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientcontactpoint'>PatientContactPoint</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -305,7 +327,7 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   <tr>
     <td><pre>"id": contact_point_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientcontactpoint'>PatientContactPoint</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -324,7 +346,7 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   <tr>
     <td><pre>"id": contact_point_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientcontactpoint'>PatientContactPoint</a></pre></td>
     <td><pre>"patient":
     "id": pt_id</pre></td>
   </tr>
@@ -402,7 +424,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": patientmetadata_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientmetadata'>PatientMetadata</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -421,7 +443,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": patientmetadata_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-patient/#patientmetadata'>PatientMetadata</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -442,7 +464,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": allergy_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-allergy-intolerance/#allergyintolerance'>AllergyIntolerance</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -461,7 +483,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": allergy_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-allergy-intolerance/#allergyintolerance'>AllergyIntolerance</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -482,7 +504,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -501,7 +523,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -520,7 +542,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -539,7 +561,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -558,7 +580,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -577,7 +599,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -616,7 +638,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -634,7 +656,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"providers": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -654,7 +676,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -672,7 +694,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"locations": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -692,7 +714,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -710,7 +732,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"visit_types": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -730,7 +752,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -748,7 +770,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"durations": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -768,7 +790,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -786,7 +808,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"reason_for_visit": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -806,7 +828,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -826,9 +848,8 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": appointmentmetadata_id
-"type": None</pre></td>
-      <td><pre>"appointment":
-    "id": appt_id</pre></td>
+"type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -845,9 +866,8 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": appointmentmetadata_id
-"type": None</pre></td>
-      <td><pre>"appointment":
-    "id": appt_id</pre></td>
+"type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -867,7 +887,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
   <td><pre>"id": claim_id
-"type": <a href='/sdk/data-claim/'>Claim</a></pre></td>
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
       <td><pre>"patient":
   "id": pt_id
 "note":
@@ -888,7 +908,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": claim_id
-"type": Claim</pre></td>
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
       <td><pre>"patient":
   "id": pt_id
 "note":
@@ -912,7 +932,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": billing_line_item_id
-"type": BillingLineItem</pre></td>
+"type": <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItem</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -931,7 +951,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": billing_line_item_id
-"type": BillingLineItem</pre></td>
+"type": <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItem</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -952,7 +972,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": condition_id
-"type": <a href='/sdk/data-condition/'>Condition</a></pre></td>
+"type": <a href='/sdk/data-condition/#condition'>Condition</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -971,7 +991,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": condition_id
-"type": <a href='/sdk/data-condition/'>Condition</a></pre></td>
+"type": <a href='/sdk/data-condition/#condition'>Condition</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -990,7 +1010,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": condition_id
-"type": <a href='/sdk/data-condition/'>Condition</a></pre></td>
+"type": <a href='/sdk/data-condition/#condition'>Condition</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -1009,7 +1029,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": condition_id
-"type": <a href='/sdk/data-condition/'>Condition</a></pre></td>
+"type": <a href='/sdk/data-condition/#condition'>Condition</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -1049,9 +1069,9 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": consent_id
-type: None</pre></td>
+"type": None</pre></td>
       <td><pre>"patient":
-   id: pt_id</pre></td>
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1068,9 +1088,9 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": consent_id
-type: None</pre></td>
+"type": None</pre></td>
       <td><pre>"patient":
-   id: pt_id</pre></td>
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1089,9 +1109,9 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": coverage_id
-type: None</pre></td>
+"type": <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
       <td><pre>"patient":
-   id: pt_id</pre></td>
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1108,9 +1128,9 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": coverage_id
-type: None</pre></td>
+"type": <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
       <td><pre>"patient":
-   id: pt_id</pre></td>
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1129,7 +1149,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": detected_issue_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1148,7 +1168,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": detected_issue_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1167,7 +1187,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": detected_issue_evidence_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1185,7 +1205,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": detected_issue_evidence_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1205,7 +1225,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": device_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-device/#device'>Device</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1224,7 +1244,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": device_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-device/#device'>Device</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1304,7 +1324,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": encounter_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-encounter/#encounter'>Encounter</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1322,7 +1342,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": encounter_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-encounter/#encounter'>Encounter</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1342,7 +1362,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": report_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-imaging/#imagingreport'>ImagingReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1361,7 +1381,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": report_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-imaging/#imagingreport'>ImagingReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1382,7 +1402,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": immunization_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-immunization/#immunization'>Immunization</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1401,7 +1421,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": immunization_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-immunization/#immunization'>Immunization</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1420,7 +1440,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": immunization_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-immunization/#immunization'>Immunization</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1439,7 +1459,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": immunization_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-immunization/#immunization'>Immunization</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1500,7 +1520,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": interview_id
-"type": <a href='/sdk/data-questionnaire/'>Interview</a></pre></td>
+"type": <a href='/sdk/data-questionnaire/#interview'>Interview</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1519,7 +1539,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": interview_id
-"type": <a href='/sdk/data-questionnaire/'>Interview</a></pre></td>
+"type": <a href='/sdk/data-questionnaire/#interview'>Interview</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1540,7 +1560,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": laborder_id
-"type": <a href='/sdk/data-labs/'>LabOrder</a></pre></td>
+"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1559,7 +1579,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": laborder_id
-"type": <a href='/sdk/data-labs/'>LabOrder</a></pre></td>
+"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1578,7 +1598,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": labreport_id
-"type": <a href='/sdk/data-labs/'>LabReport</a></pre></td>
+"type": <a href='/sdk/data-labs/#labreport'>LabReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1597,7 +1617,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": labreport_id
-"type": <a href='/sdk/data-labs/'>LabReport</a></pre></td>
+"type": <a href='/sdk/data-labs/#labreport'>LabReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1618,7 +1638,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": medication_id
-"type": <a href='/sdk/data-medication/'>Medication</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1637,7 +1657,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": medication_id
-"type": <a href='/sdk/data-medication/'>Medication</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1656,7 +1676,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-medication/'>Medication</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1675,7 +1695,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-medication/'>Medication</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1696,7 +1716,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": message_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1795,7 +1815,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": observation_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-observation/#observation'>Observation</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1814,7 +1834,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": observation_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-observation/#observation'>Observation</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1834,7 +1854,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": protocoloverride_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-protocol-override/#protocoloverride'>ProtocolOverride</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1852,7 +1872,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": protocoloverride_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-protocol-override/#protocoloverride'>ProtocolOverride</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1870,7 +1890,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": protocoloverride_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-protocol-override/#protocoloverride'>ProtocolOverride</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1891,7 +1911,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": referralreport_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-referral/#referralreport'>ReferralReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1910,7 +1930,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": referralreport_id
-"type": None</pre></td>
+"type": <a href='/sdk/data-referral/#referralreport'>ReferralReport</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1931,7 +1951,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/'>Task</a></pre></td>
+"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1950,7 +1970,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/'>Task</a></pre></td>
+"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1969,7 +1989,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": taskcomment_id
-"type": <a href='/sdk/data-task/'>TaskComment</a></pre></td>
+"type": <a href='/sdk/data-task/#taskcomment'>TaskComment</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -1987,7 +2007,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": taskcomment_id
-"type": <a href='/sdk/data-task/'>TaskComment</a></pre></td>
+"type": <a href='/sdk/data-task/#taskcomment'>TaskComment</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2005,7 +2025,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": taskcomment_id
-"type": <a href='/sdk/data-task/'>TaskComment</a></pre></td>
+"type": <a href='/sdk/data-task/#taskcomment'>TaskComment</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2023,7 +2043,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_label_id
-"type": <a href='/sdk/data-task/#tasklabel/'>TaskLabel</a></pre></td>
+"type": <a href='/sdk/data-task/#tasklabel'>TaskLabel</a></pre></td>
       <td><pre>"patient":
    "id": pt_id
 "task":
@@ -2045,7 +2065,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/'>Task</a></pre></td>
+"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -2064,7 +2084,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/'>Task</a></pre></td>
+"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -2085,7 +2105,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2103,7 +2123,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2121,7 +2141,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -2139,7 +2159,7 @@ type: None</pre></td>
     </tr>
     <tr>
       <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
