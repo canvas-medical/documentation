@@ -1,7 +1,7 @@
 ---
-title: "AllergyIntolerance"
+title: "Allergy Intolerance"
 slug: "data-allergy-intolerance"
-excerpt: "Canvas SDK AllergyIntolerance"
+excerpt: "Canvas SDK Allergy Intolerance"
 hidden: false
 ---
 
@@ -85,14 +85,14 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 ### AllergyIntolerance
 
 | Field Name                     | Type                                                    |
-| ------------------------------ | ------------------------------------------------------- |
+|--------------------------------|---------------------------------------------------------|
 | id                             | UUID                                                    |
 | dbid                           | Integer                                                 |
 | created                        | DateTime                                                |
 | modified                       | DateTime                                                |
 | deleted                        | Boolean                                                 |
-| committer                      | [CanvasUser](/sdk/data-canvasuser)                      |
-| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                      |
+| committer                      | CanvasUser                                              |
+| entered_in_error               | CanvasUser                                              |
 | patient                        | [Patient](/sdk/data-patient/#patient)                   |
 | note_id                        | Integer                                                 |
 | allergy_intolerance_type       | String                                                  |
@@ -110,7 +110,7 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 ### AllergyIntoleranceCoding
 
 | Field Name          | Type                                      |
-| ------------------- | ----------------------------------------- |
+|---------------------|-------------------------------------------|
 | dbid                | Integer                                   |
 | system              | String                                    |
 | version             | String                                    |

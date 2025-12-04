@@ -23,29 +23,6 @@ sections:
           - name: intent
             description: Whether the request is a proposal, plan, or an original order. <br><br>A Medication Request that corresponds to a refill in the patient's chart will have an intent of `filler-order` while all other Medication Requests will be `order`.
             type: enum [ order | filler-order ]
-          - name: category
-            description: Indicates the type of medication request. Currently, all medication requests from Canvas are categorized as "outpatient".
-            type: array[json]
-            attributes:
-              - name: coding
-                description: Code defined by a terminology system.
-                type: array[json]
-                attributes:
-                  - name: system
-                    description: The system url of the coding.
-                    type: string
-                    enum_options:
-                      - value: http://terminology.hl7.org/CodeSystem/medicationrequest-category
-                  - name: code
-                    description: The code of the category.
-                    type: string
-                    enum_options:
-                      - value: outpatient
-                  - name: display
-                    description: The display name of the coding.
-                    type: string
-                    enum_options:
-                      - value: Outpatient
           - name: reportedBoolean
             description: Indicates if this record was captured as a secondary 'reported' record rather than as an original primary source-of-truth record.<br><br> Currently this will always be False from Canvas.
             type: boolean
@@ -70,7 +47,7 @@ sections:
                       description: The display name of the coding.
                       type: string
           - name: subject
-            description: Who the medication request is for.
+            description: Who or group medication request is for.
             type: json
             attributes:
               - name: reference
@@ -140,13 +117,6 @@ sections:
                 - name: text
                   type: string
                   description: Free text dosage instructions. In Canvas this text comes from the `SIG` or  `DIRECTIONS` field on the associated command.
-                - name: timing
-                  type: json
-                  description: When medication should be administered.
-                  attributes:
-                    - name: event
-                      type: array[datetime]
-                      description: Identifies specific times when the event takes place.
                 - name: doseAndRate
                   type: array[json]
                   description: Amount of medication administered.
@@ -155,9 +125,6 @@ sections:
                       type: json
                       description: Amount of medication per dose.
                       attributes:
-                        - name: value
-                          description: Numerical value
-                          type: decimal
                         - name: unit
                           description: Unit representation. 
                           type: string
@@ -212,7 +179,7 @@ sections:
                 - value: filler-order
             type: string
           - name: patient
-            description: The patient reference associated with the MedicationRequest in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            description: The patient reference associated to the Medication Request in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
           - name: requester
             description: The Practitioner reference associated to the MedicationRequest.requester attribute in the format `Practitioner/6c20b7152cf7421791c5ab4113060b3f`.
@@ -252,17 +219,6 @@ sections:
     "id": "3423a69c-618d-4cbe-861a-54c60f48744e",
     "status": "active",
     "intent": "order",
-    "category": [
-        {
-            "coding": [
-                {
-                    "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
-                    "code": "outpatient",
-                    "display": "Outpatient"
-                }
-            ]
-        }
-    ],
     "reportedBoolean": false,
     "medicationCodeableConcept": {
         "coding": [
@@ -305,13 +261,9 @@ sections:
     "dosageInstruction": [
         {
             "text": "take 1 daily",
-            "timing": {
-                "event": ["2023-09-21T18:19:36.106449+00:00"]
-            },
             "doseAndRate": [
                 {
                     "doseQuantity": {
-                        "value": 5,
                         "unit": "Tablet"
                     }
                 }
@@ -428,17 +380,6 @@ sections:
                 "id": "3423a69c-618d-4cbe-861a-54c60f48744e",
                 "status": "active",
                 "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
-                                "code": "outpatient",
-                                "display": "Outpatient"
-                            }
-                        ]
-                    }
-                ],
                 "reportedBoolean": false,
                 "medicationCodeableConcept": {
                     "coding": [
@@ -481,13 +422,9 @@ sections:
                 "dosageInstruction": [
                     {
                         "text": "take 1 daily",
-                        "timing": {
-                            "event": ["2023-09-21T18:19:36.106449+00:00"]
-                        },
                         "doseAndRate": [
                             {
                                 "doseQuantity": {
-                                    "value": 5,
                                     "unit": "Tablet"
                                 }
                             }

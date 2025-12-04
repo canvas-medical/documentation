@@ -41,7 +41,7 @@ for the next step.
 Create a file at the path `~/.canvas/credentials.ini`.
 Here is what its contents should look like:
 
-```ini
+```
 [buttered-popcorn]
 client_id=butter
 client_secret=salt
@@ -67,33 +67,28 @@ will be considered default.
 The Canvas CLI gives you a great head start when creating a plugin. Simply
 run `canvas init`, and answer the prompt to name your plugin.
 
-```sh
+```
 $ canvas init
   [1/1] project_name (My Cool Plugin): Paperwork Eviscerator
-Project created in /Users/andrew/src/canvas-plugins/paperwork-eviscerator
+Project created in /Users/andrew/src/canvas-plugins/paperwork_eviscerator
 ```
 
-This output shows the location of our freshly generated plugin project.
+This output shows the location of our freshly generated plugin.
 
 ## 4. Navigate the structure of a plugin
 
 Let's take a look at what was generated for us.
 
-```sh
-$ tree paperwork-eviscerator/
-paperwork-eviscerator/
-├── paperwork_eviscerator
-│    ├── CANVAS_MANIFEST.json
-│    ├── README.md
-│    └── protocols
-│         ├── __init__.py
-│         └── my_protocol.py
-├── pyproject.toml
-└── tests
-    ├── __init__.py
-    └── test_models.py
+```
+$ tree paperwork_eviscerator/
+paperwork_eviscerator/
+|-- CANVAS_MANIFEST.json
+|-- README.md
+`-- protocols
+    |-- __init__.py
+    `-- my_protocol.py
 
-5 directories, 9 files
+2 directories, 4 files
 ```
 
 ### CANVAS_MANIFEST.json
@@ -221,14 +216,10 @@ instance.
 
 ## 7. Deploy and use your plugin
 
-When your plugin is just the way you'd like it, deploying is simple. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and
-run `canvas install <path/to/plugin_package>` (i.e. `canvas install paperwork_eviscerator`) and your plugin will be packaged,
+When your plugin is just the way you'd like it, deploying is simple. Simply
+run `canvas install <path/to/plugin>` and your plugin will be packaged,
 uploaded, installed, and enabled. As you make changes to your plugin, run the
 same command to update the code of the installed plugin.
-
-## 8. Tail the logs
-
-To view logs and to surface any errors with your plugin, run `canvas logs --host buttered-popcorn-dev` (replace with your Canvas instance name). This will tail the logs for all plugins installed on that instance.
 
 <br/>
 <br/>

@@ -11,7 +11,7 @@ sections:
           [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careteam.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careteam.html)<br><br>
           All patients in Canvas have a CareTeam by default. The identifier for the CareTeam resource for a patient is the same as the patient identifier.
           <br><br>
-          See our [article](https://help.canvasmedical.com/articles/5628604712-manage-care-teams) for information about setting up Care Teams and Care Team Roles in Canvas.
+          See our [article](https://canvas-medical.help.usepylon.com/articles/4690553240-care-teams) for information about setting up Care Teams and Care Team Roles in Canvas.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -53,7 +53,7 @@ sections:
           - name: participant
             description_for_all_endpoints: >-
               Members of the team.<br><br>
-              Canvas allows either internal practitioners or external organizations to be members of a patient CareTeam. A practitioner can only have one role on a CareTeam, and only one practitioner can have a given role on a CareTeam. Organizations cannot be the lead of a CareTeam. <br><br>
+              Canvas only allows practitioners to be members of a patient CareTeam. A practitioner can only have one role on a CareTeam, and only one practitioner can have a given role on a CareTeam. <br><br>
             update_description: >-
               If `participant` is omitted or sent as an empty list, Canvas will inactivate any care team participants it finds for the given subject.
             type: array[json]
@@ -72,7 +72,7 @@ sections:
                     - name: valueBoolean
                       type: boolean
                       required_in: update
-                      description: Value of extension. If the value is set to `True`, it indicates the specific participant as the lead for this care team. Only one active participant can be the lead of a care team. Only practitioners can be designated as the lead.
+                      description: Value of extension. If the value is set to `True`, it indicates the specific participant as the lead for this care team. Only one active participant can be the lead of a care team.
                 - name: role
                   type: array[json]
                   description: Type of involvement
@@ -103,14 +103,14 @@ sections:
                     - name: reference
                       type: string
                       required_in: update
-                      description: The reference string of the member in the format of `"Practitioner/ed1e304acdb847148338c6b0596d93fd"` or `"Organization/8ab7cc3c-86f5-4723-ba26-7baf1f906ec7"`. 
+                      description: The reference string of the member in the format of `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`. 
                     - name: type
                       type: string
-                      description: Type the reference refers to (e.g. "Practitioner", "Organization").
+                      description: Type the reference refers to (e.g. "Practitioner").
         search_parameters:
           - name: participant
             description: >-
-              Who is involved. <br><br>Search to find all patient care teams that with a specific Practitioner or Organization member. Use the format `"Practitioner/ed1e304acdb847148338c6b0596d93fd"` or `"Organization/8ab7cc3c-86f5-4723-ba26-7baf1f906ec7"`
+              Who is involved. <br><br>Search to find all patient care teams that with a specific Practitioner member. Use the format `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`
             type: string
           - name: patient
             description: Search for a specific patient's care team in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
@@ -215,19 +215,7 @@ sections:
                 "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e",
                 "display": "Kathy Fielding, MD"
             }
-        },
-      {
-            "extension": [
-                {
-                   "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
-                   "valueBoolean": false
-                }
-            ],
-            "member": {
-                "reference": "Organization/8ab7cc3c-86f5-4723-ba26-7baf1f906ec7",
-                "display": "Example Organization"
-            }
-      }
+        }
     ]
 }
 ```
@@ -533,18 +521,6 @@ print(response.text)
                             "reference": "Practitioner/fc87cbb2525f4c5eb50294f620c7a15e",
                             "display": "Kathy Fielding, MD"
                         }
-                    },
-                    {
-                          "extension": [
-                              {
-                                 "url": "http://schemas.canvasmedical.com/fhir/extensions/careteam-lead",
-                                 "valueBoolean": false
-                              }
-                          ],
-                          "member": {
-                              "reference": "Organization/8ab7cc3c-86f5-4723-ba26-7baf1f906ec7",
-                              "display": "Example Organization"
-                          }
                     }
                 ]
             }

@@ -18,7 +18,7 @@ sections:
             description: The identifier of the CoverageEligibilityResponse.
           - name: status
             type: string
-            description: Status of the resource. The value is "entered-in-error" if the call to the third-party eligibility service failed.
+            description: Status of the resource.
             enum_options:
               - value: active
               - value: entered-in-error

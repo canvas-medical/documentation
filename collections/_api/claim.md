@@ -23,7 +23,7 @@ sections:
             description_for_all_endpoints: >-
               Canvas supports a current queue extension representing the current queue the given claim is in on the Canvas instance. Learn more about navigating claim queues [here](https://canvas-medical.help.usepylon.com/articles/3240845520-queues).<br><br>
 
-              **Canvas Built-in Claim Queues**
+              **Canvas Claim Queues**
 
                 | display     | code                   |
                 | :-----------| :----------------------|
@@ -37,9 +37,6 @@ sections:
                 | Rejected    | RejectedNeedsReview    |
                 | Submission  | QueuedForSubmission    | 
                 | Trash       | Trash                  |
-              
-              It is possible to create custom queues in Canvas and utilize in the FHIR API.
-
             read_and_search_description: >-
               Canvas supports a note identifier extension on this resource. The note identifier can be used with the [Canvas Note API](/api/note) <br><br>
             create_and_update_description: >-
@@ -232,7 +229,7 @@ sections:
               Information about diagnoses relevant to the claim items.
             create_and_update_description: These diagnoses will create Assessments in Canvas. At least one diagnosis element is required. 
             type: array[json]
-            required_in: create
+            required_in: create,update
             attributes:
               - name: sequence
                 required_in: create,update
@@ -263,7 +260,7 @@ sections:
             create_and_update_description: >-
               If the claim should be a self paying claim, pass the insurance list as 
               
-              ```json
+              ```
                 "insurance": [
                     {
                         "sequence": 1,
@@ -304,7 +301,7 @@ sections:
             description: >-
               List of service charges to be used in the claim.
             type: array[json]
-            required_in: create
+            required_in: create,update
             attributes:
               - name: sequence
                 required_in: create,update

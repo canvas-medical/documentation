@@ -32,12 +32,10 @@
             overflow: hidden;
             white-space: nowrap;
             .navigation__menu__item {
-              color: #111827;
-              font-weight: 500;
+              color: black;
             }
             .navigation__menu__item:hover {
               text-decoration: none;
-              color:#2C928B;
             }
             @media (max-width: $breakpoint-md) {
                 display: flex;

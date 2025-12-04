@@ -1,7 +1,7 @@
 ---
-title: "DetectedIssue"
+title: "Detected Issue"
 slug: "data-detected-issue"
-excerpt: "Canvas SDK DetectedIssue"
+excerpt: "Canvas SDK Detected Issue"
 hidden: false
 ---
 
@@ -55,7 +55,7 @@ Filtering for detected issues is done with the `filter` method on the `DetectedI
 Specify an attribute with `filter` to filter by that attribute:
 
 ```python
-from canvas_sdk.v1.data.detected_issue import DetectedIssue
+from canvas_sdk.v1.data.detected_issues import DetectedIssue
 
 detected_issues = DetectedIssue.objects.filter(status="active")
 ```
@@ -65,16 +65,16 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 ### DetectedIssue
 
 | Field Name              | Type                                              |
-| ----------------------- | ------------------------------------------------- |
+|-------------------------|---------------------------------------------------|
 | id                      | UUID                                              |
 | dbid                    | Integer                                           |
 | created                 | DateTime                                          |
 | modified                | DateTime                                          |
 | identified              | DateTime                                          |
 | deleted                 | Boolean                                           |
-| originator              | [CanvasUser](/sdk/data-canvasuser)                |
-| committer               | [CanvasUser](/sdk/data-canvasuser)                |
-| entered_in_error        | [CanvasUser](/sdk/data-canvasuser)                |
+| originator              | CanvasUser                                        |
+| committer               | CanvasUser                                        |
+| entered_in_error        | CanvasUser                                        |
 | patient                 | [Patient](/sdk/data-patient/#patient)             |
 | code                    | String                                            |
 | status                  | String                                            |
@@ -87,16 +87,18 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 
 ### DetectedIssueEvidence
 
-| Field Name     | Type                                                     |
-| -------------- | -------------------------------------------------------- |
-| id             | UUID                                                     |
-| dbid           | Integer                                                  |
-| system         | String                                                   |
-| version        | String                                                   |
-| code           | String                                                   |
-| display        | String                                                   |
-| user_selected  | Boolean                                                  |
+
+| Field Name     | Type                                                    |
+|----------------|---------------------------------------------------------|
+| id             | UUID                                                    |
+| dbid           | Integer                                                 |
+| system         | String                                                  |
+| version        | String                                                  |
+| code           | String                                                  |
+| display        | String                                                  |
+| user_selected  | Boolean                                                 |
 | detected_issue | [DetectedIssue](/sdk/data-detected-issue/#detectedissue) |
+
 
 <br/>
 <br/>

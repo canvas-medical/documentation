@@ -7,11 +7,7 @@ hidden: false
 
 The Canvas SDK includes functionality for handling questionnaire-related events.
 
-## Creating a Questionnaire
-
-Creating a questionnaire via the SDK requires current requires defining a YAML template and referencing it in your `CANVAS_MANIFEST.json` file. Read more [here](/sdk/questionnaires/).
-
-## Creating a Questionnaire Result
+## Creating a questionnaire result
 
 The `CreateQuestionnaireResult` effect causes a new entry to appear in the Social Determinants section of the left side
 of the chart.
@@ -100,7 +96,3 @@ class MChatQuestionnaireResult(BaseProtocol):
 
         return [effect.apply()]
 ```
-
-<br/>
-<br/>
-<br/>

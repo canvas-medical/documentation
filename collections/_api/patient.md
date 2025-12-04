@@ -16,7 +16,7 @@ sections:
 
           **`birthsex`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-birthsex.html)
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex)
           <br><br>
           A code classifying the person’s sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC). This extension aligns with the C-CDA Birth Sex Observation (LOINC 76689-9). After version 6.0.0, this extension is no longer a USCDI Requirement.
           <br><br>
@@ -29,25 +29,9 @@ sections:
             | **OTH** | Other       |
             | **UNK** | Unknown     |
 
-          **`sex`**
-          <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-sex.html)
-          <br><br>
-          Reflects the the documentation of a person's sex. It is intended to support the exchange of a sex value that is not characterized as sex assigned at birth or birth sex. 
-          <br><br>
-          Supported values are:
-
-            | value              | description                              |
-            | :----              | ---------                                |
-            | **184115007**      | Patient sex unknown  (finding)           |
-            | **248152002**      | Female (finding)                         |
-            | **248153007**      | Male (finding)                           |
-            | **33791000087105** | Identifies as nonbinary gender (finding) |
-            | **asked-declined** | Asked But Declined                       |
-
           **`genderIdentity`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-genderIdentity.html)
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity)
           <br><br>
           This extension provides concepts to describe the gender a person identifies as.
           <br><br>
@@ -80,28 +64,21 @@ sections:
 
           **`race`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-race.html)<br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](http://hl7.org/fhir/us/core/StructureDefinition/us-core-race)<br><br>
           An extension to specify the races of a patient.
           <br><br>
           For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-race**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.<br><br>
 
           **`ethnicity`**
           <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-ethnicity.html)<br><br>
+          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity)<br><br>
           An extension to specify the ethnicities of a patient.
           <br><br>
           For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.<br><br>
 
-          **`tribalAffiliation`**
-          <br><br>
-          [http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-tribal-affiliation.html)<br><br>
-          An extension to specify the tribe or band with which a person associates.
-          <br><br>
-          For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation**. Additionally, a `valueCodeableConcept` with a list of codings representing the tribal affiliation.<br><br>
-
           **`timezone`**
           <br><br>
-          [http://hl7.org/fhir/StructureDefinition/tz-code](https://build.fhir.org/ig/HL7/fhir-extensions/StructureDefinition-tz-code.html)
+          [http://hl7.org/fhir/StructureDefinition/tz-code](http://hl7.org/fhir/StructureDefinition/tz-code)
           <br><br>
           The timezone a patient lives in.
           <br><br>
@@ -157,9 +134,6 @@ sections:
           If using business line functionality, create and update actions should include a json object with the `url` attribute equal to **http://schemas.canvasmedical.com/fhir/extensions/business-line** and the `valueId` set to the externallyExposableId of the business line in Canvas.
 
         attributes:
-          - name: resourceType
-            description: The FHIR Resource name.
-            type: string
           - name: id
             type: string
             description: Unique Canvas identifier for this resource
@@ -194,38 +168,20 @@ sections:
             type: array[json]
             required_in: create,update
             description: >-
-                A name associated with the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` list will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` list will populate the patient's suffix <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.<br><br> In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will be ignored.
-            attributes:
-              - name: use
-                type: string
-                description: Supported values are **usual**, **official**, **temp**, **nickname**, **old**, and **maiden**.
-              - name: family
-                type: string
-                description: Family name (often called 'Surname').
-              - name: given
-                type: array[string]
-                description: >-
-                  Given names (not always 'first'). Includes middle names.<br><br>
-                  This repeating element order: Given Names appear in the correct order for presenting the name.
-              - name: prefix
-                type: array[string]
-                description: Parts that come before the name (e.g., "Dr.", "Mr.", "Mrs.", "Ms.").
-              - name: suffix
-                type: array[string]
-                description: Parts that come after the name (e.g., "Jr.", "Sr.", "III", "Esq").
+                The identifier of the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` attribute will be displayed on the Canvas UI but it will not be editable through the UI. <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.<br><br> In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will be ignored.
           - name: telecom
             type: array[json]
             required: false
             description: Contact details for the individual.
             create_and_update_description: >-
-                Telecom is an optional list of objects where you can provide the child attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
+                Telecom is an optional list of objects where you can provide the child  attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
             attributes:
               - name: id
                 type: string
               - name: extension
                 type: array
                 description: >-
-                    This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that the patient has consented to receiving text messages or emails to this contact point. This extension is identified with the <code>url</code> [https://help.canvasmedical.com/articles/8144965836-manging-patient-consents](https://help.canvasmedical.com/articles/8144965836-manging-patient-consents). A boolean value can be specified in the <code>valueBoolean</code> attribute.<br><br>
+                    This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that the patient has consented to receiving text messages or emails to this contact point. This extension is identified with the <code>url</code> [http://schemas.canvasmedical.com/fhir/extensions/has-consent](http://schemas.canvasmedical.com/fhir/extensions/has-consent). A boolean value can be specified in the <code>valueBoolean</code> attribute.<br><br>
                     **Note:** This will not send a verification email or text as is the Canvas UI does. It will bypass this step and mark the contact as verified.
                 attributes:
                   - name: url
@@ -260,16 +216,10 @@ sections:
               The date of birth for the individual, formatted as YYYY-MM-DD.
             create_and_update_description: >-
               The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
-          - name: deceasedDateTime
-            type: datetime
-            required: false
-            description: >-
-              Indicates the decease date of the individual.<br><br>If this value is not available, `deceasedBoolean` will be provided instead.
           - name: deceasedBoolean
             type: boolean
             required: false
-            description: >-
-              Indicates if the individual is deceased or not.<br><br>This value will only be shown if `deceasedDateTime` is not available.
+            description: Indicates if the individual is deceased or not.
           - name: address
             type: array[json]
             required: false
@@ -284,7 +234,7 @@ sections:
                 type: string
                 description: Supported values are **both**, **physical** and **postal**. If omitted, the default value is **both**.
               - name: line
-                type: array[string]
+                type: string
                 description:  List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
               - name: city
                 type: string
@@ -303,14 +253,13 @@ sections:
                 attributes:
                   - name: start
                     type: date
-                    description: Starting date with inclusive boundary
                   - name: end
                     type: date
-                    description: End date with inclusive boundary, if not ongoing
           - name: photo
             type: array[json]
             description: >-
-                Image of the patient. This image shows on the patient avatar in the Canvas UI.
+                Image of the patient. This image shows on the patient avatar in the Canvas UI.<br><br>
+                **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             create_and_update_description: >-
               When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
           - name: contact
@@ -321,102 +270,33 @@ sections:
               - name: id
                 type: string
                 description: A Canvas identifier for the contact.
-              - name: relationship
-                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry contains a coding list. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
-                type: array[json]
-                attributes:
-                  - name: coding
-                    description: Code defined by a terminology system.
-                    type: array[json]
-                    attributes: 
-                      - name: system
-                        description: The system url of the coding.
-                        enum_options: 
-                          - value: http://terminology.hl7.org/CodeSystem/v3-RoleCode
-                          - value: Empty string
-                        type: string
-                      - name: code
-                        description: >-
-                          The code of the relationship.<br><br>
-                          Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
-                        type: string
-                      - name: display
-                        description: >-
-                          The display name of the coding.<br><br>
-                          Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
-                        type: string
               - name: name
-                description: A name associated with the contact.
-                type: array[json]
+                type: json
                 required_in: create,update
+                description: This is an object where you can specify the <code>text</code> that stores the contact's name.
                 attributes:
                   - name: text
                     type: string
-                    description: >-
-                      Text representation of the full name.<br><br>
-                      If the contact is not a Patient on Canvas, this attribute will be populated.<br><br>
-                      If the contact is a Patient on Canvas, this attribute will not be populated; instead the `family`, `given`, `prefix`, and `suffix` attributes will be provided.
-                  - name: family
-                    type: string
-                    description: Family name (often called 'Surname').
-                  - name: given
-                    type: array[string]
-                    description: >-
-                      Given names (not always 'first'). Includes middle names.<br><br>
-                      This repeating element order: Given Names appear in the correct order for presenting the name.
-                  - name: prefix
-                    type: array[string]
-                    description: Parts that come before the name.
-                  - name: suffix
-                    type: array[string]
-                    description: Parts that come after the name.
-              - name: telecom
+              - name: relationship
                 type: array[json]
+                description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry can contain a text string attribute and a coding list. The text attribute is a free text string representing the relationship to the patient. The coding list can specify the [configurable contact category codings](https://canvas-medical.help.usepylon.com/articles/4371968359-patient-contact-information) this contact has to the patient.
+                attributes:
+                  - name: text
+                    type: string
+              - name: telecom
+                type: json
                 description: This is a list of objects where Canvas will take the first system equal to phone and store as the contact's phone number. This value must only be a 10 digit number, no other characters are accepted. Then the first system equal to email will be stored as this contact's email address. The value of the email or phone number is stored in the value field. If any other option is passed in the system field, the data will not be stored.
                 attributes:
                   - name: system
                     type: string
-                    description: Supported values are **phone**, **fax**, **email**, **pager**, **url**, **sms**, and **other**.
                   - name: value
                     type: string
-                    description: Free text string of the value for this contact point.
-                  - name: use
-                    type: string
-                    description: Supported values are  **home**, **work**, **temp**, **old** and **mobile**.
-              - name: address
-                description: Address where the contact can be contacted or visited
+              - name: extension
                 type: array[json]
-                attributes:
-                  - name: use
-                    type: string
-                    description: Supported values are **home**, **work**, **temp** and **old**.
-                  - name: type
-                    type: string
-                    description: Supported values are **both**, **physical** and **postal**.
-                  - name: line
-                    type: array[string]
-                    description:  List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
-                  - name: city
-                    type: string
-                    description: String representing the city of the address.
-                  - name: state
-                    type: string
-                    description: 2 letter state abbreviation of the address.
-                  - name: postalCode
-                    type: string
-                    description: The 5 digit postal code of the address.
-                  - name: country
-                    type: string
-                    description: The ISO 3166 2 letter country code.
-                  - name: period
-                    type: json
-                    attributes:
-                      - name: start
-                        type: date
-                        description: Starting date with inclusive boundary
-                      - name: end
-                        type: date
-                        description: End date with inclusive boundary, if not ongoing
+                description: >-
+                  An extension that includes the following values:<br><br>
+                  - Emergency Contact<br>
+                  - Authorized for Release of Information
           - name: communication
             type: array[json]
             description: A language which may be used to communicate with the patient about his or her health.
@@ -516,10 +396,6 @@ curl --request POST \
             "valueCode": "F"
         },
         {
-            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
-            "valueCode" : "248152002"
-        },
-        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -595,26 +471,6 @@ curl --request POST \
             ]
         },
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
-            "extension":
-            [
-                {
-                    "url": "tribalAffiliation",
-                    "valueCodeableConcept":
-                    {
-                        "coding":
-                        [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
-                                "code": "187",
-                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
-                            }
-                        ]
-                    }
-                }
-            ]
-        },
-        {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
             "valueCode": "America/New_York"
         },
@@ -645,12 +501,6 @@ curl --request POST \
             [
                 "Samantha",
                 "Ann"
-            ],
-            "prefix": [
-                "Dr."
-            ],
-            "suffix": [
-                "Jr."
             ]
         },
         {
@@ -711,11 +561,6 @@ curl --request POST \
                 {
                     "coding": [
                         {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "SPS",
-                            "display": "spouse"
-                        }
-                        {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
                             "display": "Authorized for release of information"
@@ -731,6 +576,7 @@ curl --request POST \
                             "display": "Emergency contact"
                         }
                     ],
+                    "text": "Spouse"
                 }
             ],
             "telecom":
@@ -738,6 +584,17 @@ curl --request POST \
                 {
                     "system": "email",
                     "value": "danjones@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": true
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
                 }
             ]
         },
@@ -749,13 +606,7 @@ curl --request POST \
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "MTH",
-                            "display": "mother"
-                        }
-                    ]
+                    "text": "Mother"
                 }
             ],
             "telecom":
@@ -763,6 +614,17 @@ curl --request POST \
                 {
                     "system": "phone",
                     "value": "5557327068"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": false
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": false
                 }
             ]
         },
@@ -774,13 +636,7 @@ curl --request POST \
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "FTH",
-                            "display": "father"
-                        }
-                    ]
+                    "text": "Father"
                 }
             ],
             "telecom":
@@ -788,6 +644,17 @@ curl --request POST \
                 {
                     "system": "email",
                     "value": "j.stewart@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": false
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": false
                 }
             ]
         }
@@ -833,10 +700,6 @@ payload = {
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
-        },
-        {
-            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
-            "valueCode" : "248152002"
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
@@ -909,26 +772,6 @@ payload = {
                     {
                         "code": "2186-5",
                         "system": "urn:oid:2.16.840.1.113883.6.238"
-                    }
-                }
-            ]
-        },
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
-            "extension":
-            [
-                {
-                    "url": "tribalAffiliation",
-                    "valueCodeableConcept":
-                    {
-                        "coding":
-                        [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
-                                "code": "187",
-                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
-                            }
-                        ]
                     }
                 }
             ]
@@ -1024,11 +867,6 @@ payload = {
                 {
                     "coding": [
                         {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "SPS",
-                            "display": "spouse"
-                        },
-                        {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
                             "display": "Authorized for release of information"
@@ -1043,7 +881,8 @@ payload = {
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ]
+                    ],
+                    "text": "Spouse"
                 }
             ],
             "telecom":
@@ -1051,6 +890,17 @@ payload = {
                 {
                     "system": "email",
                     "value": "danjones@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": True
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": True
                 }
             ]
         },
@@ -1062,13 +912,7 @@ payload = {
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "MTH",
-                            "display": "mother"
-                        }
-                    ]
+                    "text": "Mother"
                 }
             ],
             "telecom":
@@ -1076,6 +920,17 @@ payload = {
                 {
                     "system": "phone",
                     "value": "5557327068"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": False
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": False
                 }
             ]
         },
@@ -1087,13 +942,7 @@ payload = {
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "FTH",
-                            "display": "father"
-                        }
-                    ]
+                    "text": "Father"
                 }
             ],
             "telecom":
@@ -1101,6 +950,17 @@ payload = {
                 {
                     "system": "email",
                     "value": "j.stewart@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": False
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": False
                 }
             ]
         }
@@ -1160,10 +1020,6 @@ print(response.text)
             "valueCode": "F"
         },
         {
-            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
-            "valueCode" : "248152002"
-        },
-        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -1183,7 +1039,6 @@ print(response.text)
             "valueCode": "20430005"
         },
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
             "extension":
             [
                 {
@@ -1199,10 +1054,10 @@ print(response.text)
                     "url": "text",
                     "valueString": "Other Race"
                 }
-            ]
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
         },
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
             "extension":
             [
                 {
@@ -1218,27 +1073,8 @@ print(response.text)
                     "url": "text",
                     "valueString": "Not Hispanic or Latino"
                 }
-            ]
-        },
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
-            "extension":
-            [
-                {
-                    "url": "tribalAffiliation",
-                    "valueCodeableConcept":
-                    {
-                        "coding":
-                        [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
-                                "code": "187",
-                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
-                            }
-                        ]
-                    }
-                }
-            ]
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
         },
         {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
@@ -1253,7 +1089,6 @@ print(response.text)
             "valueString": "I am an administrative caption from a Create message"
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
             "extension":
             [
                 {
@@ -1272,7 +1107,8 @@ print(response.text)
                     "url": "default",
                     "valueBoolean": false
                 }
-            ]
+            ],
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
@@ -1407,6 +1243,12 @@ print(response.text)
     "photo":
     [
         {
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                    "valueUri": "https://d3hn0m4rbsz438.cloudfront.net/avatar1.png"
+                }
+            ],
             "url": "https://fumage-example.canvasmedical.com/Patient/7162fd82487e4dc8aa2581ddbca91892/files/photo"
         }
     ],
@@ -1414,15 +1256,21 @@ print(response.text)
     [
         {
             "id": "1ba81cb4-7f97-429d-b0d8-4c4f067b11a5",
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": true
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
+                }
+            ],
             "relationship":
             [
                 {
                     "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "SPS",
-                            "display": "spouse"
-                        },
                         {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
@@ -1439,6 +1287,7 @@ print(response.text)
                             "display": "Emergency contact"
                         }
                     ],
+                    "text": "Spouse"
                 }
             ],
             "name":
@@ -1455,16 +1304,21 @@ print(response.text)
         },
         {
             "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": false
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": false
+                }
+            ],
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "MTH",
-                            "display": "mother"
-                        }
-                    ]
+                    "text": "Mother"
                 }
             ],
             "name":
@@ -1481,16 +1335,21 @@ print(response.text)
         },
         {
             "id": "30639a10-18c2-4222-8d26-32b2ca36a1bb",
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": false
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": false
+                }
+            ],
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "FTH",
-                            "display": "father"
-                        }
-                    ]
+                    "text": "Father"
                 }
             ],
             "name":
@@ -1597,10 +1456,6 @@ curl --request PUT \
             "valueCode": "F"
         },
         {
-            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
-            "valueCode" : "248152002"
-        },
-        {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
             "valueCodeableConcept":
             {
@@ -1676,26 +1531,6 @@ curl --request PUT \
             ]
         },
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
-            "extension":
-            [
-                {
-                    "url": "tribalAffiliation",
-                    "valueCodeableConcept":
-                    {
-                        "coding":
-                        [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
-                                "code": "187",
-                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
-                            }
-                        ]
-                    }
-                }
-            ]
-        },
-        {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
             "valueCode": "America/New_York"
         },
@@ -1726,12 +1561,6 @@ curl --request PUT \
             [
                 "Samantha",
                 "Ann"
-            ],
-            "prefix": [
-                "Dr."
-            ],
-            "suffix": [
-                "Jr."
             ]
         },
         {
@@ -1793,11 +1622,6 @@ curl --request PUT \
                 {
                     "coding": [
                         {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "SPS",
-                            "display": "spouse"
-                        },
-                        {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
                             "display": "Authorized for release of information"
@@ -1812,7 +1636,8 @@ curl --request PUT \
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ]
+                    ],
+                    "text": "Spouse"
                 }
             ],
             "telecom":
@@ -1820,6 +1645,17 @@ curl --request PUT \
                 {
                     "system": "email",
                     "value": "danjones@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": true
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": true
                 }
             ]
         },
@@ -1832,13 +1668,7 @@ curl --request PUT \
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "MTH",
-                            "display": "mother"
-                        }
-                    ]
+                    "text": "Mother"
                 }
             ],
             "telecom":
@@ -1846,6 +1676,17 @@ curl --request PUT \
                 {
                     "system": "phone",
                     "value": "5557327068"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": false
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": false
                 }
             ]
         },
@@ -1858,13 +1699,7 @@ curl --request PUT \
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "FTH",
-                            "display": "father"
-                        }
-                    ]
+                    "text": "Father"
                 }
             ],
             "telecom":
@@ -1872,6 +1707,17 @@ curl --request PUT \
                 {
                     "system": "email",
                     "value": "j.stewart@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": false
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": false
                 }
             ]
         }
@@ -1917,10 +1763,6 @@ payload = {
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
             "valueCode": "F"
-        },
-        {
-            "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
-            "valueCode" : "248152002"
         },
         {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
@@ -1994,26 +1836,6 @@ payload = {
             ]
         },
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
-            "extension":
-            [
-                {
-                    "url": "tribalAffiliation",
-                    "valueCodeableConcept":
-                    {
-                        "coding":
-                        [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
-                                "code": "187",
-                                "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
-                            }
-                        ]
-                    }
-                }
-            ]
-        },
-        {
             "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
             "valueCode": "America/New_York"
         },
@@ -2044,12 +1866,6 @@ payload = {
             [
                 "Samantha",
                 "Ann"
-            ],
-            "prefix": [
-                "Dr."
-            ],
-            "suffix": [
-                "Jr."
             ]
         },
         {
@@ -2111,11 +1927,6 @@ payload = {
                 {
                     "coding": [
                         {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "SPS",
-                            "display": "spouse"
-                        },
-                        {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
                             "display": "Authorized for release of information"
@@ -2131,6 +1942,7 @@ payload = {
                             "display": "Emergency contact"
                         }
                     ],
+                    "text": "Spouse"
                 }
             ],
             "telecom":
@@ -2138,6 +1950,17 @@ payload = {
                 {
                     "system": "email",
                     "value": "danjones@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": True
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": True
                 }
             ]
         },
@@ -2150,13 +1973,7 @@ payload = {
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "MTH",
-                            "display": "mother"
-                        }
-                    ]
+                    "text": "Mother"
                 }
             ],
             "telecom":
@@ -2164,6 +1981,17 @@ payload = {
                 {
                     "system": "phone",
                     "value": "5557327068"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": False
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": False
                 }
             ]
         },
@@ -2176,13 +2004,7 @@ payload = {
             "relationship":
             [
                 {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                            "code": "FTH",
-                            "display": "father"
-                        }
-                    ]
+                    "text": "Father"
                 }
             ],
             "telecom":
@@ -2190,6 +2012,17 @@ payload = {
                 {
                     "system": "email",
                     "value": "j.stewart@example.com"
+                }
+            ],
+            "extension":
+            [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                    "valueBoolean": False
+                },
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                    "valueBoolean": False
                 }
             ]
         }
@@ -2272,10 +2105,6 @@ print(response.text)
                         "valueCode": "F"
                     },
                     {
-                        "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex",
-                        "valueCode" : "248152002"
-                    },
-                    {
                         "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity",
                         "valueCodeableConcept":
                         {
@@ -2295,7 +2124,6 @@ print(response.text)
                         "valueCode": "20430005"
                     },
                     {
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
                         "extension":
                         [
                             {
@@ -2311,10 +2139,10 @@ print(response.text)
                                 "url": "text",
                                 "valueString": "Other Race"
                             }
-                        ]
+                        ],
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
                     },
                     {
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
                         "extension":
                         [
                             {
@@ -2330,27 +2158,8 @@ print(response.text)
                                 "url": "text",
                                 "valueString": "Not Hispanic or Latino"
                             }
-                        ]
-                    },
-                    {
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation",
-                        "extension":
-                        [
-                            {
-                                "url": "tribalAffiliation",
-                                "valueCodeableConcept":
-                                {
-                                    "coding":
-                                    [
-                                        {
-                                            "system": "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS",
-                                            "code": "187",
-                                            "display": "Paiute-Shoshone Tribe of the Fallon Reservation and Colony, Nevada"
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
+                        ],
+                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
                     },
                     {
                         "url": "http://hl7.org/fhir/StructureDefinition/tz-code",
@@ -2365,7 +2174,6 @@ print(response.text)
                         "valueString": "I am an administrative caption from a Create message"
                     },
                     {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy",
                         "extension":
                         [
                             {
@@ -2384,7 +2192,8 @@ print(response.text)
                                 "url": "default",
                                 "valueBoolean": false
                             }
-                        ]
+                        ],
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider",
@@ -2520,15 +2329,21 @@ print(response.text)
                 [
                     {
                         "id": "1ba81cb4-7f97-429d-b0d8-4c4f067b11a5",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                                "valueBoolean": true
+                            }
+                        ],
                         "relationship":
                         [
                             {
                                 "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                                        "code": "SPS",
-                                        "display": "spouse"
-                                    },
                                     {
                                         "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                                         "code": "ARI",
@@ -2544,7 +2359,8 @@ print(response.text)
                                         "code": "EMC",
                                         "display": "Emergency contact"
                                     }
-                                ]
+                                ],
+                                "text": "Spouse"
                             }
                         ],
                         "name":
@@ -2560,17 +2376,22 @@ print(response.text)
                         ]
                     },
                     {
-                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3"
+                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                                "valueBoolean": false
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                                "valueBoolean": false
+                            }
+                        ],
                         "relationship":
                         [
                             {
-                                "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                                        "code": "MTH",
-                                        "display": "mother"
-                                    }                                    
-                                ]
+                                "text": "Mother"
                             }
                         ],
                         "name":
@@ -2587,16 +2408,21 @@ print(response.text)
                     },
                     {
                         "id": "30639a10-18c2-4222-8d26-32b2ca36a1bb",
+                        "extension":
+                        [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/emergency-contact",
+                                "valueBoolean": false
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information",
+                                "valueBoolean": false
+                            }
+                        ],
                         "relationship":
                         [
                             {
-                                "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
-                                        "code": "FTH",
-                                        "display": "father"
-                                    }
-                                ]
+                                "text": "Father"
                             }
                         ],
                         "name":

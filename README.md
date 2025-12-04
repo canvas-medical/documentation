@@ -22,7 +22,7 @@ bundle install
 ```
 
 Start development server
-```sh
+```
 yarn dev
 ```
 

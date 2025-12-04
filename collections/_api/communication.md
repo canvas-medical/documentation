@@ -129,7 +129,6 @@ sections:
 <div id="communication-create-request">
   {% tabs communication-create-request %}
     {% tab communication-create-request curl %}
-
 ```shell
 curl --request POST \
      --url 'https://fumage-example.canvasmedical.com/Communication' \
@@ -156,12 +155,10 @@ curl --request POST \
     }
   ]
 }'
-
 ```
     {% endtab %}
 
     {% tab communication-create-request python %}
-
 ```python
 import requests
 
@@ -185,7 +182,6 @@ response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
 ```
-
     {% endtab %}
   {% endtabs %}
 </div>
@@ -283,7 +279,6 @@ print(response.text)
 ```
     {% endtab %}
     {% tab communication-search-response 403 %}
-
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -298,7 +293,6 @@ print(response.text)
   ]
 }
 ```
-
     {% endtab %}
   {% endtabs %}
 </div>
@@ -310,7 +304,6 @@ print(response.text)
 <div id="communication-read-response">
 {% tabs communication-read-response %}
 {% tab communication-read-response 200 %}
-
 ```json
 {
     "resourceType": "Communication",
@@ -333,11 +326,10 @@ print(response.text)
         }
     ]
 }
-```
 
+```
     {% endtab %}
     {% tab communication-read-response 400 %}
-
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -353,11 +345,9 @@ print(response.text)
   ]
 }
 ```
-
     {% endtab %}
     {% tab communication-read-response 401 %}
 ```json
-
 {
   "resourceType": "OperationOutcome",
   "issue": [
@@ -371,7 +361,6 @@ print(response.text)
   ]
 }
 ```
-
     {% endtab %}
     {% tab communication-read-response 403 %}
 ```json

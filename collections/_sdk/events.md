@@ -16,72 +16,21 @@ To make plugin code react to an event, you can add the event types listed below 
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
-
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
     def compute(self):
-        ...
+        ....
 ```
 
 The plugin author can enter custom workflow code into the `compute` method that will execute every time an Allergy Intolerance is created in Canvas.
 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
-## Event Actor
-The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
-It should be available for events that are directly initiated or triggered by a user — for example, SimpleAPI events, command pre- and post-search events, action button events. For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+## Event Types
 
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.handlers import BaseHandler
-from logger import log
-
-
-class CustomHandler(BaseHandler):
-    RESPONDS_TO = []
-
-    def compute(self) -> list[Effect]:
-        actor = self.event.actor
-        log.info(actor.dbid)        # The database ID of the actor, if available
-        log.info(actor.instance)  # The corresponding CanvasUser instance
-        log.info(actor.instance.person_subclass) # The corresponding Staff or Patient instance
-    
-        return []
-```
-
-## Event Types and Context
-
-The event `target` object can be accessed within the compute method of the plugin by `self.event.target`. If `self.event.target.type` exists, it provides the same type that would be imported from the Data module. For example, a type of `Condition` would be the same as what you can import from `canvas_sdk.v1.data.condition`.
-
-The event `context` object can be accessed via `self.event.context`. The
-content present in each event's context depends on the event type. The table
-below shows what you can expect for each event type, or you could take a look
-yourself by logging it out.
-
-### Common Context Patterns
-
-Many events include common contextual information to help you understand the scope and origin of the event:
-
-- **Patient context**: Most patient-related events include `"patient": {"id": pt_id}` in the context, allowing you to identify which patient the event relates to.
-- **Note context**: Command lifecycle events (PRE_COMMIT, POST_COMMIT, etc.) include `"note": {"uuid": note_id}` in the context, indicating the note where the command was executed.
-- **User context**: All command-related PRE_SEARCH and POST_SEARCH events include `"user": {"staff": staff_key}` in the context, containing the staff key of the user performing the search. This allows you to customize search results based on user-specific preferences, roles, or permissions.
-
-```python
-from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
-from logger import log
-
-
-class Protocol(BaseProtocol):
-    RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
-
-    def compute(self):
-        log.info(self.event.context)
-        return []
-```
+The following Canvas events are able to trigger a plugin to execute.
 
 ### Record lifecycle events
 
@@ -90,362 +39,70 @@ These events fire as a result of records being created, updated, or deleted.
 #### Patients
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">PATIENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient is created.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": pt_id
-"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    <td><pre>empty</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient's data is updated.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": pt_id
-"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    <td><pre>empty</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CARE_TEAM_MEMBERSHIP_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a new care team member is added for a patient.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": care_team_membership_id
-"type": <a href='/sdk/data-care-team/#careteammembership'>CareTeamMembership</a></pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CARE_TEAM_MEMBERSHIP_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a care team member is adjusted for a patient.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": care_team_membership_id
-"type": <a href='/sdk/data-care-team/#careteammembership'>CareTeamMembership</a></pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CARE_TEAM_MEMBERSHIP_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when a care team member is removed for a patient.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": care_team_membership_id
-"type": <a href='/sdk/data-care-team/#careteammembership'>CareTeamMembership</a></pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_ADDRESS_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an address is added for a patient.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": address_id
-"type": <a href='/sdk/data-patient/#patientaddress'>PatientAddress</a></pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_ADDRESS_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when one of a patient's addresses is updated.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": address_id
-"type": <a href='/sdk/data-patient/#patientaddress'>PatientAddress</a></pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_ADDRESS_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when one of a patient's addresses is removed.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": address_id
-"type": <a href='/sdk/data-patient/#patientaddress'>PatientAddress</a></pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_CONTACT_PERSON_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a contact is added for a patient.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": contact_person_id
-"type": None</pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_CONTACT_PERSON_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when one of a patient's contacts is updated.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": contact_person_id
-"type": None</pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_CONTACT_PERSON_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when one of a patient's contacts is removed.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": contact_person_id
-"type": None</pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_CONTACT_POINT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a contact method for a patient is added.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": contact_point_id
-"type": <a href='/sdk/data-patient/#patientcontactpoint'>PatientContactPoint</a></pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_CONTACT_POINT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a contact method for a patient is updated.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": contact_point_id
-"type": <a href='/sdk/data-patient/#patientcontactpoint'>PatientContactPoint</a></pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_CONTACT_POINT_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when a contact method for a patient is removed.</td></tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>Target object</td>
-    <td>Context object</td>
-  </tr>
-  <tr>
-    <td><pre>"id": contact_point_id
-"type": <a href='/sdk/data-patient/#patientcontactpoint'>PatientContactPoint</a></pre></td>
-    <td><pre>"patient":
-    "id": pt_id</pre></td>
-  </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_EXTERNAL_IDENTIFIER_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an external identifier is created for a patient.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PATIENT_CREATED</td>
+      <td>Occurs when a patient is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": patientexternalidentifier_id
-"type": <a href='/sdk/data-patient/#patientexternalidentifier'>PatientExternalIdentifier</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_EXTERNAL_IDENTIFIER_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an external identifier for a patient is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PATIENT_UPDATED</td>
+      <td>Occurs when a patient's data is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": patientexternalidentifier_id
-"type": <a href='/sdk/data-patient/#patientexternalidentifier'>PatientExternalIdentifier</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_EXTERNAL_IDENTIFIER_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when an external identifier for a patient is deleted.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CARE_TEAM_MEMBERSHIP_CREATED</td>
+      <td>Occurs when a new care team member is added for a patient.</td>
     </tr>
     <tr>
-      <td><pre>"id": patientexternalidentifier_id
-"type": <a href='/sdk/data-patient/#patientexternalidentifier'>PatientExternalIdentifier</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Patient Metadata
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_METADATA_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient's metadata is created.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CARE_TEAM_MEMBERSHIP_UPDATED</td>
+      <td>Occurs when a care team member is adjusted for a patient.</td>
     </tr>
     <tr>
-      <td><pre>"id": patientmetadata_id
-"type": <a href='/sdk/data-patient/#patientmetadata'>PatientMetadata</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_METADATA_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient's metadata is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CARE_TEAM_MEMBERSHIP_DELETED</td>
+      <td>Occurs when a care team member is removed for a patient.</td>
     </tr>
     <tr>
-      <td><pre>"id": patientmetadata_id
-"type": <a href='/sdk/data-patient/#patientmetadata'>PatientMetadata</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
+      <td>PATIENT_ADDRESS_CREATED</td>
+      <td>Occurs when an address is added for a patient.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_ADDRESS_UPDATED</td>
+      <td>Occurs when one of a patient's addresses are updated.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_ADDRESS_DELETED</td>
+      <td>Occurs when one of a patient's addresses are removed.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_PERSON_CREATED</td>
+      <td>Occurs when a contact is added for a patient.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_PERSON_UPDATED</td>
+      <td>Occurs when one of a patient's contacts is updated.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_PERSON_DELETED</td>
+      <td>Occurs when one of a patient's contacts is removed.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_POINT_CREATED</td>
+      <td>Occurs when a contact method for a patient is added.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_POINT_UPDATED</td>
+      <td>Occurs when a contact method for a patient is updated.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_CONTACT_POINT_DELETED</td>
+      <td>Occurs when a contact method for a patient is removed.</td>
     </tr>
   </tbody>
 </table>
@@ -453,39 +110,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Allergy Intolerances
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">ALLERGY_INTOLERANCE_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an allergy is created for a patient. Additional details for the allergy may become available with subsequent ALLERGY_INTOLERANCE_UPDATED events.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_INTOLERANCE_CREATED</td>
+      <td>Occurs when an allergy is created for a patient. Additional details for the allergy may become available with subsequent ALLERGY_INTOLERANCE_UPDATED events.</td>
     </tr>
     <tr>
-      <td><pre>"id": allergy_id
-"type": <a href='/sdk/data-allergy-intolerance/#allergyintolerance'>AllergyIntolerance</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_INTOLERANCE_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an allergy is updated for a patient.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": allergy_id
-"type": <a href='/sdk/data-allergy-intolerance/#allergyintolerance'>AllergyIntolerance</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
+      <td>ALLERGY_INTOLERANCE_UPDATED</td>
+      <td>Occurs when an allergy is updated for a patient.</td>
     </tr>
   </tbody>
 </table>
@@ -493,467 +133,65 @@ These events fire as a result of records being created, updated, or deleted.
 #### Appointments
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">APPOINTMENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an appointment is first created/booked.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>APPOINTMENT_CREATED</td>
+      <td>Occurs when an appointment is first created/booked.</td>
     </tr>
     <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
+      <td>APPOINTMENT_UPDATED</td>
+      <td>Occurs when details of an appointment are updated.</td>
+    </tr>
+    <tr>
+      <td>APPOINTMENT_CHECKED_IN</td>
+      <td>Occurs when a patient has arrived and been checked in for their appointment.</td>
+    </tr>
+    <tr>
+      <td>APPOINTMENT_RESCHEDULED</td>
+      <td>Occurs when an appointment is rescheduled. In this case, a new appointment is created that is linked to the appointment it was rescheduled from.</td>
+    </tr>
+    <tr>
+      <td>APPOINTMENT_RESTORED</td>
+      <td>Occurs when a cancelled appointment is restored to a non-cancelled status.</td>
+    </tr>
+    <tr>
+      <td>APPOINTMENT_CANCELED</td>
+      <td>Occurs when an appointment is cancelled.</td>
+    </tr>
+    <tr>
+      <td>APPOINTMENT_NO_SHOWED</td>
+      <td>Occurs when an appointment is marked as a no-show.</td>
     </tr>
   </tbody>
 </table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when details of an appointment are updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT_CHECKED_IN</th></tr>
-    <tr><td colspan="2">Occurs when a patient has arrived and been checked in for their appointment.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT_RESTORED</th></tr>
-    <tr><td colspan="2">Occurs when a cancelled appointment is restored to a non-cancelled status.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT_CANCELED</th></tr>
-    <tr><td colspan="2">Occurs when an appointment is cancelled.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT_NO_SHOWED</th></tr>
-    <tr><td colspan="2">Occurs when an appointment is marked as a no-show.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__SLOTS__POST_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when requesting slot availability when scheduling an appointment.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre></pre></td>
-       <td>
-        <pre>"slots_by_provider": list[dict]</pre>
-        <pre>"selected_values": dict</pre>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__PROVIDERS__PRE_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-      <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__PROVIDERS__POST_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"providers": list[dict]
-"selected_values": dict
-"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__LOCATIONS__PRE_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__LOCATIONS__POST_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"locations": list[dict]
-"selected_values": dict
-"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__VISIT_TYPES__PRE_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__VISIT_TYPES__POST_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"visit_types": list[dict]
-"selected_values": dict
-"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__DURATIONS__PRE_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__DURATIONS__POST_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"durations": list[dict]
-"selected_values": dict
-"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__REASON_FOR_VISIT__PRE_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__REASON_FOR_VISIT__POST_SEARCH</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"reason_for_visit": list[dict]
-"selected_values": dict
-"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT__FORM__GET_ADDITIONAL_FIELDS</th></tr>
-    <tr><td colspan="2">Occurs when a schedule appointment form is loaded.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
-       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Appointment Metadata
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT_METADATA_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an appointment's metadata is created.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": appointmentmetadata_id
-"type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPOINTMENT_METADATA_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an appointment's metadata is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": appointmentmetadata_id
-"type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-
-#### Claims
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLAIM_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a claim is created.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-  <td><pre>"id": claim_id
-"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
-      <td><pre>"patient":
-  "id": pt_id
-"note":
-  "uuid": note_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLAIM_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a claim is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": claim_id
-"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
-      <td><pre>"patient":
-  "id": pt_id
-"note":
-  "uuid": note_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
 
 #### Billing Line Items
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">BILLING_LINE_ITEM_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a billing line item is created from adding a CPT code to a note.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>BILLING_LINE_ITEM_CREATED</td>
+      <td>Occurs when a billing line item is created from adding a CPT code to a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": billing_line_item_id
-"type": <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItem</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">BILLING_LINE_ITEM_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a billing line item is modified.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": billing_line_item_id
-"type": <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItem</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
+      <td>BILLING_LINE_ITEM_UPDATED</td>
+      <td>Occurs when a billing line item is modified.</td>
     </tr>
   </tbody>
 </table>
@@ -961,77 +199,30 @@ These events fire as a result of records being created, updated, or deleted.
 #### Conditions
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">CONDITION_ASSESSED</th></tr>
-    <tr><td colspan="2">Occurs when a condition is assessed through the Assess Condition command.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CONDITION_ASSESSED</td>
+      <td>Occurs when a condition is assessed through the Assess Condition command.</td>
     </tr>
     <tr>
-      <td><pre>"id": condition_id
-"type": <a href='/sdk/data-condition/#condition'>Condition</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CONDITION_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a condition is diagnosed for a patient. Additional details for the condition may become available with subsequent CONDITION_UPDATED events.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CONDITION_CREATED</td>
+      <td>Occurs when a condition is diagnosed for a patient. Additional details for the condition may become available with subsequent CONDITION_UPDATED events.</td>
     </tr>
     <tr>
-      <td><pre>"id": condition_id
-"type": <a href='/sdk/data-condition/#condition'>Condition</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CONDITION_RESOLVED</th></tr>
-    <tr><td colspan="2">Occurs when a condition is resolved through the Resolve Condition command.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CONDITION_RESOLVED</td>
+      <td>Occurs when a condition is resolved through the Resolve Condition command.</td>
     </tr>
     <tr>
-      <td><pre>"id": condition_id
-"type": <a href='/sdk/data-condition/#condition'>Condition</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CONDITION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a condition is updated for a patient.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": condition_id
-"type": <a href='/sdk/data-condition/#condition'>Condition</a></pre></td>
-      <td><pre>"patient":
-    "id": pt_id</pre></td>
+      <td>CONDITION_UPDATED</td>
+      <td>Occurs when a condition is updated for a patient.</td>
     </tr>
   </tbody>
 </table>
@@ -1039,58 +230,26 @@ These events fire as a result of records being created, updated, or deleted.
 #### Consents
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">CONSENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient consent is created.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CONSENT_CREATED</td>
+      <td>Occurs when a patient consent is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": consent_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CONSENT_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when a patient consent is removed/deleted.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CONSENT_DELETED</td>
+      <td>Occurs when a patient consent is removed/deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": consent_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CONSENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient consent is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": consent_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>CONSENT_UPDATED</td>
+      <td>Occurs when a patient consent is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1098,39 +257,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Coverages
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">COVERAGE_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a coverage for a patient is created.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>COVERAGE_CREATED</td>
+      <td>Occurs when a coverage for a patient is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": coverage_id
-"type": <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">COVERAGE_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a coverage for a patient is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": coverage_id
-"type": <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>COVERAGE_UPDATED</td>
+      <td>Occurs when a coverage for a patient is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1138,75 +280,30 @@ These events fire as a result of records being created, updated, or deleted.
 #### Detected Issues
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">DETECTED_ISSUE_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a detected issue is created.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DETECTED_ISSUE_CREATED</td>
+      <td>Occurs when a detected issue is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": detected_issue_id
-"type": <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DETECTED_ISSUE_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a detected issue is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DETECTED_ISSUE_UPDATED</td>
+      <td>Occurs when a detected issue is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": detected_issue_id
-"type": <a href='/sdk/data-detected-issue/#detectedissue'>DetectedIssue</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DETECTED_ISSUE_EVIDENCE_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when detected issue evidence is created.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DETECTED_ISSUE_EVIDENCE_CREATED</td>
+      <td>Occurs when detected issue evidence is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": detected_issue_evidence_id
-"type": <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DETECTED_ISSUE_EVIDENCE_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a detected issue evidence is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": detected_issue_evidence_id
-"type": <a href='/sdk/data-detected-issue/#detectedissueevidence'>DetectedIssueEvidence</a></pre></td>
-      <td><pre>empty</pre></td>
+      <td>DETECTED_ISSUE_EVIDENCE_UPDATED</td>
+      <td>Occurs when a detected issue evidence is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1214,98 +311,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Devices
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">DEVICE_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a device is created.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DEVICE_CREATED</td>
+      <td>Occurs when a device is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": device_id
-"type": <a href='/sdk/data-device/#device'>Device</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEVICE_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a device is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": device_id
-"type": <a href='/sdk/data-device/#device'>Device</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Document References
-
-<table>
-  <thead>
-    <tr><th colspan="2">DOCUMENT_REFERENCE_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a document reference is created.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": document_reference_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DOCUMENT_REFERENCE_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a document reference is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": document_reference_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DOCUMENT_REFERENCE_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when a document reference is deleted.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": document_reference_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>DEVICE_UPDATED</td>
+      <td>Occurs when a device is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1313,37 +334,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Encounters
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">ENCOUNTER_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an encounter is created.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ENCOUNTER_CREATED</td>
+      <td>Occurs when an encounter is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": encounter_id
-"type": <a href='/sdk/data-encounter/#encounter'>Encounter</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ENCOUNTER_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an encounter is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": encounter_id
-"type": <a href='/sdk/data-encounter/#encounter'>Encounter</a></pre></td>
-      <td><pre>empty</pre></td>
+      <td>ENCOUNTER_UPDATED</td>
+      <td>Occurs when an encounter is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1351,39 +357,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Imaging Reports
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">IMAGING_REPORT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an imaging report is entered into the data integration section of canvas.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_REPORT_CREATED</td>
+      <td>Occurs when an imaging report is entered into the Data Integration section of Canvas.</td>
     </tr>
     <tr>
-      <td><pre>"id": report_id
-"type": <a href='/sdk/data-imaging/#imagingreport'>ImagingReport</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_REPORT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an imaging report is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": report_id
-"type": <a href='/sdk/data-imaging/#imagingreport'>ImagingReport</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>IMAGING_REPORT_UPDATED</td>
+      <td>Occurs when an imaging report is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1391,77 +380,30 @@ These events fire as a result of records being created, updated, or deleted.
 #### Immunizations
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">IMMUNIZATION_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an immunization is created. Additional details for the immunization may become available with subsequent IMMUNIZATION_STATEMENT_UPDATED events.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_CREATED</td>
+      <td>Occurs when an immunization is created. Additional details for the immunization may become available with subsequent IMMUNIZATION_UPDATED events.</td>
     </tr>
     <tr>
-      <td><pre>"id": immunization_id
-"type": <a href='/sdk/data-immunization/#immunization'>Immunization</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an immunization is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_CREATED</td>
+      <td>Occurs when an immunization statement is created. Additional details for the immunization statement may become available with subsequent IMMUNIZATION_STATEMENT_UPDATED events.</td>
     </tr>
     <tr>
-      <td><pre>"id": immunization_id
-"type": <a href='/sdk/data-immunization/#immunization'>Immunization</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an immunization statement is created. Additional details for the immunization statement may become available with subsequent IMMUNIZATION_STATEMENT_UPDATED events.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_UPDATED</td>
+      <td>Occurs when an immunization statement is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": immunization_id
-"type": <a href='/sdk/data-immunization/#immunization'>Immunization</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an immunization statement is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": immunization_id
-"type": <a href='/sdk/data-immunization/#immunization'>Immunization</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>IMMUNIZATION_UPDATED</td>
+      <td>Occurs when an immunization is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1469,39 +411,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Instructions
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">INSTRUCTION_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an instruction is created using the Instruct command. Additional details for the instruction may become available with subsequent INSTRUCTION_UPDATED events.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCTION_CREATED</td>
+      <td>Occurs when an instruction is created using the Instruct command. Additional details for the instruction may become available with subsequent INSTRUCTION_UPDATED events.</td>
     </tr>
     <tr>
-      <td><pre>"id": instruction_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCTION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an instruction is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": instruction_id
-"type": None</pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>INSTRUCTION_UPDATED</td>
+      <td>Occurs when an instruction is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1509,39 +434,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Interviews
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">INTERVIEW_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an interview is created using the Questionnaire command or through the Questionnaire endpoint in the FHIR API. Additional details for the interview may become available with subsequent INTERVIEW_UPDATED events.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INTERVIEW_CREATED</td>
+      <td>Occurs when an interview is created using the Questionnaire command or through the Questionnaire endpoint in the FHIR API. Additional details for the interview may become available with subsequent INTERVIEW_UPDATED events.</td>
     </tr>
     <tr>
-      <td><pre>"id": interview_id
-"type": <a href='/sdk/data-questionnaire/#interview'>Interview</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INTERVIEW_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an interview is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": interview_id
-"type": <a href='/sdk/data-questionnaire/#interview'>Interview</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>INTERVIEW_UPDATED</td>
+      <td>Occurs when an interview is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1549,77 +457,30 @@ These events fire as a result of records being created, updated, or deleted.
 #### Labs
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">LAB_ORDER_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a lab order is created via the Lab Order command. Additional details for the lab order may become available with subsequent LAB_ORDER_UPDATED events.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_CREATED</td>
+      <td>Occurs when a lab order is created via the Lab Order command. Additional details for the lab order may become available with subsequent LAB_ORDER_UPDATED events.</td>
     </tr>
     <tr>
-      <td><pre>"id": laborder_id
-"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a lab order is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_UPDATED</td>
+      <td>Occurs when a lab order is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": laborder_id
-"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_REPORT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a lab report is created either through Data Integration, electronic ingestion or the FHIR API.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_REPORT_CREATED</td>
+      <td>Occurs when a lab report is created either through Data Integration, electronic ingestion or the FHIR API.</td>
     </tr>
     <tr>
-      <td><pre>"id": labreport_id
-"type": <a href='/sdk/data-labs/#labreport'>LabReport</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_REPORT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a lab report is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": labreport_id
-"type": <a href='/sdk/data-labs/#labreport'>LabReport</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>LAB_REPORT_UPDATED</td>
+      <td>Occurs when a lab report is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1627,77 +488,30 @@ These events fire as a result of records being created, updated, or deleted.
 #### Medications
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">MEDICATION_LIST_ITEM_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a medication is added for a patient.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICATION_LIST_ITEM_CREATED</td>
+      <td>Occurs when a medication is added for a patient.</td>
     </tr>
     <tr>
-      <td><pre>"id": medication_id
-"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_LIST_ITEM_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a medication is updated for a patient.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICATION_LIST_ITEM_UPDATED</td>
+      <td>Occurs when a medication is updated for a patient.</td>
     </tr>
     <tr>
-      <td><pre>"id": medication_id
-"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIPTION_CREATED</td>
+      <td>Occurs when a prescription is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription is created for a patient using the Prescribe command. Additional details for the prescription become available with subsequent PRESCRIPTION_UPDATED events.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>PRESCRIPTION_UPDATED</td>
+      <td>Occurs when a prescription is created for a patient using the Prescribe command. Additional details for the prescription become available with subsequent PRESCRIPTION_UPDATED events.</td>
     </tr>
   </tbody>
 </table>
@@ -1705,56 +519,18 @@ These events fire as a result of records being created, updated, or deleted.
 #### Messaging
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">MESSAGE_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a message (patient/practitioner communication) is created.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": message_id
-"type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MESSAGE_TRANSMISSION_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a message transmission record is created. Message transmissions track delivery attempts and status for messages sent through various channels (SMS, email, etc.).</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": message_transmission_id
-"type": <a href='/sdk/data-message/#messagetransmission'>MessageTransmission</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MESSAGE_TRANSMISSION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a message transmission record is updated (e.g., when delivery status changes).</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": message_transmission_id
-"type": <a href='/sdk/data-message/#messagetransmission'>MessageTransmission</a></pre></td>
-      <td><pre>empty</pre></td>
+      <td>MESSAGE_CREATED</td>
+      <td>Occurs when a message (patient/practitioner communication) is created.</td>
     </tr>
   </tbody>
 </table>
@@ -1762,41 +538,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Notes
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the <a href="/sdk/data-note/#notestates">note state</a>, including locking and unlocking.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>NOTE_STATE_CHANGE_EVENT_CREATED</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": nsce_id
-"type": NoteStateChangeEvent</pre></td>
-      <td><pre>"note_id": note_id,
-"patient_id": pt_id,
-"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs if a note state change event is updated. Locking and unlocking both trigger an update event, and there is an *additional* update event when an archived PDF copy of the note finishes generating; this is done asynchronously.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": nsce_id
-"type": NoteStateChangeEvent</pre></td>
-      <td><pre>"note_id": note_id,
-"patient_id": pt_id,
-"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
+      <td>NOTE_STATE_CHANGE_EVENT_UPDATED</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -1804,39 +561,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Observations
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">OBSERVATION_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when an observation is created.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>OBSERVATION_CREATED</td>
+      <td>Occurs when an observation is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": observation_id
-"type": <a href='/sdk/data-observation/#observation'>Observation</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">OBSERVATION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an observation is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": observation_id
-"type": <a href='/sdk/data-observation/#observation'>Observation</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>OBSERVATION_UPDATED</td>
+      <td>Occurs when an observation is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1844,55 +584,26 @@ These events fire as a result of records being created, updated, or deleted.
 #### Protocol Overrides
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">PROTOCOL_OVERRIDE_CREATED</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PROTOCOL_OVERRIDE_CREATED</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": protocoloverride_id
-"type": <a href='/sdk/data-protocol-override/#protocoloverride'>ProtocolOverride</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PROTOCOL_OVERRIDE_UPDATED</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PROTOCOL_OVERRIDE_UPDATED</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": protocoloverride_id
-"type": <a href='/sdk/data-protocol-override/#protocoloverride'>ProtocolOverride</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PROTOCOL_OVERRIDE_DELETED</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": protocoloverride_id
-"type": <a href='/sdk/data-protocol-override/#protocoloverride'>ProtocolOverride</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>PROTOCOL_OVERRIDE_DELETED</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -1900,39 +611,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Referral Reports
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">REFERRAL_REPORT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a specialist consult report is created in Data Integration.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFERRAL_REPORT_CREATED</td>
+      <td>Occurs when a specialist consult report is created in Data Integration.</td>
     </tr>
     <tr>
-      <td><pre>"id": referralreport_id
-"type": <a href='/sdk/data-referral/#referralreport'>ReferralReport</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFERRAL_REPORT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a specialist consult report is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": referralreport_id
-"type": <a href='/sdk/data-referral/#referralreport'>ReferralReport</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td>REFERRAL_REPORT_UPDATED</td>
+      <td>Occurs when a specialist consult report is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -1940,227 +634,46 @@ These events fire as a result of records being created, updated, or deleted.
 #### Tasks
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">TASK_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a task is created.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_CREATED</td>
+      <td>Occurs when a task is created.</td>
     </tr>
     <tr>
-      <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a task is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_UPDATED</td>
+      <td>Occurs when a task is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a comment is added to a task.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMENT_CREATED</td>
+      <td>Occurs when a comment is added to a task.</td>
     </tr>
     <tr>
-      <td><pre>"id": taskcomment_id
-"type": <a href='/sdk/data-task/#taskcomment'>TaskComment</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a comment for a task is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMENT_UPDATED</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": taskcomment_id
-"type": <a href='/sdk/data-task/#taskcomment'>TaskComment</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMENT_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when a comment for a task is removed.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMENT_DELETED</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": taskcomment_id
-"type": <a href='/sdk/data-task/#taskcomment'>TaskComment</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_LABELS_ADJUSTED</th></tr>
-    <tr><td colspan="2">Occurs when a task's labels are changed.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_LABELS_ADJUSTED</td>
+      <td>Occurs when a task's labels are changed.</td>
     </tr>
     <tr>
-      <td><pre>"id": task_label_id
-"type": <a href='/sdk/data-task/#tasklabel'>TaskLabel</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id
-"task":
-    "id": task_id
-"action": literal["add", "remove"]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMPLETED</th></tr>
-    <tr><td colspan="2">Occurs when a task is set to completed.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMPLETED</td>
+      <td>Occurs when a task is set to completed.</td>
     </tr>
     <tr>
-      <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_CLOSED</th></tr>
-    <tr><td colspan="2">Occurs when a task is set to closed.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": task_id
-"type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Staff
-
-<table>
-  <thead>
-    <tr><th colspan="2">STAFF_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a staff is created.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STAFF_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a staff is updated.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STAFF_ACTIVATED</th></tr>
-    <tr><td colspan="2">Occurs when a staff record is created with active=True, or a staff record's active field is updated from False to True.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STAFF_DEACTIVATED</th></tr>
-    <tr><td colspan="2">Occurs when a staff record's active field is updated from True to False.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": staff_id
-"type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
-      <td><pre>empty</pre></td>
+      <td>TASK_CLOSED</td>
+      <td>Occurs when a task is set to closed.</td>
     </tr>
   </tbody>
 </table>
@@ -2168,37 +681,22 @@ These events fire as a result of records being created, updated, or deleted.
 #### Vital Signs
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">VITAL_SIGN_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a vitals entry is created for a patient using the vitals command. Additional details for the vitals become available with subsequent VITAL_SIGN_UPDATED events.</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITAL_SIGN_CREATED</td>
+      <td>Occurs when a vitals entry is created for a patient using the Vitals command. Additional details for the vitals become available with subsequent VITAL_SIGN_UPDATED events.</td>
     </tr>
     <tr>
-      <td><pre>"id": vitalsign_id
-"type": None</pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITAL_SIGN_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a vitals entry is updated for a patient.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": vitalsign_id
-"type": None</pre></td>
-      <td><pre>empty</pre></td>
+      <td>VITAL_SIGN_UPDATED</td>
+      <td>Occurs when a vitals entry is updated for a patient.</td>
     </tr>
   </tbody>
 </table>
@@ -2216,64 +714,60 @@ These events fire during the command lifecycle.
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
       <td>PRE_COMMAND_ORIGINATE</td>
-      <td>Before any command is entered into a note.</td>
+      <td>Occurs before any command is entered into a note.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_ORIGINATE</td>
-      <td>After any command is entered into a note.</td>
+      <td>Occurs after any command is entered into a note.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_UPDATE</td>
-      <td>Before the data in any command is updated.</td>
+      <td>Occurs before the data in any command is updated.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_UPDATE</td>
-      <td>After the data in any command is updated.</td>
+      <td>Occurs after the data in any command is updated.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_COMMIT</td>
-      <td>Before any command is committed.</td>
+      <td>Occurs before any command is committed.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_COMMIT</td>
-      <td>After any command is committed.</td>
+      <td>Occurs after any command is committed.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_DELETE</td>
-      <td>Before any command is deleted.</td>
+      <td>Occurs before any command is deleted.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_DELETE</td>
-      <td>After any command is deleted.</td>
+      <td>Occurs after any command is deleted.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_ENTER_IN_ERROR</td>
-      <td>Before any command is marked as entered in error.</td>
+      <td>Occurs before any command is marked as entered in error.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_ENTER_IN_ERROR</td>
-      <td>After any command is marked as entered in error.</td>
+      <td>Occurs after any command is marked as entered in error.</td>
     </tr>
     <tr>
       <td>PRE_COMMAND_EXECUTE_ACTION</td>
-      <td>Before an action is executed on any command.</td>
+      <td>Occurs before an action is executed on any command.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_EXECUTE_ACTION</td>
-      <td>After an action is executed on any command.</td>
+      <td>Occurs after an action is executed on any command.</td>
     </tr>
     <tr>
       <td>POST_COMMAND_INSERTED_INTO_NOTE</td>
-      <td>After a command is added to a note in the UI.</td>
-    </tr>
-    <tr>
-      <td>AVAILABLE_ACTIONS</td>
-      <td>When a command is rendered in the UI, after any update to data, state, or other changes</td>
+      <td>Occurs after a command is added to a note in the UI.</td>
     </tr>
   </tbody>
 </table>
@@ -2309,1061 +803,73 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 ---
 
-#### Adjust Prescription Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "change_medication_to": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__INDICATIONS__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__INDICATIONS__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__PHARMACY__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__PHARMACY__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__CHANGE_MEDICATION_TO__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__CHANGE_MEDICATION_TO__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__SUPERVISING_PROVIDER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ADJUST_PRESCRIPTION__PRESCRIBER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
 #### Allergy Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ALLERGY__ALLERGY__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "severity": str
-  "narrative": str
-  "approximate_date":
-    "input": str
-    "date": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY__ALLERGY__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#allergysearchresult'>AllergySearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ALLERGY__ALLERGY__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>ALLERGY__ALLERGY__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -3371,389 +877,74 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 #### Assess Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__CONDITION_SELECTED</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__CONDITION_SELECTED</td>
+      <td>Occurs after a condition is selected in the Assess command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Assess command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Assess command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Assess command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Assess command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Assess command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Assess command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Assess command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Assess command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Assess command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Assess command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Assess command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Assess command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ASSESS__CONDITION__POST_SEARCH</td>
+      <td>Occurs after the initial results are fetched for the condition search in the Assess command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "background": str
-  "status": str
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS__CONDITION__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS__CONDITION__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
+      <td>ASSESS__CONDITION__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -3811,10 +1002,6 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td></td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__AVAILABLE_ACTIONS</td>
-      <td></td>
-    </tr>
-    <tr>
       <td>CANCEL_PRESCRIPTION_COMMAND__PRE_EXECUTE_ACTION</td>
       <td></td>
     </tr>
@@ -3833,652 +1020,69 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   </tbody>
 </table>
 
-#### Change Medication Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION__MEDICATION__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CHANGE_MEDICATION__MEDICATION__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
 #### Clipboard Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the command has been committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__POST_DELETE</td>
+      <td>Occurs after the command has been deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the command has been marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after a command action has been executed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the command has been originated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__POST_UPDATE</td>
+      <td>Occurs after the command has been updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before a command action is executed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the command is originated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLIPBOARD_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before the command is updated.	</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "text": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE</td>
+      <td>Occurs after the command is added to a note in the UI.</td>
     </tr>
   </tbody>
 </table>
@@ -4508,352 +1112,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Close Goal Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>CLOSE_GOAL__GOAL_ID__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_id": dict
-  "achievement_status": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL__GOAL_ID__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CLOSE_GOAL__GOAL_ID__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>CLOSE_GOAL__GOAL_ID__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -4861,388 +1183,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Diagnose Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>DIAGNOSE__DIAGNOSE__POST_SEARCH</td>
+      <td>Occurs after the initial results are fetched for the diagnosis search in the Diagnose command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": dict
-  "background": str
-  "approximate_date_of_onset":
-    "input": str
-    "date": str
-  "today_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE__DIAGNOSE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DIAGNOSE__DIAGNOSE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>DIAGNOSE__DIAGNOSE__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -5250,358 +1254,78 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Educational Material Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL__LANGUAGE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL__LANGUAGE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL__LANGUAGE__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL__LANGUAGE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>EDUCATIONAL_MATERIAL__TITLE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL__TITLE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">EDUCATIONAL_MATERIAL__TITLE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>EDUCATIONAL_MATERIAL__TITLE__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -5609,813 +1333,78 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Family History Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>FAMILY_HISTORY_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>FAMILY_HISTORY_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>FAMILY_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>FAMILY_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>FAMILY_HISTORY_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>FAMILY_HISTORY_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>FAMILY_HISTORY_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
+      <td>FAMILY_HISTORY_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>FAMILY_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>FAMILY_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>FAMILY_HISTORY_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>FAMILY_HISTORY_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>FAMILY_HISTORY__FAMILY_HISTORY__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>FAMILY_HISTORY__FAMILY_HISTORY__PRE_SEARCH</td>
+      <td></td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>FAMILY_HISTORY__RELATIVE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "family_history": dict
-  "relative": dict
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY__FAMILY_HISTORY__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY__FAMILY_HISTORY__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY__RELATIVE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FAMILY_HISTORY__RELATIVE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Follow Up Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "requested_date": dict
-  "note_type": dict
-  "coding": dict
-  "reason_for_visit": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP__CODING__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP__CODING__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP__NOTE_TYPE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">FOLLOW_UP__NOTE_TYPE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>FAMILY_HISTORY__RELATIVE__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -6423,346 +1412,62 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Goal Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">GOAL_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Goal command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Assess command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Goal command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Goal command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Goal command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Goal command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Goal command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Assess command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Goal command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Goal command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>GOAL_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Goal command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">GOAL_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": str
-  "start_date": str
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>GOAL_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Goal command is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -6770,286 +1475,62 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### History of Present Illness Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the History of Present Illness command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_DELETE</td>
+      <td>Occurs after the History of Present Illness command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the History of Present Illness command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the History of Present Illness command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the History of Present Illness command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the History of Present Illness command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the History of Present Illness command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the History of Present Illness command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the History of Present Illness command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the History of Present Illness command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the History of Present Illness command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the History of Present Illness command is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -7057,538 +1538,94 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Imaging Order Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER__IMAGE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "image": dict
-  "indications": list[dict]
-  "priority": str
-  "additional_details": str
-  "imaging_center": dict
-  "comment": str
-  "ordering_provider": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER__IMAGE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER__IMAGE__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER__IMAGE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER__IMAGING_CENTER__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER__IMAGING_CENTER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER__INDICATIONS__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER__INDICATIONS__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER__INDICATIONS__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER__INDICATIONS__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMAGING_ORDER__ORDERING_PROVIDER__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER__ORDERING_PROVIDER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMAGING_ORDER__ORDERING_PROVIDER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>IMAGING_ORDER__ORDERING_PROVIDER__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -7596,376 +1633,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Immunization Statement Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZATION_STATEMENT__STATEMENT__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "statement": dict
-  "date":
-    "date": str
-    "input": str
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT__STATEMENT__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZATION_STATEMENT__STATEMENT__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>IMMUNIZATION_STATEMENT__STATEMENT__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -7973,484 +1704,86 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Immunize Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE__CODING__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "lot_number": dict
-  "manufacturer": str
-  "exp_date_original": str
-  "sig_original": str
-  "consent_given": bool
-  "given_by": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE__CODING__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE__CODING__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE__CODING__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE__GIVEN_BY__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE__GIVEN_BY__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE__GIVEN_BY__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE__GIVEN_BY__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>IMMUNIZE__LOT_NUMBER__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE__LOT_NUMBER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE__LOT_NUMBER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>IMMUNIZE__LOT_NUMBER__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -8458,340 +1791,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Instruct Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>INSTRUCT__INSTRUCT__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "instruct": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT__INSTRUCT__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">INSTRUCT__INSTRUCT__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>INSTRUCT__INSTRUCT__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -8799,514 +1862,94 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Lab Order Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER__DIAGNOSIS__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "lab_partner": dict
-  "tests": list[dict]
-  "ordering_provider": dict
-  "diagnosis": list[dict]
-  "fasting_status": bool
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER__DIAGNOSIS__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER__DIAGNOSIS__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER__DIAGNOSIS__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER__LAB_PARTNER__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER__LAB_PARTNER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER__LAB_PARTNER__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER__LAB_PARTNER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER__ORDERING_PROVIDER__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER__ORDERING_PROVIDER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER__ORDERING_PROVIDER__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER__ORDERING_PROVIDER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>LAB_ORDER__TESTS__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER__TESTS__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">LAB_ORDER__TESTS__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>LAB_ORDER__TESTS__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -9314,508 +1957,86 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Medical History Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY__APPROXIMATE_END_DATE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_medical_history": dict
-  "approximate_start_date":
-    "date": str
-    "input": str
-  "approximate_end_date":
-    "date": str
-    "input": str
-  "show_on_condition_list": bool
-  "comments": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY__APPROXIMATE_END_DATE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY__APPROXIMATE_END_DATE__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY__APPROXIMATE_END_DATE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY__APPROXIMATE_START_DATE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY__APPROXIMATE_START_DATE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY__APPROXIMATE_START_DATE__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY__APPROXIMATE_START_DATE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -9823,681 +2044,145 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Medication Statement Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>MEDICATION_STATEMENT_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Medication Statement command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>MEDICATION_STATEMENT_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Medication Statement command is deleted.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Medication Statement command is marked as entered in error.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Medication Statement command.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Medication Statement command is first entered into a note.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Medication Statement command is updated.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Medication Statement command is committed.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Medication Statement command is deleted.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Medication Statement command is marked as entered in error.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Medication Statement command.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Medication Statement command is first entered into a note.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Medication Statement command is updated.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT__MEDICATION__POST_SEARCH</td>
+      <td>Occurs after the initial results are fetched for the medication search in the medication statement command.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT__MEDICATION__PRE_SEARCH</td>
+      <td>Occurs before a medication statement search for a medication.</td>
+    </tr>
+    <tr>
+      <td>MEDICATION_STATEMENT__MEDICATION__SELECTED</td>
+      <td>Occurs when a medication is selected from Medication Statement search results.</td>
     </tr>
   </tbody>
 </table>
 
+#### Perfom Command
+
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__POST_DELETE</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "sig": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT__MEDICATION__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PERFORM__PERFORM__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">MEDICATION_STATEMENT__MEDICATION__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Perform Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "perform": dict
-  "notes": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM__PERFORM__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PERFORM__PERFORM__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>PERFORM__PERFORM__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -10505,328 +2190,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Physical Exam Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PHYSICAL_EXAM__QUESTIONNAIRE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM__QUESTIONNAIRE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PHYSICAL_EXAM__QUESTIONNAIRE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>PHYSICAL_EXAM__QUESTIONNAIRE__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -10834,286 +2261,62 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Plan Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">PLAN_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Plan command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Plan command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Plan command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Plan command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Plan command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Plan command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Plan command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Plan command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Plan command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Plan command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PLAN_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Plan command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PLAN_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>PLAN_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Plan command is updated.</td>
     </tr>
   </tbody>
 </table>
@@ -11121,616 +2324,86 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Prescribe Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Prescribe command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Prescribe command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Prescribe command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Prescribe command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Prescribe command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Prescribe command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Prescribecommand is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Prescribe command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Prescribe command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Prescribe command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Prescribe command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Prescribe command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE__INDICATIONS__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__INDICATIONS__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE__INDICATIONS__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__INDICATIONS__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE__PHARMACY__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__PHARMACY__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE__PHARMACY__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__PHARMACY__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>PRESCRIBE__PRESCRIBE__POST_SEARCH</td>
+      <td>Occurs after the initial results are fetched for the medication search in the Prescribe command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__PRESCRIBE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__PRESCRIBE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__SUPERVISING_PROVIDER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__PRESCRIBER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIBE__PRESCRIBER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>PRESCRIBE__PRESCRIBE__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -11738,340 +2411,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Questionnaire Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Questionnaire command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Questionnaire command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Questionnaire command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Questionnaire command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Questionnaire command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Questionnaire command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Questionnaire command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Questionnaire command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Questionnaire command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Questionnaire command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Questionnaire command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Questionnaire command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>QUESTIONNAIRE__QUESTIONNAIRE__POST_SEARCH</td>
+      <td>Occurs after the initial results are fetched for the questionnaire search in the Questionnaire command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-  "result": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE__QUESTIONNAIRE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">QUESTIONNAIRE__QUESTIONNAIRE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>QUESTIONNAIRE__QUESTIONNAIRE__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -12079,914 +2482,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Reason for Visit Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REASON_FOR_VISIT_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Reason for Visit command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>REASON_FOR_VISIT_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Reason for Visit command is deleted.</td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REASON_FOR_VISIT_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Reason for Visit command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>REASON_FOR_VISIT_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Reason for Visit command.</td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REASON_FOR_VISIT_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Reason for Visit command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>REASON_FOR_VISIT_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Reason for Visit command is updated.</td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REASON_FOR_VISIT_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Reason for Visit command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
+      <td>REASON_FOR_VISIT_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Reason for Visit command is deleted.</td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REASON_FOR_VISIT_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Reason for Visit command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>REASON_FOR_VISIT_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Reason for Visit command.</td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REASON_FOR_VISIT_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Reason for Visit command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
+      <td>REASON_FOR_VISIT_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Reason for Visit command is updated.</td>
     </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REASON_FOR_VISIT__CODING__POST_SEARCH</td>
+      <td>Occurs after the initial results are fetched for the reason search in the Reason for Visit command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "coding": dict
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT__CODING__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REASON_FOR_VISIT__CODING__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Refer Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "refer_to": dict
-  "indications": list[dict]
-  "clinical_question": str
-  "priority": str
-  "notes_to_specialist": str
-  "include_visit_note": bool
-  "internal_comment": str
-  "documents_to_include": dict
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__REFER_TO__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__REFER_TO__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__INDICATIONS__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__INDICATIONS__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__DOCUMENTS_TO_INCLUDE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__DOCUMENTS_TO_INCLUDE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__LINKED_ITEMS__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFER_COMMAND__LINKED_ITEMS__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>REASON_FOR_VISIT__CODING__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -12994,616 +2553,86 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Refill Prescription Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">REFILL_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL__INDICATIONS__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
-  "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
-  "note_to_pharmacist": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL__INDICATIONS__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL__INDICATIONS__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL__INDICATIONS__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL__PHARMACY__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL__PHARMACY__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL__PHARMACY__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL__PHARMACY__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REFILL__PRESCRIBE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL__PRESCRIBE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL__PRESCRIBE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-  <tr><th colspan="2">REFILL__SUPERVISING_PROVIDER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL__SUPERVISING_PROVIDER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL__PRESCRIBER__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REFILL__PRESCRIBER__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>REFILL__PRESCRIBE__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -13611,693 +2640,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Remove Allergy Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>REMOVE_ALLERGY__ALLERGY__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "allergy": dict
-  "narrative": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY__ALLERGY__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">REMOVE_ALLERGY__ALLERGY__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Resolve Condition Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "condition": dict
-  "show_in_condition_list": bool
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION__CONDITION__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">RESOLVE_CONDITION__CONDITION__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
+      <td>REMOVE_ALLERGY__ALLERGY__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -14305,328 +2711,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Review of Systems Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">ROS_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>ROS__QUESTIONNAIRE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS__QUESTIONNAIRE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ROS__QUESTIONNAIRE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>ROS__QUESTIONNAIRE__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -14684,10 +2832,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <td></td>
   </tr>
   <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__AVAILABLE_ACTIONS</td>
-    <td></td>
-  </tr>
-  <tr>
     <td>SNOOZE_PROTOCOL_COMMAND__PRE_EXECUTE_ACTION</td>
     <td></td>
   </tr>
@@ -14707,343 +2851,74 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+
 #### Stop Medication Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Stop Medication command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Stop Medication command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Stop Medication command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Stop Medication command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Stop Medication command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Stop Medication command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Stop Medication command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Stop Medication command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Stop Medication command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Stop Medication command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Stop Medication command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Stop Medication command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STOP_MEDICATION__MEDICATION__POST_SEARCH</td>
+      <td>Occurs after the initial results are fetched for the medication search in the Stop Medication command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "medication": dict
-  "rationale": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION__MEDICATION__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STOP_MEDICATION__MEDICATION__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>STOP_MEDICATION__MEDICATION__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -15051,328 +2926,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Structured Assessment Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>STRUCTURED_ASSESSMENT__QUESTIONNAIRE__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "questionnaire": dict
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT__QUESTIONNAIRE__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">STRUCTURED_ASSESSMENT__QUESTIONNAIRE__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>STRUCTURED_ASSESSMENT__QUESTIONNAIRE__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -15380,376 +2997,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Surgical History Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "past_surgical_history": dict
-  "approximate_date":
-    "input": str
-    "date": str
-  "comment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>SURGICAL_HISTORY__PAST_SURGICAL_HISTORY__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -15757,430 +3068,78 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Task Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">TASK_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Task command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Task command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Task command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Task command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Task command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Task command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Task command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Task command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Task command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Task command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Task command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Task command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK__ASSIGN_TO__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "title": str
-  "assign_to": dict
-  "due_date": str
-  "comment": str
-  "labels": list[dict]
-  "linked_items": list[dict]
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK__ASSIGN_TO__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK__ASSIGN_TO__PRE_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK__ASSIGN_TO__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>TASK__LABELS__POST_SEARCH</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK__LABELS__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">TASK__LABELS__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>TASK__LABELS__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -16238,10 +3197,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td></td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__AVAILABLE_ACTIONS</td>
-      <td></td>
-    </tr>
-    <tr>
       <td>UPDATE_DIAGNOSIS_COMMAND__PRE_EXECUTE_ACTION</td>
       <td></td>
     </tr>
@@ -16271,397 +3226,70 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Update Goal Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__POST_COMMIT</td>
+      <td>Occurs after the Update Goal command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__POST_DELETE</td>
+      <td>Occurs after the Update Goal command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td>Occurs after the Update Goal command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__POST_EXECUTE_ACTION</td>
+      <td>Occurs after an action is executed on the Update Goal command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__POST_ORIGINATE</td>
+      <td>Occurs after the Update Goal command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__POST_UPDATE</td>
+      <td>Occurs after data for the Update Goal command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__PRE_COMMIT</td>
+      <td>Occurs before the Update Goal command is committed.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__PRE_DELETE</td>
+      <td>Occurs before the Update Goal command is deleted.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td>Occurs before the Update Goal command is marked as entered in error.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td>Occurs before an action is executed on the Update Goal command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__PRE_ORIGINATE</td>
+      <td>Occurs before the Update Goal command is first entered into a note.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL_COMMAND__PRE_UPDATE</td>
+      <td>Occurs before data for the Update Goal command is updated.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>UPDATE_GOAL__GOAL_STATEMENT__POST_SEARCH</td>
+      <td>Occurs after the initial results are fetched for the goal search in the Update Goal command.</td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "goal_statement": dict
-  "due_date": str
-  "achievement_status": str
-  "priority": str
-  "progress": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2"></th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL__GOAL_STATEMENT__POST_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">UPDATE_GOAL__GOAL_STATEMENT__PRE_SEARCH</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"search_term": str
-"user": {
-  "staff": staff_key
-}
-"results": list[dict]</pre></td>
+      <td>UPDATE_GOAL__GOAL_STATEMENT__PRE_SEARCH</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -16669,655 +3297,62 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Vitals Command
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">VITALS_COMMAND__POST_COMMIT</th></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__POST_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__POST_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__POST_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__POST_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__POST_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__POST_UPDATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__PRE_COMMIT</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__PRE_DELETE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__PRE_ENTER_IN_ERROR</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__PRE_EXECUTE_ACTION</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
+      <td>VITALS_COMMAND__PRE_ORIGINATE</td>
+      <td></td>
     </tr>
     <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VITALS_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "height": str
-  "weight_lbs": str
-  "weight_oz": str
-  "waist_circumference": str
-  "body_temperature": str
-  "body_temperature_site": str
-  "blood_pressure_systole": int
-  "blood_pressure_diastole": str
-  "blood_pressure_position_and_site": str
-  "pulse": str
-  "pulse_rhythm": str
-  "respiration_rate": int
-  "oxygen saturation": str
-  "note": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-### Patient Portal lifecycle events
-
-The following events are emitted during the lifecycle of a patient portal session.
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENT_CANCELED</th></tr>
-    <tr><td colspan="3">Occurs after an appointment is canceled</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>appt_id</pre></td>
-      <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
-      <td><pre>None</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENT_RESCHEDULED</th></tr>
-    <tr><td colspan="3">Occurs after an appointment is rescheduled</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>appt_id</pre></td>
-      <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
-      <td><pre>None</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED</th></tr>
-    <tr><td colspan="3">Occurs when checking if an appointment can be canceled</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>appt_id</pre></td>
-      <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
-      <td><pre>None</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED</th></tr>
-    <tr><td colspan="3">Occurs when checking if an appointment can be rescheduled</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>appt_id</pre></td>
-      <td><pre><a href='/sdk/data-appointment/'>Appointment</a></pre></td>
-      <td><pre>None</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH</th></tr>
-    <tr><td colspan="3">Occurs after the appointment slots search has been done, allowing the values to be modified</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"slots_by_provider": dict</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH</th></tr>
-    <tr><td colspan="3">Occurs before appointment types are resolved, allowing the internal values to be bypassed</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH</th></tr>
-    <tr><td colspan="3">Occurs after appointment types are resolved, allowing the internal values to be modified</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"appointment_types": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__PRE_SEARCH</th></tr>
-    <tr><td colspan="3">Occurs before appointment locations are resolved, allowing the internal values to be bypassed</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH</th></tr>
-    <tr><td colspan="3">Occurs after appointment locations are resolved, allowing the internal values to be modified</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"locations": list[dict]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__PRE_SEARCH</th></tr>
-    <tr><td colspan="3">Occurs before appointment providers are resolved, allowing the internal values to be bypassed</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH</th></tr>
-    <tr><td colspan="3">Occurs after appointment providers are resolved, allowing the internal values to be modified</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"providers": list[dict]</pre></td>
+      <td>VITALS_COMMAND__PRE_UPDATE</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -17327,422 +3362,80 @@ The following events are emitted during the lifecycle of a patient portal sessio
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
 
 <table>
+  <colgroup>
+    <col width="40%"/>
+    <col width="60%"/>
+  </colgroup>
   <thead>
-    <tr><th colspan="2">SHOW_NOTE_HEADER_BUTTON</th></tr>
-    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
+    <th>Event</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
-      <td>Target</td>
-      <td>Context object</td>
+      <td>SHOW_NOTE_HEADER_BUTTON</td>
+      <td>Occurs when patient notes are being loaded.</td>
     </tr>
     <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre>
-  "note_id": str
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td>SHOW_NOTE_FOOTER_BUTTON</td>
+      <td>Occurs when patient notes are being loaded.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for social determinants section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_GOALS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for goals section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_CONDITIONS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for conditions section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_MEDICATIONS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for medications section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_ALLERGIES_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for allergies section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_CARE_TEAMS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for care teams section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_VITALS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for vitals section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_IMMUNIZATIONS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for immunizations section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_SURGICAL_HISTORY_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for surgical history section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_FAMILY_HISTORY_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for family history section.</td>
+    </tr>
+    <tr>
+      <td>SHOW_CHART_SUMMARY_CODING_GAPS_SECTION_BUTTON</td>
+      <td>Occurs when patient chart summary is being loaded, specifically for coding gaps section.</td>
     </tr>
   </tbody>
 </table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">SHOW_NOTE_FOOTER_BUTTON</th></tr>
-    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre>
-  "note_id": str
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for social determinants section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_GOALS_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for goals section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_CONDITIONS_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for conditions section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_MEDICATIONS_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for medications section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_ALLERGIES_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for allergies section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_CARE_TEAMS_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for care teams section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_VITALS_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for vitals section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_IMMUNIZATIONS_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for immunizations section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_SURGICAL_HISTORY_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for surgical history section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_FAMILY_HISTORY_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for family history section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="3">SHOW_CHART_SUMMARY_CODING_GAPS_SECTION_BUTTON</th></tr>
-    <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for coding gaps section</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ACTION_BUTTON_CLICKED</th></tr>
-    <tr><td colspan="2">Occurs when an action button is clicked</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre>
-  "key": action_button_key
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-### Application Events
-
-For more information on these events, see <a href="/sdk/handlers-applications" target="_blank">Applications</a>.
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPLICATION__ON_OPEN</th></tr>
-    <tr><td colspan="2">Occurs when a user clicks on an application icon to open it</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>application_id</pre></td>
-      <td><pre>
-  "patient":
-    "id": str
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-### Patient Portal Events
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"requested_from": str["appointment" |
-                      "labs" |
-                      "login" |
-                      "messaging" |
-                      "my-health" |
-                      "payment" |
-                      "search-appointment"]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-### Patient Chart Configuration
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_CHART__CONDITIONS</th></tr>
-    <tr><td colspan="2">Occurs when the conditions are loaded on the patient chart.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": patient_id
-"type": <a href='/sdk/patient/'>Patient</a></pre></td>
-      <td><pre>"conditions":
-    "id": condition id
-    "codings":
-      "code": str
-      "system": str
-      "display": str</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_CHART__MEDICATIONS</th></tr>
-    <tr><td colspan="2">Occurs when the medications are loaded on the patient chart.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": patient_id
-"type": <a href='/sdk/patient/'>Patient</a></pre></td>
-      <td><pre>"medications":
-    "id": medication id
-    "codings":
-      "code": str
-      "system": str
-      "display": str</pre></td>
-    </tr>
-  </tbody>
-</table>
-
 
 ### Other Events
 
 <table>
   <colgroup>
-    <col width="30%"/>
-    <col width="70%"/>
+    <col width="40%"/>
+    <col width="60%"/>
   </colgroup>
   <thead>
     <th>Event</th>
-    <th>Occurs when</th>
+    <th>Description</th>
   </thead>
   <tbody>
     <tr>
@@ -17751,147 +3444,31 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     </tr>
     <tr>
       <td>CRON</td>
-      <td>This event fires regularly and can be used for scheduled tasks. See <a href='/sdk/handlers-crontask/'>CronTask</a>.</td>
+      <td>This event fires regularly and can be used for scheduled tasks. See [CronTask](/sdk/handlers-crontask/).</td>
     </tr>
     <tr>
       <td>CLAIM__CONDITIONS</td>
-      <td>The conditions are loaded within the claim summary.</td>
+      <td>Occurs when the conditions are loaded within the claim summary.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_CHART__CONDITIONS</td>
+      <td>Occurs when the conditions are loaded within the patient summary</td>
     </tr>
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
-      <td>A patient chart's summary section is loading.</td>
-    </tr>
-    <tr>
-      <td>PANEL_SECTIONS_CONFIGURATION</td>
-      <td>The panel section is loading.</td>
+      <td>Occurs when a patient chart's summary section is loading.</td>
     </tr>
     <tr>
       <td>PLUGIN_CREATED</td>
-      <td>A plugin is uploaded for the first time. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
+      <td>Occurs when a plugin is uploaded for the first time. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PLUGIN_UPDATED</td>
-      <td>A plugin is enabled or when the plugin code has changed. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
+      <td>Occurs when a plugin is enabled or when the plugin code has changed. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</td>
-      <td>Adding a pharmacy for a patient in their profile.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
-      <td>Patient Portal landing page is loading. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
-    </tr>
-    <tr>
-      <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>
-      <td>Patient Profile is loading. See <a href="{% link _guides/profile-additional-fields.md %}" target="_blank">How to add patient profile additional fields</a> for examples of how to use this event.
-      <br />Context object:
-      <pre>"patient":
-    "id": str
-"user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td>Occurs when adding a pharmacy for a patient in their profile.</td>
     </tr>
   </tbody>
 </table>
-
-### Search Result Data Structures
-
-Many event payloads include search results. This section documents the common structures within them.
-
-#### MedicationSearchResult
-
-Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, `PRESCRIBE__PRESCRIBE__POST_SEARCH`, etc.) return results that follow this structure:
-
-```json
-{
-  "text": "acetaminophen 500 mg tablet",
-  "disabled": false,
-  "description": null,
-  "annotations": null,
-  "extra": {
-    "coding": [
-      {
-        "code": 206813,
-        "display": "acetaminophen 500 mg tablet",
-        "system": "http://www.fdbhealth.com/"
-      },
-      {
-        "code": "198440",
-        "display": "acetaminophen 500 mg tablet",
-        "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
-      }
-    ],
-    "clinical_quantities": [
-      {
-        "erx_quantity": "1.0000000",
-        "representative_ndc": "57896021910",
-        "clinical_quantity_description": "tablet",
-        "erx_ncpdp_script_quantity_qualifier_code": "C48542",
-        "erx_ncpdp_script_quantity_qualifier_description": "Tablet"
-      }
-    ]
-  },
-  "value": 206813
-}
-```
-
-For detailed information about medication data structures, see [Medication](/sdk/data-medication/).
-
-For examples of working with medication search results, see the [Customize Search Results](/guides/customize-search-results/) guide.
-
-#### ConditionSearchResult
-
-Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH`, etc.) return results that follow this structure:
-
-```json
-{
-  "text": "Broken internal left hip prosthesis, subsequent encounter",
-  "disabled": false,
-  "description": null,
-  "annotations": ["T84.011D"],
-  "extra": {
-    "coding": [
-      {
-        "code": "T84011D",
-        "display": "Broken internal left hip prosthesis, subsequent encounter",
-        "system": "ICD-10"
-      },
-      {
-        "code": 404684003,
-        "display": "Broken internal left hip prosthesis, subsequent encounter",
-        "system": "http://snomed.info/sct"
-      }
-    ]
-  },
-  "value": "T84011D"
-}
-```
-
-For detailed information about condition data structures, see [Condition](/sdk/data-condition/).
-
-#### AllergySearchResult
-
-Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY__ALLERGY__POST_SEARCH`, etc.) return results that follow this structure:
-
-```json
-{
-  "text": "Penicillins (allergy group)",
-  "disabled": false,
-  "description": null,
-  "annotations": null,
-  "extra": {
-    "coding": [
-      {
-        "code": 476,
-        "display": "Penicillins",
-        "system": "http://www.fdbhealth.com/"
-      }
-    ],
-    "category_id": 1,
-    "category": "allergy group"
-  },
-  "value": 476
-}
-```
-
-For detailed information about allergy data structures, see [Allergy Intolerance](/sdk/data-allergy-intolerance/).

@@ -63,7 +63,7 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 ### Task
 
 | Field Name | Type                                  |
-| ---------- | ------------------------------------- |
+|------------|---------------------------------------|
 | id         | UUID                                  |
 | dbid       | Integer                               |
 | created    | DateTime                              |
@@ -79,24 +79,23 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 | status     | [TaskStatus](#taskstatus)             |
 | comments   | [TaskComment](#taskcomment)[]         |
 | labels     | [TaskLabel](#tasklabel)[]             |
-| metadata   | [TaskMetadata](#taskmetadata)[]       |
 
 ### TaskComment
 
-| Field Name | Type                            |
-| ---------- | ------------------------------- |
-| id         | UUID                            |
-| dbid       | Integer                         |
-| created    | DateTime                        |
-| modified   | DateTime                        |
-| creator    | [Staff](/sdk/data-staff/#staff) |
-| task       | [Task](/sdk/data-task/#task)    |
-| body       | String                          |
+| Field Name       | Type                            |
+|------------------|---------------------------------|
+| id               | UUID                            |
+| dbid             | Integer                         |
+| created          | DateTime                        |
+| modified         | DateTime                        |
+| creator          | [Staff](/sdk/data-staff/#staff) |
+| task             | [Task](/sdk/data-task/#task)    |
+| body             | String                          |
 
 ### TaskLabel
 
 | Field Name       | Type                                                |
-| ---------------- | --------------------------------------------------- |
+|------------------|-----------------------------------------------------|
 | id               | UUID                                                |
 | dbid             | Integer                                             |
 | tasks            | M2M                                                 |
@@ -106,59 +105,36 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 | name             | String                                              |
 | active           | Boolean                                             |
 | modules          | [TaskLabelModule](#tasklabelmodule)                 |
-| claims           | [Claim](/sdk/data-claim)[]                          |
-
-### TaskMetadata
-
-| Field Name | Type              |
-|------------|-------------------|
-| id         | UUID              |
-| dbid       | Integer           |
-| task       | [Task](#task)     |
-| key        | String            |
-| value      | String            |
-
-```python
-from canvas_sdk.v1.data.task import Task
-from logger import log
-
-task_id = "7895e1db-f8de-4660-a0a3-9e5b43a475c6"
-task = Task.objects.get(id=task_id)
-task_metadata = task.metadata.all()
-
-for metadata in task_metadata:
-   log.info(f"Task metadata: {metadata.key}, {metadata.value}") # external_system_id - EXT-12345
-```
 
 ## Enumeration types
 
 ### TaskType
 
-| Value    | Label    |
-| -------- | -------- |
-| Task     | Task     |
-| Reminder | Reminder |
+| Value    | Label     |
+|----------|-----------|
+| Task     | Task      |
+| Reminder | Reminder  |
 
 ### EventType
 
 | Value      | Label      |
-| ---------- | ---------- |
+|------------|------------|
 | Chart Open | Chart Open |
 
 ### TaskStatus
 
-| Value     | Label     |
-| --------- | --------- |
-| COMPLETED | Completed |
-| CLOSED    | Closed    |
-| OPEN      | Open      |
+| Value       | Label       |
+|-------------|-------------|
+| COMPLETED   | Completed   |
+| CLOSED      | Closed      |
+| OPEN        | Open        |
 
 ### TaskLabelModule
 
-| Value  | Label  |
-| ------ | ------ |
-| claims | Claims |
-| tasks  | Tasks  |
+| Value       | Label       |
+|-------------|-------------|
+| claims      | Claims      |
+| tasks       | Tasks       |
 
 <br/>
 <br/>

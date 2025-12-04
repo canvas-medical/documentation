@@ -20,7 +20,7 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 
 
 **401**
-```json
+```
 {
   "resourceType": "OperationOutcome",
   "issue": [
@@ -37,7 +37,7 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 <br>
 
 **403**
-```json
+```
 {
   "resourceType": "OperationOutcome",
   "issue": [
@@ -55,7 +55,7 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 
 
 **404**
-```json
+```
 {
   "resourceType": "OperationOutcome",
   "issue": [
@@ -73,7 +73,7 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 
 **422**
 
-```json
+```
 {
   "resourceType": "OperationOutcome",
   "issue": [
@@ -90,7 +90,7 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 
 **5XX**
 
-```json
+```
 {
   "resourceType": "OperationOutcome",
   "issue": [

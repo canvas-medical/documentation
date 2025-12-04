@@ -22,8 +22,6 @@ organization = Organization.objects.get(full_name="Medical Organization")
 Or since there will only be one `Organization` in an instance, it can also be fetched by using the `first` method:
 
 ```python
-from canvas_sdk.v1.data.organization import Organization
-
 organization = Organization.objects.first()
 ```
 

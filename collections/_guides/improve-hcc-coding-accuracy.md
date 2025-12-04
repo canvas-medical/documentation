@@ -25,7 +25,7 @@ A key use case is surfacing potential codings gaps that come from external sourc
 
 The workflow within Canvas is centered around issues created with the `DetectedIssue.code` set to `CODINGGAP`. Although we are leveraging it in our R4 endpoint, `CODINGGAP` was introduced to the value set in R5, and can be used for surfacing conditions that may be present on historical claims but not yet diagnosed within the current year, suspect conditions, or condition data from external sources. The code should be structured as follows:
 
-```json
+```
     "code": {
         "coding": [
             {
@@ -49,7 +49,7 @@ There is no built in UI feature in Canvas that surfaces coding gaps that have ye
 
 The protocol will surface in each patient's chart and staff can also leverage the population page as a work list. 
 
-```python
+``` python
 from canvas_sdk.protocols.clinical_quality_measure import ClinicalQualityMeasure
 from canvas_sdk.events import EventType
 from canvas_sdk.effects.protocol_card import ProtocolCard
@@ -159,7 +159,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 
 ICD_CODES = {
-    "HCC": {"A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202", "ADD_MORE_CODES..."}
+    "HCC": {"A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202","ADDMORECODES..."}
 }
 
 
@@ -203,13 +203,12 @@ class AnnotateSearchResults(BaseProtocol):
 
 ```
 
-### Adding Annotations to Conditions and Detected Issues
+### Adding "HCC" to the Condition List and on Claims
 
-The following event/effect pairings can be leveraged to add annotations (such as the `HCC` tag) to conditions and detected issues in the patient summary as well as on claims using the protocol code below.
+The following event/effect pairings can be leveraged to add the `HCC` tag to conditions in the patient summary as well as on the claim using the protocol code below. 
 
 - `CLAIM__CONDITIONS` and `ANNOTATE_CLAIM_CONDITION_RESULTS`
 - `PATIENT_CHART__CONDITIONS` and `ANNOTATE_PATIENT_CHART_CONDITION_RESULTS`
-- `PATIENT_CHART__DETECTED_ISSUES` and `ANNOTATE_PATIENT_CHART_DETECTED_ISSUE_RESULTS`
 
 
 ``` python
@@ -222,7 +221,8 @@ from canvas_sdk.protocols import BaseProtocol
 
 ICD_CODES = {
     "HCC": {
-        "A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202", "ADD_MORE_CODES...", 
+        "A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202",
+        ,"ADDMORECODES...", 
     }
 
 }
@@ -246,7 +246,7 @@ class PatientChartConditionAnnotation(BaseProtocol):
 
         payload = {}
         for condition in self.context:
-            icd10_code = next((coding.get("code") for coding in condition.get("codings", []) if coding.get("system") == "ICD10"), None)
+            icd10_code = next((coding.get("code") for coding in condition.get("codings", []) if coding.get("system") == ICD10), None)
             if not icd10_code:
                 continue
 
@@ -272,7 +272,7 @@ class ClaimConditionAnnotation(BaseProtocol):
 
         payload = {}
         for condition in self.context:
-            icd10_code = next((coding.get("code") for coding in condition.get("codings", []) if coding.get("system") == "ICD10"), None)
+            icd10_code = next((coding.get("code") for coding in condition.get("codings", []) if coding.get("system") == ICD10), None)
             if not icd10_code:
                 continue
 
@@ -280,33 +280,6 @@ class ClaimConditionAnnotation(BaseProtocol):
                 payload[condition["id"]] = [HCC]
 
         return [Effect(type=EffectType.ANNOTATE_CLAIM_CONDITION_RESULTS, payload=json.dumps(payload))]
-
-
-class DetectedIssueAnnotation(BaseProtocol):
-    """
-    Annotate Detected Issues in the Patient Chart with ICD-10 codes from evidence
-    """
-
-    RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__DETECTED_ISSUES)
-
-    def compute(self):
-        """
-        Annotate patient summary detected issues with their ICD-10 code from evidence
-        """
-        payload = {}
-        for detected_issue in self.context:
-            # Get the first ICD-10 code from evidence if available
-            evidence_code = None
-            if detected_issue.get("evidence"):
-                for evidence in detected_issue["evidence"]:
-                    if evidence.get("code"):
-                        evidence_code = evidence["code"]
-                        break
-
-            if evidence_code:
-                payload[detected_issue["id"]] = [evidence_code]
-
-        return [Effect(type=EffectType.ANNOTATE_PATIENT_CHART_DETECTED_ISSUE_RESULTS, payload=json.dumps(payload))]
 
 
 ```

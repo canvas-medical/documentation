@@ -24,9 +24,9 @@ The complete plugin is open-source and can be found in the [Medical Software Fou
 
 The plugin adds a button on the Vital Signs section of the patient chart that, when clicked, launches a modal displaying the patient's height, weight, and head circumference measurements graphed against various percentile curves.
 
-![vitals action button](/assets/images/vitals-action-button.png){: style='width: 50%'}
+![vitals action button](/assets/images/vitals-action-button.png){: style='width: 300px'}
 
-![chart template](/assets/images/growth-charts.png){: style='width: 95%'}
+![chart template](/assets/images/growth-charts.png){: style='width: 600px'}
 
 In the following steps, we'll show you how we used the Canvas SDK to create it.
 
@@ -35,18 +35,13 @@ In the following steps, we'll show you how we used the Canvas SDK to create it.
 To add a button to the vital signs section, you’ll implement an [`ActionButton`](/sdk/handlers-action-buttons) handler. In your handler class, you’ll set the `BUTTON_LOCATION` constant to `ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION` to make the action button appear in the corresponding summary section of the chart.
 
 ```python
-from canvas_sdk.handlers.action_button import ActionButton
-from canvas_sdk.effects import Effect
+    class GenerateVitalsGraphs(ActionButton):
+        BUTTON_TITLE = "Growth Charts"
+        BUTTON_KEY = "show_growth_charts"
+        BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION
 
-
-class GenerateVitalsGraphs(ActionButton):
-    BUTTON_TITLE = "Growth Charts"
-    BUTTON_KEY = "show_growth_charts"
-    BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_SUMMARY_VITALS_SECTION
-
-    def handle(self) -> list[Effect]:
+     def handle(self) -> list[Effect]:
         # This method is invoked when the button is clicked.
-        pass
 ```
 
 ## Launching a modal when the button is clicked
@@ -58,21 +53,15 @@ In this guide, we are launching a modal, but this click action can result in any
 Here’s an example of a simple plugin using the `LaunchModalEffect` to display a “Hello World” message.
 
 ```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-from canvas_sdk.handlers.action_button import ActionButton
-from canvas_sdk.templates import render_to_string
+    class HelloWorld(ActionButton):
+        BUTTON_TITLE = "Hello World"
+        BUTTON_KEY = "show_hello_world"
+        BUTTON_LOCATION = ActionButton.ButtonLocation.
+        
+        def handle(self) -> list[Effect]:
+            launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { title: 'hello world' }))
 
-
-class HelloWorld(ActionButton):
-    BUTTON_TITLE = "Hello World"
-    BUTTON_KEY = "show_hello_world"
-    BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_HEADER
-
-    def handle(self) -> list[Effect]:
-        launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { "title": "hello world" }))
-
-        return [launch_modal.apply()]
+    return [launch_modal.apply()]
 ```
 
 And here's the result! 
@@ -115,13 +104,6 @@ To retrieve the patient data we use the [Data Module](/sdk/data/). Specifically,
 Here, we can use `self.target`, which is the patient's `id`, to retrieve the patient and their observations by filtering for the values we need — such as weight, height, etc.
 
 ```python
-
-from canvas_sdk.effects import Effect
-from canvas_sdk.v1.data.observation import Observation
-from canvas_sdk.v1.data.patient import Patient
-
-
-def handle(self) -> list[Effect]:
     patient = Patient.objects.get(id=self.target)
     sex_at_birth = patient.sex_at_birth
     birth_date = patient.birth_date
@@ -150,106 +132,76 @@ make that percentile data usable in our template, we transformed the Excel files
 Here's an excerpt:
 
 ```python
-who_boys_length_age = [
-    { "x": 0, "y": 46.77032, "z": "5th" },
-    { "x": 1, "y": 51.52262, "z": "5th" },
-    { "x": 2, "y": 55.13442, "z": "5th" },
-    ...,
-    { "x": 23, "y": 92.93123, "z": "98th" },
-    { "x": 24, "y": 93.92634, "z": "98th" }
-]
+    who_boys_length_age = [
+        { "x": 0, "y": 46.77032, "z": "5th" },
+        { "x": 1, "y": 51.52262, "z": "5th" },
+        { "x": 2, "y": 55.13442, "z": "5th" },
+        ...
+        { "x": 23, "y": 92.93123, "z": "98th" },
+        { "x": 24, "y": 93.92634, "z": "98th" }
+    ]
 ```
 
 In addition to the percentile data series, we of course need to plot the
 patient observation data series. To do this, we create a lists of x and y values corresponding to the patient’s age and measurements. You can see this in more detail in the [GitHub repo](https://github.com/Medical-Software-Foundation/canvas/blob/5e8a3dfdb18307e596d2da2d9fce33a3e379cd11/extensions/growth_charts/protocols/growth_charts.py#L80), but here's an excerpt:
 
 ```python
-import arrow
-import datetime
+    def handle(self) -> list[Effect]:
+        graphs = []
+        patient = Patient.objects.get(id=self.target)
+        sex_at_birth = patient.sex_at_birth
+        birth_date = patient.birth_date
+        age_in_months = get_age_in_months(birth_date)
 
-from canvas_sdk.effects import Effect
-from canvas_sdk.v1.data.note import Note
-from canvas_sdk.v1.data.observation import Observation
-from canvas_sdk.v1.data.patient import Patient
+        is_less_than_24_months_old = age_in_months < 24
+        is_less_than_36_months_old = age_in_months < 36
 
-def convert_oz_to_kg(oz: str) -> float:
-    return float(oz) * 0.0283495
+        observation_weight = Observation.objects.for_patient(self.target).filter(name="weight")
+        observation_height = Observation.objects.for_patient(self.target).filter(name="height")
+        observation_length = Observation.objects.for_patient(self.target).filter(name="length")
+        observation_bmi = Observation.objects.for_patient(self.target).filter(name="bmi")
+        observation_head_circumference = Observation.objects.for_patient(self.target).filter(name="head_circumference")
 
-def get_age_in_months(birth_date: datetime.date, date: datetime.date = datetime.datetime.now()) -> int:
-    now = arrow.get(date)
-    date = arrow.get(birth_date)
-    year_difference = now.year - date.year
-    month_difference = now.month - date.month
+        weight_for_age = {}
+        length_for_age = {}
+        weight_for_length = {}
+        head_for_age = {}
+        bmi_for_age = {}
 
-    return year_difference * 12 + month_difference
+        for obs in observation_weight:
+            if obs.value:
+                note = Note.objects.get(dbid=obs.note_id)
+                age_in_months = get_age_in_months(birth_date, note.datetime_of_service)
+                weight_in_kg = convert_oz_to_kg(obs.value)
+                weight_for_age[age_in_months] = weight_in_kg
 
-def handle(self) -> list[Effect]:
-    graphs = []
-    patient = Patient.objects.get(id=self.target)
-    sex_at_birth = patient.sex_at_birth
-    birth_date = patient.birth_date
-    age_in_months = get_age_in_months(birth_date)
-
-    is_less_than_24_months_old = age_in_months < 24
-    is_less_than_36_months_old = age_in_months < 36
-
-    observation_weight = Observation.objects.for_patient(self.target).filter(name="weight")
-    observation_height = Observation.objects.for_patient(self.target).filter(name="height")
-    observation_length = Observation.objects.for_patient(self.target).filter(name="length")
-    observation_bmi = Observation.objects.for_patient(self.target).filter(name="bmi")
-    observation_head_circumference = Observation.objects.for_patient(self.target).filter(name="head_circumference")
-
-    weight_for_age = {}
-    length_for_age = {}
-    weight_for_length = {}
-    head_for_age = {}
-    bmi_for_age = {}
-
-    for obs in observation_weight:
-        if obs.value:
-            note = Note.objects.get(dbid=obs.note_id)
-            age_in_months = get_age_in_months(birth_date, note.datetime_of_service)
-            weight_in_kg = convert_oz_to_kg(obs.value)
-            weight_for_age[age_in_months] = weight_in_kg
-
-    # ... repeat for other data series
+        # ... repeat for other data series
 ```
 
 Finally, we create a list of graphs with the necessary variables and data, which are passed to the template to generate and render the graph.
 
 ```python
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-from canvas_sdk.handlers.base import BaseHandler
-from canvas_sdk.templates import render_to_string
+    # list of graphs
+    graphs = [
+        {
+            "data": who_boys_length_age, # the data from the graph file
+            "title": 'Length for age (Boys 0 - 2 years)', # graph title
+            "xType": 'Generic', # the type of x axis (Generic, Length, Weight) - We need this info to convert the values 
+            "yType": 'Length', # the type of y axis (Generic, Length, Weight)
+            "xLabel": 'Age', # label for the x axis
+            "yLabel": 'Length', # label for the y axis
+            "zLabel": 'Percentile', # label for the z axis
+            "layerData": length_for_age, # the patient’s data that will be plotted on the graph
+            "tab": "WHO" # the section where the graph should be rendered (WHO or CDC)
+        },
+        # ...repeat for other data series
+    ]
 
-who_boys_length_age = ... # from growth_charts.graphs.who_boys_length_age
+	launch_modal = LaunchModalEffect(
+		content=render_to_string("templates/chart.html", {"graphs": graphs}),
+	)
 
-
-class Protocol(BaseHandler):
-    def compute(self):
-        # list of graphs
-        length_for_age = {} # filled in the actual implementation, see linked GitHub repository
-
-        graphs = [
-            {
-                "data": who_boys_length_age, # the data from the graph file
-                "title": 'Length for age (Boys 0 - 2 years)', # graph title
-                "xType": 'Generic', # the type of x axis (Generic, Length, Weight) - We need this info to convert the values 
-                "yType": 'Length', # the type of y axis (Generic, Length, Weight)
-                "xLabel": 'Age', # label for the x axis
-                "yLabel": 'Length', # label for the y axis
-                "zLabel": 'Percentile', # label for the z axis
-                "layerData": length_for_age, # the patient’s data that will be plotted on the graph
-                "tab": "WHO" # the section where the graph should be rendered (WHO or CDC)
-            },
-            # ...repeat for other data series
-        ]
-
-        launch_modal = LaunchModalEffect(
-            content=render_to_string("templates/chart.html", {"graphs": graphs}),
-        )
-
-        return [launch_modal.apply()]
+	return [launch_modal.apply()]
 ```
 
 <br/>

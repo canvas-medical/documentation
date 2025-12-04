@@ -75,7 +75,7 @@ Filtering by ValueSet works a little differently. The `find` method on the model
 
 ```python
 from canvas_sdk.v1.data.medication import Medication
-from canvas_sdk.value_set.v2022.medication import AdhdMedications
+from canvas_sdk.value_set.v022.medication import AdhdMedications
 
 medications = Medication.objects.find(AdhdMedications)
 ```
@@ -84,30 +84,28 @@ medications = Medication.objects.find(AdhdMedications)
 
 ### Medication
 
-| Field Name                     | Type                                                     |
-| ------------------------------ | -------------------------------------------------------- |
-| id                             | UUID                                                     |
-| dbid                           | Integer                                                  |
-| patient                        | [Patient](/sdk/data-patient/#patient)                    |
-| deleted                        | Boolean                                                  |
-| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                       |
-| committer                      | [CanvasUser](/sdk/data-canvasuser)                       |
-| status                         | String                                                   |
-| start_date                     | Date                                                     |
-| end_date                       | Date                                                     |
-| quantity_qualifier_description | String                                                   |
-| clinical_quantity_description  | String                                                   |
-| potency_unit_code              | String                                                   |
-| national_drug_code             | String                                                   |
-| erx_quantity                   | String                                                   |
-| codings                        | [MedicationCoding](#medicationcoding)[]                  |
-| medication_statements          | [MedicationStatement](/sdk/data-medication-statement)[]  |
-| stopmedicationevent_set        | [StopMedicationEvent](/sdk/data-stop-medication-event)[] |
+| Field Name                     | Type                                    |
+|--------------------------------|-----------------------------------------|
+| id                             | UUID                                    |
+| dbid                           | Integer                                 |
+| patient                        | [Patient](/sdk/data-patient/#patient)   |
+| deleted                        | Boolean                                 |
+| entered_in_error               | CanvasUser                              |
+| committer                      | CanvasUser                              |
+| status                         | String                                  |
+| start_date                     | Date                                    |
+| end_date                       | Date                                    |
+| quantity_qualifier_description | String                                  |
+| clinical_quantity_description  | String                                  |
+| potency_unit_code              | String                                  |
+| national_drug_code             | String                                  |
+| erx_quantity                   | String                                  |
+| codings                        | [MedicationCoding](#medicationcoding)[] |
 
 ### MedicationCoding
 
 | Field Name    | Type                      |
-| ------------- | ------------------------- |
+|---------------|---------------------------|
 | dbid          | Integer                   |
 | system        | String                    |
 | version       | String                    |

@@ -10,25 +10,11 @@ sections:
           Measurements and simple assertions made about a patient, device or other subject.<br><br>
           Canvas supports the following US Core Profiles for Observations:<br>
             - [US Core Laboratory Result Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-observation-lab.html)
-            - [US Core Occupation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-occupation.html)
-            - [US Core Pregnancy Intent Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancyintent.html)
-            - [US Core Pregnancy Status Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
-            - [US Core Sexual Orientation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-sexual-orientation.html)
-            - [US Core Simple Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
-            - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
-            - [US Core Vital Signs Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-vital-signs.html)
-            - [US Core Pediatric Head Occipital-frontal Circumference Percentile Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-head-occipital-frontal-circumference-percentile.html)
-            - [US Core Pediatric BMI for Age Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-pediatric-bmi-for-age.html)
-            - [US Core Pediatric Weight for Height Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-pediatric-weight-for-height.html)
-            - [US Core Blood Pressure Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-blood-pressure.html)
-            - [US Core BMI Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-bmi.html)
-            - [US Core Body Height Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-body-height.html)
-            - [US Core Body Temperature Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-body-temperature.html)
-            - [US Core Body Weight Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-body-weight.html)
-            - [US Core Head Circumference Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-head-circumference.html)
-            - [US Core Heart Rate Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-heart-rate.html)
-            - [US Core Pulse Oximetry Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-pulse-oximetry.html)
-            - [US Core Respiratory Rate Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-respiratory-rate.html)
+            - [US Core Pediatric BMI for Age Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-pediatric-bmi-for-age.html)
+            - [US Core Pediatric Head Occipital-frontal Circumference Percentile Profile](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-head-occipital-frontal-circumference-percentile.html)
+            - [US Core Pediatric Weight for Height Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-pediatric-weight-for-height.html)
+            - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-smokingstatus.html)
+            - [US Core Pulse Oximetry Profile](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-pulse-oximetry.html)<br>
 
           The following USCDI data elements are retrievable from this endpoint:<br>
             - Laboratory Tests
@@ -206,21 +192,6 @@ sections:
               Clinically relevant time/time-period for observation.<br><br>
               For an individual vital sign, if the effectiveDateTime differs from the panel time, it will be reflected in a read/search; however, you will not see the individual date in the UI, only the panel's datetime.<br><br>
               If omitted from create, Canvas will save a default value of the current datetime.
-          - name: effectivePeriod
-            type: json
-            exclude_in: create, update
-            description: Clinically relevant time/time-period for observation.
-            read_and_search_description: >-
-              Clinically relevant time/time-period for observation.<br><br>
-              The US Core Occupation profile presents the <code>effective</code> attribute as a time period with start and end datetimes.<br><br>
-              This attribute can only be read via FHIR, but not written.
-            attributes:
-              - name: start
-                type: datetime
-                description: Starting time with inclusive boundary
-              - name: end
-                type: datetime
-                description: End time with inclusive boundary, if not ongoing
           - name: issued
             type: datetime
             exclude_in: create
@@ -405,26 +376,6 @@ sections:
                         enum_options:
                           - value: Systolic blood pressure
                           - value: Diastolic blood pressure
-              - name: valueCodeableConcept
-                type: json
-                exclude_in: create, update
-                description: >-
-                  Actual component result.<br><br>
-                  Used when a component is represented by a value that is a reference to one or more terminologies or ontologies.
-                attributes:
-                  - name: coding
-                    description: Code defined by a terminology system.
-                    type: array[json]
-                    attributes: 
-                      - name: system
-                        description: The system url of the coding.
-                        type: string
-                      - name: code
-                        description: The code of the observation.
-                        type: string
-                      - name: display
-                        description: The display name of the coding.
-                        type: string
               - name: valueQuantity
                 type: json
                 description: Actual component result. Since this endpoint only supports blood pressure systolic/diastolic components, the units are already defaulted to `mmHg`.
@@ -526,7 +477,7 @@ sections:
             
             **Note types**<br>
             Most our FHIR endpoints insert commands into a Data Import Note type on the patient's timeline.
-            With the release of [configurable note types](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types), if you create a new Note Type in Settings with **system = Canvas** and **code = VitalsImport**,
+            With the release of [configurable note types](https://canvas-medical.help.usepylon.com/articles/9237060452-note-types), if you create a new Note Type in Settings with **system = Canvas** and **code = VitalsImport**,
             then the Observation Create endpoint will always import into that note type instead.<br><br>
 
 
@@ -551,9 +502,9 @@ sections:
         
             **Additional examples**
 
-              - [Creating a vital panel](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20panel.bru)
-              - [Creating a vital sign with components (should only be used for blood pressure)](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20w-%20components.bru)
-              - [Creating a vital sign without components](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20w-o%20components.bru)
+              - [Creating a vital panel](https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation/request/17030070-9375d12e-012c-4a68-8f2a-5709c758b4f0)
+              - [Creating a vital sign with components (should only be used for blood pressure)](https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation/request/17030070-b020fab6-334b-4aa9-9cde-cf1dc59444b4)
+              - [Creating a vital sign without components](https://www.postman.com/canvasmedical/workspace/canvas-medical-public-documentation/request/17030070-f87d6190-3a72-42e0-9429-520bd6eaa66b)
         read:
           responses: [200, 401, 403, 404]
           example_request: observation-read-request

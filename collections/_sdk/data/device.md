@@ -41,7 +41,7 @@ Specify an attribute with `filter` to filter by that attribute:
 ```python
 from canvas_sdk.v1.data.device import Device
 
-devices = Device.objects.filter(manufacturer="ACME Biomedical", lot_number="M320")
+devices = Devices.objects.filter(manufacturer="ACME Biomedical", lot_number="M320")
 ```
 
 ## Attributes
@@ -54,9 +54,9 @@ devices = Device.objects.filter(manufacturer="ACME Biomedical", lot_number="M320
 | dbid                        | Integer                               |
 | created                     | DateTime                              |
 | modified                    | DateTime                              |
-| originator                  | [CanvasUser](/sdk/data-canvasuser)    |
-| committer                   | [CanvasUser](/sdk/data-canvasuser)    |
-| entered_in_error            | [CanvasUser](/sdk/data-canvasuser)    |
+| originator                  | CanvasUser                            |
+| committer                   | CanvasUser                            |
+| entered_in_error            | CanvasUser                            |
 | patient                     | [Patient](/sdk/data-patient/#patient) |
 | note_id                     | Integer                               |
 | deleted                     | Boolean                               |

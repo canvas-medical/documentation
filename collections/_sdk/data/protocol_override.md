@@ -1,7 +1,7 @@
 ---
-title: "ProtocolOverride"
+title: "Protocol Override"
 slug: "data-protocol-override"
-excerpt: "Canvas SDK ProtocolOverride"
+excerpt: "Canvas SDK Protocol Override"
 hidden: false
 ---
 
@@ -56,14 +56,14 @@ overrides = ProtocolOverride.objects.filter(status="active")
 ### ProtocolOverride
 
 | Field Name       | Type                                  |
-| ---------------- | ------------------------------------- |
+|------------------|---------------------------------------|
 | id               | UUID                                  |
 | dbid             | Integer                               |
 | created          | DateTime                              |
 | modified         | DateTime                              |
 | deleted          | Boolean                               |
-| committer        | [CanvasUser](/sdk/data-canvasuser)    |
-| entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |
+| committer        | CanvasUser                            |
+| entered_in_error | CanvasUser                            |
 | patient          | [Patient](/sdk/data-patient/#patient) |
 | protocol_key     | String                                |
 | is_adjustment    | Boolean                               |
@@ -83,7 +83,7 @@ overrides = ProtocolOverride.objects.filter(status="active")
 ### IntervalUnit
 
 | Value  | Label  |
-| ------ | ------ |
+|--------|--------|
 | days   | days   |
 | months | months |
 | years  | years  |
@@ -91,7 +91,7 @@ overrides = ProtocolOverride.objects.filter(status="active")
 ### Status
 
 | Value    | Label    |
-| -------- | -------- |
+|----------|----------|
 | active   | active   |
 | inactive | inactive |
 

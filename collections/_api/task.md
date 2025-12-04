@@ -237,7 +237,7 @@ sections:
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: task-update-request
           example_response: task-update-response
-          description: Update a task.<br><br>Omitting the group `extension` and `authoredOn` fields in an update body does not delete the contents of that field. They will remain set to the last value they were assigned.<br><br>Omitting the `description`, `owner`, `restriction` and `input` attributes will delete the contents of the field in the Canvas database. In order to have a Task keep the values in these fields after an update, they must be included.
+          description: Update a task.<br><br>Any `note` comments included in the update message body will not be checked if they already exist in Canvas. Canvas will always assume each Note is an addition to the Task Comments.<br><br>Omitting the group `extension` and `authoredOn` fields in an update body does not delete the contents of that field. They will remain set to the last value they were assigned.<br><br>Omitting the `description`, `owner`, `restriction` and `input` attributes will delete the contents of the field in the Canvas database. In order to have a Task keep the values in these fields after an update, they must be included.
         search:
           responses: [200, 400, 401, 403]
           example_request: task-search-request

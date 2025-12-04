@@ -15,9 +15,6 @@ The bearer token included in requests send to this endpoint must have one of the
 - `user/Claim.add-activity-log-item`
 
 
-
-
-
 {% tabs claim-operations %}
 {% tab claim-operations curl %}
 ```shell

@@ -14,7 +14,7 @@ sections:
 
           - A [Letter](https://canvas-medical.help.usepylon.com/articles/8181146406-letters) that has been faxed or printed from the patient's chart.
           
-          - All documents uploaded via [Data Integration](https://help.canvasmedical.com/articles/7371085164-data-integration) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
+          - All documents uploaded via [Data Integration](https://canvas-medical.help.usepylon.com/articles/8618913529-data-integration-overview) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
           
           - [POC Lab Commands](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests) committed on the Patient's chart
           
@@ -22,7 +22,7 @@ sections:
           
           - Any [Educational Material](https://canvas-medical.help.usepylon.com/articles/4966226408-educational-material-command) committed on a patient's chart.
           
-          - Any [Invoices](https://help.canvasmedical.com/articles/9992348572-claim-management#invoicing-statements-128) generated for a patient.
+          - Any [Invoices](https://canvas-medical.help.usepylon.com/articles/5985827257-statements-and-invoicing) generated for a patient.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -52,7 +52,7 @@ sections:
 
               - clinical-date  
 
-              - A reviewer is required, it can either be a practitioner or a group
+              - reviewer  
 
               - requires-signature
               "
@@ -66,7 +66,6 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-clinical-date
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-review-mode
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-reviewer
-                  - value: http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-priority
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-requires-signature
               - name: valueString
@@ -89,16 +88,16 @@ sections:
               - name: valueReference
                 type: json
                 required_in: create
-                description_for_all_endpoints: Value of extension for Reviewer(s). The reviewer can be an individual practitioner and/or a group of practitioners.
-                create_description: The `valueReference` attribute is needed for expressing the Reviewer of the document where the `url` can be `http://schemas.canvasmedical.com/fhir/document-reference-reviewer` for an individual practitioner or `http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group` for a group/team of practitioners. This attribute is required and will be the reference to the Practitioner (Canvas Staff) and/or Group (Canvas Team) that's assigned as the reviewer of this document.
+                description_for_all_endpoints: Value of extension for Reviewer.
+                create_description: The `valueReference` attribute is needed for expressing the Reviewer of the document where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-reviewer`. This attribute is required and will be the reference to the Practitioner (Canvas Staff) that's assigned as the reviewer of this document.
                 attributes:
                   - name: reference
                     type: string
                     required_in: create
-                    description: The reference string of the Practitioner or Group in the format of `"Practitioner/95b9ac2d-e963-4d7a-b165-7901870f1663"` or `"Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78"`.
+                    description: The reference string of the Practitioner in the format of `"Practitioner/95b9ac2d-e963-4d7a-b165-7901870f1663"`.
                   - name: type
                     type: string
-                    description: Type the reference refers to (e.g. "Practitioner" or "Group").
+                    description: Type the reference refers to (e.g. "Practitioner").
               - name: valueBoolean
                 type: string
                 required_in: create
@@ -276,12 +275,14 @@ sections:
                 description: Type the reference refers to (e.g. "Organization").
           - name: description
             type: string
-            description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource.
+            description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource. 
+            create_and_update_description: It requires standard document titles that must be matched to the document provided in the coding type attribute. See the table above with the available loinc codes and their associated description.
           - name: content
             type: array[json]
             required_in: create
             description: >-
-              Document referenced
+              Document referenced<br><br>
+              **Note: There is a temporary extension on Attachment that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             attributes:
               - name: attachment
                 description: >-
@@ -441,13 +442,6 @@ curl --request POST \
             }
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-            "valueReference": {
-                "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                "type": "Group"
-            }
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
             "valueBoolean": true
         },
@@ -494,6 +488,7 @@ curl --request POST \
             }
         }
     ]
+  }
 }'
 ```
     {% endtab %}
@@ -532,19 +527,12 @@ payload = {
             }
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-            "valueReference": {
-                "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                "type": "Group"
-            }
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
-            "valueBoolean": True,
+            "valueBoolean": true,
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-requires-signature",
-            "valueBoolean": True,
+            "valueBoolean": true,
         }
     ],
     "status": "current",
@@ -628,13 +616,6 @@ payload = {
             }
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-            "valueReference": {
-                "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                "type": "Group"
-            }
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
             "valueBoolean": true
         },
@@ -682,6 +663,12 @@ payload = {
     "content": [
         {
             "attachment": {
+                "extension": [
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                        "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/invoices/f3d750f5d77d403c96baef6a6055c6e7_20211027_193132.pdf?AWSAccessKeyId=xxxx&Signature=xxxx&Expires=xxxx"
+                    }
+                ],
                 "contentType": "application/pdf",
                 "url": "https://fumage-example.canvasmedical.com/DocumentReference/6f60ed1c-a6b3-4791-99f0-f618704e33d1/files/content"
             },
@@ -817,6 +804,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/invoices/c0df2c04a0e64b46ba7fe3f836068e49_20240224_124702.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=WtfvJWbBgc50VgekeqrUDTPsyHk%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/4b640065-ae64-4775-b5a8-8264314cf5fc/files/content"
                         },
@@ -851,13 +844,6 @@ payload = {
                         "valueReference": {
                             "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
                             "type": "Practitioner"
-                        }
-                    },
-                    {
-                        "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-                        "valueReference": {
-                            "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                            "type": "Group"
                         }
                     },
                     {
@@ -905,6 +891,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/5a0cf7ae-bd88-4f04-bd7e-60a33e5e2824/files/content"
                         },
@@ -991,6 +983,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/document_annotations/blob_FeMcbYv?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=7V8KwSeZlPCCJiiarAHK55IW4pI%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/b9f82cd0-6644-4b3f-a9d1-7585c3e71498/files/content"
                         },
@@ -1047,6 +1045,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/generic_documents/letter_494.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=K4d67C%2FNj9PtLIjY9by5qLwYiK4%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/51a49fef-eb67-4b8d-a992-b3dd9e754dea/files/content"
                         },
@@ -1086,6 +1090,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/note_history/training_note_state_document_232604_1708628478?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=yangPOcYiWvr48s6VhvQIBSw0fs%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/713394da-f250-4c59-8b47-96458155f687/files/content"
                         },
@@ -1155,6 +1165,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/6ebf590d-ff90-412e-a5e7-9be30d6e4c35/files/content"
                         },
@@ -1229,6 +1245,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/d9a1304d-159d-4518-be88-3f9a1ea93cd1/files/content"
                         },
@@ -1314,6 +1336,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/bce56cc4-268a-4562-a699-16e8869415ad/files/content"
                         },
@@ -1395,6 +1423,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/d220fa24-2b2f-44cf-9843-5a1b681f0805/files/content"
                         },
@@ -1469,6 +1503,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/04a71b54-89b0-49bf-96be-60b5bdfa6450/files/content"
                         },
@@ -1543,6 +1583,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/dummy_BLseNPP.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=uBuEZpbxcCg4w9hZ6hAXLJxMGe8%3D&Expires=1709072108"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/efe6c0d6-97c0-42a6-91ba-926a2dc3c66f/files/content"
                         },
@@ -1599,6 +1645,12 @@ payload = {
                 "content": [
                     {
                         "attachment": {
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/training/generic_documents/Glaucoma_Screening_lFimBWS.pdf?AWSAccessKeyId=AKIAQB7SIDR7EI2V32FZ&Signature=2IfdGPA%2FOMFdRf3p75oYhY6QJ%2Bs%3D&Expires=1709072109"
+                                }
+                            ],
                             "contentType": "application/pdf",
                             "url": "https://fumage-example.canvasmedical.com/DocumentReference/380ad499-ec8f-4f1f-b1f0-5f25b04fd574/files/content"
                         },

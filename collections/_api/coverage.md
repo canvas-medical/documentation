@@ -18,27 +18,6 @@ sections:
             exclude_in: create
             description: The identifier of the Coverage.
             type: string
-          - name: identifier
-            description: An identifier for the insured of an insurance policy, usually assigned by the insurance carrier.
-            type: array[json]
-            attributes:
-              - name: type
-                description: Insurance member ID description
-                type: json
-                attributes:
-                  - name: system
-                    description: The system url of the coding.
-                    enum_options:
-                      - value: http://terminology.hl7.org/CodeSystem/v2-0203
-                  - name: code
-                    description: The code of the insurance member ID description.
-                    enum_options:
-                      - value: MB
-                  - name: display
-                    description: The display name of the coding.
-              - name: value
-                description: Insurance member ID value
-                type: string
           - name: status
             type: enum [ active | cancelled ]
             description_for_all_endpoints: The status of the Coverage. <br><br>In Canvas, the status of `active` means it appears in the Patient's Profile page either under the main or other coverage sections, while a status of `cancelled` means it was removed and no longer appears on the page. An expired coverage will still show as `active`, so be sure to set/read the `period.end` attribute.
@@ -49,82 +28,80 @@ sections:
             type: json
             description: >-
               Type of coverage, such as medical, workers compensation, self pay, etc.<br><br>
-              In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Pylon article](https://help.canvasmedical.com/articles/5877696655-patient-coverages#managing-insurers-68).
+              In order for this value to display on the Canvas UI, the coverage type needs to be configured for the specific payor via our insurer settings.  To get to these settings, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers).
             attributes:
               - name: coding
                 description: Code defined by a terminology system.
                 type: array[json]
-                attributes:
+                attributes: 
                   - name: system
                     description: The system url of the coding.
                     required_in: create,update
-                    enum_options:
-                      - value: http://terminology.hl7.org/CodeSystem/coverage-selfpay
-                      - value: http://terminology.hl7.org/CodeSystem/v3-ActCode
+                    enum_options: 
+                      - value: http://hl7.org/fhir/ValueSet/coverage-type
                     type: string
                   - name: code
                     description: The code of the coverage type.
                     type: string
                     required_in: create,update
                     enum_options:
-                      - value: pay
-                      - value: ANNU
-                      - value: AUTOPOL
-                      - value: CHAR
-                      - value: COL
-                      - value: CRIME
-                      - value: DENTAL
-                      - value: DENTPRG
-                      - value: DIS
-                      - value: DISEASE
-                      - value: DRUGPOL
-                      - value: EAP
-                      - value: EWB
-                      - value: ENDRENAL
-                      - value: EHCPOL
-                      - value: FLEXP
-                      - value: GOVEMP
-                      - value: HIP
-                      - value: HMO
-                      - value: HSAPOL
-                      - value: HIRISK
-                      - value: HIVAIDS
-                      - value: IND
-                      - value: LIFE
-                      - value: LTC
-                      - value: MCPOL
-                      - value: MANDPOL
-                      - value: MENTPOL
-                      - value: MENTPRG
-                      - value: MILITARY
-                      - value: POS
-                      - value: PPO
-                      - value: PNC
-                      - value: DISEASEPRG
-                      - value: PUBLICPOL
-                      - value: REI
-                      - value: RETIRE
-                      - value: SAFNET
-                      - value: SOCIAL
-                      - value: SUBSIDIZ
-                      - value: SUBSIDMC
-                      - value: SUBSUPP
-                      - value: SUBPOL
-                      - value: SUBPRG
-                      - value: SURPL
-                      - value: TLIFE
-                      - value: UMBRL
-                      - value: UNINSMOT
-                      - value: ULIFE
-                      - value: VET
-                      - value: VISPOL
-                      - value: CANPRG
-                      - value: WCBPOL
+                       - value: ANNU
+                       - value: AUTOPOL
+                       - value: CHAR
+                       - value: COL
+                       - value: CRIME
+                       - value: DENTAL
+                       - value: DENTPRG
+                       - value: DIS
+                       - value: DISEASE
+                       - value: DRUGPOL
+                       - value: EAP
+                       - value: EWB
+                       - value: ENDRENAL
+                       - value: EHCPOL
+                       - value: FLEXP
+                       - value: GOVEMP
+                       - value: HIP
+                       - value: HMO
+                       - value: HSAPOL
+                       - value: HIRISK
+                       - value: HIVAIDS
+                       - value: IND
+                       - value: LIFE
+                       - value: LTC
+                       - value: MCPOL
+                       - value: MANDPOL
+                       - value: MENTPOL
+                       - value: MENTPRG
+                       - value: MILITARY
+                       - value: pay
+                       - value: POS
+                       - value: PPO
+                       - value: PNC
+                       - value: DISEASEPRG
+                       - value: PUBLICPOL
+                       - value: REI
+                       - value: RETIRE
+                       - value: SAFNET
+                       - value: SOCIAL
+                       - value: SUBSIDIZ
+                       - value: SUBSIDMC
+                       - value: SUBSUPP
+                       - value: SUBPOL
+                       - value: SUBPRG
+                       - value: SURPL
+                       - value: TLIFE
+                       - value: UMBRL
+                       - value: UNINSMOT
+                       - value: ULIFE
+                       - value: VET
+                       - value: VISPOL
+                       - value: CANPRG
+                       - value: WCBPOL
                   - name: display
                     description: The display name of the coding.
                     type: string
                     enum_options:
-                      - value: Pay
                       - value: Annuity policy
                       - value: Automobile
                       - value: Charity program
@@ -154,6 +131,7 @@ sections:
                       - value: Mental health policy
                       - value: Mental health program
                       - value: Military health program
+                      - value: Pay
                       - value: Point of service policy
                       - value: Preferred provider organization policy
                       - value: Property and casualty insurance policy
@@ -195,8 +173,9 @@ sections:
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
           - name: subscriberId
-            description: ID assigned to the subscriber
+            description: The insurer-assigned ID for the subscriber.
             type: string
+            required_in: create,update
           - name: beneficiary
             description: >-
               Who benefits from the coverage; the patient when products or services are provided.
@@ -219,12 +198,12 @@ sections:
                 description: Code defined by a terminology system.
                 type: array[json]
                 required_in: create,update
-                attributes:
+                attributes: 
                   - name: system
                     description: The system url of the coding.
                     required_in: create,update
-                    enum_options:
-                      - value: http://terminology.hl7.org/CodeSystem/subscriber-relationship
+                    enum_options: 
+                      - value: http://hl7.org/fhir/ValueSet/subscriber-relationship
                     type: string
                   - name: code
                     description: The code of the relationship.
@@ -328,16 +307,16 @@ sections:
               - name: identifier
                 exclude_in: read,search
                 type: json
-                description: Logical reference, when literal reference is not known.
+                description: Logical reference, when literal reference is not known. 
                 attributes:
                   - name: value
                     type: string
                     required_in: create, update
-                    description: The value that is unique. These values can only be found and updated in the [Insurers Admin view](https://help.canvasmedical.com/articles/5877696655-patient-coverages#managing-insurers-68) in Canvas.
+                    description: The value that is unique. These values can only be found and updated in the [Insurers Admin view](https://canvas-medical.help.usepylon.com/articles/8126548200-managing-insurers) in Canvas. 
                   - name: system
                     type: string
-                    description: The namespace for the identifier value.
-                    enum_options:
+                    description: The namespace for the identifier value. 
+                    enum_options: 
                       - value: https://www.claim.md/services/era/
           - name: class
             type: json
@@ -354,15 +333,15 @@ sections:
                     description: Code defined by a terminology system.
                     type: array[json]
                     required_in: create,update
-                    attributes:
+                    attributes: 
                       - name: system
                         description: The system url of the coding.
                         required_in: create,update
-                        enum_options:
-                          - value: http://terminology.hl7.org/CodeSystem/coverage-class
+                        enum_options: 
+                          - value: http://hl7.org/fhir/ValueSet/coverage-class
                         type: string
                       - name: code
-                        description: The code of the class.
+                        description: The code of the class. 
                         type: string
                         required_in: create,update
                         enum_options:
@@ -370,12 +349,9 @@ sections:
                           - value: subplan
                           - value: group
                           - value: subgroup
-              - name: value
-                type: string
-                description: Value associated with the type, such as plan or group number.
-              - name: name
-                type: string
-                description: Human readable description of the type and value, such as plan name or group name.
+                  - name: value
+                    type: string
+                    description: Value associated with the type.
           - name: order
             type: number [ 1-5 ]
             required_in: create,update
@@ -392,12 +368,9 @@ sections:
           - name: patient
             type: string
             description: Retrieve coverages for a patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
-          - name: identifier
-            type: string
-            description: Retrieve all coverages with a specific member ID
           - name: subscriberid
             type: string
-            description: Retrieve all coverages with a specific subscriber ID
+            description: Retrieve all coverages with a specific subscriberID
           - name: status
             type: string
             description: Retrieve coverages by a specific status.
@@ -435,25 +408,12 @@ curl --request POST \
      --data '
 {
   "resourceType": "Coverage",
-  "identifier": [
-    {
-      "type": {
-        "coding": [
-          {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "MB",
-            "display": "Member Number"
-          }
-        ]
-      },
-      "value": "1234"
-    }
-  ],
+  "order": 1,
   "status": "active",
   "type": {
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
         "code": "MILITARY",
         "display": "military health program"
       }
@@ -462,14 +422,14 @@ curl --request POST \
   "subscriber": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34"
   },
-  "subscriberId": "123",
+  "subscriberId": "1234",
   "beneficiary": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3"
   },
   "relationship": {
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
         "code": "self"
       }
     ]
@@ -490,52 +450,47 @@ curl --request POST \
       "type": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "plan"
           }
         ]
       },
-      "value": "Starfleet HMO",
-      "name": "Starfleet HMO"
+      "value": "Starfleet HMO"
     },
     {
       "type": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "subplan"
           }
         ]
       },
-      "value": "Stars",
-      "name": "Stars"
+      "value": "Stars"
     },
     {
       "type": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "group"
           }
         ]
       },
-      "value": "Captains Only",
-      "name": "Captains Only"
+      "value": "Captains Only"
     },
     {
       "type": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "subgroup"
           }
         ]
       },
-      "value": "Subgroup 2",
-      "name": "Subgroup 2"
+      "value": "Subgroup 2"
     }
-  ],
-  "order": 1
+  ]
 }
 '
 ```
@@ -549,37 +504,24 @@ url = "https://fumage-example.canvasmedical.com/Coverage"
 
 payload = {
   "resourceType": "Coverage",
-  "identifier": [
-    {
-      "type": {
-        "coding": [
-          {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "MB",
-            "display": "Member Number"
-          }
-        ]
-      },
-      "value": "1234"
-    }
-  ],
+  "order": 1,
   "status": "active",
-  "type": {
+  "type": { 
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
         "code": "MILITARY",
         "display": "military health program"
       }
-    ]
+    ] 
   },
   "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
-  "subscriberId": "123",
+  "subscriberId": "1234",
   "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
-  "relationship": {
+  "relationship": { 
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
         "code": "self"
       }
     ]
@@ -597,55 +539,50 @@ payload = {
   ],
   "class": [
     {
-      "type": {
+      "type": { 
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "plan"
           }
         ]
       },
-      "value": "Starfleet HMO",
-      "name": "Starfleet HMO"
+      "value": "Starfleet HMO"
     },
     {
-      "type": {
+      "type": { 
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "subplan"
           }
         ]
       },
-      "value": "Stars",
-      "name": "Stars"
+      "value": "Stars"
     },
     {
-      "type": {
+      "type": { 
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "group"
           }
         ]
       },
-      "value": "Captains Only",
-      "name": "Captains Only"
+      "value": "Captains Only"
     },
     {
-      "type": {
+      "type": { 
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "subgroup"
           }
         ]
       },
-      "value": "Subgroup 2",
-      "name": "Subgroup 2"
+      "value": "Subgroup 2"
     }
-  ],
-  "order": 1
+  ]
 }
 headers = {
     "accept": "application/json",
@@ -659,7 +596,7 @@ print(response.text)
 
 ```
     {% endtab %}
-
+    
   {% endtabs %}
 </div>
 
@@ -679,25 +616,11 @@ print(response.text)
 {
   "resourceType": "Coverage",
   "id": "a7c6af04-a22f-47bf-9cc8-d41158b2ad62",
-  "identifier": [
-    {
-      "type": {
-        "coding": [
-          {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "MB",
-            "display": "Member Number"
-          }
-        ]
-      },
-      "value": "12345"
-    }
-  ],
   "status": "active",
   "type": {
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
         "code": "MILITARY",
         "display": "Military health program"
       }
@@ -707,7 +630,7 @@ print(response.text)
     "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
     "type": "Patient"
   },
-  "subscriberId": "1234",
+  "subscriberId": "12345",
   "beneficiary": {
     "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
     "type": "Patient"
@@ -715,7 +638,7 @@ print(response.text)
   "relationship": {
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
         "code": "self",
         "display": "Self"
       }
@@ -737,49 +660,45 @@ print(response.text)
         "type": {
           "coding": [
             {
-              "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
               "code": "plan"
             }
           ]
         },
-        "value": "Starfleet HMO",
-        "name": "Starfleet HMO"
+        "value": "Starfleet HMO"
       },
       {
         "type": {
           "coding": [
             {
-              "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
               "code": "subplan"
             }
           ]
         },
-        "value": "Stars",
-        "name": "Stars"
+        "value": "Stars"
       },
       {
         "type": {
           "coding": [
             {
-              "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
               "code": "group"
             }
           ]
         },
-        "value": "Captains Only",
-        "name": "Captains Only"
+        "value": "Captains Only"
       },
       {
         "type": {
           "coding": [
             {
-              "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+              "system": "http://hl7.org/fhir/ValueSet/coverage-class",
               "code": "subgroup"
             }
           ]
         },
-        "value": "Subgroup 2",
-        "name": "Subgroup 2"
+        "value": "Subgroup 2"
       }
   ],
   "order": 1
@@ -854,25 +773,12 @@ curl --request PUT \
      --data '
 {
   "resourceType": "Coverage",
-  "identifier": [
-    {
-      "type": {
-        "coding": [
-          {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "MB",
-            "display": "Member Number"
-          }
-        ]
-      },
-      "value": "1234"
-    }
-  ],
+  "order": 1,
   "status": "active",
   "type": {
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
         "code": "MILITARY",
         "display": "military health program"
       }
@@ -881,14 +787,14 @@ curl --request PUT \
   "subscriber": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34"
   },
-  "subscriberId": "123",
+  "subscriberId": "1234",
   "beneficiary": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3"
   },
   "relationship": {
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
         "code": "self"
       }
     ]
@@ -909,52 +815,47 @@ curl --request PUT \
       "type": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "plan"
           }
         ]
       },
-      "value": "Starfleet HMO",
-      "name": "Starfleet HMO"
+      "value": "Starfleet HMO"
     },
     {
       "type": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "subplan"
           }
         ]
       },
-      "value": "Stars",
-      "name": "Stars"
+      "value": "Stars"
     },
     {
       "type": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "group"
           }
         ]
       },
-      "value": "Captains Only",
-      "name": "Captains Only"
+      "value": "Captains Only"
     },
     {
       "type": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "subgroup"
           }
         ]
       },
-      "value": "Subgroup 2",
-      "name": "Subgroup 2"
+      "value": "Subgroup 2"
     }
-  ],
-  "order": 1
+  ]
 }
 '
 ```
@@ -968,37 +869,24 @@ url = "https://fumage-example.canvasmedical.com/Coverage/<id>"
 
 payload = {
   "resourceType": "Coverage",
-  "identifier": [
-    {
-      "type": {
-        "coding": [
-          {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "MB",
-            "display": "Member Number"
-          }
-        ]
-      },
-      "value": "1234"
-    }
-  ],
+  "order": 1,
   "status": "active",
-  "type": {
+  "type": { 
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "system": "http://hl7.org/fhir/ValueSet/coverage-type",
         "code": "MILITARY",
         "display": "military health program"
       }
-    ]
+    ] 
   },
   "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
-  "subscriberId": "123",
+  "subscriberId": "1234",
   "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
-  "relationship": {
+  "relationship": { 
     "coding": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+        "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
         "code": "self"
       }
     ]
@@ -1016,55 +904,50 @@ payload = {
   ],
   "class": [
     {
-      "type": {
+      "type": { 
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "plan"
           }
         ]
       },
-      "value": "Starfleet HMO",
-      "name": "Starfleet HMO"
+      "value": "Starfleet HMO"
     },
     {
-      "type": {
+      "type": { 
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "subplan"
           }
         ]
       },
-      "value": "Stars",
-      "name": "Stars"
+      "value": "Stars"
     },
     {
-      "type": {
+      "type": { 
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "group"
           }
         ]
       },
-      "value": "Captains Only",
-      "name": "Captains Only"
+      "value": "Captains Only"
     },
     {
-      "type": {
+      "type": { 
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+            "system": "http://hl7.org/fhir/ValueSet/coverage-class",
             "code": "subgroup"
           }
         ]
       },
-      "value": "Subgroup 2",
-      "name": "Subgroup 2"
+      "value": "Subgroup 2"
     }
-  ],
-  "order": 1
+  ]
 }
 headers = {
     "accept": "application/json",
@@ -1087,7 +970,7 @@ print(response.text)
 </div>
 
 <div id="coverage-search-request">
-{% include search-request.html resource_type="Coverage" search_string="identifier=12345&patient=Patient/b3084f7e884e4af2b7e23b1dca494abd" %}
+{% include search-request.html resource_type="Coverage" search_string="subscriberid=12345&patient=Patient/b3084f7e884e4af2b7e23b1dca494abd" %}
 </div>
 
 <div id="coverage-search-response">
@@ -1101,15 +984,15 @@ print(response.text)
   "link": [
     {
         "relation": "self",
-        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+        "url": "/Coverage?subscriberid=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
     },
     {
         "relation": "first",
-        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+        "url": "/Coverage?subscriberid=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
     },
     {
         "relation": "last",
-        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+        "url": "/Coverage?subscriberid=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
     }
   ],
   "entry": [
@@ -1117,26 +1000,12 @@ print(response.text)
       "resource": {
         "resourceType": "Coverage",
         "id": "171a7243-f568-48cb-8052-3f2990dac1cd",
-        "identifier": [
-          {
-            "type": {
-              "coding": [
-                {
-                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                  "code": "MB",
-                  "display": "Member Number"
-                }
-              ]
-            },
-            "value": "11111"
-          }
-        ],
         "status": "cancelled",
         "subscriber": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
         },
-        "subscriberId": "1111",
+        "subscriberId": "11111",
         "beneficiary": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
@@ -1144,7 +1013,7 @@ print(response.text)
         "relationship": {
           "coding": [
             {
-              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+              "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
               "code": "self",
               "display": "Self"
             }
@@ -1168,26 +1037,12 @@ print(response.text)
       "resource": {
         "resourceType": "Coverage",
         "id": "27f42512-23e6-4c17-8569-80e14792b6f8",
-        "identifier": [
-          {
-            "type": {
-              "coding": [
-                {
-                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                  "code": "MB",
-                  "display": "Member Number"
-                }
-              ]
-            },
-            "value": "A1"
-          }
-        ],
         "status": "cancelled",
         "subscriber": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
         },
-        "subscriberId": "A",
+        "subscriberId": "A1",
         "beneficiary": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
@@ -1195,7 +1050,7 @@ print(response.text)
         "relationship": {
           "coding": [
             {
-              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+              "system": "http://hl7.org/fhir/ValueSet/subscriber-relationship",
               "code": "self",
               "display": "Self"
             }

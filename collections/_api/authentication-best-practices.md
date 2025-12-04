@@ -18,7 +18,7 @@ For some connections requiring a username and password, it may be necessary to u
 every time a message is sent to that system.  In that type of flow, you might need to write 
 something like:
 
-```python?partial=true
+```python
 import requests
 
 token = get_new_auth_token()

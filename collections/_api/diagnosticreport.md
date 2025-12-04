@@ -144,7 +144,8 @@ sections:
           - name: presentedForm
             type: array[json]
             description: >-
-              Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created.
+              Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created. <br><br>
+              **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
             attributes:
                 - name: url
                   type: string
@@ -160,8 +161,8 @@ sections:
             type: string
             description: The DiagnosticReport category. Filters by the code and/or system  under `category.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code`.
             search_options:
-              - value: http://terminology.hl7.org/CodeSystem/v2-0074|code
-              - value: http://loinc.org|code
+              - value: http://terminology.hl7.org/CodeSystem/v2-0074
+              - value: http://loinc.org
           - name: code
             type: string
             description: The DiagnosticReport code. Filters by the code and/or system under `code.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code`.
@@ -242,6 +243,12 @@ sections:
     "presentedForm":
     [
         {
+            "extension": [
+                {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                    "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/Screenshot_2024-02-21_at_15.26.42.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=Ns%2BLQ5z5XXWH4WMOXWczuMQ7s0A%3D&Expires=1714138104"
+                }
+            ],
             "url": "https://fumage-example.canvasmedical.com/DiagnosticReport/9b90621b-059f-4f6e-9ef5-58171098e424/files/presentedForm"
         }
     ]
@@ -387,6 +394,12 @@ sections:
                 ],
                 "presentedForm": [
                     {
+                        "extension": [
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
+                                "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/Screenshot_2024-02-21_at_15.26.42.pdf?AWSAccessKeyId=AKIAQB7SIDR7C2IYANB6&Signature=Ns%2BLQ5z5XXWH4WMOXWczuMQ7s0A%3D&Expires=1714138104"
+                            }
+                        ],
                         "url": "https://fumage-example.canvasmedical.com/DiagnosticReport/197d1b7a-374e-4aa8-82b2-6960a62ecf7a/files/presentedForm"
                     }
                 ]

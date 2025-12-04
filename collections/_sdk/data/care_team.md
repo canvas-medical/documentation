@@ -1,7 +1,7 @@
 ---
-title: "CareTeam"
+title: "Care Team"
 slug: "data-care-team"
-excerpt: "Canvas SDK CareTeam"
+excerpt: "Canvas SDK Care Team"
 hidden: false
 ---
 
@@ -35,7 +35,7 @@ The `CareTeamMembership` model connects patients, staff members and their associ
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter care team data:
 
-**Find a patient's care team lead**
+__Find a patient's care team lead__
 
 ```python
 >>> from canvas_sdk.v1.data.patient import Patient
@@ -47,7 +47,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 (<Staff: Steven Magee>, <CareTeamRole: Primary care physician>)
 ```
 
-**Find all Patients that have a Certain Staff Member on their Care Team**
+__Find all Patients that have a Certain Staff Member on their Care Team__
 
 ```python
 >>> from canvas_sdk.v1.data.staff import Staff
@@ -63,7 +63,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 ### CareTeamRole
 
 | Field Name    | Type                                                            |
-| ------------- | --------------------------------------------------------------- |
+|---------------|-----------------------------------------------------------------|
 | dbid          | Integer                                                         |
 | system        | String                                                          |
 | version       | String                                                          |
@@ -76,7 +76,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 ### CareTeamMembership
 
 | Field Name   | Type                                                  |
-| ------------ | ----------------------------------------------------- |
+|--------------|-------------------------------------------------------|
 | id           | UUID                                                  |
 | dbid         | Integer                                               |
 | created      | DateTime                                              |
@@ -95,7 +95,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 ### CareTeamMembershipStatus
 
 | Value            | Label            |
-| ---------------- | ---------------- |
+|------------------|------------------|
 | proposed         | Proposed         |
 | active           | Active           |
 | suspended        | Suspended        |
