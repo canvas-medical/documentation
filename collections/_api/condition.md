@@ -371,11 +371,11 @@ curl --request POST \
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code": {
@@ -454,11 +454,11 @@ payload = {
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code": {
@@ -553,11 +553,11 @@ print(response.text)
             [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code":
@@ -697,11 +697,11 @@ curl --request PUT \
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code": {
@@ -780,11 +780,11 @@ payload = {
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code": {
@@ -893,11 +893,11 @@ print(response.text)
                         "coding": [
                             {
                                 "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                                "code": "encounter-diagnosis",
-                                "display": "Encounter Diagnosis"
+                                "code": "problem-list-item",
+                                "display": "Problem List Item"
                             }
                         ],
-                        "text": "Encounter Diagnosis"
+                        "text": "Problem List Item"
                     }
                 ],
                 "code": {
