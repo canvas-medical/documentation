@@ -399,7 +399,7 @@ class MyAPI(SimpleAPIRoute):
 
 With the above plugin installed, an example call to the endpoint would look like this:
 
-```
+```bash
 curl -X POST "https://<instance-name>.canvasmedical.com/plugin-io/api/post_claim_payment/routes/post-claim-payment" \
   -H "Content-Type: application/json" \
   -H "Authorization: <api-key>" \
