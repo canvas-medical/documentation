@@ -41,7 +41,7 @@ Base model for aggregating multiple line item-level transactions (payments, adju
 | claim               | [Claim](/sdk/data-claim/#claim)         |
 | payment\_collection | [PaymentCollection](#paymentcollection) |
 | description         | String                                  |
-| entered\_in\_error  | [CanvasUser](/sdk/data-user/)           |
+| entered\_in\_error  | [CanvasUser](/sdk/data-canvasuser/)           |
 | created             | DateTime                                |
 | modified            | DateTime                                |
 
@@ -205,7 +205,7 @@ Represents a discount applied to a claim or patient posting, linked by adjustmen
 | modified         | DateTime  |
 
 
-## Enumeration types  
+## Enumeration types
 
 ### PostingMethods
 

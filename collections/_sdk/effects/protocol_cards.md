@@ -1,11 +1,9 @@
 ---
-title: "Protocol Cards"
+title: "Protocol Card"
 slug: "effect-protocol-cards"
 excerpt: "Calls to action in a patient's chart, commonly used for decision support intervention."
 hidden: false
 ---
-
-## Protocol Card
 
 Protocol cards appear on the right-hand-side of a patient's chart, and can be accessed by clicking on the Protocols filter button in the filter menu.
 
@@ -152,8 +150,6 @@ class Protocol(BaseProtocol):
         return [p.apply()]
 
 ```
-
-<br/>
 
 ### Supported Commands
 

@@ -27,6 +27,18 @@ Provides specialized container datatypes that extend beyond the built-in types l
 - `Counter`
 - `defaultdict`
 
+##### `dataclasses`
+This module provides a decorator and functions for automatically adding generated special methods such as __init__() and __repr__() to user-defined classes. [read more](https://docs.python.org/3/library/dataclasses.html)
+
+- `asdict`
+- `astuple`
+- `dataclass`
+- `field`
+- `Field`
+- `fields`
+- `InitVar`
+- `replace`
+
 ##### `datetime`
 Provides classes for working with dates and times, essential for medical applications that need to track appointment schedules and patient timelines. [read more](https://docs.python.org/3/library/datetime.html)
 - `date`
@@ -46,6 +58,10 @@ Provides relative time delta calculations for more complex date arithmetic opera
 ##### `decimal`
 Provides precise decimal arithmetic for financial and scientific calculations where floating-point accuracy is critical. [read more](https://docs.python.org/3/library/decimal.html)
 - `Decimal`
+
+##### `defusedxml.ElementTree`
+The defusedxml package contains several Python-only workarounds and fixes for denial of service and other vulnerabilities in Python’s XML libraries. [read more](https://pypi.org/project/defusedxml/)
+- `fromstring`
 
 ##### `enum`
 Provides support for enumerations, useful for defining sets of named constants such as status codes or categories. [read more](https://docs.python.org/3/library/enum.html)

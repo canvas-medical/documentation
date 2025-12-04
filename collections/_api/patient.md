@@ -194,7 +194,25 @@ sections:
             type: array[json]
             required_in: create,update
             description: >-
-                A name associated with the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` attribute will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` attribute will populate the patient's suffix <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.<br><br> In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will be ignored.
+                A name associated with the patient. Name is a `required` list of objects.<br><br> One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example: <br><br> • the `family` attribute will populate the patient's last name. <br>• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space. <br>• the `prefix` list will be stored within Canvas's database but will not be displayed in the Canvas UI.<br>• the `suffix` list will populate the patient's suffix <br><br> The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.<br><br> In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.<br><br>If there are any other objects defined in the name list they will be ignored.
+            attributes:
+              - name: use
+                type: string
+                description: Supported values are **usual**, **official**, **temp**, **nickname**, **old**, and **maiden**.
+              - name: family
+                type: string
+                description: Family name (often called 'Surname').
+              - name: given
+                type: array[string]
+                description: >-
+                  Given names (not always 'first'). Includes middle names.<br><br>
+                  This repeating element order: Given Names appear in the correct order for presenting the name.
+              - name: prefix
+                type: array[string]
+                description: Parts that come before the name (e.g., "Dr.", "Mr.", "Mrs.", "Ms.").
+              - name: suffix
+                type: array[string]
+                description: Parts that come after the name (e.g., "Jr.", "Sr.", "III", "Esq").
           - name: telecom
             type: array[json]
             required: false
@@ -303,27 +321,102 @@ sections:
               - name: id
                 type: string
                 description: A Canvas identifier for the contact.
-              - name: name
-                type: json
-                required_in: create,update
-                description: This is an object where you can specify the <code>text</code> that stores the contact's name.
-                attributes:
-                  - name: text
-                    type: string
               - name: relationship
-                type: array[json]
                 description: This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry contains a coding list. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
+                type: array[json]
+                attributes:
+                  - name: coding
+                    description: Code defined by a terminology system.
+                    type: array[json]
+                    attributes: 
+                      - name: system
+                        description: The system url of the coding.
+                        enum_options: 
+                          - value: http://terminology.hl7.org/CodeSystem/v3-RoleCode
+                          - value: Empty string
+                        type: string
+                      - name: code
+                        description: >-
+                          The code of the relationship.<br><br>
+                          Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+                        type: string
+                      - name: display
+                        description: >-
+                          The display name of the coding.<br><br>
+                          Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+                        type: string
+              - name: name
+                description: A name associated with the contact.
+                type: array[json]
+                required_in: create,update
                 attributes:
                   - name: text
                     type: string
+                    description: >-
+                      Text representation of the full name.<br><br>
+                      If the contact is not a Patient on Canvas, this attribute will be populated.<br><br>
+                      If the contact is a Patient on Canvas, this attribute will not be populated; instead the `family`, `given`, `prefix`, and `suffix` attributes will be provided.
+                  - name: family
+                    type: string
+                    description: Family name (often called 'Surname').
+                  - name: given
+                    type: array[string]
+                    description: >-
+                      Given names (not always 'first'). Includes middle names.<br><br>
+                      This repeating element order: Given Names appear in the correct order for presenting the name.
+                  - name: prefix
+                    type: array[string]
+                    description: Parts that come before the name.
+                  - name: suffix
+                    type: array[string]
+                    description: Parts that come after the name.
               - name: telecom
-                type: json
+                type: array[json]
                 description: This is a list of objects where Canvas will take the first system equal to phone and store as the contact's phone number. This value must only be a 10 digit number, no other characters are accepted. Then the first system equal to email will be stored as this contact's email address. The value of the email or phone number is stored in the value field. If any other option is passed in the system field, the data will not be stored.
                 attributes:
                   - name: system
                     type: string
+                    description: Supported values are **phone**, **fax**, **email**, **pager**, **url**, **sms**, and **other**.
                   - name: value
                     type: string
+                    description: Free text string of the value for this contact point.
+                  - name: use
+                    type: string
+                    description: Supported values are  **home**, **work**, **temp**, **old** and **mobile**.
+              - name: address
+                description: Address where the contact can be contacted or visited
+                type: array[json]
+                attributes:
+                  - name: use
+                    type: string
+                    description: Supported values are **home**, **work**, **temp** and **old**.
+                  - name: type
+                    type: string
+                    description: Supported values are **both**, **physical** and **postal**.
+                  - name: line
+                    type: array[string]
+                    description:  List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
+                  - name: city
+                    type: string
+                    description: String representing the city of the address.
+                  - name: state
+                    type: string
+                    description: 2 letter state abbreviation of the address.
+                  - name: postalCode
+                    type: string
+                    description: The 5 digit postal code of the address.
+                  - name: country
+                    type: string
+                    description: The ISO 3166 2 letter country code.
+                  - name: period
+                    type: json
+                    attributes:
+                      - name: start
+                        type: date
+                        description: Starting date with inclusive boundary
+                      - name: end
+                        type: date
+                        description: End date with inclusive boundary, if not ongoing
           - name: communication
             type: array[json]
             description: A language which may be used to communicate with the patient about his or her health.
@@ -552,6 +645,12 @@ curl --request POST \
             [
                 "Samantha",
                 "Ann"
+            ],
+            "prefix": [
+                "Dr."
+            ],
+            "suffix": [
+                "Jr."
             ]
         },
         {
@@ -1627,6 +1726,12 @@ curl --request PUT \
             [
                 "Samantha",
                 "Ann"
+            ],
+            "prefix": [
+                "Dr."
+            ],
+            "suffix": [
+                "Jr."
             ]
         },
         {
@@ -1939,6 +2044,12 @@ payload = {
             [
                 "Samantha",
                 "Ann"
+            ],
+            "prefix": [
+                "Dr."
+            ],
+            "suffix": [
+                "Jr."
             ]
         },
         {

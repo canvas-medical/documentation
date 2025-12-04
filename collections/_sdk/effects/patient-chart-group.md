@@ -1,5 +1,5 @@
 ---
-title: "Patient chart group"
+title: "Patient Chart Group"
 slug: "patient-chart-group-effect"
 excerpt: "Effect for grouping items on a patient chart section"
 hidden: false
@@ -9,7 +9,7 @@ hidden: false
 
 This effect allows developers to group items in a patient chart section. You can define multiple groups with a name, priority, and the items that belong to each group.
 
-Currently, we are only supporting this for the Conditions and Medications sections.
+Currently, this is supported for the Conditions, Medications, and Detected Issues sections.
 
 ```python
 from canvas_sdk.effects.patient_chart_group import PatientChartGroup
@@ -64,3 +64,7 @@ A PatientChartGroup consists of the following properties:
 | Attribute  | Type               | Description    |
 |------------|--------------------|----------------|
 | `items`    | `dict[str, Group]` | list of Groups |
+
+<br/>
+<br/>
+<br/>
