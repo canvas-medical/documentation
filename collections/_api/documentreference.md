@@ -661,6 +661,14 @@ payload = {
                     "code": "uncategorizedclinicaldocument"
                 }
             ]
+        },
+        {
+            "coding": [
+                {
+                    "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                    "code": "clinical-note"
+                }
+            ]
         }
     ],
     "subject": {
@@ -884,6 +892,14 @@ payload = {
                                 "code": "labreport"
                             }
                         ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
+                            }
+                        ]
                     }
                 ],
                 "subject": {
@@ -974,6 +990,14 @@ payload = {
                             {
                                 "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "imagingreport"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
                             }
                         ]
                     }
@@ -1134,6 +1158,14 @@ payload = {
                                 "code": "referralreport"
                             }
                         ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
+                            }
+                        ]
                     }
                 ],
                 "subject": {
@@ -1291,6 +1323,14 @@ payload = {
                             {
                                 "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "uncategorizedclinicaldocument"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
                             }
                         ]
                     }
@@ -1576,6 +1616,14 @@ payload = {
                             {
                                 "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "educationalmaterial"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
                             }
                         ]
                     }
