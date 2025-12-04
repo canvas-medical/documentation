@@ -804,8 +804,10 @@ imaging_order = ImagingOrderCommand(
 
 ```python
 from canvas_sdk.commands import ImagingReviewCommand
-from canvas_sdk.v1.data.imaging import ImagingReport
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+from canvas_sdk.v1.data import ImagingReport, Patient
 
+patient = Patient.objects.get(id="patient-id")
 # Get imaging reports to review
 imaging_reports = ImagingReport.objects.filter(patient=patient, review__isnull=True)
 report_ids = [str(report.id) for report in imaging_reports]
@@ -1027,8 +1029,10 @@ LabOrderCommand(
 
 ```python
 from canvas_sdk.commands import LabReviewCommand
-from canvas_sdk.v1.data.lab import LabReport
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+from canvas_sdk.v1.data import LabReport, Patient
 
+patient = Patient.objects.get(id="patient-id")
 # Get lab reports to review
 lab_reports = LabReport.objects.filter(patient=patient, review__isnull=True)
 report_ids = [str(report.id) for report in lab_reports]
@@ -1805,8 +1809,10 @@ refer_command = ReferCommand(
 
 ```python
 from canvas_sdk.commands import ReferralReviewCommand
-from canvas_sdk.v1.data.referral import ReferralReport
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+from canvas_sdk.v1.data import Patient, ReferralReport
 
+patient = Patient.objects.get(id="patient-id")
 # Get referral reports to review
 referral_reports = ReferralReport.objects.filter(patient=patient, review__isnull=True)
 report_ids = [str(report.id) for report in referral_reports]
