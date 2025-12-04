@@ -141,7 +141,11 @@ sections:
             type: array[json]
             attributes:
                 - name: coding
-                  description: Identifies where the definition of the code comes from.
+                  description: >-
+                    Identifies where the definition of the code comes from.<br><br>
+                    The codes `encounter-diagnosis` and `problem-list-item` are paired with the system `http://terminology.hl7.org/CodeSystem/condition-category`.<br><br>
+                    The code `health-concern` is paired with the system `http://hl7.org/fhir/us/core/CodeSystem/condition-category`.<br><br>
+                    The codes `sdoh`, `functional-status`, `disability-status`, and `cognitive-status` are paired with the system `http://hl7.org/fhir/us/core/CodeSystem/us-core-category`.
                   type: array[json]
                   required_in: create, update
                   attributes: 
