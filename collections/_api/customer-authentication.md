@@ -16,16 +16,16 @@ layout: apipage
 - Registering a third-party application is always the first step.
 - In order to do so, you'll need to:
   1. Go to `{YOUR_CANVAS_EHR_INSTANCE}/auth/applications/` where you'll see the following page:
-  <img src="https://files.readme.io/ed67823-Screenshot_2021-10-26_at_16.22.31.png" alt="Authorization Page" style="width: 50%;" />
+  <img src="/assets/images/ed67823-Screenshot_2021-10-26_at_16.22.31.png" alt="Authorization Page" style="width: 50%;" />
 
 
   2. Once you click the link on that page, you'll see the following:
-  <img src="https://files.readme.io/8b49344-Screenshot_2021-10-26_at_16.24.01.png" alt="Application Registration" style="width: 50%;" />
+  <img src="/assets/images/8b49344-Screenshot_2021-10-26_at_16.24.01.png" alt="Application Registration" style="width: 50%;" />
 
 
   - You'll need to set a name for the app, set the `Client type` to `Confidential`, choose one of the `Authorization grant types`, and set the `Redirect URIs` if needed. Leave the `Algorithm` at `No OIDC support` for now.
   - Here's how it should look if you created a new "Test Application" with the `client-credentials` grant type:
-<img src="https://files.readme.io/6190a01-Screenshot_2021-10-26_at_16.26.59.png" alt="Application Example" style="width: 50%;" />
+<img src="/assets/images/6190a01-Screenshot_2021-10-26_at_16.26.59.png" alt="Application Example" style="width: 50%;" />
 
   - That's it. Take note of your `Client ID` and `Client Secret`, and proceed to the section related to the `Authorization Grant Type` you chose.
 

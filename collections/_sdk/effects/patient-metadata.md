@@ -5,21 +5,17 @@ excerpt: "Effects for patient metadata management"
 hidden: false
 ---
 
-The `PatientMetadata` effect provides a flexible key-value storage system for patient-specific data within the Canvas
-system.
-This effect enables the creation and updating of custom metadata entries associated with patient records, allowing for
-extensible patient information storage beyond standard demographic fields.
+The `PatientMetadata` effect provides a flexible key-value storage system for patient-specific data within the Canvas system. This effect enables the creation and updating of custom metadata entries associated with patient records, allowing for extensible patient information storage beyond standard demographic fields.
 
 ## Overview
 
-Patient metadata serves as a powerful extension mechanism for storing custom patient-related information that doesn't
-fit within the standard patient data model.
+Patient metadata serves as a powerful extension mechanism for storing custom patient-related information that doesn't fit within the standard patient data model. It uses the `.upsert(value)` method to apply a value to the key attributed with the Metadata effect object.
 
 ## Attributes
 
 | Attribute    | Type  | Description                                                         | Required |
 |--------------|-------|---------------------------------------------------------------------|----------|
-| `patient_id` | `str` | Id of the patient record to associate metadata with                 | Yes      |
+| `patient_id` | `str` | Id of the [Patient(/sdk/data-patient/)] record to associate metadata with                 | Yes      |
 | `key`        | `str` | Unique identifier for the metadata entry within the patient context | Yes      |
 
 ## Methods
