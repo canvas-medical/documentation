@@ -34,6 +34,12 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
     "plugin_version": "0.0.1",
     "name": "my_cool_application",
     "description": "Edit the description in CANVAS_MANIFEST.json",
+    "url_permissions": [
+        {
+            "url": "https://my-application.com",
+            "permissions": []
+        }
+    ],
     "components": {
         "applications": [
             {
@@ -42,7 +48,10 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
                 "description": "An Application that does xyz...",
                 "scope": "global",
                 "icon": "assets/python-logo.png",
-                "origins": ["https://my-application.com"]
+                "menu_position": "top",
+                "menu_order": "100",
+                "show_in_panel": false,
+                "panel_priority": 100
             }
         ],
         "commands": [],
@@ -67,7 +76,16 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
 4. **scope**:
    - `global`: The app will appear across all contexts.
    - `patient_specific`: The app will appear only in the patient chart page.
-5. **origins**: The allowed origins for the application. This is used for security purposes. For more info check the [Application Handler](/sdk/handlers-applications).
+   - `provider_menu_item`: The app button will be displayed on the provider's menu.
+   - `portal_menu_item`: The app button will be displayed on the patient portal menu.
+5. **url_permissions**: The allowed urls and permissions for the application. This is used for security purposes. For more info check the [Application Handler](/sdk/
+handlers-applications).
+6. **menu_position**: Determines where the menu item will be placed within the menu (this configuration applies only to the providers menu) 
+   - `top`: The item will be placed on the top section.
+   - `bottom`: The item will be placed in the bottom section - this section should display items that open in a new window.
+7. **menu_order**: How the items will be ordered in the menu. e.g 100, 200
+8. **show_in_panel**: If you want to increase your application’s visibility and display it alongside other panel buttons (instead of in the applications drawer), you can set this attribute
+9. **panel_priority**: How the applications will be ordered in the panel section. e.g 100, 200
 
 ## Step 4: Overriding the Application Behavior
 
@@ -102,7 +120,9 @@ class MyApplication(Application):
 
 - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
 - `NEW_WINDOW`: Opens the URL in a new browser window.
+- `PAGE`: Opens the URL as a page in the app
 - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
+- `RIGHT_CHART_PANE_LARGE`: Opens the URL in an enlarged right-hand pane of the patient chart.
 
 ## Step 5: Installing the Application
 

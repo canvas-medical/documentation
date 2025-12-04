@@ -22,16 +22,16 @@ The commands module is a new, standardized framework for building commands in Ca
 
 Commands migrated to the new framework will function similarly if not identically (minus any confusing quirks or bugs!).However, the following are benefits that we anticipate with SDK commands:
 
-### Current State 
+### Current State
 - **Improved performance.** The framework dramatically simplifies the data model behind commands in Canvas, and we expect that this much simpler data model will have a noticeable impact on note load times.
 - **Zero chance for data loss to occur.** The simpler data model allows information to be captured consistently at several layers in the application – starting with the user’s browser cache – which means that your data is persisted in some form as soon as it’s entered.
 - **Consistent keyboard controls.** The framework uses built-in browser accessibility features to provide a first-class keyboard navigation experience across all commands.
-- **Carry forward previous respones** The ability to pull forward the last recorded response will be available more widely across commands. 
+- **Carry forward previous respones** The ability to pull forward the last recorded response will be available more widely across commands.
 - **Add partially complete commands to automations.** Migrated commands can be added to automations before they are committed, allowing users to include commands that are not fully filled out.
 - **A fully-auditable command lifecycle.** The framework tracks all changes to a command over time, allowing for detailed auditing and the ability to revert to previous changes.
 
 
-[Read more about SDK commands.](/documentation/commands-overview) 
+[Read more about SDK commands.](https://docs.canvasmedical.com/sdk/commands/)
 
 
 ### Future State
@@ -59,169 +59,218 @@ Commands migrated to the new framework will function similarly if not identicall
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>HPI</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Reason for Visit</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Stop Medication</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Questionnaire</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>No longer supports same encounter carry forward setting</li><li>Comment bubbles always show and are color coded to indicate whether content is present (yellow)</li><li>Blank free text responses will no longer print with the question name (i.e ~TXT~)</li></ul></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Assess</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>Assessing from the condition list adds an uncommitted command directly into the note (based on cursor placement), rather than opening a modal </li></ul></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Goal</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Update Goal</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Medication Statement</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Prescribe</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>Adds max refill validation for epcs</li> <li>Limits to 2 indications</li></ul> </td>
     </tr>
-    <tr> 
+    <tr>
       <td>Perform</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Instruct</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Diagnose</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>The command now restricts adding duplicate diagnoses. Users will be prevented from committing the command and warned to add an assess command if the condition already exists</li></ul> </td>
     </tr>
-    <tr> 
+    <tr>
       <td>Lab Order</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>The indications drop down defaults with active conditions as quick picks</li><li>Validation will prevent sending orders if a patient does not have an address or if the provider does not have an NPI</li></ul> </td>
     </tr>
-    <tr> 
+    <tr>
       <td>Family History</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Allergy</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
-    </tr>       
-    <tr> 
+    </tr>
+    <tr>
       <td>Remove Allergy</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Surgical History</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Medical History</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
-    </tr> 
-    <tr> 
+    </tr>
+    <tr>
       <td>Task</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>Attachments are added through a modal</li></ul></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Refill</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>Adds max refill validation for epcs</li> <li>Limits to 2 indications</li></ul> </td>
     </tr>
-     <tr> 
+     <tr>
       <td>Vitals</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
        <td><ul><li>Updated layout</li></ul> </td>
     </tr>
-    </tr>
-     <tr> 
+    <tr>
       <td>Change Diagnosis</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Close Goal</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Educational Material</td>
       <td> <span class="tag-complete"> Released - GA </span> </td>
        <td><ul><li>The preview of the article is now located in the triple dot menu</li></ul> </td>
     </tr>
-    </tr>
-     <tr> 
+    <tr>
       <td>Image</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+        <td> <span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>Attachments are added through a modal</li></ul></td>
     </tr>
-     <tr> 
+     <tr>
       <td>Snooze Protocol</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Immunization Statement</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-     <tr> 
+     <tr>
       <td>Immunize</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Physical Exam</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
-    <tr> 
+    <tr>
       <td>Review of Systems</td>
+       <td> <span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Resolve Condition</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Structured Assessment</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Refer</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Follow Up</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Adjust Prescription</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><ul><li>The command has been split into two commands. Change Medication can be used if only adjusting the sig.</li></ul></td>
+    </tr>
+    <tr>
+      <td>Change Medication</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
-    <tr> 
-      <td>Structured Assessment</td>
+    <tr>
+      <td>Chart Section Review</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
-      <td></td>
-    <tr> 
-      <td>Refer</td>
+      <td><ul><li>The committed layout defaults to expanded.</li></ul></td>
+    </tr>
+    <tr>
+      <td>Lab Review</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
-    <tr> 
-      <td>Follow Up</td>
+    <tr>
+      <td>Imaging Review</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Consult Report Review</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Uncategorized Document Review</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Approve Refill</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Deny Refill</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>

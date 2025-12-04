@@ -4,9 +4,17 @@ title: "Canvas CLI"
 
 ## Getting Started
 
-### Installation
+### Installation using `pip`
 
-To install the Canvas CLI, simply `pip install canvas`. Python 3.11 or 3.12 is required.
+To install the Canvas CLI using `pip`, execute `pip install canvas`. Python 3.11, 3.12, or 3.13 is required.
+
+To upgrade the Canvas CLI if you installed using `pip`, execute `pip install --upgrade canvas`.
+
+### Installation using `uv`
+
+To install the Canvas CLI using `uv`, execute `uv tool install canvas`. `uv` will find or procure an acceptable Python version.
+
+To upgrade the Canvas CLI if you installed using `uv`, execute `uv tool upgrade canvas`.
 
 ### Configuration and Authenticating to Your Canvas Instance
 
@@ -16,7 +24,7 @@ Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas 
 
 **Example:**
 
-```
+```ini
 [buttered-popcorn]
 client_id=butter
 client_secret=salt
@@ -56,6 +64,8 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `list`: List all plugins from a Canvas instance
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
+- `config list`: List all secrets from a plugin
+- `config set`: Configure plugin secrets
 
 ### `canvas init`
 
@@ -87,8 +97,19 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Options**:
 
+- `--secret TEXT`:  Secrets to set, e.g. Key=value
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
+
+**Notes**:
+
+Files can be excluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
+
+Example
+```md
+# Exclude test files
+test_*.py
+```
 
 ### `canvas uninstall`
 
@@ -106,6 +127,7 @@ $ canvas uninstall [OPTIONS] NAME
 
 **Options**:
 
+- `--force`: Force uninstallation of the plugin
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
@@ -182,13 +204,66 @@ $ canvas validate-manifest [OPTIONS] PLUGIN_NAME
 
 ### `canvas logs`
 
-Subscribes to a log stream and prints to your console.
+Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
 
 **Usage**:
 
 ```console
 $ canvas logs [OPTIONS]
 ```
+
+**Options**:
+
+- `--host TEXT`:           Canvas instance to connect to
+- `--help`:                Show this message and exit.
+-  `--since TEXT`:         Lookback window (e.g. '24h', '2h30m'). Mutually exclusive with --start/--end.
+-  `--start TEXT`:         Start time (ISO/RFC3339) or 'now'.
+-  `--end TEXT`:           End time (ISO/RFC3339) or 'now'. Defaults to now if start is provided.
+-  `--no-follow`:          Historical only; do not stream live logs.
+-  `--level TEXT`:         Repeatable. --level ERROR --level WARN
+-  `--source TEXT`:        Filter by source/service.
+-  `--page-size INTEGER`:  Fetch size per page (historical).  \[default: 200]
+-  `--limit INTEGER`:      Max historical logs to print.
+-  `--all`:                Fetch all pages until exhausted (historical).
+-  `--interactive`:        After each page, prompt to load more.
+-  `--cursor TEXT`:        Resume token from a previous run.
+-  `--help`:               Show this message and exit.
+
+
+### `canvas config list`
+
+List all secrets from a plugin.
+
+**Usage**:
+
+```console
+$ canvas config list [OPTIONS] PLUGIN
+```
+
+**Arguments**:
+
+ - `PLUGIN`:  Plugin name to list secrets for
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+
+### `canvas config set`
+
+Configure plugin secrets.
+
+**Usage**:
+
+```console
+$ canvas config set [OPTIONS] PLUGIN
+```
+
+**Arguments**:
+
+ - `PLUGIN`:  Plugin name to list secrets for
+ - `SECRETS...`: Secrets to set, e.g. Key=value 
 
 **Options**:
 

@@ -52,8 +52,7 @@ sections:
               - name: valueAttachment
                 type: json
                 description: >- 
-                    Value of extension.<br><br> The `valueAttachment` attribute is needed for the signature extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature`. This attribute represents the attachment of the practitioner’s real handwritten signature file. <br>
-                    **Note: There is a temporary extension that will contain the presigned URL for the Attachment; this will be provided while we migrate to static URLs that will require bearer authentication to retrieve attachment files. Use this extension for backward-compatible URLs until the migration is completed.**
+                    Value of extension.<br><br> The `valueAttachment` attribute is needed for the signature extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature`. This attribute represents the attachment of the practitioner’s real handwritten signature file.
                 create_and_update_description: >-
                     Value of extension.<br><br> The `valueAttachment` attribute is needed for the signature extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature`. This attribute represents the attachment of the practitioner’s real handwritten signature file.
                 attributes:
@@ -242,13 +241,18 @@ sections:
                     description: The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
               - name: code
                 type: object[json]
-                description: License coding object. This attribute has no effect.
+                description: License type coding object. Specifies the type of license that practitioner holds.
                 attributes:
                   - name: text
                     type: string
-                    description: This field has no effect. Provide **"License"** as value.
+                    description: The license type code. This field specifies the type of license that practitioner holds.
                     enum_options:
-                      - value: License
+                      - value: CLIA
+                      - value: DEA
+                      - value: PTAN
+                      - value: STATE
+                      - value: TAXONOMY
+                      - value: OTHER
               - name: period
                 type: object[json]
                 required_in: create, update
@@ -275,9 +279,14 @@ sections:
                         description: Reference that defines the content of this object.
                         enum_options:
                           - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name
+                          - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state
+                          - value: http://schemas.canvasmedical.com/fhir/extensions/license-primary
                       - name: valueString
                         type: string
-                        description: The issuing authority short name.
+                        description: The string value for the extension. Used for issuing authority short name and state extensions.
+                      - name: valueBoolean
+                        type: boolean
+                        description: The boolean value for the extension. Used for the license-primary extension to indicate if this is the practitioner's primary license.
                   
         search_parameters:
           - name: _id
@@ -295,7 +304,7 @@ sections:
           - name: email
             type: string
             description: Practitioner user email.
-          - name: npiNumber
+          - name: npi-number
             type: string
             description: Practitioner NPI number.
 
@@ -329,6 +338,7 @@ sections:
 <div id="practitioner-create-request">
 {% tabs practitioner-create-request %}
 {% tab practitioner-create-request curl %}
+
 ```sh
 curl --request POST \
      --url 'https://fumage-example.canvasmedical.com/Practitioner' \
@@ -478,6 +488,14 @@ curl --request POST \
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": true
                     }
                 ]
             }
@@ -486,9 +504,11 @@ curl --request POST \
 }
 '
 ```
+
 {% endtab %}
 
 {% tab practitioner-create-request python %}
+
 ```python
 import requests
 
@@ -646,6 +666,14 @@ payload = {
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": True
                     }
                 ]
             }
@@ -657,6 +685,7 @@ response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
 ```
+
 {% endtab %}
 
 {% endtabs %}
@@ -673,6 +702,7 @@ print(response.text)
 <div id="practitioner-read-response">
 {% tabs practitioner-read-response %}
 {% tab practitioner-read-response 200 %}
+
 ```json
 {
     "resourceType": "Practitioner",
@@ -697,12 +727,6 @@ print(response.text)
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
             "valueAttachment": {
-                "extension": [
-                    {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
-                        "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
-                    }
-                ],
                 "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
             }
         },
@@ -835,6 +859,14 @@ print(response.text)
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": true
                     }
                 ]
             }
@@ -842,8 +874,10 @@ print(response.text)
     ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-read-response 401 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -858,8 +892,10 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-read-response 403 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -874,8 +910,10 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-read-response 404 %}
+
 ```json
 {
     "resourceType": "OperationOutcome",
@@ -889,8 +927,8 @@ print(response.text)
         }
     ]
 }
-
 ```
+
 {% endtab %}
 {% endtabs %}
 </div>
@@ -899,6 +937,7 @@ print(response.text)
 {% tabs practitioner-update-request %}
 
 {% tab practitioner-update-request curl %}
+
 ```sh
 curl --request PUT \
      --url 'https://fumage-example.canvasmedical.com/Practitioner/<id>' \
@@ -1059,6 +1098,14 @@ curl --request PUT \
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": true
                     }
                 ]
             }
@@ -1067,9 +1114,11 @@ curl --request PUT \
 }
 '
 ```
+
 {% endtab %}
 
 {% tab practitioner-update-request python %}
+
 ```python
 import requests
 
@@ -1233,6 +1282,14 @@ payload = {
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": True
                     }
                 ]
             }
@@ -1244,6 +1301,7 @@ response = requests.put(url, json=payload, headers=headers)
 
 print(response.text)
 ```
+
 {% endtab %}
 
 {% endtabs %}
@@ -1260,6 +1318,7 @@ print(response.text)
 <div id="practitioner-search-response">
 {% tabs practitioner-search-response %}
 {% tab practitioner-search-response 200 %}
+
 ```json
 {
     "resourceType": "Practitioner",
@@ -1284,12 +1343,6 @@ print(response.text)
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
             "valueAttachment": {
-                "extension": [
-                    {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/deprecated-url",
-                        "valueUri": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
-                    }
-                ],
                 "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
             }
         },
@@ -1422,6 +1475,14 @@ print(response.text)
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": true
                     }
                 ]
             }
@@ -1429,8 +1490,10 @@ print(response.text)
     ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-search-response 400 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1445,8 +1508,10 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-search-response 401 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1461,8 +1526,10 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% tab practitioner-search-response 403 %}
+
 ```json
 {
   "resourceType": "OperationOutcome",
@@ -1477,6 +1544,7 @@ print(response.text)
   ]
 }
 ```
+
 {% endtab %}
 {% endtabs %}
 </div>

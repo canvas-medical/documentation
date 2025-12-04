@@ -32,16 +32,55 @@ staff.creator_tasks.all()
 # <QuerySet [<Task: Task object (7)>]>
 ```
 
+To show a Staff member's contact points (email, phone, etc.), the `telecom` attribute can be used. For example:
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+
+[(t.system, t.value,) for t in staff.telecom.all()]
+# [('phone', '8005551416'), ('email', 'support@canvasmedical.com')]
+```
+
+To show a `Staff` full name, credentialed name, the topmost clinical role or top role abbreviation use the properties `full_name`, `credentialed_name`, `top_clinical_role` or `top_role_abbreviation`.
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+staff.full_name
+# Larry Weed
+
+staff.credentialed_name
+# Larry Weed MD
+
+staff.top_clinical_role.name
+# Physician
+
+staff.top_role_abbreviation
+# MD
+```
+
+To get `Staff` licenses. 
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+staff.licenses.all()
+# <QuerySet [<StaffLicense: CA License for Larry Weed>]>
+
+```
+
 ## Attributes
 
 ### Staff
 
 | Field Name                 | Type                                                            |
-|----------------------------|-----------------------------------------------------------------|
+| -------------------------- | --------------------------------------------------------------- |
 | id                         | UUID                                                            |
 | dbid                       | Integer                                                         |
-| created                    | DateTime                                                        |
-| modified                   | DateTime                                                        |
 | created                    | DateTime                                                        |
 | modified                   | DateTime                                                        |
 | prefix                     | String                                                          |
@@ -65,6 +104,7 @@ staff.creator_tasks.all()
 | cultural_ethnicity_terms   | Array[String]                                                   |
 | last_known_timezone        | TimeZone                                                        |
 | active                     | Boolean                                                         |
+| primary_practice_location  | [PracticeLocation](/sdk/data-practicelocation/)                 |
 | npi_number                 | String                                                          |
 | nadean_number              | String                                                          |
 | group_npi_number           | String                                                          |
@@ -74,7 +114,7 @@ staff.creator_tasks.all()
 | spi_number                 | String                                                          |
 | personal_meeting_room_link | URL                                                             |
 | state                      | JSON                                                            |
-| user                       | CanvasUser                                                      |
+| user                       | [CanvasUser](/sdk/data-canvasuser)                              |
 | supervising_team           | [Staff](#staff)[]                                               |
 | notes                      | Note[]                                                          |
 | creator_tasks              | [Task](/sdk/data-task/#task)[]                                  |
@@ -82,6 +122,122 @@ staff.creator_tasks.all()
 | comments                   | [TaskComment](/sdk/data-task/#taskcomment)[]                    |
 | care_team_memberships      | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[] |
 | teams                      | [Team](/sdk/data-team/#team)[]                                  |
+| telecom                    | [StaffContactPoint](#staffcontactpoint)[]                       |
+
+### StaffContactPoint
+
+| Field Name | Type                                                                  |
+| ---------- | --------------------------------------------------------------------- |
+| id         | UUID                                                                  |
+| dbid       | Integer                                                               |
+| system     | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
+| value      | String                                                                |
+| use        | String                                                                |
+| use_notes  | String                                                                |
+| rank       | Integer                                                               |
+| state      | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
+| staff      | [Staff](#staff)                                                       |
+
+### StaffAddress
+
+| Field Name  | Type                                                    |
+| ----------- | ------------------------------------------------------- |
+| id          | UUID                                                    |
+| dbid        | Integer                                                 |
+| line1       | String                                                  |
+| line2       | String                                                  |
+| city        | String                                                  |
+| district    | String                                                  |
+| state_code  | String                                                  |
+| postal_code | String                                                  |
+| use         | [AddressUse](/sdk/data-enumeration-types/#addressuse)   |
+| type        | [AddressType](/sdk/data-enumeration-types/#addresstype) |
+| longitude   | Float                                                   |
+| latitude    | Float                                                   |
+| start       | Date                                                    |
+| end         | Date                                                    |
+| country     | String                                                  |
+| state       | String                                                  |
+| staff       | [Staff](#staff)                                         |
+
+### StaffLicense
+
+| Field Name                          | Type                         |
+|-------------------------------------|------------------------------|
+| id                                  | UUID                         |      
+| dbid                                | Integer                      |
+| staff                               | [Staff](#staff)              |
+| issuing_authority_long_name         | String                       |
+| issuing_authority_url               | URL                          |
+| license_or_certification_identifier | String                       |
+| issuance_date                       | Date                         |
+| expiration_date                     | Date                         |
+| license_type                        | [LicenseType](#license-type) |
+| primary                             | Boolean                      |
+| state                               | String                       |
+
+### StaffPhoto
+
+| Field Name | Type            |
+| ---------- | --------------- |
+| dbid       | Integer         |
+| created    | DateTime        |
+| modified   | DateTime        |
+| staff      | [Staff](#staff) |
+| url        | String          |
+| title      | String          |
+
+### StaffRole
+
+| Field Name             | Type                       |
+| ---------------------- | -------------------------- |
+| dbid                   | Integer                    |
+| staff                  | [Staff](#staff)            |
+| internal_code          | String                     |
+| public_abbreviation    | String                     |
+| domain                 | [RoleDomain](#role-domain) |
+| name                   | String                     |
+| domain_privilege_level | Integer                    |
+| permissions            | JSON                       |
+| role_type              | [RoleType](#role-type)     |
+
+
+## Enumeration types
+
+### License Type
+
+| Value         | Description   |
+|---------------|---------------|
+| CLIA          | CLIA          |
+| DEA           | DEA           |
+| PTAN          | PTAN          |
+| STATE_LICENSE | State License |
+| TAXONOMY      | Taxonomy      |
+| SPI           | SPI           |
+| OTHER         | Other         |
+
+### Role Domain
+
+| Value          | Abbreviation | Description    |
+| -------------- | ------------ | -------------- |
+| CLINICAL       | CLI          | Clinical       |
+| ADMINISTRATIVE | ADM          | Administrative |
+| HYBRID         | HYB          | Hybrid         |
+
+### Role Type
+
+| Value        | Description  |
+| ------------ | ------------ |
+| NON_LICENSED | Non-Licensed |
+| LICENSED     | Licensed     |
+| PROVIDER     | Provider     |
+
+
+
+## Computed Properties
+
+- `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
+
 
 <br/>
 <br/>

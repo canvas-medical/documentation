@@ -1,5 +1,7 @@
 ---
 title: "Tailoring the Chart to the Patient"
+guide_for:
+- /sdk/layout-effect/
 ---
 
 Different patients have different needs, and your tools should reflect that.
@@ -34,17 +36,17 @@ First, we'll need to initialize a new plugin.
 The Canvas CLI gives you a great head start when creating a plugin. Simply
 run `canvas init`, and answer the prompt to name your plugin.
 
-```
+```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Pediatric Patient Chart Customizations
-Project created in /Users/andrew/src/canvas-plugins/pediatric_patient_chart_customizations
+Project created in /Users/andrew/src/canvas-plugins/pediatric-patient-chart-customizations
 ```
 
-This output shows the location of our freshly generated plugin. In this
-directory, you'll see a default class (`protocols/my_protocol.py`) provided as a starting point for your
+This output shows the location of our freshly generated plugin project. In this
+directory, you'll see a default class (`pediatric_patient_chart_customizations/protocols/my_protocol.py`) provided as a starting point for your
 code.
 
-```
+```sh
 $ tree pediatric_patient_chart_customizations/
 pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
@@ -66,7 +68,7 @@ descriptive, and you'll need to update the references to the file in
 I've created a new file, `protocols/pediatric_chart_layout.py`, and I've
 updated my `CANVAS_MANIFEST.json` to reflect it.
 
-```
+```sh
 $ tree pediatric_patient_chart_customizations/
 pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
@@ -250,7 +252,7 @@ updated my `CANVAS_MANIFEST.json` to reflect it.
 
 Here's the updated plugin file structure:
 
-```
+```sh
 $ tree pediatric_patient_chart_customizations/
 pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
@@ -416,20 +418,20 @@ class PediatricConditionSearch(BaseHandler):
         # compare the codings of the options with our list of adult-only
         # diagnosis codes. If it's an adult only code, remove it from the
         # list.
-        
+
         return []
 ```
 
 Once again you see some code that optimizes for performance over readability.
 If you're not familiar with the Django ORM, this code:
 
-```python
+```python?partialtrue
 patient_id = Command.objects.filter(id=self.target).values_list('patient__id', flat=True).first()
 ```
 
 Is equivalent to this code, which you may find more readable:
 
-```python
+```python?partialtrue
 command = Command.objects.get(id=self.target)
 patient_id = command.patient.id
 ```
@@ -537,6 +539,8 @@ patients over the age of 15.
 ## Watch the Workflow in Action
 
 <div style="position: relative; padding-bottom: 62.5%; height: 0;"><iframe src="https://www.loom.com/embed/ab4a7517b1e846f981d9a3f86b157910?sid=a1a2c26c-13c7-40f5-842c-7fde52b20762" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+View and deploy the Pediatric Patient Chart Customization Extension [here](https://www.canvasmedical.com/extensions/pediatric-patient-chart-customizations).
 
 ## Conclusion
 

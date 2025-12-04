@@ -84,6 +84,7 @@ class Protocol(BaseProtocol):
 ```
 
 ## Anatomy of the Example
+
 This code can be broken down into the following sections:
 - Register interest in the correct search event
 - Decide whether to make any changes
@@ -91,7 +92,12 @@ This code can be broken down into the following sections:
 - Return the modified results as a properly typed effect
 
 ### Register interest in the correct search event
+
 ```python
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+
+
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
@@ -111,7 +117,8 @@ search results that would be served to the user if there were no
 modifications.
 
 ### Decide whether to make any changes
-```python
+
+```python?partial=true
         if results is None:
             return [Effect(type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS, payload=json.dumps(None))]
 ```
@@ -122,7 +129,8 @@ being `None` means "make no changes, present the results without modification",
 whereas an empty result set means "present no options to the user".
 
 ### Loop through the results, making modifications as appropriate
-```python
+
+```python?partial=true
         post_processed_results = []
         for result in results:
             should_float_to_top = False
@@ -158,7 +166,8 @@ list at position 0. If it did not match, we append the result to the end of
 the list.
 
 ### Return the modified results as a properly typed effect
-```python
+
+```python?partial=true
         return [
             Effect(
                 type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS,
@@ -171,6 +180,33 @@ With our list of modified results in place, we just need to return an effect
 of type `AUTOCOMPLETE_SEARCH_RESULTS` with our modified list as the payload.
 
 The dropdown of options presented to the user now reflects our modifications!
+
+## Understanding Search Result Data Structures
+
+The search results in this example follow the MedicationSearchResult structure. Each result contains fields like `text`, `disabled`, `description`, `annotations`, `extra`, and `value` that provide detailed information about the medication option.
+
+For complete details about medication search result data contracts and other search result structures, see the [Search Result Data Structures](/sdk/events/#search-result-data-structures) section in the Events documentation.
+
+## Accessing User Context
+
+All command-related PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for fields like prescriber, medication, diagnosis, pharmacy, and many others across various commands.
+
+You can access the user's staff key from the context:
+
+```python
+def compute(self):
+    user_context = self.context.get("user", {})
+    staff_key = user_context.get("staff")
+
+    # Use the staff key to customize search results
+    # based on the user's role, preferences, or permissions
+```
+
+This can be useful for customizing search results based on:
+- User-specific preferences or settings
+- Role-based filtering (e.g., showing different prescriber options based on the user's specialty)
+- Permission-based access control
+- User's organization or practice location
 
 ## Watch Me Build It
 

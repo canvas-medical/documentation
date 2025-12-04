@@ -4,7 +4,7 @@ layout: apipage
 ---
 ### Mandatory Software Components
 
-In order to access the FHIR API, a REST client such as Postman, or a high-level language (Java, Python, etc) that can be used to make HTTP requests, is needed.
+In order to access the FHIR API, a REST client such as [Bruno](https://www.usebruno.com/), or a high-level language (Java, Python, etc) that can be used to make HTTP requests, is needed.
 
 ### Mandatory Software Configuration
 

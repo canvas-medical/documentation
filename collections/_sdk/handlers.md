@@ -13,6 +13,25 @@ interface for their particular use-cases. For example, CronTasks only ever
 respond to the `CRON` event, require a schedule to be specified, and expect
 the `execute` method to be implemented rather than `compute`.
 
+All handlers inherit from [BaseHandler](/sdk/handlers-basehandler/), which
+means you always have access to event and configuration data with the
+following accessors:
+- `self.event`
+  - Information about the event including the event type
+- `self.context`
+  - Data included as the event payload
+- `self.target`
+  - Identifying information to help you reference the subject of the event
+- `self.secrets`
+  - Configuration key-value store for your plugin
+  - Secrets have their keys defined in the `CANVAS_MANIFEST.json` and their
+    values are set by the Canvas instance administrator after installing your
+plugin via the Canvas UI on your plugin's configuration page
+- `self.environment`
+  - Information about the Canvas instance your plugin is being executed on,
+    like the subdomain, which we refer to as the customer identifier.
+  - Example: `self.environment['CUSTOMER_IDENTIFIER']`
+
 <div class="handler-cards">
     <a href="/sdk/handlers-action-buttons/">
         <div class="handler-card">

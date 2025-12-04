@@ -168,7 +168,7 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | code_system               | String                                                         |
 | code                      | String                                                         |
 | search_tags               | String                                                         |
-| questions                 | Question                                                       |
+| questions                 | [Question](#question)[]                                        |
 | use_in_shx                | Boolean                                                        |
 | carry_forward             | String                                                         |
 | interview_responses       | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
@@ -191,8 +191,8 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | id                   | UUID                                                           |
 | dbid                 | Integer                                                        |
 | deleted              | Boolean                                                        |
-| committer            | CanvasUser                                                     |
-| entered_in_error     | CanvasUser                                                     |
+| committer            | [CanvasUser](/sdk/data-canvasuser)                             |
+| entered_in_error     | [CanvasUser](/sdk/data-canvasuser)                             |
 | status               | String                                                         |
 | name                 | String                                                         |
 | language_id          | Integer                                                        |
@@ -200,7 +200,7 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | patient              | [Patient](/sdk/data-patient/#patient)                          |
 | note_id              | Integer                                                        |
 | appointment_id       | Integer                                                        |
-| questionnaires       | Questionnaire                                                  |
+| questionnaires       | [Questionnaire](#questionnaire)[]                              |
 | progress_status      | String                                                         |
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |

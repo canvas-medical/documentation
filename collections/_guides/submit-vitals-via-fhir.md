@@ -15,12 +15,14 @@ The Canvas [FHIR Observation Create](/api/observation/#create) endpoint supports
 <br>
 
 * * *
+
 ## What you'll learn
+
 In this guide, you will learn how to do the following:
+
 1. Create a vital panel via FHIR
 2. Submit various vital signs into the same panel via FHIR
 3. Perform a FHIR Observation Search to view the completed panel
-<br>
 
 * * *
 
@@ -29,9 +31,12 @@ In this guide, you will learn how to do the following:
 This guide will demonstrate many FHIR API calls into Canvas. Before we can make a FHIR request, we need to setup some imports, reusable variables, and authenticate into the instance we want to work with. 
 
 Here is your starting point:
+
 ```python
 import requests
+
 url = "https://fumage-example.canvasmedical.com/Observation"
+
 headers = {
     "accept": "application/json",
     "Authorization": "Bearer <token>",
@@ -63,6 +68,18 @@ First we will need to create the panel object to be able to save all the individ
 Here is the payload for how to create a Vital Panel (remember to set the patient_id and also update the effectiveDateTime):
 
 ```python
+import requests
+
+url = "https://fumage-example.canvasmedical.com/Observation"
+
+headers = {
+    "accept": "application/json",
+    "Authorization": "Bearer <token>",
+    "content-type": "application/json"
+}
+
+patient_id = "<a patient ID from your instance>"
+
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -88,7 +105,7 @@ On a successful create, when the `response.status_code` equal 201. We can fetch 
 
 However, if the request failed it will throw an error to see what went wrong. It will also display the Correlation ID that can be given to Customer Support for help with further debugging.
 
-```python
+```python?partial=true
 if response.status_code == 201:
     panel_id = response.headers['location'].replace(f"{url.replace('https', 'http')}/", '').replace('/_history/1', '')
 else:
@@ -101,39 +118,43 @@ Looking in the Canvas UI, there will now be a Data Import note placed on that pa
 ![Protocol framework](/assets/images/vitals/vital-panel-in-import-note.png){:width="80%"}
 {: refdef}
 
-
-
 ### 4. Creating Individual Vital Signs
 
 Now that we have created a Vital Panel, we will be able to use this panel_id when creating the individual vital signs to be associated with the same command by passing the `derivedFrom` attribute in the payload:
-```python
+
+```python?partial=true
+payload = {
+    # ...
     "derivedFrom": [
         {
             "reference": f"Observation/{panel_id}",
             "type": "Observation"
         }
-    ]
-``` 
+    ],
+    # ...
+}
+```
 
 Now we are ready to create the following vital signs in the panel that are supported via FHIR Observation Create:
 
-- Height  
-- Weight  
-- Waist Circumference  
-- Body Temperature  
-- Blood Pressure  
-- Pulse Rhythm  
-- Pulse Rate  
-- Respiration Rate  
-- Oxygen Saturation  
-- Notes  
+- Height
+- Weight
+- Waist Circumference
+- Body Temperature
+- Blood Pressure
+- Pulse Rhythm
+- Pulse Rate
+- Respiration Rate
+- Oxygen Saturation
+- Notes
 
 #### Add Height
 
 Height is denoted by the LOINC code `8302-2`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. By default if no `valueQuantity.unit` is specified, it will default to using inches, but `cm` is also supported, it will just convert it to inches on the UI and when a Read/Search is performed. 
 
 Here is a payload to create a height of 69.0 inches:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -163,6 +184,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Height observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -180,7 +202,8 @@ Looking in the Canvas UI, there will now be height of `69.0 in` added in that Vi
 Weight is denoted by the LOINC code `29463-7`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. By default if no `valueQuantity.unit` is specified, it will default to using ounces, but `lb` or `kg` is also supported, it will just convert it to `oz` when a Read/Search is performed. The UI will display it in `lbs` and leftover `oz`.
 
 Here is a payload to create a weight of 176.4 lbs:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -210,6 +233,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Weight observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -227,7 +251,8 @@ Looking in the Canvas UI, there will now be weight of `176 lbs 6.4 oz` added in 
 Waist Circumference is denoted by the LOINC code `29463-7`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. By default if no `valueQuantity.unit` is specified, it will default to using centimeters, but `in` is also supported, it will just convert it to `cm` on the UI or when a Read/Search is performed.
 
 Here is a payload to create a waist circumference of `98.2 cm`:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -257,6 +282,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Waist Circumference observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -274,7 +300,8 @@ Looking in the Canvas UI, there will now be waist circumference of `98.2 cm` add
 Body Temperature is denoted by the LOINC code `8310-5`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. The only unit accepted for body temperature is `°F` and if omitted it will be default. 
 
 Here is a payload to create a temperature of `98.4 °F`:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -304,6 +331,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Body Temperature observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -323,7 +351,8 @@ Blood Pressure is denoted by the LOINC code `85354-9`. In the Vital's command bl
 Since blood pressure is made up of two values, the payload will also define a `component` attribute list to pass the systolic (LOINC code `8480-6`) and diastolic (LOINC code `8462-4`) values. These two values are numeric, so they will have the `valueQuantity` attributes where the unit will be `mmHg`
 
 Here is a payload to create a Blood Pressure of `122/68`:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -382,6 +411,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Blood Pressure observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -399,7 +429,8 @@ Looking in the Canvas UI, there will now be blood pressure of `122/68` added in 
 Pulse Rate is denoted by the LOINC code `8867-4`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. The only unit accepted for pulse rate is `bpm` and if omitted it will be default.
 
 Here is a payload to create a pulse rate of `115 bpm`:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -429,6 +460,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Pulse Rate observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -446,7 +478,8 @@ Looking in the Canvas UI, there will now be pulse rate of `115 bpm` added in tha
 Pulse Rhythm is denoted by the LOINC code `8884-9`. Canvas accepts only three different string values for pulse rhythm: `Regular`, `Irregularly Irregular`, or `Regulary Irregular`. This value will be passed in the `valueString` attribute. 
 
 Here is a payload to create a pulse rhythm of `Regular`:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -473,6 +506,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Pulse rhythm observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -490,7 +524,8 @@ Looking in the Canvas UI, there will now be pulse rhythm of `Regular` added in t
 Respiration Rate is denoted by the LOINC code `9279-1`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. The only unit accepted for respiration rate is `bpm` and if omitted it will be default.
 
 Here is a payload to create a respiration rate of `15 bpm`:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -520,6 +555,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Respiration Rate observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -537,7 +573,8 @@ Looking in the Canvas UI, there will now be respiration rate of `15 bpm` added i
 Oxygen Saturation is denoted by either LOINC code `2708-6` or `59408-5`. Canvas saves the oxygen saturation with both codings. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. The only unit accepted for Oxygen Saturation is `%` and if omitted it will be default.
 
 Here is a payload to create a Oxygen Saturation of `98%`:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -572,6 +609,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Oxygen Saturation observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -589,7 +627,8 @@ Looking in the Canvas UI, there will now be Oxygen Saturation of `98%` added in 
 Adding a Note is denoted by the LOINC code `80339-5`. Since this value is free text, a `valueString` attribute can be used. 
 
 Here is a payload to create an internal Note:
-```python
+
+```python?partial=true
 payload = {
     "resourceType": "Observation",
     "status": "final",
@@ -616,6 +655,7 @@ payload = {
 }
 
 response = requests.post(url, json=payload, headers=headers)
+
 if response.status_code == 201:
     print(f"Oxygen Saturation observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
@@ -632,9 +672,11 @@ Looking in the Canvas UI, there will now will be a Note added in that Vitals Com
 
 A full Vital Panel has been completed! Let's now perform a FHIR Observation Read using the `panel_id` to see all the observation members of this panel now: 
 
-```python
+```python?partial=true
 from pprint import pprint
+
 response = requests.get(f"{url}/{panel_id}", headers=headers)
+
 if response.status_code == 200:
     pprint(response.json())
 else:
@@ -642,6 +684,7 @@ else:
 ```
 
 The output will look like:
+
 ```json
 {
     "resourceType": "Observation",
@@ -739,9 +782,11 @@ The output will look like:
 
 And finally let's perform a FHIR Observation Search to see all the vital signs that are for that patient using the derived from search parameter:
 
-```python
+```python?partial=true
 from pprint import pprint
+
 response = requests.get(f"{url}?patient=Patient/{patient_id}&category=http://terminology.hl7.org/CodeSystem/observation-category|vital-signs&derived-from=Observation/{panel_id}&_count=20", headers=headers)
+
 if response.status_code == 200:
     pprint(response.json())
 else:

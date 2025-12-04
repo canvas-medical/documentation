@@ -108,9 +108,9 @@ observations = Observation.objects.find(Weight)
 | dbid               | Integer                                             |
 | created            | DateTime                                            |
 | modified           | DateTime                                            |
-| originator         | CanvasUser                                          |
-| committer          | CanvasUser                                          |
-| entered_in_error   | CanvasUser                                          |
+| originator         | [CanvasUser](/sdk/data-canvasuser)                  |
+| committer          | [CanvasUser](/sdk/data-canvasuser)                  |
+| entered_in_error   | [CanvasUser](/sdk/data-canvasuser)                  |
 | deleted            | Boolean                                             |
 | patient            | [Patient](/sdk/data-patient/#patient)               |
 | is_member_of       | [Observation]( #observation)                        |

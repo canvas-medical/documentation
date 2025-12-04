@@ -11,6 +11,8 @@ Action buttons are UI elements that trigger specific actions when clicked in the
   
 An `ActionButton` class allows you to define custom buttons that appear in different sections of the Canvas UI. When a user clicks the button, the action associated with the button is executed. Action buttons can be added to various locations in the UI, and you can control their visibility and behavior through effects in a handler class.
 
+There are no limitations on the number of action buttons you can create. You can define multiple buttons in a single handler class or create separate classes for each button.
+
 ## Creating an Action Button
 
 To implement a custom action button, you need to create a handler class that inherits from the `ActionButton` class. Your handler class must:
@@ -29,6 +31,9 @@ To implement a custom action button, you need to create a handler class that inh
 
 - **`BUTTON_LOCATION`**  
   Specifies where the button will appear within the Canvas UI. The button can be placed in various locations, such as the note header or footer, or other areas within the chart summary.
+
+- **`PRIORITY`**
+  An optional integer that specifies the order in which the button should appear relative to other buttons in the same location. Lower values appear first. If not specified, no order is guaranteed.
 
 ### Optional: Implement the `visible()` Method
 
@@ -105,6 +110,7 @@ from canvas_sdk.effects.base import EffectType
 schema_key_to_effect_type = {
     "allergy": EffectType.COMMIT_ALLERGY_COMMAND,
     "assess": EffectType.COMMIT_ASSESS_COMMAND,
+    "changeMedication": EffectType.COMMIT_CHANGE_MEDICATION_COMMAND,
     "closeGoal": EffectType.COMMIT_CLOSE_GOAL_COMMAND,
     "diagnose": EffectType.COMMIT_DIAGNOSE_COMMAND,
     "familyHistory": EffectType.COMMIT_FAMILY_HISTORY_COMMAND,
@@ -143,7 +149,7 @@ class CommitButtonHandler(ActionButton):
             effects.append(
                 Effect(
                     type=effect_type,
-                    payload=json.dumps({"command_uuid": str(command.id)}),
+                    payload=json.dumps({"command": str(command.id)}),
                 )
             )
 

@@ -50,28 +50,42 @@ reviews = ImagingReview.objects.filter(is_released_to_patient=False)
 reports = ImagingReport.objects.filter(requires_signature=True)
 ```
 
+## Related Tasks
+To retrieve an Imaging Order's related tasks, use the `get_task_objects` method on the ImagingOrder object.
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder
+
+imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+tasks = imaging_order.get_task_objects().all()
+```
+
 ## Attributes
 
 ### ImagingOrder
 
-| Field Name          | Type                                                    |
-|---------------------|---------------------------------------------------------|
-| id                  | UUID                                                    |
-| dbid                | Integer                                                 |
-| created             | DateTime                                                |
-| modified            | DateTime                                                |
-| originator          | CanvasUser                                              |
-| deleted             | Boolean                                                 |
-| committer           | CanvasUser                                              |
-| entered_in_error    | CanvasUser                                              |
-| patient             | [Patient](/sdk/data-patient/#patient)                   |
-| imaging             | String                                                  |
-| note_to_radiologist | String                                                  |
-| internal_comment    | String                                                  |
-| status              | [OrderStatus](/sdk/data-enumeration-types/#orderstatus) |
-| date_time_ordered   | DateTime                                                |
-| priority            | String                                                  |
-| delegated           | Boolean                                                 |
+| Field Name          | Type                                                           |
+|---------------------|----------------------------------------------------------------|
+| id                  | UUID                                                           |
+| dbid                | Integer                                                        |
+| created             | DateTime                                                       |
+| modified            | DateTime                                                       |
+| originator          | [CanvasUser](/sdk/data-canvasuser)                             |
+| deleted             | Boolean                                                        |
+| committer           | [CanvasUser](/sdk/data-canvasuser)                             |
+| entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                             |
+| patient             | [Patient](/sdk/data-patient/#patient)                          |
+| note                | [Note](/sdk/data-note/#note)                                   |
+| imaging             | String                                                         |
+| imaging_center      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
+| note_to_radiologist | String                                                         |
+| internal_comment    | String                                                         |
+| status              | [OrderStatus](/sdk/data-enumeration-types/#orderstatus)        |
+| date_time_ordered   | DateTime                                                       |
+| ordering_provider   | [Staff](/sdk/data-staff/#staff)                                |
+| priority            | String                                                         |
+| delegated           | Boolean                                                        |
+| task_ids            | String                                                         |
 
 ### ImagingReview
 
@@ -81,9 +95,9 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 | dbid                         | Integer                                                                                           |
 | created                      | DateTime                                                                                          |
 | modified                     | DateTime                                                                                          |
-| originator                   | CanvasUser                                                                                        |
+| originator                   | [CanvasUser](/sdk/data-canvasuser)                                                                |
 | deleted                      | Boolean                                                                                           |
-| committer                    | CanvasUser                                                                                        |
+| committer                    | [CanvasUser](/sdk/data-canvasuser)                                                                |
 | patient_communication_method | [ReviewPatientCommunicationMethod](/sdk/data-enumeration-types/#reviewpatientcommunicationmethod) |
 | internal_comment             | String                                                                                            |
 | message_to_patient           | String                                                                                            |

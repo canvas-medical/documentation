@@ -3,12 +3,16 @@
   max-height: var(--body-height);
   overflow-y: auto;
   display: none;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 250px;
 
   @media (min-width: $breakpoint-xl) {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    line-height: 1.25;
+    line-height: 1.5;
     font-size: 0.875rem;
   }
   

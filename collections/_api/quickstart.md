@@ -4,9 +4,7 @@ layout: apipage
 ---
 ## Authentication
 
-To help you get started quickly, the Canvas sandbox APIs use a long-lived Bearer token for authentication. This token is securely provided via a 1Password link shared with your organization upon sandbox provisioning. For any additional assistance, feel free to contact us at [info@canvasmedical.com](mailto:info@canvasmedical.com).
-
-If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) and [Authentication Best Practices](/api/authentication-best-practices) to get you set up.
+To access our FHIR API, you will need to request an access token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) and [Authentication Best Practices](/api/authentication-best-practices) to get you set up. Access tokens expire 10 hours after they are created. You can and should reuse access tokens to reduce the number of tokens that are valid at any given time.
 
 ## Create a patient
 

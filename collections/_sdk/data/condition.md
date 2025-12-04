@@ -75,7 +75,7 @@ Filtering by ValueSet works a little differently. The `find` method on the model
 
 ```python
 from canvas_sdk.v1.data.condition import Condition
-from canvas_sdk.value_set.v022.condition import Diabetes
+from canvas_sdk.value_set.v2022.condition import Diabetes
 
 conditions = Condition.objects.find(Diabetes)
 ```
@@ -89,14 +89,15 @@ conditions = Condition.objects.find(Diabetes)
 | id                          | UUID                                                                       |
 | dbid                        | Integer                                                                    |
 | deleted                     | Boolean                                                                    |
-| entered_in_error            | CanvasUser                                                                 |
-| committer                   | CanvasUser                                                                 |
+| entered_in_error            | [CanvasUser](/sdk/data-canvasuser)                                         |
+| committer                   | [CanvasUser](/sdk/data-canvasuser)                                         |
 | patient                     | [Patient](/sdk/data-patient/#patient)                                      |
 | onset_date                  | Date                                                                       |
 | resolution_date             | Date                                                                       |
 | clinical_status             | [ClinicalStatus](#clinicalstatus)                                          |
 | codings                     | [ConditionCoding](#conditioncoding)[]                                      |
 | lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[] |
+| surgical                    | Boolean                                                                    |
 
 ### ConditionCoding
 
