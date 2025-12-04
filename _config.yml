@@ -32,6 +32,9 @@ collections:
   sdk:
     output: true
     permalink: /:collection/:title/
+  learn:
+    output: true
+    permalink: /:collection/:title/
 
 defaults:
   - scope:
@@ -54,7 +57,10 @@ defaults:
       path          : "collections/_sdk/**/*"
     values:
       layout        : "sdk"
-
+  - scope:
+      path          : "collections/_learn/**/*"
+    values:
+      layout        : "learn"
 
 ### Feed settings
 feed:
