@@ -96,6 +96,7 @@ Represents individual billed procedures or services tied to a claim.
 
 | Field Name        | Type                                                       |
 | ----------------- | ---------------------------------------------------------- |
+| id                | UUID                                                       |
 | dbid              | Integer                                                    |
 | billing_line_item | [BillingLineItem](/sdk/data-billing-line-item/)            |
 | claim             | [Claim](#claim)                                            |
@@ -123,6 +124,7 @@ Links a claim to a specific insurance coverage.
 
 | Field Name                         | Type                                                                     |
 | ---------------------------------- | ------------------------------------------------------------------------ |
+| id                                 | UUID                                                                     |
 | dbid                               | Integer                                                                  |
 | claim                              | [Claim](#claim)                                                          |
 | coverage                           | [Coverage](/sdk/data-coverage/)                                          |
