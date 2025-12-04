@@ -91,9 +91,6 @@ sections:
               - name: use
                 type: string
                 description: Supported values are  **home**, **work**, **temp**, **old** and **mobile**.
-              - name: rank
-                type: integer
-                description: An integer representing the preferred order of contact points per system.
           - name: address
             description: Address where the related person can be contacted or visited
             type: array[json]
@@ -189,14 +186,12 @@ sections:
     {
       "system": "phone",
       "value": "5555555555",
-      "use": "home",
-      "rank": 1
+      "use": "home"
     },
     {
       "system": "email",
       "value": "solisterry@example.net",
-      "use": "home",
-      "rank": 1
+      "use": "home"
     }
   ],
   "address": [
@@ -332,14 +327,12 @@ sections:
           {
             "system": "phone",
             "value": "5555555555",
-            "use": "home",
-            "rank": 1
+            "use": "home"
           },
           {
             "system": "email",
             "value": "solisterry@example.net",
-            "use": "home",
-            "rank": 1
+            "use": "home"
           }
         ],
         "address": [

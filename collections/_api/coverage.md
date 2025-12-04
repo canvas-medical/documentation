@@ -194,6 +194,9 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
+          - name: subscriberId
+            description: ID assigned to the subscriber
+            type: string
           - name: beneficiary
             description: >-
               Who benefits from the coverage; the patient when products or services are provided.
@@ -367,9 +370,12 @@ sections:
                           - value: subplan
                           - value: group
                           - value: subgroup
-                  - name: value
-                    type: string
-                    description: Value associated with the type.
+              - name: value
+                type: string
+                description: Value associated with the type, such as plan or group number.
+              - name: name
+                type: string
+                description: Human readable description of the type and value, such as plan name or group name.
           - name: order
             type: number [ 1-5 ]
             required_in: create,update
@@ -389,6 +395,9 @@ sections:
           - name: identifier
             type: string
             description: Retrieve all coverages with a specific member ID
+          - name: subscriberid
+            type: string
+            description: Retrieve all coverages with a specific subscriber ID
           - name: status
             type: string
             description: Retrieve coverages by a specific status.
@@ -453,6 +462,7 @@ curl --request POST \
   "subscriber": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34"
   },
+  "subscriberId": "123",
   "beneficiary": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3"
   },
@@ -485,7 +495,8 @@ curl --request POST \
           }
         ]
       },
-      "value": "Starfleet HMO"
+      "value": "Starfleet HMO",
+      "name": "Starfleet HMO"
     },
     {
       "type": {
@@ -496,7 +507,8 @@ curl --request POST \
           }
         ]
       },
-      "value": "Stars"
+      "value": "Stars",
+      "name": "Stars"
     },
     {
       "type": {
@@ -507,7 +519,8 @@ curl --request POST \
           }
         ]
       },
-      "value": "Captains Only"
+      "value": "Captains Only",
+      "name": "Captains Only"
     },
     {
       "type": {
@@ -518,7 +531,8 @@ curl --request POST \
           }
         ]
       },
-      "value": "Subgroup 2"
+      "value": "Subgroup 2",
+      "name": "Subgroup 2"
     }
   ],
   "order": 1
@@ -560,6 +574,7 @@ payload = {
     ]
   },
   "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
+  "subscriberId": "123",
   "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
   "relationship": {
     "coding": [
@@ -590,7 +605,8 @@ payload = {
           }
         ]
       },
-      "value": "Starfleet HMO"
+      "value": "Starfleet HMO",
+      "name": "Starfleet HMO"
     },
     {
       "type": {
@@ -601,7 +617,8 @@ payload = {
           }
         ]
       },
-      "value": "Stars"
+      "value": "Stars",
+      "name": "Stars"
     },
     {
       "type": {
@@ -612,7 +629,8 @@ payload = {
           }
         ]
       },
-      "value": "Captains Only"
+      "value": "Captains Only",
+      "name": "Captains Only"
     },
     {
       "type": {
@@ -623,7 +641,8 @@ payload = {
           }
         ]
       },
-      "value": "Subgroup 2"
+      "value": "Subgroup 2",
+      "name": "Subgroup 2"
     }
   ],
   "order": 1
@@ -688,6 +707,7 @@ print(response.text)
     "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
     "type": "Patient"
   },
+  "subscriberId": "1234",
   "beneficiary": {
     "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
     "type": "Patient"
@@ -722,7 +742,8 @@ print(response.text)
             }
           ]
         },
-        "value": "Starfleet HMO"
+        "value": "Starfleet HMO",
+        "name": "Starfleet HMO"
       },
       {
         "type": {
@@ -733,7 +754,8 @@ print(response.text)
             }
           ]
         },
-        "value": "Stars"
+        "value": "Stars",
+        "name": "Stars"
       },
       {
         "type": {
@@ -744,7 +766,8 @@ print(response.text)
             }
           ]
         },
-        "value": "Captains Only"
+        "value": "Captains Only",
+        "name": "Captains Only"
       },
       {
         "type": {
@@ -755,7 +778,8 @@ print(response.text)
             }
           ]
         },
-        "value": "Subgroup 2"
+        "value": "Subgroup 2",
+        "name": "Subgroup 2"
       }
   ],
   "order": 1
@@ -857,6 +881,7 @@ curl --request PUT \
   "subscriber": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34"
   },
+  "subscriberId": "123",
   "beneficiary": {
     "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3"
   },
@@ -889,7 +914,8 @@ curl --request PUT \
           }
         ]
       },
-      "value": "Starfleet HMO"
+      "value": "Starfleet HMO",
+      "name": "Starfleet HMO"
     },
     {
       "type": {
@@ -900,7 +926,8 @@ curl --request PUT \
           }
         ]
       },
-      "value": "Stars"
+      "value": "Stars",
+      "name": "Stars"
     },
     {
       "type": {
@@ -911,7 +938,8 @@ curl --request PUT \
           }
         ]
       },
-      "value": "Captains Only"
+      "value": "Captains Only",
+      "name": "Captains Only"
     },
     {
       "type": {
@@ -922,7 +950,8 @@ curl --request PUT \
           }
         ]
       },
-      "value": "Subgroup 2"
+      "value": "Subgroup 2",
+      "name": "Subgroup 2"
     }
   ],
   "order": 1
@@ -964,6 +993,7 @@ payload = {
     ]
   },
   "subscriber": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b34" },
+  "subscriberId": "123",
   "beneficiary": { "reference": "Patient/febae9dcb7cf4d88ba27cc552a3f96b3" },
   "relationship": {
     "coding": [
@@ -994,7 +1024,8 @@ payload = {
           }
         ]
       },
-      "value": "Starfleet HMO"
+      "value": "Starfleet HMO",
+      "name": "Starfleet HMO"
     },
     {
       "type": {
@@ -1005,7 +1036,8 @@ payload = {
           }
         ]
       },
-      "value": "Stars"
+      "value": "Stars",
+      "name": "Stars"
     },
     {
       "type": {
@@ -1016,7 +1048,8 @@ payload = {
           }
         ]
       },
-      "value": "Captains Only"
+      "value": "Captains Only",
+      "name": "Captains Only"
     },
     {
       "type": {
@@ -1027,7 +1060,8 @@ payload = {
           }
         ]
       },
-      "value": "Subgroup 2"
+      "value": "Subgroup 2",
+      "name": "Subgroup 2"
     }
   ],
   "order": 1
@@ -1102,6 +1136,7 @@ print(response.text)
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
         },
+        "subscriberId": "1111",
         "beneficiary": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
@@ -1152,6 +1187,7 @@ print(response.text)
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"
         },
+        "subscriberId": "A",
         "beneficiary": {
             "reference": "Patient/b3084f7e884e4af2b7e23b1dca494abd",
             "type": "Patient"

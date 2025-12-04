@@ -100,3 +100,7 @@ class MChatQuestionnaireResult(BaseProtocol):
 
         return [effect.apply()]
 ```
+
+<br/>
+<br/>
+<br/>

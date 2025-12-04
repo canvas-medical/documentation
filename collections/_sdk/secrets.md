@@ -46,8 +46,10 @@ https://<your_canvas_instance>/admin/plugin_io/plugin/<plugin_id>/change/
 On this page, you will find input fields for each secret defined in your manifest. 
 
 <div style="text-align:center;">
-  <img src="/assets/images/sdk/secrets/plugins_secrets_setting.png" alt="Setting plugin secrets" width="100%">
+  <img src="/assets/images/sdk/secrets/plugins_secrets_settings_with_permissions.png" alt="Setting plugin secrets" width="100%">
 </div>
+
+Plugin secrets can be protected by managing user permissions. Only users explicitly assigned as "managing users" for a plugin can view or modify its secrets (as well as other sensitive settings like the plugin package file download link). Other users can see basic plugin details and enable or disable plugins, but they will not be able to access or change secret values. To add or remove managing users for a plugin, use the "Managing users" section on the plugin detail page in the Admin UI. This ensures that sensitive configuration, such as API tokens, remains visible only to authorized personnel.
 
 
 ### Configuring Secrets in the CLI
