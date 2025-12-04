@@ -717,6 +717,9 @@ effects_module:
   - title: "Billing Line Items"
     url: /sdk/effect-billing-line-items/
     description: Add, modify, or remove billing codes on a note.
+  - title: "Claims"
+    url: /sdk/effect-claims/
+    description: Manage labels, update line items, move to a queue, and post a payment.
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.

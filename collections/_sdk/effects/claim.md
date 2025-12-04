@@ -278,6 +278,8 @@ The `PostClaimPayment` effect posts a payment to a claim, specifying payment det
 
 ### Example Usage
 
+The most common use case for this effect will be with the [SimpleAPI](/sdk/handlers-simple-api-http/) handler.
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.v1.data import ClaimLineItem, Claim
@@ -292,102 +294,210 @@ from datetime import date
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
 
-
 class MyAPI(SimpleAPIRoute):
-    PATH = "/routes/post-claim-payment/<id>"
+    PATH = "/routes/post-claim-payment"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
         return True
 
-    def create_line_item_transaction(
-        self, line_item: ClaimLineItem, is_patient: bool = False
-    ) -> LineItemTransaction:
-        if line_item.proc_code.startswith("99"):
-            lit = LineItemTransaction(
-                charged=line_item.charge,
-                claim_line_item_id=line_item.id,
-                payment=line_item.charge - Decimal(100.00),
-                adjustment=line_item.charge - Decimal(150.00),
-                adjustment_code="CW-0",
-                write_off=True,
-            )
-            if not is_patient:
-                lit.payment = Decimal(50.00)
-                lit.allowed = line_item.charge
-                lit.adjustment = line_item.charge - Decimal(50.00)
-                lit.adjustment_code = "PR-2"
-                lit.transfer_remaining_balance_to = "patient"
-                lit.write_off = False
-            return lit
-        if line_item.proc_code.startswith("00"):
-            lit = LineItemTransaction(
-                claim_line_item_id=line_item.id,
-                charged=line_item.charge,
-                payment=Decimal(20.00),
-            )
-            if not is_patient:
-                lit.allowed = line_item.charge
-                lit.transfer_remaining_balance_to = self.claim.coverages.last().id
-                lit.adjustment = line_item.charge - Decimal(40.00)
-                lit.adjustment_code = "CO-A2"
-            return lit
-        lit = LineItemTransaction(
+    def get_claim_line_item(self, claim: Claim, proc_code: str) -> ClaimLineItem | None:
+        return claim.line_items.active().filter(proc_code=proc_code).first()
+
+    def create_line_item_transactions(
+        self, charge: dict, claim: Claim
+    ) -> list[LineItemTransaction]:
+        transactions = []
+        if not (line_item := self.get_claim_line_item(claim, charge.get("proc_code"))):
+            return transactions
+
+        charged = Decimal(charge["charge"])
+        payment = Decimal(charge["paid"])
+        allowed = Decimal(charge["allowed"])
+        adjustments = charge.get("adjustment", [])
+        first_adjustment = adjustments[0]
+        payment = LineItemTransaction(
             claim_line_item_id=line_item.id,
-            charged=line_item.charge,
-            payment=Decimal(5.00),
+            charged=charged,
+            payment=payment,
+            allowed=allowed,
+            adjustment=Decimal(first_adjustment["amount"]),
+            adjustment_code=f"{first_adjustment['group']}-{first_adjustment['code']}",
+            # replace with whatever logic needed for resolving remaining balance
+            transfer_remaining_balance_to="patient"
+            if first_adjustment["group"] == "PR"
+            else None,
         )
-        if not is_patient:
-            lit.adjustment = line_item.charge - Decimal(10.00)
-            lit.adjustment_code = "CO-45"
-            lit.write_off = True
-        return lit
+        transactions.append(payment)
 
-    def post_patient_payment(self) -> Effect:
-        pmt = PostClaimPayment(
-            deposit_date=date(2025, 11, 11),
-            method=PaymentMethod.CASH,
-            payment_description="patient responsibility",
-            claim=ClaimAllocation(
-                claim_id=self.claim.id,
-                claim_coverage_id="patient",
-                move_to_queue_name="ZeroBalance",
-                description="this is a patient payment",
-                line_item_transactions=[
-                    self.create_line_item_transaction(c, is_patient=True)
-                    for c in self.claim_line_items
-                ],
-            ),
+        additional_adjustments = adjustments[1:]
+        for adj in additional_adjustments:
+            transaction = LineItemTransaction(
+                claim_line_item_id=line_item.id,
+                adjustment=Decimal(adj["amount"]),
+                adjustment_code=f"{adj['group']}-{adj['code']}",
+            )
+            transactions.append(transaction)
+
+        return transactions
+
+    def get_claim(
+        self, account_number: str, clearinghouse_claim_id: str
+    ) -> Claim | None:
+        return (
+            Claim.objects.filter(account_number=account_number).first()
+            or Claim.objects.filter(
+                submissions__clearinghouse_claim_id=clearinghouse_claim_id,
+            ).first()
+            or Claim.objects.filter(coverage__payer_icn=clearinghouse_claim_id).first()
         )
-        return pmt.apply()
 
-    def post_coverage_payment(self) -> Effect:
+    def post_payment(
+        self,
+        claim_payment_info: dict,
+        check_number: str,
+        check_date: str,
+        payer_id: str,
+    ) -> Effect | None:
+        account_number = claim_payment_info.get("pcn")
+        clearinghouse_claim_id = claim_payment_info.get("payer_icn")
+        if not (claim := self.get_claim(account_number, clearinghouse_claim_id)):
+            return None
+        insurance_number = claim_payment_info.get("ins_number")
+        if not (coverage := claim.get_coverage_by_payer_id(payer_id, insurance_number)):
+            return None
+
+        line_item_transactions = []
+        for c in claim_payment_info.get("charge", []):
+            line_item_transactions.extend(self.create_line_item_transactions(c, claim))
+
         pmt = PostClaimPayment(
-            check_date=date(2025, 11, 10),
-            check_number="123456789",
-            deposit_date=date(2025, 11, 11),
+            check_date=date.fromisoformat(check_date),
+            check_number=check_number,
+            deposit_date=date.fromisoformat(check_date),
             method=PaymentMethod.CHECK,
-            payment_description="money moneyyyy",
+            payment_description="Aetna 835 payment",
             claim=ClaimAllocation(
-                claim_id=self.claim.id,
-                claim_coverage_id=self.claim.coverages.first().id,
-                description="this is a coverage payment",
-                move_to_queue_name="PatientBalance",
-                line_item_transactions=[
-                    self.create_line_item_transaction(c) for c in self.claim_line_items
-                ],
+                claim_id=claim.id,
+                claim_coverage_id=coverage.id,
+                line_item_transactions=line_item_transactions,
             ),
         )
         return pmt.apply()
 
-    def get(self) -> list[Response | Effect]:
-        claim_dbid = self.request.path_params["id"]
-        self.claim = Claim.objects.get(dbid=claim_dbid)
-        self.claim_line_items = self.claim.get_active_claim_line_items()
-        return [
-            self.post_coverage_payment(),
-            self.post_patient_payment(),
-            JSONResponse({"message": "ok"}),
+    def post(self) -> list[Response | Effect]:
+        payment_info = self.request.json()
+        check_number = payment_info.get("check_number")
+        check_date = payment_info.get("paid_date")
+        payer_id = payment_info.get("payerid")
+        payments = [
+            p
+            for claim in payment_info.get("claim", [])
+            if (p := self.post_payment(claim, check_number, check_date, payer_id))
         ]
+        return payments + [JSONResponse({"message": "ok"})]
+```
+
+With the above plugin installed, an example call to the endpoint would look like this:
+
+```
+curl -X POST "https://<instance-name>.canvasmedical.com/plugin-io/api/post_claim_payment/routes/post-claim-payment" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: <api-key>" \
+  -d '{
+    "paid_date": "2025-11-06",
+    "eraid": "23853671",
+    "check_number": "397547083-1662491258",
+    "paid_amount": "346.00",
+    "payerid": "60054",
+    "claim": [
+        {
+            "pcn": "124974-1",
+            "payer_icn": "TST397547083",
+            "total_charge": "48",
+            "from_dos": "20250827",
+            "pat_name_f": "ETHYL",
+            "ins_name_l": "BATES",
+            "total_paid": "0",
+            "thru_dos": None,
+            "pat_name_l": "BATES",
+            "ins_number": "412098745",
+            "ins_name_f": "NORMAN",
+            "charge": [
+                {
+                    "chgid": "221043771",
+                    "from_dos": "20220827",
+                    "adjustment": [{"amount": "48", "group": "OA", "code": "109"}],
+                    "paid": "0",
+                    "allowed": "0",
+                    "proc_code": "99212",
+                    "charge": "48",
+                    "thru_dos": None,
+                    "units": "1",
+                }
+            ],
+        },
+        {
+            "pcn": "21830-1",
+            "payer_icn": "TST397547094",
+            "total_charge": "75",
+            "from_dos": "20220827",
+            "pat_name_f": "MARYLOU",
+            "ins_name_l": "DENNIS",
+            "total_paid": "45",
+            "thru_dos": None,
+            "pat_name_l": "DENNIS",
+            "ins_number": "223444467",
+            "ins_name_f": "ROBERT",
+            "charge": [
+                {
+                    "chgid": "221043716",
+                    "from_dos": "20220827",
+                    "adjustment": [
+                        {"amount": "15", "group": "CO", "code": "45"},
+                        {"amount": "10", "group": "PR", "code": "2"},
+                        {"amount": "5", "group": "PR", "code": "3"},
+                    ],
+                    "paid": "45",
+                    "allowed": "60",
+                    "proc_code": "99213",
+                    "charge": "75",
+                    "thru_dos": None,
+                    "units": "1",
+                }
+            ],
+        },
+        {
+            "pcn": "103756-1",
+            "payer_icn": "TST397547101",
+            "total_charge": "75",
+            "from_dos": "20220827",
+            "pat_name_f": "BRISTER",
+            "ins_name_l": "GUNTHRIE",
+            "total_paid": "45",
+            "thru_dos": None,
+            "pat_name_l": "GUNTHRIE",
+            "ins_number": "412341611",
+            "ins_name_f": "VIRGINIA",
+            "charge": [
+                {
+                    "chgid": "221043755",
+                    "from_dos": "20220827",
+                    "adjustment": [
+                        {"amount": "15", "group": "CO", "code": "45"},
+                        {"amount": "10", "group": "PR", "code": "2"},
+                        {"amount": "5", "group": "PR", "code": "3"},
+                    ],
+                    "paid": "45",
+                    "allowed": "60",
+                    "proc_code": "99213",
+                    "charge": "75",
+                    "thru_dos": None,
+                    "units": "1",
+                }
+            ],
+        },
+    ],
+}'
 ```
 
 <br/>
