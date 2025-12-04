@@ -1026,7 +1026,7 @@ payload = {
                     }
                 ]
             }
-        }
+        },
         {
             "resource": {
                 "resourceType": "DocumentReference",
