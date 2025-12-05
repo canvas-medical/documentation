@@ -194,8 +194,10 @@ sections:
                 attributes: 
                   - name: system
                     description: The system url of the coding.
-                    enum_options: 
+                    enum_options:
                       - value: http://schemas.canvasmedical.com/fhir/document-reference-category
+                      - value: http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category
+                        exclude_in: create
                     type: string
                     required_in: create
                   - name: code
