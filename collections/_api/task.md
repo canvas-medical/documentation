@@ -164,7 +164,10 @@ sections:
           - name: input
             type: array[json]
             description_for_all_endpoints: Information used to perform the task. In Canvas this translates to added labels on a Task. 
-            create_and_update_description: If the label doesn't exist in Canvas already, it will be created.
+            create_and_update_description: >-
+              If the label doesn't exist in Canvas already, it will be created.
+              <br><br>
+              When labels are created or updated through the Task endpoint, Canvas automatically scopes them to the Tasks module. If you reference an existing label that does not yet include the Tasks module, Canvas adds it during ingestion. Labels with an empty `modules` array remain global and continue to work across every module.
             attributes: 
                 - name: type
                   type: json
