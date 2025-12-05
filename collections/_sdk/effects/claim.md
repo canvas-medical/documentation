@@ -294,17 +294,19 @@ from datetime import date
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
 
+
 class MyAPI(SimpleAPIRoute):
     PATH = "/routes/post-claim-payment"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        # replace with desired authentication logic
         return True
 
     def get_claim_line_item(self, claim: Claim, proc_code: str) -> ClaimLineItem | None:
         return claim.line_items.active().filter(proc_code=proc_code).first()
 
     def create_line_item_transactions(
-        self, charge: dict, claim: Claim
+        self, charge: dict, claim: Claim, next_coverage_id: str
     ) -> list[LineItemTransaction]:
         transactions = []
         if not (line_item := self.get_claim_line_item(claim, charge.get("proc_code"))):
@@ -325,7 +327,7 @@ class MyAPI(SimpleAPIRoute):
             # replace with whatever logic needed for resolving remaining balance
             transfer_remaining_balance_to="patient"
             if first_adjustment["group"] == "PR"
-            else None,
+            else next_coverage_id,
         )
         transactions.append(payment)
 
@@ -335,6 +337,10 @@ class MyAPI(SimpleAPIRoute):
                 claim_line_item_id=line_item.id,
                 adjustment=Decimal(adj["amount"]),
                 adjustment_code=f"{adj['group']}-{adj['code']}",
+                # replace with whatever logic needed for resolving remaining balance
+                transfer_remaining_balance_to="patient"
+                if adj["group"] == "PR"
+                else next_coverage_id,
             )
             transactions.append(transaction)
 
@@ -348,7 +354,6 @@ class MyAPI(SimpleAPIRoute):
             or Claim.objects.filter(
                 submissions__clearinghouse_claim_id=clearinghouse_claim_id,
             ).first()
-            or Claim.objects.filter(coverage__payer_icn=clearinghouse_claim_id).first()
         )
 
     def post_payment(
@@ -366,9 +371,15 @@ class MyAPI(SimpleAPIRoute):
         if not (coverage := claim.get_coverage_by_payer_id(payer_id, insurance_number)):
             return None
 
+        next_coverage_id = (
+            claim.coverages.active().exclude(payer_id=payer_id).first().id
+        )
+
         line_item_transactions = []
         for c in claim_payment_info.get("charge", []):
-            line_item_transactions.extend(self.create_line_item_transactions(c, claim))
+            line_item_transactions.extend(
+                self.create_line_item_transactions(c, claim, next_coverage_id)
+            )
 
         pmt = PostClaimPayment(
             check_date=date.fromisoformat(check_date),
@@ -380,6 +391,7 @@ class MyAPI(SimpleAPIRoute):
                 claim_id=claim.id,
                 claim_coverage_id=coverage.id,
                 line_item_transactions=line_item_transactions,
+                description="Payment applied via 835",
             ),
         )
         return pmt.apply()
@@ -400,7 +412,8 @@ class MyAPI(SimpleAPIRoute):
 With the above plugin installed, an example call to the endpoint would look like this:
 
 ```bash
-curl -X POST "https://<instance-name>.canvasmedical.com/plugin-io/api/post_claim_payment/routes/post-claim-payment" \
+
+curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment" \
   -H "Content-Type: application/json" \
   -H "Authorization: <api-key>" \
   -d '{
@@ -451,36 +464,6 @@ curl -X POST "https://<instance-name>.canvasmedical.com/plugin-io/api/post_claim
             "charge": [
                 {
                     "chgid": "221043716",
-                    "from_dos": "20220827",
-                    "adjustment": [
-                        {"amount": "15", "group": "CO", "code": "45"},
-                        {"amount": "10", "group": "PR", "code": "2"},
-                        {"amount": "5", "group": "PR", "code": "3"},
-                    ],
-                    "paid": "45",
-                    "allowed": "60",
-                    "proc_code": "99213",
-                    "charge": "75",
-                    "thru_dos": None,
-                    "units": "1",
-                }
-            ],
-        },
-        {
-            "pcn": "103756-1",
-            "payer_icn": "TST397547101",
-            "total_charge": "75",
-            "from_dos": "20220827",
-            "pat_name_f": "BRISTER",
-            "ins_name_l": "GUNTHRIE",
-            "total_paid": "45",
-            "thru_dos": None,
-            "pat_name_l": "GUNTHRIE",
-            "ins_number": "412341611",
-            "ins_name_f": "VIRGINIA",
-            "charge": [
-                {
-                    "chgid": "221043755",
                     "from_dos": "20220827",
                     "adjustment": [
                         {"amount": "15", "group": "CO", "code": "45"},
