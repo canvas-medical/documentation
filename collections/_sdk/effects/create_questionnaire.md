@@ -13,7 +13,15 @@ The `CreateQuestionnaire` effect enables the programmatic creation of questionna
 
 ## Overview
 
-While questionnaires can be created using YAML templates in the plugin manifest, the `CreateQuestionnaire` effect provides a way to create questionnaires programmatically. This is particularly useful when:
+The `CreateQuestionnaire` effect creates questionnaires programmatically within Canvas plugins. Here's how it works:
+
+1. **Define the questionnaire config**: Create a `QuestionnaireConfig` dictionary with your questionnaire structure (name, questions, responses, etc.)
+2. **Create the effect**: Instantiate `CreateQuestionnaire` with your config as the `questionnaire_config` parameter
+3. **Apply the effect**: Call `.apply()` on the effect instance
+4. **Return from your handler**: Include the effect in the list returned from your `compute()` method
+5. **Canvas processes the effect**: The Canvas interpreter validates the config against the JSON schema, converts it to YAML internally, and persists the questionnaire to the database
+
+This approach is particularly useful when:
 
 - Questionnaires need to be generated dynamically based on patient data or clinical context
 - External systems need to create questionnaires via API integrations
@@ -49,7 +57,7 @@ effect = CreateQuestionnaire(questionnaire_config=config)
 | `name`                                     | `str`                | Name of the questionnaire                                                                                                                                      | Yes      |
 | `form_type`                                | `str`                | Specifies the use case: `QUES` (Questionnaire), `SA` (Structured Assessment), `EXAM` (Physical Exam), or `ROS` (Review of Systems)                             | Yes      |
 | `code_system`                              | `str`                | The coding system used for the questionnaire (e.g., `SNOMED`, `LOINC`, `INTERNAL`, `ICD-10`, `CPT`, `CANVAS`)                                                  | Yes      |
-| `code`                                     | `str` or `int`       | The assigned code for the questionnaire (will be converted to string)                                                                                         | Yes      |
+| `code`                                     | `str`       | The assigned code for the questionnaire (will be converted to string)                                                                                         | Yes      |
 | `can_originate_in_charting`                | `bool`               | Specifies if the questionnaire can be initiated from charting                                                                                                  | Yes      |
 | `questions`                                | `list[dict]`         | List of questions in the questionnaire                                                                                                                         | Yes      |
 | `prologue`                                 | `str`                | Text displayed at the beginning of the questionnaire to provide context to the user                                                                            | No       |
@@ -69,6 +77,21 @@ Each question in the `questions` list should have the following structure:
 | `responses`                                | `list[dict]`         | List of possible responses for the question                                                                      | Yes      |
 | `code_description`                         | `str`                | Description of the question code                                                                                 | No       |
 | `display_result_in_social_history_section` | `bool`               | Determines if the response should be shown in the Social History (SHX) section. Defaults to `False`              | No       |
+| `enabled_behavior`                         | `str`                | Branching logic behavior: `all` (all conditions must be met) or `any` (any condition can be met)                 | No       |
+| `enabled_conditions`                       | `list[dict]`         | List of conditions that determine when this question is shown. See [Enabled Conditions](#enabled-conditions)     | No       |
+
+### Enabled Conditions
+
+When using branching logic, each condition in the `enabled_conditions` list should have:
+
+| Attribute       | Type            | Description                                                                    | Required |
+|-----------------|-----------------|--------------------------------------------------------------------------------|----------|
+| `question_code` | `str`           | The code of the question whose answer determines if this question is shown    | Yes      |
+| `operator`      | `str`           | Comparison operator (e.g., `=`, `!=`, `>`, `<`)                                | Yes      |
+| `value_code`    | `str` or `None` | The response code value to compare against                                     | No*      |
+| `value_string`  | `str` or `None` | The string value to compare against (for text responses)                       | No*      |
+
+*Either `value_code` or `value_string` should be provided depending on the type of comparison.
 
 ### Response Fields
 
@@ -85,7 +108,6 @@ Each response in the `responses` list should have the following structure:
 
 - **Validation**: The questionnaire config is validated against the JSON schema defined in the canvas-plugins repository
 - **YAML Conversion**: The config is automatically converted to YAML format internally
-- **Code Type Flexibility**: Numeric codes are automatically converted to strings
 - **Default Values**: Optional fields are handled appropriately with defaults when not provided
 
 ## Example Usage
@@ -208,79 +230,246 @@ class ComprehensiveQuestionnaireCreator(BaseHandler):
         return [questionnaire.apply()]
 ```
 
-### Dynamic Questionnaire Based on Patient Data
+### Questionnaire with Branching Logic
 
 ```python?partial=true
 from canvas_sdk.effects.questionnaire import CreateQuestionnaire
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.events import EventType
 from canvas_sdk.questionnaires.utils import QuestionnaireConfig
-from canvas_sdk.v1.data.patient import Patient
-from canvas_sdk.v1.data.condition import Condition
 
 
-class PatientSpecificQuestionnaire(BaseHandler):
+class BranchingQuestionnaireCreator(BaseHandler):
     """
-    Create a questionnaire dynamically based on patient's existing conditions.
+    Create a questionnaire with conditional branching logic.
+    Questions appear based on previous answers using enabled_behavior and enabled_conditions.
     """
-    RESPONDS_TO = [EventType.Name(EventType.APPOINTMENT_CREATED)]
+    RESPONDS_TO = [EventType.Name(EventType.PLUGIN_INSTALLED)]
 
     def compute(self):
-        # Get patient information
-        patient_id = self.event.context.get("patient_id")
-        if not patient_id:
-            return []
-
-        patient = Patient.objects.get(id=patient_id)
-        conditions = Condition.objects.filter(patient=patient, clinicalStatus="active")
-
-        # Build questions based on active conditions
-        questions = []
-
-        if conditions.filter(coding__code="E11").exists():  # Diabetes
-            questions.append(
-                {
-                    "code_system": "INTERNAL",
-                    "code": "DIABETES_CHECK",
-                    "content": "Have you been checking your blood sugar regularly?",
-                    "responses_code_system": "INTERNAL",
-                    "responses_type": "SING",
-                    "responses": [
-                        {"name": "Yes, daily", "code": "DIABETES_YES_DAILY", "value": "3"},
-                        {"name": "Yes, weekly", "code": "DIABETES_YES_WEEKLY", "value": "2"},
-                        {"name": "Occasionally", "code": "DIABETES_OCCASIONALLY", "value": "1"},
-                        {"name": "No", "code": "DIABETES_NO", "value": "0"},
-                    ],
-                }
-            )
-
-        if conditions.filter(coding__code="I10").exists():  # Hypertension
-            questions.append(
-                {
-                    "code_system": "INTERNAL",
-                    "code": "BP_CHECK",
-                    "content": "Have you been monitoring your blood pressure at home?",
-                    "responses_code_system": "INTERNAL",
-                    "responses_type": "SING",
-                    "responses": [
-                        {"name": "Yes, regularly", "code": "BP_YES", "value": "1"},
-                        {"name": "No", "code": "BP_NO", "value": "0"},
-                    ],
-                }
-            )
-
-        # Only create questionnaire if there are relevant questions
-        if not questions:
-            return []
-
         config: QuestionnaireConfig = {
-            "name": f"Pre-Visit Assessment for {patient.first_name} {patient.last_name}",
+            "name": "Patient Health Screening with Branching",
             "form_type": "QUES",
-            "code_system": "INTERNAL",
-            "code": f"PREVST_ASSESS_{patient.id}",
+            "code_system": "LOINC",
+            "code": "75626-2",
             "can_originate_in_charting": True,
-            "prologue": "Please complete this brief assessment before your appointment.",
-            "questions": questions,
+            "prologue": "This questionnaire will help us understand your current health status. Some questions will appear based on your previous answers.",
+            "display_results_in_social_history_section": True,
+            "questions": [
+                {
+                    "content": "Do you currently smoke cigarettes?",
+                    "code_system": "LOINC",
+                    "code": "72166-2",
+                    "code_description": "Tobacco smoking status",
+                    "responses_code_system": "SNOMED",
+                    "responses_type": "SING",
+                    "display_result_in_social_history_section": True,
+                    "responses": [
+                        {
+                            "name": "Yes",
+                            "code": "373066001",
+                            "code_description": "Yes (qualifier value)",
+                            "value": "1",
+                        },
+                        {
+                            "name": "No",
+                            "code": "373067005",
+                            "code_description": "No (qualifier value)",
+                            "value": "0",
+                        },
+                    ],
+                },
+                {
+                    "content": "How many cigarettes do you smoke per day?",
+                    "code_system": "LOINC",
+                    "code": "68520-2",
+                    "code_description": "Number of cigarettes smoked per day",
+                    "responses_code_system": "INTERNAL",
+                    "responses_type": "SING",
+                    "enabled_behavior": "all",  # All conditions must be met
+                    "enabled_conditions": [
+                        {
+                            "question_code": "72166-2",  # References smoking question
+                            "operator": "=",
+                            "value_code": "373066001",  # "Yes" response code
+                            "value_string": None,
+                        }
+                    ],
+                    "responses": [
+                        {
+                            "name": "Less than 10",
+                            "code": "SMOKE_LIGHT",
+                            "code_description": "Light smoker",
+                            "value": "1",
+                        },
+                        {
+                            "name": "10-20",
+                            "code": "SMOKE_MODERATE",
+                            "code_description": "Moderate smoker",
+                            "value": "2",
+                        },
+                        {
+                            "name": "More than 20",
+                            "code": "SMOKE_HEAVY",
+                            "code_description": "Heavy smoker",
+                            "value": "3",
+                        },
+                    ],
+                },
+                {
+                    "content": "Would you like information about smoking cessation programs?",
+                    "code_system": "INTERNAL",
+                    "code": "CESSATION_INFO",
+                    "code_description": "Interest in smoking cessation",
+                    "responses_code_system": "SNOMED",
+                    "responses_type": "SING",
+                    "enabled_behavior": "all",
+                    "enabled_conditions": [
+                        {
+                            "question_code": "72166-2",
+                            "operator": "=",
+                            "value_code": "373066001",
+                            "value_string": None,
+                        }
+                    ],
+                    "responses": [
+                        {
+                            "name": "Yes, please",
+                            "code": "373066001",
+                            "code_description": "Yes (qualifier value)",
+                            "value": "1",
+                        },
+                        {
+                            "name": "No, thank you",
+                            "code": "373067005",
+                            "code_description": "No (qualifier value)",
+                            "value": "0",
+                        },
+                    ],
+                },
+                {
+                    "content": "Do you consume alcohol?",
+                    "code_system": "LOINC",
+                    "code": "74013-4",
+                    "code_description": "Alcoholic drinks per day",
+                    "responses_code_system": "SNOMED",
+                    "responses_type": "SING",
+                    "display_result_in_social_history_section": True,
+                    "responses": [
+                        {
+                            "name": "Never",
+                            "code": "228274009",
+                            "code_description": "Never drank alcohol",
+                            "value": "0",
+                        },
+                        {
+                            "name": "Occasionally",
+                            "code": "228276006",
+                            "code_description": "Occasional drinker",
+                            "value": "1",
+                        },
+                        {
+                            "name": "Regularly",
+                            "code": "228273003",
+                            "code_description": "Regular drinker",
+                            "value": "2",
+                        },
+                    ],
+                },
+                {
+                    "content": "How many alcoholic drinks do you have per week?",
+                    "code_system": "LOINC",
+                    "code": "11287-0",
+                    "code_description": "Alcohol intake per week",
+                    "responses_code_system": "INTERNAL",
+                    "responses_type": "SING",
+                    "enabled_behavior": "any",  # Any condition can be met
+                    "enabled_conditions": [
+                        {
+                            "question_code": "74013-4",
+                            "operator": "=",
+                            "value_code": "228276006",  # "Occasionally"
+                            "value_string": None,
+                        },
+                        {
+                            "question_code": "74013-4",
+                            "operator": "=",
+                            "value_code": "228273003",  # "Regularly"
+                            "value_string": None,
+                        },
+                    ],
+                    "responses": [
+                        {
+                            "name": "1-3 drinks",
+                            "code": "ALCOHOL_LOW",
+                            "code_description": "Low alcohol consumption",
+                            "value": "1",
+                        },
+                        {
+                            "name": "4-7 drinks",
+                            "code": "ALCOHOL_MODERATE",
+                            "code_description": "Moderate alcohol consumption",
+                            "value": "2",
+                        },
+                        {
+                            "name": "8-14 drinks",
+                            "code": "ALCOHOL_HIGH",
+                            "code_description": "High alcohol consumption",
+                            "value": "3",
+                        },
+                        {
+                            "name": "More than 14 drinks",
+                            "code": "ALCOHOL_VERY_HIGH",
+                            "code_description": "Very high alcohol consumption",
+                            "value": "4",
+                        },
+                    ],
+                },
+                {
+                    "content": "Do you exercise regularly?",
+                    "code_system": "LOINC",
+                    "code": "89574-8",
+                    "code_description": "Physical activity level",
+                    "responses_code_system": "SNOMED",
+                    "responses_type": "SING",
+                    "responses": [
+                        {
+                            "name": "Yes, 3+ times per week",
+                            "code": "256235009",
+                            "code_description": "Exercises regularly",
+                            "value": "2",
+                        },
+                        {
+                            "name": "Sometimes, 1-2 times per week",
+                            "code": "256236005",
+                            "code_description": "Exercises occasionally",
+                            "value": "1",
+                        },
+                        {
+                            "name": "No",
+                            "code": "256237001",
+                            "code_description": "Does not exercise",
+                            "value": "0",
+                        },
+                    ],
+                },
+                {
+                    "content": "Any additional health concerns you'd like to discuss?",
+                    "code_system": "INTERNAL",
+                    "code": "FREE_TEXT_CONCERNS",
+                    "code_description": "Additional health concerns",
+                    "responses_code_system": "INTERNAL",
+                    "responses_type": "TXT",
+                    "responses": [
+                        {
+                            "name": "TXT",
+                            "code": "FREE_TEXT_CONCERNS_RESPONSE",
+                            "code_description": "Free text response for health concerns",
+                            "value": "",
+                        }
+                    ],
+                },
+            ],
         }
 
         questionnaire = CreateQuestionnaire(questionnaire_config=config)
@@ -357,7 +546,11 @@ The `CreateQuestionnaire` effect performs comprehensive validation before execut
 5. **Response Validation**:
    - For `TXT` type questions, validates that there is exactly one response
    - For `SING` and `MULT` types, validates that there is at least one response option
-6. **Structural Validation**:
+6. **Branching Logic Validation**:
+   - Validates that `enabled_behavior` is either `all` or `any` when provided
+   - Ensures referenced `question_code` values in conditions exist in the questionnaire
+   - Validates that operators and value types are compatible
+7. **Structural Validation**:
    - Ensures at least one question is provided
    - Validates proper nesting of questions and responses
 
@@ -442,6 +635,10 @@ Here's a complete example of a questionnaire configuration in JSON format (usefu
   ]
 }
 ```
+
+### Branching Logic Note
+
+For questionnaires with conditional branching (where questions appear based on previous answers), add `enabled_behavior` and `enabled_conditions` to individual questions. See the [Questionnaire with Branching Logic](#questionnaire-with-branching-logic) example above for a complete implementation.
 
 ## Related Documentation
 
