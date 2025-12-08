@@ -7,20 +7,21 @@ hidden: false
 
 ## Introduction
 
-The `Referral` and `ReferralReport` models represent referral results.
+The `Referral`, `ReferralReport`, and `ReferralReview` models represent referral results and their reviews.
 
 ## Basic Usage
 
-To retrieve an `Referral` or `ReferralReport` by identifier, use the `get` method on the model manager:
+To retrieve a `Referral`, `ReferralReport`, or `ReferralReview` by identifier, use the `get` method on the model manager:
 
 ```python
-from canvas_sdk.v1.data.referral import Referral, ReferralReport
+from canvas_sdk.v1.data.referral import Referral, ReferralReport, ReferralReview
 
 referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 referral_report = ReferralReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+referral_review = ReferralReview.objects.get(id="b3e6f74c-2a1b-4c8d-9f2e-31842ae7d3b9")
 ```
 
-If you have a patient object, the referrals and reports can be accessed with the `referral_set` and `referral_reports` attributes, respectively on a `Patient` object:
+If you have a patient object, the referrals, reports, and reviews can be accessed with the `referral_set`, `referral_reports`, and `referral_reviews` attributes, respectively on a `Patient` object:
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
@@ -28,23 +29,25 @@ from canvas_sdk.v1.data.patient import Patient
 patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 referrals = patient.referral_set.all()
 reports = patient.referral_reports.all()
+reviews = patient.referral_reviews.all()
 ```
 
 ## Filtering
 
-Referrals and reports can be filtered by any attribute that exists on the models.
+Referrals, reports, and reviews can be filtered by any attribute that exists on the models.
 
-Filtering is done with the `filter` method on the `Referral` and `ReferralReport` model managers.
+Filtering is done with the `filter` method on the `Referral`, `ReferralReport`, and `ReferralReview` model managers.
 
 ### By attribute
 
 Specify an attribute with `filter` to filter by that attribute:
 
 ```python
-from canvas_sdk.v1.data.referral import Referral, ReferralReport
+from canvas_sdk.v1.data.referral import Referral, ReferralReport, ReferralReview
 
 referrals = Referral.objects.filter(priority="urgent")
 reports = ReferralReport.objects.filter(requires_signature=True)
+reviews = ReferralReview.objects.filter(status="completed")
 ```
 
 ## Related Tasks
@@ -107,3 +110,22 @@ tasks = referral.get_task_objects().all()
 | comment            | String                                                                |
 | priority           | Boolean                                                               |
 | original_date      | Date                                                                  |
+| review             | [ReferralReview](#referralreview)                                     |
+
+### ReferralReview
+
+| Field Name                    | Type                                   |
+|-------------------------------|----------------------------------------|
+| id                            | UUID                                   |
+| dbid                          | Integer                                |
+| created                       | DateTime                               |
+| modified                      | DateTime                               |
+| originator                    | [CanvasUser](/sdk/data-canvasuser)     |
+| deleted                       | Boolean                                |
+| committer                     | [CanvasUser](/sdk/data-canvasuser)     |
+| entered_in_error              | [CanvasUser](/sdk/data-canvasuser)     |
+| internal_comment              | String                                 |
+| message_to_patient            | String                                 |
+| status                        | String                                 |
+| patient                       | [Patient](/sdk/data-patient/#patient)  |
+| patient_communication_method  | String                                 |
