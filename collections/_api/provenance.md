@@ -26,6 +26,7 @@ sections:
             - Patient
             - Prescription
             - Procedure
+            - ServiceRequest
             - UpdateGoal
         attributes:
           - name: resourceType
@@ -61,6 +62,7 @@ sections:
                     - value: Observation
                     - value: Patient
                     - value: Procedure
+                    - value: ServiceRequest
                 - name: display
                   type: string
                   description: Text alternative for the resource.
