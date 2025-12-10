@@ -114,7 +114,7 @@ observations = Observation.objects.find(Weight)
 | deleted            | Boolean                                             |
 | patient            | [Patient](/sdk/data-patient/#patient)               |
 | is_member_of       | [Observation]( #observation)                        |
-| category           | String                                              |
+| category           | String (comma-separated list of categories |
 | units              | String                                              |
 | value              | String                                              |
 | note_id            | Integer                                             |
