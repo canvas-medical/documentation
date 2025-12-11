@@ -744,6 +744,9 @@ effects_module:
   - title: "Notes"
     url: /sdk/effect-notes/
     description: Interact with notes in Canvas.
+  - title: "Observations"
+    url: /sdk/effect-observation/
+    description: Create or update clinical observations.
   - title: "Patient"
     url: /sdk/effect-patient/
     description: Interact with patient data.
