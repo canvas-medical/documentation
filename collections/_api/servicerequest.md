@@ -32,12 +32,9 @@ sections:
             type: string
             enum_options:
               - value: active
-              - value: draft
-              - value: on-hold
-              - value: revoked
               - value: completed
+              - value: draft
               - value: entered-in-error
-              - value: unknown
           - name: intent
             description: Indicates the level of authorization/intent for the request. Canvas supports `order` for orders placed by a practitioner.
             type: string
@@ -147,12 +144,9 @@ sections:
             type: string
             search_options:
               - value: active
-              - value: draft
-              - value: on-hold
-              - value: revoked
               - value: completed
+              - value: draft
               - value: entered-in-error
-              - value: unknown
           - name: intent
             description: The intent of the request. Canvas supports `order`.
             type: string
