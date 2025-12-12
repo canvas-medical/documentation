@@ -10,7 +10,7 @@ sections:
           A request for a service to be performed for a patient, such as imaging, laboratory testing, or referral.<br><br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-servicerequest.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-servicerequest.html)<br><br>
           
-          ServiceRequest represents multiple Canvas services, such as:
+          ServiceRequest represents multiple Canvas services:
           
           - Imaging orders (e.g., CT, MRI, X-ray) - [Ordering imaging study](https://canvas-medical.help.usepylon.com/articles/2615916315-image-command)
           - Laboratory orders (e.g., hemoglobin/hematocrit) - [Placing a lab order](https://canvas-medical.help.usepylon.com/articles/3065191197-placing-a-lab-order)
