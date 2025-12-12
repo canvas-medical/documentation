@@ -120,7 +120,7 @@ sections:
                 type: string
                 description: Type the reference refers to (e.g. "Practitioner").
           - name: reasonReference
-            description: Reason for the request. Optional (0...N). References Conditions from Canvas.
+            description: Reason for the request. References Conditions from Canvas.
             type: array[json]
             attributes:
               - name: reference
