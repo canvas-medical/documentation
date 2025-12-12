@@ -147,11 +147,6 @@ sections:
               - value: completed
               - value: draft
               - value: entered-in-error
-          - name: intent
-            description: The intent of the request. Canvas supports `order`.
-            type: string
-            search_options:
-              - value: order
           - name: category
             description: Categorization of the request (SNOMED CT). Filters by `category.coding` code and/or system. You can search by code alone or `system|code`.
             type: string
