@@ -162,11 +162,6 @@ sections:
           - name: code
             description: What is being requested (typically LOINC). Filters by `code.coding` code and/or system. You can search by code alone or `system|code`.
             type: string
-          - name: _revinclude
-            description: Include Provenance resources that reference this ServiceRequest.
-            type: string
-            search_options:
-              - value: "Provenance:target"
         endpoints: [read, search]
         read:
           description: Read a ServiceRequest resource.
