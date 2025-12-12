@@ -92,7 +92,7 @@ sections:
             attributes:
               - name: reference
                 type: string
-                description: The reference string of the subject in the format of `"Patient/<id>"`.
+                description: The reference string of the subject in the format of `"Patient/c4ff2ee2e41b4636b7d37ac7f9297d95"`.
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
@@ -115,7 +115,7 @@ sections:
             attributes:
               - name: reference
                 type: string
-                description: The reference string of the requester in the format of `"Practitioner/<id>"`.
+                description: The reference string of the requester in the format of `"Practitioner/5eede137ecfe4124b8b773040e33be14"`.
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Practitioner").
@@ -293,7 +293,7 @@ sections:
 </div>
 
 <div id="ServiceRequest-search-request">
-{% include search-request.html resource_type="ServiceRequest" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="ServiceRequest" search_string="patient=Patient/c4ff2ee2e41b4636b7d37ac7f9297d95" %}
 </div>
 
 <div id="ServiceRequest-search-response">
