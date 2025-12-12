@@ -183,6 +183,131 @@ class Protocol(BaseHandler):
         return [note_effect.push_charges()]
 ```
 
+### Lock
+
+Locks an existing note, preventing further modifications. Has the exact same effect as clicking on the `Lock` button in the Note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to lock   | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note that is not already locked.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.lock()]
+```
+
+### Sign
+
+Signs an existing note, marking it as reviewed and approved by the provider. Has the exact same effect as clicking on the `Sign` button in the Note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to sign   | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note that is not already signed.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.sign()]
+```
+
+### Unlock
+
+Unlocks a previously locked/signed note, allowing modifications again. Has the exact same effect as clicking on the `Unlock/Amend` button in the Note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to unlock | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note that is currently locked.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.unlock()]
+```
+
+### Check In
+
+Marks a patient as checked in for their appointment. Has the exact same effect as clicking on the `Check In` button in the Appointment note.
+
+#### Attributes
+
+| Attribute     | Type            | Description                            | Required |
+| ------------- | --------------- | -------------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note for check-in    | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note associated with an appointment.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.check_in()]
+```
+
+### No Show
+
+Marks an appointment as a no-show when the patient does not arrive. Has the exact same effect as marking an appointment as `No Show` in the Appointment note.
+
+#### Attributes
+
+| Attribute     | Type            | Description                            | Required |
+| ------------- | --------------- | -------------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to mark no-show | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note associated with an appointment.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.no_show()]
+```
+
 
 ## ScheduleEvent Effect
 
