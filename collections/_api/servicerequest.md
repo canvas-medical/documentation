@@ -125,7 +125,7 @@ sections:
             attributes:
               - name: reference
                 type: string
-                description: The reference string of the reason in the format of `"Condition/<id>"`.
+                description: The reference string of the reason in the format of `"Condition/6700a428-6387-458d-8134-0702851da23c"`.
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Condition").
