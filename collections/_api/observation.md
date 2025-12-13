@@ -1470,8 +1470,7 @@ print(response.text)
                 "issued": "2024-04-08T20:11:12.243418+00:00",
                 "specimen": {
                     "reference": "Specimen/0a5d9e1f-1c64-4d04-a2bb-2a58e34f9f6d",
-                    "type": "Specimen",
-                    "display": "Serum"
+                    "type": "Specimen"
                 },
                 "valueQuantity": {
                     "value": 1.0,
