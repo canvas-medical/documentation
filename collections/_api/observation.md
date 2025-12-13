@@ -369,7 +369,7 @@ sections:
             exclude_in: create, update
             description: >-
               Reference to the Specimen resource that was used for this observation.<br><br>
-              This field is populated for laboratory observations that have an associated specimen from a lab order. The specimen reference includes the specimen's externally exposable ID and display text showing the specimen type (e.g., "Serum", "Blood").
+              This field is populated for laboratory observations that have an associated specimen from a lab order. The specimen reference includes the specimen's externally exposable ID.
             attributes:
               - name: reference
                 type: string
@@ -377,9 +377,6 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Specimen").
-              - name: display
-                type: string
-                description: The specimen type display text (e.g., "Serum", "Blood").
           - name: component
             type: array[json]
             description: Component results. <br><br> Currently only used for blood pressure observations to display the systolic and diastolic components.
