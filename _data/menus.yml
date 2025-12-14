@@ -7,6 +7,7 @@ main:
     url: /guides/
   - title: Product Updates
     url: /product-updates/release-notes
+
 api:
   - title: "Canvas FHIR"
     identifier: api_canvas_fhir
@@ -107,6 +108,9 @@ api_resources:
   - title: "Medication"
     url: /api/medication/
     identifier: api_medication
+  - title: "MedicationDispense"
+    url: /api/medicationdispense/
+    identifier: api_medicationdispense
   - title: "MedicationRequest"
     url: /api/medicationrequest/
     identifier: api_medicationrequest
@@ -140,6 +144,9 @@ api_resources:
   - title: "QuestionnaireResponse"
     url: /api/questionnaireresponse/
     identifier: api_questionnaireresponse
+  - title: "RelatedPerson"
+    url: /api/relatedperson/
+    identifier: api_relatedperson
   - title: "Schedule"
     url: /api/schedule/
     identifier: api_schedule
@@ -312,6 +319,11 @@ api_medication:
     url: /api/medication/#read
   - title: "Medication Search"
     url: /api/medication/#search
+api_medicationdispense:
+  - title: "MedicationDispense Read"
+    url: /api/medicationdispense/#read
+  - title: "MedicationDispense Search"
+    url: /api/medicationdispense/#search
 api_medicationrequest:
   - title: "MedicationRequest Read"
     url: /api/medicationrequest/#read
@@ -389,6 +401,11 @@ api_questionnaireresponse:
     url: /api/questionnaireresponse/#update
   - title: "QuestionnaireResponse Search"
     url: /api/questionnaireresponse/#search
+api_relatedperson:
+  - title: "RelatedPerson Read"
+    url: /api/relatedperson/#read
+  - title: "RelatedPerson Search"
+    url: /api/relatedperson/#search
 api_schedule:
   - title: "Schedule Search"
     url: /api/schedule/#search
@@ -417,6 +434,65 @@ api_custom_apis:
     url: /api/letter
   - title: "Note"
     url: /api/note
+
+education:
+  - title: "Developer Education"
+    url: /learn/
+    identifier: education_series
+
+education_series:
+  - title: "Series 1"
+    header: true
+  - title: "Overview"
+    url: /learn/overview/
+    description: Learn the basics of the Canvas SDK
+  - title: "Setup"
+    url: /learn/setup/
+    description: Set up your developer environment
+  - title: "Events"
+    url: /learn/events/
+    description: Learn about events in the Canvas SDK
+  - title: "Data"
+    url: /learn/data/
+    description: Learn about data in the Canvas SDK
+  - title: "Effects"
+    url: /learn/effects/
+    description: Learn about effects in the Canvas SDK
+  - title: "SimpleAPI"
+    url: /learn/simpleapi/
+    description: Learn about the SimpleAPI in the Canvas SDK
+  - title: "Questionnaires"
+    url: /learn/questionnaires/
+    description: Learn about the Questionnaires in the Canvas SDK
+  - title: "Series 2"
+    header: true
+  - title: "Development Best Practices"
+    url: /learn/advanced/
+    description: Take your Canvas SDK knowledge to the next level
+  - title: "Handlers"
+    url: /learn/handlers/
+    description: Learn about handlers in the Canvas SDK
+  - title: "Commands"
+    url: /learn/commands/
+    description: Learn about commands in the Canvas SDK
+  - title: "Protocols"
+    url: /learn/protocols/
+    description: Learn about protocols in the Canvas SDK
+  - title: "Testing Utilities"
+    url: /learn/testing-utilities/
+    description: Learn about testing utilities in the Canvas SDK
+  - title: "Sandboxing and Allowed Imports"
+    url: /learn/sandboxing-and-allowed-imports/
+    description: Learn about sandboxing and allowed imports in the Canvas SDK
+  - title: "Secrets"
+    url: /learn/secrets/
+    description: Learn about secrets in the Canvas SDK
+  - title: "Caching"
+    url: /learn/caching/
+    description: Learn about caching in the Canvas SDK
+  - title: "Utils"
+    url: /learn/utils/
+    description: Learn about utils in the Canvas SDK
 
 guides:
   - title: "Guides"
@@ -498,6 +574,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Group items within a Patient Chart Section"
+    url: /guides/patient-chart-group-items/
+    description: How to group items on the patient chart
+    uses:
+      - sdk
+
   - title: "Your First Application"
     url: /guides/your-first-application
     description: Install and customize embeddable applications in Canvas
@@ -531,13 +613,13 @@ guides_templates:
 sdk:
   - title: "SDK Overview"
     identifier: sdk_overview
+  - title: "Example Plugins"
+    url: /sdk/examples/
+    identifier: example_plugins
 
 sdk_overview:
   - title: "Introduction"
     url: /sdk/
-  - title: "Example Plugins"
-    url: /sdk/examples/
-    identifier: example_plugins
   - title: "Caching Module"
     url: /sdk/caching/
   - title: "Command Line Interface"
@@ -563,20 +645,33 @@ sdk_overview:
     url: /sdk/sandboxing-and-allowed-imports/
   - title: "Secrets"
     url: /sdk/secrets/
+  - title: "SimpleAPI"
+    url: /sdk/handlers-simple-api/
+    identifier: simple_api_handlers
   - title: "Utils Module"
     url: /sdk/utils/
   - title: "Testing Utilities"
     url: /sdk/testing-utils/
+  - title: "Logging"
+    url: /sdk/plugin-logs/
 
 example_plugins:
   - title: "AI Note Titles"
     url: /sdk/example-ai_note_titles/
   - title: "API Samples"
     url: /sdk/example-api_samples/
+  - title: "Abnormal Lab Task Notification"
+    url: /sdk/example-abnormal_lab_task_notification/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
+  - title: "Example Chart Application"
+    url: /sdk/example-example_chart_app/
+  - title: "Group Items in Patient Chart"
+    url: /sdk/example-patient_summary_chart_groups/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
+  - title: "Send All Prescriptions"
+    url: /sdk/example-send_all_prescriptions/
   - title: "Upsert Patient Metadata"
     url: /sdk/example-upsert_patient_metadata/
   - title: "Vitals Visualizer"
@@ -599,9 +694,6 @@ sdk_handlers:
     url: /sdk/handlers-basehandler/
   - title: "CronTask"
     url: /sdk/handlers-crontask/
-  - title: "SimpleAPI"
-    url: /sdk/handlers-simple-api/
-    identifier: simple_api_handlers
 
 simple_api_handlers:
   - title: "HTTP API"
@@ -610,6 +702,9 @@ simple_api_handlers:
     url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
+  - title: "Appointments"
+    url: /sdk/effect-notes/#appointment-effect
+    description: Create, update, and cancel patient appointments.
   - title: "Appointment Metadata"
     url: /sdk/effect-appointment-metadata/
     description: Interact with appointment metadata.
@@ -622,9 +717,21 @@ effects_module:
   - title: "Billing Line Items"
     url: /sdk/effect-billing-line-items/
     description: Add, modify, or remove billing codes on a note.
+  - title: "Claims"
+    url: /sdk/effect-claims/
+    description: Manage labels, update line items, move to a queue, or post a payment.
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Custom HTML and Django Templates"
+    url: /sdk/layout-effect/#custom-html-and-django-templates
+    description: Render custom HTML using Django templates.
+  - title: "Create Calendar"
+    url: /sdk/calendar-create-effect/
+    description: Create a calendar for a provider.
+  - title: "Manage Calendar Events"
+    url: /sdk/calendar-event-management-effects/
+    description: Manage calendar events.
   - title: "Form Result"
     url: /sdk/form-result-effect
     description: Effect for dynamically displaying forms in the Patient Portal.
@@ -640,6 +747,9 @@ effects_module:
   - title: "Patient"
     url: /sdk/effect-patient/
     description: Interact with patient data.
+  - title: "Patient Chart Group"
+    url: /sdk/patient-chart-group-effect/
+    description: Effect for grouping items on a patient chart section.
   - title: "Patient External ID"
     url: /sdk/effect-create-patient-external-identifier/
     description: Create a new external identifier for a patient.
@@ -661,6 +771,9 @@ effects_module:
   - title: "Tasks"
     url: /sdk/effect-tasks/
     description: Create or update tasks.
+  - title: "Task Metadata"
+    url: /sdk/effect-task-metadata/
+    description: Interact with Task metadata.
 
 data_module:
   - title: "AllergyIntolerance"
@@ -681,6 +794,9 @@ data_module:
   - title: "BusinessLine"
     url: /sdk/data-business-line/
     description: A group of patients that share a common brand under an organization.
+  - title: "Calendar"
+    url: /sdk/data-calendar/
+    description: Calendars associated with providers.
   - title: "CanvasUser"
     url: /sdk/data-canvasuser/
     description: User accounts associated with other records.
@@ -714,6 +830,9 @@ data_module:
   - title: "Device"
     url: /sdk/data-device/
     description: Type of a manufactured item that is used in the provision of healthcare.
+  - title: "EligibilitySummary"
+    url: /sdk/data-coverage/#eligilibitysummary
+    description: Summary of copay and coinsurance for a Coverage.
   - title: "Encounter"
     url: /sdk/data-encounter/
     description: A patient Encounter connected to a Note in Canvas.
@@ -735,6 +854,9 @@ data_module:
   - title: "Medication"
     url: /sdk/data-medication/
     description: A record of a medication that is being consumed by a patient, either now, in the past, or in the future.
+  - title: "Medication History"
+    url: /sdk/data-medication-history/
+    description: A record of a patient's medication history, including medications that were taken in the past but are no longer active.
   - title: "Medication Statement"
     url: /sdk/data-medication-statement/
     description: A record of a medication statement by a patient from the past.
@@ -795,9 +917,6 @@ data_module:
   - title: "Team"
     url: /sdk/data-team
     description: Data associated with Teams.
-  - title: "User"
-    url: /sdk/data-user
-    description: Data associated with Users.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.

@@ -5,8 +5,6 @@ excerpt: "Effect for creating, editing, and sending messages."
 hidden: false
 ---
 
-# Message Effect
-
 The `Message` effect provides a unified way to create, edit, and transmit messages between users (patients or staff)
 within the Canvas platform.
 It supports standalone creation, immediate send after creating, edits, and dedicated send operations.
@@ -16,9 +14,10 @@ It supports standalone creation, immediate send after creating, edits, and dedic
 | Name           | Type                      | Description                                                                                                 |
 |----------------|---------------------------|-------------------------------------------------------------------------------------------------------------|
 | `message_id`   | `str` or `UUID` or `None` | Unique identifier of an existing message. Must be unset when creating a new message; required when editing. |
-| `content`      | `str`                     | The text body of the message.                                                                               |
+| `content`      | `str` or `None`           | The text body of the message. Required when creating; cannot be empty.                                      |
 | `sender_id`    | `str` or `UUID`           | ID of the user (Patient or Staff) who is sending the message.                                               |
 | `recipient_id` | `str` or `UUID`           | ID of the user (Patient or Staff) who will receive the message.                                             |
+| `read`         | `datetime` or `None`      | Timestamp indicating when the message was read by the recipient. Defaults to `None` (unread).               |
 
 ## Validation & Errors
 
@@ -28,11 +27,12 @@ Before any effect is emitted, the model runs these checks:
   Verifies that both `sender_id` and `recipient_id` belong to either a `Patient` or a `Staff` record.
 - **Create vs. Edit Constraints**
   - **Create** and **Create-and-Send** must **not** include `message_id`.
+  - **Create** and **Create-and-Send** must include non-empty `content` (content cannot be blank or whitespace-only).
   - **Edit** operations **must** include a valid `message_id` that already exists in the database.
 
 ## Caveats
 
-- **Role Constraints:** Sender and Recipient must always be one of Patient or Staff; Patient-to-Patient and Staff-to-Staff messaging are not allowed.
+- **Role Constraints:** Sender and Recipient must always be one of Patient or Staff. Patient-to-Patient messaging is not allowed.
 - **UI Refresh Required:** Due to system constraints, editing a message requires a manual UI refresh for updated content to display.
 - **No Attachments Supported:** The Message effect does not yet support attachments.
 - **Immediate Post for Patient-to-Staff:** Messages created from a Patient to Staff cannot be drafted and will immediately appear in the timeline. This means that `CREATE_AND_SEND` and `SEND` effects will fail in these scenarios. You should only use the `CREATE` method for Patient-to-Staff messaging.
@@ -122,3 +122,7 @@ effect_edit = m3.edit()
 m4 = Message(message_id=m.id)
 effect_send = m4.send()
 ```
+
+<br/>
+<br/>
+<br/>

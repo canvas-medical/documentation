@@ -7,7 +7,13 @@ hidden: false
 
 ## Introduction
 
-The `LabReport`, `LabValue` and `LabReview` models represent diagnostic clinical laboratory results.
+The Canvas SDK provides comprehensive models for working with laboratory data throughout the entire lab workflow—from ordering tests to reviewing results. The primary models include:
+
+- **`LabOrder`**: Represents a lab order placed for a patient, including order details, transmission type, and associated tests
+- **`LabTest`**: Individual tests within a lab order, tracking status from creation through processing
+- **`LabReport`**: Contains the results returned from the lab, including all values and associated metadata
+- **`LabValue`**: Individual test results within a lab report, including values, units, and reference ranges
+- **`LabReview`**: Tracks the clinical review process for lab results, including provider comments and patient communication
 
 ## Basic Usage
 
@@ -77,7 +83,7 @@ lab_report = LabReport.objects.filter(patient=patient)
 
 ## Example
 
-A common plugin use case may be for a plugin to run every time a new Lab Report is created in Canvas. The following plugin code will run every time a new Lab Report is created and log the patient it is for, along with the values and codings from the report's results:
+The following plugin code will run every time a new Lab Report is created and log the patient it is for, along with the values and codings from the report's results:
 
 ```python
 from canvas_sdk.events import EventType
@@ -103,7 +109,161 @@ class Protocol(BaseProtocol):
         return []
 ```
 
-Each value and coding are instances of `LabValue` and `LabValueCoding`, respectively. To view the fields available for each of these models, they are available in the [Canvas SDK open source repository](https://github.com/canvas-medical/canvas-plugins/blob/main/canvas_sdk/v1/data/lab.py).
+For complete field documentation on all lab models, see the [Attributes](#attributes) section below.
+
+### Working with Lab Orders and Tests
+
+You can also work with lab orders and their associated tests. Here's an example of querying a lab order and checking the status of its tests:
+
+```python
+from canvas_sdk.v1.data.lab import LabOrder, LabTest
+
+# Get a lab order by ID
+lab_order = LabOrder.objects.get(id="abc123...")
+
+# Access all tests in the order
+for test in lab_order.tests.all():
+    print(f"Test: {test.ontology_test_name}")
+    print(f"Status: {test.status}")
+    print(f"Code: {test.ontology_test_code}")
+
+    # Check if results have been received
+    if test.report:
+        print(f"Report available with {test.report.values.count()} values")
+```
+
+### Navigating Between Lab Orders and Reports
+
+Lab orders and lab reports are connected through the `LabTest` model. Here's how to navigate between them:
+
+#### Getting the LabOrder from a LabReport
+
+```python
+from canvas_sdk.v1.data.lab import LabReport
+
+# Get a lab report
+lab_report = LabReport.objects.get(id="report-id")
+
+# Direct access to all orders via the reverse many-to-many relationship
+for lab_order in lab_report.laborder_set.all():
+    print(f"Order ID: {lab_order.id}")
+    print(f"Ordered by: {lab_order.ordering_provider.full_name if lab_order.ordering_provider else 'N/A'}")
+    print(f"Date ordered: {lab_order.date_ordered}")
+
+# Alternatively, access the order through the tests
+for test in lab_report.tests.all():
+    lab_order = test.order
+    print(f"Order ID: {lab_order.id}")
+    break  # Usually all tests in a report share the same order
+```
+
+#### Getting LabReports from a LabOrder
+
+```python
+from canvas_sdk.v1.data.lab import LabOrder
+
+# Get a lab order
+lab_order = LabOrder.objects.get(id="order-id")
+
+# Direct access to all reports via the many-to-many relationship
+for report in lab_order.reports.all():
+    print(f"Report ID: {report.id}")
+    print(f"Date performed: {report.date_performed}")
+    print(f"Number of values: {report.values.count()}")
+
+# Alternatively, access reports through the tests if you need test-level details
+for test in lab_order.tests.all():
+    if test.report:
+        print(f"Test: {test.ontology_test_name}")
+        print(f"Report ID: {test.report.id}")
+```
+
+### Working with Lab Reviews
+
+Lab reviews track the clinical review process for lab results, including provider comments and patient communication. Here's how to work with the LabReport and LabReview relationship:
+
+#### Accessing the Review from a LabReport
+
+```python
+from canvas_sdk.v1.data.lab import LabReport
+
+# Get a lab report
+lab_report = LabReport.objects.get(id="report-id")
+
+# Check if the report has been reviewed
+if lab_report.review:
+    lab_review = lab_report.review
+    print(f"Review status: {lab_review.status}")
+    print(f"Internal comment: {lab_review.internal_comment}")
+    print(f"Message to patient: {lab_review.message_to_patient}")
+
+    # Access the provider who reviewed it
+    if lab_review.originator:
+        print(f"Reviewed by: {lab_review.originator.full_name}")
+else:
+    print("Report has not been reviewed yet")
+```
+
+#### Accessing Reports from a LabReview
+
+```python
+from canvas_sdk.v1.data.lab import LabReview
+
+# Get a lab review
+lab_review = LabReview.objects.get(id="review-id")
+
+# Access all reports in this review batch
+for report in lab_review.reports.all():
+    print(f"Report ID: {report.id}")
+    print(f"Date performed: {report.date_performed}")
+    print(f"Number of values: {report.values.count()}")
+
+    # Check if this report requires signature
+    if report.requires_signature:
+        print("  ⚠️  Requires provider signature")
+```
+
+#### Finding Unreviewed Lab Reports
+
+```python
+from canvas_sdk.v1.data.lab import LabReport
+from canvas_sdk.v1.data.patient import Patient
+
+# Get all unreviewed lab reports for a patient
+patient = Patient.objects.get(id="patient-id")
+unreviewed_reports = LabReport.objects.filter(
+    patient=patient,
+    review__isnull=True,
+    deleted=False
+)
+
+print(f"Found {unreviewed_reports.count()} unreviewed reports")
+for report in unreviewed_reports:
+    print(f"Report from {report.date_performed} - {report.values.count()} values")
+```
+
+### Filtering Lab Results by Abnormal Values
+
+A common use case is to identify abnormal lab values that may require clinical attention:
+
+```python
+from canvas_sdk.v1.data.lab import LabReport, LabValue
+from canvas_sdk.v1.data.patient import Patient
+
+# Get all lab reports for a patient
+patient = Patient.objects.get(id="patient-id")
+lab_reports = LabReport.objects.filter(patient=patient)
+
+# Find all abnormal values
+for report in lab_reports:
+    abnormal_values = report.values.filter(abnormal_flag__isnull=False).exclude(abnormal_flag="")
+
+    if abnormal_values.exists():
+        print(f"Report from {report.date_performed}:")
+        for value in abnormal_values:
+            for coding in value.codings.all():
+                print(f"  {coding.name}: {value.value} {value.units} (Flag: {value.abnormal_flag})")
+```
 
 ## Attributes
 
@@ -219,6 +379,7 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | labcorp_abn_url           | URL                                               |
 | reasons                   | [LabOrderReason](#laborderreason)[]               |
 | tests                     | [LabTest](#labtest)[]                             |
+| reports                   | [LabReport](#labreport)[]                         |
 
 ### LabOrderReason
 
@@ -234,6 +395,42 @@ Each value and coding are instances of `LabValue` and `LabValueCoding`, respecti
 | order             | [LabOrder](#laborder)                                 |
 | mode              | [LabReasonMode](#labreasonmode)                       |
 | reason_conditions | [LabOrderReasonCondition](#laborderreasoncondition)[] |
+
+### LabOrderReasonCondition
+
+| Field Name         | Type                                  |
+|--------------------|---------------------------------------|
+| dbid               | Integer                               |
+| created            | DateTime                              |
+| modified           | DateTime                              |
+| originator         | [CanvasUser](/sdk/data-canvasuser)    |
+| deleted            | Boolean                               |
+| committer          | [CanvasUser](/sdk/data-canvasuser)    |
+| entered_in_error   | [CanvasUser](/sdk/data-canvasuser)    |
+| reason             | [LabOrderReason](#laborderreason)     |
+| condition          | [Condition](/sdk/data-condition)      |
+
+### LabTest
+
+Represents an individual test within a lab order. Each `LabTest` tracks the lifecycle of a specific test from order creation through processing and result receipt.
+
+| Field Name                  | Type                                      |
+|-----------------------------|-------------------------------------------|
+| id                          | UUID                                      |
+| dbid                        | Integer                                   |
+| created                     | DateTime                                  |
+| modified                    | DateTime                                  |
+| ontology_test_name          | String                                    |
+| ontology_test_code          | String                                    |
+| status                      | [LabTestOrderStatus](#labtestorderstatus) |
+| report                      | [LabReport](#labreport)                   |
+| specimen_type               | String                                    |
+| specimen_source_code        | String                                    |
+| specimen_source_description | String                                    |
+| specimen_source_coding_system | String                                  |
+| order                       | [LabOrder](#laborder)                     |
+| aoe_code                    | String                                    |
+| procedure_class             | String                                    |
 
 ## Enumeration types
 

@@ -204,7 +204,7 @@ $ canvas validate-manifest [OPTIONS] PLUGIN_NAME
 
 ### `canvas logs`
 
-Subscribes to a log stream and prints to your console.
+Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
 
 **Usage**:
 
@@ -214,8 +214,20 @@ $ canvas logs [OPTIONS]
 
 **Options**:
 
-- `--host TEXT`: Canvas instance to connect to
-- `--help`: Show this message and exit.
+- `--host TEXT`:           Canvas instance to connect to
+- `--help`:                Show this message and exit.
+-  `--since TEXT`:         Lookback window (e.g. '24h', '2h30m'). Mutually exclusive with --start/--end.
+-  `--start TEXT`:         Start time (ISO/RFC3339) or 'now'.
+-  `--end TEXT`:           End time (ISO/RFC3339) or 'now'. Defaults to now if start is provided.
+-  `--no-follow`:          Historical only; do not stream live logs.
+-  `--level TEXT`:         Repeatable. --level ERROR --level WARN
+-  `--source TEXT`:        Filter by source/service.
+-  `--page-size INTEGER`:  Fetch size per page (historical).  \[default: 200]
+-  `--limit INTEGER`:      Max historical logs to print.
+-  `--all`:                Fetch all pages until exhausted (historical).
+-  `--interactive`:        After each page, prompt to load more.
+-  `--cursor TEXT`:        Resume token from a previous run.
+-  `--help`:               Show this message and exit.
 
 
 ### `canvas config list`
