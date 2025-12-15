@@ -50,30 +50,34 @@ The resources in scope for the response are:
 
 The table below lists the Canvas resources included in the patient recordset:
 
-| Resource                       | 
-|--------------------------------|
-| [AllergyIntolerance](/api/allergyintolerance)             | 
-| [Appointment](/api/appointment)                    | 
-| [CarePlan](/api/careplan)                       | 
-| [CareTeam](/api/careteam)                       |
-| [Claim](/api/claim)                          | 
-| [Communication](/api/communication)                  | 
-| [Condition](/api/condition)                      | 
-| [Consent](/api/consent)                        | 
-| [Coverage](/api/coverage)                         | 
-| [CoverageEligibilityResponse](/api/coverageeligibilityresponse)      | 
-| [Device](/api/device)                 | 
-| [DiagnosticReport](/api/diagnosticreport)                 | 
-| [DocumentReference](/api/documentreference)                | 
-| [Encounter](/api/encounter)                        | 
-| [Goal](/api/goal)                             |  
-| [Immunization](/api/immunization)                     | 
-| [Media](/api/media)                 | 
-| [MedicationRequest](/api/medicationrequest)                 | 
-| [MedicationStatement](/api/medicationstatement)               | 
-| [Observation](/api/observation)                       | 
-| [Patient](/api/patient)                           | 
-| [Procedure](/api/procedure)                           | 
-| [Provenance](/api/provenance)                           | 
+| Resource                                                        | 
+|-----------------------------------------------------------------|
+| [AllergyIntolerance](/api/allergyintolerance)                   | 
+| [Appointment](/api/appointment)                                 | 
+| [CarePlan](/api/careplan)                                       | 
+| [CareTeam](/api/careteam)                                       |
+| [Claim](/api/claim)                                             | 
+| [Communication](/api/communication)                             | 
+| [Condition](/api/condition)                                     | 
+| [Consent](/api/consent)                                         | 
+| [Coverage](/api/coverage)                                       | 
+| [CoverageEligibilityResponse](/api/coverageeligibilityresponse) | 
+| [Device](/api/device)                                           | 
+| [DiagnosticReport](/api/diagnosticreport)                       | 
+| [DocumentReference](/api/documentreference)                     | 
+| [Encounter](/api/encounter)                                     | 
+| [Goal](/api/goal)                                               |  
+| [Immunization](/api/immunization)                               | 
+| [Media](/api/media)                                             | 
+| [MedicationDispense](/api/medicationdispense)                   |
+| [MedicationRequest](/api/medicationrequest)                     | 
+| [MedicationStatement](/api/medicationstatement)                 | 
+| [Observation](/api/observation)                                 | 
+| [Patient](/api/patient)                                         | 
+| [Procedure](/api/procedure)                                     | 
+| [Provenance](/api/provenance)                                   | 
 | [QuestionnaireResponse](/api/questionnaireresponse)             | 
-| [Task](/api/task)                              | 
+| [RelatedPerson](/api/relatedperson)                             |
+| [ServiceRequest](/api/servicerequest)                           |
+| [Specimen](/api/specimen)                                       |
+| [Task](/api/task)                                               | 

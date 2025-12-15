@@ -194,8 +194,10 @@ sections:
                 attributes: 
                   - name: system
                     description: The system url of the coding.
-                    enum_options: 
+                    enum_options:
                       - value: http://schemas.canvasmedical.com/fhir/document-reference-category
+                      - value: http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category
+                        exclude_in: create
                     type: string
                     required_in: create
                   - name: code
@@ -661,6 +663,14 @@ payload = {
                     "code": "uncategorizedclinicaldocument"
                 }
             ]
+        },
+        {
+            "coding": [
+                {
+                    "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                    "code": "clinical-note"
+                }
+            ]
         }
     ],
     "subject": {
@@ -884,6 +894,14 @@ payload = {
                                 "code": "labreport"
                             }
                         ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
+                            }
+                        ]
                     }
                 ],
                 "subject": {
@@ -976,6 +994,14 @@ payload = {
                                 "code": "imagingreport"
                             }
                         ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
+                            }
+                        ]
                     }
                 ],
                 "subject": {
@@ -1002,7 +1028,7 @@ payload = {
                     }
                 ]
             }
-        }
+        },
         {
             "resource": {
                 "resourceType": "DocumentReference",
@@ -1132,6 +1158,14 @@ payload = {
                             {
                                 "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "referralreport"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
                             }
                         ]
                     }
@@ -1291,6 +1325,14 @@ payload = {
                             {
                                 "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "uncategorizedclinicaldocument"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
                             }
                         ]
                     }
@@ -1576,6 +1618,14 @@ payload = {
                             {
                                 "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "educationalmaterial"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
                             }
                         ]
                     }

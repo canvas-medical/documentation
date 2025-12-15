@@ -17,6 +17,16 @@ sections:
           - name: id
             description: The identifier of the Procedure.
             type: string
+          - name: basedOn
+            description: A reference to a resource that contains details of the request for this procedure.
+            type: array[json]
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the ServiceRequest in the format of `"ServiceRequest/a47c7b0e-bbb4-42cd-bc4a-df259d148ea1"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "ServiceRequest").
           - name: status 
             type: enum [ in-progress | stopped | completed | unknown | entered-in-error ]
             description: A code specifying the state of the procedure.
@@ -86,6 +96,12 @@ sections:
 {
     "resourceType": "Procedure",
     "id": "2dd9a3bc-a3bb-472b-aaef-c57be394de39",
+    "basedOn": [
+        {
+            "reference": "ServiceRequest/18b3d94d-70fa-4387-817c-9b8811e52d73",
+            "type": "ServiceRequest"
+        }
+    ],
     "status": "unknown",
     "code": {
         "coding": [
@@ -193,6 +209,12 @@ sections:
             "resource": {
                 "resourceType": "Procedure",
                 "id": "2dd9a3bc-a3bb-472b-aaef-c57be394de39",
+                "basedOn": [
+                    {
+                        "reference": "ServiceRequest/18b3d94d-70fa-4387-817c-9b8811e52d73",
+                        "type": "ServiceRequest"
+                    }
+                ],
                 "status": "unknown",
                 "code": {
                     "coding": [
