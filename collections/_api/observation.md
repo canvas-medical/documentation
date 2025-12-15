@@ -74,6 +74,7 @@ sections:
                     type: string
                     enum_options:
                       - value: http://terminology.hl7.org/CodeSystem/observation-category
+                      - value: http://hl7.org/fhir/us/core/CodeSystem/us-core-category
                   - name: code
                     description: The code of the observation.
                     type: string
@@ -87,6 +88,10 @@ sections:
                       - value: exam
                       - value: therapy
                       - value: activity
+                      - value: sdoh
+                      - value: functional-status
+                      - value: cognitive-status
+                      - value: disability-status
                   - name: display
                     description: The display name of the coding.
                     type: string
@@ -101,6 +106,10 @@ sections:
                       - value: Exam
                       - value: Therapy
                       - value: Activity
+                      - value: SDOH
+                      - value: Functional Status
+                      - value: Cognitive Status
+                      - value: Disability Status
           - name: code
             type: json
             exclude_in: read, search
@@ -221,6 +230,16 @@ sections:
               - name: end
                 type: datetime
                 description: End time with inclusive boundary, if not ongoing
+          - name: performer
+            type: array[json]
+            description: Who is responsible for the observation
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the patient or practitioner (e.g. `"Practitioner/4150cd20de8a470aa570a852859ac87e"`).
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Practitioner").
           - name: issued
             type: datetime
             exclude_in: create
@@ -241,6 +260,8 @@ sections:
                   -  pulse rate<br>
                   -  oxygen saturation<br>
                   -  respiration rate
+
+              A `valueQuantity` can also be used to represent a diagnostic score. Scores will have a unit of 'score'.
             attributes:
               - name: value
                 type: number
@@ -683,6 +704,13 @@ print(response.text)
         "type": "Patient"
     },
     "effectiveDateTime": "2022-06-28T20:18:54.141759+00:00",
+    "performer":
+    [
+        {
+            "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+            "type": "Practitioner"
+        }
+    ],
     "issued": "2022-06-28T20:43:10.465819+00:00",
     "dataAbsentReason": {
         "coding": [
@@ -858,6 +886,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.633932+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.651181+00:00",
                 "dataAbsentReason": {
                     "coding": [
@@ -922,6 +957,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.754424+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.756630+00:00",
                 "valueQuantity": {
                     "value": 69.0,
@@ -972,6 +1014,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.744026+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.745602+00:00",
                 "valueQuantity": {
                     "value": 98.0,
@@ -1056,6 +1105,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.739851+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.741587+00:00",
                 "valueString": "Regular",
                 "derivedFrom": [
@@ -1096,6 +1152,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.714893+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.716508+00:00",
                 "valueString": "120/80 mmHg",
                 "derivedFrom": [
@@ -1172,6 +1235,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:38.029091+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1220,6 +1290,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:38.024815+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1268,6 +1345,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:38.020391+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1316,6 +1400,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:38.012952+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1363,6 +1454,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-03T07:00:00+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T20:11:12.198162+00:00",
                 "dataAbsentReason": {
                     "coding": [
@@ -1417,6 +1515,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-03T07:00:00+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T20:11:12.256507+00:00",
                 "valueString": "test"
             }
@@ -1451,6 +1556,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-03T07:00:00+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T20:11:12.243418+00:00",
                 "valueQuantity": {
                     "value": 1.0,
@@ -1488,6 +1600,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:37.996595+00:00",
                 "valueQuantity": {
                     "value": 4.0,
@@ -1531,6 +1650,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.819506+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1579,6 +1705,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.805651+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1627,6 +1760,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:45.616779+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.781371+00:00",
                 "valueQuantity": {
                     "value": 90.0,
@@ -1672,6 +1812,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:45.616779+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.766580+00:00",
                 "valueQuantity": {
                     "value": 37.0,
@@ -1717,6 +1864,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:45.616779+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.751224+00:00",
                 "valueQuantity": {
                     "value": 20.0,
@@ -1762,6 +1916,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:45.616779+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.629738+00:00",
                 "dataAbsentReason": {
                     "coding": [
