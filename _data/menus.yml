@@ -722,12 +722,21 @@ effects_module:
   - title: "Billing Line Items"
     url: /sdk/effect-billing-line-items/
     description: Add, modify, or remove billing codes on a note.
+  - title: "Claims"
+    url: /sdk/effect-claims/
+    description: Manage labels, update line items, move to a queue, or post a payment.
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
   - title: "Custom HTML and Django Templates"
     url: /sdk/layout-effect/#custom-html-and-django-templates
     description: Render custom HTML using Django templates.
+  - title: "Create Calendar"
+    url: /sdk/calendar-create-effect/
+    description: Create a calendar for a provider.
+  - title: "Manage Calendar Events"
+    url: /sdk/calendar-event-management-effects/
+    description: Manage calendar events.
   - title: "Form Result"
     url: /sdk/form-result-effect
     description: Effect for dynamically displaying forms in the Patient Portal.
@@ -790,6 +799,9 @@ data_module:
   - title: "BusinessLine"
     url: /sdk/data-business-line/
     description: A group of patients that share a common brand under an organization.
+  - title: "Calendar"
+    url: /sdk/data-calendar/
+    description: Calendars associated with providers.
   - title: "CanvasUser"
     url: /sdk/data-canvasuser/
     description: User accounts associated with other records.
@@ -910,6 +922,9 @@ data_module:
   - title: "Team"
     url: /sdk/data-team
     description: Data associated with Teams.
+  - title: "Uncategorized Clinical Documents"
+    url: /sdk/data-uncategorized-clinical-document
+    description: Data associated with uncategorized clinical documents and their reviews.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.

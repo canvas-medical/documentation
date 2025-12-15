@@ -2079,6 +2079,54 @@ TaskCommand(
 )
 ```
 
+
+---
+
+## UncategorizedDocumentReview
+
+**Command-specific parameters**:
+
+| Name                     | Type                                     | Required | Description                                                                                                    |
+|--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
+| `report_ids`             | _list[string]_                           | `true`   | List of uncategorized document IDs to review.                                                                  |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReportReviewCommunicationMethod`.                            |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+
+**Enums and Types**:
+
+**`ReportReviewCommunicationMethod`**
+
+| Communication Method                | Value | Description                                                |
+|:------------------------------------|:------|:-----------------------------------------------------------|
+| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
+| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
+| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
+| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
+| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import UncategorizedDocumentReviewCommand
+from canvas_sdk.v1.data import UncategorizedClinicalDocument, Patient
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+
+patient = Patient.objects.last()
+# Get uncategorized documents to review
+uncategorized_documents = UncategorizedClinicalDocument.objects.filter(patient=patient, review__isnull=True)
+report_ids = [str(doc.id) for doc in uncategorized_documents]
+
+uncategorized_review = UncategorizedDocumentReviewCommand(
+    note_uuid="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    report_ids=report_ids,
+    message_to_patient="Your document has been reviewed.",
+    communication_method=ReportReviewCommunicationMethod.DELEGATED_CALL_CAN_LEAVE_MESSAGE,
+    comment="Document reviewed, no further action needed."
+)
+```
+
 ---
 
 ## UpdateDiagnosis
