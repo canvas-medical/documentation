@@ -158,7 +158,7 @@ class Protocol(BaseHandler):
 
 ### Push Charges
 
-Pushes the charges from the Note to its associated Claim in the Revenue module. Has the exact same effect as clicking on the `Push charges` button in the Note footer.
+Pu  shes the charges from the Note to its associated Claim in the Revenue module. Has the exact same effect as clicking on the `Push charges` button in the Note footer.
 
 #### Attributes
 
@@ -182,6 +182,8 @@ class Protocol(BaseHandler):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.push_charges()]
 ```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
 ### Lock
 
@@ -208,6 +210,8 @@ class Protocol(BaseHandler):
         return [note_effect.lock()]
 ```
 
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
 ### Sign
 
 Signs an existing note, marking it as reviewed and approved by the provider. Has the exact same effect as clicking on the `Sign` button in the Note footer.
@@ -232,6 +236,8 @@ class Protocol(BaseHandler):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.sign()]
 ```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
 ### Unlock
 
@@ -258,6 +264,8 @@ class Protocol(BaseHandler):
         return [note_effect.unlock()]
 ```
 
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
 ### Check In
 
 Marks a patient as checked in for their appointment. Has the exact same effect as clicking on the `Check In` button in the Appointment note.
@@ -283,6 +291,8 @@ class Protocol(BaseHandler):
         return [note_effect.check_in()]
 ```
 
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
 ### No Show
 
 Marks an appointment as a no-show when the patient does not arrive. Has the exact same effect as marking an appointment as `No Show` in the Appointment note.
@@ -307,6 +317,8 @@ class Protocol(BaseHandler):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.no_show()]
 ```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
 
 ## ScheduleEvent Effect
