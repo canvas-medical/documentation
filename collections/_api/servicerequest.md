@@ -10,7 +10,7 @@ sections:
           A request for a service to be performed for a patient, such as imaging, laboratory testing, or referral.<br><br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-servicerequest.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-servicerequest.html)<br><br>
           
-          ServiceRequest represents multiple Canvas services, such as:
+          ServiceRequest represents multiple Canvas services:
           
           - Imaging orders (e.g., CT, MRI, X-ray) - [Ordering imaging study](https://canvas-medical.help.usepylon.com/articles/2615916315-image-command)
           - Laboratory orders (e.g., hemoglobin/hematocrit) - [Placing a lab order](https://canvas-medical.help.usepylon.com/articles/3065191197-placing-a-lab-order)
@@ -32,12 +32,9 @@ sections:
             type: string
             enum_options:
               - value: active
-              - value: draft
-              - value: on-hold
-              - value: revoked
               - value: completed
+              - value: draft
               - value: entered-in-error
-              - value: unknown
           - name: intent
             description: Indicates the level of authorization/intent for the request. Canvas supports `order` for orders placed by a practitioner.
             type: string
@@ -95,7 +92,7 @@ sections:
             attributes:
               - name: reference
                 type: string
-                description: The reference string of the subject in the format of `"Patient/<id>"`.
+                description: The reference string of the subject in the format of `"Patient/c4ff2ee2e41b4636b7d37ac7f9297d95"`.
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Patient").
@@ -118,17 +115,17 @@ sections:
             attributes:
               - name: reference
                 type: string
-                description: The reference string of the requester in the format of `"Practitioner/<id>"`.
+                description: The reference string of the requester in the format of `"Practitioner/5eede137ecfe4124b8b773040e33be14"`.
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Practitioner").
           - name: reasonReference
-            description: Reason for the request. Optional (0...N). References Conditions from Canvas.
+            description: Reason for the request. References Conditions from Canvas.
             type: array[json]
             attributes:
               - name: reference
                 type: string
-                description: The reference string of the reason in the format of `"Condition/<id>"`.
+                description: The reference string of the reason in the format of `"Condition/6700a428-6387-458d-8134-0702851da23c"`.
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Condition").
@@ -147,17 +144,9 @@ sections:
             type: string
             search_options:
               - value: active
-              - value: draft
-              - value: on-hold
-              - value: revoked
               - value: completed
+              - value: draft
               - value: entered-in-error
-              - value: unknown
-          - name: intent
-            description: The intent of the request. Canvas supports `order`.
-            type: string
-            search_options:
-              - value: order
           - name: category
             description: Categorization of the request (SNOMED CT). Filters by `category.coding` code and/or system. You can search by code alone or `system|code`.
             type: string
@@ -168,11 +157,6 @@ sections:
           - name: code
             description: What is being requested (typically LOINC). Filters by `code.coding` code and/or system. You can search by code alone or `system|code`.
             type: string
-          - name: _revinclude
-            description: Include Provenance resources that reference this ServiceRequest.
-            type: string
-            search_options:
-              - value: "Provenance:target"
         endpoints: [read, search]
         read:
           description: Read a ServiceRequest resource.
@@ -299,7 +283,7 @@ sections:
 </div>
 
 <div id="ServiceRequest-search-request">
-{% include search-request.html resource_type="ServiceRequest" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="ServiceRequest" search_string="patient=Patient/c4ff2ee2e41b4636b7d37ac7f9297d95" %}
 </div>
 
 <div id="ServiceRequest-search-response">
