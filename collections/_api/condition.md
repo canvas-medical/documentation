@@ -9,7 +9,7 @@ sections:
         article: "a"
         description: >-
           A clinical condition, problem, diagnosis, or other event, situation, issue, or clinical concept that has risen to a level of concern.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-condition.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-condition.html)
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html)
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -141,7 +141,11 @@ sections:
             type: array[json]
             attributes:
                 - name: coding
-                  description: Identifies where the definition of the code comes from.
+                  description: >-
+                    Identifies where the definition of the code comes from.<br><br>
+                    The codes `encounter-diagnosis` and `problem-list-item` are paired with the system `http://terminology.hl7.org/CodeSystem/condition-category`.<br><br>
+                    The code `health-concern` is paired with the system `http://hl7.org/fhir/us/core/CodeSystem/condition-category`.<br><br>
+                    The codes `sdoh`, `functional-status`, `disability-status`, and `cognitive-status` are paired with the system `http://hl7.org/fhir/us/core/CodeSystem/us-core-category`. Please note that these codings are only optionally included as a secondary codeable concept for problem list items or health concerns.
                   type: array[json]
                   required_in: create, update
                   attributes: 
@@ -150,15 +154,21 @@ sections:
                       required_in: create, update
                       enum_options: 
                         - value: http://terminology.hl7.org/CodeSystem/condition-category
+                        - value: http://hl7.org/fhir/us/core/CodeSystem/condition-category
+                        - value: http://hl7.org/fhir/us/core/CodeSystem/us-core-category
                       type: string
                     - name: code
-                      description: The code of the clinical status.
+                      description: The category code.
                       required_in: create, update
                       type: string
                       enum_options: 
                         - value: encounter-diagnosis
                         - value: problem-list-item
                         - value: health-concern
+                        - value: sdoh
+                        - value: functional-status
+                        - value: disability-status
+                        - value: cognitive-status
                     - name: display
                       description: The display name of the coding.
                       exclude_in: create, update
@@ -167,6 +177,10 @@ sections:
                         - value: Encounter Diagnosis
                         - value: Problem List Item
                         - value: Health Concern
+                        - value: SDOH
+                        - value: Functional Status
+                        - value: Disability Status
+                        - value: Cognitive Status
                 - name: text
                   description: Plain text representation of the concept.
                   exclude_in: create, update
@@ -175,6 +189,10 @@ sections:
                         - value: Encounter Diagnosis
                         - value: Problem List Item
                         - value: Health Concern
+                        - value: SDOH
+                        - value: Functional Status
+                        - value: Disability Status
+                        - value: Cognitive Status
           - name: code
             description_for_all_endpoints: Identification of the condition, problem or diagnosis.
             create_description: Canvas will not validate the coding supplied in the payload, instead Canvas will just save the system, code, and display as provided. We highly recommend supplying a coding with the `system` of `http://hl7.org/fhir/sid/icd-10-cm`.
@@ -275,6 +293,10 @@ sections:
             search_options: 
               - value: entered-in-error
               - value: provisional
+          - name: category
+            description: >-
+              The category of the condition. Filters by the code and/or system under `category.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code` (e.g. `http://terminology.hl7.org/CodeSystem/condition-category|health-concern`).
+            type: string
         endpoints: [create, read, update, search]
         create:
           responses: [201, 400, 401, 403, 405, 422]
@@ -349,11 +371,11 @@ curl --request POST \
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code": {
@@ -432,11 +454,11 @@ payload = {
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code": {
@@ -531,11 +553,11 @@ print(response.text)
             [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code":
@@ -675,11 +697,11 @@ curl --request PUT \
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code": {
@@ -758,11 +780,11 @@ payload = {
             "coding": [
                 {
                     "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis",
-                    "display": "Encounter Diagnosis"
+                    "code": "problem-list-item",
+                    "display": "Problem List Item"
                 }
             ],
-            "text": "Encounter Diagnosis"
+            "text": "Problem List Item"
         }
     ],
     "code": {
@@ -808,7 +830,7 @@ print(response.text)
 </div>
 
 <div id="condition-search-request">
-{% include search-request.html resource_type="Condition" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0" %}
+{% include search-request.html resource_type="Condition" search_string="patient=Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0&category=http://terminology.hl7.org/CodeSystem/condition-category|health-concern" %}
 </div>
 
 <div id="condition-search-response">
@@ -871,11 +893,11 @@ print(response.text)
                         "coding": [
                             {
                                 "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                                "code": "encounter-diagnosis",
-                                "display": "Encounter Diagnosis"
+                                "code": "problem-list-item",
+                                "display": "Problem List Item"
                             }
                         ],
-                        "text": "Encounter Diagnosis"
+                        "text": "Problem List Item"
                     }
                 ],
                 "code": {

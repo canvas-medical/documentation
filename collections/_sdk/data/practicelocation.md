@@ -63,7 +63,7 @@ Please note that the content of each `value` field can contain any value that is
 ### PracticeLocation
 
 | Field Name                | Type                                                  |
-|-------------------------- |------------------------------------------------------ |
+| ------------------------- | ----------------------------------------------------- |
 | id                        | UUID                                                  |
 | dbid                      | Integer                                               |
 | created                   | DateTime                                              |
@@ -87,30 +87,48 @@ Please note that the content of each `value` field can contain any value that is
 
 ### PracticeLocationAddress
 
-| Field Name                | Type                                                      |
-|-------------------------- |---------------------------------------------------------- |
-| dbid                      | Integer                                                   |
-| practice_location         | [PracticeLocation](#practicelocation)                     |
-| line1                     | String                                                    |
-| line2                     | String                                                    |
-| city                      | String                                                    |
-| district                  | String                                                    |
-| state_code                | String                                                    |
-| postal_code               | String                                                    |
-| use                       | [AddressUse](/sdk/data-enumeration-types/#addressuse)     |
-| type                      | [AddressType](/sdk/data-enumeration-types/#addresstype)   |
-| longitude                 | Float                                                     |
-| latitude                  | Float                                                     |
-| start                     | Date                                                      |
-| end                       | Date                                                      |
-| country                   | String                                                    |
-| state                     | [AddressState](/sdk/data-enumeration-types/#addressstate) |
+| Field Name        | Type                                                      |
+| ----------------- | --------------------------------------------------------- |
+| dbid              | Integer                                                   |
+| practice_location | [PracticeLocation](#practicelocation)                     |
+| line1             | String                                                    |
+| line2             | String                                                    |
+| city              | String                                                    |
+| district          | String                                                    |
+| state_code        | String                                                    |
+| postal_code       | String                                                    |
+| use               | [AddressUse](/sdk/data-enumeration-types/#addressuse)     |
+| type              | [AddressType](/sdk/data-enumeration-types/#addresstype)   |
+| longitude         | Float                                                     |
+| latitude          | Float                                                     |
+| start             | Date                                                      |
+| end               | Date                                                      |
+| country           | String                                                    |
+| state             | [AddressState](/sdk/data-enumeration-types/#addressstate) |
 
 ### PracticeLocationSetting
 
-| Field Name                | Type                                                 |
-|-------------------------- |----------------------------------------------------- |
-| dbid                      | Integer                                              |
-| practice_location         | [PracticeLocation](#practicelocation)                |
-| name                      | String                                               |
-| value                     | JSON                                                 |
+| Field Name        | Type                                  |
+| ----------------- | ------------------------------------- |
+| dbid              | Integer                               |
+| practice_location | [PracticeLocation](#practicelocation) |
+| name              | String                                |
+| value             | JSON                                  |
+
+## PracticeLocationContactPoint
+
+The `PracticeLocationContactPoint` model represents a contact method (such as phone, email, or fax) for a Practice Location. Multiple contact points can be associated with a single Practice Location, each with its own type, use, and status.
+
+### Attributes
+
+| Field Name        | Type                                                                  |
+| ----------------- | --------------------------------------------------------------------- |
+| id                | UUID                                                                  |
+| dbid              | Integer                                                               |
+| practice_location | [PracticeLocation](#practicelocation)                                 |
+| system            | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
+| value             | String                                                                |
+| use               | [ContactPointUse](/sdk/data-enumeration-types/#contactpointuse)       |
+| use_notes         | String                                                                |
+| rank              | Integer                                                               |
+| state             | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |

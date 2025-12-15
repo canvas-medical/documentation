@@ -86,12 +86,17 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 - `total_patient_paid`: Paid amount by the patient
 - `total_payer_paid`: Paid amount by coverages
 
+**Helpful Methods**:
+
+- `get_coverage_by_payer_id(payer_id: str, subscriber_number: str | None = None)`: Finds the active coverage associated with a payer_id. Optionally checks if the subscriber_number matches, which will choose the correct coverage in the case where a patient has two coverages with the same payer_id.
+
 ### ClaimLineItem
 
 Represents individual billed procedures or services tied to a claim.
 
 | Field Name        | Type                                                       |
 | ----------------- | ---------------------------------------------------------- |
+| id                | UUID                                                       |
 | dbid              | Integer                                                    |
 | billing_line_item | [BillingLineItem](/sdk/data-billing-line-item/)            |
 | claim             | [Claim](#claim)                                            |
@@ -119,6 +124,7 @@ Links a claim to a specific insurance coverage.
 
 | Field Name                         | Type                                                                     |
 | ---------------------------------- | ------------------------------------------------------------------------ |
+| id                                 | UUID                                                                     |
 | dbid                               | Integer                                                                  |
 | claim                              | [Claim](#claim)                                                          |
 | coverage                           | [Coverage](/sdk/data-coverage/)                                          |
@@ -244,7 +250,6 @@ Represents labels assigned to the claim.
 | claim      | [Claim](#claim)                        |
 | label      | [TaskLabel](/sdk/data-task/#tasklabel) |
 
-
 ### ClaimProvider
 
 Captures provider-level data related to a specific claim.
@@ -299,13 +304,26 @@ Captures provider-level data related to a specific claim.
 | created                            | DateTime        |
 | modified                           | DateTime        |
 
+### ClaimSubmission
+
+Captures clearinghouse submission details about a claim.
+
+| Field Name             | Type                            |
+| ---------------------- | ------------------------------- |
+| id                     | UUID                            |
+| dbid                   | Integer                         |
+| claim                  | [Claim](#claim)                 |
+| coverage               | [ClaimCoverage](#claimcoverage) |
+| clearinghouse_claim_id | String                          |
+| claim_index            | Integer                         |
+
 ### InstallmentPlan
 
 Represents a payment plan between a patient and provider.
 
 | Field Name           | Type                                            |
 | -------------------- | ----------------------------------------------- |
-| creator              | [CanvasUser](/sdk/data-canvasuser/)                   |
+| creator              | [CanvasUser](/sdk/data-canvasuser/)             |
 | patient              | [Patient](/sdk/data-patient/)                   |
 | total_amount         | Decimal                                         |
 | status               | [InstallmentPlanStatus](#installmentplanstatus) |
