@@ -38,11 +38,11 @@ Stay up to date on the latest important dates for the Canvas platform.
         This will affect all QuestionnaireResponse endpoints.<br><br>
         <strong>What you need to do to avoid disruption:</strong><br><br>
         The create and update endpoints currently accept either a reference string or an absolute
-        URL. Client code needs to be adjusted to start sending the absolute URL of the Questionnaire
-        in the request body.<br><br>
-        Read and search endpoints will start returning the absolute URL on the release date. Client
-        code needs to be adjusted so that it can handle either a reference string or an absolute
-        URL.<br><br>
+        URL for the <code>questionnaire</code> attribute. Client code needs to be adjusted to start
+        sending the absolute URL of the Questionnaire for this attribute in request bodies.<br><br>
+        Read and search endpoints will start returning the absolute URL for this attribute on the
+        release date. Client code needs to be adjusted so that it can accept and handle either a
+        reference string or an absolute URL for this attribute in response bodies.<br><br>
         <strong>Making these two changes before the release date will ensure that your use of the
         QuestionnaireResponse endpoints will be unaffected by this change.</strong> 
       </td>
