@@ -56,7 +56,7 @@ sections:
             required_in: create,update
             description: >-
               Form being answered.<br><br>
-              The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-<customer-identifier>.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
+              The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
             type: string
           - name: status
             required_in: create,update
