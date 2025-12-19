@@ -34,12 +34,14 @@ Stay up to date on the latest important dates for the Canvas platform.
         v3 requirements.<br><br>
         The <code>questionnaire</code> attribute is currently presented as a reference string, e.g.
         <code>Questionnaire/b357ddc9-c6fc-4a99-a79b-1d0b933afd7a</code>. USCDI v3 requires that this
-        attribute be presented as a full URL, e.g. <code>https://fumage-example.canvasmedical.com/Questionnaire/b357ddc9-c6fc-4a99-a79b-1d0b933afd7a</code><br><br>
+        attribute be presented as a full URL, e.g. <code>https://fumage-<CUSTOMER-ID>.canvasmedical.com/Questionnaire/b357ddc9-c6fc-4a99-a79b-1d0b933afd7a</code><br><br>
         This will affect all QuestionnaireResponse endpoints.<br><br>
         <strong>What you need to do to avoid disruption:</strong><br><br>
         The create and update endpoints currently accept either a reference string or an absolute
         URL for the <code>questionnaire</code> attribute. Client code needs to be adjusted to start
-        sending the absolute URL of the Questionnaire for this attribute in request bodies.<br><br>
+        sending the absolute URL of the Questionnaire for this attribute in request bodies. Use the
+        example above as a reference, and be sure to replace the customer ID in the example so that
+        the base URL matches what you normally use for FHIR requests.<br><br>        
         Read and search endpoints will start returning the absolute URL for this attribute on the
         release date. Client code needs to be adjusted so that it can accept and handle either a
         reference string or an absolute URL for this attribute in response bodies.<br><br>
