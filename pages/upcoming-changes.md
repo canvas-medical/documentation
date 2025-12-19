@@ -48,7 +48,7 @@ Stay up to date on the latest important dates for the Canvas platform.
         <strong>Making these two changes before the release date will ensure that your use of the
         QuestionnaireResponse endpoints will be unaffected by this change.</strong> 
       </td>
-      <td>01/19/25</td>
+      <td>02/02/26</td>
       <td></td>
     </tr>
     <tr>
