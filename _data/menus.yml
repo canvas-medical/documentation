@@ -737,6 +737,12 @@ effects_module:
   - title: "Manage Calendar Events"
     url: /sdk/calendar-event-management-effects/
     description: Manage calendar events.
+  - title: "Link Document to Patient"
+    url: /sdk/effect-link-document-to-patient/
+    description: Link a document to a patient using demographic matching.
+  - title: "Remove Document from Patient"
+    url: /sdk/effect-remove-document-from-patient/
+    description: Remove patient link from a document in the Data Integration queue.
   - title: "Form Result"
     url: /sdk/form-result-effect
     description: Effect for dynamically displaying forms in the Patient Portal.
