@@ -158,7 +158,7 @@ class Protocol(BaseHandler):
 
 ### Push Charges
 
-Pu  shes the charges from the Note to its associated Claim in the Revenue module. Has the exact same effect as clicking on the `Push charges` button in the Note footer.
+Pushes the charges from the Note to its associated Claim in the Revenue module. Has the exact same effect as clicking on the `Push charges` button in the Note footer.
 
 #### Attributes
 
