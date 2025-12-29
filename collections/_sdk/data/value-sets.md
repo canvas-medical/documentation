@@ -11,6 +11,16 @@ The Canvas SDK includes a library of built-in Value Sets that can be used within
 
 Built-in Value Sets that can be imported into plugins can be found in the Canvas SDK open source repo [here](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/value_set/).
 
+### Tomography Value Set
+
+The SDK includes a `Tomography` value set for digital breast tomosynthesis imaging:
+
+```python
+from canvas_sdk.value_set.v2026.tomography import Tomography
+```
+
+This value set includes LOINC codes for digital breast tomosynthesis (8 codes), CPT code `77063` (screening digital breast tomosynthesis), and HCPCS code `G0279` (diagnostic digital breast tomosynthesis).
+
 ## Usage
 
 **Filtering Conditions by Value Set**
@@ -64,6 +74,34 @@ patient_hypertension_conditions = patient.conditions.find(EssentialHypertension 
 if patient_hypertension_conditions:
     for condition in patient_hypertension_conditions:
         log.info(condition.codings.all().values())
+```
+
+**Extracting codes from a Value Set**
+
+To extract all codes from a Value Set as a flattened set (useful for comparisons or lookups), use the `get_codes` class method:
+
+```python
+from canvas_sdk.value_set.v2022.condition import Diabetes
+
+codes = Diabetes.get_codes()  # Returns set of all codes across all code systems
+```
+
+## Type Annotations
+
+For type hinting in plugin code, use the `ValueSetType` type alias which supports both single Value Sets and combined Value Sets:
+
+```python
+from typing import TYPE_CHECKING
+
+from canvas_sdk.value_set.value_set import ValueSet
+
+if TYPE_CHECKING:
+    from canvas_sdk.value_set.value_set import ValueSetType
+
+
+def filter_by_value_set(value_set: "ValueSetType") -> None:
+    # Accepts ValueSet class or combined ValueSets (using | operator)
+    pass
 ```
 
 ## Creating Custom Value Sets

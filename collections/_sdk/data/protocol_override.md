@@ -37,6 +37,23 @@ patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 override = ProtocolOverride.objects.for_patient(patient_id)
 ```
 
+## Active Adjustment
+
+To retrieve the active adjustment override for a specific patient and protocol combination, use the `get_active_adjustment` method:
+
+```python
+from canvas_sdk.v1.data.protocol_override import ProtocolOverride
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+protocol_key = "my_protocol_key"
+
+adjustment = ProtocolOverride.objects.get_active_adjustment(patient, protocol_key)
+if adjustment:
+    # Patient has an active adjustment for this protocol
+    pass
+```
+
 ## Filtering
 
 Protocol overrides can be filtered by any attribute that exists on the model.

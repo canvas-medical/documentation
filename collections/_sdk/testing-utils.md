@@ -78,6 +78,21 @@ def test_factory() -> None:
     assert patient.id is not None
 ```
 
+### Factory Traits
+
+Some factories support traits that configure common scenarios:
+
+```python
+from canvas_sdk.test_utils.factories import EncounterFactory
+
+# Create encounters with different states
+concluded_encounter = EncounterFactory.create(concluded=True)
+cancelled_encounter = EncounterFactory.create(cancelled=True)
+video_encounter = EncounterFactory.create(video=True)
+```
+
+The `EncounterFactory` supports the following traits: `concluded`, `cancelled`, `planned`, `video`, `voice`, `home`, `lab`, `offsite`.
+
 ### Using Models Directly
 
 You can also create records manually using the model classes:
@@ -108,19 +123,49 @@ from canvas_sdk.test_utils import factories
 Developers are encouraged to add new factories for their own models, and to submit PRs with contributions.
 
 At this time, Canvas has factory support for the following models:
+* BillingLineItem
 * Claim
 * Claim Diagnosis Code
+* Condition, ConditionCoding
+* Encounter
 * Facility
+* ImagingReportCoding
 * Medication History
 * Note
+* Observation, ObservationCoding, ObservationComponent, ObservationComponentCoding, ObservationValueCoding
 * Organization
 * Patient
 * PracticeLocation
 * ProtocolCurrent
+* ProtocolOverride
 * Staff
 * User
 
 A complete list of available factories is located [here](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/test_utils/factories).
+
+### Helper Functions
+
+The SDK provides helper functions in `canvas_sdk.test_utils.helpers` to simplify common test data creation patterns:
+
+```python
+from canvas_sdk.test_utils.helpers import (
+    create_protocol_instance,
+    create_condition_with_coding,
+    create_encounter_with_billing,
+    create_imaging_report_with_coding,
+    create_observation_with_value_coding,
+)
+```
+
+**`create_protocol_instance(protocol_class, timeframe)`** - Creates a CQM protocol instance with custom timeframes for testing clinical quality measures.
+
+**`create_condition_with_coding(patient, value_set)`** - Creates a `Condition` with associated `ConditionCoding` from a ValueSet.
+
+**`create_encounter_with_billing(patient, cpt_codes)`** - Creates a `Note` with associated `BillingLineItem` records containing specified CPT codes.
+
+**`create_imaging_report_with_coding(patient, value_set)`** - Creates an `ImagingReport` with associated `ImagingReportCoding` from a ValueSet.
+
+**`create_observation_with_value_coding(patient, value_set)`** - Creates an `Observation` with associated `ObservationValueCoding` from a ValueSet.
 
 ## Local DB Seeding via `run-plugin`
 

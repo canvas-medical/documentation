@@ -7,14 +7,14 @@ hidden: false
 
 ## Introduction
 
-The `ImagingOrder`, `ImagingReview` and `ImagingReport` models represent imaging results.
+The `ImagingOrder`, `ImagingReview`, `ImagingReport`, and `ImagingReportCoding` models represent imaging results and their associated codes.
 
 ## Basic Usage
 
 To retrieve an `ImagingOrder`, `ImagingReview`, or `ImagingReport` by identifier, use the `get` method on the model manager:
 
 ```python
-from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview, ImagingReport
+from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview, ImagingReport, ImagingReportCoding
 
 imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 imaging_review = ImagingReview.objects.get(id="c02c6b02-2581-46bf-819c-b5aacad2134c")
@@ -48,6 +48,22 @@ from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview, ImagingRepor
 orders = ImagingOrder.objects.filter(status="completed")
 reviews = ImagingReview.objects.filter(is_released_to_patient=False)
 reports = ImagingReport.objects.filter(requires_signature=True)
+```
+
+## Codings
+
+The codings for an imaging report can be accessed with the `codings` attribute on an `ImagingReport` object:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingReport
+from logger import log
+
+report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+for coding in report.codings.all():
+    log.info(f"system:  {coding.system}")
+    log.info(f"code:    {coding.code}")
+    log.info(f"display: {coding.display}")
 ```
 
 ## Related Tasks
@@ -124,6 +140,17 @@ tasks = imaging_order.get_task_objects().all()
 | result_date        | Date                                                                  |
 | original_date      | Date                                                                  |
 | review             | [ImagingReview](#imagingreview)                                       |
+| codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |
+
+### ImagingReportCoding
+
+| Field Name | Type                          |
+|------------|-------------------------------|
+| dbid       | Integer                       |
+| system     | String                        |
+| code       | String                        |
+| display    | String                        |
+| report     | [ImagingReport](#imagingreport) |
 
 ## Enumeration types
 
