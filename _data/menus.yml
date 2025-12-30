@@ -722,6 +722,9 @@ effects_module:
   - title: "Billing Line Items"
     url: /sdk/effect-billing-line-items/
     description: Add, modify, or remove billing codes on a note.
+  - title: "Categorize Document"
+    url: /sdk/effect-categorize-document/
+    description: Categorize documents in the Data Integration queue.
   - title: "Claims"
     url: /sdk/effect-claims/
     description: Manage labels, update line items, move to a queue, or post a payment.
@@ -913,6 +916,9 @@ data_module:
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.
+  - title: "SpecialtyReportTemplate"
+    url: /sdk/data-specialty-report-template/
+    description: Templates for LLM-powered specialty and referral report parsing.
   - title: "Staff"
     url: /sdk/data-staff
     description: Data associated with Staff members.
