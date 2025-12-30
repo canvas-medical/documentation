@@ -27,6 +27,33 @@ sections:
             type: string
             required_in: update
             exclude_in: create
+          - name: identifier
+            type: json
+            exclude_in: create, update
+            description: Business identifier for this QuestionnaireResponse.
+            attributes:
+              - name: id
+                type: string
+                description: Unique id for inter-element referencing.
+              - name: use
+                type: enum [ usual | official | temp | secondary | old ]
+                description: The purpose of this identifier.
+              - name: system
+                type: string
+                description: The namespace for the identifier value.
+              - name: value
+                type: string
+                description: The value that is unique.
+              - name: period
+                type: json
+                description: Time period when id is/was valid for use.
+                attributes:
+                  - name: start
+                    type: datetime
+                    description: Starting time with inclusive boundary.
+                  - name: end
+                    type: datetime
+                    description: End time with inclusive boundary, if not ongoing.
           - name: extension
             type: array[json]
             description_for_all_endpoints: >-
@@ -171,6 +198,9 @@ sections:
                           description: The display name of the coding.
                           type: string
                           required_in: create, update
+                    - value: valueDecimal
+                      exclude_in: create, update
+                      description: For questions where the answer is a numeric decimal value (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the numeric response. This answer type is only returned in read and search responses.
         search_parameters:
           - name: _id
             description: The identifier of the QuestionnaireResponse.
