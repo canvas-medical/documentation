@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `ImagingOrder`, `ImagingReview` and `ImagingReport` models represent imaging results.
+The `ImagingOrder`, `ImagingReview` and `ImagingReport` models represent imaging results. The `ImagingReportTemplate`, `ImagingReportTemplateField`, and `ImagingReportTemplateFieldOption` models represent templates for structured imaging report data capture.
 
 ## Basic Usage
 
@@ -32,6 +32,30 @@ reviews = patient.imaging_reviews.all()
 reports = patient.imaging_results.all()
 ```
 
+### Imaging Report Templates
+
+To retrieve an `ImagingReportTemplate` by identifier:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingReportTemplate
+
+template = ImagingReportTemplate.objects.get(id="a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+```
+
+To access a template's fields and field options:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingReportTemplate
+
+template = ImagingReportTemplate.objects.get(id="a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+
+for field in template.fields.all():
+    print(f"Field: {field.label}, Type: {field.type}, Required: {field.required}")
+
+    for option in field.options.all():
+        print(f"  Option: {option.label} ({option.key})")
+```
+
 ## Filtering
 
 Imaging orders, reviews, and reports can be filtered by any attribute that exists on the models.
@@ -48,6 +72,20 @@ from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview, ImagingRepor
 orders = ImagingOrder.objects.filter(status="completed")
 reviews = ImagingReview.objects.filter(is_released_to_patient=False)
 reports = ImagingReport.objects.filter(requires_signature=True)
+```
+
+### Filtering Imaging Report Templates
+
+The `ImagingReportTemplate` model provides convenient filter methods for common use cases:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingReportTemplate
+
+active_templates = ImagingReportTemplate.objects.active()
+matching_templates = ImagingReportTemplate.objects.search("chest x-ray")
+custom_templates = ImagingReportTemplate.objects.custom()
+builtin_templates = ImagingReportTemplate.objects.builtin()
+results = ImagingReportTemplate.objects.active().custom().search("mri")
 ```
 
 ## Related Tasks
@@ -124,6 +162,48 @@ tasks = imaging_order.get_task_objects().all()
 | result_date        | Date                                                                  |
 | original_date      | Date                                                                  |
 | review             | [ImagingReview](#imagingreview)                                       |
+
+### ImagingReportTemplate
+
+| Field Name      | Type                                                      |
+|-----------------|-----------------------------------------------------------|
+| id              | UUID                                                      |
+| dbid            | Integer                                                   |
+| name            | String                                                    |
+| long_name       | String                                                    |
+| code            | String                                                    |
+| code_system     | String                                                    |
+| search_keywords | String                                                    |
+| active          | Boolean                                                   |
+| custom          | Boolean                                                   |
+| rank            | Integer                                                   |
+| fields          | [ImagingReportTemplateField](#imagingreporttemplatefield)[] |
+
+### ImagingReportTemplateField
+
+| Field Name      | Type                                                                  |
+|-----------------|-----------------------------------------------------------------------|
+| id              | UUID                                                                  |
+| dbid            | Integer                                                               |
+| report_template | [ImagingReportTemplate](#imagingreporttemplate)                       |
+| sequence        | Integer                                                               |
+| code            | String                                                                |
+| code_system     | String                                                                |
+| label           | String                                                                |
+| units           | String                                                                |
+| type            | String                                                                |
+| required        | Boolean                                                               |
+| options         | [ImagingReportTemplateFieldOption](#imagingreporttemplatefieldoption)[] |
+
+### ImagingReportTemplateFieldOption
+
+| Field Name | Type                                                    |
+|------------|---------------------------------------------------------|
+| id         | UUID                                                    |
+| dbid       | Integer                                                 |
+| field      | [ImagingReportTemplateField](#imagingreporttemplatefield) |
+| label      | String                                                  |
+| key        | String                                                  |
 
 ## Enumeration types
 
