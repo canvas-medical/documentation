@@ -1,5 +1,5 @@
 ---
-title: Encounter List 
+title: Plugin Update - Encounter List 
 date: 2025-12-31
 layout: productupdates
 tags: plugins
