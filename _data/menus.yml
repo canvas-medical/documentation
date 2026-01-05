@@ -921,7 +921,7 @@ data_module:
     description: Data associated with Service Providers.
   - title: "SpecialtyReportTemplate"
     url: /sdk/data-specialty-report-template/
-    description: Templates for LLM-powered specialty and referral report parsing.
+    description: Templates for specialty and referral reports.
   - title: "Staff"
     url: /sdk/data-staff
     description: Data associated with Staff members.
