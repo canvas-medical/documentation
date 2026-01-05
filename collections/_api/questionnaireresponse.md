@@ -36,11 +36,20 @@ sections:
                 type: string
                 description: Unique id for inter-element referencing.
               - name: use
-                type: enum [ usual | official | temp | secondary | old ]
+                type: string
                 description: The purpose of this identifier.
+                enum_options:
+                  - value: usual
+                  - value: official
+                  - value: temp
+                  - value: secondary
+                  - value: old
               - name: system
                 type: string
                 description: The namespace for the identifier value.
+                enum_options:
+                  - value: http://schemas.canvasmedical.com/fhir/identifiers/questionnaire-response
+                    description: Canvas-assigned namespace for QuestionnaireResponse identifiers.
               - name: value
                 type: string
                 description: The value that is unique.
