@@ -18,7 +18,7 @@ interpretation.
 | `observation_id`      | `str` or `UUID` or `None`          | Unique identifier of an existing observation. Must be unset when creating; required when updating. |
 | `patient_id`          | `str` or `None`                    | ID of the patient for this observation. Required when creating.                                    |
 | `is_member_of_id`     | `str` or `UUID` or `None`          | Reference to a parent observation (for grouping related observations).                             |
-| `category`            | `str` or `None`                    | Category of observation (e.g., "vital-signs", "laboratory", "imaging").                            |
+| `category`            | `str` or `list[str]` or `None`     | Category of observation (e.g., "vital-signs", "laboratory", "imaging"). Can be a single category or a list of categories. |
 | `units`               | `str` or `None`                    | Unit of measure for the observation value (e.g., "mmHg", "mg/dL").                                |
 | `value`               | `str` or `None`                    | The observation value as a string.                                                                 |
 | `note_id`             | `int` or `None`                    | ID of the note associated with this observation.                                                   |
@@ -219,6 +219,28 @@ glucose = Observation(
 )
 
 effect_create_lab = glucose.create()
+```
+
+### Create an Observation with Multiple Categories
+
+```python?partial=True
+# Create an observation that belongs to multiple categories
+comprehensive_assessment = Observation(
+    patient_id=patient.id,
+    name="Comprehensive Physical Assessment",
+    category=["vital-signs", "exam"],  # Multiple categories
+    value="Normal",
+    effective_datetime=datetime.datetime.now(),
+    codings=[
+        CodingData(
+            code="29545-1",
+            display="Physical examination",
+            system="http://loinc.org",
+        )
+    ],
+)
+
+effect_create_multi = comprehensive_assessment.create()
 ```
 
 <br/>
