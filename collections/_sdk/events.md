@@ -2203,6 +2203,51 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Clinical Documents
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REVIEWED</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is reviewed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": None</pre></td>
+      <td><pre>"document":
+  "id": str
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": str
+"review":
+  "reviewer":
+    "type": str
+    "id": str
+    "name": str
+  "status": str
+  "patient_communication_method": str
+  "internal_comment": str
+  "message_to_patient": str
+"reviewed_at": str
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Command lifecycle events
 
 These events fire during the command lifecycle.
