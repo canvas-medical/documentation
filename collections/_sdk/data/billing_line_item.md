@@ -90,6 +90,7 @@ For examples of how to use the BillingLineItem data class with the BillingLineIt
 | command_type | String                                           |
 | command_id   | Integer                                          |
 | status       | [BillingLineItemStatus ](#billinglineitemstatus) |
+| assessments  | [Assessment ](/sdk/data-assessment)              |
 
 ### BillingLineItemModifier
 
