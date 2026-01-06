@@ -2203,6 +2203,45 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Clinical Documents
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REVIEWER_ASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a reviewer is assigned to a clinical document. This event fires for both initial assignments and reassignments, providing information about the current reviewer and the previous reviewer if applicable.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": None</pre></td>
+      <td><pre>"document":
+  "id": str
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": str
+"assigned_at": str
+"reviewer":
+  "type": str
+  "id": str
+  "name": str
+"previous_reviewer":
+  "type": str
+  "id": str
+  "name": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Command lifecycle events
 
 These events fire during the command lifecycle.
