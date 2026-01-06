@@ -2203,6 +2203,46 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Clinical Documents
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_FIELDS_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when fields on a clinical document are updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": None</pre></td>
+      <td><pre>"document":
+  "id": str
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": str
+"updated_fields":
+  - "name": str
+    "value": str
+    "previous_value": str
+"updated_at": str
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Command lifecycle events
 
 These events fire during the command lifecycle.
