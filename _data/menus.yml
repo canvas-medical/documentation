@@ -734,6 +734,9 @@ effects_module:
   - title: "Create Calendar"
     url: /sdk/calendar-create-effect/
     description: Create a calendar for a provider.
+  - title: "Event Validation Error"
+    url: /sdk/effect-event-validation-error/
+    description: Effect for blocking event creation with a validation error message.
   - title: "Manage Calendar Events"
     url: /sdk/calendar-event-management-effects/
     description: Manage calendar events.

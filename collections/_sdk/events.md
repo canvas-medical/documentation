@@ -31,6 +31,7 @@ The plugin author can enter custom workflow code into the `compute` method that 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
 ## Event Actor
+
 The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
 It should be available for events that are directly initiated or triggered by a user — for example, SimpleAPI events, command pre- and post-search events, action button events. For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
 
@@ -48,7 +49,7 @@ class CustomHandler(BaseHandler):
         log.info(actor.dbid)        # The database ID of the actor, if available
         log.info(actor.instance)  # The corresponding CanvasUser instance
         log.info(actor.instance.person_subclass) # The corresponding Staff or Patient instance
-    
+
         return []
 ```
 
@@ -872,7 +873,6 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
-
 #### Claims
 
 <table>
@@ -916,7 +916,6 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
   </tbody>
 </table>
-
 
 #### Billing Line Items
 
@@ -1765,6 +1764,26 @@ These events fire as a result of records being created, updated, or deleted.
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
     <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the <a href="/sdk/data-note/#notestates">note state</a>, including locking and unlocking.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": nsce_id
+"type": NoteStateChangeEvent</pre></td>
+      <td><pre>"note_id": note_id,
+"patient_id": pt_id,
+"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_PRE_CREATE</th></tr>
+    <tr><td colspan="2">Occurs <b>before</b> a note state change event is created. This event allows protocols to perform validation and block the note state change if needed. If an <a href="/sdk/effect-event-validation-error"><code>EventValidationError</code></a> effect is returned, the note state change event is aborted and the error message is surfaced to the user.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -19254,7 +19273,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     </tr>
   </tbody>
 </table>
-
 
 ### Other Events
 
