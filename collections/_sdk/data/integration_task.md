@@ -100,7 +100,7 @@ team_reviews = IntegrationTaskReview.objects.by_team("team-uuid-here")
 | title            | String                                                |
 | channel          | [IntegrationTaskChannel](#integrationtaskchannel)     |
 | patient          | [Patient](/sdk/data-patient/#patient)                 |
-| service_provider | [ServiceProvider](/sdk/data-service-provider)         |
+| service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | reviews          | [IntegrationTaskReview](#integrationtaskreview)[]     |
 
 #### Properties
