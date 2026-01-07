@@ -2203,6 +2203,41 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Clinical Documents
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_RECEIVED</th></tr>
+    <tr><td colspan="2">Occurs when a new clinical document is received via fax, upload, or electronic transmission.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": None</pre></td>
+      <td><pre>"document":
+  "id": str
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": str
+"patient":
+  "id": pt_id
+"available_document_types":
+  - "key": str
+    "name": str
+    "report_type": str
+    "template_type": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Command lifecycle events
 
 These events fire during the command lifecycle.
