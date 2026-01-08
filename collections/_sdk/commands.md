@@ -29,6 +29,18 @@ Returns an Effect that originates a new command in the note body.
 
 **See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
 
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
+    new_plan.narrative = 'newer'
+
+    return [new_plan.originate()]
+```
+
 #### edit
 
 Returns an Effect that edits an existing command with the values set on the command class instance.
@@ -38,30 +50,20 @@ Returns an Effect that edits an existing command with the values set on the comm
 - **No Changes:** Calling `edit()` without making any changes will result in a no-op; the command remains unchanged.
 - **Invalid Values:** If you attempt to set an invalid value, you should receive a validation error.
 
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik', narrative='something new')
+
+    return [existing_plan.edit()]
+```
+
 #### delete
 
 Returns an Effect that deletes an existing, non-committed command from the note body.
-
-#### commit
-
-Returns an Effect that commits an existing, non-committed command to the note body.
-
-#### review
-
-Returns an Effect that sets a command in review.
-
-**Limited availability** The `review()` method can only be called on [Prescribe](#prescribe) commands objects. Other command types do not support this operation.
-
-#### send
-
-Returns an Effect that sends a signed command.
-
-**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
-
-#### enter_in_error
-
-Returns an effect that enter-in-errors an existing, committed command in the note body.
-
 
 **Example**:
 
@@ -69,12 +71,73 @@ Returns an effect that enter-in-errors an existing, committed command in the not
 from canvas_sdk.commands import PlanCommand
 
 def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
 
-    existing_plan = PlanCommand(command_uuid='63hdik', narrative='something new')
-    new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
-    new_plan.narrative = 'newer'
+    return [existing_plan.delete()]
+```
 
-    return [existing_plan.edit(), new_plan.originate()]
+#### commit
+
+Returns an Effect that commits an existing, non-committed command to the note body.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.commit()]
+```
+
+#### review
+
+Returns an Effect that sets a command in review.
+
+**Limited availability** The `review()` method can only be called on [Prescribe](#prescribe) commands objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.review()]
+```
+
+#### send
+
+Returns an Effect that sends a signed command.
+
+**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.send()]
+```
+
+#### enter_in_error
+
+Returns an effect that enter-in-errors an existing, committed command in the note body.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.enter_in_error()]
 ```
 
 ## Command Constants
