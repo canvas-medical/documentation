@@ -174,9 +174,7 @@ class Protocol(BaseProtocol):
 
 The command validation effect can be used with command validation events. All command types support `__POST_VALIDATION` events following the naming pattern:
 
-```
-{COMMAND_KEY}_COMMAND__POST_VALIDATION
-```
+`{COMMAND_KEY}_COMMAND__POST_VALIDATION`
 
 For example:
 - `PLAN_COMMAND__POST_VALIDATION`
