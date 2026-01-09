@@ -171,23 +171,36 @@ A human-friendly approach to creating, manipulating, formatting and converting d
 
 ##### `django.db.models`
 Django's database abstraction layer for defining database models and performing queries. [read more](https://docs.djangoproject.com/en/stable/topics/db/models/)
+- `Avg`
 - `BigIntegerField`
 - `Case`
 - `CharField`
+- `Count`
+- `Exists`
 - `IntegerField`
+- `Max`
+- `Min`
 - `Model`
+- `OuterRef`
+- `Prefetch`
 - `Q`
+- `Subquery`
+- `Sum`
 - `Value`
 - `When`
 
 ##### `django.db.models.expressions`
 Django's database expressions for complex query operations and conditional logic. [read more](https://docs.djangoproject.com/en/stable/ref/models/expressions/)
 - `Case`
+- `Exists`
+- `OuterRef`
+- `Subquery`
 - `Value`
 - `When`
 
 ##### `django.db.models.query`
 Django's QuerySet class for database query operations and result handling. [read more](https://docs.djangoproject.com/en/stable/ref/models/querysets/)
+- `Prefetch`
 - `QuerySet`
 
 ##### `django.utils.functional`
@@ -268,6 +281,7 @@ The following Python builtin functions are available within the sandbox:
 - `property`
 - `reversed`
 - `staticmethod`
+- `sum`
 - `super`
 - `vars`
 
