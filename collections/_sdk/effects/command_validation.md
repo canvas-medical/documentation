@@ -36,7 +36,8 @@ There are several ways to add validation errors to the effect:
 The `add_error()` method allows you to incrementally build validation errors and supports method chaining:
 
 ```python
-from canvas_sdk.commands import CommandValidationErrorEffect, PlanCommand
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.commands.validation import CommandValidationErrorEffect
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
@@ -66,7 +67,7 @@ class Protocol(BaseProtocol):
 The `add_error()` method returns `self`, allowing for clean method chaining:
 
 ```python
-from canvas_sdk.commands import CommandValidationErrorEffect
+from canvas_sdk.commands.validation import CommandValidationErrorEffect
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
@@ -90,7 +91,7 @@ class Protocol(BaseProtocol):
 You can also initialize the effect with a list of `ValidationError` objects:
 
 ```python
-from canvas_sdk.commands import CommandValidationErrorEffect, ValidationError
+from canvas_sdk.commands.validation import CommandValidationErrorEffect, ValidationError
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
@@ -118,7 +119,8 @@ class Protocol(BaseProtocol):
 Here's a complete example that validates a Plan command to ensure it meets specific requirements:
 
 ```python
-from canvas_sdk.commands import CommandValidationErrorEffect, PlanCommand
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.commands.validation import CommandValidationErrorEffect
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
