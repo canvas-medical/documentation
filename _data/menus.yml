@@ -728,6 +728,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Command Validation"
+    url: /sdk/effect-command-validation/
+    description: Validate commands and return structured error messages to users.
   - title: "Custom HTML and Django Templates"
     url: /sdk/layout-effect/#custom-html-and-django-templates
     description: Render custom HTML using Django templates.
