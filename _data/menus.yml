@@ -608,6 +608,11 @@ guides_list:
     description: How to add additional fields when scheduling an appointment
     uses:
       - sdk
+  - title: "Note Management with External Applications"
+    url: /guides/note-management-oauth/
+    description: How manage notes (i.e. lock, unlock, sign) with an external application using OAuth 2.0 authorization
+    uses:
+      - sdk
 
 guides_templates:
   - title: "Behavioral Health"
