@@ -336,9 +336,17 @@ This pattern ensures that both the originate and commit operations use the same 
 
 Command-specific details for each command class can be found below.
 
----
+## Custom Commands
 
-**Note**: For creating custom commands with HTML-rendered content, see [CustomCommand](/sdk/commands-custom-command/). Custom commands allow you to display read-only content in the patient chart and must be configured in your plugin's manifest.
+For creating custom commands with HTML-rendered content that can be inserted into patient charts, see the [CustomCommand](/sdk/commands-custom-command/) documentation.
+
+Custom commands are different from standard commands:
+- They allow you to display read-only HTML content in the patient chart
+- They must be configured in your plugin's manifest before use
+- They support both display and print versions of content
+- They are designed for displaying formatted data, not for capturing user input
+
+Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 
 ---
 
