@@ -336,6 +336,12 @@ This pattern ensures that both the originate and commit operations use the same 
 
 Command-specific details for each command class can be found below.
 
+---
+
+**Note**: For creating custom commands with HTML-rendered content, see [CustomCommand](/sdk/commands-custom-command/). Custom commands allow you to display read-only content in the patient chart and must be configured in your plugin's manifest.
+
+---
+
 ## AdjustPrescription
 
 **Command-specific parameters**:
@@ -502,8 +508,6 @@ close_goal = CloseGoalCommand(
     progress="Patient has achieved the target weight goal of 150 lbs."
 )
 ```
-
----
 
 ## Diagnose
 
