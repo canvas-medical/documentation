@@ -128,8 +128,6 @@ Create a simpler print version (e.g., `templates/risk_assessment_print.html`):
 </html>
 ```
 
-{% include alert.html type="warning" content="Always add a class to the <code>body</code> element and scope all styles within that class. This prevents your template styles from overriding Canvas' default styles." %}
-
 ### Step 2: Use Templates in Your Command
 
 ```python
