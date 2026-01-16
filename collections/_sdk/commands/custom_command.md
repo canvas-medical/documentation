@@ -153,6 +153,7 @@ Create a subclass with a predefined `schema_key`:
 ```python
 from canvas_sdk.commands.commands.custom_command import CustomCommand
 from canvas_sdk.templates import render_to_string
+import uuid
 
 class RiskAssessmentCommand(CustomCommand):
     """Custom command for risk assessment."""
@@ -179,6 +180,10 @@ Returns an Effect that originates a new command in the note body.
 
 **Example:**
 ```python
+from canvas_sdk.commands.commands.custom_command import CustomCommand
+from canvas_sdk.templates import render_to_string
+import uuid
+
 command = CustomCommand(
     schema_key="riskAssessment",
     content=render_to_string("templates/risk_assessment.html"),
