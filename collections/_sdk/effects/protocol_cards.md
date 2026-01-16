@@ -17,7 +17,7 @@ A Protocol card consists of three main parts:
 - A narrative, which appears just below the title to add any additional clarifying information
 - A list of recommendations, which each have a title and optionally a button that can either:
   - open a new tab and navigate to another site
-  - insert a command into a note
+  - insert commands into a note
 
 | Name               | Type                                    | Required                                     | Description                                                                                                                                        |
 | :----------------- | :-------------------------------------- | :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -35,12 +35,12 @@ A Protocol card consists of three main parts:
 
 ### Recommendation
 
-| Attribute | Type     | Required | Description                           |
-| :-------- | :------- | :------- | :------------------------------------ |
-| `title`   | _string_ | `true`   | The description of the recommendation |
-| `button`  | _string_ | `false`  | The text to appear on the button      |
-| `href`    | _string_ | `false`  | The url for the button to navigate to |
-|           |          |          |                                       |
+| Attribute  | Type                             | Required | Description                           |
+|:-----------|:---------------------------------|:---------|:--------------------------------------|
+| `title`    | _string_                         | `true`   | The description of the recommendation |
+| `button`   | _string_                         | `false`  | The text to appear on the button      |
+| `href`     | _string_                         | `false`  | The url for the button to navigate to |
+| `commands` | list[[Command](#/sdk/commands/)] | `false`  | The commands to be inserted           |
 
 ### Status
 
@@ -53,7 +53,9 @@ A Protocol card consists of three main parts:
 | `NOT_RELEVANT`   | not_relevant   |
 |                  |                |
 
-To include a command recommendation, we recommend you import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See [below](#supported-commands) for the list of supported commands.
+To include a command recommendation you can:
+- import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See [below](#supported-commands) for the list of supported commands.
+- instantiate the command as above, and then pass it in a list to the `commands` attribute of a recommendation.
 
 </br>
 </br>
@@ -67,33 +69,42 @@ from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 from datetime import date
 from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import DiagnoseCommand, PlanCommand
 
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self):
-        p = ProtocolCard(
-            patient_id=self.target,
-            key="testing-protocol-cards",
-            title="This is a ProtocolCard title",
-            narrative="this is the narrative",
-            status=ProtocolCard.Status.DUE,
-            recommendations=[Recommendation(title="this recommendation has no action, just words!")]
-        )
-
-        p.add_recommendation(
-            title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
-        )
-
         diagnose = DiagnoseCommand(
             icd10_code="I10",
             background="feeling bad for many years",
             approximate_date_of_onset=date(2020, 1, 1),
             today_assessment="still not great",
         )
+        
+        plan = PlanCommand(
+            narrative="Follow up in 2 weeks",
+        )
+        
+        p = ProtocolCard(
+            patient_id=self.target,
+            key="testing-protocol-cards",
+            title="This is a ProtocolCard title",
+            narrative="this is the narrative",
+            status=ProtocolCard.Status.DUE,
+            recommendations=[
+              Recommendation(title="this recommendation has no action, just words!"),
+              Recommendation(title="this recommendation inserts multiple commands", button="add commands", commands=[diagnose, plan])
+            ],
+        )
+
+        p.add_recommendation(
+            title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
+        )
+
         p.recommendations.append(diagnose.recommend(title="this inserts a diagnose command"))
+        p.recommendations.append(title="new recommendation", button="start", commands=[diagnose])
 
         return [p.apply()]
 
