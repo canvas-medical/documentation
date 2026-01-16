@@ -4,6 +4,8 @@ title: "Custom Data"
 
 The Canvas SDK provides three approaches for storing custom data in your plugins, allowing you to extend existing models, create flexible key-value stores, or define fully structured data models with relationships.
 
+**Note:** All code examples in this document include the necessary imports and can be copied directly into your plugin code.
+
 ---
 
 ## Overview
@@ -11,10 +13,11 @@ The Canvas SDK provides three approaches for storing custom data in your plugins
 Custom data in the Canvas SDK can be implemented using one of three approaches:
 
 1. **CustomAttributes on Proxy Models** - Extend existing SDK data models (like Patient or Staff) with flexible key-value attributes
-2. **AttributeHub** - Store arbitrary key-value data that doesn't belong to existing models
+2. **AttributeHubs** - Store arbitrary key-value data that doesn't belong to existing models
 3. **Custom Data Models** - Define fully structured models with typed fields and relationships
 
-Each approach serves different use cases and provides different levels of structure and type safety.
+Each approach serves different use cases and provides different levels of structure and type safety. 
+All three approaches may be used together.
 
 ---
 
@@ -35,7 +38,7 @@ Use this when you need to add flexible data to existing SDK models without defin
 - Storing provider preferences
 - Temporary or experimental data fields
 
-### AttributeHub
+### AttributeHubs
 
 Use this when you need to store data that doesn't naturally belong to any existing model.
 
@@ -99,7 +102,22 @@ class PatientProxy(Patient, CustomAttributeMixin):
 Set individual or multiple custom attributes on a model instance:
 
 ```python
-from staff_plus.models.proxy import StaffProxy, PatientProxy
+from canvas_sdk.v1.data import Staff, Patient
+from canvas_sdk.v1.data import CustomAttributeMixin, CustomAttributeAwareManager
+
+
+# Define proxy models (typically in your plugin's models.py)
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class PatientProxy(Patient, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
 
 # Get model instances
 staff = StaffProxy.objects.get(id="staff-uuid")
@@ -122,6 +140,17 @@ staff.set_attributes({
 Retrieve custom attribute values by name:
 
 ```python
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+staff = StaffProxy.objects.get(id="staff-uuid")
+
 # Get a single attribute
 specialty = staff.get_attribute("specialty")  # Returns "Cardiology"
 
@@ -134,6 +163,18 @@ unknown = staff.get_attribute("nonexistent")  # Returns None
 CustomAttributes automatically handle multiple data types:
 
 ```python
+from datetime import datetime
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+staff = StaffProxy.objects.get(id="staff-uuid")
+
 # String values
 staff.set_attribute("bio", "Board-certified cardiologist")
 
@@ -147,7 +188,6 @@ staff.set_attribute("accepting_patients", True)
 staff.set_attribute("rating", 4.8)
 
 # Datetime values
-from datetime import datetime
 staff.set_attribute("last_updated", datetime.now())
 
 # JSON/Complex objects
@@ -163,6 +203,14 @@ Filter models by their custom attributes:
 
 ```python
 from django.db.models import Q
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
 
 # Find staff with specific specialty
 cardiologists = (
@@ -192,18 +240,27 @@ matching_staff = (
 Reduce database queries by prefetching custom attributes:
 
 ```python
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
 # Prefetch all custom attributes
 staff_list = StaffProxy.objects.all()  # Automatically prefetches
 
 # Prefetch only specific attributes
-staff = StaffProxy.objects.with_only("accepting_patients").get(id=staff_id)
+staff = StaffProxy.objects.with_only("accepting_patients").get(id="staff-uuid")
 
 # Prefetch multiple specific attributes
 staff = StaffProxy.objects.with_only([
     "accepting_patients",
     "specialty",
     "years_experience"
-]).get(id=staff_id)
+]).get(id="staff-uuid")
 ```
 
 ### Deleting Attributes
@@ -211,6 +268,17 @@ staff = StaffProxy.objects.with_only([
 Remove custom attributes when no longer needed:
 
 ```python
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+staff = StaffProxy.objects.get(id="staff-uuid")
+
 # Delete a single attribute
 deleted = staff.delete_attribute("old_field")  # Returns True if deleted
 
@@ -240,6 +308,14 @@ hub = AttributeHub.objects.create(
 ### Storing Data in AttributeHub
 
 ```python
+from datetime import datetime
+from canvas_sdk.v1.data import AttributeHub
+
+hub = AttributeHub.objects.create(
+    type="staff_profile",
+    externally_exposable_id="staff_id:abc123"
+)
+
 # Store individual attributes
 hub.set_attribute("last_sync", datetime.now())
 hub.set_attribute("external_id", "ext_12345")
@@ -257,10 +333,12 @@ hub.set_attribute("profile", profile_data)
 ### Retrieving Data from AttributeHub
 
 ```python
+from canvas_sdk.v1.data import AttributeHub
+
 # Get or create pattern
 hub, created = AttributeHub.objects.get_or_create(
     type="staff_profile",
-    externally_exposable_id=f"staff_id:{staff_id}"
+    externally_exposable_id="staff_id:abc123"
 )
 
 # Retrieve attributes
@@ -271,9 +349,10 @@ last_sync = hub.get_attribute("last_sync")
 ### Use Case Example: External API State
 
 ```python
-from canvas_sdk.handlers.simple_api import SimpleAPI, api
-from canvas_sdk.v1.data import AttributeHub, Staff
 from datetime import datetime
+from canvas_sdk.handlers.simple_api import SimpleAPI, api
+from canvas_sdk.effects.simple_api import JSONResponse
+from canvas_sdk.v1.data import AttributeHub, Staff
 
 
 class ExternalSyncAPI(SimpleAPI):
@@ -335,6 +414,21 @@ class Specialty(CustomModel):
 Use standard Django ORM methods for CRUD operations:
 
 ```python
+from django.db.models import TextField, IntegerField, Index
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+    description = TextField()
+    years_required = IntegerField()
+
+
 # Create
 specialty = Specialty.objects.create(
     name="Cardiology",
@@ -390,8 +484,29 @@ class Biography(CustomModel):
 ### Creating and Accessing
 
 ```python
-from staff_plus.models.biography import Biography
-from staff_plus.models.proxy import StaffProxy
+from datetime import datetime
+from django.db.models import OneToOneField, TextField, IntegerField, DO_NOTHING
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Biography(CustomModel):
+    staff = OneToOneField(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="biography"
+    )
+    biography = TextField()
+    language = TextField()
+    practicing_since = IntegerField()
+
 
 # Create a biography for a staff member
 staff = StaffProxy.objects.get(id="staff-uuid")
@@ -414,8 +529,31 @@ years_experience = datetime.today().year - staff.biography.practicing_since
 ### Updating One-to-One Relations
 
 ```python
+from django.db.models import OneToOneField, TextField, IntegerField, DO_NOTHING
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Biography(CustomModel):
+    staff = OneToOneField(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="biography"
+    )
+    biography = TextField()
+    language = TextField()
+    practicing_since = IntegerField()
+
+
 # Get or create pattern
-staff = StaffProxy.objects.get(id=staff_id)
+staff = StaffProxy.objects.get(id="staff-uuid")
 
 if not hasattr(staff, 'biography') or staff.biography is None:
     # Create new biography
@@ -473,8 +611,35 @@ class Language(CustomModel):
 ### Creating and Accessing
 
 ```python
-from staff_plus.models.language import Language
-from staff_plus.models.proxy import StaffProxy
+from datetime import datetime
+from django.db.models import ForeignKey, TextField, DateTimeField, DO_NOTHING, Index
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Language(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["code"]),
+        ]
+
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="languages"
+    )
+    name = TextField()
+    code = TextField()
+    created = DateTimeField(default=datetime.now)
+    updated = DateTimeField(default=datetime.now)
+
 
 # Create multiple languages for a staff member
 staff = StaffProxy.objects.get(id="staff-uuid")
@@ -494,6 +659,36 @@ english_speakers = StaffProxy.objects.filter(languages__code="en").distinct()
 ### Querying Across Relationships
 
 ```python
+from django.db.models import Count, ForeignKey, TextField, DateTimeField, DO_NOTHING, Index
+from datetime import datetime
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Language(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["code"]),
+        ]
+
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="languages"
+    )
+    name = TextField()
+    code = TextField()
+    created = DateTimeField(default=datetime.now)
+    updated = DateTimeField(default=datetime.now)
+
+
 # Find all staff who speak Spanish
 spanish_speakers = StaffProxy.objects.filter(
     languages__name="Spanish"
@@ -505,8 +700,6 @@ bilingual_staff = StaffProxy.objects.filter(
 ).distinct()
 
 # Count languages per staff member
-from django.db.models import Count
-
 staff_with_counts = (
     StaffProxy.objects
     .annotate(language_count=Count('languages'))
@@ -517,8 +710,38 @@ staff_with_counts = (
 ### Bulk Creation
 
 ```python
+from datetime import datetime
+from django.db.models import ForeignKey, TextField, DateTimeField, DO_NOTHING, Index
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Language(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["code"]),
+        ]
+
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="languages"
+    )
+    name = TextField()
+    code = TextField()
+    created = DateTimeField(default=datetime.now)
+    updated = DateTimeField(default=datetime.now)
+
+
 # Create multiple related objects efficiently
-staff = StaffProxy.objects.get(id=staff_id)
+staff = StaffProxy.objects.get(id="staff-uuid")
 
 languages_to_create = [
     Language(staff=staff, name="English", code="en"),
@@ -580,8 +803,40 @@ class StaffSpecialty(CustomModel):
 ### Creating Associations
 
 ```python
-from staff_plus.models.specialty import Specialty, StaffSpecialty
-from staff_plus.models.proxy import StaffProxy
+from django.db.models import ForeignKey, TextField, Index, CASCADE
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+
 
 # Get or create specialties
 cardiology, _ = Specialty.objects.get_or_create(name="Cardiology")
@@ -604,8 +859,43 @@ StaffSpecialty.objects.bulk_create(associations)
 ### Querying Many-to-Many
 
 ```python
+from django.db.models import ForeignKey, TextField, Index, CASCADE
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+
+
 # Get all specialties for a staff member
-staff = StaffProxy.objects.get(id=staff_id)
+staff = StaffProxy.objects.get(id="staff-uuid")
 staff_specialty_links = staff.staff_specialties.all()
 specialties = [link.specialty for link in staff_specialty_links]
 specialty_names = [link.specialty.name for link in staff_specialty_links]
@@ -634,6 +924,41 @@ matching_staff = StaffProxy.objects.filter(dbid__in=staff_ids)
 ### Optimizing Many-to-Many Queries
 
 ```python
+from django.db.models import ForeignKey, TextField, Index, CASCADE
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+
+
 # Prefetch related data to avoid N+1 queries
 staff_members = (
     StaffProxy.objects
@@ -652,8 +977,43 @@ for staff in staff_members:
 ### Updating Associations
 
 ```python
+from django.db.models import ForeignKey, TextField, Index, CASCADE
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+
+
 # Replace all specialties for a staff member
-staff = StaffProxy.objects.get(id=staff_id)
+staff = StaffProxy.objects.get(id="staff-uuid")
 new_specialties = ["Cardiology", "Pulmonology"]
 
 # Clear existing associations
@@ -674,12 +1034,59 @@ for specialty_name in new_specialties:
 Use multiple approaches together for maximum flexibility:
 
 ```python
-from staff_plus.models.proxy import StaffProxy
-from staff_plus.models.biography import Biography
-from staff_plus.models.specialty import Specialty, StaffSpecialty
+from datetime import datetime
+from django.db.models import (
+    ForeignKey, OneToOneField, TextField, IntegerField,
+    Index, CASCADE, DO_NOTHING
+)
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Biography(CustomModel):
+    staff = OneToOneField(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="biography"
+    )
+    biography = TextField()
+    language = TextField()
+    practicing_since = IntegerField()
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+
 
 # Get staff with all data types
-staff = StaffProxy.objects.get(id=staff_id)
+staff = StaffProxy.objects.get(id="staff-uuid")
 
 # Custom data model (structured, one-to-one)
 biography_text = staff.biography.biography
@@ -710,6 +1117,67 @@ profile = {
 Combine prefetching strategies for optimal performance:
 
 ```python
+from datetime import datetime
+from django.db.models import (
+    ForeignKey, OneToOneField, TextField, IntegerField, DateTimeField,
+    Index, CASCADE, DO_NOTHING
+)
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Biography(CustomModel):
+    staff = OneToOneField(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="biography"
+    )
+    biography = TextField()
+    practicing_since = IntegerField()
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+
+
+class Language(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="languages"
+    )
+    name = TextField()
+    code = TextField()
+
+
 # Fetch staff with all related data in one query
 staff_members = (
     StaffProxy.objects
@@ -828,7 +1296,31 @@ Test that CustomAttributes persist correctly and maintain isolation between obje
 
 ```python
 from datetime import datetime
-from staff_plus.models.proxy import StaffProxy, PatientProxy
+import factory
+from canvas_sdk.test_utils.factories import StaffFactory, PatientFactory
+from canvas_sdk.v1.data import Staff, Patient, CustomAttributeMixin, CustomAttributeAwareManager
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class PatientProxy(Patient, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+    class Meta:
+        model = StaffProxy
+
+
+class PatientProxyFactory(PatientFactory, factory.django.DjangoModelFactory[PatientProxy]):
+    class Meta:
+        model = PatientProxy
 
 
 def test_custom_attributes_on_proxy():
@@ -855,6 +1347,8 @@ def test_custom_attributes_on_proxy():
 
 def test_custom_attributes_multiple_types():
     """Test CustomAttributes with different value types."""
+    from datetime import datetime
+
     staff = StaffProxyFactory.create()
 
     # Set different types
@@ -917,8 +1411,21 @@ def test_delete_attribute():
 Test that AttributeHub stores and retrieves data correctly:
 
 ```python
-from canvas_sdk.v1.data import AttributeHub
 from datetime import datetime
+import factory
+from canvas_sdk.test_utils.factories import StaffFactory
+from canvas_sdk.v1.data import AttributeHub, Staff, CustomAttributeMixin, CustomAttributeAwareManager
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+    class Meta:
+        model = StaffProxy
 
 
 def test_attribute_hub_creation():
@@ -993,9 +1500,74 @@ def test_attribute_hub_json_storage():
 Test custom model creation, relationships, and queries:
 
 ```python
-from staff_plus.models.specialty import Specialty, StaffSpecialty
-from staff_plus.models.biography import Biography
-from staff_plus.models.language import Language
+import factory
+from datetime import datetime
+from django.db.models import (
+    ForeignKey, OneToOneField, TextField, IntegerField, DateTimeField,
+    Index, CASCADE, DO_NOTHING
+)
+from canvas_sdk.test_utils.factories import StaffFactory
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+    class Meta:
+        model = StaffProxy
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+
+
+class Biography(CustomModel):
+    staff = OneToOneField(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="biography"
+    )
+    biography = TextField()
+    language = TextField()
+    practicing_since = IntegerField()
+
+
+class Language(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="languages"
+    )
+    name = TextField()
+    code = TextField()
+    created = DateTimeField(default=datetime.now)
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
 
 
 def test_custom_model_creation():
@@ -1116,6 +1688,46 @@ def test_many_to_many_query_filtering():
 Use factories to simplify test data creation:
 
 ```python
+import factory
+from django.db.models import OneToOneField, TextField, IntegerField, DO_NOTHING
+from canvas_sdk.test_utils.factories import StaffFactory
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+    class Meta:
+        model = StaffProxy
+
+
+class Biography(CustomModel):
+    staff = OneToOneField(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="biography"
+    )
+    biography = TextField()
+    language = TextField()
+    practicing_since = IntegerField()
+
+
+class BiographyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Biography
+
+    staff = factory.SubFactory(StaffProxyFactory)
+    biography = factory.Faker("paragraph", nb_sentences=5)
+    language = factory.Faker("language_name")
+    practicing_since = factory.Faker("year")
+
+
 def test_with_factories():
     """Test using factories for quick data setup."""
     # Create staff with biography using factories
@@ -1128,6 +1740,29 @@ def test_with_factories():
     # Factory automatically created the related staff
     staff = biography.staff
     assert staff.first_name is not None
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+
+
+class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = StaffSpecialty
+
+    staff = factory.SubFactory(StaffProxyFactory)
+    specialty = factory.SubFactory(SpecialtyFactory)
 
 
 def test_many_to_many_with_factories():
@@ -1163,6 +1798,86 @@ def test_factory_with_custom_attributes():
 Test that prefetching and query optimization work correctly:
 
 ```python
+import factory
+from django.db.models import (
+    ForeignKey, OneToOneField, TextField, IntegerField,
+    Index, CASCADE, DO_NOTHING, Count
+)
+from canvas_sdk.test_utils.factories import StaffFactory
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+    class Meta:
+        model = StaffProxy
+
+
+class Biography(CustomModel):
+    staff = OneToOneField(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="biography"
+    )
+    biography = TextField()
+    practicing_since = IntegerField()
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+
+
+class BiographyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Biography
+
+    staff = factory.SubFactory(StaffProxyFactory)
+    biography = factory.Faker("paragraph")
+    practicing_since = factory.Faker("year")
+
+
+class SpecialtyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Specialty
+
+    name = factory.Faker("word")
+
+
+class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = StaffSpecialty
+
+    staff = factory.SubFactory(StaffProxyFactory)
+    specialty = factory.SubFactory(SpecialtyFactory)
+
+
 def test_custom_attributes_prefetch():
     """Test prefetching CustomAttributes."""
     staff1 = StaffProxyFactory.create()
@@ -1236,6 +1951,64 @@ def test_relationship_prefetch():
 Test data validation, constraints, and cascade behavior:
 
 ```python
+import factory
+from django.db.models import ForeignKey, TextField, Index, CASCADE
+from canvas_sdk.test_utils.factories import StaffFactory
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+from canvas_sdk.v1.data.custom_attribute import CustomAttribute
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+    class Meta:
+        model = StaffProxy
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+    name = TextField()
+
+
+class SpecialtyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Specialty
+
+    name = factory.Faker("word")
+
+
+class StaffSpecialty(CustomModel):
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=CASCADE,
+        related_name="staff_specialties"
+    )
+
+
+class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = StaffSpecialty
+
+    staff = factory.SubFactory(StaffProxyFactory)
+    specialty = factory.SubFactory(SpecialtyFactory)
+
+
 def test_cascade_delete():
     """Test CASCADE delete behavior."""
     staff = StaffProxyFactory.create()
@@ -1265,7 +2038,6 @@ def test_unique_constraint():
     assert staff_from_db.get_attribute("unique_field") == "value2"
 
     # Verify no duplicates in database
-    from canvas_sdk.v1.data.custom_attribute import CustomAttribute
     count = CustomAttribute.objects.filter(
         object_id=staff.dbid,
         name="unique_field"
