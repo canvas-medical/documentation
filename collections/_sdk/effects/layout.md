@@ -278,7 +278,7 @@ This twist on the _Holywood Principle_ ensures that your application remains sec
 
 ## Resizing Modals
 
-Modal overlays can now be dynamically resized by embedded applications using the MessageChannel API. Applications running within modal overlays can send a `RESIZE` message to adjust the modal's width and/or height:
+Modal overlays can now be dynamically resized by embedded applications using the MessageChannel API. Applications launching with a `DEFAULT_MODAL` target can send a `RESIZE` message to adjust the modal's width and/or height:
 
 ```html
 <script>
@@ -287,13 +287,13 @@ Modal overlays can now be dynamically resized by embedded applications using the
     // Listen for the port transfer from the Canvas Application
     window.addEventListener('message', (event) => {
       // Check if this is the INIT_CHANNEL message with a port
-      if (event.data?.type === 'INIT_CHANNEL' && event.ports[0]) {
+      if (event.data?.type === 'INIT_CHANNEL' && event.ports?.[0]) {
 
         // Store the port for later use
         messagePort = event.ports[0];
         messagePort.start();
         // Example: Resize modal to specific dimensions
-        messageChannel.postMessage({
+        messagePort.postMessage({
           type: 'RESIZE',
           width: 800,  // pixels
           height: 600  // pixels
