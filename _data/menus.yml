@@ -660,6 +660,9 @@ sdk_overview:
   - title: "Data Module"
     url: /sdk/data/
     identifier: data_module
+  - title: "Custom Data"
+    url: /sdk/custom-data/
+    identifier: custom-data
   - title: "Effects Module"
     url: /sdk/effects/
     identifier: effects_module
