@@ -1,6 +1,6 @@
 ---
 title: "Custom Data Models"
-slug: "custom-models"
+slug: "custom-data-custom-models"
 ---
 
 ## Overview

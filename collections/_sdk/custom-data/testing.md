@@ -1,6 +1,6 @@
 ---
-title: Testing Custom Data
-slug: testing
+title: "Testing Custom Data"
+slug: "custom-data-testing"
 ---
 
 # Testing Custom Data

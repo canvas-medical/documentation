@@ -6,9 +6,9 @@ title: "Custom Data"
 
 The Canvas SDK provides three techniques for storing custom data in your plugins, allowing you to extend existing models, create flexible key-value stores, or define fully structured data models with relationships:
 
-1. **[CustomAttributes on Proxy Models](/sdk/custom-data/custom-attributes/)** - Extend existing SDK data models (like Patient or Staff) with flexible key-value attributes
-2. **[AttributeHubs](/sdk/custom-data/attribute-hub/)** - Store arbitrary key-value data that doesn't belong to existing models
-3. **[Custom Data Models](/sdk/custom-data/custom-models/)** - Define fully structured models with typed fields and relationships
+1. **[CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/)** - Extend existing SDK data models (like Patient or Staff) with flexible key-value attributes
+2. **[AttributeHubs](/sdk/custom-data-attribute-hub/)** - Store arbitrary key-value data that doesn't belong to existing models
+3. **[Custom Data Models](/sdk/custom-data-custom-models/)** - Define fully structured models with typed fields and relationships
 
 Each technique serves different use cases and provides different levels of structure and type safety. All three techniques may be used together.
 
@@ -31,7 +31,7 @@ Use this when you need to add flexible data to existing SDK models without defin
 - Storing provider preferences
 - Temporary or experimental data fields
 
-[Learn more about CustomAttributes →](/sdk/custom-data/custom-attributes/)
+[Learn more about CustomAttributes →](/sdk/custom-data-custom-attributes/)
 
 ### AttributeHubs
 
@@ -49,7 +49,7 @@ Use this when you need to store data that doesn't naturally belong to any existi
 - Plugin session data
 - Feature flags
 
-[Learn more about AttributeHubs →](/sdk/custom-data/attribute-hub/)
+[Learn more about AttributeHubs →](/sdk/custom-data-attribute-hub/)
 
 ### Custom Data Models
 
@@ -68,7 +68,7 @@ Use this when you need structured, typed data with relationships and constraints
 - Integration-specific data structures
 - Practice-specific business entities
 
-[Learn more about Custom Data Models →](/sdk/custom-data/custom-models/)
+[Learn more about Custom Data Models →](/sdk/custom-data-custom-models/)
 
 ---
 
@@ -211,10 +211,10 @@ The Canvas SDK provides comprehensive testing utilities for all custom data appr
 
 ## See Also
 
-- [CustomAttributes on Proxy Models](/sdk/custom-data/custom-attributes/) - Flexible key-value attributes
-- [AttributeHubs](/sdk/custom-data/attribute-hub/) - Standalone key-value storage
-- [Custom Data Models](/sdk/custom-data/custom-models/) - Structured models with relationships
-- [Testing Custom Data](/sdk/custom-data/testing/) - Testing utilities and examples
+- [CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
+- [AttributeHubs](/sdk/custom-data-attribute-hub/) - Standalone key-value storage
+- [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships
+- [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins
 - [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration

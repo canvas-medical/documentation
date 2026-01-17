@@ -1,6 +1,6 @@
 ---
 title: "CustomAttributes on Proxy Models"
-slug: "custom-attributes"
+slug: "custom-data-custom-attributes"
 ---
 
 ## Overview
