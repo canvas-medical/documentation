@@ -2,26 +2,151 @@
 title: "Custom Data"
 ---
 
-The Canvas SDK provides three approaches for storing custom data in your plugins, allowing you to extend existing models, create flexible key-value stores, or define fully structured data models with relationships.
-
-**Note:** All code examples in this document include the necessary imports and can be copied directly into your plugin code.
-
----
-
 ## Overview
 
-Custom data in the Canvas SDK can be implemented using one of three approaches:
+The Canvas SDK provides three techniques for storing custom data in your plugins, allowing you to extend existing models, create flexible key-value stores, or define fully structured data models with relationships:
 
 1. **CustomAttributes on Proxy Models** - Extend existing SDK data models (like Patient or Staff) with flexible key-value attributes
 2. **AttributeHubs** - Store arbitrary key-value data that doesn't belong to existing models
 3. **Custom Data Models** - Define fully structured models with typed fields and relationships
 
-Each approach serves different use cases and provides different levels of structure and type safety. 
-All three approaches may be used together.
+Each technique serves different use cases and provides different levels of structure and type safety. 
+All three techniques may be used together.
 
 ---
 
-## When to Use Each Approach
+## Data Privacy and Plugin Isolation
+
+All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or Custom Data Models—is **scoped to that plugin**. This isolation ensures that plugins cannot directly access or modify another plugin's data, maintaining security and data integrity across the system.
+
+### Data Isolation
+
+**CustomAttributes** attached to SDK models (like Patient or Staff) are scoped by plugin. Each plugin maintains its own separate namespace for custom attributes, even when attached to the same core model instance.
+
+```python
+# In plugin-a
+staff.set_attribute("specialty", "Cardiology")  # Only accessible within plugin-a
+
+# In plugin-b
+staff.get_attribute("specialty")  # Returns None - cannot see plugin-a's data
+staff.set_attribute("specialty", "Neurology")  # Creates separate attribute in plugin-b
+```
+
+**Custom Data Models** created by a plugin exist in a plugin-specific database schema. Tables and data are completely isolated from other plugins.
+
+```python
+# In plugin-a: Creates table in plugin-a schema
+class Specialty(CustomModel):
+    name = TextField()
+
+# In plugin-b: Cannot access plugin-a's Specialty model or data
+# Would need to define its own Specialty model if needed
+```
+
+**AttributeHubs** store data within the plugin's namespace and are not accessible to other plugins.
+
+### Sharing Data Between Plugins
+
+To share data across plugins, a plugin must **explicitly expose an API** with appropriate authorization and access controls. This is done using the [Simple API](/sdk/canvas_cli/#simple-api-endpoints) feature.
+
+#### Example: Exposing Provider Profile Data
+
+```python
+from canvas_sdk.handlers.simple_api import SimpleAPI, APIKeyCredentials, api
+from canvas_sdk.effects.simple_api import JSONResponse
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class ProfileAPI(SimpleAPI):
+    """API to share staff profile data with authorized plugins."""
+
+    PREFIX = "/staff-profiles"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        """Validate API key from requesting plugin."""
+        from hmac import compare_digest
+
+        provided_key = credentials.key
+        expected_key = self.secrets["profile_api_key"]
+
+        return compare_digest(provided_key.encode(), expected_key.encode())
+
+    @api.get("/<staff_id>")
+    def get_profile(self):
+        """Return staff profile data."""
+        staff_id = self.request.path_params["staff_id"]
+        staff = StaffProxy.objects.get(id=staff_id)
+
+        # Explicitly choose what data to expose
+        profile = {
+            "staff_id": staff.id,
+            "first_name": staff.first_name,
+            "last_name": staff.last_name,
+            "specialty": staff.get_attribute("specialty"),
+            "accepting_patients": staff.get_attribute("accepting_patients")
+        }
+
+        return [JSONResponse(profile)]
+```
+
+#### Consuming Shared Data from Another Plugin
+
+```python
+import requests
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.events import EventType
+
+
+class ConsumerHandler(BaseHandler):
+    """Handler that consumes profile data from another plugin."""
+
+    RESPONDS_TO = EventType.Name(EventType.APPOINTMENT__APPOINTMENT__POST_SEARCH)
+
+    def compute(self):
+        staff_id = self.target.staff_id
+
+        # Call the other plugin's API
+        api_key = self.secrets["profile_api_key"]
+        response = requests.get(
+            f"http://<canvas-host>/plugin-io/api/staff-profiles/profile/{staff_id}",
+            headers={"Authorization": f"Bearer {api_key}"}
+        )
+
+        if response.status_code == 200:
+            profile = response.json()
+            specialty = profile.get("specialty")
+            # Use the shared data...
+
+        return []
+```
+
+### Data Sharing Best Practices
+
+1. **Explicit Authorization** - Always require authentication for APIs that expose plugin data
+2. **Minimal Exposure** - Only expose the specific data fields that are necessary
+3. **Validate Requests** - Check permissions and validate that the requester should have access
+4. **Document APIs** - Provide clear documentation for plugins that will consume your API
+5. **Version APIs** - Use versioning (e.g., `/v1/profiles`) to allow API evolution
+6. **Audit Access** - Log API access for security and debugging purposes
+7. **Rate Limiting** - Consider implementing rate limits to prevent abuse
+
+### Security Considerations
+
+- **Never bypass plugin isolation** by attempting to access another plugin's database schema directly
+- **Use API keys or tokens** stored in secrets, never hardcoded in plugin code
+- **Implement proper error handling** that doesn't leak sensitive information
+- **Consider PHI implications** when exposing patient-related data via APIs
+- **Follow least privilege** principle - grant minimum necessary access
+
+---
+
+## When to Use Each Technique
 
 ### CustomAttributes on Proxy Models
 
@@ -84,18 +209,22 @@ from canvas_sdk.v1.data import Staff, Patient, CustomAttributeMixin, CustomAttri
 
 
 class StaffProxy(Staff, CustomAttributeMixin):
+    """A proxy for Staff with CustomAttribute capabilities"""
     class Meta:
         proxy = True
 
+    # This model manager is necessary efficient retrieval of attributes
     objects = CustomAttributeAwareManager()
 
 
-class PatientProxy(Patient, CustomAttributeMixin):
+class PatientProxy(Patient):
+    """A proxy for Patient without custom attributes, for use in associating Patients to CustomModels"""
     class Meta:
         proxy = True
-
-    objects = CustomAttributeAwareManager()
 ```
+
+You can name your proxy class as you wish, but it **must** subclass a core model, 
+and declare `proxy = True`.
 
 ### Setting Attributes
 
@@ -408,6 +537,188 @@ class Specialty(CustomModel):
 ```
 
 **Note on Indexing:** Foreign key and one-to-one fields are automatically indexed by the SDK. You only need to manually add indexes for other fields that you use in `.filter()` queries.
+
+---
+
+## Schema Rules and Constraints
+
+Custom data models have specific rules for schema evolution to ensure database stability and prevent data loss.
+
+### Schema Evolution Rules
+
+**Tables:**
+- Tables may be **declared** in your plugin code within a **models** directory
+- Tables **cannot be renamed** once created
+- Table definitions persist across plugin updates
+
+**Columns:**
+- Columns may be **added** to existing tables
+- Columns **cannot be removed** from tables
+- Columns **cannot be renamed** once created
+
+```python
+from django.db.models import TextField, IntegerField, BooleanField, Index
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class Provider(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["specialty"]),
+        ]
+
+    # Original fields
+    name = TextField()
+    specialty = TextField()
+
+    # New field added in v2 - must allow null or have default
+    board_certified = BooleanField()
+
+    # Another new field with default value
+    years_experience = IntegerField(default=0)
+
+    # ❌ CANNOT rename 'specialty' to 'medical_specialty'
+    # ❌ CANNOT remove 'name' field
+```
+
+### Database Constraints
+
+**No database-level constraints allowed:**
+- Do not use `unique=True` on fields
+- Do not use `null=False` on fields
+- Do not use `UniqueConstraint` in Meta
+- Do not use `CheckConstraint` in Meta
+- Foreign keys are supported but not backed by database constraints
+
+Any declared constraints will be ignored during database schema initialization.
+
+**Your plugin is responsible for:**
+- Data validation before saving
+- Ensuring uniqueness if needed
+- Maintaining data quality and integrity
+- Handling constraint violations in application logic
+
+```python
+from django.db.models import TextField, Index
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class Specialty(CustomModel):
+    class Meta:
+        indexes = [
+            Index(fields=["name"]),
+        ]
+
+        # ❌ NOT ALLOWED - no database constraints
+        # constraints = [
+        #     UniqueConstraint(fields=["name"], name="unique_specialty_name")
+        # ]
+
+    name = TextField()  # ✓ Correct - no unique=True
+
+
+# ✓ Correct - validate uniqueness in application code
+def create_specialty(name: str) -> Specialty:
+    """Create specialty, ensuring name uniqueness at application level."""
+    # Check for existing specialty
+    existing = Specialty.objects.filter(name=name).first()
+    if existing:
+        raise ValueError(f"Specialty with name '{name}' already exists")
+
+    return Specialty.objects.create(name=name)
+```
+
+### Indexes
+
+**Allowed:**
+- Indexes may be declared on **one or more non-key columns**
+- Use `Index(fields=[...])` in the Meta class
+- Multi-column indexes are supported
+- Foreign key fields are automatically indexed (no need to declare)
+
+```python
+from django.db.models import TextField, ForeignKey, DateTimeField, Index, DO_NOTHING
+from datetime import datetime
+from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class StaffProxy(Staff, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+
+class Appointment(CustomModel):
+    class Meta:
+        indexes = [
+            # ✓ Single column index
+            Index(fields=["status"]),
+
+            # ✓ Multi-column index for common query pattern
+            Index(fields=["staff", "appointment_date"]),
+
+            # ✓ Index with descending order
+            Index(fields=["-created_at"]),
+        ]
+
+    staff = ForeignKey(
+        StaffProxy,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="custom_appointments"
+    )  # Automatically indexed - don't add to Meta.indexes
+
+    status = TextField()  # Indexed in Meta
+    appointment_date = DateTimeField()  # Indexed as part of composite
+    created_at = DateTimeField(default=datetime.now)
+    notes = TextField()  # Not indexed - not used in filters
+```
+
+### Migration Best Practices
+
+1. **Additive changes only** - Only add new fields, never remove or rename
+5. **Handle missing data** - Code should gracefully handle null values in new fields
+
+```python
+from django.db.models import TextField, IntegerField, BooleanField, Index
+from canvas_sdk.v1.data.base import CustomModel
+
+
+class ProviderProfile(CustomModel):
+    """Provider profile data.
+
+    Schema versions:
+    - v1.0: Initial fields (name, specialty, years_experience)
+    - v1.1: Added board_certified field
+    - v1.2: Added accepting_patients field
+    """
+
+    class Meta:
+        indexes = [
+            Index(fields=["specialty"]),
+        ]
+
+    # v1.0 fields
+    name = TextField()
+    specialty = TextField()
+    years_experience = IntegerField(default=0)
+
+    # v1.1 fields - nullable for backward compatibility
+    board_certified = BooleanField(null=True, blank=True)
+
+    # v1.2 fields - with sensible default
+    accepting_patients = BooleanField(default=True)
+
+
+# ✓ Code handles null values gracefully
+def get_board_certification_status(profile: ProviderProfile) -> str:
+    if profile.board_certified is None:
+        return "Unknown"
+    return "Board Certified" if profile.board_certified else "Not Board Certified"
+```
+
+---
 
 ### Creating and Querying
 
@@ -1029,9 +1340,9 @@ for specialty_name in new_specialties:
 
 ## Advanced Patterns
 
-### Combining Approaches
+### Combining techniques
 
-Use multiple approaches together for maximum flexibility:
+Use multiple techniques together for maximum flexibility:
 
 ```python
 from datetime import datetime
@@ -2078,6 +2389,13 @@ def test_transaction_rollback():
 
 ## Best Practices
 
+### Data Privacy and Isolation
+
+1. **Understand plugin data scoping** - All custom data is isolated to your plugin by default
+2. **Use APIs for data sharing** - Never attempt to access another plugin's data directly
+3. **Implement proper authorization** - Secure all APIs that expose plugin data
+4. **Follow PHI guidelines** - Treat all patient-related custom data with appropriate security measures
+
 ### Model Design
 
 1. **Use proxy models** for adding CustomAttributes to existing SDK models
@@ -2086,6 +2404,14 @@ def test_transaction_rollback():
 4. **Index fields used in queries** - Add indexes to the Meta class for fields frequently used in lookups
 5. **Use related_name** for clear reverse relation access
 6. **Choose CASCADE or DO_NOTHING** carefully based on your data retention needs
+
+### Schema Management
+
+1. **Additive changes only** - Only add new fields; never remove or rename tables or columns
+2. **No database constraints** - Validate data in application code, not at the database level
+3. **Nullable new fields** - New columns must allow null or provide default values
+4. **Document schema versions** - Track changes in code comments for maintainability
+5. **Test schema changes** - Thoroughly test additions in development before deploying
 
 ### Performance
 
@@ -2115,3 +2441,5 @@ def test_transaction_rollback():
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Testing Utils](/sdk/testing-utils/) - Factories for testing custom data
 - [Effects](/sdk/effects/) - Effects for manipulating data
+- [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins
+- [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration
