@@ -15,6 +15,58 @@ All three techniques may be used together.
 
 ---
 
+## When to Use Each Technique
+
+### CustomAttributes on Proxy Models
+
+Use this when you need to add flexible data to existing SDK models without defining a schema.
+
+**Best for:**
+- Storing variable or configuration data on existing models
+- Rapid prototyping
+- Data that doesn't require strict typing
+- Simple key-value associations with core models
+
+**Example use cases:**
+- Adding practice-specific flags to patients
+- Storing provider preferences
+- Temporary or experimental data fields
+
+### AttributeHubs
+
+Use this when you need to store data that doesn't naturally belong to any existing model.
+
+**Best for:**
+- Cross-cutting concerns that span multiple models
+- Temporary data storage
+- External system state tracking
+- Plugin-specific configuration
+
+**Example use cases:**
+- API synchronization state
+- External system identifiers
+- Plugin session data
+- Feature flags
+
+### Custom Data Models
+
+Use this when you need structured, typed data with relationships and constraints.
+
+**Best for:**
+- Complex domain models
+- Data requiring validation and constraints
+- Relational data with foreign keys
+- Performance-critical queries
+- Data requiring indexes
+
+**Example use cases:**
+- Provider specialties and certifications
+- Custom workflows and forms
+- Integration-specific data structures
+- Practice-specific business entities
+
+---
+
 ## Data Privacy and Plugin Isolation
 
 All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or Custom Data Models—is **scoped to that plugin**. This isolation ensures that plugins cannot directly access or modify another plugin's data, maintaining security and data integrity across the system.
@@ -144,57 +196,6 @@ class ConsumerHandler(BaseHandler):
 - **Consider PHI implications** when exposing patient-related data via APIs
 - **Follow least privilege** principle - grant minimum necessary access
 
----
-
-## When to Use Each Technique
-
-### CustomAttributes on Proxy Models
-
-Use this when you need to add flexible data to existing SDK models without defining a schema.
-
-**Best for:**
-- Storing variable or configuration data on existing models
-- Rapid prototyping
-- Data that doesn't require strict typing
-- Simple key-value associations with core models
-
-**Example use cases:**
-- Adding practice-specific flags to patients
-- Storing provider preferences
-- Temporary or experimental data fields
-
-### AttributeHubs
-
-Use this when you need to store data that doesn't naturally belong to any existing model.
-
-**Best for:**
-- Cross-cutting concerns that span multiple models
-- Temporary data storage
-- External system state tracking
-- Plugin-specific configuration
-
-**Example use cases:**
-- API synchronization state
-- External system identifiers
-- Plugin session data
-- Feature flags
-
-### Custom Data Models
-
-Use this when you need structured, typed data with relationships and constraints.
-
-**Best for:**
-- Complex domain models
-- Data requiring validation and constraints
-- Relational data with foreign keys
-- Performance-critical queries
-- Data requiring indexes
-
-**Example use cases:**
-- Provider specialties and certifications
-- Custom workflows and forms
-- Integration-specific data structures
-- Practice-specific business entities
 
 ---
 
