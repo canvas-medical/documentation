@@ -5,20 +5,28 @@ slug: "custom-data-custom-models"
 
 ## Overview
 
-Custom Data Models allow you to define fully structured, typed data models with relationships and constraints. Built on Django's ORM, Custom Models provide the most powerful and flexible approach to storing custom data in Canvas plugins.
+Custom Data Models allow you to define fully structured, typed data models with relationships among entities and normalized data. 
+Built on Django's ORM, Custom Models provide the most powerful and flexible approach to storing custom data in Canvas plugins.
+
+The functionality expressed is a subset of the total ORM. The SDK omits some features in order to simplify the lifecycle 
+of plugin installation and maintenance.
 
 **Best for:**
 - Complex domain models
-- Data requiring validation and constraints
+- Data requiring validation and normalization
 - Relational data with foreign keys
 - Performance-critical queries
-- Data requiring indexes
 
 **Example use cases:**
 - Provider specialties and certifications
 - Custom workflows and forms
 - Integration-specific data structures
 - Practice-specific business entities
+
+Custom models may be associated to core SDK data models via proxy classes, or may be entirely standalone.
+
+Custom models must be defined within a `models` directory under the plugin top-level directory. E.g., `/my_plugin/models/custom_model_a.py`. 
+If not, then database migrations will not be applied. (Proxy models may be defined anywhere since they do not require any database modifications.)
 
 ---
 
@@ -27,214 +35,90 @@ Custom Data Models allow you to define fully structured, typed data models with 
 Create a custom model by extending `CustomModel`:
 
 ```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, IntegerField, BooleanField
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import BooleanField, DateTimeField, IntegerField, JSONField, TextField 
 
 
-class ProviderSpecialty(CustomModel):
-    """Track provider specialties and certifications."""
+class ProviderQualification(CustomModel):
+    """Additional information about a provider characteristics and certifications."""
 
-    name = TextField(max_length=200)
-    board_certified = BooleanField(default=False)
-    years_experience = IntegerField(default=0)
-
-    class Meta:
-        db_table = "provider_specialty"
+    # Define fields
+    board_certified = BooleanField()
+    practicing_since_year = IntegerField()
+    mission_statement = TextField()
+    degrees = JSONField()
+    created_at = DateTimeField()
 ```
 
-Custom Models automatically include:
-- `id`: Primary key (UUID)
-- `created_at`: Timestamp of creation
-- `updated_at`: Timestamp of last modification
-
+This above definition will result in a table named `providerqualification`. It will have a primary key
+column named `dbid` of type `serial`, an auto-incrementing integer. It will have five additional columns
+of time `boolean`, `integer`, `text`, `jsonb`, and `timestamptz` in the PostgreSQL database for the Canvas instance.
+Only the primary key will be indexed.
 ---
 
 ## Schema Rules and Constraints
 
+To maintain safety on potentially large datasets, constraints on CustomModels are not enforced within the database. 
+They must be enforced within plugin code.
+
+Unsupported contraints
+* `not null`
+* `unique`
+* `max_length`
+
+If applied to an existing dataset the constraints could result in a full table rewrite operation, and are thus omitted entirely.
+
 ### Field Types
 
-Canvas SDK provides Django-based field types for defining your models:
+The Canvas SDK provides Django-based field types for defining your models:
 
-| Field Type | Description | Common Parameters |
-|------------|-------------|-------------------|
-| `TextField` | Variable-length text | `max_length`, `blank`, `null`, `default` |
-| `CharField` | Fixed-length text | `max_length` (required), `blank`, `null`, `default` |
-| `IntegerField` | Integer values | `blank`, `null`, `default` |
-| `DecimalField` | Decimal numbers | `max_digits`, `decimal_places`, `blank`, `null`, `default` |
-| `BooleanField` | True/False values | `default` |
-| `DateField` | Date values | `auto_now`, `auto_now_add`, `blank`, `null`, `default` |
-| `DateTimeField` | Date and time values | `auto_now`, `auto_now_add`, `blank`, `null`, `default` |
-| `JSONField` | JSON-serializable data | `blank`, `null`, `default` |
-| `ForeignKey` | Many-to-one relationship | `on_delete`, `related_name`, `blank`, `null` |
-| `OneToOneField` | One-to-one relationship | `on_delete`, `related_name`, `blank`, `null` |
-| `ManyToManyField` | Many-to-many relationship | `related_name`, `blank` |
+| Field Type | Description | Supported Parameters                |
+|------------|-------------|-------------------------------------|
+| `TextField` | Variable-length text | `default`                           |
+| `IntegerField` | Integer values | `default`                           |
+| `DecimalField` | Decimal numbers | `default`, `max_digits`,`decimal_places` |
+| `BooleanField` | True/False values | `default`                           |
+| `DateField` | Date values | `auto_now`, `auto_now_add`, `default` |
+| `DateTimeField` | Date and time values | `auto_now`, `auto_now_add`, `default`                         |
+| `JSONField` | JSON-serializable data | `default`                           |
+| `ForeignKey` | Many-to-one relationship | `on_delete`, `related_name`         |
+| `OneToOneField` | One-to-one relationship | `on_delete`, `related_name`         |
+| `ManyToManyField` | Many-to-many relationship | `related_name`                      |
 
-```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import (
-    TextField, IntegerField, DecimalField, BooleanField,
-    DateField, DateTimeField, JSONField
-)
+If `default` is supplied it will be applied to new records only.
 
-
-class ProviderProfile(CustomModel):
-    bio = TextField(blank=True, null=True)
-    license_number = CharField(max_length=50)
-    patient_capacity = IntegerField(default=100)
-    hourly_rate = DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    accepting_patients = BooleanField(default=True)
-    license_expiry = DateField(blank=True, null=True)
-    last_credentialing_check = DateTimeField(auto_now=True)
-    specialties = JSONField(default=list)
-
-    class Meta:
-        db_table = "provider_profile"
-```
-
-### Column Constraints
-
-Apply constraints using field parameters:
-
-```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, IntegerField
-
-
-class Certification(CustomModel):
-    # Required field (cannot be null or blank)
-    name = TextField(max_length=200)
-
-    # Optional field (can be null or blank)
-    description = TextField(blank=True, null=True)
-
-    # Field with default value
-    status = TextField(max_length=20, default="active")
-
-    # Positive integer only
-    validity_years = IntegerField(default=1)
-
-    # Unique constraint
-    certification_number = TextField(max_length=50, unique=True)
-
-    class Meta:
-        db_table = "certification"
-```
-
-**Common Parameters:**
-- `null=True`: Allows NULL in database
-- `blank=True`: Allows empty value in forms
-- `default`: Default value for new records
-- `unique=True`: Enforces uniqueness constraint
-- `max_length`: Maximum character length
-
-### Database Constraints
-
-Define table-level constraints using the `Meta` class:
-
-```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, ForeignKey
-from django.db.models import UniqueConstraint
-
-
-class ProviderLicense(CustomModel):
-    provider_id = TextField(max_length=200)
-    state = TextField(max_length=2)
-    license_number = TextField(max_length=50)
-
-    class Meta:
-        db_table = "provider_license"
-        # Ensure unique combination of provider and state
-        constraints = [
-            UniqueConstraint(
-                fields=["provider_id", "state"],
-                name="unique_provider_state"
-            )
-        ]
-```
 
 ### Indexes
 
 Add indexes for frequently queried fields:
 
 ```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, DateField
-from django.db.models import Index
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import BooleanField, DateTimeField, Index, IntegerField, JSONField, TextField 
 
 
-class Appointment(CustomModel):
-    provider_id = TextField(max_length=200)
-    patient_id = TextField(max_length=200)
-    appointment_date = DateField()
-    status = TextField(max_length=20)
+class ProviderQualification(CustomModel):
 
+    board_certified = BooleanField()
+    practicing_since_year = IntegerField()
+    mission_statement = TextField()
+    degrees = JSONField()
+    created_at = DateTimeField()
+    
     class Meta:
-        db_table = "appointment"
         indexes = [
             # Single-column index
-            Index(fields=["provider_id"]),
-            Index(fields=["patient_id"]),
+            Index(fields=["board_certified"]),
             # Composite index for common query pattern
-            Index(fields=["provider_id", "appointment_date"]),
-            # Named index
-            Index(fields=["status"], name="appointment_status_idx")
+            Index(fields=["practicing_since", "appointment_date"]),
+            Index(fields=["created_at"])
         ]
 ```
 
 **Index Best Practices:**
-- Index foreign key fields
 - Index fields used in `filter()` and `order_by()`
 - Create composite indexes for common multi-field queries
-- Avoid over-indexing (indexes slow down writes)
-
-### Migration Best Practices
-
-When modifying Custom Models:
-
-1. **Additive Changes** (safe to deploy):
-   - Adding new fields with `null=True` or `default`
-   - Adding new models
-   - Adding indexes
-
-```python
-# Safe: Adding optional field
-class ProviderProfile(CustomModel):
-    bio = TextField(blank=True, null=True)
-    # New field added
-    languages = JSONField(default=list)
-```
-
-2. **Destructive Changes** (require careful migration):
-   - Removing fields
-   - Renaming fields
-   - Changing field types
-   - Adding `null=False` to existing fields
-
-```python
-# Requires migration: Adding required field to existing model
-class ProviderProfile(CustomModel):
-    bio = TextField(blank=True, null=True)
-    # This requires a migration with default or data population
-    license_number = CharField(max_length=50)  # null=False by default
-```
-
-3. **Migration Strategy for Required Fields**:
-
-```python
-# Step 1: Add field as optional
-class ProviderProfile(CustomModel):
-    bio = TextField(blank=True, null=True)
-    license_number = CharField(max_length=50, null=True, blank=True)
-
-# Step 2: Populate data for existing records
-# (In a data migration or script)
-
-# Step 3: Make field required
-class ProviderProfile(CustomModel):
-    bio = TextField(blank=True, null=True)
-    license_number = CharField(max_length=50)  # Now required
-```
+- Foreign key fields are indexed automatically
 
 ---
 
@@ -355,8 +239,8 @@ A one-to-one relationship links one record in a model to exactly one record in a
 ### Basic One-to-One
 
 ```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, OneToOneField, DateField
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import TextField, OneToOneField, DateField
 from canvas_sdk.v1.data import Staff
 
 
@@ -371,13 +255,12 @@ class ProviderCredentials(CustomModel):
 
     staff = OneToOneField(
         StaffProxy,
-        on_delete=models.CASCADE,
         related_name="credentials"
     )
-    dea_number = TextField(max_length=50, blank=True, null=True)
-    npi_number = TextField(max_length=10)
-    license_number = TextField(max_length=50)
-    license_state = TextField(max_length=2)
+    dea_number = TextField()
+    npi_number = TextField()
+    license_number = TextField()
+    license_state = TextField()
     license_expiry = DateField()
 
     class Meta:
@@ -436,8 +319,8 @@ expiring_soon = StaffProxy.objects.filter(
 ### One-to-One with Optional Relationship
 
 ```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, OneToOneField
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import TextField, OneToOneField
 
 
 class ProviderBio(CustomModel):
@@ -445,14 +328,11 @@ class ProviderBio(CustomModel):
 
     staff = OneToOneField(
         StaffProxy,
-        on_delete=models.CASCADE,
-        related_name="bio",
-        null=True,
-        blank=True
+        related_name="bio"
     )
     biography = TextField()
     education = TextField()
-    research_interests = TextField(blank=True, null=True)
+    research_interests = TextField()
 
     class Meta:
         db_table = "provider_bio"
@@ -467,8 +347,8 @@ A one-to-many (or many-to-one) relationship allows one record to be associated w
 ### Basic One-to-Many
 
 ```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, ForeignKey, DateField
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import TextField, ForeignKey, DateField
 
 
 class ProviderSpecialty(CustomModel):
@@ -476,15 +356,11 @@ class ProviderSpecialty(CustomModel):
 
     staff = ForeignKey(
         StaffProxy,
-        on_delete=models.CASCADE,
         related_name="specialties"
     )
-    name = TextField(max_length=200)
+    name = TextField()
     board_certified = BooleanField(default=False)
-    certification_date = DateField(blank=True, null=True)
-
-    class Meta:
-        db_table = "provider_specialty"
+    certification_date = DateField()
 ```
 
 ### Creating One-to-Many Records
@@ -550,8 +426,8 @@ has_cardiology = staff.specialties.filter(name="Cardiology").exists()
 ### One-to-Many with Patient Relationships
 
 ```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, ForeignKey, DateTimeField
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import TextField, ForeignKey, DateTimeField, Index
 from canvas_sdk.v1.data import Patient
 
 
@@ -566,18 +442,17 @@ class PatientNote(CustomModel):
 
     patient = ForeignKey(
         PatientProxy,
-        on_delete=models.CASCADE,
         related_name="custom_notes"
     )
-    note_type = TextField(max_length=50)
+    note_type = TextField()
     content = TextField()
-    created_by = TextField(max_length=200)
+    created_by = TextField()
     created_at = DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "patient_note"
         indexes = [
-            Index(fields=["patient", "created_at"]),
+            Index(fields=["created_at"]),
         ]
 
 
@@ -595,44 +470,6 @@ PatientNote.objects.create(
 # Query patient's notes
 recent_notes = patient.custom_notes.order_by("-created_at")[:5]
 care_plan_notes = patient.custom_notes.filter(note_type="care_plan")
-```
-
-### Cascading Deletes
-
-Control what happens when the related object is deleted using `on_delete`:
-
-```python
-from canvas_sdk.v1.data.fields import ForeignKey
-from django.db.models import CASCADE, PROTECT, SET_NULL
-
-
-class ProviderSpecialty(CustomModel):
-    # CASCADE: Delete specialties when staff is deleted
-    staff = ForeignKey(
-        StaffProxy,
-        on_delete=CASCADE,
-        related_name="specialties"
-    )
-
-
-class ProviderAssignment(CustomModel):
-    # PROTECT: Prevent staff deletion if assignments exist
-    staff = ForeignKey(
-        StaffProxy,
-        on_delete=PROTECT,
-        related_name="assignments"
-    )
-
-
-class ProviderReview(CustomModel):
-    # SET_NULL: Set to null when staff is deleted
-    staff = ForeignKey(
-        StaffProxy,
-        on_delete=SET_NULL,
-        null=True,
-        blank=True,
-        related_name="reviews"
-    )
 ```
 
 ---
@@ -892,8 +729,8 @@ class StaffProxy(Staff, CustomAttributeMixin):
 class Department(CustomModel):
     """Structured department model."""
 
-    name = TextField(max_length=200)
-    code = TextField(max_length=10, unique=True)
+    name = TextField()
+    code = TextField()
 
     class Meta:
         db_table = "department"

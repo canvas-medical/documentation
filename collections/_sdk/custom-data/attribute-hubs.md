@@ -5,11 +5,13 @@ slug: "custom-data-attribute-hub"
 
 ## Overview
 
-AttributeHub provides a simple model for storing arbitrary key-value data that doesn't belong to existing models. This approach is ideal for cross-cutting concerns that span multiple models, temporary data storage, external system state tracking, or plugin-specific configuration.
+`AttributeHub` provides a simple model for storing arbitrary key-value data that doesn't belong to existing models. 
+This approach is ideal for cross-cutting concerns that span multiple models, temporary data storage, 
+external system state tracking, or plugin-specific configuration.
 
 **Best for:**
 - Cross-cutting concerns that span multiple models
-- Temporary data storage
+- Temporary (but not auto-expiring) data storage
 - External system state tracking
 - Plugin-specific configuration
 
@@ -23,7 +25,7 @@ AttributeHub provides a simple model for storing arbitrary key-value data that d
 
 ## Creating an AttributeHub
 
-Create a hub for a specific purpose using the `type` and `externally_exposable_id` fields:
+Create a hub for a specific purpose using the `type` and `externally_exposable_id` fields, which together form a unique key.
 
 ```python
 from canvas_sdk.v1.data import AttributeHub

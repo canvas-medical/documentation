@@ -14,7 +14,7 @@ CustomAttributes allow you to extend existing SDK models (like Patient or Staff)
 - Simple key-value associations with core models
 
 **Example use cases:**
-- Adding practice-specific flags to patients
+- Adding practice-specific flags or identifiers to patients
 - Storing provider preferences
 - Temporary or experimental data fields
 
@@ -43,8 +43,12 @@ class PatientProxy(Patient):
         proxy = True
 ```
 
-You can name your proxy class as you wish, but it **must** subclass a core model,
-and declare `proxy = True`.
+You can name your proxy class as you wish, but it **must**:
+1. subclass a core model,
+1. declare `proxy = True`.
+
+Proxy classes may be referenced by `CustomModel` subclasses defined in your plugin, but they cannot have new fields defined
+within them.
 
 ---
 
@@ -80,11 +84,14 @@ patient.set_attribute("preferred_language", "Spanish")
 
 # Set multiple attributes at once
 staff.set_attributes({
-    "board_certified": True,
-    "years_experience": 15,
-    "accepting_new_patients": False
+    "practicing_since": 2005,
+    "accepting_new_patients": False,
+    "languages": ["English", "Spanish"]
 })
 ```
+
+Setting attributes in bulk via `set_attributes` will be more performant with larger numbers of individual attributes.
+
 
 ---
 
@@ -118,7 +125,7 @@ unknown = staff.get_attribute("nonexistent")  # Returns None
 CustomAttributes automatically handle multiple data types:
 
 ```python
-from datetime import datetime
+from datetime import date, datetime
 from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
 
 
@@ -142,6 +149,9 @@ staff.set_attribute("accepting_patients", True)
 # Decimal values
 staff.set_attribute("rating", 4.8)
 
+# Date values
+staff.set_attribute("creation_date", date.today())
+
 # Datetime values
 staff.set_attribute("last_updated", datetime.now())
 
@@ -151,6 +161,19 @@ staff.set_attribute("preferences", {
     "notification_sms": False
 })
 ```
+
+Values are stored in appropriately typed columns for the value, and these columns may be referenced in queries.
+
+| Field Name        | Django Field Type | PostgreSQL Data Type       |
+|-------------------|-------------------|----------------------------|
+| `text_value`      | `TextField`       | `text`                     |
+| `date_value`      | `DateField`       | `date`                     |
+| `timestamp_value` | `DateTimeField`   | `timestamp with time zone` |
+| `int_value`       | `IntegerField`    | `integer`                  |
+| `decimal_value`   | `DecimalField`    | `decimal(20,10)`           |
+| `json_value`      | `JSONField`       | `jsonb`                    |
+| `bool_value`      | `BooleanField`    | `boolean`                  |
+
 
 ---
 
@@ -169,7 +192,7 @@ class StaffProxy(Staff, CustomAttributeMixin):
     objects = CustomAttributeAwareManager()
 
 
-# Find staff with specific specialty
+# Find staff with a specific specialty assigned as a text value
 cardiologists = (
     StaffProxy.objects
     .filter(
@@ -179,7 +202,7 @@ cardiologists = (
     .all()
 )
 
-# Find staff with multiple specialties using OR conditions
+# Find staff with multiple specialties assigned using a JSON array using OR conditions
 specialties = ["Cardiology", "Internal Medicine"]
 specialty_filters = Q()
 for specialty in specialties:
@@ -196,7 +219,8 @@ matching_staff = (
 
 ## Optimizing Queries with Prefetch
 
-Reduce database queries by prefetching custom attributes:
+Reduce database queries by prefetching custom attributes with the `CustomAttributeAwareManager` model manager. By default,
+this manager will prefetch all attributes associated to the record.
 
 ```python
 from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager

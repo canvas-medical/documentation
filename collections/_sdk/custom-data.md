@@ -4,7 +4,8 @@ title: "Custom Data"
 
 ## Overview
 
-The Canvas SDK provides three techniques for storing custom data in your plugins, allowing you to extend existing models, create flexible key-value stores, or define fully structured data models with relationships:
+The Canvas SDK provides three techniques for storing custom data in your plugins, allowing you to extend existing models, create flexible key-value stores, 
+or define fully structured data models with relationships among entities:
 
 1. **[CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/)** - Extend existing SDK data models (like Patient or Staff) with flexible key-value attributes
 2. **[AttributeHubs](/sdk/custom-data-attribute-hub/)** - Store arbitrary key-value data that doesn't belong to existing models
@@ -27,7 +28,7 @@ Use this when you need to add flexible data to existing SDK models without defin
 - Simple key-value associations with core models
 
 **Example use cases:**
-- Adding practice-specific flags to patients
+- Adding practice-specific flags or identifiers to patients
 - Storing provider preferences
 - Temporary or experimental data fields
 
@@ -49,24 +50,23 @@ Use this when you need to store data that doesn't naturally belong to any existi
 - Plugin session data
 - Feature flags
 
-[Learn more about AttributeHubs →](/sdk/custom-data-attribute-hub/)
+[Learn more about AttributeHubs →](/sdk/custom-data-attribute-hubs/)
 
 ### Custom Data Models
 
-Use this when you need structured, typed data with relationships and constraints.
+Use this when you need structured, typed data with relationships and normalized data.
 
 **Best for:**
 - Complex domain models
-- Data requiring validation and constraints
+- Data requiring validation and normalization
 - Relational data with foreign keys
 - Performance-critical queries
-- Data requiring indexes
 
 **Example use cases:**
 - Provider specialties and certifications
 - Custom workflows and forms
 - Integration-specific data structures
-- Practice-specific business entities
+- Practice-specific business operation concepts and logic
 
 [Learn more about Custom Data Models →](/sdk/custom-data-custom-models/)
 
@@ -74,37 +74,55 @@ Use this when you need structured, typed data with relationships and constraints
 
 ## Data Privacy and Plugin Isolation
 
-All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or Custom Data Models—is **scoped to that plugin**. This isolation ensures that plugins cannot directly access or modify another plugin's data, maintaining security and data integrity across the system.
+All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or Custom Data Models—is **scoped to that plugin**. 
+This isolation ensures that plugins cannot directly access or modify another plugin's data, maintaining security and data integrity across the system.
 
 ### Data Isolation
 
 **CustomAttributes** attached to SDK models (like Patient or Staff) are scoped by plugin. Each plugin maintains its own separate namespace for custom attributes, even when attached to the same core model instance.
 
 ```python
-# In plugin-a
-staff.set_attribute("specialty", "Cardiology")  # Only accessible within plugin-a
-
-# In plugin-b
-staff.get_attribute("specialty")  # Returns None - cannot see plugin-a's data
-staff.set_attribute("specialty", "Neurology")  # Creates separate attribute in plugin-b
+# In one plugin
+from my_plugin.models.proxy import StaffProxy
+staff = StaffProxy.objects.get(id="abc")
+staff.set_attribute("specialty", "Cardiology")  # Only accessible within "my_plugin"
+```
+```python
+# In another plugin
+from your_plugin.models.proxy import StaffProxy
+staff = StaffProxy.objects.get(id="abc")
+staff.get_attribute("specialty")  # Returns None - cannot see "my_plugin" data
+staff.set_attribute("specialty", "Cardiac")  # Creates separate attribute in "your_plugin"
 ```
 
-**Custom Data Models** created by a plugin exist in a plugin-specific database schema. Tables and data are completely isolated from other plugins.
+**AttributeHubs** similarly store data within the plugin's namespace and are not accessible to other plugins.
+
+**Custom Data Models** created by a plugin exist in a plugin-specific namespace. Tables and data are completely isolated from other plugins.
 
 ```python
-# In plugin-a: Creates table in plugin-a schema
+# In a plugin named "my_plugin": Creates a table "specialty" in the "my_plugin" namespace
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import TextField
+class Specialty(CustomModel):
+    name = TextField()
+```
+
+```python
+# In a plugin named "your_plugin": Creates a table "specialty" in the "your_plugin" namespace
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import TextField
 class Specialty(CustomModel):
     name = TextField()
 
-# In plugin-b: Cannot access plugin-a's Specialty model or data
-# Would need to define its own Specialty model if needed
+# In "your_plugin": Cannot access the "my_plugin" Specialty model or data
 ```
-
-**AttributeHubs** store data within the plugin's namespace and are not accessible to other plugins.
 
 ### Sharing Data Between Plugins
 
-To share data across plugins, a plugin must **explicitly expose an API** with appropriate authorization and access controls. This is done using the [Simple API](/sdk/canvas_cli/#simple-api-endpoints) feature.
+To share data across plugins, a plugin must **explicitly expose an API** with appropriate authorization and access controls. 
+This is done using the [Simple API](/sdk/canvas_cli/#simple-api-endpoints) feature.
+
+This limitation exists to ensure data provenance, and reduce chance of dependency conflicts among plugins.
 
 #### Example: Exposing Provider Profile Data
 
@@ -155,9 +173,17 @@ class ProfileAPI(SimpleAPI):
 #### Consuming Shared Data from Another Plugin
 
 ```python
-import requests
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.events import EventType
+
+
+        staff_id = self.request.path_params["staff_id"]
+        from canvas_sdk.utils import Http
+
+        http = Http()
+        response = http.get("http://localhost:8000/plugin-io/api/staff_plus/profile/v2/dbf184ad28a1408bbed184fc8fd2b029",
+                 headers={"Authorization": f"f2464a67e6fa9839579189a8c1c781e9"})
+        return [JSONResponse(response.json())]
 
 
 class ConsumerHandler(BaseHandler):
@@ -205,15 +231,15 @@ class ConsumerHandler(BaseHandler):
 
 ## Testing Custom Data
 
-The Canvas SDK provides comprehensive testing utilities for all custom data approaches. See the [Testing Custom Data](/sdk/custom-data/testing/) guide for detailed examples and best practices.
+The Canvas SDK provides comprehensive testing utilities for all custom data approaches. See the [Testing Custom Data](/sdk/custom-data-testing/) guide for detailed examples and best practices.
 
 ---
 
 ## See Also
 
 - [CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
-- [AttributeHubs](/sdk/custom-data-attribute-hub/) - Standalone key-value storage
-- [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships
+- [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
+- [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships among entities
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins

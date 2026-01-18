@@ -862,7 +862,19 @@ effects_module:
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.
-
+custom_data_module:
+  - title: "Custom Attributes"
+    url: /sdk/custom-data-custom-attributes
+    description: Flexible key value storage to augment core data models
+  - title: "AttributeHubs"
+    url: /sdk/custom-data-attributehubs
+    description: Grouping custom attributes independently of core data models
+  - title: "Custom Models"
+    url: /sdk/custom-data-custom-models
+    description: Fully custom normalized models
+  - title: "Testing"
+    url: /sdk/custom-data-testing
+    description: Automated tests using all three kinds of custom data storage
 data_module:
   - title: "AllergyIntolerance"
     url: /sdk/data-allergy-intolerance/
