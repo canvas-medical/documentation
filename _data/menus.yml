@@ -763,6 +763,9 @@ effects_module:
   - title: "Patient"
     url: /sdk/effect-patient/
     description: Interact with patient data.
+  - title: "Patient Facility Address"
+    url: /sdk/effect-patient-facility-address/
+    description: Create, update, or delete patient facility address associations.
   - title: "Patient Chart Group"
     url: /sdk/patient-chart-group-effect/
     description: Effect for grouping items on a patient chart section.
