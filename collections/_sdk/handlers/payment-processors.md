@@ -110,15 +110,22 @@ Handles the actual payment. This method is triggered after tokenization and is r
 
 ```python
 from decimal import Decimal
+from typing import Any
 from canvas_sdk.effects.payment_processor import (
-  CardTransaction, 
+  CardTransaction,
   PaymentProcessorForm
 )
 from canvas_sdk.templates import render_to_string
 from canvas_sdk.v1.data import Patient
 
 
-def charge(self, token: str, patient: Patient, amount: Decimal) -> CardTransaction:
+def charge(
+    self,
+    amount: Decimal,
+    token: str,
+    patient: Patient | None = None,
+    **kwargs: Any
+) -> CardTransaction:
     payload = {
         "token": token,
         "amount": int(amount * 100),
@@ -132,6 +139,51 @@ def charge(self, token: str, patient: Patient, amount: Decimal) -> CardTransacti
         success=True,
         api_response=result,
     )
+```
+
+#### Additional Context
+
+The `charge` method accepts `**kwargs` which can contain additional context passed from the payment form. This is useful when you need to pass extra information from the tokenization response (e.g., payment method details, transaction metadata) to the charge handler.
+
+The additional context is passed via the second argument of `setToken` in your form's JavaScript (see [Form Workflow](#form-workflow)). Canvas processes the `additional_context` as follows:
+
+| Input Type          | Example              | Passed to `charge` as              |
+|---------------------|----------------------|------------------------------------|
+| JSON object string  | `'{"key": "value"}'` | `key="value"` (unpacked as kwargs) |
+| `None`              | `null`               | `additional_context=None`          |
+| Plain string        | `"some text"`        | `additional_context="some text"`   |
+| JSON number string  | `"123"`              | `additional_context=123`           |
+| JSON boolean string | `"true"`             | `additional_context=True`          |
+
+Example using additional context:
+
+```python
+from decimal import Decimal
+from typing import Any
+from canvas_sdk.effects.payment_processor import (
+  CardTransaction,
+  PaymentProcessorForm
+)
+from canvas_sdk.templates import render_to_string
+from canvas_sdk.v1.data import Patient
+
+def charge(
+    self,
+    amount: Decimal,
+    token: str,
+    patient: Patient | None = None,
+    **kwargs: Any
+) -> CardTransaction:
+    # Access additional context from kwargs
+    # If setToken was called with a JSON object like {"zip_code": "60007", "city": "Chicago"},
+    # these will be available as kwargs
+    zip_code = kwargs.get("zip_code")
+    city = kwargs.get("city")
+
+    # Or if a non-dict value was passed, it will be in additional_context
+    raw_context = kwargs.get("additional_context")
+
+    # ... rest of implementation
 ```
 
 ---
@@ -164,13 +216,27 @@ def list_payment_methods(self, patient: Patient) -> list[PaymentMethod]:
 #### 4.2. Add
 
 ```python
+from typing import Any
 from canvas_sdk.effects.payment_processor import AddPaymentMethodResponse
 from canvas_sdk.v1.data import Patient
 
 
-def add_payment_method(self, token: str, patient: Patient) -> AddPaymentMethodResponse:
+def add_payment_method(self, token: str, patient: Patient, **kwargs: Any) -> AddPaymentMethodResponse:
     return AddPaymentMethodResponse(success=True)
 ```
+##### Additional Context
+
+The `add_payment_method` method accepts `**kwargs` which can contain additional context passed from the add card form. This is useful when you need to pass extra information from the tokenization response to the charge handler.
+
+The additional context is passed via the second argument of `setToken` in your form's JavaScript (see [Form Workflow](#form-workflow)). Canvas processes the `additional_context` as follows:
+
+| Input Type          | Example              | Passed to `charge` as              |
+|---------------------|----------------------|------------------------------------|
+| JSON object string  | `'{"key": "value"}'` | `key="value"` (unpacked as kwargs) |
+| `None`              | `null`               | `additional_context=None`          |
+| Plain string        | `"some text"`        | `additional_context="some text"`   |
+| JSON number string  | `"123"`              | `additional_context=123`           |
+| JSON boolean string | `"true"`             | `additional_context=True`          |
 
 #### 4.3. Remove
 
@@ -199,12 +265,25 @@ window.parent.setFormIsReady();
 
 ### 2. Submit token after success
 
-Once the card details are validated and tokenized, this method must be called to pass the token back to Canvas. 
+Once the card details are validated and tokenized, this method must be called to pass the token back to Canvas.
 This token will then be used to charge or store the card.
 
 ```js
 window.parent.setToken("tok_123abc");
 ```
+
+You can optionally pass a second argument with additional context that will be forwarded to the `charge` or `add_payment_method` methods. This is useful for passing extra data from the tokenization response:
+
+```js
+// Pass additional context as a JSON-serializable object
+window.parent.setToken("tok_123abc", { zip_code: "111", city: "Chicago" });
+
+// Or pass the raw tokenization result
+const result = await paymentProvider.tokenize(cardDetails);
+window.parent.setToken(result.token, result);
+```
+
+The additional context will be available in the `charge` and `add_payment_method`  method's `**kwargs`. See the [Charge](#3-charge) section for details on how different value types are handled.
 
 ### 3. Report validation status
 
