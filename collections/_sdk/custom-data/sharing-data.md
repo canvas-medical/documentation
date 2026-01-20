@@ -1,6 +1,6 @@
 ---
 title: "Sharing Data"
-slug: "custom-data-sharing"
+slug: "custom-data-sharing-data"
 ---
 
 To share data across plugins or to external services, a plugin must **explicitly expose an API** with appropriate 
