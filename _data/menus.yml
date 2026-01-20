@@ -1054,6 +1054,9 @@ custom_data_module:
   - title: "Testing"
     url: /sdk/custom-data-testing
     description: Automated tests using all three kinds of custom data storage
+  - title: "Sharing Data"
+    url: /sdk/custom-data-sharing-data
+    description: How to share data with other plugins or external systems
 
 releasenotes:
   - title: "Product Updates"

@@ -119,107 +119,17 @@ class Specialty(CustomModel):
 # In "your_plugin": Cannot access the "my_plugin" Specialty model or data
 ```
 
-### Sharing Data Between Plugins
+## Testing Custom Data
 
-To share data across plugins, a plugin must **explicitly expose an API** with appropriate authorization and access controls. 
-This is done using the [Simple API](/sdk/canvas_cli/#simple-api-endpoints) feature.
-
-This limitation exists to ensure data provenance, and reduce chance of dependency conflicts among plugins.
-
-#### Example: Exposing Provider Profile Data
-
-```python
-from canvas_sdk.handlers.simple_api import SimpleAPI, APIKeyCredentials, api
-from canvas_sdk.effects.simple_api import JSONResponse
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
-
-
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
-
-
-class ProfileAPI(SimpleAPI):
-    """API to share staff profile data with authorized plugins."""
-
-    PREFIX = "/staff-profiles"
-
-    def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        """Validate API key from requesting plugin."""
-        from hmac import compare_digest
-
-        provided_key = credentials.key
-        expected_key = self.secrets["profile_api_key"]
-
-        return compare_digest(provided_key.encode(), expected_key.encode())
-
-    @api.get("/<staff_id>")
-    def get_profile(self):
-        """Return staff profile data."""
-        staff_id = self.request.path_params["staff_id"]
-        staff = StaffProxy.objects.get(id=staff_id)
-
-        # Explicitly choose what data to expose
-        profile = {
-            "staff_id": staff.id,
-            "first_name": staff.first_name,
-            "last_name": staff.last_name,
-            "specialty": staff.get_attribute("specialty"),
-            "accepting_patients": staff.get_attribute("accepting_patients")
-        }
-
-        return [JSONResponse(profile)]
-```
-
-#### Consuming Shared Data from Another Plugin
-
-```python
-from canvas_sdk.effects import Effect, EffectType
-from canvas_sdk.effects.simple_api import Response, JSONResponse
-from canvas_sdk.handlers.simple_api import SimpleAPI, APIKeyCredentials, api
-from canvas_sdk.utils import Http
-
-class MyAPI(SimpleAPI):
-    PREFIX = "/profile"
-
-@api.get("/api/<staff_id>")
-def get_single_profile_api(self) -> list[Response | Effect]:
-    staff_id = self.request.path_params["staff_id"]
-    canvas_host = "demo.canvasmedical.com"
-    token = 'abcd1234'
-
-    other_plugin_api = f"https://{canvas_host}/plugin-io/api/other_plugin/staff_profile/{staff_id}"
-    http = Http()
-    response = http.get(other_plugin_api,
-             headers={"Authorization": f"{token}"})
-    return [JSONResponse(response.json())]
-
-```
-
-### Data Sharing Best Practices
-
-1. **Explicit Authorization** - Always require authentication for APIs that expose plugin data
-2. **Minimal Exposure** - Only expose the specific data fields that are necessary
-3. **Validate Requests** - Check permissions and validate that the requester should have access
-4. **Document APIs** - Provide clear documentation for plugins that will consume your API
-5. **Version APIs** - Use versioning (e.g., `/v1/profiles`) to allow API evolution
-6. **Audit Access** - Log API access for security and debugging purposes
-7. **Rate Limiting** - Consider implementing rate limits to prevent abuse
-
-### Security Considerations
-
-- **Never bypass plugin isolation** by attempting to access another plugin's database schema directly
-- **Use API keys or tokens** stored in secrets, never hardcoded in plugin code
-- **Implement proper error handling** that doesn't leak sensitive information
-- **Consider PHI implications** when exposing patient-related data via APIs
-- **Follow least privilege** principle - grant minimum necessary access
+The Canvas SDK provides comprehensive testing utilities for all custom data approaches. 
+See the [Testing Custom Data](/sdk/custom-data-testing/) guide for detailed examples and best practices.
 
 ---
 
-## Testing Custom Data
+### Sharing Data
 
-The Canvas SDK provides comprehensive testing utilities for all custom data approaches. See the [Testing Custom Data](/sdk/custom-data-testing/) guide for detailed examples and best practices.
+Use APIs to make data available and accessible to and from other plugins and external servides. See the
+[Sharing Data](/sdk/custom-data-sharing-data/) guide for detailed examples and best practices.
 
 ---
 
@@ -229,6 +139,7 @@ The Canvas SDK provides comprehensive testing utilities for all custom data appr
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships among entities
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
+- [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins
 - [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration
