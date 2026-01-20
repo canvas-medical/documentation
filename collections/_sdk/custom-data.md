@@ -17,7 +17,7 @@ Each technique serves different use cases and provides different levels of struc
 
 ## When to Use Each Technique
 
-### CustomAttributes on Proxy Models
+### CustomAttributes for SDK Models
 
 Use this when you need to add flexible data to existing SDK models without defining a schema.
 
@@ -67,6 +67,8 @@ Use this when you need structured, typed data with relationships and normalized 
 - Custom workflows and forms
 - Integration-specific data structures
 - Practice-specific business operation concepts and logic
+
+**CustomModels may build around and be related to core SDK models using proxies.**
 
 [Learn more about Custom Data Models →](/sdk/custom-data-custom-models/)
 
@@ -173,40 +175,26 @@ class ProfileAPI(SimpleAPI):
 #### Consuming Shared Data from Another Plugin
 
 ```python
-from canvas_sdk.handlers.base import BaseHandler
-from canvas_sdk.events import EventType
+from canvas_sdk.effects import Effect, EffectType
+from canvas_sdk.effects.simple_api import Response, JSONResponse
+from canvas_sdk.handlers.simple_api import SimpleAPI, APIKeyCredentials, api
+from canvas_sdk.utils import Http
 
+class MyAPI(SimpleAPI):
+    PREFIX = "/profile"
 
-        staff_id = self.request.path_params["staff_id"]
-        from canvas_sdk.utils import Http
+@api.get("/api/<staff_id>")
+def get_single_profile_api(self) -> list[Response | Effect]:
+    staff_id = self.request.path_params["staff_id"]
+    canvas_host = "demo.canvasmedical.com"
+    token = 'abcd1234'
 
-        http = Http()
-        response = http.get("http://localhost:8000/plugin-io/api/staff_plus/profile/v2/dbf184ad28a1408bbed184fc8fd2b029",
-                 headers={"Authorization": f"f2464a67e6fa9839579189a8c1c781e9"})
-        return [JSONResponse(response.json())]
+    other_plugin_api = f"https://{canvas_host}/plugin-io/api/other_plugin/staff_profile/{staff_id}"
+    http = Http()
+    response = http.get(other_plugin_api,
+             headers={"Authorization": f"{token}"})
+    return [JSONResponse(response.json())]
 
-
-class ConsumerHandler(BaseHandler):
-    """Handler that consumes profile data from another plugin."""
-
-    RESPONDS_TO = EventType.Name(EventType.APPOINTMENT__APPOINTMENT__POST_SEARCH)
-
-    def compute(self):
-        staff_id = self.target.staff_id
-
-        # Call the other plugin's API
-        api_key = self.secrets["profile_api_key"]
-        response = requests.get(
-            f"http://<canvas-host>/plugin-io/api/staff-profiles/profile/{staff_id}",
-            headers={"Authorization": f"Bearer {api_key}"}
-        )
-
-        if response.status_code == 200:
-            profile = response.json()
-            specialty = profile.get("specialty")
-            # Use the shared data...
-
-        return []
 ```
 
 ### Data Sharing Best Practices

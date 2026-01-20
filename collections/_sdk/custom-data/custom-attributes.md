@@ -1,11 +1,13 @@
 ---
-title: "CustomAttributes on Proxy Models"
+title: "CustomAttributes for SDK Models"
 slug: "custom-data-custom-attributes"
 ---
 
 ## Overview
 
-CustomAttributes allow you to extend existing SDK models (like Patient or Staff) with flexible key-value attributes without defining a formal schema. This approach is ideal for storing variable configuration data, rapid prototyping, or simple key-value associations with core models.
+CustomAttributes allow you to extend existing SDK models (like Patient or Staff) with flexible key-value attributes 
+without defining a formal schema. This approach is ideal for storing variable configuration data, rapid prototyping, 
+or simple key-value associations with core models.
 
 **Best for:**
 - Storing variable or configuration data on existing models
@@ -20,7 +22,11 @@ CustomAttributes allow you to extend existing SDK models (like Patient or Staff)
 
 ---
 
-## Creating a Proxy Model
+## Creating a Proxy for the SDK Model
+
+CustomAttributes attach to a "proxy" of a core SDK model. A proxy is a Django ORM model that extends another model 
+and allows customizations without changing the base model. It cannot define new database fields, but inherits all
+of those from its base model.
 
 Extend existing SDK models by creating a proxy class that adds CustomAttribute support.
 
@@ -35,20 +41,11 @@ class StaffProxy(Staff, CustomAttributeMixin):
 
     # This model manager is necessary efficient retrieval of attributes
     objects = CustomAttributeAwareManager()
-
-
-class PatientProxy(Patient):
-    """A proxy for Patient without custom attributes, for use in associating Patients to CustomModels"""
-    class Meta:
-        proxy = True
 ```
 
 You can name your proxy class as you wish, but it **must**:
 1. subclass a core model,
 1. declare `proxy = True`.
-
-Proxy classes may be referenced by `CustomModel` subclasses defined in your plugin, but they cannot have new fields defined
-within them.
 
 ---
 

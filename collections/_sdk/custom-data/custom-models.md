@@ -257,11 +257,30 @@ ProviderQualification.objects.filter(
 ProviderQualification.objects.all().delete()
 ```
 
+## Extend Canvas Data Model using Proxy Models
+
+A proxy is a Django ORM model that extends another model and allows customizations without changing the base model. 
+It cannot define new database fields, but inherits all
+of those from its base model.
+
+We will define them like so:
+
+```python
+from canvas_sdk.v1.data import Staff
+
+
+class StaffProxy(Staff):
+    """Proxy for Staff to use with custom models."""
+    class Meta:
+        proxy = True
+```
+
 ---
 
 ## One-to-One Relationships
 
-A one-to-one relationship links one record in a model to exactly one record in another model. Use `OneToOneField` to define this relationship.
+A one-to-one relationship links one record in a model to exactly one record in another model. 
+Use `OneToOneField` to define this relationship.
 
 ### Basic One-to-One
 

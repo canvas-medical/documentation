@@ -3,8 +3,6 @@ title: "Testing Custom Data"
 slug: "custom-data-testing"
 ---
 
-# Testing Custom Data
-
 The Canvas SDK provides comprehensive testing utilities for custom data. Tests run within database transactions that automatically roll back, ensuring isolation between test cases.
 
 ## Test Setup
@@ -57,8 +55,8 @@ Define factories for your custom models with appropriate field values:
 
 ```python
 import factory
-from staff_plus.models.specialty import Specialty, StaffSpecialty
-from staff_plus.models.biography import Biography
+from my_plugin.models import Specialty, StaffSpecialty
+from my_plugin.models import Biography
 
 
 class SpecialtyFactory(factory.django.DjangoModelFactory):
