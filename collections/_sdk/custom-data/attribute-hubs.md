@@ -81,12 +81,14 @@ hub.set_attributes({
 Use the get-or-create pattern to retrieve existing hubs or create new ones:
 
 ```python
-from canvas_sdk.v1.data import AttributeHub
+from canvas_sdk.v1.data import AttributeHub, Staff
+
+staff = Staff.objects.get(id=staff.id)
 
 # Get or create pattern
 hub, created = AttributeHub.objects.get_or_create(
     type="staff_profile",
-    externally_exposable_id=f"staff_id:{staff_id}"
+    externally_exposable_id=f"staff_id:{staff.id}"
 )
 
 # Retrieve attributes
@@ -125,7 +127,7 @@ class ExternalSyncAPI(SimpleAPI):
         # Store data in AttributeHub
         hub, created = AttributeHub.objects.get_or_create(
             type="external_sync",
-            externally_exposable_id=f"staff:{staff_id}"
+            externally_exposable_id=f"staff:{staff.id}"
         )
 
         hub.set_attributes({
@@ -148,7 +150,7 @@ from canvas_sdk.v1.data import AttributeHub
 class ProfileHandler(BaseHandler):
     """Handler that checks external sync state."""
 
-    RESPONDS_TO = EventType.Name(EventType.STAFF__STAFF__READ)
+    RESPONDS_TO = EventType.Name(EventType.STAFF_UPDATED)
 
     def compute(self):
         staff_id = self.target.id
@@ -180,7 +182,7 @@ class ProfileHandler(BaseHandler):
 
 1. **Use descriptive type values** - Choose meaningful type names that describe the purpose of the hub (e.g., "external_sync", "api_cache", "feature_flags")
 2. **Use consistent ID patterns** - Use a consistent pattern for `externally_exposable_id` (e.g., "entity_type:entity_id")
-3. **Namespace by purpose** - Group related data under a single hub rather than creating multiple hubs for the same entity
+3. **Namespace by purpose** - Group related data under a single hub rather than creating multiple hubs for the same entity type
 
 ### Data Privacy and Isolation
 

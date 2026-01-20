@@ -273,12 +273,6 @@ if deleted:
 
 ## Best Practices
 
-### Model Design
-
-1. **Use proxy models** for adding CustomAttributes to existing SDK models
-2. **Include CustomAttributeAwareManager** - Always use `CustomAttributeAwareManager()` as the objects manager for efficient attribute retrieval
-3. **Use related_name** for clear reverse relation access when using CustomAttributes with foreign keys
-
 ### Data Privacy and Isolation
 
 1. **Understand plugin data scoping** - All custom data is isolated to your plugin by default
@@ -288,8 +282,7 @@ if deleted:
 
 ### Performance
 
-1. **Prefetch related data** to avoid N+1 query problems
-2. **Use select_related** for foreign key lookups
+2. **Include CustomAttributeAwareManager** - Always use `CustomAttributeAwareManager()` as the objects manager for efficient attribute retrieval
 3. **Filter at the database level** rather than in Python
 4. **Use with_only()** to prefetch only specific attributes when you don't need all custom attributes
 
@@ -297,12 +290,10 @@ if deleted:
 
 1. **Validate data** before saving custom attributes
 2. **Handle None values** when accessing attributes that may not exist
-3. **Use get_or_create** to avoid duplicate records
 
 ### Testing
 
 1. **Use factories** to create test data consistently
-2. **Test relationship queries** in both directions
 3. **Test with and without prefetching** to ensure correct behavior
 
 ---

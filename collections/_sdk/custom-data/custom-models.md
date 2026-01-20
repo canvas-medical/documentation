@@ -464,10 +464,15 @@ has_spanish_bio = staff.biographies.filter(language="Spanish").exists()
 
 A many-to-many relationship allows multiple records in one model to be associated with multiple records in another model.
 
-### Explicit Through Model (Recommended)
+### Many-to-Many with Through Model
 
-The recommended approach for many-to-many relationships is to use an explicit through model (also called a join table).
-This gives you full control over the relationship and allows you to add additional fields to track metadata about the association.
+Many-to-many relationships are implemented using an explicit through model (also called a join table or junction table).
+The through model contains ForeignKey fields to both sides of the relationship.
+
+In the example above, `StaffSpecialty` is the through model that creates the many-to-many relationship 
+between `StaffProxy` and `Specialty`.
+
+`StaffSpecialty` may include additional fields to describe the nature of the association between `Staff` and `Specialty`.
 
 ```python
 from django.db.models import ForeignKey, Index, TextField, DO_NOTHING
@@ -491,7 +496,7 @@ class Specialty(CustomModel):
             Index(fields=["name"]),
         ]
 
-
+# Declaring this class will result in a join table called `staffspecialty`
 class StaffSpecialty(CustomModel):
     """Many-to-many relationship: Staff can have many specialties, specialties can have many staff."""
 
@@ -517,7 +522,7 @@ This creates a many-to-many relationship where:
 ### Creating Many-to-Many Records
 
 ```python
-from plugins.my_plugin.models import StaffProxy, Specialty, StaffSpecialty
+from my_plugin.models import StaffProxy, Specialty, StaffSpecialty
 
 
 # Create specialties
@@ -600,55 +605,6 @@ for staff in staff_with_specialties:
     print(f"{staff.first_name} {staff.last_name}: {', '.join(specialties)}")
 ```
 
-### Many-to-Many with Through Model
-
-Many-to-many relationships are implemented using an explicit through model (also called a join table or junction table).
-The through model contains ForeignKey fields to both sides of the relationship.
-
-In the example above, `StaffSpecialty` is the through model that creates the many-to-many relationship between `StaffProxy` and `Specialty`.
-
-Here are the complete model definitions:
-
-```python
-from django.db.models import ForeignKey, Index, TextField, DO_NOTHING
-from canvas_sdk.v1.data.base import CustomModel
-from canvas_sdk.v1.data import Staff
-
-
-class StaffProxy(Staff):
-    """Proxy for Staff to use with custom models."""
-    class Meta:
-        proxy = True
-
-
-class Specialty(CustomModel):
-    """Represents a medical specialty."""
-
-    name = TextField()
-
-    class Meta:
-        indexes = [
-            Index(fields=["name"]),
-        ]
-
-
-class StaffSpecialty(CustomModel):
-    """Through model connecting staff members to their specialties."""
-
-    staff = ForeignKey(
-        StaffProxy,
-        to_field="dbid",
-        on_delete=DO_NOTHING,
-        related_name="staff_specialties"
-    )
-    specialty = ForeignKey(
-        Specialty,
-        to_field="dbid",
-        on_delete=DO_NOTHING,
-        related_name="staff_specialties"
-    )
-```
-
 **Key points about through models:**
 
 - Both sides of the relationship can access the through model using `related_name`
@@ -695,15 +651,12 @@ class StaffDepartment(CustomModel):
     """Staff can belong to multiple departments."""
 
     staff = ForeignKey(
-        StaffProxy, on_delete=DO_NOTHING,
-        related_name="department_assignments"
+        StaffProxy, on_delete=DO_NOTHING, related_name="department_assignments"
     )
     department = ForeignKey(
-        Department, on_delete=DO_NOTHING,
-        related_name="staff_members"
+        Department, on_delete=DO_NOTHING, related_name="staff_members"
     )
-    role = TextField(max_length=100)
-
+    role = TextField()
 
 
 # Usage: Combine structured relationships with flexible attributes
