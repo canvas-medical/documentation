@@ -36,24 +36,24 @@ Create a custom model by extending `CustomModel`:
 
 ```python
 from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import BooleanField, DateTimeField, IntegerField, JSONField, TextField 
+from django.db.models import BooleanField, DateField, DateTimeField, DecimalField, IntegerField, JSONField, TextField 
 
 
-class ProviderQualification(CustomModel):
-    """Additional information about a provider characteristics and certifications."""
+class HealthCoach(CustomModel):
 
-    # Define fields
-    board_certified = BooleanField()
-    practicing_since_year = IntegerField()
-    mission_statement = TextField()
-    degrees = JSONField()
-    created_at = DateTimeField()
-```
+    name = TextField()
+    practicing_since = IntegerField()
+    version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
+    is_accepting_patients = BooleanField()
+    created_date = DateField(auto_now_add=True)
+    last_modified_at = DateTimeField(auto_now_add=True)
+    extended_attributes = JSONField()    
+ ```
 
-This above definition will result in a table named `providerqualification`. It will have a primary key
-column named `dbid` of type `serial`, an auto-incrementing integer. It will have five additional columns
-of time `boolean`, `integer`, `text`, `jsonb`, and `timestamptz` in the PostgreSQL database for the Canvas instance.
-Only the primary key will be indexed.
+This above definition will result in a PostgreSQL table named `healthcoach`. It will have a primary key
+column named `dbid` of type `serial`, an auto-incrementing integer. It will have six additional columns
+of `text`, `integer`, `numeric(3,8)`, `boolean`, `jsonb`,`date`, and `timestamp with time zone`, respectively.
+
 ---
 
 ## Schema Rules and Constraints
@@ -65,28 +65,29 @@ Unsupported contraints
 * `not null`
 * `unique`
 * `max_length`
+* `references`
 
-If applied to an existing dataset the constraints could result in a full table rewrite operation, and are thus omitted entirely.
+If applied to an existing dataset, some constraints could result in a full table rewrite operation, or prevent
+plugin installation.
 
 ### Field Types
 
 The Canvas SDK provides Django-based field types for defining your models:
 
-| Field Type | Description | Supported Parameters                |
-|------------|-------------|-------------------------------------|
-| `TextField` | Variable-length text | `default`                           |
-| `IntegerField` | Integer values | `default`                           |
-| `DecimalField` | Decimal numbers | `default`, `max_digits`,`decimal_places` |
-| `BooleanField` | True/False values | `default`                           |
-| `DateField` | Date values | `auto_now`, `auto_now_add`, `default` |
-| `DateTimeField` | Date and time values | `auto_now`, `auto_now_add`, `default`                         |
-| `JSONField` | JSON-serializable data | `default`                           |
-| `ForeignKey` | Many-to-one relationship | `on_delete`, `related_name`         |
-| `OneToOneField` | One-to-one relationship | `on_delete`, `related_name`         |
-| `ManyToManyField` | Many-to-many relationship | `related_name`                      |
+| Field Type        | Description               | Supported Parameters                     |
+|-------------------|---------------------------|------------------------------------------|
+| `TextField`       | Variable-length text      | `default`                                |
+| `IntegerField`    | Integer values            | `default`                                |
+| `DecimalField`    | Decimal numbers           | `default`, `max_digits`,`decimal_places` |
+| `BooleanField`    | True/False values         | `default`                                |
+| `DateField`       | Date values               | `auto_now_add`, `default`                |
+| `DateTimeField`   | Date and time values      | `auto_now_add`, `default`                |
+| `JSONField`       | JSON-serializable data    | `default`                                |
+| `ForeignKey`      | Many-to-one relationship  | `related_name`                           |
+| `OneToOneField`   | One-to-one relationship   | `related_name`                           |
 
-If `default` is supplied it will be applied to new records only.
-
+If `default` is supplied it will be applied by the Django ORM, and will not be a PostgreSQL default. 
+As a result, only new records will receive the value, and it will not cause a mass edit of existing records.
 
 ### Indexes
 
@@ -94,24 +95,29 @@ Add indexes for frequently queried fields:
 
 ```python
 from canvas_sdk.v1.data.base import CustomModel
+from django.contrib.postgres.indexes import GinIndex
 from django.db.models import BooleanField, DateTimeField, Index, IntegerField, JSONField, TextField 
 
 
 class ProviderQualification(CustomModel):
 
+    first_name = TextField()
+    last_name = TextField()
     board_certified = BooleanField()
     practicing_since_year = IntegerField()
-    mission_statement = TextField()
     degrees = JSONField()
     created_at = DateTimeField()
     
     class Meta:
         indexes = [
             # Single-column index
-            Index(fields=["board_certified"]),
-            # Composite index for common query pattern
-            Index(fields=["practicing_since", "appointment_date"]),
-            Index(fields=["created_at"])
+            Index(fields=["practicing_since_year"]),
+            # Composite index for common search combinations
+            Index(fields=["first_name", "last_name"]),
+            # Descending index for ordering records
+            Index(fields=["-created_at"]),
+            # Gin index for efficient JSON queries
+            GinIndex(fields=["extended_attributes"])
         ]
 ```
 
@@ -127,30 +133,36 @@ class ProviderQualification(CustomModel):
 ### Creating Records
 
 ```python
-from plugins.my_plugin.models import ProviderSpecialty
+from my_plugin.models import ProviderQualification
 
 
 # Create and save
-specialty = ProviderSpecialty(
-    name="Cardiology",
+qualification = ProviderQualification(
+    first_name="Jessica",
+    last_name="Smith",
     board_certified=True,
-    years_experience=15
+    practicing_since_year=2005,
+    extended_attribtes={ "biography": "Lives in Fresno with her..." }
 )
-specialty.save()
+qualification.save()
 
 # Create in one step
-specialty = ProviderSpecialty.objects.create(
-    name="Neurology",
+qualification = ProviderQualification.objects.create(
+    first_name="Jessica",
+    last_name="Smith",
     board_certified=True,
-    years_experience=10
+    practicing_since_year=2005,
+    extended_attribtes={ "biography": "Lives in Fresno with her..." }
 )
 
 # Get or create (avoids duplicates)
-specialty, created = ProviderSpecialty.objects.get_or_create(
-    name="Internal Medicine",
+qualification = ProviderQualification.objects.get_or_create(
+    first_name="Jessica",
+    last_name="Smith",
     defaults={
-        "board_certified": False,
-        "years_experience": 5
+        "board_certified": True,
+        "practicing_since_year": 2005,
+        "extended_attributes": { "biography": "Lives in Fresno with her..." }
     }
 )
 ```
@@ -158,57 +170,69 @@ specialty, created = ProviderSpecialty.objects.get_or_create(
 ### Querying Records
 
 ```python
-from plugins.my_plugin.models import ProviderSpecialty
-
+from my_plugin.models import ProviderQualification
+from datetime import date
 
 # Get all records
-all_specialties = ProviderSpecialty.objects.all()
+all_qualifications = ProviderQualification.objects.all()
 
 # Filter records
-board_certified = ProviderSpecialty.objects.filter(board_certified=True)
-experienced = ProviderSpecialty.objects.filter(years_experience__gte=10)
+board_certified = ProviderQualification.objects.filter(board_certified=True)
 
-# Get single record
+# Get providers with 10+ years experience 
+experienced = ProviderQualification.objects.filter(
+    practicing_since_year__lte=date.today().year - 10
+)
+
+# Get single record by database primary key
 try:
-    cardiology = ProviderSpecialty.objects.get(name="Cardiology")
-except ProviderSpecialty.DoesNotExist:
-    cardiology = None
+    jessica = ProviderQualification.objects.get(dbid=123)
+except ProviderQualification.DoesNotExist:
+    jessica = None
 
-# Chain filters
-senior_certified = ProviderSpecialty.objects.filter(
+# Get single record by fields
+try:
+    jessica = ProviderQualification.objects.get(first_name="Jessica", last_name="Smith")
+except ProviderQualification.DoesNotExist:
+    jessica = None
+
+# Apply multiple filters
+senior_certified = ProviderQualification.objects.filter(
     board_certified=True,
-    years_experience__gte=10
+    practicing_since_year__lte=2010  # Practicing since 2010 or earlier
 )
 
 # Order results
-by_experience = ProviderSpecialty.objects.order_by("-years_experience")
+by_experience = ProviderQualification.objects.order_by("practicing_since_year")
 
-# Limit results
-top_five = ProviderSpecialty.objects.order_by("-years_experience")[:5]
+# Limit results - get 5 most experienced (earliest practicing_since_year)
+top_five = ProviderQualification.objects.order_by("practicing_since_year")[:5]
 ```
 
 ### Updating Records
 
 ```python
-from plugins.my_plugin.models import ProviderSpecialty
+from my_plugin.models import ProviderQualification
 
 
 # Update single record
-specialty = ProviderSpecialty.objects.get(name="Cardiology")
-specialty.years_experience = 16
-specialty.save()
+qualification = ProviderQualification.objects.get(first_name="Jessica", last_name="Smith")
+qualification.practicing_since_year = 2004
+qualification.save()
 
 # Update multiple records
-ProviderSpecialty.objects.filter(
+ProviderQualification.objects.filter(
     board_certified=False
 ).update(board_certified=True)
 
 # Update or create
-specialty, created = ProviderSpecialty.objects.update_or_create(
-    name="Pediatrics",
+qualification, created = ProviderQualification.objects.update_or_create(
+    first_name="Michael",
+    last_name="Johnson",
     defaults={
         "board_certified": True,
-        "years_experience": 8
+        "practicing_since_year": 2015,
+        "extended_attributes": { "specialties": ["Cardiology", "Internal Medicine"] }
     }
 )
 ```
@@ -216,18 +240,21 @@ specialty, created = ProviderSpecialty.objects.update_or_create(
 ### Deleting Records
 
 ```python
-from plugins.my_plugin.models import ProviderSpecialty
+from my_plugin.models import ProviderQualification
 
 
 # Delete single record
-specialty = ProviderSpecialty.objects.get(name="Cardiology")
-specialty.delete()
+qualification = ProviderQualification.objects.get(first_name="Jessica", last_name="Smith")
+qualification.delete()
 
-# Delete multiple records
-ProviderSpecialty.objects.filter(years_experience=0).delete()
+# Delete multiple records - remove providers who started this year
+from datetime import date
+ProviderQualification.objects.filter(
+    practicing_since_year=date.today().year
+).delete()
 
 # Delete all records (use with caution!)
-ProviderSpecialty.objects.all().delete()
+ProviderQualification.objects.all().delete()
 ```
 
 ---
@@ -239,8 +266,193 @@ A one-to-one relationship links one record in a model to exactly one record in a
 ### Basic One-to-One
 
 ```python
+from canvas_sdk.v1.data import Staff
 from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import TextField, OneToOneField, DateField
+from django.db.models import DateTimeField, DecimalField, DO_NOTHING, OneToOneField, TextField
+
+
+class StaffProxy(Staff):
+    """Proxy for Staff to use with custom models."""
+    class Meta:
+        proxy = True
+
+class Biography(CustomModel):
+
+    biography = TextField()
+    language = TextField()
+    version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
+    last_modified_at = DateTimeField(auto_now_add=True)
+
+    staff = OneToOneField(
+        StaffProxy, to_field="dbid", on_delete=DO_NOTHING, related_name="biography"
+    )
+```
+
+The above will create a table with a `serial` primary key, two `text` columns, a `numeric(1,3)` column, a `timestamptz` column, 
+and an `integer` column named `staff_id` that contains a foreign key into the SDK `Staff` model. The `StaffProxy` class 
+defined in this plugin will contain the reverse mapping via `related_name`.
+
+### Creating One-to-One Records
+
+```python
+from my_plugin.models import StaffProxy, Biography
+
+# Get the staff member
+staff = StaffProxy.objects.get(id="staff-uuid")
+
+# Create biography
+biography = Biography.objects.create(
+    staff=staff,
+    biography="Dr. Smith is a board-certified cardiologist with over 20 years of experience...",
+    language="English",
+    version=1.0
+)
+```
+
+### Querying One-to-One Relationships
+
+```python
+from my_plugin.models import StaffProxy, Biography
+
+
+# Access from biography to staff
+biography = Biography.objects.get(dbid=1)
+staff_member = biography.staff
+
+# Access from staff to biography (using related_name)
+staff = StaffProxy.objects.get(id="staff-uuid")
+try:
+    bio = staff.biography
+except Biography.DoesNotExist:
+    print("No biography found")
+
+# Find all staff with biographies in Spanish
+spanish_providers = StaffProxy.objects.filter(
+    biography__language="Spanish"
+)
+
+# Find staff whose biography was last updated before a certain date
+from datetime import datetime, timedelta
+
+outdated_bios = StaffProxy.objects.filter(
+    biography__last_modified_at__lte=datetime.now() - timedelta(days=365)
+)
+```
+
+---
+
+## One-to-Many Relationships
+
+A one-to-many (or many-to-one) relationship allows one record to be associated with multiple records in another model. 
+Use `ForeignKey` to define this relationship.
+
+### Basic One-to-Many
+
+```python
+from canvas_sdk.v1.data import Staff
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import DateTimeField, DecimalField, DO_NOTHING, ForeignKey, TextField
+
+
+class StaffProxy(Staff):
+    """Proxy for Staff to use with custom models."""
+    class Meta:
+        proxy = True
+
+class Biography(CustomModel):
+
+    biography = TextField()
+    language = TextField()
+    version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
+    last_modified_at = DateTimeField(auto_now_add=True)
+
+    # Same as one-to-one, but a Foreign key with a plural 'related_name'. Now, each staff may have multiple biographies,
+    # perhaps in different languages.
+    staff = ForeignKey(
+        StaffProxy, to_field="dbid", on_delete=DO_NOTHING, related_name="biographies"
+    )
+```
+
+### Creating One-to-Many Records
+
+```python
+from plugins.my_plugin.models import StaffProxy, Biography
+
+
+# Get staff member
+staff = StaffProxy.objects.get(id="staff-uuid")
+
+# Create multiple biographies for one provider (e.g., in different languages)
+english_bio = Biography.objects.create(
+    staff=staff,
+    biography="Dr. Smith is a board-certified cardiologist with over 20 years of experience in interventional cardiology.",
+    language="English",
+    version=1.0
+)
+
+spanish_bio = Biography.objects.create(
+    staff=staff,
+    biography="La Dra. Smith es una cardióloga certificada con más de 20 años de experiencia en cardiología intervencionista.",
+    language="Spanish",
+    version=1.0
+)
+```
+
+### Querying One-to-Many Relationships
+
+```python
+from plugins.my_plugin.models import StaffProxy, Biography
+
+
+# Access from biography to staff (forward)
+biography = Biography.objects.get(language="Spanish")
+provider = biography.staff
+print(f"Provider: {provider.first_name} {provider.last_name}")
+
+# Access from staff to biographies (reverse, using related_name)
+staff = StaffProxy.objects.get(id="staff-uuid")
+biographies = staff.biographies.all()
+for bio in biographies:
+    print(f"- {bio.language}: {bio.biography[:50]}... (v{bio.version})")
+
+# Filter reverse relationship
+english_bios = staff.biographies.filter(language="English")
+
+# Query across relationship
+# Find all staff who have biographies in Spanish
+spanish_speaking_providers = StaffProxy.objects.filter(
+    biographies__language="Spanish"
+)
+
+# Find staff with multiple biography versions
+from django.db.models import Count
+
+providers_with_multiple_bios = StaffProxy.objects.annotate(
+    bio_count=Count('biographies')
+).filter(bio_count__gt=1)
+
+# Count related records
+biography_count = staff.biographies.count()
+
+# Check existence
+has_spanish_bio = staff.biographies.filter(language="Spanish").exists()
+```
+
+
+---
+
+## Many-to-Many Relationships
+
+A many-to-many relationship allows multiple records in one model to be associated with multiple records in another model.
+
+### Explicit Through Model (Recommended)
+
+The recommended approach for many-to-many relationships is to use an explicit through model (also called a join table).
+This gives you full control over the relationship and allows you to add additional fields to track metadata about the association.
+
+```python
+from django.db.models import ForeignKey, Index, TextField, DO_NOTHING
+from canvas_sdk.v1.data.base import CustomModel
 from canvas_sdk.v1.data import Staff
 
 
@@ -250,460 +462,187 @@ class StaffProxy(Staff):
         proxy = True
 
 
-class ProviderCredentials(CustomModel):
-    """One-to-one relationship: Each staff member has one credentials record."""
+class Specialty(CustomModel):
+    """Medical specialty (e.g., Cardiology, Neurology)."""
 
-    staff = OneToOneField(
-        StaffProxy,
-        related_name="credentials"
-    )
-    dea_number = TextField()
-    npi_number = TextField()
-    license_number = TextField()
-    license_state = TextField()
-    license_expiry = DateField()
-
-    class Meta:
-        db_table = "provider_credentials"
-```
-
-### Creating One-to-One Records
-
-```python
-from plugins.my_plugin.models import StaffProxy, ProviderCredentials
-from datetime import date
-
-
-# Get staff member
-staff = StaffProxy.objects.get(id="staff-uuid")
-
-# Create credentials
-credentials = ProviderCredentials.objects.create(
-    staff=staff,
-    dea_number="AB1234563",
-    npi_number="1234567890",
-    license_number="MD12345",
-    license_state="CA",
-    license_expiry=date(2025, 12, 31)
-)
-```
-
-### Querying One-to-One Relationships
-
-```python
-from plugins.my_plugin.models import StaffProxy, ProviderCredentials
-
-
-# Access from credentials to staff
-credentials = ProviderCredentials.objects.get(npi_number="1234567890")
-staff_member = credentials.staff
-print(f"Provider: {staff_member.first_name} {staff_member.last_name}")
-
-# Access from staff to credentials (using related_name)
-staff = StaffProxy.objects.get(id="staff-uuid")
-try:
-    credentials = staff.credentials
-    print(f"DEA: {credentials.dea_number}")
-except ProviderCredentials.DoesNotExist:
-    print("No credentials found")
-
-# Query across relationship
-# Find all staff with expiring licenses
-from datetime import date, timedelta
-
-expiring_soon = StaffProxy.objects.filter(
-    credentials__license_expiry__lte=date.today() + timedelta(days=90)
-)
-```
-
-### One-to-One with Optional Relationship
-
-```python
-from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import TextField, OneToOneField
-
-
-class ProviderBio(CustomModel):
-    """Optional one-to-one: Not all staff may have a bio."""
-
-    staff = OneToOneField(
-        StaffProxy,
-        related_name="bio"
-    )
-    biography = TextField()
-    education = TextField()
-    research_interests = TextField()
-
-    class Meta:
-        db_table = "provider_bio"
-```
-
----
-
-## One-to-Many Relationships
-
-A one-to-many (or many-to-one) relationship allows one record to be associated with multiple records in another model. Use `ForeignKey` to define this relationship.
-
-### Basic One-to-Many
-
-```python
-from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import TextField, ForeignKey, DateField
-
-
-class ProviderSpecialty(CustomModel):
-    """One provider can have many specialties."""
-
-    staff = ForeignKey(
-        StaffProxy,
-        related_name="specialties"
-    )
     name = TextField()
-    board_certified = BooleanField(default=False)
-    certification_date = DateField()
-```
-
-### Creating One-to-Many Records
-
-```python
-from plugins.my_plugin.models import StaffProxy, ProviderSpecialty
-from datetime import date
-
-
-# Get staff member
-staff = StaffProxy.objects.get(id="staff-uuid")
-
-# Create multiple specialties for one provider
-cardiology = ProviderSpecialty.objects.create(
-    staff=staff,
-    name="Cardiology",
-    board_certified=True,
-    certification_date=date(2015, 6, 1)
-)
-
-internal_medicine = ProviderSpecialty.objects.create(
-    staff=staff,
-    name="Internal Medicine",
-    board_certified=True,
-    certification_date=date(2010, 5, 15)
-)
-```
-
-### Querying One-to-Many Relationships
-
-```python
-from plugins.my_plugin.models import StaffProxy, ProviderSpecialty
-
-
-# Access from specialty to staff (forward)
-specialty = ProviderSpecialty.objects.get(name="Cardiology")
-provider = specialty.staff
-print(f"Provider: {provider.first_name} {provider.last_name}")
-
-# Access from staff to specialties (reverse, using related_name)
-staff = StaffProxy.objects.get(id="staff-uuid")
-specialties = staff.specialties.all()
-for specialty in specialties:
-    print(f"- {specialty.name} (Certified: {specialty.board_certified})")
-
-# Filter reverse relationship
-board_certified_specialties = staff.specialties.filter(board_certified=True)
-
-# Query across relationship
-# Find all staff who are board certified in Cardiology
-cardiologists = StaffProxy.objects.filter(
-    specialties__name="Cardiology",
-    specialties__board_certified=True
-)
-
-# Count related records
-specialty_count = staff.specialties.count()
-
-# Check existence
-has_cardiology = staff.specialties.filter(name="Cardiology").exists()
-```
-
-### One-to-Many with Patient Relationships
-
-```python
-from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import TextField, ForeignKey, DateTimeField, Index
-from canvas_sdk.v1.data import Patient
-
-
-class PatientProxy(Patient):
-    """Proxy for Patient to use with custom models."""
-    class Meta:
-        proxy = True
-
-
-class PatientNote(CustomModel):
-    """One patient can have many custom notes."""
-
-    patient = ForeignKey(
-        PatientProxy,
-        related_name="custom_notes"
-    )
-    note_type = TextField()
-    content = TextField()
-    created_by = TextField()
-    created_at = DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "patient_note"
         indexes = [
-            Index(fields=["created_at"]),
+            Index(fields=["name"]),
         ]
 
 
-# Usage
-patient = PatientProxy.objects.get(id="patient-uuid")
+class StaffSpecialty(CustomModel):
+    """Many-to-many relationship: Staff can have many specialties, specialties can have many staff."""
 
-# Create notes
-PatientNote.objects.create(
-    patient=patient,
-    note_type="care_plan",
-    content="Patient prefers morning appointments",
-    created_by="staff-uuid"
-)
-
-# Query patient's notes
-recent_notes = patient.custom_notes.order_by("-created_at")[:5]
-care_plan_notes = patient.custom_notes.filter(note_type="care_plan")
-```
-
----
-
-## Many-to-Many Relationships
-
-A many-to-many relationship allows multiple records in one model to be associated with multiple records in another model. Use `ManyToManyField` to define this relationship.
-
-### Basic Many-to-Many
-
-```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, ManyToManyField
-
-
-class Certification(CustomModel):
-    """Certification that providers can have."""
-
-    name = TextField(max_length=200)
-    issuing_body = TextField(max_length=200)
-    description = TextField(blank=True, null=True)
-
-    class Meta:
-        db_table = "certification"
-
-
-class ProviderProfile(CustomModel):
-    """Provider can have many certifications, certification can belong to many providers."""
-
-    staff = OneToOneField(
+    staff = ForeignKey(
         StaffProxy,
-        on_delete=models.CASCADE,
-        related_name="provider_profile"
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="staff_specialties"
     )
-    certifications = ManyToManyField(
-        Certification,
-        related_name="providers",
-        blank=True
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="staff_specialties"
     )
-
-    class Meta:
-        db_table = "provider_profile"
 ```
+
+This creates a many-to-many relationship where:
+- One staff member can have multiple specialties
+- One specialty can be assigned to multiple staff members
+- `StaffSpecialty` is the through model that connects them
 
 ### Creating Many-to-Many Records
 
 ```python
-from plugins.my_plugin.models import StaffProxy, ProviderProfile, Certification
+from plugins.my_plugin.models import StaffProxy, Specialty, StaffSpecialty
 
 
-# Create certifications
-acls = Certification.objects.create(
-    name="ACLS",
-    issuing_body="American Heart Association",
-    description="Advanced Cardiovascular Life Support"
-)
+# Create specialties
+cardiology = Specialty.objects.create(name="Cardiology")
+internal_medicine = Specialty.objects.create(name="Internal Medicine")
+emergency_medicine = Specialty.objects.create(name="Emergency Medicine")
 
-bls = Certification.objects.create(
-    name="BLS",
-    issuing_body="American Heart Association",
-    description="Basic Life Support"
-)
-
-pals = Certification.objects.create(
-    name="PALS",
-    issuing_body="American Heart Association",
-    description="Pediatric Advanced Life Support"
-)
-
-# Create provider profile
+# Get staff member
 staff = StaffProxy.objects.get(id="staff-uuid")
-profile = ProviderProfile.objects.create(staff=staff)
 
-# Add certifications
-profile.certifications.add(acls)
-profile.certifications.add(bls, pals)  # Add multiple at once
+# Create associations between staff and specialties
+StaffSpecialty.objects.create(staff=staff, specialty=cardiology)
+StaffSpecialty.objects.create(staff=staff, specialty=internal_medicine)
 
-# Set certifications (replaces existing)
-profile.certifications.set([acls, pals])
+# Bulk create multiple associations at once
+specialties_to_add = [emergency_medicine, cardiology]
+staff_specialties = [
+    StaffSpecialty(staff=staff, specialty=specialty) for specialty in specialties_to_add
+]
+StaffSpecialty.objects.bulk_create(staff_specialties)
 
-# Remove certifications
-profile.certifications.remove(bls)
+# Replace all specialties for a staff member
+# First, remove existing associations
+StaffSpecialty.objects.filter(staff=staff).delete()
 
-# Clear all certifications
-profile.certifications.clear()
+# Then create new associations
+new_specialties = [cardiology, emergency_medicine]
+new_staff_specialties = [
+    StaffSpecialty(staff=staff, specialty=specialty) for specialty in new_specialties
+]
+StaffSpecialty.objects.bulk_create(new_staff_specialties)
 ```
 
 ### Querying Many-to-Many Relationships
 
 ```python
-from plugins.my_plugin.models import ProviderProfile, Certification
+from plugins.my_plugin.models import StaffProxy, Specialty, StaffSpecialty
 
 
-# Access from profile to certifications (forward)
-profile = ProviderProfile.objects.get(staff__id="staff-uuid")
-certifications = profile.certifications.all()
-for cert in certifications:
-    print(f"- {cert.name} ({cert.issuing_body})")
+# Access staff member's specialties through the join table
+staff = StaffProxy.objects.get(id="staff-uuid")
+staff_specialty_records = staff.staff_specialties.all()
+for staff_specialty in staff_specialty_records:
+    print(f"- {staff_specialty.specialty.name}")
 
-# Access from certification to providers (reverse)
-acls = Certification.objects.get(name="ACLS")
-acls_providers = acls.providers.all()
+# Get just the specialty names
+specialty_names = [ss.specialty.name for ss in staff.staff_specialties.all()]
 
-# Filter
-profile_certs = profile.certifications.filter(issuing_body="American Heart Association")
+# Access all staff members with a specific specialty (reverse)
+cardiology = Specialty.objects.get(name="Cardiology")
+cardiology_staff_records = cardiology.staff_specialties.all()
+for staff_specialty in cardiology_staff_records:
+    staff_member = staff_specialty.staff
+    print(f"- {staff_member.first_name} {staff_member.last_name}")
 
-# Check existence
-has_acls = profile.certifications.filter(name="ACLS").exists()
+# Find staff IDs with specific specialties
+staff_ids = StaffSpecialty.objects.filter(
+    specialty__name__in=["Cardiology", "Internal Medicine"]
+).values_list("staff_id", flat=True)
 
-# Count
-cert_count = profile.certifications.count()
-
-# Query across relationship
-# Find all profiles with ACLS certification
-acls_certified = ProviderProfile.objects.filter(
-    certifications__name="ACLS"
-)
-
-# Find providers with multiple specific certifications
-from django.db.models import Q
-
-critical_care = ProviderProfile.objects.filter(
-    Q(certifications__name="ACLS") & Q(certifications__name="PALS")
+# Find staff members with a specific specialty
+cardiologists = StaffProxy.objects.filter(
+    staff_specialties__specialty__name="Cardiology"
 ).distinct()
+
+# Check if a staff member has a specific specialty
+has_cardiology = staff.staff_specialties.filter(specialty__name="Cardiology").exists()
+
+# Count specialties for a staff member
+specialty_count = staff.staff_specialties.count()
+
+# Efficient querying with prefetch_related
+staff_with_specialties = (
+    StaffProxy.objects
+    .prefetch_related("staff_specialties__specialty")
+    .all()
+)
+for staff in staff_with_specialties:
+    specialties = [ss.specialty.name for ss in staff.staff_specialties.all()]
+    print(f"{staff.first_name} {staff.last_name}: {', '.join(specialties)}")
 ```
 
 ### Many-to-Many with Through Model
 
-Use a through model when you need to store additional data about the relationship:
+Many-to-many relationships are implemented using an explicit through model (also called a join table or junction table).
+The through model contains ForeignKey fields to both sides of the relationship.
+
+In the example above, `StaffSpecialty` is the through model that creates the many-to-many relationship between `StaffProxy` and `Specialty`.
+
+Here are the complete model definitions:
 
 ```python
-from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import (
-    TextField, ForeignKey, ManyToManyField, DateField, BooleanField
-)
+from django.db.models import ForeignKey, Index, TextField, DO_NOTHING
+from canvas_sdk.v1.data.base import CustomModel
+from canvas_sdk.v1.data import Staff
 
 
-class Certification(CustomModel):
-    name = TextField(max_length=200)
-    issuing_body = TextField(max_length=200)
+class StaffProxy(Staff):
+    """Proxy for Staff to use with custom models."""
+    class Meta:
+        proxy = True
+
+
+class Specialty(CustomModel):
+    """Represents a medical specialty."""
+
+    name = TextField()
 
     class Meta:
-        db_table = "certification"
+        indexes = [
+            Index(fields=["name"]),
+        ]
 
 
-class ProviderProfile(CustomModel):
-    staff = OneToOneField(
+class StaffSpecialty(CustomModel):
+    """Through model connecting staff members to their specialties."""
+
+    staff = ForeignKey(
         StaffProxy,
-        on_delete=models.CASCADE,
-        related_name="provider_profile"
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="staff_specialties"
     )
-    certifications = ManyToManyField(
-        Certification,
-        through="ProviderCertification",
-        related_name="providers"
+    specialty = ForeignKey(
+        Specialty,
+        to_field="dbid",
+        on_delete=DO_NOTHING,
+        related_name="staff_specialties"
     )
-
-    class Meta:
-        db_table = "provider_profile"
-
-
-class ProviderCertification(CustomModel):
-    """Through model storing additional certification data."""
-
-    provider_profile = ForeignKey(
-        ProviderProfile,
-        on_delete=models.CASCADE
-    )
-    certification = ForeignKey(
-        Certification,
-        on_delete=models.CASCADE
-    )
-    obtained_date = DateField()
-    expiry_date = DateField(blank=True, null=True)
-    is_active = BooleanField(default=True)
-    certificate_number = TextField(max_length=100, blank=True, null=True)
-
-    class Meta:
-        db_table = "provider_certification"
-        unique_together = ["provider_profile", "certification"]
 ```
 
-### Creating and Querying Through Models
+**Key points about through models:**
 
-```python
-from plugins.my_plugin.models import (
-    ProviderProfile, Certification, ProviderCertification
-)
-from datetime import date
+- Both sides of the relationship can access the through model using `related_name`
+- `staff.staff_specialties.all()` returns `StaffSpecialty` objects (not `Specialty` objects)
+- To get the actual specialties, access through the join table: `[ss.specialty for ss in staff.staff_specialties.all()]`
+- You can add additional fields to the through model to store metadata about the relationship (e.g., date assigned, certification level, etc.)
+- Query across the relationship using double underscores: `StaffProxy.objects.filter(staff_specialties__specialty__name="Cardiology")`
 
+## No Cascaded Operations
 
-# Create provider profile
-staff = StaffProxy.objects.get(id="staff-uuid")
-profile = ProviderProfile.objects.create(staff=staff)
-
-# Create certification
-acls = Certification.objects.get(name="ACLS")
-
-# Create through model explicitly
-provider_cert = ProviderCertification.objects.create(
-    provider_profile=profile,
-    certification=acls,
-    obtained_date=date(2020, 1, 15),
-    expiry_date=date(2025, 1, 15),
-    is_active=True,
-    certificate_number="ACLS-12345"
-)
-
-# Query through model
-# Get all active certifications for a provider
-active_certs = ProviderCertification.objects.filter(
-    provider_profile=profile,
-    is_active=True
-)
-
-# Get certifications expiring soon
-from datetime import timedelta
-
-expiring_soon = ProviderCertification.objects.filter(
-    provider_profile=profile,
-    expiry_date__lte=date.today() + timedelta(days=90),
-    is_active=True
-)
-
-# Access through data from queryset
-profile_certs = profile.certifications.all()
-for cert in profile_certs:
-    # Access through model
-    through = ProviderCertification.objects.get(
-        provider_profile=profile,
-        certification=cert
-    )
-    print(f"{cert.name}: Expires {through.expiry_date}")
-```
+At this time the SDK does **not** support `CASCADE`, `PROTECT`, or `SET_NULL` for the required `on_delete` attribute 
+to `ForeignKey` and `OneToOneField`. Only `DO_NOTHING` is allowed. It is the responsibility of the plugin to 
+delete associated records correctly.
 
 ---
 
@@ -715,7 +654,7 @@ You can combine Custom Models with CustomAttributes for maximum flexibility:
 
 ```python
 from canvas_sdk.v1.data.custom import CustomModel
-from canvas_sdk.v1.data.fields import TextField, ForeignKey
+from django.db.models import DO_NOTHING, ForeignKey, TextField 
 from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
 
 
@@ -732,28 +671,20 @@ class Department(CustomModel):
     name = TextField()
     code = TextField()
 
-    class Meta:
-        db_table = "department"
-
 
 class StaffDepartment(CustomModel):
     """Staff can belong to multiple departments."""
 
     staff = ForeignKey(
-        StaffProxy,
-        on_delete=models.CASCADE,
+        StaffProxy, on_delete=DO_NOTHING,
         related_name="department_assignments"
     )
     department = ForeignKey(
-        Department,
-        on_delete=models.CASCADE,
+        Department, on_delete=DO_NOTHING,
         related_name="staff_members"
     )
     role = TextField(max_length=100)
 
-    class Meta:
-        db_table = "staff_department"
-        unique_together = ["staff", "department"]
 
 
 # Usage: Combine structured relationships with flexible attributes
@@ -780,82 +711,89 @@ staff.set_attributes({
 Optimize database queries using `select_related` and `prefetch_related`:
 
 ```python
-from plugins.my_plugin.models import ProviderSpecialty, ProviderProfile, StaffProxy
+from my_plugin.models import Specialty, StaffSpecialty, StaffProxy
 
 
-# Use select_related for ForeignKey and OneToOneField (SQL JOIN)
-specialties = ProviderSpecialty.objects.select_related("staff").all()
-for specialty in specialties:
-    # No additional query - staff is already loaded
-    print(f"{specialty.name}: {specialty.staff.first_name}")
+# Use select_related for ForeignKey (SQL JOIN)
+# Load StaffSpecialty with related staff and specialty in one query
+staff_specialties = StaffSpecialty.objects.select_related("staff", "specialty").all()
+for ss in staff_specialties:
+    # No additional queries - both staff and specialty are already loaded
+    print(f"{ss.staff.first_name} {ss.staff.last_name}: {ss.specialty.name}")
 
-# Use prefetch_related for reverse ForeignKey and ManyToManyField
-staff_list = StaffProxy.objects.prefetch_related("specialties").all()
+# Use prefetch_related for reverse ForeignKey relationships
+# Load staff with all their specialties efficiently
+staff_list = StaffProxy.objects.prefetch_related("staff_specialties__specialty").all()
 for staff in staff_list:
-    # No additional queries - specialties are already loaded
-    for specialty in staff.specialties.all():
-        print(f"{staff.first_name}: {specialty.name}")
+    # No additional queries - staff_specialties and specialties are already loaded
+    for ss in staff.staff_specialties.all():
+        print(f"{staff.first_name}: {ss.specialty.name}")
 
-# Combine both for complex queries
-profiles = ProviderProfile.objects.select_related(
-    "staff"
-).prefetch_related(
-    "certifications",
-    "staff__department_assignments__department"
-).all()
+# Prefetch specialties for multiple staff members
+specialties_list = Specialty.objects.prefetch_related("staff_specialties__staff").all()
+for specialty in specialties_list:
+    staff_members = [ss.staff for ss in specialty.staff_specialties.all()]
+    print(f"{specialty.name}: {len(staff_members)} staff members")
 
 # Use Prefetch for custom filtering
 from django.db.models import Prefetch
 
-profiles = ProviderProfile.objects.prefetch_related(
+# Only load staff specialties with specific specialty names
+staff_with_filtered_specialties = StaffProxy.objects.prefetch_related(
     Prefetch(
-        "certifications",
-        queryset=Certification.objects.filter(issuing_body="American Heart Association")
+        "staff_specialties",
+        queryset=StaffSpecialty.objects.filter(
+            specialty__name__in=["Cardiology", "Neurology"]
+        ).select_related("specialty")
     )
 ).all()
 ```
 
 ### Complex Queries
 
-Use Django's Q objects for complex filtering:
+Use Django's Q objects for complex filtering and aggregation:
 
 ```python
-from django.db.models import Q, Count, Avg
-from plugins.my_plugin.models import ProviderProfile, ProviderSpecialty
+from django.db.models import Q, Count
+from plugins.my_plugin.models import StaffProxy, Specialty, StaffSpecialty
 
 
-# OR conditions
-profiles = ProviderProfile.objects.filter(
-    Q(certifications__name="ACLS") | Q(certifications__name="BLS")
+# OR conditions - Find staff with Cardiology OR Neurology specialty
+staff_with_cardio_or_neuro = StaffProxy.objects.filter(
+    Q(staff_specialties__specialty__name="Cardiology") |
+    Q(staff_specialties__specialty__name="Neurology")
 ).distinct()
 
-# AND with OR
-senior_specialists = ProviderSpecialty.objects.filter(
-    Q(board_certified=True) &
-    (Q(name="Cardiology") | Q(name="Neurology")) &
-    Q(years_experience__gte=10)
+# AND conditions - Find specialties with "Cardiology" or "Medicine" in the name
+cardio_or_medicine = Specialty.objects.filter(
+    Q(name__icontains="Cardiology") | Q(name__icontains="Medicine")
 )
 
-# Negation
-non_certified = ProviderProfile.objects.filter(
-    ~Q(certifications__name="ACLS")
+# Negation - Find staff WITHOUT a specific specialty
+staff_without_cardiology = StaffProxy.objects.exclude(
+    staff_specialties__specialty__name="Cardiology"
 )
 
-# Aggregation
-from django.db.models import Count, Avg
+# Complex filtering - Staff with multiple specific specialties
+# Note: This requires DISTINCT because joins can create duplicate rows
+staff_with_multiple = StaffProxy.objects.filter(
+    staff_specialties__specialty__name="Cardiology"
+).filter(
+    staff_specialties__specialty__name="Internal Medicine"
+).distinct()
 
-# Count related objects
+# Count related objects - Staff with specialty counts
 staff_with_counts = StaffProxy.objects.annotate(
-    specialty_count=Count("specialties"),
-    avg_experience=Avg("specialties__years_experience")
+    specialty_count=Count("staff_specialties")
 ).filter(specialty_count__gte=2)
 
-# Group by and aggregate
-from django.db.models import Count
+# Group by and aggregate - Count how many staff have each specialty
+specialty_counts = Specialty.objects.annotate(
+    staff_count=Count("staff_specialties")
+).order_by("-staff_count")
 
-specialty_counts = ProviderSpecialty.objects.values("name").annotate(
-    provider_count=Count("staff")
-).order_by("-provider_count")
+for specialty in specialty_counts:
+    print(f"{specialty.name}: {specialty.staff_count} staff members")
 ```
 
 ---
@@ -865,49 +803,37 @@ specialty_counts = ProviderSpecialty.objects.values("name").annotate(
 ### Model Design
 
 1. **Use appropriate field types** - Choose the most specific field type for your data
-2. **Set null and blank appropriately** - Use `null=True` for optional database values, `blank=True` for optional form fields
 3. **Define related_name** - Always specify `related_name` for clear reverse relationships
-4. **Use Meta options** - Define `db_table`, `indexes`, and `constraints` in the Meta class
 5. **Keep models focused** - Each model should represent a single, well-defined concept
 
 ### Relationships
 
-1. **Choose the right relationship type** - OneToOne for 1:1, ForeignKey for 1:many, ManyToMany for many:many
-2. **Use through models** - Add a through model when you need to store relationship metadata
-3. **Set on_delete appropriately** - Use CASCADE, PROTECT, or SET_NULL based on your business logic
-4. **Avoid circular dependencies** - Structure models to minimize circular foreign key relationships
+1. **Choose the right relationship type** - OneToOne for 1:1, ForeignKey for 1:many, join tables and "through" models for many:many
+2. **Use through models** - To create a join table bridging two other entities, create a CustomModel representing the relationship
+3. **Delete dependencies** - To prevent orphaned records, delete join table entries prior to deleting child records
 
 ### Performance
 
-1. **Add indexes strategically** - Index foreign keys and frequently filtered fields
+1. **Add indexes strategically** - Index frequently filtered fields - foreign key fields are automatically indexed
 2. **Use select_related** - For ForeignKey and OneToOneField to reduce queries
-3. **Use prefetch_related** - For reverse ForeignKey and ManyToManyField
+3. **Use prefetch_related** - For reverse ForeignKey fields (including join tables for many-to-many fields)
 4. **Avoid N+1 queries** - Always prefetch related data when iterating
 5. **Use exists() for checks** - More efficient than count() or len()
 6. **Use iterator() for large datasets** - Reduces memory usage for processing many records
 
 ### Data Integrity
 
-1. **Use unique constraints** - Prevent duplicate data at the database level
-2. **Use unique_together** - For composite uniqueness constraints
+1. **Ensure uniqueness of records** - Prevent duplicate data by checking for the presence of a record before creating a new one
 3. **Validate in model methods** - Add custom validation in `clean()` method
 4. **Use transactions** - Wrap multiple operations in atomic transactions
 5. **Handle DoesNotExist** - Always catch exceptions when using `get()`
-
-### Migrations
-
-1. **Add fields as nullable first** - Then populate data, then make required
-2. **Use data migrations** - For complex data transformations
-3. **Test migrations** - Always test on a copy of production data
-4. **Keep migrations small** - Break complex changes into multiple migrations
-5. **Document breaking changes** - Add comments for migrations that require special handling
 
 ### Testing
 
 1. **Use model factories** - Create test data with factory patterns
 2. **Test model methods** - Verify custom model methods and properties
 3. **Test relationships** - Ensure relationships work in both directions
-4. **Test constraints** - Verify unique constraints and validation
+4. **Test data quality** - The plugin is responsible for ensuring uniqueness and validity of foreign keys 
 5. **Test edge cases** - Test with null values, empty strings, boundary conditions
 
 ---
