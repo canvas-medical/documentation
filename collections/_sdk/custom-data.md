@@ -7,8 +7,8 @@ title: "Custom Data"
 The Canvas SDK provides three techniques for storing custom data in your plugins, allowing you to extend existing models, create flexible key-value stores, 
 or define fully structured data models with relationships among entities:
 
-1. **[CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/)** - Extend existing SDK data models (like Patient or Staff) with flexible key-value attributes
-2. **[AttributeHubs](/sdk/custom-data-attribute-hub/)** - Store arbitrary key-value data that doesn't belong to existing models
+1. **[CustomAttributes for SDK Models](/sdk/custom-data-custom-attributes/)** - Extend existing SDK data models (like Patient or Staff) with flexible key-value attributes
+2. **[AttributeHubs](/sdk/custom-data-attribute-hub/)** - Store arbitrary key-value and JSON data independent of existing models
 3. **[Custom Data Models](/sdk/custom-data-custom-models/)** - Define fully structured models with typed fields and relationships
 
 Each technique serves different use cases and provides different levels of structure and type safety. All three techniques may be used together.
@@ -135,7 +135,7 @@ Use APIs to make data available and accessible to and from other plugins and ext
 
 ## See Also
 
-- [CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
+- [CustomAttributes on SDK Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships among entities
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
