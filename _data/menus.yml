@@ -733,6 +733,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "External Events"
+    url: /sdk/effect-external-event/
+    description: Create or update external clinical events from ADT feeds.
   - title: "Command Validation"
     url: /sdk/effect-command-validation/
     description: Validate commands and return structured error messages to users.
@@ -855,6 +858,9 @@ data_module:
   - title: "Encounter"
     url: /sdk/data-encounter/
     description: A patient Encounter connected to a Note in Canvas.
+  - title: "ExternalEvent"
+    url: /sdk/data-external-event/
+    description: External clinical events from ADT feeds such as admissions, discharges, and transfers.
   - title: "Facility"
     url: /sdk/data-facility/
     description: A location where healthcare services are provided.
