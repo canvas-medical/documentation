@@ -94,29 +94,46 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 
 Represents individual billed procedures or services tied to a claim.
 
-| Field Name        | Type                                                       |
-| ----------------- | ---------------------------------------------------------- |
-| id                | UUID                                                       |
-| dbid              | Integer                                                    |
-| billing_line_item | [BillingLineItem](/sdk/data-billing-line-item/)            |
-| claim             | [Claim](#claim)                                            |
-| status            | [ClaimLineItemStatus](#claimlineitemstatus)                |
-| charge            | Decimal                                                    |
-| from_date         | String                                                     |
-| thru_date         | String                                                     |
-| narrative         | String                                                     |
-| ndc_code          | String                                                     |
-| ndc_dosage        | String                                                     |
-| ndc_measure       | String                                                     |
-| place_of_service  | [PracticeLocationPOS](/sdk/data-note/#practicelocationpos) |
-| proc_code         | String                                                     |
-| display           | String                                                     |
-| remote_chg_id     | String                                                     |
-| units             | Integer                                                    |
-| epsdt             | String                                                     |
-| family_planning   | [FamilyPlanningOptions](#familyplanningoptions)            |
-| created           | DateTime                                                   |
-| modified          | DateTime                                                   |
+| Field Name        | Type                                                        |
+| ----------------- | ----------------------------------------------------------- |
+| id                | UUID                                                        |
+| dbid              | Integer                                                     |
+| billing_line_item | [BillingLineItem](/sdk/data-billing-line-item/)             |
+| diagnosis_codes   | [ClaimLineItemDiagnosisCode](#claimlineitemdiagnosiscode)[] |
+| claim             | [Claim](#claim)                                             |
+| status            | [ClaimLineItemStatus](#claimlineitemstatus)                 |
+| charge            | Decimal                                                     |
+| from_date         | String                                                      |
+| thru_date         | String                                                      |
+| narrative         | String                                                      |
+| ndc_code          | String                                                      |
+| ndc_dosage        | String                                                      |
+| ndc_measure       | String                                                      |
+| place_of_service  | [PracticeLocationPOS](/sdk/data-note/#practicelocationpos)  |
+| proc_code         | String                                                      |
+| display           | String                                                      |
+| remote_chg_id     | String                                                      |
+| units             | Integer                                                     |
+| epsdt             | String                                                      |
+| family_planning   | [FamilyPlanningOptions](#familyplanningoptions)             |
+| created           | DateTime                                                    |
+| modified          | DateTime                                                    |
+
+### ClaimLineItemDiagnosisCode
+
+Represents a diagnosis code for a given ClaimLineItem. There exists one ClaimLineItemDiagnosisCode for each ClaimDiagnosisCode, and the "linked" attribute indicates whether or not the diagnosis code is linked to the line item.
+
+| Field Name           | Type                                      |
+| -------------------- | ----------------------------------------- |
+| id                   | UUID                                      |
+| dbid                 | Integer                                   |
+| line_item            | [ClaimLineItem](#claimlineitem)           |
+| claim_diagnosis_code | [ClaimDiagnosisCode](#claimdiagnosiscode) |
+| code                 | String                                    |
+| poa                  | String                                    |
+| linked               | Boolean                                   |
+| created              | DateTime                                  |
+| modified             | DateTime                                  |
 
 ### ClaimCoverage
 
@@ -187,16 +204,17 @@ Represents a free-text comment made on a Claim.
 
 Represents diagnosis codes associated with a claim, ordered by rank.
 
-| Field Name | Type            |
-| ---------- | --------------- |
-| id         | UUID            |
-| dbid       | Integer         |
-| claim      | [Claim](#claim) |
-| rank       | Integer         |
-| code       | String          |
-| display    | String          |
-| created    | DateTime        |
-| modified   | DateTime        |
+| Field Name                | Type                                                        |
+| ------------------------- | ----------------------------------------------------------- |
+| id                        | UUID                                                        |
+| dbid                      | Integer                                                     |
+| claim                     | [Claim](#claim)                                             |
+| line_item_diagnosis_codes | [ClaimLineItemDiagnosisCode](#claimlineitemdiagnosiscode)[] |
+| rank                      | Integer                                                     |
+| code                      | String                                                      |
+| display                   | String                                                      |
+| created                   | DateTime                                                    |
+| modified                  | DateTime                                                    |
 
 ### ClaimQueue
 
