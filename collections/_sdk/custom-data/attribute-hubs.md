@@ -1,6 +1,6 @@
 ---
 title: "AttributeHubs"
-slug: "custom-data-attribute-hub"
+slug: "custom-data-attribute-hubs"
 ---
 
 ## Overview

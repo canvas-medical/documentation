@@ -8,7 +8,7 @@ The Canvas SDK provides three techniques for storing custom data in your plugins
 or define fully structured data models with relationships among entities:
 
 1. **[CustomAttributes for SDK Models](/sdk/custom-data-custom-attributes/)** - Extend existing SDK data models (like Patient or Staff) with flexible key-value attributes
-2. **[AttributeHubs](/sdk/custom-data-attribute-hub/)** - Store arbitrary key-value and JSON data independent of existing models
+2. **[AttributeHubs](/sdk/custom-data-attribute-hubs/)** - Store arbitrary key-value and JSON data independent of existing models
 3. **[Custom Data Models](/sdk/custom-data-custom-models/)** - Define fully structured models with typed fields and relationships
 
 Each technique serves different use cases and provides different levels of structure and type safety. All three techniques may be used together.
@@ -128,7 +128,7 @@ See the [Testing Custom Data](/sdk/custom-data-testing/) guide for detailed exam
 
 ### Sharing Data
 
-Use APIs to make data available and accessible to and from other plugins and external servides. See the
+Use APIs to make data available and accessible to and from other plugins and external services. See the
 [Sharing Data](/sdk/custom-data-sharing-data/) guide for detailed examples and best practices.
 
 ---
