@@ -76,7 +76,6 @@ results = SpecialtyReportTemplate.objects.active().custom().by_specialty("207RC0
 
 | Field Name      | Type                                                                          |
 |-----------------|-------------------------------------------------------------------------------|
-| id              | UUID                                                                          |
 | dbid            | Integer                                                                       |
 | report_template | [SpecialtyReportTemplate](#specialtyreporttemplate)                           |
 | sequence        | Integer                                                                       |
@@ -92,7 +91,6 @@ results = SpecialtyReportTemplate.objects.active().custom().by_specialty("207RC0
 
 | Field Name | Type                                                          |
 |------------|---------------------------------------------------------------|
-| id         | UUID                                                          |
 | dbid       | Integer                                                       |
 | field      | [SpecialtyReportTemplateField](#specialtyreporttemplatefield) |
 | label      | String                                                        |

@@ -70,7 +70,6 @@ results = LabReportTemplate.objects.active().point_of_care().search("a1c")
 
 | Field Name      | Type                                                              |
 |-----------------|-------------------------------------------------------------------|
-| id              | UUID                                                              |
 | dbid            | Integer                                                           |
 | report_template | [LabReportTemplate](#labreporttemplate)                           |
 | sequence        | Integer                                                           |
@@ -86,7 +85,6 @@ results = LabReportTemplate.objects.active().point_of_care().search("a1c")
 
 | Field Name | Type                                                  |
 |------------|-------------------------------------------------------|
-| id         | UUID                                                  |
 | dbid       | Integer                                               |
 | field      | [LabReportTemplateField](#labreporttemplatefield)     |
 | label      | String                                                |

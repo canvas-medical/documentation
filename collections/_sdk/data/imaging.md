@@ -183,7 +183,6 @@ tasks = imaging_order.get_task_objects().all()
 
 | Field Name      | Type                                                                  |
 |-----------------|-----------------------------------------------------------------------|
-| id              | UUID                                                                  |
 | dbid            | Integer                                                               |
 | report_template | [ImagingReportTemplate](#imagingreporttemplate)                       |
 | sequence        | Integer                                                               |
@@ -199,7 +198,6 @@ tasks = imaging_order.get_task_objects().all()
 
 | Field Name | Type                                                    |
 |------------|---------------------------------------------------------|
-| id         | UUID                                                    |
 | dbid       | Integer                                                 |
 | field      | [ImagingReportTemplateField](#imagingreporttemplatefield) |
 | label      | String                                                  |
