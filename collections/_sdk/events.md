@@ -2219,7 +2219,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": document_id
 "type": None</pre></td>
       <td><pre>"document":
-  "id": str
+  "id": document_id
   "channel": str
   "status": str
   "title": str
