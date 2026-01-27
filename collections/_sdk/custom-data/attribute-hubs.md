@@ -41,36 +41,42 @@ hub = AttributeHub.objects.create(
 
 ## Storing Data in AttributeHub
 
-Store individual attributes or complex data as JSON:
+Store individual attributes or complex data as JSON. Here's an example of a meal tracker that records patient meals and calories:
 
 ```python
 from datetime import datetime
-from canvas_sdk.v1.data import AttributeHub
+from canvas_sdk.v1.data import AttributeHub, Patient
 
-# Create or get hub
+patient = Patient.objects.get(id="patient-uuid-here")
+
+# Create a hub to track a specific meal
 hub = AttributeHub.objects.create(
-    type="staff_profile",
-    externally_exposable_id="staff_id:abc123"
+    type="meal_entry",
+    externally_exposable_id=f"patient:{patient.id}:meal:{datetime.now().isoformat()}"
 )
 
 # Store individual attributes
-hub.set_attribute("last_sync", datetime.now())
-hub.set_attribute("external_id", "ext_12345")
+hub.set_attribute("meal_type", "lunch")
+hub.set_attribute("calories", 650)
+hub.set_attribute("recorded_at", datetime.now())
 
 # Store complex data as JSON
-profile_data = {
-    "biography": "Experienced physician",
-    "specialties": ["Cardiology", "Internal Medicine"],
-    "languages": ["English", "Spanish"],
-    "practicing_since": 2005
+meal_details = {
+    "foods": [
+        {"name": "Grilled chicken salad", "calories": 350, "protein_g": 35},
+        {"name": "Whole grain roll", "calories": 150, "protein_g": 5},
+        {"name": "Apple", "calories": 95, "protein_g": 0},
+        {"name": "Water", "calories": 0, "protein_g": 0}
+    ],
+    "notes": "Patient reported feeling satisfied after meal"
 }
-hub.set_attribute("profile", profile_data)
+hub.set_attribute("meal_details", meal_details)
 
 # Store multiple attributes at once
 hub.set_attributes({
-    "last_sync": datetime.now(),
-    "external_id": "ext_12345",
-    "sync_status": "completed"
+    "total_protein_g": 40,
+    "meal_location": "home",
+    "logged_by": "patient_self_report"
 })
 ```
 
@@ -81,23 +87,31 @@ hub.set_attributes({
 Use the get-or-create pattern to retrieve existing hubs or create new ones:
 
 ```python
-from canvas_sdk.v1.data import AttributeHub, Staff
+from canvas_sdk.v1.data import AttributeHub, Patient
 
-staff = Staff.objects.get(id=staff.id)
+patient = Patient.objects.get(id="patient-uuid-here")
 
-# Get or create pattern
+# Get or create a hub for tracking daily calorie totals
 hub, created = AttributeHub.objects.get_or_create(
-    type="staff_profile",
-    externally_exposable_id=f"staff_id:{staff.id}"
+    type="daily_calorie_summary",
+    externally_exposable_id=f"patient:{patient.id}:date:2024-01-15"
 )
 
-# Retrieve attributes
-profile = hub.get_attribute("profile")
-last_sync = hub.get_attribute("last_sync")
-external_id = hub.get_attribute("external_id")
+if created:
+    # Initialize a new day's tracking
+    hub.set_attributes({
+        "total_calories": 0,
+        "meal_count": 0,
+        "calorie_goal": 2000
+    })
 
-# Handle missing attributes
-status = hub.get_attribute("sync_status")  # Returns None if not set
+# Retrieve attributes
+total_calories = hub.get_attribute("total_calories")
+meal_count = hub.get_attribute("meal_count")
+calorie_goal = hub.get_attribute("calorie_goal")
+
+# Handle missing attributes gracefully
+notes = hub.get_attribute("daily_notes")  # Returns None if not set
 ```
 
 ---
