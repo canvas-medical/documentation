@@ -5,9 +5,9 @@ slug: "custom-data-attribute-hubs"
 
 ## Overview
 
-`AttributeHub` provides a simple model for storing arbitrary key-value data that doesn't belong to existing models. 
-This approach is ideal for cross-cutting concerns that span multiple models, temporary data storage, 
-external system state tracking, or plugin-specific configuration.
+`AttributeHubs` provide a simple mechanism for storing arbitrary key-value data that doesn't belong to existing models. 
+This approach is ideal for cross-cutting concerns that span multiple models, temporary data storage, external system state tracking, 
+or plugin-specific configuration.
 
 **Best for:**
 - Cross-cutting concerns that span multiple models
@@ -26,6 +26,8 @@ external system state tracking, or plugin-specific configuration.
 ## Creating an AttributeHub
 
 Create a hub for a specific purpose using the `type` and `externally_exposable_id` fields, which together form a unique key.
+There is a database constraint on these two fields to ensure uniqueness, and creating a duplicate will raise a `UniqueViolation` 
+exception.
 
 ```python
 from canvas_sdk.v1.data import AttributeHub
@@ -234,6 +236,7 @@ class CampaignEnrollmentHandler(BaseHandler):
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
 - [CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes on existing models
 - [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships
+- [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins

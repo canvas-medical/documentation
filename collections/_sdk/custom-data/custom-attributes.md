@@ -46,6 +46,10 @@ class StaffProxy(Staff, CustomAttributeMixin):
 You can name your proxy class as you wish, but it **must**:
 1. subclass a core model,
 1. declare `proxy = True`.
+1. define the `objects` model manager as a `CustomAttributeAwareManager`
+
+A proxy may omit the mixin and model manager if it is only to be used to associate [Custom Models](/sdk/custom-data-custom-models/)
+to core SDK models.
 
 ---
 
@@ -303,6 +307,7 @@ if deleted:
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships
+- [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins
