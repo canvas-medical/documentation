@@ -813,8 +813,8 @@ for specialty in specialty_counts:
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
-- [CustomAttributes on Proxy Models](/sdk/custom-data/custom-attributes/) - Flexible key-value attributes
-- [AttributeHubs](/sdk/custom-data/attribute-hub/) - Standalone key-value storage
-- [Testing Custom Data](/sdk/custom-data/testing/) - Testing utilities and examples
+- [CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
+- [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
+- [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins

@@ -102,44 +102,47 @@ status = hub.get_attribute("sync_status")  # Returns None if not set
 
 ---
 
-## Use Case Example: External API State
+## Use Case Example: CRM Campaign Sync
 
-Store synchronization state and external system data using AttributeHub:
+Store synchronization state between a custom data model and an external CRM using AttributeHub:
 
 ```python
 from canvas_sdk.handlers.simple_api import SimpleAPI, api
 from canvas_sdk.effects.simple_api import JSONResponse
-from canvas_sdk.v1.data import AttributeHub, Staff
+from canvas_sdk.v1.data import AttributeHub, Patient
 from datetime import datetime
 
 
-class ExternalSyncAPI(SimpleAPI):
-    """API endpoint for syncing external profile data."""
+class CRMSyncAPI(SimpleAPI):
+    """API endpoint for syncing campaign data with external CRM."""
 
-    PREFIX = "/sync"
+    PREFIX = "/crm"
 
-    @api.post("/profile/<staff_id>")
-    def sync_profile(self):
-        staff_id = self.request.path_params["staff_id"]
-        staff = Staff.objects.get(id=staff_id)
-        json_body = self.request.json()
+    @api.post("/campaign/<campaign_id>/patient/<patient_id>")
+    def sync_patient_campaign(self):
+        campaign_id = self.request.path_params["campaign_id"]
+        patient_id = self.request.path_params["patient_id"]
+        patient = Patient.objects.get(id=patient_id)
+        crm_data = self.request.json()
 
-        # Store data in AttributeHub
+        # Store CRM sync state in AttributeHub
         hub, created = AttributeHub.objects.get_or_create(
-            type="external_sync",
-            externally_exposable_id=f"staff:{staff.id}"
+            type="crm_campaign_sync",
+            externally_exposable_id=f"patient:{patient.id}:campaign:{campaign_id}"
         )
 
         hub.set_attributes({
-            "profile_data": json_body,
+            "crm_contact_id": crm_data.get("contact_id"),
+            "campaign_status": crm_data.get("status"),
+            "enrollment_date": crm_data.get("enrolled_at"),
             "last_synced": str(datetime.now()),
-            "sync_status": "completed"
+            "sync_direction": "crm_to_canvas"
         })
 
-        return [JSONResponse({"status": "success"})]
+        return [JSONResponse({"status": "success", "hub_id": str(hub.id)})]
 ```
 
-Later, retrieve the sync state:
+Later, retrieve the sync state when processing patient events:
 
 ```python
 from canvas_sdk.handlers.base import BaseHandler
@@ -147,28 +150,29 @@ from canvas_sdk.events import EventType
 from canvas_sdk.v1.data import AttributeHub
 
 
-class ProfileHandler(BaseHandler):
-    """Handler that checks external sync state."""
+class CampaignEnrollmentHandler(BaseHandler):
+    """Handler that checks CRM campaign sync state for patients."""
 
-    RESPONDS_TO = EventType.Name(EventType.STAFF_UPDATED)
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self):
-        staff_id = self.target.id
+        patient_id = self.target.id
+        campaign_id = "wellness_2024"  # Your campaign identifier
 
-        # Retrieve sync state from AttributeHub
+        # Retrieve CRM sync state from AttributeHub
         hub, created = AttributeHub.objects.get_or_create(
-            type="external_sync",
-            externally_exposable_id=f"staff:{staff_id}"
+            type="crm_campaign_sync",
+            externally_exposable_id=f"patient:{patient_id}:campaign:{campaign_id}"
         )
 
         if not created:
+            crm_contact_id = hub.get_attribute("crm_contact_id")
+            campaign_status = hub.get_attribute("campaign_status")
             last_synced = hub.get_attribute("last_synced")
-            profile_data = hub.get_attribute("profile_data")
-            sync_status = hub.get_attribute("sync_status")
 
-            # Use the sync data...
-            if sync_status == "completed":
-                # Process profile data
+            # Use the CRM data to drive clinical workflows
+            if campaign_status == "enrolled":
+                # Patient is enrolled in CRM campaign - trigger relevant protocols
                 pass
 
         return []
@@ -214,9 +218,9 @@ class ProfileHandler(BaseHandler):
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
-- [CustomAttributes on Proxy Models](/sdk/custom-data/custom-attributes/) - Flexible key-value attributes on existing models
-- [Custom Data Models](/sdk/custom-data/custom-models/) - Structured models with relationships
-- [Testing Custom Data](/sdk/custom-data/testing/) - Testing utilities and examples
+- [CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes on existing models
+- [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships
+- [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins
 - [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration
