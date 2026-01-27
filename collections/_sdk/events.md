@@ -2228,7 +2228,7 @@ These events fire as a result of records being created, updated, or deleted.
   "content_type": str
   "created_at": str
 "updated_fields":
-  - "name": str
+    "name": str
     "value": str
     "previous_value": str
 "updated_at": str
