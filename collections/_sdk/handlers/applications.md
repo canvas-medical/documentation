@@ -188,13 +188,61 @@ This is also where you can define the title and icon that displays your
 app in the app drawer. The icon will be rendered at 48px by 48px, so should be
 square and simple enough to not lose detail at that size.
 
-Other information you can define about your application is the `scope`
-(`"patient_specific"` or `"global"`), which determines if the application is
-visible only in a patient chart or outside of charts.
+## Application Scopes
 
-If you want to increase your application’s visibility and display it alongside
+The `scope` attribute determines where your application is visible within Canvas. The following scopes are available:
+
+| Scope | Description |
+| ----- | ----------- |
+| `patient_specific` | Visible only within a patient's chart in the app drawer |
+| `global` | Visible outside of patient charts in the app drawer |
+| `full_chart` | Displayed as a tab in the patient chart navigation menu alongside Chart and Profile |
+| `note` | Displayed as a tab within individual notes, allowing note-specific functionality |
+
+### Note Scope
+
+Applications with the `note` scope appear as tabs within notes, alongside the Note Body tab. This is useful for building specialized documentation tools, clinical decision support, or integrated workflows that operate in the context of a specific note.
+
+![Note Application Tabs](/_images/sdk/handlers/note-application-tabs.png)
+
+#### Filtering by Note Type
+
+You can restrict a `note`-scoped application to only appear on specific note types using the `note_types` attribute. This attribute accepts a list of note type names. When specified, the application tab will only be visible on notes that match one of the listed types.
+
+If `note_types` is empty or not specified, the application will appear on all notes.
+
+```json
+{
+  "class": "my_plugin.apps.intake:IntakeWorkflow",
+  "name": "📋 Patient Intake",
+  "description": "Structured intake questionnaire and documentation",
+  "icon": "/assets/intake-icon.png",
+  "scope": "note",
+  "note_types": ["Office Visit", "Telehealth"]
+}
+```
+
+In this example, the "Patient Intake" application will only appear as a tab on notes with the type "Office Visit" or "Telehealth".
+
+### Full Chart Scope
+
+Applications with the `full_chart` scope appear as navigation tabs at the top of the patient chart, alongside the default "Chart" and "Profile" tabs. This is ideal for building comprehensive patient-level views or dashboards.
+
+```json
+{
+  "class": "my_plugin.apps.analytics:PatientAnalytics",
+  "name": "Analytics",
+  "description": "Patient analytics dashboard",
+  "icon": "/assets/analytics-icon.png",
+  "scope": "full_chart"
+}
+```
+
+## Panel Display
+
+If you want to increase your application's visibility and display it alongside
 other panel buttons (instead of in the applications drawer), you can add
-the `show_in_panel` attribute. If you’ve added more than one application
+the `show_in_panel` attribute. If you've added more than one application
 to that panel, you can set their priorities using the `panel_priority` attribute.
 
 For security reasons you also need to specify the domains that will be loaded within the iframe, or they will not be
@@ -240,6 +288,7 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
   "readme": "./README.md"
 }
 ```
+
 
 <br/>
 <br/>
