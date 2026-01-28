@@ -11,6 +11,7 @@ The Canvas SDK provides effects to:
 - [update claim line items](#updateclaimlineitem)
 - [move a claim to a specific queue](#moveclaimtoqueue)
 - [post a payment](#postclaimpayment)
+- [add a comment to a claim](#addclaimcomment)
 
 ## AddClaimLabel
 
@@ -556,6 +557,49 @@ curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment"
         },
     ],
 }'
+```
+
+## AddClaimComment
+
+The `AddClaimComment` effect creates a new comment on an existing claim.
+
+### Attributes
+
+| Attribute  | Type            | Description              | Required |
+| ---------- | --------------- | ------------------------ | -------- |
+| `claim_id` | `UUID` or `str` | Identifier for the claim | Yes      |
+| `comment`  | `str`           | The comment text to add  | Yes      |
+
+### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+
+### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects.claim_comment import AddClaimComment
+from canvas_sdk.v1.data import Patient, Claim
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.COVERAGE_CREATED)
+
+    def compute(self) -> list[Effect]:
+        pt = Patient.objects.get(id=self.event.context["patient"]["id"])
+        # patient's claims that have not been submitted yet
+        pt_claims = Claim.objects.filter(
+            note__patient=pt, current_queue__queue_sort_ordering__in=[1, 2, 3, 4]
+        )
+        return [
+            AddClaimComment(
+                claim_id=claim.id,
+                comment="Patient has a new coverage, please confirm if this claim's coverage info should be updated.",
+            ).apply()
+            for claim in pt_claims
+        ]
 ```
 
 <br/>
