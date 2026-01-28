@@ -48,8 +48,7 @@ class Protocol(BaseProtocol):
                     errors=[
                         ValidationError(
                             message="Patient has no coverage. Do not send claim to billing department until coverage(s) have been added."
-                        ),
-                        ValidationError(message="test"),
+                        )
                     ]
                 ).apply(),
                 AddBannerAlert(
