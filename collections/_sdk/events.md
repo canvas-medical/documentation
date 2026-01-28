@@ -1860,6 +1860,46 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Letters
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_id
+"type": <a href='/sdk/data-letter/'>Letter</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_id
+"type": <a href='/sdk/data-letter/'>Letter</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Observations
 
 <table>
