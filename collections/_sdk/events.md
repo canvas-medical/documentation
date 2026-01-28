@@ -127,6 +127,25 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <thead>
+    <tr><th colspan="2">PATIENT_PREFERRED_PHARMACY_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient's preferred pharmacy is created or updated.</td></tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": pt_id
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">CARE_TEAM_MEMBERSHIP_CREATED</th></tr>
     <tr><td colspan="2">Occurs when a new care team member is added for a patient.</td></tr>
   </thead>
