@@ -429,6 +429,65 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Patient Facility Address
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_FACILITY_ADDRESS_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient facility address is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientfacilityaddress_id
+"type": <a href='/sdk/data-patient/#patientfacilityaddress'>PatientFacilityAddress</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_FACILITY_ADDRESS_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient facility address is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientfacilityaddress_id
+"type": <a href='/sdk/data-patient/#patientfacilityaddress'>PatientFacilityAddress</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_FACILITY_ADDRESS_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a patient facility address is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientfacilityaddress_id
+"type": <a href='/sdk/data-patient/#patientfacilityaddress'>PatientFacilityAddress</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Patient Metadata
 
 <table>
