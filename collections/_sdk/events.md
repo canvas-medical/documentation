@@ -127,6 +127,25 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <thead>
+    <tr><th colspan="2">PATIENT_PREFERRED_PHARMACY_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient's preferred pharmacy is created or updated.</td></tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": pt_id
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">CARE_TEAM_MEMBERSHIP_CREATED</th></tr>
     <tr><td colspan="2">Occurs when a new care team member is added for a patient.</td></tr>
   </thead>
@@ -1837,6 +1856,46 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
 "state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Letters
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_id
+"type": <a href='/sdk/data-letter/'>Letter</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_id
+"type": <a href='/sdk/data-letter/'>Letter</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
