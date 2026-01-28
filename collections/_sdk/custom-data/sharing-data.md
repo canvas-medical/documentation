@@ -3,8 +3,12 @@ title: "Sharing Data"
 slug: "custom-data-sharing-data"
 ---
 
-To share data across plugins or to external services, a plugin must **explicitly expose an API** with appropriate 
-authorization and access controls. This is done using the [Simple API](/sdk/canvas_cli/#simple-api-endpoints) feature.
+To share data across plugins or to external services, a plugin must expose an API with appropriate 
+authorization and access controls. This is done using the [Simple API](/sdk/handlers-simple-api-http) feature.
+
+At this time, the SDK supports data sharing via API only, in order to prevent data corruption, accidental leakage, 
+and dependencies among plugins. A future version of the SDK may expose a permissions framework to allow granular
+data access without requiring APIs to be written.
 
 #### Example: Exposing Provider Profile Data
 
