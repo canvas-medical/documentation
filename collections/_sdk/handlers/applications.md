@@ -197,32 +197,6 @@ The `scope` attribute determines where your application is visible within Canvas
 | `patient_specific` | Visible only within a patient's chart in the app drawer |
 | `global` | Visible outside of patient charts in the app drawer |
 | `full_chart` | Displayed as a tab in the patient chart navigation menu alongside Chart and Profile |
-| `note` | Displayed as a tab within individual notes, allowing note-specific functionality |
-
-### Note Scope
-
-Applications with the `note` scope appear as tabs within notes, alongside the Note Body tab. This is useful for building specialized documentation tools, clinical decision support, or integrated workflows that operate in the context of a specific note.
-
-![Note Application Tabs](/_images/sdk/handlers/note-application-tabs.png)
-
-#### Filtering by Note Type
-
-You can restrict a `note`-scoped application to only appear on specific note types using the `note_types` attribute. This attribute accepts a list of note type names. When specified, the application tab will only be visible on notes that match one of the listed types.
-
-If `note_types` is empty or not specified, the application will appear on all notes.
-
-```json
-{
-  "class": "my_plugin.apps.intake:IntakeWorkflow",
-  "name": "📋 Patient Intake",
-  "description": "Structured intake questionnaire and documentation",
-  "icon": "/assets/intake-icon.png",
-  "scope": "note",
-  "note_types": ["Office Visit", "Telehealth"]
-}
-```
-
-In this example, the "Patient Intake" application will only appear as a tab on notes with the type "Office Visit" or "Telehealth".
 
 ### Full Chart Scope
 
@@ -236,6 +210,90 @@ Applications with the `full_chart` scope appear as navigation tabs at the top of
   "icon": "/assets/analytics-icon.png",
   "scope": "full_chart"
 }
+```
+
+## Note Applications
+
+Note Applications appear as tabs within a patient's note, allowing you to embed custom interfaces directly in the clinical documentation workflow.
+
+### Implementing a Note Application
+
+To create a Note Application, your handler class should inherit from `NoteApplication` and define two required class attributes:
+
+| Attribute | Description |
+| --------- | ----------- |
+| `NAME` | The display title shown on the tab (supports emojis) |
+| `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`) |
+
+Your class must implement the `handle()` method, which is called when the user clicks on the tab. This method should return a list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import NoteApplication
+
+
+class PatientIntakeApp(NoteApplication):
+    """Note application for patient intake workflow."""
+
+    NAME = "📋 Patient Intake"
+    IDENTIFIER = "my_plugin__patient_intake"
+
+    def handle(self) -> list[Effect]:
+        """Launch the intake form when the tab is clicked."""
+        note_id = self.context.get("note_id")
+
+        return [
+            LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.NOTE,
+                content="<html>Your form HTML here</html>",
+                title="Patient Intake Form"
+            ).apply()
+        ]
+```
+
+![Note Application Tabs](../../../assets/images/note-application-tabs.png)
+
+### Context and Event Data
+
+The `handle()` method has access to context data through `self.context`:
+
+| Key | Description |
+| --- | ----------- |
+| `note_id` | The database ID of the current note |
+| `user` | Information about the current user |
+
+Additional data is available through the event object:
+
+| Property | Description |
+| -------- | ----------- |
+| `self.event.target` | The patient associated with the note |
+| `self.event.actor` | The authenticated user who triggered the event |
+
+### Controlling Visibility
+
+You can control when your Note Application tab is visible by overriding the `visible()` method. This method has access to the same context and event data as `handle()`:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import NoteApplication
+
+class ConditionalIntakeApp(NoteApplication):
+    NAME = "📋 Intake"
+    IDENTIFIER = "my_plugin__conditional_intake"
+
+    def visible(self) -> bool:
+        """Only show for specific conditions."""
+        # Add your visibility logic here
+        return True
+
+    def handle(self) -> list[Effect]:
+        return [LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.NOTE,
+            content="<html>Form content</html>",
+            title="Intake"
+        ).apply()]
 ```
 
 ## Panel Display
