@@ -2233,7 +2233,12 @@ These events fire as a result of records being created, updated, or deleted.
   - "key": str
     "name": str
     "report_type": str
-    "template_type": str</pre></td>
+    "template_type": str
+    "template_fields":
+      - "name": str
+        "label": str
+        "type": str
+        "required": bool</pre></td>
     </tr>
   </tbody>
 </table>
