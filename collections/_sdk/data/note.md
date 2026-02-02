@@ -257,6 +257,17 @@ note_type_code = note.note_type_version.code
 note_type_system = note.note_type_version.system
 ```
 
+### Get all tasks associated with a note
+
+Get all `NoteTask` records associated with a specific note using the `note_tasks` attribute on the `Note` instance:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+note_tasks = note.note_tasks.all()
+```
+
 ## Filtering
 
 ### By attribute

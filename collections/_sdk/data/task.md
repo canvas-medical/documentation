@@ -60,7 +60,7 @@ task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
 
 ### Note Tasks and Initial Comments
 
-A `NoteTask` represents the link between a Task command and the `Task` it generates. When a task is created via a Task command, a `NoteTask` record is created that stores the **initial comment** provided during task creation in the `internal_comment` field.
+A `NoteTask` represents the link between a Task command and the `Task` it generates. When a task is created via a Task command, a `NoteTask` record is created that stores the original values entered in the command. Of importance is the **initial comment** that is provided during task creation in the `internal_comment` field.
 
 This is important because `task.comments.all()` only returns manual comments added after the task is created through the interface—it does not include the original comment entered during task creation. To access that initial comment, you need to use the `NoteTask` model.
 
@@ -99,7 +99,7 @@ class TaskCreatedHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.TASK_CREATED)]
 
     def compute(self):
-        task_id = self.target.id
+        task_id = self.target
         task = Task.objects.get(id=task_id)
 
         # Get the initial comment from the NoteTask

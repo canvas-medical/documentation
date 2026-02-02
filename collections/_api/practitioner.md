@@ -38,7 +38,12 @@ sections:
                 description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
               - name: valueCode
                 type: string
-                description: Value of extension.<br><br> The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`. <br><br> A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC). Supported values are **M** (Male), **F** (Female), **OTH** (Other), and **UNK** (Unknown).
+                description: Value of extension.<br><br> The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`. <br><br> A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC).
+                enum_options:
+                  - value: M
+                  - value: F
+                  - value: OTH
+                  - value: UNK
               - name: valueUrl
                 type: string
                 description: Value of extension.<br><br> The `valueUrl` attribute is needed for the meeting link extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link`. This value will represent the url that will be associated to any telehealth notes in Canvas. 
