@@ -11,6 +11,7 @@ The Canvas SDK provides effects to:
 - [update claim line items](#updateclaimlineitem)
 - [move a claim to a specific queue](#moveclaimtoqueue)
 - [post a payment](#postclaimpayment)
+- [add a comment to a claim](#addclaimcomment)
 
 ## AddClaimLabel
 
@@ -116,20 +117,25 @@ class Protocol(BaseProtocol):
 
 ### UpdateClaimLineItem
 
-The `UpdateClaimLineItem` effect allows you to update the `charge` field on a specified claim line item.
+The `UpdateClaimLineItem` effect allows you to update the `charge` field and `linked_diagnosis_codes` on a specified claim line item.
 
 #### Attributes
 
-| Attribute            | Type            | Description                                        | Required |
-| -------------------- | --------------- | -------------------------------------------------- | -------- |
-| `claim_line_item_id` | `UUID` or `str` | Identifier for the claim line item                 | Yes      |
-| `charge`             | `float`         | The charge amount to update on the claim line item | No       |
+| Attribute                | Type                | Description                                                                                                          | Required |
+| ------------------------ | ------------------- | -------------------------------------------------------------------------------------------------------------------- | -------- |
+| `claim_line_item_id`     | `UUID` or `str`     | Identifier for the claim line item                                                                                   | Yes      |
+| `charge`                 | `float`             | The charge amount to update on the claim line item                                                                   | No       |
+| `linked_diagnosis_codes` | `list[UUID or str]` | List of [ClaimLineItemDiagnosisCode](/sdk/data-claim/#claimlineitemdiagnosiscode) IDs to link to the claim line item | No       |
 
 #### Implementation Details
 
 - Validates `claim_line_item_id` is provided and that the associated claim line item exists
+- If `linked_diagnosis_codes` is provided, validates that all [ClaimLineItemDiagnosisCode](/sdk/data-claim/#claimlineitemdiagnosiscode) IDs correspond to existing diagnosis codes on the claim line item
+- The `linked_diagnosis_codes` list represents the complete set of diagnosis codes that will be linked to the claim line item when the effect is applied. Any diagnosis codes not included in this list will be unlinked. If you wish to add a new code to the existing linked codes, you must first retrieve the current list and include all codes you want to remain linked: `list(claim_line_item.diagnosis_codes.filter(linked=True).values_list("id", flat=True)) + [new_code_id]`
 
 #### Example Usage
+
+Updating charge amount.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -161,6 +167,76 @@ class Protocol(BaseProtocol):
         if self.event.context["state"] == "LKD":
             return self.update_all_items(500.00)
         return []
+```
+
+Linking and un-linking diagnosis codes.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.v1.data import Note, ClaimLineItem
+from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = [
+        EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED),
+    ]
+
+    def compute(self) -> list[Effect]:
+        effects = []
+        note = Note.objects.get(id=self.event.context["note_id"])
+        if not (claim := note.get_claim()):
+            return effects
+
+        state = self.event.context["state"]
+        if state == "PSH":
+            # only link proc codes starting with "99" to diag codes starting with "I"
+            items = claim.line_items.filter(proc_code__startswith="99")
+            return self.generate_effects(items, self.get_diags_that_start_with_I)
+        if state == "LKD":
+            # link all proc codes to all diag codes
+            items = claim.line_items.all()
+            return self.generate_effects(items, self.get_all_diags)
+        if state == "ULK":
+            # unlink proc codes starting with "99" from diag codes starting with "I"
+            items = claim.line_items.filter(proc_code__startswith="99")
+            return self.generate_effects(items, self.get_diags_that_dont_start_with_I)
+        if state == "DLT":
+            # unlink all proc codes from all diag codes
+            items = claim.line_items.all()
+            return self.generate_effects(items, self.get_no_diags)
+
+        return effects
+
+    def get_diags_that_start_with_I(self, item: ClaimLineItem) -> list[str]:
+        return list(
+            item.diagnosis_codes.filter(code__startswith="I").values_list(
+                "id", flat=True
+            )
+        )
+
+    def get_diags_that_dont_start_with_I(self, item: ClaimLineItem) -> list[str]:
+        return list(
+            item.diagnosis_codes.exclude(code__startswith="I").values_list(
+                "id", flat=True
+            )
+        )
+
+    def get_all_diags(self, item: ClaimLineItem) -> list[str]:
+        return list(item.diagnosis_codes.values_list("id", flat=True))
+
+    def get_no_diags(self, item: ClaimLineItem) -> list[str]:
+        return []
+
+    def generate_effects(self, items, get_diag_ids) -> list[Effect]:
+        return [
+            UpdateClaimLineItem(
+                claim_line_item_id=item.id, linked_diagnosis_codes=get_diag_ids(item)
+            ).apply()
+            for item in items
+        ]
 ```
 
 ### MoveClaimToQueue
@@ -481,6 +557,49 @@ curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment"
         },
     ],
 }'
+```
+
+## AddClaimComment
+
+The `AddClaimComment` effect creates a new comment on an existing claim.
+
+### Attributes
+
+| Attribute  | Type            | Description              | Required |
+| ---------- | --------------- | ------------------------ | -------- |
+| `claim_id` | `UUID` or `str` | Identifier for the claim | Yes      |
+| `comment`  | `str`           | The comment text to add  | Yes      |
+
+### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+
+### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects.claim_comment import AddClaimComment
+from canvas_sdk.v1.data import Patient, Claim
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.COVERAGE_CREATED)
+
+    def compute(self) -> list[Effect]:
+        pt = Patient.objects.get(id=self.event.context["patient"]["id"])
+        # patient's claims that have not been submitted yet
+        pt_claims = Claim.objects.filter(
+            note__patient=pt, current_queue__queue_sort_ordering__in=[1, 2, 3, 4]
+        )
+        return [
+            AddClaimComment(
+                claim_id=claim.id,
+                comment="Patient has a new coverage, please confirm if this claim's coverage info should be updated.",
+            ).apply()
+            for claim in pt_claims
+        ]
 ```
 
 <br/>

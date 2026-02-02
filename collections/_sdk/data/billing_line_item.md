@@ -75,21 +75,22 @@ For examples of how to use the BillingLineItem data class with the BillingLineIt
 
 ### BillingLineItem
 
-| Field Name   | Type                                             |
-| ------------ | ------------------------------------------------ |
-| id           | UUID                                             |
-| dbid         | Integer                                          |
-| created      | DateTime                                         |
-| modified     | DateTime                                         |
-| note         | [Note](/sdk/data-note)                           |
-| patient      | [Patient](/sdk/data-patient/#patient)            |
-| cpt          | String                                           |
-| charge       | Decimal                                          |
-| description  | String                                           |
-| units        | Integer                                          |
-| command_type | String                                           |
-| command_id   | Integer                                          |
-| status       | [BillingLineItemStatus ](#billinglineitemstatus) |
+| Field Name   | Type                                            |
+| ------------ | ----------------------------------------------- |
+| id           | UUID                                            |
+| dbid         | Integer                                         |
+| created      | DateTime                                        |
+| modified     | DateTime                                        |
+| note         | [Note](/sdk/data-note)                          |
+| patient      | [Patient](/sdk/data-patient/#patient)           |
+| cpt          | String                                          |
+| charge       | Decimal                                         |
+| description  | String                                          |
+| units        | Integer                                         |
+| command_type | String                                          |
+| command_id   | Integer                                         |
+| status       | [BillingLineItemStatus](#billinglineitemstatus) |
+| assessments  | [Assessment](/sdk/data-assessment)[]            |
 
 ### BillingLineItemModifier
 

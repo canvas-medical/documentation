@@ -292,25 +292,26 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 
 ### Note
 
-| Field Name          | Type                                  | Notes                                                                |
-| ------------------- | ------------------------------------- | -------------------------------------------------------------------- |
-| id                  | UUID                                  |                                                                      |
-| dbid                | Integer                               |                                                                      |
-| created             | DateTime                              |                                                                      |
-| modified            | DateTime                              |                                                                      |
-| patient             | [Patient](/sdk/data-patient/#patient) |                                                                      |
-| note_type_version   | [NoteType](#notetype)                 |                                                                      |
-| title               | String                                |                                                                      |
-| body                | JSON                                  | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. |
-| originator          | [CanvasUser](/sdk/data-canvasuser)    |                                                                      |
-| provider            | [Staff](/sdk/data-staff/#staff)       |                                                                      |
-| checksum            | String                                |                                                                      |
-| billing_note        | String                                |                                                                      |
-| related_data        | JSON                                  | Can contain one key, `roomNumber`, if the Note is an inpatient stay. |
-| datetime_of_service | DateTime                              |                                                                      |
-| place_of_service    | String                                |                                                                      |
-| encounter           | [Encounter](/sdk/data-encounter)      |                                                                      |
-| commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                               |
+| Field Name          | Type                                   | Notes                                                                                                                                                                                                |
+|---------------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| id                  | UUID                                   |                                                                                                                                                                                                      |
+| dbid                | Integer                                |                                                                                                                                                                                                      |
+| created             | DateTime                               |                                                                                                                                                                                                      |
+| modified            | DateTime                               |                                                                                                                                                                                                      |
+| patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
+| note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
+| title               | String                                 |                                                                                                                                                                                                      |
+| body                | JSON                                   | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. |
+| originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
+| provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
+| checksum            | String                                 |                                                                                                                                                                                                      |
+| billing_note        | String                                 |                                                                                                                                                                                                      |
+| related_data        | JSON                                   | Can contain one key, `roomNumber`, if the Note is an inpatient stay.                                                                                                                                 |
+| datetime_of_service | DateTime                               |                                                                                                                                                                                                      |
+| place_of_service    | String                                 |                                                                                                                                                                                                      |
+| encounter           | [Encounter](/sdk/data-encounter)       |                                                                                                                                                                                                      |
+| commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                                                                                                                                                               |
+| note_tasks          | QuerySet[[NoteTask](/sdk/data-task)]   | All tasks associated with this note                                                                                                                                                                  |
 
 ### NoteType
 

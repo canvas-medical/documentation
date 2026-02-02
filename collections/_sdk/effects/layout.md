@@ -276,6 +276,35 @@ This twist on the _Holywood Principle_ ensures that your application remains sec
 <br/>
 <br/>
 
+## Resizing Modals
+
+Modal overlays can now be dynamically resized by embedded applications using the MessageChannel API. Applications launching with a `DEFAULT_MODAL` target can send a `RESIZE` message to adjust the modal's width and/or height:
+
+```html
+<script>
+    let messagePort = null;
+
+    // Listen for the port transfer from the Canvas Application
+    window.addEventListener('message', (event) => {
+      // Check if this is the INIT_CHANNEL message with a port
+      if (event.data?.type === 'INIT_CHANNEL' && event.ports?.[0]) {
+
+        // Store the port for later use
+        messagePort = event.ports[0];
+        messagePort.start();
+        // Example: Resize modal to specific dimensions
+        messagePort.postMessage({
+          type: 'RESIZE',
+          width: 800,  // pixels
+          height: 600  // pixels
+        });
+      }
+    });
+</script>
+```
+
+This enables embedded applications to optimize their display area based on content requirements, improving the user experience for dynamic or responsive plugin interfaces.
+
 ## Portal Landing Page Widgets
 
 The `PortalWidget` class allows you to add widgets of various sizes to the patient portal landing page. You can fully customize your widgets or leverage ready-made widgets provided by Canvas, such as Appointments and Messaging.
