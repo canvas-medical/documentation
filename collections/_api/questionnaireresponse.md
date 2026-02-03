@@ -56,7 +56,7 @@ sections:
             required_in: create,update
             description: >-
               Form being answered.<br><br>
-              The `questionnaire` field contains a value that is formatted like a Questionnaire reference, e.g. `Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
+              The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
             type: string
           - name: status
             required_in: create,update
@@ -183,7 +183,7 @@ sections:
             description: The patient that is the subject of the questionnaire response in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
           - name: questionnaire
-            description: The questionnaire the answers are provided for in the format "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd".
+            description: The questionnaire the answers are provided for in the format "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd".
             type: string
           - name: questionnaire.code
             description: Filters by the code and/or system of the associated questionnaire. You can search by just the code value or you can search by the system and code in the format `system|code` (e.g `http://snomed.info/sct|404684003`).
@@ -257,7 +257,7 @@ curl --request POST \
             "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "completed",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -341,7 +341,7 @@ payload = {
             "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "completed",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -438,7 +438,7 @@ print(response.text)
             "valueString": "https://example.canvasmedical.com/permalinks/v1/YWJjZGVmZ2hpamtsbW5vcHFycwo"
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "completed",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -577,7 +577,7 @@ curl --request PUT \
             "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "entered-in-error",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -661,7 +661,7 @@ payload = {
             "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "entered-in-error",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -778,7 +778,7 @@ print(response.text)
                         "valueString": "https://example.canvasmedical.com/permalinks/v1/YWJjZGVmZ2hpamtsbW5vcHFycwo"
                     }
                 ],
-                "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+                "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
                 "status": "completed",
                 "subject": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
