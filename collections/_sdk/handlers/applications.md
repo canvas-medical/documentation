@@ -197,6 +197,8 @@ The `scope` attribute determines where your application is visible within Canvas
 | `patient_specific` | Visible only within a patient's chart in the app drawer |
 | `global` | Visible outside of patient charts in the app drawer |
 | `full_chart` | Displayed as a tab in the patient chart navigation menu alongside Chart and Profile |
+| `provider_menu_item` | Displayed as a menu item in the provider menu |
+| `portal_menu_item` | Displayed as a menu item in the patient portal |
 
 ### Full Chart Scope
 
