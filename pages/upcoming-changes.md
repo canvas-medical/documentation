@@ -29,10 +29,10 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td>FHIR API: Remove Practitioner birth sex extension — phase 1</td>
       <td style="color: red;">Breaking Change</td>
       <td>
-        We recently added support for an extension to the FHIR Practitioner resource that enables writing a practitioner's birth sex. After doing so, we discovered that this feature is not compliant with USCDI v3.<br><br>
+        We recently added support for an extension to the FHIR Practitioner resource that enables writing a practitioner's birth sex (extension URL http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex). After doing so, we discovered that this feature is not compliant with USCDI v3.<br><br>
         On the release date, we are going to remove support for this extension. Read and search endpoints will no longer return this data. If the extension is present in a resource sent to a create or update endpoint, the extension will be ignored.<br><br>
-        Instead, when a request is sent to create a practitioner, the birth sex value in the database will be set to `unknown`.<br><br>
-        <strong>To avoid disruption, act before the release date to change your client code to stop consuming birth sex from read and search responses.</strong>
+        Instead, when a request is sent to create a practitioner, the birth sex value in the database will be set to <code>unknown</code>.<br><br>
+        <strong>To avoid disruption, act before the release date and change your client code to stop consuming birth sex from FHIR Practitioner read and search responses.</strong>
       </td>
       <td>02/06/26</td>
       <td></td>
@@ -42,7 +42,7 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td style="color: red;">Breaking Change</td>
       <td>
         On the release date, requests sent to the FHIR Practitioner create and update endpoints that contain the birth sex extension will receive an error response.<br><br>
-        <strong>To avoid disruption, act before the release date to change your client code to stop sending the birth sex extension in create and update requests.</strong>
+        <strong>To avoid disruption, act before the release date and change your client code to stop sending the birth sex extension in FHIR Practitioner create and update requests.</strong>
       </td>
       <td>02/13/26</td>
       <td></td>
