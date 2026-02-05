@@ -17,13 +17,15 @@ Additionally, the SDK provides a separate effect to [update claim line items](#u
 
 The following standalone effect classes are deprecated and will be removed in a future release. Please use the `ClaimEffect` class instead.
 
-| Deprecated Class   | Old Import Path                    | New Equivalent                                          |
-| ------------------ | ---------------------------------- | ------------------------------------------------------- |
-| `AddClaimLabel`    | `canvas_sdk.effects.claim_label`   | `canvas_sdk.effects.claim::ClaimEffect.add_labels()`    |
-| `RemoveClaimLabel` | `canvas_sdk.effects.claim_label`   | `canvas_sdk.effects.claim::ClaimEffect.remove_labels()` |
-| `MoveClaimToQueue` | `canvas_sdk.effects.claim_queue`   | `canvas_sdk.effects.claim::ClaimEffect.move_to_queue()` |
-| `AddClaimComment`  | `canvas_sdk.effects.claim_comment` | `canvas_sdk.effects.claim::ClaimEffect.add_comment()`   |
-| `PostClaimPayment` | `canvas_sdk.effects.payment`       | `canvas_sdk.effects.claim::ClaimEffect.post_payment()`  |
+`from canvas_sdk.effects.claim import ClaimEffect`
+
+| Deprecated Class   | Old Import Path                    | New Equivalent                |
+| ------------------ | ---------------------------------- | ----------------------------- |
+| `AddClaimLabel`    | `canvas_sdk.effects.claim_label`   | `ClaimEffect.add_labels()`    |
+| `RemoveClaimLabel` | `canvas_sdk.effects.claim_label`   | `ClaimEffect.remove_labels()` |
+| `MoveClaimToQueue` | `canvas_sdk.effects.claim_queue`   | `ClaimEffect.move_to_queue()` |
+| `AddClaimComment`  | `canvas_sdk.effects.claim_comment` | `ClaimEffect.add_comment()`   |
+| `PostClaimPayment` | `canvas_sdk.effects.payment`       | `ClaimEffect.post_payment()`  |
 
 ## Claim Effect
 
@@ -37,7 +39,7 @@ The `ClaimEffect` class facilitates operations on existing claims.
 
 ### Add Labels
 
-Adds one or more labels to a claim, and optionally creates new labels before assigning them to the claim.
+`ClaimEffect.add_labels()`: adds one or more labels to a claim, and optionally creates new labels before assigning them to the claim.
 
 #### Parameters
 
@@ -94,7 +96,7 @@ class Protocol(BaseProtocol):
 
 ### Remove Labels
 
-Removes existing labels from a claim.
+`ClaimEffect.remove_labels()`: removes existing labels from a claim.
 
 #### Parameters
 
@@ -134,7 +136,7 @@ class Protocol(BaseProtocol):
 
 ### Move to Queue
 
-Moves a claim to a specific queue.
+`ClaimEffect.move_to_queue()`: moves a claim to a specific queue.
 
 #### Parameters
 
@@ -171,7 +173,7 @@ class Protocol(BaseProtocol):
 
 ### Add Comment
 
-Creates a new comment on a claim.
+`ClaimEffect.add_comment()`: creates a new comment on a claim.
 
 #### Parameters
 
@@ -212,7 +214,7 @@ class Protocol(BaseProtocol):
 
 ### Post Payment
 
-Posts a payment to a claim, specifying payment details and line item transactions. This method supports payments from insurance or patient and allows you to specify payments, adjustments, transfers, and write-offs on individual claim line items.
+`ClaimEffect.post_payment()`: posts a payment to a claim, specifying payment details and line item transactions. This method supports payments from insurance or patient and allows you to specify payments, adjustments, transfers, and write-offs on individual claim line items.
 
 #### Parameters
 
