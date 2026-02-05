@@ -507,7 +507,7 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 from canvas_sdk.v1.data import Note, ClaimLineItem
-from canvas_sdk.effects.claim import UpdateClaimLineItem
+from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
 
 
 class Protocol(BaseProtocol):
@@ -541,7 +541,7 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 from canvas_sdk.v1.data import Note, ClaimLineItem
-from canvas_sdk.effects.claim import UpdateClaimLineItem
+from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
 
 
 class Protocol(BaseProtocol):
