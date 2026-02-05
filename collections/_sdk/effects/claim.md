@@ -17,8 +17,6 @@ Additionally, the SDK provides a separate effect to [update claim line items](#u
 
 The following standalone effect classes are deprecated and will be removed in a future release. Please use the `ClaimEffect` class instead.
 
-`from canvas_sdk.effects.claim import ClaimEffect`
-
 | Deprecated Class   | Old Import Path                    | New Equivalent                |
 | ------------------ | ---------------------------------- | ----------------------------- |
 | `AddClaimLabel`    | `canvas_sdk.effects.claim_label`   | `ClaimEffect.add_labels()`    |
@@ -30,6 +28,8 @@ The following standalone effect classes are deprecated and will be removed in a 
 ## Claim Effect
 
 The `ClaimEffect` class facilitates operations on existing claims.
+
+`from canvas_sdk.effects.claim import ClaimEffect`
 
 ### Attributes
 
