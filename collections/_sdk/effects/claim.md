@@ -12,6 +12,8 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
 - [moving claim to a queue](#move-to-queue)
 - [adding comments](#add-comment) to claims
 - [posting payments](#post-payment) to claims
+- [adding banner alerts](#add-banner) to claims
+- [removing banner alerts](#remove-banner) from claims
 
 Additionally, the SDK provides a separate effect to [update claim line items](#updateclaimlineitem).
 
@@ -476,6 +478,100 @@ curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment"
         }
     ]
 }'
+```
+
+### Add Banner
+
+`ClaimEffect.add_banner()`: adds a banner alert to a claim. Banner alerts are displayed in the UI to surface important information about a claim.
+
+#### Parameters
+
+| Parameter   | Type                                          | Description                                         | Required |
+| ----------- | --------------------------------------------- | --------------------------------------------------- | -------- |
+| `key`       | `str`                                         | A unique key identifying the banner alert           | Yes      |
+| `narrative` | `str`                                         | The banner text to display (max 90 characters)      | Yes      |
+| `intent`    | [BannerAlertIntent](#banneralertintent-enumeration-type) | The visual intent/severity of the banner            | Yes      |
+| `href`      | `str`                                         | An optional link URL for the banner                 | No       |
+
+#### BannerAlertIntent Enumeration Type
+
+| Enum      | Value   |
+| :-------- | :------ |
+| `INFO`    | info    |
+| `WARNING` | warning |
+| `ALERT`   | alert   |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- The `narrative` field has a maximum length of 90 characters
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects.claim import ClaimEffect, BannerAlertIntent
+from canvas_sdk.v1.data import Note
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is unlocked, add a warning banner to the claim."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "ULK":
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [
+                claim_effect.add_banner(
+                    key="review-needed",
+                    narrative="This claim needs review before resubmission.",
+                    intent=BannerAlertIntent.WARNING,
+                )
+            ]
+        return []
+```
+
+### Remove Banner
+
+`ClaimEffect.remove_banner()`: removes a banner alert from a claim by its key.
+
+#### Parameters
+
+| Parameter | Type  | Description                                   | Required |
+| --------- | ----- | --------------------------------------------- | -------- |
+| `key`     | `str` | The unique key of the banner alert to remove  | Yes      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, remove the review-needed banner from the claim."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "LKD":
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.remove_banner(key="review-needed")]
+        return []
 ```
 
 ---
