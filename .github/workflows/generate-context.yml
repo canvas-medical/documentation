@@ -3,8 +3,9 @@ on:
   push:
     branches: [main]
     paths:
-      - "collections/_sdk/**"
+      - "collections/_api/**"
       - "collections/_guides/**"
+      - "collections/_sdk/**"
 jobs:
   generate-context:
     runs-on: ubuntu-latest
