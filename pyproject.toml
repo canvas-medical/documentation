@@ -11,7 +11,11 @@ dependencies = [
 ]
 
 [tool.uv]
-override-dependencies = ["canvas>=0.95.0"]
+override-dependencies = [
+  "canvas>=0.95.0",
+  "pydantic>=2.12.5",
+  "pydantic-core>=2.41.5",
+]
 
 [tool.uv.sources]
 ai-scribe = { git = "https://github.com/Medical-Software-Foundation/canvas.git", subdirectory = "extensions/ai-scribe", rev = "main" }
