@@ -99,7 +99,7 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing e
 - Email composition uses structured types: `Address`, `Recipient`, `BodyContent`, `Attachment`, and `Email`.
 - Error handling uses the `RequestFailed` exception from the SendGrid client structures.
 
-```python?partial=true
+```python
 from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 
@@ -464,7 +464,7 @@ class EmailManip(SimpleAPI):
 
 This code defines an Application handler that launches a modal form in the right chart pane for interacting with the SendGrid email API endpoints.
 
-```python?partial=true
+```python
 from email_sender.constants.constants import Constants
 
 from canvas_sdk.effects import Effect

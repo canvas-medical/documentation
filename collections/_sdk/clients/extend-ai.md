@@ -22,7 +22,7 @@ Extend AI provides intelligent document processing (IDP) capabilities:
 
 The Extend AI client is included in the Canvas SDK. Import the necessary components:
 
-```python?partial=true
+```python
 from canvas_sdk.clients.extend_ai.libraries import Client
 from canvas_sdk.clients.extend_ai.constants import RunStatus, VersionName
 from canvas_sdk.clients.extend_ai.structures import RequestFailed
@@ -38,7 +38,7 @@ client = Client(key="your_extend_ai_api_key")
 
 The most common use case is running an existing processor on a document. Here's a complete example:
 
-```python?partial=true
+```python
 import time
 from canvas_sdk.clients.extend_ai.libraries import Client
 from canvas_sdk.clients.extend_ai.constants import RunStatus
@@ -151,7 +151,7 @@ if run.status == RunStatus.PROCESSED:
 
 ## Complete Workflow Example
 
-```python?partial=true
+```python
 import time
 from canvas_sdk.clients.extend_ai.libraries import Client
 from canvas_sdk.clients.extend_ai.constants import RunStatus

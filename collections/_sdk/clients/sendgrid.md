@@ -15,7 +15,7 @@ The Canvas SDK SendGrid client provides a simple interface for sending emails, m
 
 The SendGrid client is included in the Canvas SDK. Import the necessary components:
 
-```python?partial=true
+```python
 from canvas_sdk.clients.sendgrid.libraries import EmailClient
 from canvas_sdk.clients.sendgrid.constants import RecipientType
 from canvas_sdk.clients.sendgrid.structures import (
@@ -36,7 +36,7 @@ client = EmailClient(Settings(key="your_sendgrid_api_key"))
 
 ## Send a Simple Text Email
 
-```python?partial=true
+```python
 from canvas_sdk.clients.sendgrid.libraries import EmailClient
 from canvas_sdk.clients.sendgrid.constants import RecipientType
 from canvas_sdk.clients.sendgrid.structures import (

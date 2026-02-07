@@ -17,20 +17,20 @@ The Canvas SDK AWS S3 client provides a simple interface for interacting with Am
 
 The AWS S3 client is included in the Canvas SDK. Import the necessary components:
 
-```python?partial=true
+```python
 from canvas_sdk.clients.aws import S3, Credentials, S3Item
 ```
 
 Or import from specific modules:
 
-```python?partial=true
+```python
 from canvas_sdk.clients.aws.libraries import S3
 from canvas_sdk.clients.aws.structures import Credentials, S3Item
 ```
 
 ## Initialize the Client
 
-```python?partial=true
+```python
 from canvas_sdk.clients.aws import S3, Credentials
 
 credentials = Credentials(
@@ -54,7 +54,7 @@ else:
 
 ## Upload a Text File
 
-```python?partial=true
+```python
 from canvas_sdk.clients.aws import S3, Credentials
 
 credentials = Credentials(
@@ -245,7 +245,7 @@ AWS credentials for S3 access.
 
 **Example:**
 
-```python?partial=true
+```python
 from canvas_sdk.clients.aws import Credentials
 
 credentials = Credentials(
@@ -281,7 +281,7 @@ for item in items:
 
 Here's a complete example of using the S3 client in a Canvas plugin:
 
-```python?partial=true
+```python
 from http import HTTPStatus
 
 from canvas_sdk.clients.aws import S3, Credentials

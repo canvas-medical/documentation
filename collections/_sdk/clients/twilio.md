@@ -16,7 +16,7 @@ The Canvas SDK Twilio client provides a simple interface for sending SMS and MMS
 
 The Twilio client is included in the Canvas SDK. Import the necessary components:
 
-```python?partial=true
+```python
 from canvas_sdk.clients.twilio.libraries import SmsClient
 from canvas_sdk.clients.twilio.structures import Settings, SmsMms, RequestFailed
 ```
@@ -34,7 +34,7 @@ client = SmsClient(settings)
 
 ## Send a Simple SMS
 
-```python?partial=true
+```python
 from canvas_sdk.clients.twilio.libraries import SmsClient
 from canvas_sdk.clients.twilio.structures import Settings, SmsMms, RequestFailed
 
@@ -127,7 +127,7 @@ for message in client.retrieve_all_sms("", "", "2024-01-01", DateOperation.ON_AN
 
 When Twilio receives an SMS to your number, it can call your webhook. Parse the callback data:
 
-```python?partial=true
+```python
 from canvas_sdk.clients.twilio.structures import StatusInbound, TwiMlMessage
 
 def handle_inbound_sms(raw_body: str) -> str:
@@ -148,7 +148,7 @@ def handle_inbound_sms(raw_body: str) -> str:
 
 ## Reply with MMS (TwiML)
 
-```python?partial=true
+```python
 from canvas_sdk.clients.twilio.structures import TwiMlMessage
 
 # Create a TwiML response with text and image
@@ -640,7 +640,7 @@ except RequestFailed as e:
 
 Here's a complete example of handling inbound SMS and sending replies:
 
-```python?partial=true
+```python
 from canvas_sdk.clients.twilio.structures import StatusInbound, TwiMlMessage
 
 def handle_webhook(raw_body: str) -> str:

@@ -18,7 +18,7 @@ Depending on which LLM provider you use:
 
 The LLMs client is included in the Canvas SDK. Import the necessary components:
 
-```python?partial=true
+```python
 from canvas_sdk.clients.llms import (
     LlmOpenai,
     LlmAnthropic,
@@ -40,7 +40,7 @@ from canvas_sdk.clients.llms.structures import LlmFileUrl, FileContent, BaseMode
 
 ### OpenAI (GPT Models)
 
-```python?partial=true
+```python
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
 
@@ -53,7 +53,7 @@ client = LlmOpenai(LlmSettingsGpt4(
 
 ### Anthropic (Claude)
 
-```python?partial=true
+```python
 from canvas_sdk.clients.llms import LlmAnthropic
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsAnthropic
 
@@ -67,7 +67,7 @@ client = LlmAnthropic(LlmSettingsAnthropic(
 
 ### Google (Gemini)
 
-```python?partial=true
+```python
 from canvas_sdk.clients.llms import LlmGoogle
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGemini
 
@@ -80,7 +80,7 @@ client = LlmGoogle(LlmSettingsGemini(
 
 ## Simple Text Conversation
 
-```python?partial=true
+```python
 from http import HTTPStatus
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
@@ -143,7 +143,7 @@ else:
 
 ## Analyze an Image
 
-```python?partial=true
+```python
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
 from canvas_sdk.clients.llms.constants import FileType
@@ -172,7 +172,7 @@ print(response.response)
 
 ## Analyze a PDF Document
 
-```python?partial=true
+```python
 from canvas_sdk.clients.llms import LlmAnthropic
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsAnthropic
 from canvas_sdk.clients.llms.constants import FileType
@@ -204,7 +204,7 @@ print(response.response)
 
 Instead of providing a URL, you can upload file content directly using `FileContent`. This is useful when you have the file data in memory (e.g., from a form upload).
 
-```python?partial=true
+```python
 import base64
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
@@ -249,7 +249,7 @@ print(response.response)
 
 ## Structured JSON Output
 
-```python?partial=true
+```python
 from pydantic import Field
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
@@ -589,7 +589,7 @@ Base class for structured JSON output schemas. Extends Pydantic's `BaseModel` wi
 
 **Usage:**
 
-```python?partial=true
+```python
 from pydantic import Field
 from canvas_sdk.clients.llms.structures import BaseModelLlmJson
 
@@ -624,7 +624,7 @@ Available on all LLM client classes:
 
 Here's a complete example of using the LLMs client in a Canvas plugin:
 
-```python?partial=true
+```python
 import base64
 from http import HTTPStatus
 
