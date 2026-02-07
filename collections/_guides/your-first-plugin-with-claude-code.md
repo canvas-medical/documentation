@@ -52,7 +52,7 @@ At any point, if you have more detail and direction to give, in any format (othe
 
 When you're at the point of completion where you need to try the plugin yourself, run:
 
-```
+```text
 /cpa:deploy
 ```
 
@@ -80,7 +80,7 @@ Ask CPA to handle the case where the note already has a Reason for Visit command
 
 The `/cpa:deploy` command will start a subagent called `deploy-uat`, which runs a background task to access the `canvas logs` stream. Ask Claude to look at them anytime you need help troubleshooting. You can also of course view logs in the shell manually with:
 
-```
+```bash
 uv run canvas logs <your-instance>
 ```
 
