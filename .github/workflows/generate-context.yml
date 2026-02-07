@@ -1,0 +1,22 @@
+name: Generate Coding Agent Context
+on:
+  push:
+    branches: [main]
+    paths:
+      - "collections/_sdk/**"
+      - "collections/_guides/**"
+jobs:
+  generate-context:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Generate context file
+        run: uv run ./generate-context.py
+      - name: Commit updated context file
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: regenerate coding-agent-context.txt"
+          file_pattern: coding-agent-context.txt
