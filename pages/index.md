@@ -83,6 +83,15 @@ permalink: "/"
     <span class="cardSectionLandingHeading">Effects</span>
     <p class="cardSectionLandingDescription">Transform your platform by modifying data, customizing interfaces, and automating workflows - all with native integration.</p>
 </a>
+
+<a href="/sdk/clients/" class="cardSectionLandingItem">
+    <div class="cardSectionLandingIcon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M9.5 2C9.5 2 10 2 10.5 4C10.5 4 12.5832 2.74714 13.7135 3.44857M14.5 9.5C14.5 9.5 14.5 10 16.5 10.5C16.5 10.5 15.2471 12.5832 15.9486 13.7135M2 9.5C2 9.5 2 10 4 10.5C4 10.5 2.74714 12.5832 3.44857 13.7135M9.5 16.5C9.5 16.5 10 16.5 10.5 18.5C10.5 18.5 12.5832 17.2471 13.7135 17.9486M3 21L10 14M12 12L14.5 9.5M12 12L9.5 14.5M12 12L14 14M12 12L10 10M21 3L14 10" stroke="#A295FD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span class="cardSectionLandingHeading">Clients</span>
+    <p class="cardSectionLandingDescription">Pre-built integrations with third-party services like AI/ML providers, cloud storage, email, and messaging.</p>
+</a>
 </div>
 </div>
 

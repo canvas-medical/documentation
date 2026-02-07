@@ -632,6 +632,9 @@ sdk_overview:
     url: /sdk/
   - title: "Caching Module"
     url: /sdk/caching/
+  - title: "Clients Module"
+    url: /sdk/clients/
+    identifier: clients_module
   - title: "Command Line Interface"
     url: /sdk/canvas_cli/
   - title: "Commands Module"
@@ -665,23 +668,50 @@ sdk_overview:
   - title: "Logging"
     url: /sdk/plugin-logs/
 
+clients_module:
+  - title: "AWS S3"
+    url: /sdk/clients-aws-s3/
+    description: Upload, download, and manage files in Amazon S3.
+  - title: "Extend AI"
+    url: /sdk/clients-extend-ai/
+    description: Intelligent document processing with extraction, classification, and splitting.
+  - title: "LLMs"
+    url: /sdk/clients-llms/
+    description: Unified interface for OpenAI, Anthropic, and Google AI models.
+  - title: "SendGrid"
+    url: /sdk/clients-sendgrid/
+    description: Send emails, manage webhooks, and track delivery with SendGrid.
+  - title: "Twilio"
+    url: /sdk/clients-twilio/
+    description: Send SMS/MMS messages and manage phone numbers with Twilio.
+
 example_plugins:
   - title: "AI Note Titles"
     url: /sdk/example-ai_note_titles/
   - title: "API Samples"
     url: /sdk/example-api_samples/
+  - title: "AWS S3"
+    url: /sdk/example-aws_s3/
   - title: "Abnormal Lab Task Notification"
     url: /sdk/example-abnormal_lab_task_notification/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
   - title: "Example Chart Application"
     url: /sdk/example-example_chart_app/
+  - title: "Extend AI PDF"
+    url: /sdk/example-extend_ai_pdf/
   - title: "Group Items in Patient Chart"
     url: /sdk/example-patient_summary_chart_groups/
+  - title: "LLM"
+    url: /sdk/example-llm/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
   - title: "Send All Prescriptions"
     url: /sdk/example-send_all_prescriptions/
+  - title: "SendGrid Email"
+    url: /sdk/example-sendgrid_email/
+  - title: "Twilio SMS/MMS"
+    url: /sdk/example-twilio_sms_mms/
   - title: "Upsert Patient Metadata"
     url: /sdk/example-upsert_patient_metadata/
   - title: "Vitals Visualizer"
