@@ -4,15 +4,14 @@ version = "0.1.0"
 requires-python = ">=3.11,<3.15"
 dependencies = [
   "ai-scribe",
-  "canvas>=0.72.0",
-  "click>=8.3.0",
+  "canvas>=0.95.0",
+  "click>=8.3.1",
   "markdown-it-py[plugins]>=4.0.0",
   "requests>=2.32.5",
-  "types-requests>=2.32.4.20250913",
 ]
 
 [tool.uv]
-override-dependencies = ["canvas>=0.72.0"]
+override-dependencies = ["canvas>=0.95.0"]
 
 [tool.uv.sources]
 ai-scribe = { git = "https://github.com/Medical-Software-Foundation/canvas.git", subdirectory = "extensions/ai-scribe", rev = "main" }
@@ -20,11 +19,11 @@ canvas = { git = "https://github.com/canvas-medical/canvas-plugins.git", rev = "
 
 [dependency-groups]
 dev = [
-  "mypy>=1.18.2",
+  "mypy>=1.19.1",
   "mypy-extensions>=1.1.0,<2",
-  "ruff>=0.14.0",
-  "setuptools>=80.9.0",
-  "types-requests>=2.32.4.20250611",
+  "ruff>=0.15.0",
+  "setuptools>=81.0.0",
+  "types-requests>=2.32.4.20260107",
 ]
 
 [tool.ruff]
