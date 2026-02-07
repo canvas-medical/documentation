@@ -7,6 +7,8 @@ The clients module provides pre-built integrations with popular third-party serv
 
 All clients follow a consistent pattern: configure credentials via [plugin secrets](/sdk/secrets/), instantiate a client, and call methods. Error handling is standardized with a `RequestFailed` exception across most clients.
 
+{% include alert.html type="warning" content="When using third-party clients with your own API keys, you are responsible for all privacy, security, and regulatory compliance associated with those services. For certain providers such as OpenAI and Anthropic, you may contact Canvas to inquire about access through our compliant accounts." %}
+
 <div class="sdk-card-list">
 {% for item in site.menus.clients_module %}
     <a href="{{ item.url }}">
