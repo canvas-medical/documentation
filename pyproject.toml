@@ -15,6 +15,7 @@ override-dependencies = [
   "canvas>=0.95.0",
   "pydantic>=2.12.5",
   "pydantic-core>=2.41.5",
+  "typing-extensions>=4.14.1",
 ]
 
 [tool.uv.sources]
