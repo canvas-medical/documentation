@@ -18,8 +18,6 @@ Extend AI provides intelligent document processing (IDP) capabilities:
 - **Classification**: Classify documents into predefined categories
 - **Splitting**: Split multi-page documents into logical sections
 
----
-
 ## Imports
 
 The Extend AI client is included in the Canvas SDK. Import the necessary components:
@@ -215,8 +213,6 @@ result = extract_from_document(
 )
 print(result)
 ```
-
----
 
 ## Client
 

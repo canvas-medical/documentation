@@ -14,8 +14,6 @@ Depending on which LLM provider you use:
 - **Anthropic**: API key from https://console.anthropic.com/settings/keys
 - **Google**: API key from https://aistudio.google.com/apikey
 
----
-
 ## Imports
 
 The LLMs client is included in the Canvas SDK. Import the necessary components:
@@ -306,8 +304,6 @@ client.set_user_prompt(["Jane Doe lives at 123 Main St, New York, USA."])
 
 response = client.request()
 ```
-
----
 
 ## LLM Clients
 

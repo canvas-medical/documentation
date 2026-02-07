@@ -12,8 +12,6 @@ The Canvas SDK Twilio client provides a simple interface for sending SMS and MMS
 - **Twilio API Key and Secret**: Create at [API Keys](https://console.twilio.com/us1/account/keys-credentials/api-keys)
 - **Twilio Phone Number**: Purchase at [Phone Numbers](https://console.twilio.com/us1/develop/phone-numbers/manage/incoming)
 
----
-
 ## Imports
 
 The Twilio client is included in the Canvas SDK. Import the necessary components:
@@ -164,8 +162,6 @@ xml_response = reply.to_xml()
 # <?xml version="1.0" encoding="UTF-8"?>
 # <Response><Message><Body>Here's a picture for you!</Body><Media>https://example.com/image.jpg</Media></Message></Response>
 ```
-
----
 
 ## SmsClient
 

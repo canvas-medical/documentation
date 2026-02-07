@@ -13,8 +13,6 @@ The Canvas SDK AWS S3 client provides a simple interface for interacting with Am
 - **AWS Region**: The region where your bucket is located (e.g., `us-east-1`)
 - **S3 Bucket Name**: The name of your S3 bucket
 
----
-
 ## Imports
 
 The AWS S3 client is included in the Canvas SDK. Import the necessary components:
@@ -131,8 +129,6 @@ url = client.generate_presigned_url("path/to/file.txt", expiration=3600)
 if url:
     print(f"Presigned URL: {url}")
 ```
-
----
 
 ## S3
 

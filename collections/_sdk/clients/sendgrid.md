@@ -11,8 +11,6 @@ The Canvas SDK SendGrid client provides a simple interface for sending emails, m
 - **SendGrid API Key**: Create one at https://app.sendgrid.com/settings/api_keys
 - **Authenticated Domain**: Configure at https://app.sendgrid.com/settings/sender_auth
 
----
-
 ## Imports
 
 The SendGrid client is included in the Canvas SDK. Import the necessary components:
@@ -168,8 +166,6 @@ criteria = LoggedEmailCriteria(
 for email in client.logged_emails(criteria, up_to=10):
     print(f"Subject: {email.subject}, Status: {email.status.value}")
 ```
-
----
 
 ## EmailClient
 
