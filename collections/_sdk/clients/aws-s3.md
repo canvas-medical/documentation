@@ -17,20 +17,20 @@ The Canvas SDK AWS S3 client provides a simple interface for interacting with Am
 
 The AWS S3 client is included in the Canvas SDK. Import the necessary components:
 
-```python
+```python?partial=true
 from canvas_sdk.clients.aws import S3, Credentials, S3Item
 ```
 
 Or import from specific modules:
 
-```python
+```python?partial=true
 from canvas_sdk.clients.aws.libraries import S3
 from canvas_sdk.clients.aws.structures import Credentials, S3Item
 ```
 
 ## Initialize the Client
 
-```python
+```python?partial=true
 from canvas_sdk.clients.aws import S3, Credentials
 
 credentials = Credentials(
@@ -45,7 +45,7 @@ client = S3(credentials)
 
 ## Check if Client is Ready
 
-```python
+```python?partial=true
 if client.is_ready():
     print("S3 client is configured and ready")
 else:
@@ -54,7 +54,7 @@ else:
 
 ## Upload a Text File
 
-```python
+```python?partial=true
 from canvas_sdk.clients.aws import S3, Credentials
 
 credentials = Credentials(
@@ -75,7 +75,7 @@ if response and response.status_code == 200:
 
 ## Upload a Binary File
 
-```python
+```python?partial=true
 # Upload binary content (e.g., an image)
 with open("local_image.png", "rb") as f:
     binary_data = f.read()
@@ -92,7 +92,7 @@ if response and response.status_code == 200:
 
 ## Download a File
 
-```python
+```python?partial=true
 response = client.access_s3_object("path/to/file.txt")
 
 if response:
@@ -102,7 +102,7 @@ if response:
 
 ## List Objects in Bucket
 
-```python
+```python?partial=true
 # List all objects with a prefix
 items = client.list_s3_objects("documents/")
 
@@ -113,7 +113,7 @@ if items:
 
 ## Delete an Object
 
-```python
+```python?partial=true
 response = client.delete_object("path/to/file.txt")
 
 if response and response.status_code == 204:
@@ -122,7 +122,7 @@ if response and response.status_code == 204:
 
 ## Generate a Presigned URL
 
-```python
+```python?partial=true
 # Generate a URL valid for 1 hour (3600 seconds)
 url = client.generate_presigned_url("path/to/file.txt", expiration=3600)
 
@@ -136,7 +136,7 @@ The main class for interacting with AWS S3.
 
 ### Constructor
 
-```python
+```python?partial=true
 S3(credentials: Credentials)
 ```
 
@@ -230,8 +230,6 @@ Generate a presigned URL for temporary access to an S3 object.
 
 **Returns:** Presigned URL string, or `None` if credentials are not ready.
 
----
-
 ## Data Structures
 
 ### Credentials
@@ -247,7 +245,7 @@ AWS credentials for S3 access.
 
 **Example:**
 
-```python
+```python?partial=true
 from canvas_sdk.clients.aws import Credentials
 
 credentials = Credentials(
@@ -270,7 +268,7 @@ S3 object metadata returned by `list_s3_objects`.
 
 **Example:**
 
-```python
+```python?partial=true
 items = client.list_s3_objects("documents/")
 
 for item in items:
@@ -279,13 +277,11 @@ for item in items:
     print(f"Last Modified: {item.last_modified}")
 ```
 
----
-
 ## Complete Plugin Example
 
 Here's a complete example of using the S3 client in a Canvas plugin:
 
-```python
+```python?partial=true
 from http import HTTPStatus
 
 from canvas_sdk.clients.aws import S3, Credentials
@@ -368,13 +364,11 @@ class S3Handler(SimpleAPI):
         return []
 ```
 
----
-
 ## Error Handling
 
 The S3 client methods return `None` when credentials are not ready. For list operations, an `Exception` is raised if S3 returns an error status code.
 
-```python
+```python?partial=true
 # Check credentials before operations
 if not client.is_ready():
     print("S3 credentials are not configured")
@@ -397,8 +391,6 @@ else:
     print("Credentials not ready")
 ```
 
----
-
 ## AWS Signature V4 Authentication
 
 The S3 client implements AWS Signature Version 4 for request authentication. This is handled automatically - you only need to provide valid credentials. The client:
@@ -407,8 +399,6 @@ The S3 client implements AWS Signature Version 4 for request authentication. Thi
 - Generates proper canonical requests
 - Handles date/time formatting for AWS
 - Supports presigned URLs for temporary access
-
----
 
 ## Additional Resources
 

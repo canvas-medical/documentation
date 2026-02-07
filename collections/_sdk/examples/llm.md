@@ -101,7 +101,7 @@ This code defines a SimpleAPI handler that exposes REST endpoints for interactin
 - Structured output is configured via `client.set_schema()` with Pydantic models extending `BaseModelLlmJson`.
 - File attachments are supported via `LlmFileUrl` for URLs and `FileContent` for binary content.
 
-```python
+```python?partial=true
 import base64
 from http import HTTPStatus
 
@@ -250,7 +250,7 @@ class LlmManip(SimpleAPI):
 
 This code defines an Application handler that launches a modal form in the right chart pane for interacting with the LLM API endpoints.
 
-```python
+```python?partial=true
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import Application

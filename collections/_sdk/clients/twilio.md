@@ -16,14 +16,14 @@ The Canvas SDK Twilio client provides a simple interface for sending SMS and MMS
 
 The Twilio client is included in the Canvas SDK. Import the necessary components:
 
-```python
+```python?partial=true
 from canvas_sdk.clients.twilio.libraries import SmsClient
 from canvas_sdk.clients.twilio.structures import Settings, SmsMms, RequestFailed
 ```
 
 ## Initialize the Client
 
-```python
+```python?partial=true
 settings = Settings(
     account_sid="your_account_sid",
     key="your_api_key",
@@ -34,7 +34,7 @@ client = SmsClient(settings)
 
 ## Send a Simple SMS
 
-```python
+```python?partial=true
 from canvas_sdk.clients.twilio.libraries import SmsClient
 from canvas_sdk.clients.twilio.structures import Settings, SmsMms, RequestFailed
 
@@ -70,7 +70,7 @@ except RequestFailed as e:
 
 ## Send an MMS with Image
 
-```python
+```python?partial=true
 # Create an MMS with an image attachment
 mms = SmsMms(
     number_from=phone.phone_number,
@@ -90,7 +90,7 @@ except RequestFailed as e:
 
 ## Send SMS with Status Callback
 
-```python
+```python?partial=true
 # Send SMS with a callback URL to track delivery status
 sms = SmsMms(
     number_from=phone.phone_number,
@@ -107,7 +107,7 @@ print(f"Message queued with callback. SID: {message.sid}")
 
 ## Retrieve Message History
 
-```python
+```python?partial=true
 from canvas_sdk.clients.twilio.constants import DateOperation
 
 # Get all messages (no filters)
@@ -127,7 +127,7 @@ for message in client.retrieve_all_sms("", "", "2024-01-01", DateOperation.ON_AN
 
 When Twilio receives an SMS to your number, it can call your webhook. Parse the callback data:
 
-```python
+```python?partial=true
 from canvas_sdk.clients.twilio.structures import StatusInbound, TwiMlMessage
 
 def handle_inbound_sms(raw_body: str) -> str:
@@ -148,7 +148,7 @@ def handle_inbound_sms(raw_body: str) -> str:
 
 ## Reply with MMS (TwiML)
 
-```python
+```python?partial=true
 from canvas_sdk.clients.twilio.structures import TwiMlMessage
 
 # Create a TwiML response with text and image
@@ -169,7 +169,7 @@ The main class for interacting with the Twilio SMS/MMS API.
 
 ### Constructor
 
-```python
+```python?partial=true
 SmsClient(settings: Settings)
 ```
 
@@ -183,7 +183,7 @@ SmsClient(settings: Settings)
 
 Retrieve all phone numbers associated with the Twilio account.
 
-```python
+```python?partial=true
 for phone in client.account_phone_numbers():
     print(f"{phone.friendly_name}: {phone.phone_number}")
     print(f"  SMS: {phone.capabilities.sms}, MMS: {phone.capabilities.mms}")
@@ -197,7 +197,7 @@ for phone in client.account_phone_numbers():
 
 Retrieve details for a specific phone number by its SID.
 
-```python
+```python?partial=true
 phone = client.account_phone_number("PNxxxxxxxxxxxxxxxxx")
 print(f"Phone: {phone.phone_number}, Status: {phone.status}")
 ```
@@ -214,7 +214,7 @@ print(f"Phone: {phone.phone_number}, Status: {phone.status}")
 
 Configure the webhook URL for receiving inbound messages on a phone number.
 
-```python
+```python?partial=true
 from canvas_sdk.clients.twilio.constants import HttpMethod
 
 success = client.set_inbound_webhook(
@@ -240,7 +240,7 @@ success = client.set_inbound_webhook(
 
 Send an SMS or MMS message. The method automatically validates phone capabilities.
 
-```python
+```python?partial=true
 sms = SmsMms(
     number_from="+15551234567",
     number_from_sid="PNxxxxxxxxxxxxxxxxx",
@@ -268,7 +268,7 @@ print(f"Sent! SID: {message.sid}, Status: {message.status.value}")
 
 Get details for a specific message by its SID.
 
-```python
+```python?partial=true
 message = client.retrieve_sms("SMxxxxxxxxxxxxxxxxx")
 print(f"Status: {message.status.value}")
 print(f"Body: {message.body}")
@@ -287,7 +287,7 @@ print(f"Sent: {message.date_sent}")
 
 Retrieve messages with optional filtering.
 
-```python
+```python?partial=true
 from canvas_sdk.clients.twilio.constants import DateOperation
 
 # All messages
@@ -318,7 +318,7 @@ for msg in client.retrieve_all_sms("", "", "2024-06-01", DateOperation.ON_AND_AF
 
 Delete a message from Twilio.
 
-```python
+```python?partial=true
 deleted = client.delete_sms("SMxxxxxxxxxxxxxxxxx")
 print(f"Deleted: {deleted}")
 ```
@@ -337,7 +337,7 @@ print(f"Deleted: {deleted}")
 
 Get all media attachments for a message.
 
-```python
+```python?partial=true
 for media in client.retrieve_media_list("SMxxxxxxxxxxxxxxxxx"):
     print(f"Media SID: {media.sid}")
     print(f"Content Type: {media.content_type}")
@@ -355,7 +355,7 @@ for media in client.retrieve_media_list("SMxxxxxxxxxxxxxxxxx"):
 
 Download the raw binary content of a media attachment.
 
-```python
+```python?partial=true
 for media in client.retrieve_media_list(message_sid):
     content = client.retrieve_raw_media(message_sid, media.sid)
 
@@ -372,8 +372,6 @@ for media in client.retrieve_media_list(message_sid):
 **Returns:** Raw binary content (`bytes`)
 
 **Raises:** `RequestFailed` on error
-
----
 
 ## Data Structures
 
@@ -551,7 +549,7 @@ Generates TwiML XML for responding to inbound messages.
 
 **Example:**
 
-```python
+```python?partial=true
 # Simple text reply
 reply = TwiMlMessage.instance("Thanks for your message!")
 xml = reply.to_xml()
@@ -560,8 +558,6 @@ xml = reply.to_xml()
 reply = TwiMlMessage.instance_with_media("Check this out!", "https://example.com/image.jpg")
 xml = reply.to_xml()
 ```
-
----
 
 ## Constants (Enums)
 
@@ -615,8 +611,6 @@ HTTP methods for webhook configuration.
 | `GET`  | HTTP GET method  |
 | `POST` | HTTP POST method |
 
----
-
 ## Error Handling
 
 ### RequestFailed
@@ -630,7 +624,7 @@ Exception raised when a Twilio API request fails (extends `RuntimeError`).
 
 **Example:**
 
-```python
+```python?partial=true
 try:
     message = client.send_sms_mms(sms)
 except RequestFailed as e:
@@ -642,13 +636,11 @@ except RequestFailed as e:
         print(f"API error {e.status_code}: {e.message}")
 ```
 
----
-
 ## Complete Webhook Example
 
 Here's a complete example of handling inbound SMS and sending replies:
 
-```python
+```python?partial=true
 from canvas_sdk.clients.twilio.structures import StatusInbound, TwiMlMessage
 
 def handle_webhook(raw_body: str) -> str:
@@ -692,8 +684,6 @@ def handle_webhook(raw_body: str) -> str:
 
     return reply.to_xml()
 ```
-
----
 
 ## Additional Resources
 

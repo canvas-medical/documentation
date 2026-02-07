@@ -106,7 +106,7 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing o
 - The `_s3_client` method creates an `S3` client instance from `canvas_sdk.clients.aws.libraries`, configured with `S3Credentials` from plugin secrets.
 - Each endpoint checks `client.is_ready()` before performing operations.
 
-```python
+```python?partial=true
 from http import HTTPStatus
 
 from aws_manip.constants.secrets import Secrets
@@ -214,7 +214,7 @@ class AwsManip(SimpleAPI):
 
 This code defines an Application handler that launches a modal form in the right chart pane for interacting with the S3 management API endpoints.
 
-```python
+```python?partial=true
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import Application

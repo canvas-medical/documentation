@@ -18,7 +18,7 @@ Depending on which LLM provider you use:
 
 The LLMs client is included in the Canvas SDK. Import the necessary components:
 
-```python
+```python?partial=true
 from canvas_sdk.clients.llms import (
     LlmOpenai,
     LlmAnthropic,
@@ -40,7 +40,7 @@ from canvas_sdk.clients.llms.structures import LlmFileUrl, FileContent, BaseMode
 
 ### OpenAI (GPT Models)
 
-```python
+```python?partial=true
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
 
@@ -53,7 +53,7 @@ client = LlmOpenai(LlmSettingsGpt4(
 
 ### Anthropic (Claude)
 
-```python
+```python?partial=true
 from canvas_sdk.clients.llms import LlmAnthropic
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsAnthropic
 
@@ -67,7 +67,7 @@ client = LlmAnthropic(LlmSettingsAnthropic(
 
 ### Google (Gemini)
 
-```python
+```python?partial=true
 from canvas_sdk.clients.llms import LlmGoogle
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGemini
 
@@ -80,7 +80,7 @@ client = LlmGoogle(LlmSettingsGemini(
 
 ## Simple Text Conversation
 
-```python
+```python?partial=true
 from http import HTTPStatus
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
@@ -108,7 +108,7 @@ else:
 
 ## Multi-turn Conversation
 
-```python
+```python?partial=true
 # Initialize client
 client = LlmOpenai(LlmSettingsGpt4(
     api_key="your_api_key",
@@ -129,7 +129,7 @@ print(response.response)  # "4 multiplied by 3 equals 12."
 
 ## Using Retry Logic
 
-```python
+```python?partial=true
 # Attempt multiple requests until success or max attempts
 responses = client.attempt_requests(attempts=3)
 
@@ -143,7 +143,7 @@ else:
 
 ## Analyze an Image
 
-```python
+```python?partial=true
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
 from canvas_sdk.clients.llms.constants import FileType
@@ -172,7 +172,7 @@ print(response.response)
 
 ## Analyze a PDF Document
 
-```python
+```python?partial=true
 from canvas_sdk.clients.llms import LlmAnthropic
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsAnthropic
 from canvas_sdk.clients.llms.constants import FileType
@@ -204,7 +204,7 @@ print(response.response)
 
 Instead of providing a URL, you can upload file content directly using `FileContent`. This is useful when you have the file data in memory (e.g., from a form upload).
 
-```python
+```python?partial=true
 import base64
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
@@ -249,7 +249,7 @@ print(response.response)
 
 ## Structured JSON Output
 
-```python
+```python?partial=true
 from pydantic import Field
 from canvas_sdk.clients.llms import LlmOpenai
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
@@ -283,7 +283,7 @@ print(response.response)  # {"name": "John Smith", "age": 35, "occupation": "sof
 
 ## Nested Structured Output
 
-```python
+```python?partial=true
 from pydantic import Field
 from canvas_sdk.clients.llms.structures import BaseModelLlmJson
 
@@ -319,7 +319,7 @@ All LLM clients inherit from `LlmApi` and share the same interface.
 
 ### Constructor
 
-```python
+```python?partial=true
 LlmOpenai(settings: LlmSettingsGpt4)
 LlmAnthropic(settings: LlmSettingsAnthropic)
 LlmGoogle(settings: LlmSettingsGemini)
@@ -419,8 +419,6 @@ Attempt multiple requests until success or max attempts reached.
 
 **Returns:** List of all `LlmResponse` objects from each attempt.
 
----
-
 ## Settings Classes
 
 ### LlmSettings (Base)
@@ -444,7 +442,7 @@ Settings for OpenAI API.
 
 **Example:**
 
-```python
+```python?partial=true
 LlmSettingsGpt4(
     api_key="sk-...",
     model="gpt-4o",
@@ -465,7 +463,7 @@ Settings for Anthropic Claude API.
 
 **Example:**
 
-```python
+```python?partial=true
 LlmSettingsAnthropic(
     api_key="sk-ant-...",
     model="claude-sonnet-4-5-20250929",
@@ -486,15 +484,13 @@ Settings for Google Gemini API.
 
 **Example:**
 
-```python
+```python?partial=true
 LlmSettingsGemini(
     api_key="AIza...",
     model="models/gemini-2.0-flash",
     temperature=0.7,
 )
 ```
-
----
 
 ## Data Structures
 
@@ -567,7 +563,7 @@ Container for file content, used for direct file uploads to LLM providers. Add i
 
 **Example:**
 
-```python
+```python?partial=true
 import base64
 from canvas_sdk.clients.llms.structures import FileContent
 
@@ -593,7 +589,7 @@ Base class for structured JSON output schemas. Extends Pydantic's `BaseModel` wi
 
 **Usage:**
 
-```python
+```python?partial=true
 from pydantic import Field
 from canvas_sdk.clients.llms.structures import BaseModelLlmJson
 
@@ -601,8 +597,6 @@ class MySchema(BaseModelLlmJson):
     field_name: str = Field(description="Description for the LLM")
     another_field: int = Field(description="Another description")
 ```
-
----
 
 ## Constants (Enums)
 
@@ -626,13 +620,11 @@ Available on all LLM client classes:
 | `ROLE_USER`  | `"user"`   | User message role              |
 | `ROLE_MODEL` | `"model"`  | Model/assistant response role  |
 
----
-
 ## Complete Plugin Example
 
 Here's a complete example of using the LLMs client in a Canvas plugin:
 
-```python
+```python?partial=true
 import base64
 from http import HTTPStatus
 
@@ -743,13 +735,11 @@ class LlmHandler(SimpleAPI):
         return [PlainTextResponse(response.response, status_code=response.code)]
 ```
 
----
-
 ## Error Handling
 
 The LLM clients return `LlmResponse` objects with HTTP status codes indicating success or failure.
 
-```python
+```python?partial=true
 from http import HTTPStatus
 
 response = client.request()
@@ -768,7 +758,7 @@ else:
 
 When using `attempt_requests`, the method will automatically retry on failure:
 
-```python
+```python?partial=true
 responses = client.attempt_requests(attempts=3)
 
 # Check if any attempt succeeded
@@ -778,8 +768,6 @@ if successful:
 else:
     print(f"All {len(responses)} attempts failed")
 ```
-
----
 
 ## Provider-Specific Notes
 
@@ -804,8 +792,6 @@ else:
 - Supports both URL-based and direct file content
 - Maximum file size limit of 10MB per request (combined)
 - Structured output uses `responseJsonSchema`
-
----
 
 ## Additional Resources
 

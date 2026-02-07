@@ -15,7 +15,7 @@ The Canvas SDK SendGrid client provides a simple interface for sending emails, m
 
 The SendGrid client is included in the Canvas SDK. Import the necessary components:
 
-```python
+```python?partial=true
 from canvas_sdk.clients.sendgrid.libraries import EmailClient
 from canvas_sdk.clients.sendgrid.constants import RecipientType
 from canvas_sdk.clients.sendgrid.structures import (
@@ -30,13 +30,13 @@ from canvas_sdk.clients.sendgrid.structures import (
 
 ## Initialize the Client
 
-```python
+```python?partial=true
 client = EmailClient(Settings(key="your_sendgrid_api_key"))
 ```
 
 ## Send a Simple Text Email
 
-```python
+```python?partial=true
 from canvas_sdk.clients.sendgrid.libraries import EmailClient
 from canvas_sdk.clients.sendgrid.constants import RecipientType
 from canvas_sdk.clients.sendgrid.structures import (
@@ -66,7 +66,7 @@ except RequestFailed as e:
 
 ## Send an HTML Email with CC
 
-```python
+```python?partial=true
 email = Email(
     sender=Address(email="sender@example.com", name="Sender"),
     reply_tos=[Address(email="reply@example.com", name="Reply To")],
@@ -88,7 +88,7 @@ client.simple_send(email)
 
 ## Send an Email with Attachment
 
-```python
+```python?partial=true
 from canvas_sdk.clients.sendgrid.structures import Attachment
 
 # Create attachment from URL
@@ -115,7 +115,7 @@ client.simple_send(email)
 
 ## Send an Email with Inline Image
 
-```python
+```python?partial=true
 # Create inline image attachment
 inline_image = Attachment.from_url_inline(
     url="https://example.com/logo.png",
@@ -144,7 +144,7 @@ client.simple_send(email)
 
 ## Query Sent Emails
 
-```python
+```python?partial=true
 from datetime import datetime
 from canvas_sdk.clients.sendgrid.constants import CriterionOperation
 from canvas_sdk.clients.sendgrid.structures import CriterionDatetime, LoggedEmailCriteria
@@ -173,7 +173,7 @@ The main class for interacting with the SendGrid API.
 
 ### Constructor
 
-```python
+```python?partial=true
 EmailClient(settings: Settings)
 ```
 
@@ -255,8 +255,6 @@ Configure webhooks to receive email delivery status notifications.
 | `event_webhook_get(event_webhook_id: str) -> EventWebhookRecord`  | Get webhook by ID                                         |
 | `event_webhook_list() -> Iterator[EventWebhookRecord]`            | List all event webhooks                                   |
 | `event_webhook_sign(event_webhook_id: str, enabled: bool) -> str` | Enable/disable signature verification, returns public key |
-
----
 
 ## Data Structures
 
@@ -465,8 +463,6 @@ Represents an inbound email received via the Inbound Parse webhook.
 | `spam_report`     | `list[str]`                   | Spam analysis report           |
 | `spam_score`      | `float`                       | Spam score                     |
 
----
-
 ## Constants (Enums)
 
 ### RecipientType
@@ -530,8 +526,6 @@ Comparison operators for email log queries.
 | `LOWER_THAN_OR_EQUAL`    | `<=`   | Less than or equal       |
 | `EQUAL`                  | `=`    | Equal to                 |
 
----
-
 ## Error Handling
 
 ### RequestFailed
@@ -545,20 +539,18 @@ Exception raised when a SendGrid API request fails (extends `RuntimeError`).
 
 **Example:**
 
-```python
+```python?partial=true
 try:
     client.simple_send(email)
 except RequestFailed as e:
     print(f"Error {e.status_code}: {e.message}")
 ```
 
----
-
 ## Webhook Setup Examples
 
 ### Inbound Parse Webhook (Receive Incoming Emails)
 
-```python
+```python?partial=true
 from canvas_sdk.clients.sendgrid.structures import ParseSetting
 
 # Note: Requires MX record for the hostname pointing to mx.sendgrid.net
@@ -578,7 +570,7 @@ except RequestFailed as e:
 
 ### Event Webhook (Track Outbound Email Status)
 
-```python
+```python?partial=true
 from canvas_sdk.clients.sendgrid.structures import EventWebhook
 
 webhook = EventWebhook(
@@ -603,8 +595,6 @@ try:
 except RequestFailed as e:
     print(f"Failed: {e.message}")
 ```
-
----
 
 ## Additional Resources
 

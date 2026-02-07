@@ -93,7 +93,7 @@ This code defines a SimpleAPI handler that exposes REST endpoints for processing
 - The `_extend_client` method creates a `Client` instance from `canvas_sdk.clients.extend_ai.libraries`.
 - Error handling uses the `RequestFailed` exception from the Extend AI client structures.
 
-```python
+```python?partial=true
 from datetime import datetime
 from http import HTTPStatus
 
@@ -230,7 +230,7 @@ class PdfManip(StaffSessionAuthMixin, SimpleAPI):
 
 This code defines an Application handler that launches a modal form in the right chart pane for interacting with the Extend AI PDF processing API endpoints.
 
-```python
+```python?partial=true
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import Application

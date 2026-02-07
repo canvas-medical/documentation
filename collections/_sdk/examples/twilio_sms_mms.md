@@ -106,7 +106,7 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing S
 - Error handling uses the `RequestFailed` exception from the Twilio client structures.
 - Inbound message handling generates TwiML responses for automatic replies.
 
-```python
+```python?partial=true
 from http import HTTPStatus
 
 from canvas_sdk.clients.twilio.constants import DateOperation, HttpMethod
@@ -345,7 +345,7 @@ class SmsManip(StaffSessionAuthMixin, SimpleAPI):
 
 This code defines an Application handler that launches a modal form in the right chart pane for interacting with the Twilio SMS/MMS API endpoints.
 
-```python
+```python?partial=true
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import Application

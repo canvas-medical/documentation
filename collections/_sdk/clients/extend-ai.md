@@ -22,7 +22,7 @@ Extend AI provides intelligent document processing (IDP) capabilities:
 
 The Extend AI client is included in the Canvas SDK. Import the necessary components:
 
-```python
+```python?partial=true
 from canvas_sdk.clients.extend_ai.libraries import Client
 from canvas_sdk.clients.extend_ai.constants import RunStatus, VersionName
 from canvas_sdk.clients.extend_ai.structures import RequestFailed
@@ -30,7 +30,7 @@ from canvas_sdk.clients.extend_ai.structures import RequestFailed
 
 ## Initialize the Client
 
-```python
+```python?partial=true
 client = Client(key="your_extend_ai_api_key")
 ```
 
@@ -38,7 +38,7 @@ client = Client(key="your_extend_ai_api_key")
 
 The most common use case is running an existing processor on a document. Here's a complete example:
 
-```python
+```python?partial=true
 import time
 from canvas_sdk.clients.extend_ai.libraries import Client
 from canvas_sdk.clients.extend_ai.constants import RunStatus
@@ -82,7 +82,7 @@ except RequestFailed as e:
 
 ## List Available Processors
 
-```python
+```python?partial=true
 # List all processors in your account
 for processor in client.list_processors():
     print(f"ID: {processor.id}")
@@ -93,7 +93,7 @@ for processor in client.list_processors():
 
 ## Get Processor Configuration
 
-```python
+```python?partial=true
 from canvas_sdk.clients.extend_ai.constants import VersionName
 
 # Get the draft version of a processor
@@ -113,7 +113,7 @@ if hasattr(processor_version.config, 'schema'):
 
 ## Check Run Status and Get Results
 
-```python
+```python?partial=true
 # Check the status of a run
 run = client.run_status("run_xxxxxxxxxxxxxxxxx")
 
@@ -139,7 +139,7 @@ if run.status == RunStatus.PROCESSED:
 
 ## Clean Up Files After Processing
 
-```python
+```python?partial=true
 # After processing, delete the uploaded files to save storage
 run = client.run_status("run_xxxxxxxxxxxxxxxxx")
 
@@ -151,7 +151,7 @@ if run.status == RunStatus.PROCESSED:
 
 ## Complete Workflow Example
 
-```python
+```python?partial=true
 import time
 from canvas_sdk.clients.extend_ai.libraries import Client
 from canvas_sdk.clients.extend_ai.constants import RunStatus
@@ -220,7 +220,7 @@ The main class for interacting with the Extend AI API.
 
 ### Constructor
 
-```python
+```python?partial=true
 Client(key: str)
 ```
 
@@ -234,7 +234,7 @@ Client(key: str)
 
 List all files stored in Extend AI.
 
-```python
+```python?partial=true
 for file in client.list_files():
     print(f"{file.id}: {file.name} ({file.type})")
 ```
@@ -247,7 +247,7 @@ for file in client.list_files():
 
 Delete a file from Extend AI storage.
 
-```python
+```python?partial=true
 deleted = client.delete_file("file_xxxxxxxxxxxxxxxxx")
 print(f"Deleted: {deleted}")
 ```
@@ -266,7 +266,7 @@ print(f"Deleted: {deleted}")
 
 List all processors in the account.
 
-```python
+```python?partial=true
 for processor in client.list_processors():
     print(f"{processor.name}: {processor.type.value}")
 ```
@@ -279,7 +279,7 @@ for processor in client.list_processors():
 
 Get details for a specific processor version.
 
-```python
+```python?partial=true
 from canvas_sdk.clients.extend_ai.constants import VersionName
 
 # Get draft version
@@ -305,7 +305,7 @@ processor = client.processor("proc_xxx", "v1")
 
 Create a new processor with the specified configuration.
 
-```python
+```python?partial=true
 from canvas_sdk.clients.extend_ai.constants import BaseProcessor
 from canvas_sdk.clients.extend_ai.structures.config import (
     ConfigExtraction,
@@ -347,7 +347,7 @@ print(f"Created: {processor.id}")
 
 Execute a processor on a document.
 
-```python
+```python?partial=true
 run = client.run_processor(
     processor_id="proc_xxxxxxxxxxxxxxxxx",
     file_name="invoice.pdf",
@@ -372,7 +372,7 @@ print(f"Run ID: {run.id}, Status: {run.status.value}")
 
 Get the current status and results of a processor run.
 
-```python
+```python?partial=true
 run = client.run_status("run_xxxxxxxxxxxxxxxxx")
 
 if run.status == RunStatus.PROCESSED:
@@ -390,8 +390,6 @@ else:
 **Returns:** `ProcessorRun` object with current status and results
 
 **Raises:** `RequestFailed` on error
-
----
 
 ## Data Structures
 
@@ -454,8 +452,6 @@ A classification category definition.
 | `type`        | `str` | Classification type/category name  |
 | `description` | `str` | Description of this classification |
 
----
-
 ## Result Structures
 
 ### ResultExtraction
@@ -468,7 +464,7 @@ Output from an extraction processor.
 
 **Example:**
 
-```python
+```python?partial=true
 if run.status == RunStatus.PROCESSED:
     extracted = run.output.value
     print(f"Name: {extracted.get('name')}")
@@ -487,7 +483,7 @@ Output from a classification processor.
 
 **Example:**
 
-```python
+```python?partial=true
 if run.status == RunStatus.PROCESSED:
     print(f"Type: {run.output.type}")
     print(f"Confidence: {run.output.confidence:.2%}")
@@ -505,7 +501,7 @@ Output from a splitter processor.
 
 **Example:**
 
-```python
+```python?partial=true
 if run.status == RunStatus.PROCESSED:
     for split in run.output.splits:
         print(f"Section: {split.type}")
@@ -537,8 +533,6 @@ An insight extracted during classification.
 |-----------|-------|-----------------------|
 | `type`    | `str` | Insight type/category |
 | `content` | `str` | Insight text content  |
-
----
 
 ## Configuration Structures
 
@@ -577,8 +571,6 @@ Configuration for splitter processors.
 | `split_rules`          | `str`                     | Custom splitting rules             |
 | `advanced_options`     | `AdvancedOptionsSplitter` | Advanced settings                  |
 | `parser`               | `Parser`                  | Document parser settings           |
-
----
 
 ## Constants (Enums)
 
@@ -626,8 +618,6 @@ Base processor variants (performance vs speed trade-off).
 | `SPLITTING_PERFORMANCE`      | High accuracy splitting                  |
 | `SPLITTING_LIGHT`            | Fast splitting                           |
 
----
-
 ## Error Handling
 
 ### RequestFailed
@@ -641,20 +631,18 @@ Exception raised when an Extend AI API request fails (extends `RuntimeError`).
 
 **Example:**
 
-```python
+```python?partial=true
 try:
     run = client.run_processor(...)
 except RequestFailed as e:
     print(f"API Error {e.status_code}: {e.message}")
 ```
 
----
-
 ## Polling Pattern
 
 Since document processing is asynchronous, use this pattern to wait for results:
 
-```python
+```python?partial=true
 import time
 from canvas_sdk.clients.extend_ai.constants import RunStatus
 
@@ -697,8 +685,6 @@ final_run = wait_for_completion(client, run.id)
 if final_run.status == RunStatus.PROCESSED:
     print(final_run.output.to_dict())
 ```
-
----
 
 ## Additional Resources
 
