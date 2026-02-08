@@ -1,5 +1,6 @@
 name: Generate Coding Agent Context
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
