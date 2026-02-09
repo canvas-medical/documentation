@@ -817,6 +817,9 @@ effects_module:
   - title: "Patient Portal"
     url: /sdk/patient-portal/
     description: Customize your Patient Portal.
+  - title: "Patient Timeline"
+    url: /sdk/effect-patient-timeline/
+    description: Configure a patient's timeline by excluding specific note types.
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
