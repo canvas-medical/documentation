@@ -20446,6 +20446,10 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
+    <tr>
+      <td>GET_HOMEPAGE_CONFIGURATION</td>
+      <td>Homepage is loading. See <a href="{% link _guides/set-default-homepage.md %}" target="_blank">Set default homepage</a> for examples of how to use this event.</td>
+    </tr>
   </tbody>
 </table>
 
