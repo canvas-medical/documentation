@@ -19,13 +19,13 @@ Claude Code supports a plugin marketplace. We built the Canvas Plugin Assistant 
 
 CPA accelerates the entire plugin development lifecycle — from brainstorming requirements and scaffolding code, to running tests and deploying to your instance and rapidly cycling through user acceptance testing and enhancements.
 
-Together, Claude Code with CPA lets developers (and non-developers comfortable with the command line) go from an idea to a working, deployed plugin through natural conversation at warp speed.
+Together, Claude Code with CPA lets developers go from an idea to a working, deployed plugin through natural conversation at warp speed.
 
 ## Prerequisites
 
 - Python 3.12+ installed
 - A Canvas instance with admin access
-- [OAuth credentials configured](/api/customer-authentication/) and saved locally in `~/.canvas/credentials.ini` (register an application with `confidential` client type and `client-credentials` grant type)
+- [OAuth credentials configured](/api/customer-authentication/) and saved locally in `~/.canvas/credentials.ini` (register an application with `confidential` client type and `client-credentials` grant type). For more, see [these configuration steps](/guides/your-first-plugin/#2-configure-the-canvas-cli-for-your-instances)
 - [Claude Code installed](https://docs.anthropic.com/en/docs/claude-code/overview)
 
 ## 1. Install the Canvas Plugin Assistant and Set Up Your Environment
@@ -34,7 +34,7 @@ Follow the installation and setup instructions in the [Canvas Plugin Assistant R
 
 ## 2. Describe Your First Plugin
 
-Run `/cpa:new-plugin` to start building. CPA will ask clarifying questions via an interactive chip interface. Describe what you want in plain English. For example:
+Run `/cpa:new-plugin` to start building. CPA will ask clarifying questions via an interactive chip interface. Describe what you want in plain English. You can find examples of what's possible [here](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions), [here](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins), and [here](https://www.canvasmedical.com/plugins). For example:
 
 > I want a plugin that adds a button to the note header. When clicked, the button should inject a Reason for Visit command into the note with the text "hello world".
 
@@ -42,7 +42,7 @@ Here's what happens next:
 
 1. **Brainstorm** — CPA asks follow-up questions to refine your requirements
 2. **Specification** — CPA generates a `plugin-spec.md` for your review. Read through it and approve or request changes
-3. **Scaffold** — CPA creates the plugin project structure, manifest, and handler files
+3. **Scaffold** — CPA creates the [plugin project structure](/guides/your-first-plugin/#4-navigate-the-structure-of-a-plugin), manifest, and handler files
 4. **Implement** — CPA writes the protocol/handler code based on the spec
 5. **Test** — CPA generates and runs tests to verify the plugin works correctly
 
