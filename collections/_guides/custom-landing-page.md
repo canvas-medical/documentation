@@ -9,7 +9,7 @@ and explains how to integrate the ready-made widgets provided by Canvas.
 
 {% include alert.html type="info" content="This guide assumes pre-existing
 knowledge of the Canvas SDK. If you're starting from scratch, you may want to
-read and implement <a href='/guides/your-first-plugin/'>Your First Plugin</a> before
+read and implement <a href='/guides/your-first-plugin-with-claude-code/'>Your First Plugin (with Claude Code)</a> before
 working through this exercise." %}
 
 ## What Are Widgets in the Patient Portal?
