@@ -93,7 +93,8 @@ curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
 --data-urlencode 'client_id={CLIENT_ID}' \
 --data-urlencode 'client_secret={CLIENT_SECRET}' \
 --data-urlencode 'redirect_uri={REDIRECT_URI_AS_DEFINED_ON_THE_APPLICATION}' \
---data-urlencode 'refresh_token={REFRESH_TOKEN}'
+--data-urlencode 'refresh_token={REFRESH_TOKEN}' \
+--data-urlencode 'scope={LIST_OF_SCOPES}'
 ```
 and you'll get a brand new access token.
 
@@ -101,7 +102,7 @@ and you'll get a brand new access token.
 
 Scopes are useful to prevent access to unwanted parts of the API. If you're using the Client Credentials Flow, Scopes are optional, and if omitted, you'll have full access to the FHIR API. Be mindful of that.
 
-If you're using the Authorization Code Flow, you need to pass scopes as part of your first request to get an authorization code. These scopes follow the [Clinical Scope Syntax](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#clinical-scope-syntax) set by HL7.
+If you're using the Authorization Code Flow, you need to pass scopes as part of your requests. These scopes follow the [Clinical Scope Syntax](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#clinical-scope-syntax) set by HL7. If you are passing more than one scope, they need to be separated by a space like `scope=offline_access user/*.read`
 
 Since Canvas currently works on a User level (e.g., the logged-in user isn't a Patient), the most relevant scopes can be found [here](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#user-level-scopes).
 
