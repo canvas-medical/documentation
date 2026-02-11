@@ -18,12 +18,6 @@ These credentials should be stored as [plugin secrets](/sdk/secrets/) and grant 
 The Canvas FHIR client is included in the Canvas SDK. Import the client:
 
 ```python
-from canvas_sdk.clients import CanvasFhir
-```
-
-Or import from the specific module:
-
-```python
 from canvas_sdk.clients.canvas_fhir import CanvasFhir
 ```
 
@@ -44,7 +38,7 @@ On initialization, the client will:
 ## Search for Resources
 
 ```python
-from canvas_sdk.clients import CanvasFhir
+from canvas_sdk.clients.canvas_fhir import CanvasFhir
 
 client = CanvasFhir(
     client_id="your_client_id",
@@ -218,7 +212,7 @@ except HTTPError as e:
 Here's a complete example of using the Canvas FHIR client in an ActionButton handler:
 
 ```python
-from canvas_sdk.clients import CanvasFhir
+from canvas_sdk.clients.canvas_fhir import CanvasFhir
 from canvas_sdk.effects import Effect
 from canvas_sdk.handlers.action_button import ActionButton
 from logger import log
