@@ -3,14 +3,275 @@ title: "Sharing Data"
 slug: "custom-data-sharing-data"
 ---
 
-To share data across plugins or to external services, a plugin must expose an API with appropriate 
-authorization and access controls. This is done using the [Simple API](/sdk/handlers-simple-api-http) feature.
+Plugins can share data in two ways, depending on the relationship between the plugins:
 
-At this time, the SDK supports data sharing via API only, in order to prevent data corruption, accidental leakage, 
-and dependencies among plugins. A future version of the SDK may expose a permissions framework to allow granular
-data access without requiring APIs to be written.
+| Approach | Use Case | Coupling |
+|----------|----------|----------|
+| **[Namespace Sharing](#namespace-sharing)** | Plugins owned by the same organization that need direct database access | Tight |
+| **[API Sharing](#api-sharing)** | Plugins owned by different organizations, or when loose coupling is preferred | Loose |
 
-#### Example: Exposing Provider Profile Data
+## Namespace Sharing
+
+Namespace sharing allows multiple plugins to read from and write to the same database tables. This is ideal for organizations that want to build smaller, focused plugins instead of a single monolithic plugin.
+A plugin may reside within one namespace only. If it needs to access data from multiple namespaces,
+then it must do so via API calls.
+
+### When to Use Namespace Sharing
+
+- Your organization owns multiple plugins that need to share data
+- You want to break a large plugin into smaller, maintainable pieces
+- You need direct database access for performance
+- You want to avoid the overhead of API calls between plugins
+
+### Namespace Lifecycle
+
+#### 1. Creating a Namespace
+
+The first plugin with `read_write` access to a namespace automatically creates it. When the namespace is created:
+
+1. A PostgreSQL schema is created with the namespace name
+2. Two authentication keys are generated:
+   - `read_access_key` - Grants read-only access
+   - `read_write_access_key` - Grants full read/write access
+3. The keys are stored as secrets in the creating plugin
+
+#### 2. Sharing Access Keys
+
+After the namespace is created, you can find the generated keys in the plugin's secrets (visible in the Canvas admin UI for the plugin). 
+Share these keys with other plugins that need access:
+
+- Share `read_access_key` with plugins that only need to read data
+- Share `read_write_access_key` with plugins that need to modify data
+
+We recommend storing these keys in a secure location outside of Canvas in case they are accidentally removed from the manifest.
+
+#### 3. Configuring Plugin Access
+
+Each plugin that accesses a namespace must:
+
+1. Declare the namespace in `CANVAS_MANIFEST.json`
+2. Add the appropriate access key to its secrets
+3. Include the secret name in the manifest's `secrets` array. *Items omitted from the `secrets` array are deleted upon installation*
+
+### Manifest Configuration
+
+```json
+{
+  "sdk_version": "0.1.4",
+  "plugin_version": "1.0.0",
+  "name": "my_plugin",
+  "secrets": ["read_write_access_key"],
+  "custom_data": {
+    "namespace": "acme_corp__shared_data",
+    "access": "read_write"
+  }
+}
+```
+
+**Namespace naming requirements:**
+- Must contain `__` (double underscore) to separate organization from name
+- Cannot use reserved PostgreSQL names (`public`, `pg_catalog`, etc.)
+- Cannot start with `pg_`
+
+**Access levels:**
+- `read` - Can only read data from the namespace
+- `read_write` - Can read and write data, and create custom tables
+
+### Permissions and Restrictions
+
+| Permission                               | `read` | `read_write` |
+|------------------------------------------|--------|--------------|
+| Query CustomAttributes                   | ✓ | ✓ |
+| Query AttributeHubs                      | ✓ | ✓ |
+| Query CustomModels                       | ✓ | ✓ |
+| Set/delete CustomAttributes              | ✗ | ✓ |
+| Create/update/delete AttributeHubs       | ✗ | ✓ |
+| Create/update/delete CustomModel records | ✗ | ✓ |
+| Create/update custom database tables     | ✗ | ✓ |
+
+### Example: Sharing CustomAttributes
+
+CustomAttributes attach key-value data to existing Canvas models (Patient, Staff, etc.).
+
+**Plugin A (write access) - Sets patient attributes:**
+
+```python
+# CANVAS_MANIFEST.json: "access": "read_write"
+from canvas_sdk.v1.data import Patient, CustomAttributeMixin, CustomAttributeAwareManager
+
+class PatientProxy(Patient, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+patient_id = 123
+patient = PatientProxy.objects.get(id=patient_id)
+patient.set_attribute("risk_score", 85)
+patient.set_attribute("care_program", "diabetes_management")
+```
+
+**Plugin B (read access) - Reads patient attributes:**
+
+```python
+# CANVAS_MANIFEST.json: "access": "read"
+from canvas_sdk.v1.data import Patient, CustomAttributeMixin, CustomAttributeAwareManager
+
+class PatientProxy(Patient, CustomAttributeMixin):
+    class Meta:
+        proxy = True
+    objects = CustomAttributeAwareManager()
+
+patient_id = 123
+patient = PatientProxy.objects.with_only(
+    attribute_names=["risk_score", "care_program"]
+).get(id=patient_id)
+
+risk_score = patient.get_attribute("risk_score")  # 85
+care_program = patient.get_attribute("care_program")  # "diabetes_management"
+```
+
+### Example: Sharing AttributeHubs
+
+AttributeHubs store standalone key-value data not attached to Canvas models.
+
+**Plugin A (write access) - Creates configuration hub:**
+
+```python
+# CANVAS_MANIFEST.json: "access": "read_write"
+from canvas_sdk.v1.data import AttributeHub
+
+# Create a configuration hub
+config = AttributeHub.objects.create(type="clinic_config", externally_exposable_id="main")
+config.set_attribute("max_daily_appointments", 50)
+config.set_attribute("appointment_duration_minutes", 30)
+config.set_attribute("accepting_new_patients", True)
+```
+
+**Plugin B (read access) - Reads configuration:**
+
+```python
+# CANVAS_MANIFEST.json: "access": "read"
+from canvas_sdk.v1.data import AttributeHub
+
+config = AttributeHub.objects.with_only(
+    attribute_names=["max_daily_appointments", "appointment_duration_minutes"]
+).get(type="clinic_config", externally_exposable_id="main")
+
+max_appointments = config.get_attribute("max_daily_appointments")  # 50
+duration = config.get_attribute("appointment_duration_minutes")  # 30
+```
+
+### Example: Sharing CustomModels
+
+CustomModels allow you to define your own database tables with full ORM support.
+
+**Important:** If multiple plugins need to share the same custom tables, each plugin must declare identical model definitions. The `read_write` plugin creates the tables; `read` plugins can query but not modify them.
+
+**Shared model definition (must be identical in both plugins):**
+
+```python
+# models/specialty.py
+from django.db import models
+from canvas_sdk.v1.data.base import CustomModel
+
+class Specialty(CustomModel):
+    """A medical specialty that can be assigned to staff members."""
+
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    requires_referral = models.BooleanField(default=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['name']),
+        ]
+```
+
+**Plugin A (write access) - Creates and manages specialties:**
+
+```python
+# CANVAS_MANIFEST.json: "access": "read_write"
+from .models.specialty import Specialty
+
+# Create specialties
+cardiology = Specialty(
+    name="Cardiology",
+    description="Heart and cardiovascular system",
+    requires_referral=True
+)
+cardiology.save()
+
+dermatology = Specialty(
+    name="Dermatology",
+    description="Skin conditions",
+    requires_referral=False
+)
+dermatology.save()
+```
+
+**Plugin B (read access) - Queries specialties:**
+
+```python
+# CANVAS_MANIFEST.json: "access": "read"
+from .models.specialty import Specialty
+
+# Query specialties (read operations work)
+referral_specialties = Specialty.objects.filter(requires_referral=True)
+
+for specialty in referral_specialties:
+    print(f"{specialty.name}: {specialty.description}")
+
+# Write operations raise NamespaceWriteDenied
+specialty = Specialty.objects.first()
+specialty.description = "Updated"
+specialty.save()  # Raises NamespaceWriteDenied!
+```
+
+### Error Handling
+
+When a plugin with `read` access attempts a write operation, a `NamespaceWriteDenied` exception is raised:
+
+```python
+from canvas_sdk.v1.data.base import NamespaceWriteDenied
+
+try:
+    hub.set_attribute("key", "value")
+except NamespaceWriteDenied as e:
+    # "Write operation denied: namespace 'acme_corp__shared_data' is read-only.
+    #  Plugin must declare 'read_write' access to perform write operations."
+    log.error(f"Cannot write to shared namespace: {e}")
+```
+
+### Troubleshooting
+
+**"NamespaceAccessError: secret 'read_access_key' is not configured"**
+- Add the secret name to the `secrets` array in your manifest
+- Ensure the secret has a value set in the Canvas UI
+
+**"NamespaceAccessError: the key value is not a valid access key"**
+- Verify you're using the correct key from the namespace owner
+- Check that the key hasn't been regenerated
+
+**"NamespaceAccessError: requests 'read_write' access but key only grants 'read'"**
+- You're using `read_access_key` but declared `"access": "read_write"`
+- Either change to `read_write_access_key` or change access to `"read"`
+
+**"NamespaceWriteDenied: namespace is read-only"**
+- Your plugin has `"access": "read"` but is attempting a write operation
+- Change to `"access": "read_write"` and use `read_write_access_key`
+
+---
+
+## API Sharing
+
+API sharing is the recommended approach when:
+
+- Plugins are owned by different organizations
+- You want loose coupling between plugins
+- You need fine-grained control over what data is exposed
+- You want to version your data interface independently
+
+### Example: Exposing Provider Profile Data
 
 ```python
 from canvas_sdk.handlers.simple_api import SimpleAPI, APIKeyCredentials, api
@@ -42,7 +303,9 @@ class ProfileAPI(SimpleAPI):
     def get_profile(self):
         """Return staff profile data."""
         staff_id = self.request.path_params["staff_id"]
-        staff = StaffProxy.objects.with_only(attribute_names=["specialty", "accepting_patients"]).get(id=staff_id)
+        staff = StaffProxy.objects.with_only(
+            attribute_names=["specialty", "accepting_patients"]
+        ).get(id=staff_id)
 
         # Explicitly choose what data to expose
         profile = {
@@ -56,30 +319,31 @@ class ProfileAPI(SimpleAPI):
         return [JSONResponse(profile)]
 ```
 
-#### Consuming Shared Data from Another Plugin
+### Consuming Shared Data from Another Plugin
 
 ```python
-from canvas_sdk.effects import Effect, EffectType
+from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import Response, JSONResponse
-from canvas_sdk.handlers.simple_api import SimpleAPI, APIKeyCredentials, api
+from canvas_sdk.handlers.simple_api import SimpleAPI, api
 from canvas_sdk.utils import Http
+
 
 class MyAPI(SimpleAPI):
     PREFIX = "/retrieve"
 
-@api.get("/profile_for_staff/<staff_id>")
-def get_single_profile_via_api(self) -> list[Response | Effect]:
-    staff_id = self.request.path_params["staff_id"]
-    canvas_host = "demo.canvasmedical.com"
-    token = 'abcd1234'
+    @api.get("/profile_for_staff/<staff_id>")
+    def get_single_profile_via_api(self) -> list[Response | Effect]:
+        staff_id = self.request.path_params["staff_id"]
+        canvas_host = "demo.canvasmedical.com"
+        token = self.secrets["profile_api_token"]
 
-    other_plugin_api = f"https://{canvas_host}/plugin-io/api/other_plugin/staff_profile/{staff_id}"
-    http = Http()
-    response = http.get(other_plugin_api, headers={"Authorization": f"{token}"})
-    return [JSONResponse(response.json())]
+        other_plugin_api = f"https://{canvas_host}/plugin-io/api/other_plugin/staff-profiles/{staff_id}"
+        http = Http()
+        response = http.get(other_plugin_api, headers={"Authorization": token})
+        return [JSONResponse(response.json())]
 ```
 
-### Data Sharing Best Practices
+### API Sharing Best Practices
 
 1. **Explicit Authorization** - Always require authentication for APIs that expose plugin data
 2. **Minimal Exposure** - Only expose the specific data fields that are necessary
@@ -97,6 +361,19 @@ def get_single_profile_via_api(self) -> list[Response | Effect]:
 - **Consider PHI implications** when exposing patient-related data via APIs
 - **Follow least privilege** principle - grant minimum necessary access
 
+---
+
+## Choosing Between Namespace and API Sharing
+
+| Factor | Namespace Sharing | API Sharing |
+|--------|-------------------|-------------|
+| **Ownership** | Same organization | Different organizations |
+| **Coupling** | Tight | Loose |
+| **Performance** | Direct DB access | HTTP overhead |
+| **Schema Evolution** | Coordinated updates | Independent versioning |
+| **Access Control** | Binary (read/read_write) | Fine-grained |
+| **Setup Complexity** | Lower | Higher |
+
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Introduction to custom data storage
@@ -104,4 +381,6 @@ def get_single_profile_via_api(self) -> list[Response | Effect]:
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Custom Models](/sdk/custom-data-custom-models/) - Django models for structured data
 - [Testing Utils](/sdk/testing-utils/) - Factories for testing custom data
-- [Effects](/sdk/effects/) - Effects for manipulating data
+- [Caching API](/sdk/caching) - Auto-expiring transient data
+- [Simple API](/sdk/handlers-simple-api-http) - HTTP API handlers
+- [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration

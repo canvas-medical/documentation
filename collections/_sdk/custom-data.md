@@ -74,6 +74,13 @@ Use this when you need structured, typed data with relationships and normalized 
 
 ---
 
+## Caching
+
+If your use case represents transient data that should expire via TTL, use the
+[Caching API](/sdk/caching) instead of the Custom Data features.
+
+---
+
 ## Data Privacy and Plugin Isolation
 
 All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or Custom Data Models—is **scoped to that plugin**. 
@@ -141,5 +148,6 @@ Use APIs to make data available and accessible to and from other plugins and ext
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
 - [Data Models](/sdk/data/) - Core SDK data models
+- [Caching API](/sdk/caching) - Auto-expiring transient data
 - [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins
 - [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration
