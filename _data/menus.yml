@@ -679,6 +679,9 @@ clients_module:
   - title: "AWS S3"
     url: /sdk/clients-aws-s3/
     description: Upload, download, and manage files in Amazon S3.
+  - title: "Canvas FHIR"
+    url: /sdk/clients-canvas-fhir/
+    description: Interact with the Canvas FHIR API for resources like Coverages and DocumentReferences.
   - title: "Extend AI"
     url: /sdk/clients-extend-ai/
     description: Intelligent document processing with extraction, classification, and splitting.
