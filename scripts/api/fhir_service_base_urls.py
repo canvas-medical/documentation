@@ -10,7 +10,9 @@ FHIR Bundle JSON files for non-production and production environments.
 Steps for updating the FHIR service base URLs in the documentation repository:
 
 1. Create a branch in the documentation repository.
-2. Set the CONSOLE_AUTH_TOKEN environment variable to your Canvas Console auth token.
+2. Set the CONSOLE_API_BASE_URL environment variable to the correct value
+   (see https://www.notion.so/canvasmedical/REST-API-3040bd9e403380a8ba1ac0b4a498ac5b).
+3. Set the CONSOLE_API_AUTH_TOKEN environment variable to your Canvas Console auth token.
 3. Run the script: uv run fhir_service_base_urls.py
 4. Create a PR from your branch and merge it.
 """
@@ -35,8 +37,10 @@ from fhir.resources.R4B.bundle import Bundle, BundleEntry
 from fhir.resources.R4B.endpoint import Endpoint
 from fhir.resources.R4B.organization import Organization
 
-CONSOLE_BASE_URL = "https://console.canvasmedical.com/api/v1/provisioning"
-CONSOLE_API_TIMEOUT = 600
+CONSOLE_API_BASE_URL = os.environ.get("CONSOLE_BASE_URL", "")
+CONSOLE_AUTH_TOKEN = os.environ.get("CONSOLE_AUTH_TOKEN", "")
+CONSOLE_API_TIMEOUT = int(os.environ.get("CONSOLE_API_TIMEOUT", "600"))
+
 CONSOLE_TAG_TO_TYPE = {
     "customer_dev": "dev",
     "customer_staging": "staging",
@@ -56,7 +60,7 @@ DEFAULT_PROD_FILENAME = "fhir-service-base-urls-production.json"
 
 def fetch_instance_types(client: httpx.Client) -> dict[str, str]:
     """Fetch instance type (dev/staging/prod) for each customer slug."""
-    response = client.post(f"{CONSOLE_BASE_URL}/instances")
+    response = client.post(f"{CONSOLE_API_BASE_URL}/instances")
     response.raise_for_status()
 
     slug_to_type: dict[str, str] = {}
@@ -73,20 +77,20 @@ def fetch_instance_types(client: httpx.Client) -> dict[str, str]:
 def fetch_org_data(client: httpx.Client) -> list[dict[str, Any]]:
     """Fetch organization and address data from the Console query API."""
     response = client.post(
-        f"{CONSOLE_BASE_URL}/instances/query/",
+        f"{CONSOLE_API_BASE_URL}/instances/query/",
         json={"sql": CONSOLE_SQL_QUERY},
     )
     response.raise_for_status()
     return cast(list[dict[str, Any]], response.json())
 
 
-def load_orgs(auth_token: str) -> dict[str, dict[str, Any]]:
+def load_orgs() -> dict[str, dict[str, Any]]:
     """Fetch data from the Console API and organize into a dict keyed by org_name."""
     orgs: dict[str, dict[str, Any]] = {}
     customer_org_ids: dict[str, str] = {}
 
     with httpx.Client(
-        headers={"Authorization": f"Token {auth_token}"},
+        headers={"Authorization": f"Token {CONSOLE_AUTH_TOKEN}"},
         timeout=CONSOLE_API_TIMEOUT,
         follow_redirects=True,
     ) as client:
@@ -230,11 +234,13 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    auth_token = os.environ.get("CONSOLE_AUTH_TOKEN")
-    if not auth_token:
+    if not CONSOLE_API_BASE_URL:
+        raise RuntimeError("CONSOLE_BASE_URL environment variable is required")
+
+    if not CONSOLE_AUTH_TOKEN:
         raise RuntimeError("CONSOLE_AUTH_TOKEN environment variable is required")
 
-    orgs = load_orgs(auth_token)
+    orgs = load_orgs()
 
     for mode, output_file in [
         ("nonprod", args.nonprod_output_file),
