@@ -4,7 +4,7 @@ slug: clients-canvas-fhir
 hidden: false
 ---
 
-The Canvas SDK FHIR client provides a simple interface for interacting with the Canvas FHIR API, supporting CRUD operations on FHIR resources such as Coverages, DocumentReferences, AllergyIntolerances, and more. It handles OAuth client credentials authentication and token caching automatically.
+The Canvas SDK FHIR client provides a simple interface for interacting with the [Canvas FHIR API](/api/), supporting CRUD operations on FHIR resources such as Coverages, DocumentReferences, AllergyIntolerances, and more. It handles OAuth client credentials authentication and token caching automatically.
 
 ## Requirements
 
