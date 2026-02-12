@@ -35,59 +35,6 @@ On initialization, the client will:
 2. Cache the access token using the plugin cache system, keyed by `client_id`, with automatic expiration.
 3. Determine the FHIR API base URL from the environment's `CUSTOMER_IDENTIFIER` setting (e.g., `https://fumage-{CUSTOMER_IDENTIFIER}.canvasmedical.com`).
 
-## Search for Resources
-
-```python
-from canvas_sdk.clients.canvas_fhir import CanvasFhir
-
-client = CanvasFhir(
-    client_id="your_client_id",
-    client_secret="your_client_secret",
-)
-
-# Search for a patient's allergy intolerances
-results = client.search("AllergyIntolerance", {"patient": "Patient/abc123"})
-
-for entry in results.get("entry", []):
-    resource = entry["resource"]
-    print(f"Allergy: {resource['code']['coding'][0]['display']}")
-```
-
-## Read a Specific Resource
-
-```python?partial=true
-# Read a specific resource by ID
-allergy = client.read("AllergyIntolerance", "allergy-id-123")
-print(f"Status: {allergy['clinicalStatus']['coding'][0]['code']}")
-```
-
-## Create a Resource
-
-```python?partial=true
-# Create a new Coverage resource
-coverage = client.create("Coverage", {
-    "resourceType": "Coverage",
-    "status": "active",
-    "beneficiary": {"reference": "Patient/abc123"},
-    "payor": [{"reference": "Organization/org-456"}],
-})
-print(f"Created Coverage: {coverage['id']}")
-```
-
-## Update a Resource
-
-```python?partial=true
-# Update an existing resource
-updated = client.update("Coverage", "coverage-id-789", {
-    "resourceType": "Coverage",
-    "id": "coverage-id-789",
-    "status": "cancelled",
-    "beneficiary": {"reference": "Patient/abc123"},
-    "payor": [{"reference": "Organization/org-456"}],
-})
-print(f"Updated Coverage status: {updated['status']}")
-```
-
 ## CanvasFhir
 
 The main class for interacting with the Canvas FHIR API.
@@ -109,8 +56,13 @@ CanvasFhir(client_id: str, client_secret: str)
 
 Search for FHIR resources matching the given parameters.
 
-```python?partial=true
-results = client.search("Patient", {"name": "Smith", "birthdate": "1990-01-01"})
+```python
+# Search for a patient's allergy intolerances
+results = client.search("AllergyIntolerance", {"patient": "Patient/abc123"})
+
+for entry in results.get("entry", []):
+    resource = entry["resource"]
+    print(f"Allergy: {resource['code']['coding'][0]['display']}")
 ```
 
 | Parameter       | Type   | Description                                      |
@@ -127,7 +79,9 @@ results = client.search("Patient", {"name": "Smith", "birthdate": "1990-01-01"})
 Read a single FHIR resource by its ID.
 
 ```python?partial=true
-patient = client.read("Patient", "patient-id-123")
+# Read a specific resource by ID
+allergy = client.read("AllergyIntolerance", "allergy-id-123")
+print(f"Status: {allergy['clinicalStatus']['coding'][0]['code']}")
 ```
 
 | Parameter       | Type  | Description                          |
@@ -144,12 +98,14 @@ patient = client.read("Patient", "patient-id-123")
 Create a new FHIR resource.
 
 ```python?partial=true
-new_resource = client.create("DocumentReference", {
-    "resourceType": "DocumentReference",
-    "status": "current",
-    "type": {"coding": [{"system": "http://loinc.org", "code": "34133-9"}]},
-    "subject": {"reference": "Patient/abc123"},
+# Create a new Coverage resource
+coverage = client.create("Coverage", {
+    "resourceType": "Coverage",
+    "status": "active",
+    "beneficiary": {"reference": "Patient/abc123"},
+    "payor": [{"reference": "Organization/org-456"}],
 })
+print(f"Created Coverage: {coverage['id']}")
 ```
 
 | Parameter       | Type   | Description                          |
@@ -166,6 +122,7 @@ new_resource = client.create("DocumentReference", {
 Update an existing FHIR resource.
 
 ```python?partial=true
+# Update an existing resource
 updated = client.update("Coverage", "coverage-id-789", {
     "resourceType": "Coverage",
     "id": "coverage-id-789",
@@ -173,6 +130,7 @@ updated = client.update("Coverage", "coverage-id-789", {
     "beneficiary": {"reference": "Patient/abc123"},
     "payor": [{"reference": "Organization/org-456"}],
 })
+print(f"Updated Coverage status: {updated['status']}")
 ```
 
 | Parameter       | Type   | Description                          |
