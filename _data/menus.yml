@@ -621,6 +621,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Set default homepage by user"
+    url: /guides/set-default-homepage/
+    description: How to change the default homepage for users in your organization
+    uses:
+      - sdk
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh/
@@ -844,6 +850,9 @@ data_module:
   - title: "AllergyIntolerance"
     url: /sdk/data-allergy-intolerance/
     description: Harmful or undesired physiological responses associated with exposure to a substance.
+  - title: "Application"
+    url: /sdk/data-application/
+    description: A plugin application.
   - title: "Appointment"
     url: /sdk/data-appointment/
     description: A scheduled meeting between a patient and a provider.
