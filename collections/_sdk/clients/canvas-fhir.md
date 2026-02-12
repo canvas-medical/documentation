@@ -33,7 +33,7 @@ client = CanvasFhir(
 On initialization, the client will:
 1. Authenticate using the OAuth client credentials flow against your Canvas environment's token endpoint.
 2. Cache the access token using the plugin cache system, keyed by `client_id`, with automatic expiration.
-3. Determine the FHIR API base URL from the `CUSTOMER_IDENTIFIER` setting (e.g., `https://fumage-{CUSTOMER_IDENTIFIER}.canvasmedical.com`).
+3. Determine the FHIR API base URL from the environment's `CUSTOMER_IDENTIFIER` setting (e.g., `https://fumage-{CUSTOMER_IDENTIFIER}.canvasmedical.com`).
 
 ## Search for Resources
 
