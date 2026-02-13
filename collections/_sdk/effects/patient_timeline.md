@@ -47,8 +47,8 @@ class Protocol(BaseHandler):
 
     def compute(self):
         # Use unique_identifier
-        office_visit = NoteType.objects.get(name="Office visit")
-        lab_visit = NoteType.objects.get(name="Lab visit")
+        office_visit = NoteType.objects.get(name="Office visit", is_active=True)
+        lab_visit = NoteType.objects.get(name="Lab visit", is_active=True)
 
         effect = PatientTimelineEffect(
             excluded_note_types=[
