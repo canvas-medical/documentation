@@ -15,24 +15,45 @@ To exclude note types from a patient's timeline, import the `PatientTimelineEffe
 
 | Attribute             |          | Type           | Description                                                                                                      |
 | --------------------- | -------- | -------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `excluded_note_types` | required | list[str]   | A list of note type identifiers (UUIDs) to exclude from the patient's timeline.                                   |
+| `excluded_note_types` | required | list[str]   | A list of `NoteType.unique_identifier` values (UUIDs) to exclude from the patient's timeline. |
 
 ### Example Usage
+
+The `excluded_note_types` list must contain `unique_identifier` values from the `NoteType` model. Each `NoteType` has a `unique_identifier` (UUID) that you can look up by querying the model:
+
+```python
+from canvas_sdk.v1.data.note import NoteType
+
+# Find the unique_identifier for a note type by name
+note_type = NoteType.objects.get(name="Office visit")
+note_type.unique_identifier  # e.g. UUID("a3b9c1d2-...")
+
+# Or list all note types with their unique_identifiers
+for nt in NoteType.objects.all():
+    print(f"{nt.name}: {nt.unique_identifier}")
+```
+
+Then use those `unique_identifier` values in the effect:
 
 ```python
 from canvas_sdk.effects.patient.timeline import PatientTimelineEffect
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data.note import NoteType
 
 
 class Protocol(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.PATIENT_TIMELINE__GET_CONFIGURATION)]
 
     def compute(self):
+        # Use unique_identifier
+        office_visit = NoteType.objects.get(name="Office visit")
+        lab_visit = NoteType.objects.get(name="Lab visit")
+
         effect = PatientTimelineEffect(
             excluded_note_types=[
-                "note-type-uuid-1",
-                "note-type-uuid-2",
+                str(office_visit.unique_identifier),
+                str(lab_visit.unique_identifier),
             ]
         )
 
@@ -41,7 +62,10 @@ class Protocol(BaseHandler):
 
 ### Behavior
 
-- **CHART_REVIEW is always visible**: Even if a `CHART_REVIEW` note type is included in the `excluded_note_types` list, it will always be shown on the timeline. The system automatically removes it from any exclusion list.
+> 📘 Chart Review notes cannot be excluded
+>
+> Even if a `CHART_REVIEW` note type is included in the `excluded_note_types` list, it will always be shown on the timeline. The system automatically removes it from any exclusion list.
+
 - **Permalink access**: If a user tries to directly access a note whose type has been excluded, they will receive a permission error.
 - **Multiple plugins**: If multiple plugins respond to the `PATIENT_TIMELINE__GET_CONFIGURATION` event, the excluded note types from all responses are combined.
 
