@@ -83,21 +83,28 @@ If your use case represents transient data that should expire via TTL, use the
 
 ## Data Privacy and Plugin Isolation
 
-All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or Custom Data Models—is **scoped to that plugin**. 
-This isolation ensures that plugins cannot directly access or modify another plugin's data, maintaining security and data integrity across the system.
+All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or Custom Data Models—is scoped to a namespace. 
+This isolation ensures that plugins cannot directly access or modify another plugin's data, maintaining security and data integrity 
+across the system. 
+
+Plugins may share data in two ways:
+* By explicit co-location within a namespace, allowing direct database access
+* By publishing [Simple API](/sdk/handlers-simple-api-http) endpoints
+
+[Learn more about data sharing](/sdk/custom-data-sharing-data)
 
 ### Data Isolation
 
 **CustomAttributes** attached to SDK models (like Patient or Staff) are scoped by plugin. Each plugin maintains its own separate namespace for custom attributes, even when attached to the same core model instance.
 
 ```python
-# In one plugin
+# In one plugin and namespace
 from my_plugin.models.proxy import StaffProxy
 staff = StaffProxy.objects.get(id="abc")
 staff.set_attribute("specialty", "Cardiology")  # Only accessible within "my_plugin"
 ```
 ```python
-# In another plugin
+# In another plugin and different namespace
 from your_plugin.models.proxy import StaffProxy
 staff = StaffProxy.objects.get(id="abc")
 staff.get_attribute("specialty")  # Returns None - cannot see "my_plugin" data
@@ -106,7 +113,7 @@ staff.set_attribute("specialty", "Cardiac")  # Creates separate attribute in "yo
 
 **AttributeHubs** similarly store data within the plugin's namespace and are not accessible to other plugins.
 
-**Custom Data Models** created by a plugin exist in a plugin-specific namespace. Tables and data are completely isolated from other plugins.
+**Custom Data Models** created by a plugin exist within namespaces. Tables and data are completely isolated from other namespaces.
 
 ```python
 # In a plugin named "my_plugin": Creates a table "specialty" in the "my_plugin" namespace
