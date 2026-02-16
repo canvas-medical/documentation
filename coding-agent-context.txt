@@ -40040,6 +40040,57 @@ class NarrativeMetadataExtractor(BaseHandler):
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient-metadata/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-patient-timeline/
+The Canvas SDK allows you to configure a patient's timeline, such as hiding specific note types from view.
+## Excluding Note Types
+To exclude note types from a patient's timeline, import the `PatientTimelineEffect` class and create an instance of it. This effect is triggered in response to the `PATIENT_TIMELINE__GET_CONFIGURATION` event, which fires when a patient's timeline is loaded.
+### Attributes
+| Attribute             |          | Type           | Description                                                                                                      |
+| --------------------- | -------- | -------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `excluded_note_types` | required | list[str]   | A list of `NoteType.unique_identifier` values (UUIDs) to exclude from the patient's timeline. |
+### Example Usage
+The `excluded_note_types` list must contain `unique_identifier` values from the `NoteType` model. Each `NoteType` has a `unique_identifier` (UUID) that you can look up by querying the model:
+```python
+from canvas_sdk.v1.data.note import NoteType
+# Find the unique_identifier for a note type by name
+note_type = NoteType.objects.get(name="Office visit")
+note_type.unique_identifier  # e.g. UUID("a3b9c1d2-...")
+# Or list all note types with their unique_identifiers
+for nt in NoteType.objects.all():
+    print(f"{nt.name}: {nt.unique_identifier}")
+```
+Then use those `unique_identifier` values in the effect:
+```python
+from canvas_sdk.effects.patient.timeline import PatientTimelineEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data.note import NoteType
+class Protocol(BaseHandler):
+    RESPONDS_TO = [EventType.Name(EventType.PATIENT_TIMELINE__GET_CONFIGURATION)]
+    def compute(self):
+        # Use unique_identifier
+        office_visit = NoteType.objects.get(name="Office visit", is_active=True)
+        lab_visit = NoteType.objects.get(name="Lab visit", is_active=True)
+        effect = PatientTimelineEffect(
+            excluded_note_types=[
+                str(office_visit.unique_identifier),
+                str(lab_visit.unique_identifier),
+            ]
+        )
+        return [effect.apply()]
+```
+### Behavior
+> 📘 Chart Review notes cannot be excluded
+>
+> Even if a `CHART_REVIEW` note type is included in the `excluded_note_types` list, it will always be shown on the timeline. The system automatically removes it from any exclusion list.
+- **Permalink access**: If a user tries to directly access a note whose type has been excluded, they will receive a permission error.
+- **Multiple plugins**: If multiple plugins respond to the `PATIENT_TIMELINE__GET_CONFIGURATION` event, the excluded note types from all responses are combined.
+### Validation
+- All provided UUIDs must correspond to existing note types in the system. If a note type UUID does not exist, a `ValidationError` will be raised with a message indicating which note type was not found.
+- Values that are not valid UUIDs will also raise a `ValidationError`.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient-timeline/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-patient/
 The `Patient` effect enables the creation and updating of patient records within the Canvas system. This effect captures demographic information, contact details, and clinical associations necessary for patient registration and updates.
 ## Attributes
@@ -40224,7 +40275,7 @@ A Protocol card consists of three main parts:
 - A narrative, which appears just below the title to add any additional clarifying information
 - A list of recommendations, which each have a title and optionally a button that can either:
   - open a new tab and navigate to another site
-  - insert a command into a note
+  - insert commands into a note
 | Name               | Type                                    | Required                                     | Description                                                                                                                                        |
 | :----------------- | :-------------------------------------- | :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `patient_id`       | _string_                                | `true` (if `patient_filter` is not included) | The id of the [patient](/sdk/data-patient/)                                                                                                        |
@@ -40239,12 +40290,12 @@ A Protocol card consists of three main parts:
 | `due_in`           | _integer_                               | `false`                                      | The number of days until the protocol card will be considered due for the patient, defaults to `-1` for already due                                |
 |                    |                                         |                                              |                                                                                                                                                    |
 ### Recommendation
-| Attribute | Type     | Required | Description                           |
-| :-------- | :------- | :------- | :------------------------------------ |
-| `title`   | _string_ | `true`   | The description of the recommendation |
-| `button`  | _string_ | `false`  | The text to appear on the button      |
-| `href`    | _string_ | `false`  | The url for the button to navigate to |
-|           |          |          |                                       |
+| Attribute  | Type                             | Required | Description                           |
+|:-----------|:---------------------------------|:---------|:--------------------------------------|
+| `title`    | _string_                         | `true`   | The description of the recommendation |
+| `button`   | _string_                         | `false`  | The text to appear on the button      |
+| `href`     | _string_                         | `false`  | The url for the button to navigate to |
+| `commands` | list[[Command](#/sdk/commands/)] | `false`  | The commands to be inserted           |
 ### Status
 | Enum             | Value          |
 | :--------------- | :------------- |
@@ -40254,7 +40305,9 @@ A Protocol card consists of three main parts:
 | `PENDING`        | pending        |
 | `NOT_RELEVANT`   | not_relevant   |
 |                  |                |
-To include a command recommendation, we recommend you import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See [below](#supported-commands) for the list of supported commands.
+To include a command recommendation you can:
+- import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See [below](#supported-commands) for the list of supported commands.
+- instantiate the command as above, and then pass it in a list to the `commands` attribute of a recommendation.
 </br>
 </br>
 For non-command recommendations, you can either use the `Recommendation` class, or the `.add_recommendation(title: str = "", button: str = "", href: str | None)` method on the protocol card.
@@ -40264,28 +40317,35 @@ from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 from datetime import date
 from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import DiagnoseCommand, PlanCommand
 class Protocol(BaseProtocol):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
     def compute(self):
-        p = ProtocolCard(
-            patient_id=self.target,
-            key="testing-protocol-cards",
-            title="This is a ProtocolCard title",
-            narrative="this is the narrative",
-            status=ProtocolCard.Status.DUE,
-            recommendations=[Recommendation(title="this recommendation has no action, just words!")]
-        )
-        p.add_recommendation(
-            title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
-        )
         diagnose = DiagnoseCommand(
             icd10_code="I10",
             background="feeling bad for many years",
             approximate_date_of_onset=date(2020, 1, 1),
             today_assessment="still not great",
         )
+        plan = PlanCommand(
+            narrative="Follow up in 2 weeks",
+        )
+        p = ProtocolCard(
+            patient_id=self.target,
+            key="testing-protocol-cards",
+            title="This is a ProtocolCard title",
+            narrative="this is the narrative",
+            status=ProtocolCard.Status.DUE,
+            recommendations=[
+              Recommendation(title="this recommendation has no action, just words!"),
+              Recommendation(title="this recommendation inserts multiple commands", button="add commands", commands=[diagnose, plan])
+            ],
+        )
+        p.add_recommendation(
+            title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
+        )
         p.recommendations.append(diagnose.recommend(title="this inserts a diagnose command"))
+        p.recommendations.append(title="new recommendation", button="start", commands=[diagnose])
         return [p.apply()]
 ```
 To apply the effect to all active patients on plugin create and plugin update, you would include the plugin create and update events in `RESPONDS_TO`. And when responding to one of the plugin events you would use `patient_filter` instead of `patient_id` for the ProtocolCard.
@@ -60313,6 +60373,24 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
       "code": str
       "system": str
       "display": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+### Patient Timeline Configuration
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_TIMELINE__GET_CONFIGURATION</th></tr>
+    <tr><td colspan="2">Occurs when a patient's timeline is loaded. Allows plugins to configure which note types are visible on the timeline. See the <a href='/sdk/effect-patient-timeline/'>Patient Timeline effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_key
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
