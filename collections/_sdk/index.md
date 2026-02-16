@@ -10,9 +10,15 @@ Here are some step-by-step guides to get you started:
 
 
 <div class="sdk-card-list">
+    <a href="/guides/your-first-plugin-with-claude-code">
+        <div class="sdk-card">
+            <span class="cardHeading">Your First Plugin (with Claude Code)</span>
+            <p>Use an AI assistant to build and deploy your first Canvas plugin through natural conversation.</p>
+        </div>
+    </a>
     <a href="/guides/your-first-plugin">
         <div class="sdk-card">
-            <span class="cardHeading">Your First Plugin</span>
+            <span class="cardHeading">Your First Plugin (Manual)</span>
             <p>This guide steps you through installing the Canvas SDK, creating a plugin, and deploying it to a Canvas instance.</p>
         </div>
     </a>

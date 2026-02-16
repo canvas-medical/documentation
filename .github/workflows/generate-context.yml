@@ -1,0 +1,31 @@
+name: Generate Coding Agent Context
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "collections/_api/**"
+      - "collections/_guides/**"
+      - "collections/_sdk/**"
+jobs:
+  generate-context:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Generate context file
+        run: uv run ./generate-context.py
+      - name: Commit updated context file
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: regenerate coding-agent-context.txt"
+          file_pattern: coding-agent-context.txt

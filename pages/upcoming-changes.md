@@ -44,7 +44,7 @@ Stay up to date on the latest important dates for the Canvas platform.
         On the release date, requests sent to the FHIR Practitioner create and update endpoints that contain the birth sex extension will receive an error response.<br><br>
         <strong>To avoid disruption, act before the release date and change your client code to stop sending the birth sex extension in FHIR Practitioner create and update requests.</strong>
       </td>
-      <td>02/13/26</td>
+      <td>02/16/26</td>
       <td></td>
     </tr>
     <tr>

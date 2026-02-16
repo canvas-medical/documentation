@@ -20002,6 +20002,28 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   </tbody>
 </table>
 
+
+<table>
+  <thead>
+    <tr><th colspan="2">SHOW_NOTE_BODY_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 <table>
   <thead>
     <tr><th colspan="3">SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON</th></tr>
@@ -20366,6 +20388,26 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+### Patient Timeline Configuration
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_TIMELINE__GET_CONFIGURATION</th></tr>
+    <tr><td colspan="2">Occurs when a patient's timeline is loaded. Allows plugins to configure which note types are visible on the timeline. See the <a href='/sdk/effect-patient-timeline/'>Patient Timeline effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_key
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Other Events
 
 <table>
@@ -20423,6 +20465,10 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+    <tr>
+      <td>GET_HOMEPAGE_CONFIGURATION</td>
+      <td>Homepage is loading. See <a href="{% link _guides/set-default-homepage.md %}" target="_blank">Set default homepage</a> for examples of how to use this event.</td>
     </tr>
   </tbody>
 </table>
