@@ -20388,6 +20388,26 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+### Patient Timeline Configuration
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_TIMELINE__GET_CONFIGURATION</th></tr>
+    <tr><td colspan="2">Occurs when a patient's timeline is loaded. Allows plugins to configure which note types are visible on the timeline. See the <a href='/sdk/effect-patient-timeline/'>Patient Timeline effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_key
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Other Events
 
 <table>
