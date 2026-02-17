@@ -7,7 +7,8 @@ sections:
         name: Encounter
         article: "a"
         description: >-
-          An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.<br><br>[https://hl7.org/fhir/R4/encounter.html](https://hl7.org/fhir/R4/encounter.html)<br><br>
+          An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-encounter.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-encounter.html)<br><br>
 
           <b>Encounter creation in Canvas</b><br><br>
           An encounter is associated with some of our notes in Canvas. For our default base notes, an encounter will be created with these note types: <br><br>
@@ -18,9 +19,7 @@ sections:
           - Home Visit <br>
           - In-patient Visit <br><br>
 
-          With our [Configurable Note Types Feature](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types) all custom note types will be associated with an encounter by default.<br><br>
-
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-encounter.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-encounter.html)
+          With our [Configurable Note Types Feature](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types) all custom note types will be associated with an encounter by default.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

@@ -7,7 +7,9 @@ sections:
         name: Practitioner
         article: "a"
         description: >-
-         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).<br><br>
+         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>
+         [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html)<br><br>
+          To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).<br><br>
           
         attributes:
           - name: id

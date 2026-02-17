@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           Details and position information for a physical place where services are provided and resources and participants may be stored, found, contained, or accommodated.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-location.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-location.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-location.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-location.html)<br><br>
           The FHIR Location resource corresponds to Canvas Practice Locations.
         attributes:
           - name: resourceType

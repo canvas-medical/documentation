@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           Describes the event of a patient being administered a vaccine or a record of an immunization as reported by a patient, a clinician or another party.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-immunization.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-immunization.html)<br><br>
 
           In Canvas, Immunization records are recorded using either the [Immunization Statement Commmand](https://canvas-medical.help.usepylon.com/articles/1379672479-command-immunization-statement) or the [Immunize Command](https://canvas-medical.help.usepylon.com/articles/4155771468-command-immunize).
         attributes:
