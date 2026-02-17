@@ -24,10 +24,12 @@ from canvas_sdk.clients.canvas_fhir import CanvasFhir
 ## Initialize the Client
 
 ```python?partial=true
-client = CanvasFhir(
-    client_id="your_client_id",
-    client_secret="your_client_secret",
-)
+# Declare these secrets in the CANVAS_MANIFEST.json and set the values on the
+# plugin configuration page.
+client_id = self.secrets["CANVAS_FHIR_CLIENT_ID"]
+client_secret = self.secrets["CANVAS_FHIR_CLIENT_SECRET"]
+
+client = CanvasFhir(client_id, client_secret)
 ```
 
 On initialization, the client will:
