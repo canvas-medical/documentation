@@ -150,6 +150,9 @@ api_resources:
   - title: "Schedule"
     url: /api/schedule/
     identifier: api_schedule
+  - title: "ServiceRequest"
+    url: /api/servicerequest/
+    identifier: api_servicerequest
   - title: "Slot"
     url: /api/slot/
     identifier: api_slot
