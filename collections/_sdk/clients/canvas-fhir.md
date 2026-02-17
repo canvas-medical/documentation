@@ -58,7 +58,7 @@ CanvasFhir(client_id: str, client_secret: str)
 
 Search for FHIR resources matching the given parameters.
 
-```python
+```python?partial=true
 # Search for a patient's allergy intolerances
 results = client.search("AllergyIntolerance", {"patient": "Patient/abc123"})
 
