@@ -80,8 +80,8 @@ When the namespace is created:
 Subsequent plugins that want to access an existing namespace must:
 
 1. **Obtain the access key** from the namespace creator (see [Discovering Access Keys](#discovering-access-keys))
-2. **Configure the secret** in the Canvas admin UI before installation
-3. **Declare the namespace** in their manifest with the appropriate access level
+2. **Declare the namespace** in their manifest with the appropriate access level
+2. **Configure the secret** in using the `--secret` parameter during installation via the CLI.
 
 The installation process validates the access key:
 

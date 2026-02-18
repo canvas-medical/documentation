@@ -95,7 +95,8 @@ Plugins may share data in two ways:
 
 ### Data Isolation
 
-**CustomAttributes** attached to SDK models (like Patient or Staff) are scoped by plugin. Each plugin maintains its own separate namespace for custom attributes, even when attached to the same core model instance.
+**CustomAttributes** attached to SDK models (like Patient or Staff) are scoped to the plugin's namespace. Custom attributes live within
+a namespace and are only visible to plugins co-located within the namespace, even when attached to the same core model instance.
 
 ```python
 # In one plugin and namespace
@@ -111,7 +112,7 @@ staff.get_attribute("specialty")  # Returns None - cannot see "my_plugin" data
 staff.set_attribute("specialty", "Cardiac")  # Creates separate attribute in "your_plugin"
 ```
 
-**AttributeHubs** similarly store data within the plugin's namespace and are not accessible to other plugins.
+**AttributeHubs** similarly store data within the plugin's namespace and are not accessible to other plugins in other namespaces.
 
 **Custom Data Models** created by a plugin exist within namespaces. Tables and data are completely isolated from other namespaces.
 
