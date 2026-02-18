@@ -25,33 +25,125 @@ then it must do so via API calls.
 
 ### Namespace Lifecycle
 
-#### 1. Creating a Namespace
+The lifecycle of a namespace depends on whether a plugin is creating a new namespace or joining an existing one.
 
-The first plugin with `read_write` access to a namespace automatically creates it. When the namespace is created:
+#### Installation Flow
 
-1. A PostgreSQL schema is created with the namespace name
-2. Two authentication keys are generated:
-   - `read_access_key` - Grants read-only access
+```mermaid
+flowchart TD
+    A[Plugin Installation Begins] --> B{Access level?}
+
+    B -->|read_write| C{Namespace exists?}
+    B -->|read| D{Namespace exists?}
+
+    C -->|No| E[Create PostgreSQL Schema]
+    E --> F[Generate Authentication Keys]
+    F --> G[Store Keys as Plugin Secrets]
+    G --> H[Create Custom Tables]
+    H --> I[✅ Plugin Installed Successfully]
+
+    C -->|Yes| J{Has valid read_write key?}
+    J -->|Yes| K[Create Custom Tables]
+    J -->|No| L[❌ Installation Fails]
+    K --> I
+
+    D -->|No| M[❌ Installation Fails]
+    D -->|Yes| N{Has valid access key?}
+    N -->|Yes| O[Ready for Read Access]
+    N -->|No| P[❌ Installation Fails]
+    O --> I
+```
+
+#### Creating a New Namespace
+
+The **first plugin** installed with a given namespace name automatically creates it. This happens when:
+
+1. The manifest declares a `custom_data.namespace` that doesn't yet exist
+2. The plugin declares `"access": "read_write"`
+
+When the namespace is created:
+
+1. **Schema Creation** - A PostgreSQL schema is created with the namespace name
+2. **Key Generation** - Two authentication keys are generated:
+   - `read_access_key` - Grants read-only access to the namespace
    - `read_write_access_key` - Grants full read/write access
-3. The keys are stored as secrets in the creating plugin
+3. **Secret Storage** - The keys are automatically stored as secrets in the creating plugin
+4. **Table Creation** - Any CustomModel tables defined by the plugin are created
 
-#### 2. Sharing Access Keys
+> **Note:** The creating plugin does not need to provide an access key—it generates the keys and is inherently trusted.
 
-After the namespace is created, you can find the generated keys in the plugin's secrets (visible in the Canvas admin UI for the plugin). 
-Share these keys with other plugins that need access:
+#### Joining an Existing Namespace
+
+Subsequent plugins that want to access an existing namespace must:
+
+1. **Obtain the access key** from the namespace creator (see [Discovering Access Keys](#discovering-access-keys))
+2. **Configure the secret** in the Canvas admin UI before installation
+3. **Declare the namespace** in their manifest with the appropriate access level
+
+The installation process validates the access key:
+
+| Declared Access | Namespace Exists | Key Provided | Result |
+|-----------------|------------------|--------------|--------|
+| `read` | No | N/A | ❌ Installation fails |
+| `read` | Yes | Valid `read_access_key` | ✅ Plugin installed with read access |
+| `read` | Yes | Invalid or missing | ❌ Installation fails |
+| `read_write` | No | N/A | ✅ Creates namespace and tables |
+| `read_write` | Yes | Valid `read_write_access_key` | ✅ Plugin installed, tables created |
+| `read_write` | Yes | Invalid or missing | ❌ Installation fails |
+
+#### Discovering Access Keys
+
+After the namespace is created, you can find the generated keys in the **Canvas admin UI**:
+
+1. Navigate to **Settings → Plugins**
+2. Find the plugin that created the namespace
+3. Click to view plugin details
+4. The `read_access_key` and `read_write_access_key` appear in the **Secrets** section
+
+Share these keys securely with developers of other plugins that need access:
 
 - Share `read_access_key` with plugins that only need to read data
 - Share `read_write_access_key` with plugins that need to modify data
 
-We recommend storing these keys in a secure location outside of Canvas in case they are accidentally removed from the manifest.
+> **Important:** Store these keys in a secure location outside of Canvas. If the keys are accidentally removed from the manifest's `secrets` array, they will be deleted upon the next installation.
 
-#### 3. Configuring Plugin Access
+#### Configuring Plugin Access
 
-Each plugin that accesses a namespace must:
+Each plugin that joins a namespace must:
 
-1. Declare the namespace in `CANVAS_MANIFEST.json`
-2. Add the appropriate access key to its secrets
-3. Include the secret name in the manifest's `secrets` array. *Items omitted from the `secrets` array are deleted upon installation*
+1. **Declare the namespace** in `CANVAS_MANIFEST.json`
+2. **Include the secret name** in the manifest's `secrets` array
+3. **Provide the access key** during installation
+
+```json
+{
+  "secrets": ["read_write_access_key"],
+  "custom_data": {
+    "namespace": "acme_corp__shared_data",
+    "access": "read_write"
+  }
+}
+```
+
+**Installing with the Canvas CLI (recommended):**
+
+Provide the access key using the `--secret` flag:
+
+```bash
+canvas install my_plugin \
+  --host demo.canvasmedical.com \
+  --secret read_write_access_key=3b35fad9-6462-4e83-83f5-c0e4bde49b71
+```
+
+**Alternative: Setting secrets via Admin UI:**
+
+If you've already installed the plugin without the secret:
+
+1. Go to **Settings → Plugins → Your Plugin → Secrets**
+2. Set the `read_access_key` or `read_write_access_key` value
+3. **Reinstall the plugin** to pick up the secret
+
+> **Warning:** Secrets omitted from the `secrets` array are deleted upon installation. Always include `read_access_key` or `read_write_access_key` in the array.
 
 ### Manifest Configuration
 
