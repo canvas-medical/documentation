@@ -29,30 +29,33 @@ The lifecycle of a namespace depends on whether a plugin is creating a new names
 
 #### Installation Flow
 
-```mermaid
-flowchart TD
-    A[Plugin Installation Begins] --> B{Access level?}
+[//]: # (COMMENTED OUT SINCE JEKYLL DOESN'T SUPPORT MERMAID)
+[//]: # (```mermaid)
+[//]: # (flowchart TD)
+[//]: # (    A[Plugin Installation Begins] --> B{Access level?})
+[//]: # ()
+[//]: # (    B -->|read_write| C{Namespace exists?})
+[//]: # (    B -->|read| D{Namespace exists?})
+[//]: # ()
+[//]: # (    C -->|No| E[Create PostgreSQL Schema])
+[//]: # (    E --> F[Generate Authentication Keys])
+[//]: # (    F --> G[Store Keys as Plugin Secrets])
+[//]: # (    G --> H[Create Custom Tables])
+[//]: # (    H --> I[✅ Plugin Installed Successfully])
+[//]: # ()
+[//]: # (    C -->|Yes| J{Has valid read_write key?})
+[//]: # (    J -->|Yes| K[Create Custom Tables])
+[//]: # (    J -->|No| L[❌ Installation Fails])
+[//]: # (    K --> I)
+[//]: # ()
+[//]: # (    D -->|No| M[❌ Installation Fails])
+[//]: # (    D -->|Yes| N{Has valid access key?})
+[//]: # (    N -->|Yes| O[Ready for Read Access])
+[//]: # (    N -->|No| P[❌ Installation Fails])
+[//]: # (    O --> I)
+[//]: # (```)
 
-    B -->|read_write| C{Namespace exists?}
-    B -->|read| D{Namespace exists?}
-
-    C -->|No| E[Create PostgreSQL Schema]
-    E --> F[Generate Authentication Keys]
-    F --> G[Store Keys as Plugin Secrets]
-    G --> H[Create Custom Tables]
-    H --> I[✅ Plugin Installed Successfully]
-
-    C -->|Yes| J{Has valid read_write key?}
-    J -->|Yes| K[Create Custom Tables]
-    J -->|No| L[❌ Installation Fails]
-    K --> I
-
-    D -->|No| M[❌ Installation Fails]
-    D -->|Yes| N{Has valid access key?}
-    N -->|Yes| O[Ready for Read Access]
-    N -->|No| P[❌ Installation Fails]
-    O --> I
-```
+<img src="/assets/images/sdk/custom_data/installation_flowchart.png" width="400">
 
 #### Creating a New Namespace
 
