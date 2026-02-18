@@ -307,7 +307,7 @@ import factory
 from datetime import datetime
 from django.db.models import (
     ForeignKey, OneToOneField, TextField, IntegerField, DateTimeField,
-    Index, CASCADE, DO_NOTHING
+    Index, DO_NOTHING
 )
 from canvas_sdk.test_utils.factories import StaffFactory
 from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
@@ -362,13 +362,13 @@ class StaffSpecialty(CustomModel):
     staff = ForeignKey(
         StaffProxy,
         to_field="dbid",
-        on_delete=CASCADE,
+        on_delete=DO_NOTHING,
         related_name="staff_specialties"
     )
     specialty = ForeignKey(
         Specialty,
         to_field="dbid",
-        on_delete=CASCADE,
+        on_delete=DO_NOTHING,
         related_name="staff_specialties"
     )
 
@@ -549,13 +549,13 @@ class StaffSpecialty(CustomModel):
     staff = ForeignKey(
         StaffProxy,
         to_field="dbid",
-        on_delete=CASCADE,
+        on_delete=DO_NOTHING,
         related_name="staff_specialties"
     )
     specialty = ForeignKey(
         Specialty,
         to_field="dbid",
-        on_delete=CASCADE,
+        on_delete=DO_NOTHING,
         related_name="staff_specialties"
     )
 
@@ -604,7 +604,7 @@ Test that prefetching and query optimization work correctly:
 import factory
 from django.db.models import (
     ForeignKey, OneToOneField, TextField, IntegerField,
-    Index, CASCADE, DO_NOTHING, Count
+    Index, DO_NOTHING, Count
 )
 from canvas_sdk.test_utils.factories import StaffFactory
 from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
@@ -646,13 +646,13 @@ class StaffSpecialty(CustomModel):
     staff = ForeignKey(
         StaffProxy,
         to_field="dbid",
-        on_delete=CASCADE,
+        on_delete=DO_NOTHING,
         related_name="staff_specialties"
     )
     specialty = ForeignKey(
         Specialty,
         to_field="dbid",
-        on_delete=CASCADE,
+        on_delete=DO_NOTHING,
         related_name="staff_specialties"
     )
 
@@ -755,7 +755,7 @@ Test data validation, constraints, and cascade behavior:
 
 ```python
 import factory
-from django.db.models import ForeignKey, TextField, Index, CASCADE
+from django.db.models import ForeignKey, TextField, Index, DO_NOTHING
 from canvas_sdk.test_utils.factories import StaffFactory
 from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
 from canvas_sdk.v1.data.base import CustomModel
@@ -793,13 +793,13 @@ class StaffSpecialty(CustomModel):
     staff = ForeignKey(
         StaffProxy,
         to_field="dbid",
-        on_delete=CASCADE,
+        on_delete=DO_NOTHING,
         related_name="staff_specialties"
     )
     specialty = ForeignKey(
         Specialty,
         to_field="dbid",
-        on_delete=CASCADE,
+        on_delete=DO_NOTHING,
         related_name="staff_specialties"
     )
 
@@ -812,18 +812,20 @@ class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
     specialty = factory.SubFactory(SpecialtyFactory)
 
 
-def test_cascade_delete():
-    """Test CASCADE delete behavior."""
+def test_manual_cleanup_on_delete():
+    """Test manual cleanup since DO_NOTHING doesn't cascade."""
     staff = StaffProxyFactory.create()
     specialty = SpecialtyFactory.create()
     ss = StaffSpecialtyFactory.create(staff=staff, specialty=specialty)
 
-    # Delete specialty should cascade to junction table
+    # With DO_NOTHING, you must clean up related records manually
     specialty_id = specialty.dbid
+    StaffSpecialty.objects.filter(specialty_id=specialty_id).delete()
     specialty.delete()
 
-    # Junction table record should be deleted
+    # Verify both are gone
     assert not StaffSpecialty.objects.filter(specialty_id=specialty_id).exists()
+    assert not Specialty.objects.filter(dbid=specialty_id).exists()
 
 
 def test_unique_constraint():
@@ -875,7 +877,8 @@ def test_transaction_rollback():
 5. **Test edge cases** like None values, empty lists, and missing relationships
 6. **Use descriptive test names** that explain what is being tested
 7. **Test query optimization** to ensure prefetching works as expected
-8. **Verify constraints** like uniqueness and cascade behavior
+8. **Verify constraints** like uniqueness behavior
+9. **Clean up manually** - Custom models use `DO_NOTHING` for foreign keys, so related records must be deleted manually before deleting the parent
 
 ---
 
