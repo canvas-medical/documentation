@@ -216,7 +216,7 @@ for identifier in patient_external_identifiers:
 | dbid       | Integer             |
 | patient    | [Patient](#patient) |
 | key        | String              |
-| value      | String              |
+| value      | Text                |
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
