@@ -1880,6 +1880,67 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <thead>
+    <tr><th colspan="2">NOTE_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a new note is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": Note</pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is updated. This fires on any save to the note, including body changes, state changes, and metadata updates.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": Note</pre></td>
+      <td><pre>"patient":
+   "id": pt_id
+"user":
+   "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_BODY_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the content of a note's body changes. This is a more specific event than <code>NOTE_UPDATED</code> — it only fires when the body text is actually modified, not on other note updates. Useful for triggering actions like <a href="/sdk/effect-notes/#freeze">freezing a note</a> when a user is actively editing.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": Note</pre></td>
+      <td><pre>"patient":
+   "id": pt_id
+"user":
+   "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_CREATED</th></tr>
     <tr><td colspan="2">Occurs as a note traverses through its state machine. This event can be used when looking at any changes to the <a href="/sdk/data-note/#notestates">note state</a>, including locking and unlocking.</td></tr>
   </thead>

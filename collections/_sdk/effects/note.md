@@ -266,6 +266,69 @@ class Protocol(BaseHandler):
 
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
+### Freeze
+
+Temporarily freezes a note, preventing other users from editing it. The note is automatically unfrozen after the specified duration. While frozen, the note displays a banner and can optionally blur the note body for non-owner users.
+
+If the same user freezes an already-frozen note, the freeze timer is extended without modifying the note.
+
+#### Attributes
+
+| Attribute  | Type            | Description                                                        | Required |
+|------------|-----------------|--------------------------------------------------------------------|----------|
+| `note_id`  | `UUID` or `str` | Identifier of the note to freeze                                   | Yes      |
+| `duration` | `int`           | Duration in seconds before the note is automatically unfrozen      | No       |
+| `user_id`  | `str` or `None` | Identifier of the user who is freezing the note (the "lock owner") | No       |
+| `blur`     | `bool`          | Whether to blur the note body for users other than the lock owner  | No       |
+
+**Defaults**: `duration` = 300 (5 minutes), `blur` = False
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.freeze import FreezeNoteEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_BODY_UPDATED)
+
+    def compute(self):
+        freeze_effect = FreezeNoteEffect(
+            note_id=self.target,
+            duration=300,
+            user_id=self.context.get("user", {}).get("id"),
+            blur=True,
+        )
+
+        return [freeze_effect.apply()]
+```
+
+### Unfreeze
+
+Unfreezes a previously frozen note, allowing all users to edit it again. This also cancels any pending auto-unfreeze task.
+
+#### Attributes
+
+| Attribute | Type            | Description                        | Required |
+|-----------|-----------------|------------------------------------|----------|
+| `note_id` | `UUID` or `str` | Identifier of the note to unfreeze | Yes      |
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.freeze import UnfreezeNoteEffect
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        unfreeze_effect = UnfreezeNoteEffect(note_id="existing-note-uuid")
+
+        return [unfreeze_effect.apply()]
+```
+
 ### Check In
 
 Marks a patient as checked in for their appointment. Has the exact same effect as clicking on the `Check In` button in the Appointment note.
