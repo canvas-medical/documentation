@@ -1978,6 +1978,41 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter action event is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_action_event_id
+"type": <a href='/sdk/data-letter-action-event/'>LetterActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter action event is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_action_event_id
+"type": <a href='/sdk/data-letter-action-event/'>LetterActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Observations
 
 <table>
