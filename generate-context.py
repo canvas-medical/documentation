@@ -9,7 +9,11 @@
 # ]
 # ///
 
-"""Build Jekyll site, extract rendered HTML, and convert to markdown context file.
+"""Build Jekyll site, extract rendered HTML, and convert to markdown context files.
+
+Produces two files:
+  - sdk-context.txt: SDK docs + SDK-related guides
+  - fhir-context.txt: FHIR API docs + FHIR-related guides
 
 Requires: bundle exec jekyll build (run separately or via the JEKYLL_BUILD env var).
 The _site/ directory must exist before running this script.
@@ -25,14 +29,37 @@ import yaml
 from bs4 import BeautifulSoup, Tag
 
 REPO_ROOT = Path(__file__).resolve().parent
-COLLECTIONS = [
-    "_sdk",
-    "_guides",
-    "_api",
-]
 BASE_URL = "https://docs.canvasmedical.com"
-OUTPUT_FILE = REPO_ROOT / "coding-agent-context.txt"
 SITE_DIR = REPO_ROOT / "_site"
+
+# Guides are classified by stem (filename without .md) into SDK or FHIR.
+# Any guide not listed here is excluded (e.g., index.md landing page).
+FHIR_GUIDE_STEMS = {
+    "embedding-a-smart-on-fhir-application",
+    "fhir-v2-migration-guide",
+    "improve-hcc-coding-accuracy",
+    "note-management-oauth",
+    "staying-on-top-of-tasks",
+    "submit-vitals-via-fhir",
+}
+SDK_GUIDE_STEMS = {
+    "appointments-additional_fields",
+    "creating-webhooks-with-the-canvas-sdk",
+    "custom-landing-page",
+    "customize-panel-buttons",
+    "customize-search-results",
+    "growth-charts",
+    "patient-chart-group-items",
+    "patient-portal-forms",
+    "profile-additional-fields",
+    "scribe-ai-parser",
+    "set-default-homepage",
+    "tailoring-the-chart-to-the-patient",
+    "your-first-application",
+    "your-first-plugin-with-claude-code",
+    "your-first-plugin",
+}
+
 
 FRONTMATTER_RE = re.compile(r"\A---\n(.+?)\n---\n?", re.DOTALL)
 
@@ -209,41 +236,77 @@ def extract_content(html_path: Path) -> str | None:
     return dense
 
 
+def collect_pages(collection: str) -> list[tuple[str, str]]:
+    """Extract all pages from a collection, returning (url, content) pairs."""
+    collection_name = collection.lstrip("_")
+    collection_dir = REPO_ROOT / "collections" / collection
+    pages: list[tuple[str, str]] = []
+
+    for md_path in sorted(collection_dir.rglob("*.md")):
+        url_path = url_path_for(md_path, collection_name)
+        url = f"{BASE_URL}{url_path}"
+        hp = html_path_for(url_path)
+
+        if not hp.exists():
+            print(f"  WARN: no HTML for {md_path.name} -> {hp}", file=sys.stderr)
+            continue
+
+        content = extract_content(hp)
+        if content:
+            pages.append((url, content))
+
+    return pages
+
+
+def write_context_file(path: Path, pages: list[tuple[str, str]]) -> None:
+    """Write pages to a context file, sorted by URL."""
+    pages.sort(key=lambda p: p[0])
+    with open(path, "w", encoding="utf-8") as f:
+        for url, content in pages:
+            f.write(f"----- BEGIN PAGE {url}\n")
+            f.write(content)
+            f.write(f"\n----- END PAGE {url}\n\n\n")
+    print(f"Wrote {len(pages)} pages to {path.name}")
+
+
 def main() -> None:
     build_jekyll()
 
     if not SITE_DIR.exists():
         sys.exit("_site/ directory not found. Run: bundle exec jekyll build")
 
-    pages: list[tuple[str, str]] = []
+    # Collect pages for each output file from its primary collections
+    sdk_pages: list[tuple[str, str]] = []
+    fhir_pages: list[tuple[str, str]] = []
 
-    for collection in COLLECTIONS:
-        collection_name = collection.lstrip("_")
-        collection_dir = REPO_ROOT / "collections" / collection
+    for collection, target in [("_sdk", sdk_pages), ("_api", fhir_pages)]:
+        target.extend(collect_pages(collection))
 
-        for md_path in sorted(collection_dir.rglob("*.md")):
-            url_path = url_path_for(md_path, collection_name)
-            url = f"{BASE_URL}{url_path}"
-            hp = html_path_for(url_path)
+    # Route guides by stem classification
+    guides_dir = REPO_ROOT / "collections" / "_guides"
+    for md_path in sorted(guides_dir.rglob("*.md")):
+        stem = md_path.stem
+        if stem in SDK_GUIDE_STEMS:
+            target = sdk_pages
+        elif stem in FHIR_GUIDE_STEMS:
+            target = fhir_pages
+        else:
+            continue
 
-            if not hp.exists():
-                print(f"  WARN: no HTML for {md_path.name} -> {hp}", file=sys.stderr)
-                continue
+        url_path = url_path_for(md_path, "guides")
+        url = f"{BASE_URL}{url_path}"
+        hp = html_path_for(url_path)
 
-            content = extract_content(hp)
-            if content:
-                pages.append((url, content))
+        if not hp.exists():
+            print(f"  WARN: no HTML for {md_path.name} -> {hp}", file=sys.stderr)
+            continue
 
-    # Sort by URL for deterministic output
-    pages.sort(key=lambda p: p[0])
+        content = extract_content(hp)
+        if content:
+            target.append((url, content))
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        for url, content in pages:
-            f.write(f"----- BEGIN PAGE {url}\n")
-            f.write(content)
-            f.write(f"\n----- END PAGE {url}\n\n\n")
-
-    print(f"Wrote {len(pages)} pages to {OUTPUT_FILE.name}")
+    write_context_file(REPO_ROOT / "sdk-context.txt", sdk_pages)
+    write_context_file(REPO_ROOT / "fhir-context.txt", fhir_pages)
 
 
 if __name__ == "__main__":
