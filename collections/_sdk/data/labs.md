@@ -87,13 +87,13 @@ The following plugin code will run every time a new Lab Report is created and lo
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 from canvas_sdk.v1.data.lab import LabReport
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.LAB_REPORT_CREATED)
 
     def compute(self):

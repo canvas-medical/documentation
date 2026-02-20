@@ -42,7 +42,7 @@ from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.v1.data.note import NoteType
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.PATIENT_TIMELINE__GET_CONFIGURATION)]
 
     def compute(self):

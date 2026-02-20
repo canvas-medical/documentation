@@ -44,7 +44,7 @@ import arrow
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.task import AddTask, AddTaskComment, UpdateTask, TaskStatus
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.v1.data.lab import LabReport
 from canvas_sdk.v1.data.staff import Staff
@@ -52,7 +52,7 @@ from canvas_sdk.v1.data.team import Team
 from canvas_sdk.v1.data.referral import Referral
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.LAB_REPORT_CREATED),
     ]
@@ -106,7 +106,7 @@ from canvas_sdk.effects.task import UpdateTask, TaskStatus
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         update_task = UpdateTask(
             id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
@@ -132,7 +132,7 @@ from canvas_sdk.effects.task import AddTaskComment
 from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.v1.data.staff import Staff
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         author = Staff.objects.get(last_name="Weed")
         add_task_comment = AddTaskComment(

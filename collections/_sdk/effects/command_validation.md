@@ -40,9 +40,9 @@ from canvas_sdk.commands import PlanCommand
 from canvas_sdk.commands.validation import CommandValidationErrorEffect
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_VALIDATION)
 
     def compute(self) -> list[Effect]:
@@ -70,9 +70,9 @@ The `add_error()` method returns `self`, allowing for clean method chaining:
 from canvas_sdk.commands.validation import CommandValidationErrorEffect
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_VALIDATION)
 
     def compute(self) -> list[Effect]:
@@ -94,9 +94,9 @@ You can also initialize the effect with a list of `ValidationError` objects:
 from canvas_sdk.commands.validation import CommandValidationErrorEffect, ValidationError
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_VALIDATION)
 
     def compute(self) -> list[Effect]:
@@ -123,10 +123,10 @@ from canvas_sdk.commands import PlanCommand
 from canvas_sdk.commands.validation import CommandValidationErrorEffect
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     """
     Example protocol demonstrating command validation.
 
