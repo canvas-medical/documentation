@@ -14,7 +14,7 @@ request to a different service, or simply return a response back to the requeste
 ## Quickstart
 
 Follow the instructions in
-[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) to create a plugins
+[Your First Plugin (with Claude Code)](https://docs.canvasmedical.com/guides/your-first-plugin-with-claude-code/) to create a plugins
 project. For this exercise, use `my_api` as your project (i.e. plugin) name.
 
 Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
@@ -22,7 +22,7 @@ class names as you see fit in your project, but for this exercise, we are just g
 value at `components -> protocols -> 0 -> class` to be `my_api.protocols.my_protocol:MyAPI`.
 
 We're going to need a secret value for authentication. The instructions for declaring secrets are
-outlined on the [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
+outlined on the [Your First Plugin (Manual)](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 Declare a secret in `CANVAS_MANIFEST.json` named `my-api-key`.
 
 Open `my_api/protocols/my_protocol.py` and replace the contents of the file with this code:
@@ -52,7 +52,7 @@ class MyAPI(SimpleAPIRoute):
 ```
 
 The next step is to deploy your plugin; the instructions for doing so are on the
-[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
+[Your First Plugin (Manual)](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 
 You can see in the code above that the `authenticate` method is going to authenticate using API key
 authentication. We've already declared the secret, so now we need to generate a value and set it on

@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action. Includes companies, institutions, corporations, departments, community groups, healthcare practice groups, payer/insurer, etc.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-organization.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-organization.html)
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-organization.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-organization.html)
           <br><br>Organizations come from three different Canvas data types: Organizations, Vendors, and Insurers. You can manage these resources in Canvas Settings. FHIR Organizations created by Insurers in Canvas are useful in the [FHIR Coverage](/api/coverage) payor attribute.
         attributes:
           - name: resourceType

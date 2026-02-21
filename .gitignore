@@ -42,3 +42,4 @@ Zone.Identifier
 
 # script output
 events.temp.md
+.claude/settings.local.json

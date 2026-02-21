@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           An order or request for both supply of the medication and the instructions for administration of the medication to a patient. The resource is called "MedicationRequest" rather than "MedicationPrescription" or "MedicationOrder" to generalize the use across inpatient and outpatient settings, including care plans, etc., and to harmonize with workflow patterns.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-medicationrequest.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-medicationrequest.html)<br><br>
           FHIR MedicationRequest maps to the [Prescribe, Refill, Adjust Prescription, Deny Refill, Approve Refill](https://canvas-medical.help.usepylon.com/articles/5128727084-managing-medication-commands) commands in Canvas.
         attributes:
           - name: resourceType

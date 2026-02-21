@@ -241,6 +241,8 @@ The `LaunchModalEffect` class has the following properties:
   - `NEW_WINDOW`: Opens the content in a new browser window.
   - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
   - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
+  - `PAGE`: Opens the content as a full page.
+  - `NOTE`: Opens the content within a note tab (used with Note Applications).
 - **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 
 ### Closing Modals from Applications

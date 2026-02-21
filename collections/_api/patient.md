@@ -7,7 +7,8 @@ sections:
         name: Patient
         article: "a"
         description: >-
-          Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br> [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html)<br><br>
+          Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html)<br><br>
 
           **Supported Extensions**
           <br><br>

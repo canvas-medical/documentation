@@ -1,34 +1,57 @@
 ---
 title: "Claim Effects"
 slug: "effect-claims"
-excerpt: "Effects for claims."
+excerpt: "Effects for managing claims."
 hidden: false
 ---
 
-The Canvas SDK provides effects to:
+The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect` class provides a unified interface for:
 
-- manage claim labels, which includes [creating, adding](#addclaimlabel), and [removing](#removeclaimlabel) labels
-- [update claim line items](#updateclaimlineitem)
-- [move a claim to a specific queue](#moveclaimtoqueue)
-- [post a payment](#postclaimpayment)
-- [add a comment to a claim](#addclaimcomment)
+- [adding labels](#add-labels) to claims
+- [removing labels](#remove-labels) from claims
+- [moving claim to a queue](#move-to-queue)
+- [adding comments](#add-comment) to claims
+- [posting payments](#post-payment) to claims
 
-## AddClaimLabel
+Additionally, the SDK provides a separate effect to [update claim line items](#updateclaimlineitem).
 
-The `AddClaimLabel` effect facilitates adding a label to an existing claim, and optionally creating a new label before assigning it to the claim.
+The following standalone effect classes are deprecated and will be removed in a future release. Please use the `ClaimEffect` class instead.
 
-| Attribute  | Type                 | Description                                                                 | Required |
-| ---------- | -------------------- | --------------------------------------------------------------------------- | -------- |
-| `claim_id` | `UUID` or `str`      | Identifier for the claim                                                    | Yes      |
-| `labels`   | `list[str or Label]` | List of label names and [Label](#label) dataclasses\* to apply to the claim | Yes      |
+| Deprecated Class   | Old Import Path                    | New Equivalent                |
+| ------------------ | ---------------------------------- | ----------------------------- |
+| `AddClaimLabel`    | `canvas_sdk.effects.claim_label`   | `ClaimEffect.add_labels()`    |
+| `RemoveClaimLabel` | `canvas_sdk.effects.claim_label`   | `ClaimEffect.remove_labels()` |
+| `MoveClaimToQueue` | `canvas_sdk.effects.claim_queue`   | `ClaimEffect.move_to_queue()` |
+| `AddClaimComment`  | `canvas_sdk.effects.claim_comment` | `ClaimEffect.add_comment()`   |
+| `PostClaimPayment` | `canvas_sdk.effects.payment`       | `ClaimEffect.post_payment()`  |
+
+## Claim Effect
+
+The `ClaimEffect` class facilitates operations on existing claims.
+
+`from canvas_sdk.effects.claim import ClaimEffect`
+
+### Attributes
+
+| Attribute  | Type            | Description              | Required |
+| ---------- | --------------- | ------------------------ | -------- |
+| `claim_id` | `UUID` or `str` | Identifier for the claim | Yes      |
+
+### Add Labels
+
+`ClaimEffect.add_labels()`: adds one or more labels to a claim, and optionally creates new labels before assigning them to the claim.
+
+#### Parameters
+
+| Parameter | Type                 | Description                                                                 | Required |
+| --------- | -------------------- | --------------------------------------------------------------------------- | -------- |
+| `labels`  | `list[str or Label]` | List of label names and [Label](#label) dataclasses\* to apply to the claim | Yes      |
 
 \*Labels can be passed in by name or as a Label dataclass. If the label with the provided name or values does not exist in your Canvas instance, it will be created and then applied to the specified claim. However, if a label already exists with the provided name or properties, it will add this existing label to the claim.
 
-## Label
+#### Label
 
 The `Label` dataclass represents a label with specific properties, including color and name.
-
-### Attributes
 
 | Attribute | Type                                                | Description                      | Required |
 | --------- | --------------------------------------------------- | -------------------------------- | -------- |
@@ -47,7 +70,7 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 
-from canvas_sdk.effects.claim_label import AddClaimLabel, Label
+from canvas_sdk.effects.claim import ClaimEffect, Label
 from canvas_sdk.v1.data import Note
 from canvas_sdk.v1.data.common import ColorEnum
 
@@ -62,28 +85,24 @@ class Protocol(BaseProtocol):
         claim = note.get_claim()
         state = self.event.context["state"]
         if state == "PSH":
-            add = AddClaimLabel(
-                claim_id=claim.id,
-                labels=[Label(color=ColorEnum.PINK, name="pushed not locked")],
-            )
-            return [add.apply()]
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.add_labels([Label(color=ColorEnum.PINK, name="pushed not locked")])]
         elif state == "LKD":
-            add_urgent = AddClaimLabel(claim_id=claim.id, labels=["Urgent"])
-            return [add_urgent.apply()]
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.add_labels(["Urgent"])]
 
         return []
 ```
 
-### RemoveClaimLabel
+### Remove Labels
 
-The `RemoveClaimLabel` effect removes an existing label from a claim.
+`ClaimEffect.remove_labels()`: removes existing labels from a claim.
 
-#### Attributes
+#### Parameters
 
-| Attribute  | Type            | Description                                  | Required |
-| ---------- | --------------- | -------------------------------------------- | -------- |
-| `claim_id` | `UUID` or `str` | Identifier for the claim                     | Yes      |
-| `labels`   | `list[str]`     | List of label names to remove from the claim | Yes      |
+| Parameter | Type        | Description                                  | Required |
+| --------- | ----------- | -------------------------------------------- | -------- |
+| `labels`  | `list[str]` | List of label names to remove from the claim | Yes      |
 
 #### Implementation Details
 
@@ -97,8 +116,8 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 
-from canvas_sdk.effects.claim_label import RemoveClaimLabel
-from canvas_sdk.v1.data import Note, TaskLabel
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
 
 
 class Protocol(BaseProtocol):
@@ -110,16 +129,362 @@ class Protocol(BaseProtocol):
         claim = note.get_claim()
         state = self.event.context["state"]
         if state == "LKD":
-            remove = RemoveClaimLabel(claim_id=claim.id, labels=["pushed not locked"])
-            return [remove.apply()]
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.remove_labels(["pushed not locked"])]
         return []
 ```
 
-### UpdateClaimLineItem
+### Move to Queue
+
+`ClaimEffect.move_to_queue()`: moves a claim to a specific queue.
+
+#### Parameters
+
+| Parameter | Type  | Description                                                                                            | Required |
+| --------- | ----- | ------------------------------------------------------------------------------------------------------ | -------- |
+| `queue`   | `str` | The name of the queue to move the claim to, which must be a [valid name](/sdk/data-claim/#claimqueues) | Yes      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- Validates `queue` is provided and the [queue with that name exists](/sdk/data-claim/#claimqueues)
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        if self.event.context["state"] == "ULK":
+            note = Note.objects.get(id=self.event.context["note_id"])
+            claim = note.get_claim()
+            claim_effect = ClaimEffect(claim_id=str(claim.id))
+            return [claim_effect.move_to_queue("NeedsClinicianReview")]
+        return []
+```
+
+### Add Comment
+
+`ClaimEffect.add_comment()`: creates a new comment on a claim.
+
+#### Parameters
+
+| Parameter | Type  | Description             | Required |
+| --------- | ----- | ----------------------- | -------- |
+| `comment` | `str` | The comment text to add | Yes      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Patient, Claim
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = EventType.Name(EventType.COVERAGE_CREATED)
+
+    def compute(self) -> list[Effect]:
+        pt = Patient.objects.get(id=self.event.context["patient"]["id"])
+        # patient's claims that have not been submitted yet
+        pt_claims = Claim.objects.filter(
+            note__patient=pt, current_queue__queue_sort_ordering__in=[1, 2, 3, 4]
+        )
+        return [
+            ClaimEffect(claim_id=claim.id).add_comment(
+                "Patient has a new coverage, please confirm if this claim's coverage info should be updated."
+            )
+            for claim in pt_claims
+        ]
+```
+
+### Post Payment
+
+`ClaimEffect.post_payment()`: posts a payment to a claim, specifying payment details and line item transactions. This method supports payments from insurance or patient and allows you to specify payments, adjustments, transfers, and write-offs on individual claim line items.
+
+#### Parameters
+
+| Parameter                | Type                          | Description                                                                                         | Required |
+| ------------------------ | ----------------------------- | --------------------------------------------------------------------------------------------------- | -------- |
+| `claim_coverage_id`      | `UUID`, `str`, or `'patient'` | Identifier for the coverage or the string `'patient'` for patient payments.                         | Yes      |
+| `line_item_transactions` | `list[LineItemTransaction]`   | List of [LineItemTransactions](#lineitemtransaction) for claim line items.                          | Yes      |
+| `method`                 | `PaymentMethod`               | The [PaymentMethod](#paymentmethod-enumeration-type) used (e.g., `cash`, `check`, `card`, `other`). | Yes      |
+| `move_to_queue_name`     | `str`                         | Name of the queue to move the claim to after payment.                                               | No       |
+| `claim_description`      | `str`                         | Description for the claim allocation.                                                               | No       |
+| `check_date`             | `date`                        | Date of the check (required if method is `check`).                                                  | No       |
+| `check_number`           | `str`                         | Check number (required if method is `check`).                                                       | No       |
+| `deposit_date`           | `date`                        | Date the payment was deposited.                                                                     | No       |
+| `payment_description`    | `str`                         | Description of the payment.                                                                         | No       |
+
+#### Validations and Implementation Details
+
+- `check_number` and `check_date` are required if payment method is `check`
+- `claim_id` must correspond to a valid existing claim. For insurance payments, there are a few ways to help you identify the correct claim using the [Claim](/sdk/data-claim/#claim), [ClaimSubmission](/sdk/data-claim/#claimsubmission), [ClaimCoverage](/sdk/data-claim/#claimcoverage) data models:
+  - `Claim.account_number` is the identifier that Canvas sends to the clearinghouse as a unique Canvas identifier for the claim.
+  - `ClaimSubmission.clearinghouse_claim_id` is the identifier that the clearinghouse sends back to Canvas after they have accepted the claim, and is used for the clearinghouse's internal tracking of the claim.
+  - `ClaimCoverage.payer_icn` is the identifier that the insurance company uses for their internal tracking of the claim, and is usually provided to Canvas via the clearinghouse.
+- `claim_coverage_id` must be either the string `"patient"` or correspond to a valid and **active** [ClaimCoverage](/sdk/data-claim/#claimcoverage) for the Claim.
+  - A helpful way to identify the correct claim coverage is to use the method `get_coverage_by_payer_id(payer_id: str, subscriber_number: str | None = None)` on the [Claim](/sdk/data-claim/#claim) data model, where `payer_id` is the standard id for the insurance company. You can optionally provide `subscriber_number` if it's possible that the patient has multiple coverages from the same payer and you want to identify the correct coverage.
+- `move_to_queue_name` must be a valid label from [ClaimQueue](/sdk/data-claim/#claimqueues), but is not required. If provided, the claim will move to this queue after payment is applied.
+
+#### LineItemTransaction
+
+| Attribute                       | Type                          | Description                                             | Required |
+| ------------------------------- | ----------------------------- | ------------------------------------------------------- | -------- |
+| `claim_line_item_id`            | `UUID` or `str`               | Identifier for the claim line item.                     | Yes      |
+| `charged`                       | `Decimal`                     | Charged amount for the line item.                       | No       |
+| `allowed`                       | `Decimal`                     | Allowed amount for the line item.                       | No       |
+| `payment`                       | `Decimal`                     | Payment amount for the line item.                       | No       |
+| `adjustment`                    | `Decimal`                     | Adjustment amount for the line item.                    | No       |
+| `adjustment_code`               | `str`                         | Code describing the adjustment.                         | No       |
+| `transfer_remaining_balance_to` | `UUID`, `str`, or `'patient'` | Transfer remaining balance to another payer or patient. | No       |
+| `write_off`                     | `bool`                        | Whether to write off the remaining balance.             | No       |
+
+##### LineItemTransaction Validations
+
+- `claim_line_item_id` must be a valid and **active** line item for the claim. It is recommended to search for it using `.active()` and by `proc_code`, e.g. `claim.line_items.active().filter(proc_code="99215").first()`
+- There can be many LineItemTransactions for the same `claim_line_item_id`, but the first LineItemTransaction for a claim line item must specify either a payment or an adjustment (or allowed amount); subsequent transactions require an adjustment.
+- If an `adjustment` is specified, an `adjustment_code` must also be provided.
+- If the adjustment code is for a transfer (code starts with "Transfer"), a valid `transfer_remaining_balance_to` must be provided, and it cannot be the same payer as the `claim_coverage_id` payer.
+- `transfer_remaining_balance_to` can only be made to the patient (using the string `"patient"`) or to an **active** `claim_coverage_id` for the claim.
+- Adjustments cannot simultaneously write off and transfer the same amount; only one of `write_off` or `transfer_remaining_balance_to` should be set on LineItemTransactions where `adjustment` is present.
+- Adjustments and transfers are not allowed for COPAY charges, i.e. claim line items where the proc_code = `COPAY`. Only payments are allowed for those line items.
+- `payment` on COPAY line items must have a `claim_coverage_id` equal to `"patient"`.
+- `allowed` should be empty or $0 if `claim_coverage_id` is equal to `"patient"`.
+
+#### PaymentMethod Enumeration Type
+
+| Enum    | Value |
+| :------ | :---- |
+| `CASH`  | cash  |
+| `CHECK` | check |
+| `CARD`  | card  |
+| `OTHER` | other |
+
+#### Example Usage
+
+The most common use case for this method will be with the [SimpleAPI](/sdk/handlers-simple-api-http/) handler.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.v1.data import ClaimLineItem, Claim
+from decimal import Decimal
+from canvas_sdk.effects.claim import (
+    ClaimEffect,
+    PaymentMethod,
+    LineItemTransaction,
+)
+from datetime import date
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+
+
+class MyAPI(SimpleAPIRoute):
+    PATH = "/routes/post-claim-payment"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        # replace with desired authentication logic
+        return True
+
+    def get_claim_line_item(self, claim: Claim, proc_code: str) -> ClaimLineItem | None:
+        return claim.line_items.active().filter(proc_code=proc_code).first()
+
+    def create_line_item_transactions(
+        self, charge: dict, claim: Claim, next_coverage_id: str
+    ) -> list[LineItemTransaction]:
+        transactions = []
+        if not (line_item := self.get_claim_line_item(claim, charge.get("proc_code"))):
+            return transactions
+
+        charged = Decimal(charge["charge"])
+        payment = Decimal(charge["paid"])
+        allowed = Decimal(charge["allowed"])
+        adjustments = charge.get("adjustment", [])
+        first_adjustment = adjustments[0]
+        payment = LineItemTransaction(
+            claim_line_item_id=line_item.id,
+            charged=charged,
+            payment=payment,
+            allowed=allowed,
+            adjustment=Decimal(first_adjustment["amount"]),
+            adjustment_code=f"{first_adjustment['group']}-{first_adjustment['code']}",
+            # replace with whatever logic needed for resolving remaining balance
+            transfer_remaining_balance_to="patient"
+            if first_adjustment["group"] == "PR"
+            else next_coverage_id,
+        )
+        transactions.append(payment)
+
+        additional_adjustments = adjustments[1:]
+        for adj in additional_adjustments:
+            transaction = LineItemTransaction(
+                claim_line_item_id=line_item.id,
+                adjustment=Decimal(adj["amount"]),
+                adjustment_code=f"{adj['group']}-{adj['code']}",
+                # replace with whatever logic needed for resolving remaining balance
+                transfer_remaining_balance_to="patient"
+                if adj["group"] == "PR"
+                else next_coverage_id,
+            )
+            transactions.append(transaction)
+
+        return transactions
+
+    def get_claim(
+        self, account_number: str, clearinghouse_claim_id: str
+    ) -> Claim | None:
+        return (
+            Claim.objects.filter(account_number=account_number).first()
+            or Claim.objects.filter(
+                submissions__clearinghouse_claim_id=clearinghouse_claim_id,
+            ).first()
+        )
+
+    def post_payment(
+        self,
+        claim_payment_info: dict,
+        check_number: str,
+        check_date: str,
+        payer_id: str,
+    ) -> Effect | None:
+        account_number = claim_payment_info.get("pcn")
+        clearinghouse_claim_id = claim_payment_info.get("payer_icn")
+        if not (claim := self.get_claim(account_number, clearinghouse_claim_id)):
+            return None
+        insurance_number = claim_payment_info.get("ins_number")
+        if not (coverage := claim.get_coverage_by_payer_id(payer_id, insurance_number)):
+            return None
+
+        next_coverage_id = (
+            claim.coverages.active().exclude(payer_id=payer_id).first().id
+        )
+
+        line_item_transactions = []
+        for c in claim_payment_info.get("charge", []):
+            line_item_transactions.extend(
+                self.create_line_item_transactions(c, claim, next_coverage_id)
+            )
+
+        claim_effect = ClaimEffect(claim_id=claim.id)
+        return claim_effect.post_payment(
+            claim_coverage_id=coverage.id,
+            line_item_transactions=line_item_transactions,
+            method=PaymentMethod.CHECK,
+            check_date=date.fromisoformat(check_date),
+            check_number=check_number,
+            deposit_date=date.fromisoformat(check_date),
+            payment_description="Aetna 835 payment",
+            claim_description="Payment applied via 835",
+        )
+
+    def post(self) -> list[Response | Effect]:
+        payment_info = self.request.json()
+        check_number = payment_info.get("check_number")
+        check_date = payment_info.get("paid_date")
+        payer_id = payment_info.get("payerid")
+        payments = [
+            p
+            for claim in payment_info.get("claim", [])
+            if (p := self.post_payment(claim, check_number, check_date, payer_id))
+        ]
+        return payments + [JSONResponse({"message": "ok"})]
+```
+
+With the above plugin installed, an example call to the endpoint would look like this:
+
+```bash
+
+curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: <api-key>" \
+  -d '{
+    "paid_date": "2025-11-06",
+    "eraid": "23853671",
+    "check_number": "397547083-1662491258",
+    "paid_amount": "346.00",
+    "payerid": "60054",
+    "claim": [
+        {
+            "pcn": "124974-1",
+            "payer_icn": "TST397547083",
+            "total_charge": "48",
+            "from_dos": "20250827",
+            "pat_name_f": "ETHYL",
+            "ins_name_l": "BATES",
+            "total_paid": "0",
+            "thru_dos": null,
+            "pat_name_l": "BATES",
+            "ins_number": "412098745",
+            "ins_name_f": "NORMAN",
+            "charge": [
+                {
+                    "chgid": "221043771",
+                    "from_dos": "20220827",
+                    "adjustment": [{"amount": "48", "group": "OA", "code": "109"}],
+                    "paid": "0",
+                    "allowed": "0",
+                    "proc_code": "99212",
+                    "charge": "48",
+                    "thru_dos": null,
+                    "units": "1"
+                }
+            ]
+        },
+        {
+            "pcn": "21830-1",
+            "payer_icn": "TST397547094",
+            "total_charge": "75",
+            "from_dos": "20220827",
+            "pat_name_f": "MARYLOU",
+            "ins_name_l": "DENNIS",
+            "total_paid": "45",
+            "thru_dos": null,
+            "pat_name_l": "DENNIS",
+            "ins_number": "223444467",
+            "ins_name_f": "ROBERT",
+            "charge": [
+                {
+                    "chgid": "221043716",
+                    "from_dos": "20220827",
+                    "adjustment": [
+                        {"amount": "15", "group": "CO", "code": "45"},
+                        {"amount": "10", "group": "PR", "code": "2"},
+                        {"amount": "5", "group": "PR", "code": "3"}
+                    ],
+                    "paid": "45",
+                    "allowed": "60",
+                    "proc_code": "99213",
+                    "charge": "75",
+                    "thru_dos": null,
+                    "units": "1"
+                }
+            ]
+        }
+    ]
+}'
+```
+
+---
+
+## UpdateClaimLineItem
 
 The `UpdateClaimLineItem` effect allows you to update the `charge` field and `linked_diagnosis_codes` on a specified claim line item.
 
-#### Attributes
+### Attributes
 
 | Attribute                | Type                | Description                                                                                                          | Required |
 | ------------------------ | ------------------- | -------------------------------------------------------------------------------------------------------------------- | -------- |
@@ -127,13 +492,13 @@ The `UpdateClaimLineItem` effect allows you to update the `charge` field and `li
 | `charge`                 | `float`             | The charge amount to update on the claim line item                                                                   | No       |
 | `linked_diagnosis_codes` | `list[UUID or str]` | List of [ClaimLineItemDiagnosisCode](/sdk/data-claim/#claimlineitemdiagnosiscode) IDs to link to the claim line item | No       |
 
-#### Implementation Details
+### Implementation Details
 
 - Validates `claim_line_item_id` is provided and that the associated claim line item exists
 - If `linked_diagnosis_codes` is provided, validates that all [ClaimLineItemDiagnosisCode](/sdk/data-claim/#claimlineitemdiagnosiscode) IDs correspond to existing diagnosis codes on the claim line item
 - The `linked_diagnosis_codes` list represents the complete set of diagnosis codes that will be linked to the claim line item when the effect is applied. Any diagnosis codes not included in this list will be unlinked. If you wish to add a new code to the existing linked codes, you must first retrieve the current list and include all codes you want to remain linked: `list(claim_line_item.diagnosis_codes.filter(linked=True).values_list("id", flat=True)) + [new_code_id]`
 
-#### Example Usage
+### Example Usage
 
 Updating charge amount.
 
@@ -236,369 +601,6 @@ class Protocol(BaseProtocol):
                 claim_line_item_id=item.id, linked_diagnosis_codes=get_diag_ids(item)
             ).apply()
             for item in items
-        ]
-```
-
-### MoveClaimToQueue
-
-The `MoveClaimToQueue` effect moves a specific claim to a queue.
-
-#### Attributes
-
-| Attribute  | Type            | Description                                                                                            | Required |
-| ---------- | --------------- | ------------------------------------------------------------------------------------------------------ | -------- |
-| `claim_id` | `UUID` or `str` | Identifier for the claim                                                                               | Yes      |
-| `queue`    | `str`           | The name of the queue to move the claim to, which must be a [valid name](/sdk/data-claim/#claimqueues) | Yes      |
-
-#### Implementation Details
-
-- Validates `claim_id` is provided and that the associated claim exists
-- Validates `queue` is provided and the [queue with that name exists](/sdk/data-claim/#claimqueues)
-
-#### Example Usage
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
-from canvas_sdk.effects.claim_queue import MoveClaimToQueue
-from canvas_sdk.v1.data import Note
-
-
-class Protocol(BaseProtocol):
-    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
-
-    def compute(self) -> list[Effect]:
-        if self.event.context["state"] == "ULK":
-            note = Note.objects.get(id=self.event.context["note_id"])
-            claim = note.get_claim()
-            move = MoveClaimToQueue(
-                claim_id=str(claim.id), queue="NeedsClinicianReview"
-            )
-            return [move.apply()]
-
-```
-
-## PostClaimPayment
-
-The `PostClaimPayment` effect posts a payment to a claim, specifying payment details and line item transactions. This effect supports payments from insurance or patient and allows you to specify payments, adjustments, transfers, and write-offs on individual claim line items.
-
-### Attributes
-
-| Attribute             | Type              | Description                                                                                                    | Required |
-| --------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------- | -------- |
-| `method`              | `PaymentMethod`   | The [PaymentMethod](#paymentmethod-enumeration-type) used (e.g., `cash`, `check`, `card`, `other`).            | Yes      |
-| `check_date`          | `date`            | Date of the check (required if method is `check`).                                                             | No       |
-| `check_number`        | `str`             | Check number (required if method is `check`).                                                                  | No       |
-| `deposit_date`        | `date`            | Date the payment was deposited.                                                                                | No       |
-| `payment_description` | `str`             | Description of the payment.                                                                                    | No       |
-| `claim`               | `ClaimAllocation` | [ClaimAllocation](#claimallocation) specifying how the payment is distributed to the claim and its line items. | Yes      |
-
-#### Validations and Implementation Details
-
-- `check_number` and `check_date` are required if payment method is `check`
-
-### ClaimAllocation
-
-| Attribute                | Type                          | Description                                                                 | Required |
-| ------------------------ | ----------------------------- | --------------------------------------------------------------------------- | -------- |
-| `claim_id`               | `UUID` or `str`               | Identifier for the claim.                                                   | Yes      |
-| `claim_coverage_id`      | `UUID`, `str`, or `'patient'` | Identifier for the coverage or the string `'patient'` for patient payments. | Yes      |
-| `line_item_transactions` | `list[LineItemTransaction]`   | List of [LineItemTransactions](#lineitemtransaction) for claim line items.  | Yes      |
-| `move_to_queue_name`     | `str`                         | Name of the queue to move the claim to after payment.                       | No       |
-| `description`            | `str`                         | Description for the claim allocation.                                       | No       |
-
-#### Validations and Implementation Details
-
-- `claim_id` must correspond to a valid existing claim. for insurance payments, there are a few ways to help you identify the correct claim using the [Claim](/sdk/data-claim/#claim), [ClaimSubmission](/sdk/data-claim/#claimsubmission), [ClaimCoverage](/sdk/data-claim/#claimcoverage) data models:
-  - `Claim.account_number` is the identifier that Canvas sends to the clearinghouse as a unique Canvas identifier for the claim.
-  - `ClaimSubmission.clearinghouse_claim_id` is the identifier that the clearinghouse sends back to Canvas after they have accepted the claim, and is used for the clearinghouse's internal tracking of the claim.
-  - `ClaimCoverage.payer_icn` is the identifier that the insurance company uses for their internal tracking of the claim, and is usually provided to Canvas via the clearinghouse.
-- `claim_coverage_id` must be either the string `"patient"` or correspond to a valid and **active** [ClaimCoverage](/sdk/data-claim/#claimcoverage) for the Claim.
-  - a helpful way to identify the correct claim coverage is to use the method `get_coverage_by_payer_id(payer_id: str, subscriber_number: str | None = None)` on the [Claim](/sdk/data-claim/#claim) data model, where `payer_id` is the standard id for the insurance company. You can optionally provide `subscriber_number` if its possible that the patient has multiple coverages from the same payer and you want to identify the correct coverage.
-- `move_to_queue_name` must be a valid label from [ClaimQueue](/sdk/data-claim/#claimqueues), but is not required. if provided, the claim will move to this queue after payment is applied.
-
-### LineItemTransaction
-
-| Attribute                       | Type                          | Description                                             | Required |
-| ------------------------------- | ----------------------------- | ------------------------------------------------------- | -------- |
-| `claim_line_item_id`            | `UUID` or `str`               | Identifier for the claim line item.                     | Yes      |
-| `charged`                       | `Decimal`                     | Charged amount for the line item.                       | No       |
-| `allowed`                       | `Decimal`                     | Allowed amount for the line item.                       | No       |
-| `payment`                       | `Decimal`                     | Payment amount for the line item.                       | No       |
-| `adjustment`                    | `Decimal`                     | Adjustment amount for the line item.                    | No       |
-| `adjustment_code`               | `str`                         | Code describing the adjustment.                         | No       |
-| `transfer_remaining_balance_to` | `UUID`, `str`, or `'patient'` | Transfer remaining balance to another payer or patient. | No       |
-| `write_off`                     | `bool`                        | Whether to write off the remaining balance.             | No       |
-
-#### Validations and Implementation Details
-
-- `claim_line_item_id` must be a valid and **active** line item for the claim. It is recommended to search for it using `.active()` and by `proc_code`, e.g. `claim.line_items.active().filter(proc_code="99215").first()`
-- there can be many LineItemTransactions for the same `claim_line_item_id`, but the first LineItemTransaction for a claim line item must specify either a payment or an adjustment (or allowed amount); subsequent transactions require an adjustment.
-- if an `adjustment` is specified, an `adjustment_code` must also be provided.
-- if the adjustment code is for a transfer (code starts with "Transfer"), a valid `transfer_remaining_balance_to` must be provided, and it cannot be the same payer as the `claim_coverage_id` payer from the ClaimAllocation.
-- `transfer_remaining_balance_to` can only be made to the patient (using the string `"patient"`) or to an **active** `claim_coverage_id` for the claim.
-- adjustments cannot simultaneously write off and transfer the same amount; only one of `write_off` or `transfer_remaining_balance_to` should be set on LineItemTransactions where `adjustment` is present.
-- adjustments and transfers are not allowed for COPAY charges, i.e. claim line items where the proc_code = `COPAY`. only payments are allowed for those line items.
-- `payment` on COPAY line items must have a `claim_coverage_id` equal to `"patient"`.
-- `allowed` should be empty or $0 if `claim_coverage_id` is equal to `"patient"`.
-
-#### PaymentMethod Enumeration Type
-
-| Enum    | Value |
-| :------ | :---- |
-| `CASH`  | cash  |
-| `CHECK` | check |
-| `CARD`  | card  |
-| `OTHER` | other |
-
-### Example Usage
-
-The most common use case for this effect will be with the [SimpleAPI](/sdk/handlers-simple-api-http/) handler.
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.v1.data import ClaimLineItem, Claim
-from decimal import Decimal
-from canvas_sdk.effects.payment import (
-    PostClaimPayment,
-    PaymentMethod,
-    ClaimAllocation,
-    LineItemTransaction,
-)
-from datetime import date
-from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
-
-
-class MyAPI(SimpleAPIRoute):
-    PATH = "/routes/post-claim-payment"
-
-    def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        # replace with desired authentication logic
-        return True
-
-    def get_claim_line_item(self, claim: Claim, proc_code: str) -> ClaimLineItem | None:
-        return claim.line_items.active().filter(proc_code=proc_code).first()
-
-    def create_line_item_transactions(
-        self, charge: dict, claim: Claim, next_coverage_id: str
-    ) -> list[LineItemTransaction]:
-        transactions = []
-        if not (line_item := self.get_claim_line_item(claim, charge.get("proc_code"))):
-            return transactions
-
-        charged = Decimal(charge["charge"])
-        payment = Decimal(charge["paid"])
-        allowed = Decimal(charge["allowed"])
-        adjustments = charge.get("adjustment", [])
-        first_adjustment = adjustments[0]
-        payment = LineItemTransaction(
-            claim_line_item_id=line_item.id,
-            charged=charged,
-            payment=payment,
-            allowed=allowed,
-            adjustment=Decimal(first_adjustment["amount"]),
-            adjustment_code=f"{first_adjustment['group']}-{first_adjustment['code']}",
-            # replace with whatever logic needed for resolving remaining balance
-            transfer_remaining_balance_to="patient"
-            if first_adjustment["group"] == "PR"
-            else next_coverage_id,
-        )
-        transactions.append(payment)
-
-        additional_adjustments = adjustments[1:]
-        for adj in additional_adjustments:
-            transaction = LineItemTransaction(
-                claim_line_item_id=line_item.id,
-                adjustment=Decimal(adj["amount"]),
-                adjustment_code=f"{adj['group']}-{adj['code']}",
-                # replace with whatever logic needed for resolving remaining balance
-                transfer_remaining_balance_to="patient"
-                if adj["group"] == "PR"
-                else next_coverage_id,
-            )
-            transactions.append(transaction)
-
-        return transactions
-
-    def get_claim(
-        self, account_number: str, clearinghouse_claim_id: str
-    ) -> Claim | None:
-        return (
-            Claim.objects.filter(account_number=account_number).first()
-            or Claim.objects.filter(
-                submissions__clearinghouse_claim_id=clearinghouse_claim_id,
-            ).first()
-        )
-
-    def post_payment(
-        self,
-        claim_payment_info: dict,
-        check_number: str,
-        check_date: str,
-        payer_id: str,
-    ) -> Effect | None:
-        account_number = claim_payment_info.get("pcn")
-        clearinghouse_claim_id = claim_payment_info.get("payer_icn")
-        if not (claim := self.get_claim(account_number, clearinghouse_claim_id)):
-            return None
-        insurance_number = claim_payment_info.get("ins_number")
-        if not (coverage := claim.get_coverage_by_payer_id(payer_id, insurance_number)):
-            return None
-
-        next_coverage_id = (
-            claim.coverages.active().exclude(payer_id=payer_id).first().id
-        )
-
-        line_item_transactions = []
-        for c in claim_payment_info.get("charge", []):
-            line_item_transactions.extend(
-                self.create_line_item_transactions(c, claim, next_coverage_id)
-            )
-
-        pmt = PostClaimPayment(
-            check_date=date.fromisoformat(check_date),
-            check_number=check_number,
-            deposit_date=date.fromisoformat(check_date),
-            method=PaymentMethod.CHECK,
-            payment_description="Aetna 835 payment",
-            claim=ClaimAllocation(
-                claim_id=claim.id,
-                claim_coverage_id=coverage.id,
-                line_item_transactions=line_item_transactions,
-                description="Payment applied via 835",
-            ),
-        )
-        return pmt.apply()
-
-    def post(self) -> list[Response | Effect]:
-        payment_info = self.request.json()
-        check_number = payment_info.get("check_number")
-        check_date = payment_info.get("paid_date")
-        payer_id = payment_info.get("payerid")
-        payments = [
-            p
-            for claim in payment_info.get("claim", [])
-            if (p := self.post_payment(claim, check_number, check_date, payer_id))
-        ]
-        return payments + [JSONResponse({"message": "ok"})]
-```
-
-With the above plugin installed, an example call to the endpoint would look like this:
-
-```bash
-
-curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: <api-key>" \
-  -d '{
-    "paid_date": "2025-11-06",
-    "eraid": "23853671",
-    "check_number": "397547083-1662491258",
-    "paid_amount": "346.00",
-    "payerid": "60054",
-    "claim": [
-        {
-            "pcn": "124974-1",
-            "payer_icn": "TST397547083",
-            "total_charge": "48",
-            "from_dos": "20250827",
-            "pat_name_f": "ETHYL",
-            "ins_name_l": "BATES",
-            "total_paid": "0",
-            "thru_dos": None,
-            "pat_name_l": "BATES",
-            "ins_number": "412098745",
-            "ins_name_f": "NORMAN",
-            "charge": [
-                {
-                    "chgid": "221043771",
-                    "from_dos": "20220827",
-                    "adjustment": [{"amount": "48", "group": "OA", "code": "109"}],
-                    "paid": "0",
-                    "allowed": "0",
-                    "proc_code": "99212",
-                    "charge": "48",
-                    "thru_dos": None,
-                    "units": "1",
-                }
-            ],
-        },
-        {
-            "pcn": "21830-1",
-            "payer_icn": "TST397547094",
-            "total_charge": "75",
-            "from_dos": "20220827",
-            "pat_name_f": "MARYLOU",
-            "ins_name_l": "DENNIS",
-            "total_paid": "45",
-            "thru_dos": None,
-            "pat_name_l": "DENNIS",
-            "ins_number": "223444467",
-            "ins_name_f": "ROBERT",
-            "charge": [
-                {
-                    "chgid": "221043716",
-                    "from_dos": "20220827",
-                    "adjustment": [
-                        {"amount": "15", "group": "CO", "code": "45"},
-                        {"amount": "10", "group": "PR", "code": "2"},
-                        {"amount": "5", "group": "PR", "code": "3"},
-                    ],
-                    "paid": "45",
-                    "allowed": "60",
-                    "proc_code": "99213",
-                    "charge": "75",
-                    "thru_dos": None,
-                    "units": "1",
-                }
-            ],
-        },
-    ],
-}'
-```
-
-## AddClaimComment
-
-The `AddClaimComment` effect creates a new comment on an existing claim.
-
-### Attributes
-
-| Attribute  | Type            | Description              | Required |
-| ---------- | --------------- | ------------------------ | -------- |
-| `claim_id` | `UUID` or `str` | Identifier for the claim | Yes      |
-| `comment`  | `str`           | The comment text to add  | Yes      |
-
-### Implementation Details
-
-- Validates `claim_id` is provided and that the associated claim exists
-
-### Example Usage
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
-from canvas_sdk.effects.claim_comment import AddClaimComment
-from canvas_sdk.v1.data import Patient, Claim
-
-
-class Protocol(BaseProtocol):
-    RESPONDS_TO = EventType.Name(EventType.COVERAGE_CREATED)
-
-    def compute(self) -> list[Effect]:
-        pt = Patient.objects.get(id=self.event.context["patient"]["id"])
-        # patient's claims that have not been submitted yet
-        pt_claims = Claim.objects.filter(
-            note__patient=pt, current_queue__queue_sort_ordering__in=[1, 2, 3, 4]
-        )
-        return [
-            AddClaimComment(
-                claim_id=claim.id,
-                comment="Patient has a new coverage, please confirm if this claim's coverage info should be updated.",
-            ).apply()
-            for claim in pt_claims
         ]
 ```
 

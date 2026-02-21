@@ -26,6 +26,28 @@ Stay up to date on the latest important dates for the Canvas platform.
   </thead>
   <tbody>
     <tr>
+      <td>FHIR API: Remove Practitioner birth sex extension — phase 1</td>
+      <td style="color: red;">Breaking Change</td>
+      <td>
+        We recently added support for an extension to the FHIR Practitioner resource that enables writing a practitioner's birth sex (extension URL http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex). After doing so, we discovered that this feature is not compliant with USCDI v3.<br><br>
+        On the release date, we are going to remove support for this extension. Read and search endpoints will no longer return this data. If the extension is present in a resource sent to a create or update endpoint, the extension will be ignored.<br><br>
+        Instead, when a request is sent to create a practitioner, the birth sex value in the database will be set to <code>unknown</code>.<br><br>
+        <strong>To avoid disruption, act before the release date and change your client code to stop consuming birth sex from FHIR Practitioner read and search responses.</strong>
+      </td>
+      <td>02/06/26</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>FHIR API: Remove Practitioner birth sex extension — phase 2</td>
+      <td style="color: red;">Breaking Change</td>
+      <td>
+        On the release date, requests sent to the FHIR Practitioner create and update endpoints that contain the birth sex extension will receive an error response.<br><br>
+        <strong>To avoid disruption, act before the release date and change your client code to stop sending the birth sex extension in FHIR Practitioner create and update requests.</strong>
+      </td>
+      <td>02/16/26</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>FHIR API: QuestionnaireResponse questionnaire attribute changing from reference string to absolute URL</td>
       <td style="color: red;">Breaking Change</td>
       <td>
@@ -49,59 +71,6 @@ Stay up to date on the latest important dates for the Canvas platform.
         QuestionnaireResponse endpoints will be unaffected by this change.</strong> 
       </td>
       <td>02/02/26</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>FHIR API: Condition category handling</td>
-      <td style="color: red;">Breaking Change</td>
-      <td>
-        On the release date, Canvas will handle the <code>category</code> attribute on the FHIR
-        Condition resource differently in order to meet USCDI v3 requirements.<br><br>
-        Currently, the <code>category</code> attribute for all Conditions is required to be
-        <code>encounter-diagnosis</code>. On the release date, the following changes will take
-        effect:<br>
-        <ul>
-          <li>
-            The Condition create and update endpoints will accept <code>encounter-diagnosis</code>,
-            <code>problem-list-item</code>, or <code>health-concern</code> for the <code>code</code>
-            attribute of the category coding.
-          </li>
-          <li>
-            The Condition read and search-type endpoints will return
-            <code>encounter-diagnosis</code>, <code>problem-list-item</code>, or
-            <code>health-concern</code> for the <code>code</code> attribute of the category coding,
-            based on what is stored in the database for the Condition.
-          </li>
-          <li>
-            Conditions created by the Diagnose command will have <code>category</code> set to
-            <code>problem-list-item</code>. The Diagnose command will be enhanced in the future to
-            enable use of the other value options for <code>category</code>.
-          </li>
-          <li>
-            The <code>category</code> for all existing Conditions in the database will be set to
-            <code>problem-list-item</code>.
-          </li>
-        </ul>
-        <strong>What you need to do:</strong><br>
-        <ul>
-          <li>
-            All client code that makes use of the Condition create or update endpoints must be
-            updated before the release date so that <code>problem-list-item</code> is sent instead
-            of <code>encounter-diagnosis</code>. Please note that until we make the breaking change,
-            even if you send <code>problem-list-item</code>, we will continue returning you
-            <code>encounter-diagnosis</code> from read and search endpoints until we make the
-            breaking change.
-          </li>
-          <li>
-            All client code that makes use of the read or search endpoints must be updated if they
-            reference the <code>category</code> attribute to flexibly handle either
-            <code>encounter-diagnosis</code> or <code>problem-list-item</code>.
-          </li>
-        </ul><br>
-        <strong>Making these two changes before the release date will ensure that your use of the endpoint
-        will be unaffected by this change.</strong> 
-      </td>
-      <td>12/08/25</td>
       <td></td>
     </tr>
     <tr>
