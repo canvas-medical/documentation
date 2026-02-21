@@ -24,7 +24,7 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
     "components": {
         "protocols": [
             {
-                "class": "abnormal_lab_task_notification.protocols.abnormal_lab_protocol:AbnormalLabHandler",
+                "class": "abnormal_lab_task_notification.handlers.abnormal_lab_handler:AbnormalLabHandler",
                 "description": "Monitors lab reports and creates tasks for abnormal values",
                 "data_access": {
                     "event": "LAB_REPORT_CREATED",
@@ -50,9 +50,9 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
 }
 ```
 
-## protocols/
+## handlers/
 
-### abnormal_lab_protocol.py
+### abnormal_lab_handler.py
 
 **Purpose and Functionality**
 
@@ -95,7 +95,7 @@ from logger import log
 
 class AbnormalLabHandler(BaseHandler):
     """
-    A protocol that monitors lab reports and creates task notifications
+    A handler that monitors lab reports and creates task notifications
     for abnormal lab values to ensure prompt review.
 
     Triggers on: LAB_REPORT_CREATED events
