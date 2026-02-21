@@ -362,7 +362,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/allergyintolerance/
 ### 
 Risk of harmful or undesirable, physiological response which is unique to an individual and associated with exposure to a substance.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html>   
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-allergyintolerance.html>   
 To learn more about documenting allergies in Canvas see [here](https://canvas-medical.help.usepylon.com/articles/9964004914-document-allergies).
 ### Endpoints
 post /AllergyIntolerance get /AllergyIntolerance/{id} put /AllergyIntolerance/{id} get /AllergyIntolerance
@@ -3930,7 +3930,7 @@ There's any number of ways to do this in your language of choice. In Python, you
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/careplan/
 ### 
 Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions.  
-<https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careplan.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-careplan.html>  
 A CarePlan in Canvas translates to the [Integrated Care Plan PDF](https://canvas-medical.help.usepylon.com/articles/8547508751-administrative-menu-integrated-care-plan) you can print on the patient's chart. This endpoint will return either one or zero care plans for each patient. If no care plan was returned for a given patient, then that patient has never had a Goal command committed on their chart.
 ### Endpoints
 get /CarePlan/{id} get /CarePlan
@@ -4335,7 +4335,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/careteam/
 ### 
 The Care Team includes all the people and organizations who plan to participate in the coordination and delivery of care for a patient.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careteam.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-careteam.html>  
 All patients in Canvas have a CareTeam by default. The identifier for the CareTeam resource for a patient is the same as the patient identifier.   
 See our [article](https://help.canvasmedical.com/articles/5628604712-manage-care-teams) for information about setting up Care Teams and Care Team Roles in Canvas.
 ### Endpoints
@@ -8361,6 +8361,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/condition/
 ### 
 A clinical condition, problem, diagnosis, or other event, situation, issue, or clinical concept that has risen to a level of concern.  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-encounter-diagnosis.html>  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html>
 ### Endpoints
 post /Condition get /Condition/{id} put /Condition/{id} get /Condition
@@ -10710,7 +10711,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/coverage/
 ### 
 Financial instrument which may be used to reimburse or pay for health care products and services. Includes both insurance and self-payment.  
-<https://hl7.org/fhir/R4/coverage.html>
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-coverage.html>
 ### Endpoints
 post /Coverage get /Coverage/{id} put /Coverage/{id} get /Coverage
 post
@@ -16148,7 +16149,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/device/
 ### 
 A type of a manufactured item that is used in the provision of healthcare without being substantially changed through that activity. The device may be a medical or non-medical device.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-implantable-device.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-implantable-device.html>  
 For information about creating Device resources for a patient, see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/8311513697-implantable-devices). Devices are not currently used by the Canvas UI, but any devices that are created can be accessed with the Device read and search endpoints, In order to generate the type attribute, a device code must be created and linked to the device via the admin settings on Canvas.
 ### Endpoints
 get /Device/{id} get /Device
@@ -17617,7 +17618,8 @@ The bearer token included in requests send to this endpoint must have one of the
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/diagnosticreport/
 ### 
 The findings and interpretation of diagnostic tests performed on patients, groups of patients, devices, and locations, and/or specimens derived from these. The report includes clinical context such as requesting and provider information, and some mix of atomic results, images, textual and coded interpretations, and formatted representation of diagnostic reports.   
-<https://hl7.org/fhir/R4/diagnosticreport.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-diagnosticreport-lab.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-diagnosticreport-note.html>  
 This endpoint implements the US Core DiagnosticReport Profile for Report. The following USCDI data elements are retrievable from this endpoint:  
 Clinical Notes:  
 \- Imaging Narrative  
@@ -18294,7 +18296,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/documentreference/
 ### 
 A reference to a document of any kind for any purpose. Provides metadata about the document so that the document can be discovered and managed. The scope of a document is any seralized object with a mime-type, so includes formal patient centric documents (CDA), clinical notes, scanned paper, and non-patient specific documents like policy text.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-documentreference.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-documentreference.html>  
 A Document Reference can represent many different PDFs generated in Canvas:
   - A [Letter](https://canvas-medical.help.usepylon.com/articles/8181146406-letters) that has been faxed or printed from the patient's chart.
   - All documents uploaded via [Data Integration](https://help.canvasmedical.com/articles/7371085164-data-integration) and linked to a Patient. This includes Lab Reports, Imaging Reports, Referral Reports, Clinical, and Administrative Documents.
@@ -20474,7 +20476,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/encounter/
 ### 
 An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.  
-<https://hl7.org/fhir/R4/encounter.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-encounter.html>  
 **Encounter creation in Canvas**  
 An encounter is associated with some of our notes in Canvas. For our default base notes, an encounter will be created with these note types:   
 \- Lab visit   
@@ -20483,8 +20485,7 @@ An encounter is associated with some of our notes in Canvas. For our default bas
 \- Office visit   
 \- Home Visit   
 \- In-patient Visit   
-With our [Configurable Note Types Feature](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types) all custom note types will be associated with an encounter by default.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-encounter.html>
+With our [Configurable Note Types Feature](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types) all custom note types will be associated with an encounter by default.
 ### Endpoints
 get /Encounter/{id} get /Encounter
 get
@@ -21570,7 +21571,7 @@ Error Code | Description
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/goal/
 ### 
 Describes the intended objective(s) for a patient, group or organization  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-goal.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-goal.html>  
 To learn more about how to create goals within the Canvas UI see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/6744190871-goals-command).
 ### Endpoints
 get /Goal/{id} get /Goal
@@ -23127,7 +23128,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/immunization/
 ### 
 Describes the event of a patient being administered a vaccine or a record of an immunization as reported by a patient, a clinician or another party.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-immunization.html>  
 In Canvas, Immunization records are recorded using either the [Immunization Statement Commmand](https://canvas-medical.help.usepylon.com/articles/1379672479-command-immunization-statement) or the [Immunize Command](https://canvas-medical.help.usepylon.com/articles/4155771468-command-immunize).
 ### Endpoints
 post /Immunization get /Immunization/{id} put /Immunization/{id} get /Immunization
@@ -24224,7 +24225,7 @@ The contents of the letter. Supports HTML & CSS. **Placeholders created in Canva
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/location/
 ### 
 Details and position information for a physical place where services are provided and resources and participants may be stored, found, contained, or accommodated.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-location.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-location.html>  
 The FHIR Location resource corresponds to Canvas Practice Locations.
 ### Endpoints
 get /Location/{id} get /Location
@@ -25334,7 +25335,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/medication/
 ### 
 This resource is primarily used for the identification and definition of a medication for the purposes of prescribing, dispensing, and administering a medication as well as for making statements about medication use.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medication.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-medication.html>  
 Best practice is to utilize this endpoint to find codings to feed the [Medication Statement Create/Update](/api/medicationstatement/#create). These medications come directly from our integration with FDB.
 ### Endpoints
 get /Medication/{id} get /Medication
@@ -26275,7 +26276,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/medicationrequest/
 ### 
 An order or request for both supply of the medication and the instructions for administration of the medication to a patient. The resource is called "MedicationRequest" rather than "MedicationPrescription" or "MedicationOrder" to generalize the use across inpatient and outpatient settings, including care plans, etc., and to harmonize with workflow patterns.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medicationrequest.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-medicationrequest.html>  
 FHIR MedicationRequest maps to the [Prescribe, Refill, Adjust Prescription, Deny Refill, Approve Refill](https://canvas-medical.help.usepylon.com/articles/5128727084-managing-medication-commands) commands in Canvas.
 ### Endpoints
 get /MedicationRequest/{id} get /MedicationRequest
@@ -28338,11 +28339,13 @@ To order your results, simply add an ordering query parameter, e.g. `GET` from `
 ### 
 Measurements and simple assertions made about a patient, device or other subject.  
 Canvas supports the following US Core Profiles for Observations:  
-  - [US Core Laboratory Result Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-observation-lab.html)
-  - [US Core Occupation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-occupation.html)
-  - [US Core Pregnancy Intent Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancyintent.html)
-  - [US Core Pregnancy Status Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
-  - [US Core Sexual Orientation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-sexual-orientation.html)
+  - [US Core Observation Clinical Result Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-clinical-result.html)
+  - [US Core Laboratory Result Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-lab.html)
+  - [US Core Observation Occupation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-occupation.html)
+  - [US Core Observation Pregnancy Intent Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancyintent.html)
+  - [US Core Observation Pregnancy Status Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
+  - [US Core Observation Screening Assessment Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
+  - [US Core Observation Sexual Orientation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-sexual-orientation.html)
   - [US Core Simple Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
   - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
   - [US Core Vital Signs Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-vital-signs.html)
@@ -30851,7 +30854,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/organization/
 ### 
 A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action. Includes companies, institutions, corporations, departments, community groups, healthcare practice groups, payer/insurer, etc.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-organization.html>   
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-organization.html>   
 Organizations come from three different Canvas data types: Organizations, Vendors, and Insurers. You can manage these resources in Canvas Settings. FHIR Organizations created by Insurers in Canvas are useful in the [FHIR Coverage](/api/coverage) payor attribute.
 ### Endpoints
 get /Organization/{id} get /Organization
@@ -31473,7 +31476,7 @@ In this example, `entry` contains 10 Observation resources - following the relat
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/patient/
 ### 
 Demographics and other administrative information about an individual or animal receiving care or other health-related services.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html>  
 **Supported Extensions**   
 Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all `json` types and should be included in the `extension` array field as shown in the request/response examples on this page. The following extensions are supported:  
 **`birthsex`**   
@@ -35857,7 +35860,7 @@ The bearer token included in requests send to this endpoint must have one of the
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/practitioner/
 ### 
 A person who is directly or indirectly involved in the provisioning of healthcare.  
-<https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html>  
 To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).  
 ### Endpoints
 post /Practitioner get /Practitioner/{id} put /Practitioner/{id} get /Practitioner
@@ -38296,7 +38299,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/procedure/
 ### 
 An action that is or was performed on or for a patient. This can be a physical intervention like an operation, or less invasive like long term services, counseling, or hypnotherapy.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-procedure.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-procedure.html>  
 See this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/5988007695-command-perform) for information on creating procedures with the `Perform` command.
 ### Endpoints
 get /Procedure/{id} get /Procedure
@@ -38685,7 +38688,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/provenance/
 ### 
 Provenance of a resource is a record that describes entities and processes involved in producing and delivering or otherwise influencing that resource. Provenance provides a critical foundation for assessing authenticity, enabling trust, and allowing reproducibility. Provenance assertions are a form of contextual metadata and can themselves become important records with their own provenance. Provenance statement indicates clinical significance in terms of confidence in authenticity, reliability, and trustworthiness, integrity, and stage in lifecycle (e.g. Document Completion - has the artifact been legally authenticated), all of which may impact security, privacy, and trust policies.  
-<http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-provenance.html>   
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-provenance.html>   
 In Canvas a Provenance record is created each time the following data types are create or updated in the Canvas database:
   - AllergyIntolerance
   - CarePlan
@@ -40069,7 +40072,7 @@ The request requires user authorization.
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/questionnaireresponse/
 ### 
 A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.  
-<https://hl7.org/fhir/R4/questionnaireresponse.html>  
+<https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-questionnaireresponse.html>  
 See this [article](https://help.canvasmedical.com/articles/7017593857-creating-questionnaires) for information about how to build questionnaires in Canvas.  
 Questionnaires can map to four different commands in the Canvas UI depending on what the use case in charting is set to:
   - [Questionnaire](https://canvas-medical.help.usepylon.com/articles/5651999344-command-questionnaire)
