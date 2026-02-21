@@ -10016,41 +10016,41 @@ Represents an individual message record.
 ###  Fields 
 Name | Type | Description  
 ---|---|---  
-`id` | `UUIDField` | Unique identifier for the message.  
-`dbid` | `BigIntegerField` | Database primary key.  
-`created` | `DateTimeField` | Timestamp when the message was created.  
-`modified` | `DateTimeField` | Timestamp when the message was last modified.  
-`content` | `TextField` | The body text of the message.  
-`sender` | `ForeignKey(CanvasUser)` | The user who sent the message. May be null.  
-`recipient` | `ForeignKey(CanvasUser)` | The user who received the message. May be null.  
-`note` | `ForeignKey(Note)` | Associated note (if any) for contextual linkage. May be null.  
-`read` | `DateTimeField` | Timestamp when the recipient read the message. Null if unread.  
+`id` | `UUID` | Unique identifier for the message.  
+`dbid` | `Integer` | Database primary key.  
+`created` | `DateTime` | Timestamp when the message was created.  
+`modified` | `DateTime` | Timestamp when the message was last modified.  
+`content` | `Text` | The body text of the message.  
+`sender` | [CanvasUser](/sdk/data-canvasuser) | The user who sent the message. May be null.  
+`recipient` | [CanvasUser](/sdk/data-canvasuser) | The user who received the message. May be null.  
+`note` | [Note](/sdk/data-note) | Associated note (if any) for contextual linkage. May be null.  
+`read` | `DateTime` | Timestamp when the recipient read the message. Null if unread.  
 ##  MessageAttachment 
 Represents a file attachment linked to a message.
 ###  Fields 
 Name | Type | Description  
 ---|---|---  
-`id` | `UUIDField` | Unique identifier for the attachment.  
-`dbid` | `BigIntegerField` | Database primary key.  
-`file` | `TextField` | Storage path or identifier for the file.  
-`content_type` | `CharField(max_length=255)` | MIME type of the attachment.  
-`message` | `ForeignKey(Message)` | The parent message to which this belongs.  
+`id` | `UUID` | Unique identifier for the attachment.  
+`dbid` | `Integer` | Database primary key.  
+`file` | `Text` | Storage path or identifier for the file.  
+`content_type` | `String` | MIME type of the attachment.  
+`message` | Message | The parent message to which this belongs.  
 ##  MessageTransmission 
 Tracks delivery attempts and status for a message.
 ###  Fields 
 Name | Type | Description  
 ---|---|---  
-`id` | `UUIDField` | Unique identifier for the transmission record.  
-`dbid` | `BigIntegerField` | Database primary key.  
-`created` | `DateTimeField` | Timestamp when the transmission was created.  
-`modified` | `DateTimeField` | Timestamp when the transmission was last modified.  
-`message` | `ForeignKey(Message)` | The message associated with this transmission.  
-`delivered` | `BooleanField` | Whether delivery was successful.  
-`failed` | `BooleanField` | Whether delivery failed.  
-`contact_point_system` | `CharField(choices=TransmissionChannel)` | The channel used for delivery.  
-`contact_point_value` | `CharField(max_length=255)` | The destination address or identifier (e.g., phone, email).  
-`comment` | `TextField` | Optional comments or error details.  
-`delivered_by` | `ForeignKey(Staff)` | The staff member who processed the delivery. May be null.
+`id` | `UUID` | Unique identifier for the transmission record.  
+`dbid` | `Integer` | Database primary key.  
+`created` | `DateTime` | Timestamp when the transmission was created.  
+`modified` | `DateTime` | Timestamp when the transmission was last modified.  
+`message` | Message | The message associated with this transmission.  
+`delivered` | `Boolean` | Whether delivery was successful.  
+`failed` | `Boolean` | Whether delivery failed.  
+`contact_point_system` | TransmissionChannel | The channel used for delivery.  
+`contact_point_value` | `String` | The destination address or identifier (e.g., phone, email).  
+`comment` | `Text` | Optional comments or error details.  
+`delivered_by` | [Staff](/sdk/data-staff/#staff) | The staff member who processed the delivery. May be null.
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-message/
 
 
@@ -10858,7 +10858,7 @@ Field Name | Type
 dbid | Integer  
 patient | Patient  
 key | String  
-value | String  
+value | Text  
     ```python
     from canvas_sdk.v1.data.patient import Patient
     from logger import log
@@ -14791,6 +14791,57 @@ The effect payload is structured as JSON with the following schema:
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient-metadata/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-patient-timeline/
+The Canvas SDK allows you to configure a patient's timeline, such as hiding specific note types from view.
+##  Excluding Note Types 
+To exclude note types from a patient's timeline, import the `PatientTimelineEffect` class and create an instance of it. This effect is triggered in response to the `PATIENT_TIMELINE__GET_CONFIGURATION` event, which fires when a patient's timeline is loaded.
+###  Attributes 
+Attribute |  | Type | Description  
+---|---|---|---  
+`excluded_note_types` | required | list[str] | A list of `NoteType.unique_identifier` values (UUIDs) to exclude from the patient's timeline.  
+###  Example Usage 
+The `excluded_note_types` list must contain `unique_identifier` values from the `NoteType` model. Each `NoteType` has a `unique_identifier` (UUID) that you can look up by querying the model:
+    ```python
+    from canvas_sdk.v1.data.note import NoteType
+    # Find the unique_identifier for a note type by name
+    note_type = NoteType.objects.get(name="Office visit")
+    note_type.unique_identifier  # e.g. UUID("a3b9c1d2-...")
+    # Or list all note types with their unique_identifiers
+    for nt in NoteType.objects.all():
+        print(f"{nt.name}: {nt.unique_identifier}")
+    ```
+Then use those `unique_identifier` values in the effect:
+    ```python
+    from canvas_sdk.effects.patient.timeline import PatientTimelineEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    from canvas_sdk.v1.data.note import NoteType
+    class Protocol(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.PATIENT_TIMELINE__GET_CONFIGURATION)]
+        def compute(self):
+            # Use unique_identifier
+            office_visit = NoteType.objects.get(name="Office visit", is_active=True)
+            lab_visit = NoteType.objects.get(name="Lab visit", is_active=True)
+            effect = PatientTimelineEffect(
+                excluded_note_types=[
+                    str(office_visit.unique_identifier),
+                    str(lab_visit.unique_identifier),
+                ]
+            )
+            return [effect.apply()]
+    ```
+###  Behavior 
+> 📘 Chart Review notes cannot be excluded
+> 
+> Even if a `CHART_REVIEW` note type is included in the `excluded_note_types` list, it will always be shown on the timeline. The system automatically removes it from any exclusion list.
+  - **Permalink access** : If a user tries to directly access a note whose type has been excluded, they will receive a permission error.
+  - **Multiple plugins** : If multiple plugins respond to the `PATIENT_TIMELINE__GET_CONFIGURATION` event, the excluded note types from all responses are combined.
+###  Validation 
+  - All provided UUIDs must correspond to existing note types in the system. If a note type UUID does not exist, a `ValidationError` will be raised with a message indicating which note type was not found.
+  - Values that are not valid UUIDs will also raise a `ValidationError`.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient-timeline/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-patient/
 The `Patient` effect enables the creation and updating of patient records within the Canvas system. This effect captures demographic information, contact details, and clinical associations necessary for patient registration and updates.
 ##  Attributes 
@@ -14970,7 +15021,7 @@ A Protocol card consists of three main parts:
   - A narrative, which appears just below the title to add any additional clarifying information
   - A list of recommendations, which each have a title and optionally a button that can either: 
     - open a new tab and navigate to another site
-    - insert a command into a note
+    - insert commands into a note
 Name | Type | Required | Description  
 ---|---|---|---  
 `patient_id` | _string_ | `true` (if `patient_filter` is not included) | The id of the [patient](/sdk/data-patient/)  
@@ -14990,7 +15041,7 @@ Attribute | Type | Required | Description
 `title` | _string_ | `true` | The description of the recommendation  
 `button` | _string_ | `false` | The text to appear on the button  
 `href` | _string_ | `false` | The url for the button to navigate to  
-|  |  |   
+`commands` | list[Command] | `false` | The commands to be inserted  
 ###  Status 
 Enum | Value  
 ---|---  
@@ -15000,7 +15051,9 @@ Enum | Value
 `PENDING` | pending  
 `NOT_RELEVANT` | not_relevant  
 |   
-To include a command recommendation, we recommend you import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See below for the list of supported commands.
+To include a command recommendation you can:
+  - import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See below for the list of supported commands.
+  - instantiate the command as above, and then pass it in a list to the `commands` attribute of a recommendation.
 </br> </br>
 For non-command recommendations, you can either use the `Recommendation` class, or the `.add_recommendation(title: str = "", button: str = "", href: str | None)` method on the protocol card.
 **Example** :
@@ -15009,28 +15062,35 @@ For non-command recommendations, you can either use the `Recommendation` class, 
     from canvas_sdk.protocols import BaseProtocol
     from datetime import date
     from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
-    from canvas_sdk.commands import DiagnoseCommand
+    from canvas_sdk.commands import DiagnoseCommand, PlanCommand
     class Protocol(BaseProtocol):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
         def compute(self):
-            p = ProtocolCard(
-                patient_id=self.target,
-                key="testing-protocol-cards",
-                title="This is a ProtocolCard title",
-                narrative="this is the narrative",
-                status=ProtocolCard.Status.DUE,
-                recommendations=[Recommendation(title="this recommendation has no action, just words!")]
-            )
-            p.add_recommendation(
-                title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
-            )
             diagnose = DiagnoseCommand(
                 icd10_code="I10",
                 background="feeling bad for many years",
                 approximate_date_of_onset=date(2020, 1, 1),
                 today_assessment="still not great",
             )
+            plan = PlanCommand(
+                narrative="Follow up in 2 weeks",
+            )
+            p = ProtocolCard(
+                patient_id=self.target,
+                key="testing-protocol-cards",
+                title="This is a ProtocolCard title",
+                narrative="this is the narrative",
+                status=ProtocolCard.Status.DUE,
+                recommendations=[
+                  Recommendation(title="this recommendation has no action, just words!"),
+                  Recommendation(title="this recommendation inserts multiple commands", button="add commands", commands=[diagnose, plan])
+                ],
+            )
+            p.add_recommendation(
+                title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
+            )
             p.recommendations.append(diagnose.recommend(title="this inserts a diagnose command"))
+            p.recommendations.append(title="new recommendation", button="start", commands=[diagnose])
             return [p.apply()]
     ```
 To apply the effect to all active patients on plugin create and plugin update, you would include the plugin create and update events in `RESPONDS_TO`. And when responding to one of the plugin events you would use `patient_filter` instead of `patient_id` for the ProtocolCard.
@@ -15469,7 +15529,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 Effect | Description  
@@ -27160,6 +27220,15 @@ Target object | Context object
           "code": str
           "system": str
           "display": str  
+###  Patient Timeline Configuration 
+PATIENT_TIMELINE__GET_CONFIGURATION  
+---  
+Occurs when a patient's timeline is loaded. Allows plugins to configure which note types are visible on the timeline. See the [Patient Timeline effect](/sdk/effect-patient-timeline/) for usage details.  
+Target object | Context object  
+    "id": patient_key
+    "type": [Patient](/sdk/data-patient/)
+| 
+    empty  
 ###  Other Events 
 Event | Occurs when | UNKNOWN | Default event type unlikely to ever be emitted.  
 ---|---  
@@ -31911,6 +31980,7 @@ If you want to ensure the visiting user is a logged in patient user, you can use
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-simple-api-websocket/
 WebSocket APIs in Canvas let you define **channels** that clients can connect to. These APIs support one-way, server-to-client communication, and are designed for use cases such as real-time notifications.
+To use websockets in a Canvas plugin, you must define the WebSocketAPI auth handler to manage access to your channel, use the `Broadcast` effect to publish messages to that channel, and create client code to manage the connection, handle new messages, and gracefully reconnect.
 ###  Defining a WebSocket API 
 To define a WebSocket handler, subclass `WebSocketAPI`. You must implement an `authenticate` method that determines whether the connection should be accepted.
     ```python
@@ -31929,9 +31999,10 @@ When a handler is invoked, the `websocket` object is available as an attribute o
   - `api_key`: The api key, if present
   - `logged_in_user`: A dictionary like `{ "id": ..., "type": ... }` if a logged-in user is present
 You can access this object within your handler methods using `self.websocket`.
+> **Info:** Channel names may only contain alphanumeric, hyphen, and underscore characters. 
 ###  Authentication 
 You must implement the `authenticate()` method in your handler class. Two authentication methods are supported:
-#####  Session-Based (Internal Clients) 
+####  Session-Based (Internal Clients) 
 For connections initiated from within the Canvas browser UI by a logged-in user:
     ```python
     def authenticate(self) -> bool:
@@ -31946,7 +32017,7 @@ For connections initiated from within the Canvas browser UI by a logged-in user:
         # individual is in a particular group or team.
         ...
     ```
-#####  APIKey-Based (External Clients) 
+####  APIKey-Based (External Clients) 
 For external tools or scripts, pass an auth key as a query parameter:
     wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin>/<channel>?api_key=<key>
 The key is made available in your handler via `self.websocket.api_key`. You can store this key as a secret.
