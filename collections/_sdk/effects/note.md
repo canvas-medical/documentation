@@ -42,7 +42,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(
             note_type_id="note-type-uuid",
@@ -80,7 +80,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         note_effect.title = "Updated Consultation Notes"
@@ -121,7 +121,7 @@ from canvas_sdk.effects.fax.note import FaxNoteEffect
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         # Basic fax without coversheet
         fax_effect = FaxNoteEffect(
@@ -140,7 +140,7 @@ from canvas_sdk.effects.fax.note import FaxNoteEffect
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         # Fax with coversheet
         fax_effect = FaxNoteEffect(
@@ -177,7 +177,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.push_charges()]
@@ -204,7 +204,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.lock()]
@@ -231,7 +231,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.sign()]
@@ -258,7 +258,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.unlock()]
@@ -274,35 +274,34 @@ If the same user freezes an already-frozen note, the freeze timer is extended wi
 
 #### Attributes
 
-| Attribute  | Type            | Description                                                        | Required |
-|------------|-----------------|--------------------------------------------------------------------|----------|
-| `note_id`  | `UUID` or `str` | Identifier of the note to freeze                                   | Yes      |
-| `duration` | `int`           | Duration in seconds before the note is automatically unfrozen      | No       |
-| `user_id`  | `str` or `None` | Identifier of the user who is freezing the note (the "lock owner") | No       |
-| `blur`     | `bool`          | Whether to blur the note body for users other than the lock owner  | No       |
+| Attribute     | Type            | Description                                                        | Required |
+|---------------|-----------------|--------------------------------------------------------------------|----------|
+| `instance_id` | `UUID` or `str` | Identifier of the note to freeze                                   | Yes      |
+| `duration`    | `int`           | Duration in seconds before the note is automatically unfrozen      | No       |
+| `user_id`     | `str` or `None` | Identifier of the user who is freezing the note (the "lock owner") | No       |
+| `blur`        | `bool`          | Whether to blur the note body for users other than the lock owner  | No       |
 
 **Defaults**: `duration` = 300 (5 minutes), `blur` = False
 
 #### Example Usage
 
 ```python
-from canvas_sdk.effects.note.freeze import FreezeNoteEffect
+from canvas_sdk.effects.note.note import Note
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_BODY_UPDATED)
 
     def compute(self):
-        freeze_effect = FreezeNoteEffect(
-            note_id=self.target,
+        note_effect = Note(instance_id=self.target)
+
+        return [note_effect.freeze(
             duration=300,
             user_id=self.context.get("user", {}).get("id"),
             blur=True,
-        )
-
-        return [freeze_effect.apply()]
+        )]
 ```
 
 ### Unfreeze
@@ -311,22 +310,22 @@ Unfreezes a previously frozen note, allowing all users to edit it again. This al
 
 #### Attributes
 
-| Attribute | Type            | Description                        | Required |
-|-----------|-----------------|------------------------------------|----------|
-| `note_id` | `UUID` or `str` | Identifier of the note to unfreeze | Yes      |
+| Attribute     | Type            | Description                        | Required |
+|---------------|-----------------|------------------------------------|----------|
+| `instance_id` | `UUID` or `str` | Identifier of the note to unfreeze | Yes      |
 
 #### Example Usage
 
 ```python
-from canvas_sdk.effects.note.freeze import UnfreezeNoteEffect
+from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
-        unfreeze_effect = UnfreezeNoteEffect(note_id="existing-note-uuid")
+        note_effect = Note(instance_id="existing-note-uuid")
 
-        return [unfreeze_effect.apply()]
+        return [note_effect.unfreeze()]
 ```
 
 ### Check In
@@ -348,7 +347,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.check_in()]
@@ -375,7 +374,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.no_show()]
@@ -418,7 +417,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(
             note_type_id="schedule-event-note-type-uuid",
@@ -460,7 +459,7 @@ from canvas_sdk.effects.note.base import AppointmentIdentifier
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
         schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -501,7 +500,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
         schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=3)
@@ -523,7 +522,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
 
@@ -564,7 +563,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(
             appointment_note_type_id="appointment-note-type-uuid",
@@ -607,7 +606,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
         appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=2)
@@ -645,7 +644,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
         appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -665,7 +664,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
 
