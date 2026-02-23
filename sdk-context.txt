@@ -6242,7 +6242,7 @@ Below is an example that demonstrates how to instantiate a `QuestionnaireCommand
     from canvas_sdk.effects import Effect
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data import Note, Questionnaire
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self) -> list[Effect]:
           q = Questionnaire.objects.filter(name="Exercise").first()
           note = Note.objects.last()
@@ -7865,11 +7865,11 @@ Specify an attribute with `filter` to filter by that attribute:
 ##  Command types and data 
 When events are fired as part of [Command Lifecycle Events](/sdk/events/#command-lifecycle-events), the `self.target` value that is available within a plugin will contain the `id` value of the command. For example:
     ```python
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
     from logger import log
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [
             EventType.Name(EventType.REASON_FOR_VISIT_COMMAND__POST_UPDATE),
         ]
@@ -7880,10 +7880,10 @@ Using this value, the `Command` model can be queried to fetch additional data ab
     ```python
     import json
     from canvas_sdk.effects import Effect
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data.command import Command
     from logger import log
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         def compute(self) -> list[Effect]:
             command_instance = Command.objects.get(id=self.target)
             log.info(command_instance.schema_key)
@@ -9352,10 +9352,10 @@ To query all lab reports for a particular patient, the `patient` argument can be
 The following plugin code will run every time a new Lab Report is created and log the patient it is for, along with the values and codings from the report's results:
     ```python
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from logger import log
     from canvas_sdk.v1.data.lab import LabReport
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.LAB_REPORT_CREATED)
         def compute(self):
             lab_report = LabReport.objects.select_related("patient").get(id=self.target)
@@ -12285,7 +12285,7 @@ Name | URL
 The following code is an example of a custom `ValueSet` in use within a plugin:
     ```python
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from logger import log
     from canvas_sdk.v1.data.patient import Patient
     from canvas_sdk.value_set.value_set import ValueSet
@@ -12297,7 +12297,7 @@ The following code is an example of a custom `ValueSet` in use within a plugin:
         SNOMEDCT = {
             "284537006",  # Eyelid burn (disorder)
         }
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
         def compute(self):
             patient = Patient.objects.get(id="6cbc40b408294a5f9b41f57ba1b2b487")
@@ -12560,11 +12560,11 @@ intent | optional | Intent | Affects the styling of the alert.
 href | optional | String | If given, the alert will appear as a link to this URL.  
     ```python
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects.banner_alert import AddBannerAlert
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
         def compute(self):
             banner = AddBannerAlert(
@@ -12584,11 +12584,11 @@ href | optional | String | If given, the alert will appear as a link to this URL
 To apply the effect to all active patients when a plugin is created or updated, include the `PLUGIN_CREATED` and/or `PLUGIN_UPDATED` events in the `RESPONDS_TO` list. Additionally, `patient_filter` can be used (instead of `patient_id`) on the `AddBannerAlert` class.
     ```python
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects.banner_alert import AddBannerAlert
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [
             EventType.Name(EventType.PATIENT_UPDATED),
             EventType.Name(EventType.PLUGIN_CREATED),
@@ -12725,10 +12725,10 @@ modifiers | optional | list[Coding] | The modifiers to create with the billing c
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data import Command, Assessment
     from canvas_sdk.effects.billing_line_item import AddBillingLineItem
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [
             EventType.Name(EventType.PERFORM_COMMAND__POST_ORIGINATE)
         ]
@@ -12767,10 +12767,10 @@ modifiers | optional | list[Coding] | The modifiers to create with the billing c
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data import Assessment, Command, BillingLineItem
     from canvas_sdk.effects.billing_line_item import UpdateBillingLineItem
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [
             EventType.Name(EventType.PERFORM_COMMAND__POST_COMMIT)
         ]
@@ -12805,10 +12805,10 @@ billing_line_item_id | required | String | The id of the [BillingLineItem](/sdk/
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data import Command, BillingLineItem
     from canvas_sdk.effects.billing_line_item import RemoveBillingLineItem
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [
             EventType.Name(EventType.PERFORM_COMMAND__POST_ENTER_IN_ERROR)
         ]
@@ -12872,11 +12872,11 @@ Attribute | Type | Description | Required
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects.claim import ClaimEffect, Label
     from canvas_sdk.v1.data import Note
     from canvas_sdk.v1.data.common import ColorEnum
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
         def compute(self) -> list[Effect]:
             """Creates and adds a new label the claim when charges are pushed.
@@ -12905,10 +12905,10 @@ Parameter | Type | Description | Required
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects.claim import ClaimEffect
     from canvas_sdk.v1.data import Note
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
         def compute(self) -> list[Effect]:
             """When note is locked, remove the 'pushed not locked' label from the claim."""
@@ -12933,10 +12933,10 @@ Parameter | Type | Description | Required
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects.claim import ClaimEffect
     from canvas_sdk.v1.data import Note
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
         def compute(self) -> list[Effect]:
             if self.event.context["state"] == "ULK":
@@ -12958,10 +12958,10 @@ Parameter | Type | Description | Required
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects.claim import ClaimEffect
     from canvas_sdk.v1.data import Patient, Claim
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.COVERAGE_CREATED)
         def compute(self) -> list[Effect]:
             pt = Patient.objects.get(id=self.event.context["patient"]["id"])
@@ -13228,10 +13228,10 @@ Updating charge amount.
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data import Note, ClaimLineItem
     from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         """When a note is unlocked, update the associated claim's line items to have a charge of $0.00.
         When a note is locked, update the associated claim's line items to have a charge of $500.00."""
         RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
@@ -13254,10 +13254,10 @@ Linking and un-linking diagnosis codes.
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data import Note, ClaimLineItem
     from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [
             EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED),
         ]
@@ -13334,8 +13334,8 @@ The `add_error()` method allows you to incrementally build validation errors and
     from canvas_sdk.commands.validation import CommandValidationErrorEffect
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
-    class Protocol(BaseProtocol):
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_VALIDATION)
         def compute(self) -> list[Effect]:
             narrative = self.context["fields"]["narrative"]
@@ -13355,8 +13355,8 @@ The `add_error()` method returns `self`, allowing for clean method chaining:
     from canvas_sdk.commands.validation import CommandValidationErrorEffect
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
-    class Protocol(BaseProtocol):
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_VALIDATION)
         def compute(self) -> list[Effect]:
             narrative = self.context["fields"]["narrative"]
@@ -13371,8 +13371,8 @@ You can also initialize the effect with a list of `ValidationError` objects:
     from canvas_sdk.commands.validation import CommandValidationErrorEffect, ValidationError
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
-    class Protocol(BaseProtocol):
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_VALIDATION)
         def compute(self) -> list[Effect]:
             narrative = self.context["fields"]["narrative"]
@@ -13391,9 +13391,9 @@ Here's a complete example that validates a Plan command to ensure it meets speci
     from canvas_sdk.commands.validation import CommandValidationErrorEffect
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from logger import log
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         """
         Example protocol demonstrating command validation.
         This protocol validates Plan commands to ensure they meet
@@ -13606,12 +13606,12 @@ Return an `EventValidationError` from your protocol's `compute` method to block 
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data import Note
     from canvas_sdk.v1.data.coverage import CoverageStack
     from canvas_sdk.effects.validation import EventValidationError, ValidationError
     from canvas_sdk.effects.banner_alert import AddBannerAlert, RemoveBannerAlert
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_PRE_CREATE)
         def handle_no_coverage(self, patient_id: str, note: Note) -> list[Effect]:
             """If the patient has no coverage, add banner alert and do not allow notes to be locked or charges pushed."""
@@ -13908,7 +13908,7 @@ Attribute | Type | Description | Required
     import datetime
     from canvas_sdk.effects.note.note import Note
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             note_effect = Note(
                 note_type_id="note-type-uuid",
@@ -13935,7 +13935,7 @@ Attribute | Type | Description | Required | Updatable
     import datetime
     from canvas_sdk.effects.note.note import Note
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             note_effect = Note(instance_id="existing-note-uuid")
             note_effect.title = "Updated Consultation Notes"
@@ -13965,7 +13965,7 @@ Attribute | Type | Description | Required
     ```python
     from canvas_sdk.effects.fax.note import FaxNoteEffect
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             # Basic fax without coversheet
             fax_effect = FaxNoteEffect(
@@ -13979,7 +13979,7 @@ Attribute | Type | Description | Required
     ```python
     from canvas_sdk.effects.fax.note import FaxNoteEffect
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             # Fax with coversheet
             fax_effect = FaxNoteEffect(
@@ -14005,7 +14005,7 @@ Attribute | Type | Description | Required
     import datetime
     from canvas_sdk.effects.note.note import Note
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             note_effect = Note(instance_id="existing-note-uuid")
             return [note_effect.push_charges()]
@@ -14022,7 +14022,7 @@ Attribute | Type | Description | Required
     ```python
     from canvas_sdk.effects.note.note import Note
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             note_effect = Note(instance_id="existing-note-uuid")
             return [note_effect.lock()]
@@ -14039,7 +14039,7 @@ Attribute | Type | Description | Required
     ```python
     from canvas_sdk.effects.note.note import Note
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             note_effect = Note(instance_id="existing-note-uuid")
             return [note_effect.sign()]
@@ -14056,7 +14056,7 @@ Attribute | Type | Description | Required
     ```python
     from canvas_sdk.effects.note.note import Note
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             note_effect = Note(instance_id="existing-note-uuid")
             return [note_effect.unlock()]
@@ -14073,7 +14073,7 @@ Attribute | Type | Description | Required
     ```python
     from canvas_sdk.effects.note.note import Note
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             note_effect = Note(instance_id="existing-note-uuid")
             return [note_effect.check_in()]
@@ -14090,7 +14090,7 @@ Attribute | Type | Description | Required
     ```python
     from canvas_sdk.effects.note.note import Note
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             note_effect = Note(instance_id="existing-note-uuid")
             return [note_effect.no_show()]
@@ -14120,7 +14120,7 @@ Attribute | Type | Description | Required
     import datetime
     from canvas_sdk.effects.note.appointment import ScheduleEvent
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             schedule_event_effect = ScheduleEvent(
                 note_type_id="schedule-event-note-type-uuid",
@@ -14152,7 +14152,7 @@ Attribute | Type | Description | Required
     from canvas_sdk.effects.note.appointment import ScheduleEvent
     from canvas_sdk.effects.note.base import AppointmentIdentifier
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
             schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -14182,7 +14182,7 @@ Attribute | Type | Description | Required
     import datetime
     from canvas_sdk.effects.note.appointment import ScheduleEvent
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
             schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=3)
@@ -14196,7 +14196,7 @@ Marks a schedule event as cancelled.
     import datetime
     from canvas_sdk.effects.note.appointment import ScheduleEvent
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
             return [schedule_event_effect.delete()]
@@ -14225,7 +14225,7 @@ Attribute | Type | Description | Required
     import datetime
     from canvas_sdk.effects.note.appointment import Appointment
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             appointment_effect = Appointment(
                 appointment_note_type_id="appointment-note-type-uuid",
@@ -14257,7 +14257,7 @@ Attribute | Type | Description | Required
     import datetime
     from canvas_sdk.effects.note.appointment import Appointment
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             appointment_effect = Appointment(instance_id="existing-appointment-uuid")
             appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=2)
@@ -14284,7 +14284,7 @@ Attribute | Type | Description | Required
     import datetime
     from canvas_sdk.effects.note.appointment import Appointment
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             appointment_effect = Appointment(instance_id="existing-appointment-uuid")
             appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -14297,7 +14297,7 @@ Cancels an existing appointment and updates its status.
     ```python
     from canvas_sdk.effects.note.appointment import Appointment
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             appointment_effect = Appointment(instance_id="existing-appointment-uuid")
             return appointment_effect.cancel()
@@ -14607,7 +14607,7 @@ The effect validates:
     ```python
     from canvas_sdk.effects.patient_facility_address import PatientFacilityAddress, AddressType
     from canvas_sdk.handlers.base import BaseHandler
-    class MyProtocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             effect = PatientFacilityAddress(
                 patient_id="patient-uuid-here",
@@ -14621,7 +14621,7 @@ The effect validates:
     ```python
     from canvas_sdk.effects.patient_facility_address import PatientFacilityAddress, AddressType
     from canvas_sdk.handlers.base import BaseHandler
-    class MyProtocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             effect = PatientFacilityAddress(
                 patient_id="patient-uuid-here",
@@ -14642,7 +14642,7 @@ The effect validates:
     ```python
     from canvas_sdk.effects.patient_facility_address import PatientFacilityAddress
     from canvas_sdk.handlers.base import BaseHandler
-    class MyProtocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             # Update to use a different existing facility
             effect = PatientFacilityAddress(
@@ -14656,7 +14656,7 @@ The effect validates:
     ```python
     from canvas_sdk.effects.patient_facility_address import PatientFacilityAddress
     from canvas_sdk.handlers.base import BaseHandler
-    class MyProtocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             effect = PatientFacilityAddress(
                 id="existing-address-uuid",
@@ -14816,7 +14816,7 @@ Then use those `unique_identifier` values in the effect:
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers.base import BaseHandler
     from canvas_sdk.v1.data.note import NoteType
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [EventType.Name(EventType.PATIENT_TIMELINE__GET_CONFIGURATION)]
         def compute(self):
             # Use unique_identifier
@@ -14924,7 +14924,7 @@ Attribute | Type | Description | Required
     from canvas_sdk.handlers.base import BaseHandler
     from canvas_sdk.v1.data.common import ContactPointSystem, ContactPointUse, PersonSex
     import datetime
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             patient = Patient(
                 first_name="Jane",
@@ -14969,7 +14969,7 @@ Attribute | Type | Description | Required
     from canvas_sdk.effects.patient import Patient, PatientAddress, PatientExternalIdentifier
     from canvas_sdk.handlers.base import BaseHandler
     from canvas_sdk.v1.data.common import AddressUse
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             # Update an existing patient
             updated_patient = Patient(
@@ -15059,11 +15059,11 @@ For non-command recommendations, you can either use the `Recommendation` class, 
 **Example** :
     ```python
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from datetime import date
     from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
     from canvas_sdk.commands import DiagnoseCommand, PlanCommand
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
         def compute(self):
             diagnose = DiagnoseCommand(
@@ -15097,13 +15097,13 @@ To apply the effect to all active patients on plugin create and plugin update, y
     ```python
     from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from datetime import date
     from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
     from canvas_sdk.commands import DiagnoseCommand
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [
             EventType.Name(EventType.PATIENT_UPDATED),
             EventType.Name(EventType.PLUGIN_CREATED),
@@ -15174,9 +15174,9 @@ This effect enables custom scoring of questionnaires in Canvas.
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.questionnaire_result import CreateQuestionnaireResult
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data.command import Command
-    class MChatQuestionnaireResult(BaseProtocol):
+    class MChatQuestionnaireResult(BaseHandler):
         """
         Return a CreateQuestionnaireResult effect in response to a committed Questionnaire Command that
         contains questions coded for the M-CHAT questionnaire.
@@ -15391,12 +15391,12 @@ An example of adding a task:
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.task import AddTask, AddTaskComment, UpdateTask, TaskStatus
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data.lab import LabReport
     from canvas_sdk.v1.data.staff import Staff
     from canvas_sdk.v1.data.team import Team
     from canvas_sdk.v1.data.referral import Referral
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [
             EventType.Name(EventType.LAB_REPORT_CREATED),
         ]
@@ -15438,7 +15438,7 @@ An example of updating a task to a status of `COMPLETED`:
     ```python
     from canvas_sdk.effects.task import UpdateTask, TaskStatus
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             update_task = UpdateTask(
                 id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
@@ -15457,7 +15457,7 @@ author_id | optional | string or UUID | Author's id to set task comment creator,
     from canvas_sdk.effects.task import AddTaskComment
     from canvas_sdk.handlers.base import BaseHandler
     from canvas_sdk.v1.data.staff import Staff
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         def compute(self):
             author = Staff.objects.get(last_name="Weed")
             add_task_comment = AddTaskComment(
@@ -15481,7 +15481,7 @@ Effects are returned as a list from the `compute` method of a plugin that inheri
     from canvas_sdk.events import EventType
     from canvas_sdk.effects import Effect, EffectType
     from canvas_sdk.handlers.base import BaseHandler
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
         def compute(self):
             results = self.context.get("results")
@@ -15681,11 +15681,11 @@ An event is an occurrence of an action that happens within Canvas. For example, 
 **Why should I use them?**
 By writing plugins that respond to events, plugin code is notified and can react to events that occur in Canvas. This enables plugin authors to create custom workflows whenever a relevant event takes place, such as making a POST request to a webhook.
 **How do I use them?**
-To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseProtocol`. For example:
+To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseHandler`. For example:
     ```python
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
-    class Protocol(BaseProtocol):
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
         def compute(self):
             ...
@@ -15717,9 +15717,9 @@ Many events include common contextual information to help you understand the sco
   - **User context** : All command-related PRE_SEARCH and POST_SEARCH events include `"user": {"staff": staff_key}` in the context, containing the staff key of the user performing the search. This allows you to customize search results based on user-specific preferences, roles, or permissions.
     ```python
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from logger import log
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
         def compute(self):
             log.info(self.event.context)
@@ -27355,7 +27355,7 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
         "components": {
             "protocols": [
                 {
-                    "class": "abnormal_lab_task_notification.protocols.abnormal_lab_protocol:AbnormalLabProtocol",
+                    "class": "abnormal_lab_task_notification.handlers.abnormal_lab_handler:AbnormalLabHandler",
                     "description": "Monitors lab reports and creates tasks for abnormal values",
                     "data_access": {
                         "event": "LAB_REPORT_CREATED",
@@ -27380,12 +27380,12 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
         "readme": "This plugin monitors incoming lab reports and creates task notifications for any abnormal lab values, ensuring they are flagged for prompt review."
     }
     ```
-##  protocols/ 
-###  abnormal_lab_protocol.py 
+##  handlers/ 
+###  abnormal_lab_handler.py 
 **Purpose and Functionality**
-This file defines a protocol called AbnormalLabProtocol for use with the Canvas Medical SDK. Its primary function is to monitor for the creation of new laboratory reports (`LAB_REPORT_CREATED` events). When such an event occurs, the protocol inspects the report to determine if it contains any abnormal lab values. If abnormal results are found, it automatically creates a task for prompt clinical review.
+This file defines a handler called AbnormalLabHandler for use with the Canvas Medical SDK. Its primary function is to monitor for the creation of new laboratory reports (`LAB_REPORT_CREATED` events). When such an event occurs, the handler inspects the report to determine if it contains any abnormal lab values. If abnormal results are found, it automatically creates a task for prompt clinical review.
 **Event Handling**
-  - The protocol listens for the LAB_REPORT_CREATED event.
+  - The handler listens for the LAB_REPORT_CREATED event.
   - When triggered, it examines the relevant [lab report(/sdk/data-labs/#labreport)] for any values marked as abnormal.
 **Core Logic**
   - It fetches the full LabReport instance specified by the event.
@@ -27399,17 +27399,17 @@ This file defines a protocol called AbnormalLabProtocol for use with the Canvas 
 **Error Handling**
   - If anything goes wrong (e.g., the report is missing, or there's a processing error), it logs the error and does not produce any task.
 **Summary**
-This protocol automates the process of flagging abnormal laboratory results for clinical review within Canvas Medical, enhancing the safety net for critical lab findings by ensuring they are not overlooked.
+This handler automates the process of flagging abnormal laboratory results for clinical review within Canvas Medical, enhancing the safety net for critical lab findings by ensuring they are not overlooked.
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.task import AddTask, TaskStatus
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data.lab import LabReport
     from logger import log
-    class AbnormalLabProtocol(BaseProtocol):
+    class AbnormalLabHandler(BaseHandler):
         """
-        A protocol that monitors lab reports and creates task notifications
+        A handler that monitors lab reports and creates task notifications
         for abnormal lab values to ensure prompt review.
         Triggers on: LAB_REPORT_CREATED events
         Effects: Creates tasks for abnormal lab values
@@ -29451,7 +29451,7 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
         "components": {
             "protocols": [
                 {
-                    "class": "patient_summary_chart_groups.protocols.my_protocol:Protocol",
+                    "class": "patient_summary_chart_groups.protocols.my_protocol:Conditions",
                     "description": "A protocol that groups Psychiatry conditions"
                 },
                 {
@@ -29474,8 +29474,8 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
     ```
 ##  protocols/ 
 ###  my_protocol.py 
-This file defines two custom protocol handlers, `Protocol` and `Medications`, using the Canvas SDK. These handlers listen for specific events related to a patient's medical chart and group relevant diagnoses or medications into a "Psychiatry" category, returning these as effects for further processing or display in the Canvas UI.
-**Section:`Protocol` Handler**
+This file defines two custom protocol handlers, `Conditions` and `Medications`, using the Canvas SDK. These handlers listen for specific events related to a patient's medical chart and group relevant diagnoses or medications into a "Psychiatry" category, returning these as effects for further processing or display in the Canvas UI.
+**Section:`Conditions` Handler**
   - Inherits from `BaseHandler`.
   - Listens to the `EventType.PATIENT_CHART__CONDITIONS` event (triggered when a patient's chart conditions are accessed).
   - For each condition in the event context, it looks at the `codings` list: 
@@ -29502,7 +29502,7 @@ This file defines two custom protocol handlers, `Protocol` and `Medications`, us
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.commands.constants import CodeSystems
-    class Protocol(BaseHandler):
+    class Conditions(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__CONDITIONS)
         def compute(self) -> list[Effect]:
             groups: dict[str, Group] = {}
@@ -30755,8 +30755,8 @@ In this example, we extract key-value pairs from a plan command's narrative and 
         "components": {
             "protocols": [
                 {
-                    "class": "upsert_patient_metadata.protocols.my_protocol:Protocol",
-                    "description": "A protocol that does xyz..."
+                    "class": "upsert_patient_metadata.handlers.my_handler:MyHandler",
+                    "description": "A handler that does xyz..."
                 }
             ],
             "commands": [],
@@ -30772,11 +30772,11 @@ In this example, we extract key-value pairs from a plan command's narrative and 
         "readme": "./README.md"
     }
     ```
-##  protocols/ 
-###  my_protocol.py 
+##  handlers/ 
+###  my_handler.py 
 This file defines a Canvas plugin handler that uses the update of a plan command as an excuse to trigger. When a user updates a plan command and includes certain key-value data in the narrative, this handler extracts that information and saves it as patient metadata.
 **Narrative Parsing**
-The protocol retrieves the narrative text from the event context. It uses regular expressions to look for patterns of the form:
+The handler retrieves the narrative text from the event context. It uses regular expressions to look for patterns of the form:
   - `key=somekey`
   - `value=somevalue`
 The separator between key/value and their contents can be any character except alphanumerics, underscores, asterisks, hashes, or whitespace. For example, `key=blood_pressure*value=120/80`.
@@ -30792,7 +30792,7 @@ If either the key or value is missing, no action is performed.
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
     from logger import log
-    class Protocol(BaseHandler):
+    class MyHandler(BaseHandler):
         """
         Extracts key-value pairs from plan update narratives and stores them as patient metadata.
         Parses narrative text for patterns like "key=somekey*value=somevalue" where the separator
@@ -32125,9 +32125,9 @@ The `PatientProfileConfiguration` class allows you to reorder, hide, and/or spec
     from canvas_sdk.effects import Effect, EffectType
     from canvas_sdk.effects.patient_profile_configuration import PatientProfileConfiguration
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from logger import log
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         """This protocol is used to configure which sections appear in the Patient Profile section.
         The SHOW_PATIENT_PROFILE_SECTIONS payload expects a list of sections where each section is a dict like { "type": str, "start_expanded": bool }
         The accepted values for the "type" are:
@@ -32519,8 +32519,8 @@ can_schedule_appointments | bool | If the patient is allowed to book or reschedu
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.patient_portal.application_configuration import PatientPortalApplicationConfiguration
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
-    class Protocol(BaseProtocol):
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION)
         def compute(self) -> list[Effect]:
             return [
@@ -32539,8 +32539,8 @@ Customize your patient appointment cards so patients can easily join their teleh
     import json
     from canvas_sdk.effects import Effect, EffectType
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
-    class Protocol(BaseProtocol):
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED)
         def compute(self) -> list[Effect]:
             return [
@@ -32554,8 +32554,8 @@ Customize your patient appointment cards so patients can easily join their teleh
     import json
     from canvas_sdk.effects import Effect, EffectType
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
-    class Protocol(BaseProtocol):
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED)
         def compute(self) -> list[Effect]:
             return [
@@ -32570,8 +32570,8 @@ This button shows on telehealth appointments
     import json
     from canvas_sdk.effects import Effect, EffectType
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
-    class Protocol(BaseProtocol):
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK)
         def compute(self) -> list[Effect]:
             return [
@@ -32637,8 +32637,8 @@ When an effect is prepared, the model validates inputs and returns structured er
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.send_contact_verification import SendContactVerificationEffect
     from canvas_sdk.events import EventType
-    from canvas_sdk.protocols import BaseProtocol
-    class Protocol(BaseProtocol):
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_CONTACT_POINT_CREATED)
         def compute(self) -> list[Effect]:
             contact_point_id = self.event.target
@@ -33307,9 +33307,9 @@ Set multiple secrets:
 ###  Accessing Secrets in Your Plugin 
 Secrets defined in your manifest and configured in the admin UI are exposed to your plugin code through the `self.secrets`. This is a Python dictionary containing all secret values.
     ```python
-    from canvas_sdk.protocols import BaseProtocol
+    from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects import Effect
-    class Protocol(BaseProtocol):
+    class MyHandler(BaseHandler):
         def compute(self) -> list[Effect]:
             api_token = self.secrets["API_TOKEN"]
             ...
