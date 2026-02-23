@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `LetterActionEvent` model represents actions events from letters created within Canvas. LetterActionEvents are associated with a [Letter](/sdk/data-letter/).
+The `LetterActionEvent` model represents occurrences of a letter being printed or faxed within Canvas. LetterActionEvents are associated with a [Letter](/sdk/data-letter/).
 
 ## Basic Usage
 
@@ -23,13 +23,13 @@ letterActionEvent = LetterActionEvent.objects.get(id="b5a0c1d2-e3f4-5678-9abc-de
 
 ### Find a letter action event for a specific letter
 
-If you have a letter object, you can access its associated letter_action_event using the `letter_action_event` attribute:
+If you have a letter object, you can access its associated letter_action_events using the `letter_action_events` attribute:
 
 ```python
 from canvas_sdk.v1.data.letter import Letter
 
 letter = Letter.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
-letter_action_event = letter.letter_action_event
+letter_action_events = letter.letter_action_events
 ```
 
 ## Filtering
