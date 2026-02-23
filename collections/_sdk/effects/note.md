@@ -42,7 +42,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(
             note_type_id="note-type-uuid",
@@ -80,7 +80,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         note_effect.title = "Updated Consultation Notes"
@@ -121,7 +121,7 @@ from canvas_sdk.effects.fax.note import FaxNoteEffect
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         # Basic fax without coversheet
         fax_effect = FaxNoteEffect(
@@ -140,7 +140,7 @@ from canvas_sdk.effects.fax.note import FaxNoteEffect
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         # Fax with coversheet
         fax_effect = FaxNoteEffect(
@@ -177,7 +177,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.push_charges()]
@@ -204,7 +204,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.lock()]
@@ -231,7 +231,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.sign()]
@@ -258,7 +258,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.unlock()]
@@ -285,7 +285,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.check_in()]
@@ -312,7 +312,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.no_show()]
@@ -355,7 +355,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(
             note_type_id="schedule-event-note-type-uuid",
@@ -397,7 +397,7 @@ from canvas_sdk.effects.note.base import AppointmentIdentifier
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
         schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -438,7 +438,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
         schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=3)
@@ -460,7 +460,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
 
@@ -501,7 +501,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(
             appointment_note_type_id="appointment-note-type-uuid",
@@ -544,7 +544,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
         appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=2)
@@ -582,7 +582,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
         appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -602,7 +602,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
 

@@ -68,14 +68,14 @@ The `Label` dataclass represents a label with specific properties, including col
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.effects.claim import ClaimEffect, Label
 from canvas_sdk.v1.data import Note
 from canvas_sdk.v1.data.common import ColorEnum
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self) -> list[Effect]:
@@ -114,13 +114,13 @@ class Protocol(BaseProtocol):
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.effects.claim import ClaimEffect
 from canvas_sdk.v1.data import Note
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self) -> list[Effect]:
@@ -154,12 +154,12 @@ class Protocol(BaseProtocol):
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.claim import ClaimEffect
 from canvas_sdk.v1.data import Note
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self) -> list[Effect]:
@@ -190,12 +190,12 @@ class Protocol(BaseProtocol):
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.claim import ClaimEffect
 from canvas_sdk.v1.data import Patient, Claim
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.COVERAGE_CREATED)
 
     def compute(self) -> list[Effect]:
@@ -505,12 +505,12 @@ Updating charge amount.
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note, ClaimLineItem
 from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     """When a note is unlocked, update the associated claim's line items to have a charge of $0.00.
     When a note is locked, update the associated claim's line items to have a charge of $500.00."""
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
@@ -539,12 +539,12 @@ Linking and un-linking diagnosis codes.
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note, ClaimLineItem
 from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED),
     ]

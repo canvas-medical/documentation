@@ -66,13 +66,13 @@ For non-command recommendations, you can either use the `Recommendation` class, 
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from datetime import date
 from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
 from canvas_sdk.commands import DiagnoseCommand, PlanCommand
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self):
@@ -115,16 +115,16 @@ To apply the effect to all active patients on plugin create and plugin update, y
 ```python
 from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from datetime import date
 from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
 from canvas_sdk.commands import DiagnoseCommand
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.PATIENT_UPDATED),
         EventType.Name(EventType.PLUGIN_CREATED),

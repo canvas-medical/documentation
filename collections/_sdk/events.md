@@ -12,14 +12,14 @@ By writing plugins that respond to events, plugin code is notified and can react
 
 **How do I use them?**
 
-To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseProtocol`. For example:
+To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseHandler`. For example:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
     def compute(self):
@@ -72,11 +72,11 @@ Many events include common contextual information to help you understand the sco
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
     def compute(self):

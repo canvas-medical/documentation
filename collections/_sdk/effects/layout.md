@@ -78,11 +78,11 @@ import json
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.effects.patient_profile_configuration import PatientProfileConfiguration
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     """This protocol is used to configure which sections appear in the Patient Profile section.
 
     The SHOW_PATIENT_PROFILE_SECTIONS payload expects a list of sections where each section is a dict like { "type": str, "start_expanded": bool }
