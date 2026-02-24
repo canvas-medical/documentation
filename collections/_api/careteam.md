@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           The Care Team includes all the people and organizations who plan to participate in the coordination and delivery of care for a patient.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careteam.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careteam.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-careteam.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-careteam.html)<br><br>
           All patients in Canvas have a CareTeam by default. The identifier for the CareTeam resource for a patient is the same as the patient identifier.
           <br><br>
           See our [article](https://help.canvasmedical.com/articles/5628604712-manage-care-teams) for information about setting up Care Teams and Care Team Roles in Canvas.

@@ -7,8 +7,8 @@ sections:
         name: Coverage
         article: "a"
         description: >-
-          Financial instrument which may be used to reimburse or pay for health care products and services. Includes both insurance and self-payment.<br>
-          [https://hl7.org/fhir/R4/coverage.html](https://hl7.org/fhir/R4/coverage.html)
+          Financial instrument which may be used to reimburse or pay for health care products and services. Includes both insurance and self-payment.<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-coverage.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-coverage.html)
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

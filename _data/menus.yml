@@ -150,6 +150,9 @@ api_resources:
   - title: "Schedule"
     url: /api/schedule/
     identifier: api_schedule
+  - title: "ServiceRequest"
+    url: /api/servicerequest/
+    identifier: api_servicerequest
   - title: "Slot"
     url: /api/slot/
     identifier: api_slot
@@ -504,7 +507,13 @@ guides:
     identifier: guides_list
 
 guides_list:
-  - title: "Your First Plugin"
+  - title: "Your First Plugin (with Claude Code)"
+    url: /guides/your-first-plugin-with-claude-code/
+    description: Use an AI assistant to build and deploy your first Canvas plugin
+    uses:
+      - sdk
+
+  - title: "Your First Plugin (Manual)"
     url: /guides/your-first-plugin/
     description: Customize the behavior of Canvas using plugins
     uses:
@@ -608,9 +617,16 @@ guides_list:
     description: How to add additional fields when scheduling an appointment
     uses:
       - sdk
+
   - title: "Note Management with External Applications"
     url: /guides/note-management-oauth/
     description: How manage notes (i.e. lock, unlock, sign) with an external application using OAuth 2.0 authorization
+    uses:
+      - sdk
+
+  - title: "Set default homepage by user"
+    url: /guides/set-default-homepage/
+    description: How to change the default homepage for users in your organization
     uses:
       - sdk
 
@@ -632,6 +648,9 @@ sdk_overview:
     url: /sdk/
   - title: "Caching Module"
     url: /sdk/caching/
+  - title: "Clients Module"
+    url: /sdk/clients/
+    identifier: clients_module
   - title: "Command Line Interface"
     url: /sdk/canvas_cli/
   - title: "Commands Module"
@@ -665,23 +684,50 @@ sdk_overview:
   - title: "Logging"
     url: /sdk/plugin-logs/
 
+clients_module:
+  - title: "AWS S3"
+    url: /sdk/clients-aws-s3/
+    description: Upload, download, and manage files in Amazon S3.
+  - title: "Extend AI"
+    url: /sdk/clients-extend-ai/
+    description: Intelligent document processing with extraction, classification, and splitting.
+  - title: "LLMs"
+    url: /sdk/clients-llms/
+    description: Unified interface for OpenAI, Anthropic, and Google AI models.
+  - title: "SendGrid"
+    url: /sdk/clients-sendgrid/
+    description: Send emails, manage webhooks, and track delivery with SendGrid.
+  - title: "Twilio"
+    url: /sdk/clients-twilio/
+    description: Send SMS/MMS messages and manage phone numbers with Twilio.
+
 example_plugins:
   - title: "AI Note Titles"
     url: /sdk/example-ai_note_titles/
   - title: "API Samples"
     url: /sdk/example-api_samples/
+  - title: "AWS S3"
+    url: /sdk/example-aws_s3/
   - title: "Abnormal Lab Task Notification"
     url: /sdk/example-abnormal_lab_task_notification/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
   - title: "Example Chart Application"
     url: /sdk/example-example_chart_app/
+  - title: "Extend AI PDF"
+    url: /sdk/example-extend_ai_pdf/
   - title: "Group Items in Patient Chart"
     url: /sdk/example-patient_summary_chart_groups/
+  - title: "LLM"
+    url: /sdk/example-llm/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
   - title: "Send All Prescriptions"
     url: /sdk/example-send_all_prescriptions/
+  - title: "SendGrid Email"
+    url: /sdk/example-sendgrid_email/
+  - title: "Twilio SMS/MMS"
+    url: /sdk/example-twilio_sms_mms/
   - title: "Upsert Patient Metadata"
     url: /sdk/example-upsert_patient_metadata/
   - title: "Vitals Visualizer"
@@ -787,6 +833,9 @@ effects_module:
   - title: "Patient Portal"
     url: /sdk/patient-portal/
     description: Customize your Patient Portal.
+  - title: "Patient Timeline"
+    url: /sdk/effect-patient-timeline/
+    description: Configure a patient's timeline by excluding specific note types.
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
@@ -804,6 +853,9 @@ data_module:
   - title: "AllergyIntolerance"
     url: /sdk/data-allergy-intolerance/
     description: Harmful or undesired physiological responses associated with exposure to a substance.
+  - title: "Application"
+    url: /sdk/data-application/
+    description: A plugin application.
   - title: "Appointment"
     url: /sdk/data-appointment/
     description: A scheduled meeting between a patient and a provider.

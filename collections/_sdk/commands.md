@@ -1684,7 +1684,7 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note, Questionnaire
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
 
     def compute(self) -> list[Effect]:
       q = Questionnaire.objects.filter(name="Exercise").first()

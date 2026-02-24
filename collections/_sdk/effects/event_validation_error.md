@@ -30,14 +30,14 @@ Return an `EventValidationError` from your protocol's `compute` method to block 
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note
 from canvas_sdk.v1.data.coverage import CoverageStack
 from canvas_sdk.effects.validation import EventValidationError, ValidationError
 from canvas_sdk.effects.banner_alert import AddBannerAlert, RemoveBannerAlert
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_PRE_CREATE)
 
     def handle_no_coverage(self, patient_id: str, note: Note) -> list[Effect]:

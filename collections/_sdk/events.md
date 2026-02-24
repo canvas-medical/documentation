@@ -12,14 +12,14 @@ By writing plugins that respond to events, plugin code is notified and can react
 
 **How do I use them?**
 
-To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseProtocol`. For example:
+To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseHandler`. For example:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
     def compute(self):
@@ -72,11 +72,11 @@ Many events include common contextual information to help you understand the sco
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
     def compute(self):
@@ -1974,6 +1974,41 @@ These events fire as a result of records being created, updated, or deleted.
 "type": <a href='/sdk/data-letter/'>Letter</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter action event is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_action_event_id
+"type": <a href='/sdk/data-letter-action-event/'>LetterActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter action event is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_action_event_id
+"type": <a href='/sdk/data-letter-action-event/'>LetterActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20002,6 +20037,28 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   </tbody>
 </table>
 
+
+<table>
+  <thead>
+    <tr><th colspan="2">SHOW_NOTE_BODY_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 <table>
   <thead>
     <tr><th colspan="3">SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON</th></tr>
@@ -20366,6 +20423,26 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+### Patient Timeline Configuration
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_TIMELINE__GET_CONFIGURATION</th></tr>
+    <tr><td colspan="2">Occurs when a patient's timeline is loaded. Allows plugins to configure which note types are visible on the timeline. See the <a href='/sdk/effect-patient-timeline/'>Patient Timeline effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_key
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Other Events
 
 <table>
@@ -20423,6 +20500,10 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+    <tr>
+      <td>GET_HOMEPAGE_CONFIGURATION</td>
+      <td>Homepage is loading. See <a href="{% link _guides/set-default-homepage.md %}" target="_blank">Set default homepage</a> for examples of how to use this event.</td>
     </tr>
   </tbody>
 </table>

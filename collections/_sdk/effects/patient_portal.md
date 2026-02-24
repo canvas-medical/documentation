@@ -20,10 +20,10 @@ To configure the patient portal, you can use the `PatientPortalApplicationConfig
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.patient_portal.application_configuration import PatientPortalApplicationConfiguration
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION)
 
 
@@ -55,10 +55,10 @@ import json
 
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED)
 
 
@@ -79,10 +79,10 @@ import json
 
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED)
 
 
@@ -105,10 +105,10 @@ import json
 
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK)
 
 
@@ -206,10 +206,10 @@ When an effect is prepared, the model validates inputs and returns structured er
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.send_contact_verification import SendContactVerificationEffect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_CONTACT_POINT_CREATED)
 
     def compute(self) -> list[Effect]:

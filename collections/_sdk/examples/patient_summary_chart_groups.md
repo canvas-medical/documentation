@@ -25,7 +25,7 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
     "components": {
         "protocols": [
             {
-                "class": "patient_summary_chart_groups.protocols.my_protocol:Protocol",
+                "class": "patient_summary_chart_groups.protocols.my_protocol:Conditions",
                 "description": "A protocol that groups Psychiatry conditions"
             },
             {
@@ -51,9 +51,9 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
 
 ### my_protocol.py
 
-This file defines two custom protocol handlers, `Protocol` and `Medications`, using the Canvas SDK. These handlers listen for specific events related to a patient's medical chart and group relevant diagnoses or medications into a "Psychiatry" category, returning these as effects for further processing or display in the Canvas UI.
+This file defines two custom protocol handlers, `Conditions` and `Medications`, using the Canvas SDK. These handlers listen for specific events related to a patient's medical chart and group relevant diagnoses or medications into a "Psychiatry" category, returning these as effects for further processing or display in the Canvas UI.
 
-**Section: `Protocol` Handler**
+**Section: `Conditions` Handler**
 
 - Inherits from `BaseHandler`.
 - Listens to the `EventType.PATIENT_CHART__CONDITIONS` event (triggered when a patient's chart conditions are accessed).
@@ -89,7 +89,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.commands.constants import CodeSystems
 
-class Protocol(BaseHandler):
+class Conditions(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__CONDITIONS)
 
     def compute(self) -> list[Effect]:

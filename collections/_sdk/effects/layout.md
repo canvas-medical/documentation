@@ -78,11 +78,11 @@ import json
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.effects.patient_profile_configuration import PatientProfileConfiguration
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     """This protocol is used to configure which sections appear in the Patient Profile section.
 
     The SHOW_PATIENT_PROFILE_SECTIONS payload expects a list of sections where each section is a dict like { "type": str, "start_expanded": bool }
@@ -241,6 +241,8 @@ The `LaunchModalEffect` class has the following properties:
   - `NEW_WINDOW`: Opens the content in a new browser window.
   - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
   - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
+  - `PAGE`: Opens the content as a full page.
+  - `NOTE`: Opens the content within a note tab (used with Note Applications).
 - **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 
 ### Closing Modals from Applications

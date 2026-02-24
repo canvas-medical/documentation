@@ -1,5 +1,5 @@
 ---
-title: "Your First Plugin"
+title: "Your First Plugin (Manual)"
 guide_for:
 - /sdk/quickstart/
 - /sdk/canvas_cli/
@@ -10,6 +10,8 @@ guide_for:
 Plugins are your tool for customizing the Canvas experience. By using the
 modules of the Canvas SDK, you can react to [events](/sdk/events/) emitted from the EHR,
 request additional [data](/sdk/data/) if needed, and respond with [effects](/sdk/effects/) that alter workflows and add or change data in Canvas. You can also use [utils](/sdk/utils/) to do things like call out to web services with our provided HTTP client.
+
+{% include alert.html type="warning" content="This guide is for manual coding. Want a faster, AI-assisted approach? Check out <a href='/guides/your-first-plugin-with-claude-code/'>Your First Plugin (with Claude Code)</a>, which uses an AI assistant to guide you through building and deploying your plugin." %}
 
 ## Video
 
