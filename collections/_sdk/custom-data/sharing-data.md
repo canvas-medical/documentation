@@ -192,12 +192,10 @@ CustomAttributes attach key-value data to existing Canvas models (Patient, Staff
 
 ```python
 # CANVAS_MANIFEST.json: "access": "read_write"
-from canvas_sdk.v1.data import Patient, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Patient, ModelExtension
 
-class PatientProxy(Patient, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class PatientProxy(Patient, ModelExtension):
+    pass
 
 patient_id = 123
 patient = PatientProxy.objects.get(id=patient_id)
@@ -209,12 +207,10 @@ patient.set_attribute("care_program", "diabetes_management")
 
 ```python
 # CANVAS_MANIFEST.json: "access": "read"
-from canvas_sdk.v1.data import Patient, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Patient, ModelExtension
 
-class PatientProxy(Patient, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class PatientProxy(Patient, ModelExtension):
+    pass
 
 patient_id = 123
 patient = PatientProxy.objects.with_only(
@@ -371,13 +367,11 @@ API sharing is the recommended approach when:
 ```python
 from canvas_sdk.handlers.simple_api import SimpleAPI, APIKeyCredentials, api
 from canvas_sdk.effects.simple_api import JSONResponse
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 class ProfileAPI(SimpleAPI):

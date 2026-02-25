@@ -101,19 +101,15 @@ Test that CustomAttributes persist correctly and maintain isolation between obje
 from datetime import datetime
 import factory
 from canvas_sdk.test_utils.factories import StaffFactory, PatientFactory
-from canvas_sdk.v1.data import Staff, Patient, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, Patient, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
-class PatientProxy(Patient, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class PatientProxy(Patient, ModelExtension):
+    pass
 
 
 class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
@@ -217,13 +213,11 @@ Test that AttributeHub stores and retrieves data correctly:
 from datetime import datetime
 import factory
 from canvas_sdk.test_utils.factories import StaffFactory
-from canvas_sdk.v1.data import AttributeHub, Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import AttributeHub, Staff, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
@@ -310,14 +304,12 @@ from django.db.models import (
     Index, DO_NOTHING
 )
 from canvas_sdk.test_utils.factories import StaffFactory
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
@@ -494,14 +486,12 @@ Use factories to simplify test data creation:
 import factory
 from django.db.models import OneToOneField, TextField, IntegerField, DO_NOTHING
 from canvas_sdk.test_utils.factories import StaffFactory
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
@@ -607,14 +597,12 @@ from django.db.models import (
     Index, DO_NOTHING, Count
 )
 from canvas_sdk.test_utils.factories import StaffFactory
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
@@ -757,15 +745,13 @@ Test data validation, constraints, and cascade behavior:
 import factory
 from django.db.models import ForeignKey, TextField, Index, DO_NOTHING
 from canvas_sdk.test_utils.factories import StaffFactory
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 from canvas_sdk.v1.data.custom_attribute import CustomAttribute
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):

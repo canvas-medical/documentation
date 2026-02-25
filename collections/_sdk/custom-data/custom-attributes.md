@@ -28,28 +28,24 @@ CustomAttributes attach to a "proxy" of a core SDK model. A proxy is a Django OR
 and allows customizations without changing the base model. It cannot define new database fields, but inherits all
 of those from its base model.
 
-Extend existing SDK models by creating a proxy class that adds CustomAttribute support.
+Extend existing SDK models by subclassing the SDK model and `ModelExtension`. The latter adds CustomAttribute support
+and sets up the proxy relationship.
 
 ```python
-from canvas_sdk.v1.data import Staff, Patient, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
+class StaffProxy(Staff, ModelExtension):
     """A proxy for Staff with CustomAttribute capabilities"""
-    class Meta:
-        proxy = True
-
-    # This model manager is necessary efficient retrieval of attributes
-    objects = CustomAttributeAwareManager()
+    pass
 ```
 
 You can name your proxy class as you wish, but it **must**:
 1. subclass a core model,
-1. declare `proxy = True`.
-1. define the `objects` model manager as a `CustomAttributeAwareManager`
+1. include `ModelExtension`.
 
-A proxy may omit the mixin and model manager if it is only to be used to associate [Custom Models](/sdk/custom-data-custom-models/)
-to core SDK models.
+The mixin automatically configures the class as a Django proxy model and assigns a `CustomAttributeAwareManager`
+as the `objects` manager for efficient attribute retrieval. No `Meta` class or explicit manager assignment is needed.
 
 ---
 
@@ -58,21 +54,16 @@ to core SDK models.
 Set individual or multiple custom attributes on a model instance:
 
 ```python
-from canvas_sdk.v1.data import Staff, Patient
-from canvas_sdk.v1.data import CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, Patient, ModelExtension
 
 
 # Define proxy models (typically in your plugin's models.py)
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
-class PatientProxy(Patient, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class PatientProxy(Patient, ModelExtension):
+    pass
 
 
 # Get model instances
@@ -101,13 +92,11 @@ Setting attributes in bulk via `set_attributes` will be more performant with lar
 Retrieve custom attribute values by name:
 
 ```python
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 staff = StaffProxy.objects.get(id="staff-uuid")
@@ -127,13 +116,11 @@ CustomAttributes automatically handle multiple data types:
 
 ```python
 from datetime import date, datetime
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 staff = StaffProxy.objects.get(id="staff-uuid")
@@ -184,13 +171,11 @@ Filter models by their custom attributes:
 
 ```python
 from django.db.models import Q
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 # Find staff with a specific specialty assigned as a text value
@@ -224,13 +209,11 @@ Reduce database queries by prefetching custom attributes with the `CustomAttribu
 this manager will prefetch all attributes associated to the record.
 
 ```python
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 # Prefetch all custom attributes
@@ -254,13 +237,11 @@ staff = StaffProxy.objects.with_only([
 Remove custom attributes when no longer needed:
 
 ```python
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+class StaffProxy(Staff, ModelExtension):
+    pass
 
 
 staff = StaffProxy.objects.get(id="staff-uuid")
@@ -286,7 +267,7 @@ if deleted:
 
 ### Performance
 
-2. **Include CustomAttributeAwareManager** - Always use `CustomAttributeAwareManager()` as the objects manager for efficient attribute retrieval
+2. **CustomAttributeAwareManager is auto-assigned** - The mixin automatically assigns `CustomAttributeAwareManager()` as the `objects` manager for efficient attribute retrieval
 3. **Filter at the database level** rather than in Python
 4. **Use with_only()** to prefetch only specific attributes when you don't need all custom attributes
 

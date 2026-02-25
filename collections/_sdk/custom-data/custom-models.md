@@ -636,14 +636,12 @@ You can combine Custom Models with CustomAttributes for maximum flexibility:
 ```python
 from canvas_sdk.v1.data.custom import CustomModel
 from django.db.models import DO_NOTHING, ForeignKey, TextField 
-from canvas_sdk.v1.data import Staff, CustomAttributeMixin, CustomAttributeAwareManager
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, CustomAttributeMixin):
+class StaffProxy(Staff, ModelExtension):
     """Staff proxy with CustomAttribute support."""
-    class Meta:
-        proxy = True
-    objects = CustomAttributeAwareManager()
+    pass
 
 
 class Department(CustomModel):
