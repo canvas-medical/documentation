@@ -236,7 +236,7 @@ AttributeHubs store standalone key-value data not attached to Canvas models.
 from canvas_sdk.v1.data import AttributeHub
 
 # Create a configuration hub
-config = AttributeHub.objects.create(type="clinic_config", externally_exposable_id="main")
+config = AttributeHub.objects.create(type="clinic_config", id="main")
 config.set_attribute("max_daily_appointments", 50)
 config.set_attribute("appointment_duration_minutes", 30)
 config.set_attribute("accepting_new_patients", True)
@@ -250,7 +250,7 @@ from canvas_sdk.v1.data import AttributeHub
 
 config = AttributeHub.objects.with_only(
     attribute_names=["max_daily_appointments", "appointment_duration_minutes"]
-).get(type="clinic_config", externally_exposable_id="main")
+).get(type="clinic_config", id="main")
 
 max_appointments = config.get_attribute("max_daily_appointments")  # 50
 duration = config.get_attribute("appointment_duration_minutes")  # 30

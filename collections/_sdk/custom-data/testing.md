@@ -236,7 +236,7 @@ def test_attribute_hub_creation():
     # Create hub
     hub = AttributeHub.objects.create(
         type="staff_profile",
-        externally_exposable_id="staff_123"
+        id="staff_123"
     )
 
     # Set attributes
@@ -255,7 +255,7 @@ def test_attribute_hub_get_or_create():
     # First call creates
     hub1, created1 = AttributeHub.objects.get_or_create(
         type="staff_sync",
-        externally_exposable_id=f"staff:{staff.id}"
+        id=f"staff:{staff.id}"
     )
     assert created1 is True
 
@@ -264,7 +264,7 @@ def test_attribute_hub_get_or_create():
     # Second call retrieves existing
     hub2, created2 = AttributeHub.objects.get_or_create(
         type="staff_sync",
-        externally_exposable_id=f"staff:{staff.id}"
+        id=f"staff:{staff.id}"
     )
     assert created2 is False
     assert hub1.dbid == hub2.dbid
@@ -275,7 +275,7 @@ def test_attribute_hub_json_storage():
     """Test storing complex JSON in AttributeHub."""
     hub = AttributeHub.objects.create(
         type="profile",
-        externally_exposable_id="test_123"
+        id="test_123"
     )
 
     profile_data = {

@@ -25,7 +25,7 @@ or plugin-specific configuration.
 
 ## Creating an AttributeHub
 
-Create a hub for a specific purpose using the `type` and `externally_exposable_id` fields, which together form a unique key.
+Create a hub for a specific purpose using the `type` and `id` fields, which together form a unique key.
 There is a database constraint on these two fields to ensure uniqueness, and creating a duplicate will raise a `UniqueViolation` 
 exception.
 
@@ -35,7 +35,7 @@ from canvas_sdk.v1.data import AttributeHub
 # Create a hub for a specific purpose
 hub = AttributeHub.objects.create(
     type="staff_profile",
-    externally_exposable_id="staff_id:abc123"
+    id="staff_id:abc123"
 )
 ```
 
@@ -54,7 +54,7 @@ patient = Patient.objects.get(id="patient-uuid-here")
 # Create a hub to track a specific meal
 hub = AttributeHub.objects.create(
     type="meal_entry",
-    externally_exposable_id=f"patient:{patient.id}:meal:{datetime.now().isoformat()}"
+    id=f"patient:{patient.id}:meal:{datetime.now().isoformat()}"
 )
 
 # Store individual attributes
@@ -96,7 +96,7 @@ patient = Patient.objects.get(id="patient-uuid-here")
 # Get or create a hub for tracking daily calorie totals
 hub, created = AttributeHub.objects.get_or_create(
     type="daily_calorie_summary",
-    externally_exposable_id=f"patient:{patient.id}:date:2024-01-15"
+    id=f"patient:{patient.id}:date:2024-01-15"
 )
 
 if created:
@@ -144,7 +144,7 @@ class CRMSyncAPI(SimpleAPI):
         # Store CRM sync state in AttributeHub
         hub, created = AttributeHub.objects.get_or_create(
             type="crm_campaign_sync",
-            externally_exposable_id=f"patient:{patient.id}:campaign:{campaign_id}"
+            id=f"patient:{patient.id}:campaign:{campaign_id}"
         )
 
         hub.set_attributes({
@@ -178,7 +178,7 @@ class CampaignEnrollmentHandler(BaseHandler):
         # Retrieve CRM sync state from AttributeHub
         hub, created = AttributeHub.objects.get_or_create(
             type="crm_campaign_sync",
-            externally_exposable_id=f"patient:{patient_id}:campaign:{campaign_id}"
+            id=f"patient:{patient_id}:campaign:{campaign_id}"
         )
 
         if not created:
@@ -201,7 +201,7 @@ class CampaignEnrollmentHandler(BaseHandler):
 ### Data Organization
 
 1. **Use descriptive type values** - Choose meaningful type names that describe the purpose of the hub (e.g., "external_sync", "api_cache", "feature_flags")
-2. **Use consistent ID patterns** - Use a consistent pattern for `externally_exposable_id` (e.g., "entity_type:entity_id")
+2. **Use consistent ID patterns** - Use a consistent pattern for `id` (e.g., "entity_type:entity_id")
 3. **Namespace by purpose** - Group related data under a single hub rather than creating multiple hubs for the same entity type
 
 ### Data Privacy and Isolation

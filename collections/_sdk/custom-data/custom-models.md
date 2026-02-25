@@ -80,14 +80,18 @@ The Canvas SDK provides Django-based field types for defining your models:
 | `IntegerField`    | Integer values            | `default`                                |
 | `DecimalField`    | Decimal numbers           | `default`, `max_digits`,`decimal_places` |
 | `BooleanField`    | True/False values         | `default`                                |
-| `DateField`       | Date values               | `auto_now_add`, `default`                |
-| `DateTimeField`   | Date and time values      | `auto_now_add`, `default`                |
+| `DateField`       | Date values               | `auto_now`, `auto_now_add`, `default`    |
+| `DateTimeField`   | Date and time values      | `auto_now`, `auto_now_add`, `default`    |
 | `JSONField`       | JSON-serializable data    | `default`                                |
-| `ForeignKey`      | Many-to-one relationship  | `related_name`                           |
-| `OneToOneField`   | One-to-one relationship   | `related_name`                           |
+| `ForeignKey`      | Many-to-one relationship  | `related_name`, `on_delete=DO_NOTHING`   |
+| `OneToOneField`   | One-to-one relationship   | `related_name`, `on_delete=DO_NOTHING`   |
 
 If `default` is supplied it will be applied by the Django ORM, and will not be a PostgreSQL default. 
 As a result, only new records will receive the value, and it will not cause a mass edit of existing records.
+
+Note: `on_delete=CASCADE` is unsupported because it relies upon database-level foreign key constraints
+which are not implemented at this time. Plugins are responsible for maintaining data integrity and
+preventing orphaned records during delete operations.
 
 ### Indexes
 
@@ -473,6 +477,8 @@ In the example above, `StaffSpecialty` is the through model that creates the man
 between `StaffProxy` and `Specialty`.
 
 `StaffSpecialty` may include additional fields to describe the nature of the association between `Staff` and `Specialty`.
+
+The Canvas SDK does **not** support the Django `ManyToManyField` at this time.
 
 ```python
 from django.db.models import ForeignKey, Index, TextField, DO_NOTHING

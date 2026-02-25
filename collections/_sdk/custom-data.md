@@ -7,9 +7,9 @@ title: "Custom Data"
 The Canvas SDK provides three techniques for storing custom data in your plugins, allowing you to extend existing models, create flexible key-value stores, 
 or define fully structured data models with relationships among entities:
 
-1. **[CustomAttributes for SDK Models](/sdk/custom-data-custom-attributes/)** - Extend existing SDK data models (like Patient or Staff) with flexible key-value attributes
-2. **[AttributeHubs](/sdk/custom-data-attribute-hubs/)** - Store arbitrary key-value and JSON data independent of existing models
-3. **[Custom Data Models](/sdk/custom-data-custom-models/)** - Define fully structured models with typed fields and relationships
+1. **[CustomAttributes for SDK Models](/sdk/custom-data-custom-attributes/)** - Augment existing SDK data models (like Patient or Staff) with flexible key-value attributes
+2. **[Custom Data Models](/sdk/custom-data-custom-models/)** - Extend the Canvas data model by adding fully structured models with typed fields and relationships
+3. **[AttributeHubs](/sdk/custom-data-attribute-hubs/)** - Store arbitrary key-value pairs and JSON data independently of the Canvas data model
 
 Each technique serves different use cases and provides different levels of structure and type safety. All three techniques may be used together.
 
@@ -34,9 +34,35 @@ Use this when you need to add flexible data to existing SDK models without defin
 
 [Learn more about CustomAttributes →](/sdk/custom-data-custom-attributes/)
 
+### Custom Data Models
+
+Use this when you need structured, typed data with relationships and normalized data.
+
+**Best for:**
+- Associating new tables to existing Canvas tables
+- Creating new associations among Canvas tables
+- Complex domain models
+- Data requiring validation and normalization
+- Relational data with foreign keys
+- Performance-critical queries
+
+**Example use cases:**
+- Provider specialties and certifications
+- Linking `Staff` to `Note` creating a `supervising_provider` association
+- Custom workflows and forms
+- Integration-specific data structures
+- Practice-specific business operation concepts and logic
+
+**CustomModels may build around and be related to core SDK models using proxies.**
+
+[Learn more about Custom Data Models →](/sdk/custom-data-custom-models/)
+
 ### AttributeHubs
 
-Use this when you need to store data that doesn't naturally belong to any existing model.
+AttributeHubs provide a key/value and document store free from the burden of defining any schema or linking to Canvas models.
+They are for storing irregular or unstructured information that doesn't have a natural home. Whereas CustomAttributes and 
+CustomModels build upon the Canvas data model, AttributeHubs allow easy, standalone persistence of information. 
+Use this when you need to store data that doesn't naturally belong to any existing or imagined model. 
 
 **Best for:**
 - Cross-cutting concerns that span multiple models
@@ -52,25 +78,6 @@ Use this when you need to store data that doesn't naturally belong to any existi
 
 [Learn more about AttributeHubs →](/sdk/custom-data-attribute-hubs/)
 
-### Custom Data Models
-
-Use this when you need structured, typed data with relationships and normalized data.
-
-**Best for:**
-- Complex domain models
-- Data requiring validation and normalization
-- Relational data with foreign keys
-- Performance-critical queries
-
-**Example use cases:**
-- Provider specialties and certifications
-- Custom workflows and forms
-- Integration-specific data structures
-- Practice-specific business operation concepts and logic
-
-**CustomModels may build around and be related to core SDK models using proxies.**
-
-[Learn more about Custom Data Models →](/sdk/custom-data-custom-models/)
 
 ---
 
