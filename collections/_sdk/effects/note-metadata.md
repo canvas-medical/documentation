@@ -86,7 +86,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 
 
-class NoteMetadataProtocol(BaseHandler):
+class NoteMetadataHandler(BaseHandler):
   """
   Adds metadata to notes when a plan command is updated.
   """
@@ -111,7 +111,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 
 
-class SigningMetadataProtocol(BaseHandler):
+class SigningMetadataHandler(BaseHandler):
   """
   Adds metadata to notes when they are signed.
   """
