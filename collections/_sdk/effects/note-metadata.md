@@ -17,10 +17,10 @@ fit within the standard note data model.
 
 ## Attributes
 
-| Attribute | Type  | Description                                                       | Required |
-|-----------|-------|-------------------------------------------------------------------|----------|
-| `note_id` | `str` | Id of the note record to associate metadata with                  | Yes      |
-| `key`     | `str` | Unique identifier for the metadata entry within the note context  | Yes      |
+| Attribute | Type          | Description                                                      | Required |
+|-----------|---------------|------------------------------------------------------------------|----------|
+| `note_id` | `str \| UUID` | Id of the note record to associate metadata with                 | Yes      |
+| `key`     | `str`         | Unique identifier for the metadata entry within the note context | Yes      |
 
 ## Methods
 
@@ -60,19 +60,6 @@ The effect performs comprehensive validation before execution:
 - Both `note_id` and `key` must be non-empty strings
 - The `value` parameter in the `upsert` method must be provided
 
-### Data Structure
-
-The effect payload is structured as JSON with the following schema:
-
-```json
-{
-  "data": {
-    "note_id": "note-id",
-    "key": "metadata-key",
-    "value": "metadata-value"
-  }
-}
-```
 
 ## Example Usage
 
@@ -83,8 +70,8 @@ from canvas_sdk.effects.note_metadata import NoteMetadata
 
 # Create a metadata entry for note tracking
 metadata = NoteMetadata(
-    note_id="550e8400e29b41d4a716446655440000",
-    key="external_system_id"
+  note_id="803ce56a-350e-49a4-abae-019d9f5f24b2",
+  key="my_plugin:external_system_id"
 )
 
 # Upsert the metadata value
@@ -117,7 +104,7 @@ class NoteMetadataHandler(BaseHandler):
       # Store signing source
       metadata = NoteMetadata(
         note_id=note_id,
-        key="signing_source"
+        key="my_plugin:signing_source"
       )
       effects.append(metadata.upsert("protocol"))
 
@@ -128,7 +115,7 @@ class NoteMetadataHandler(BaseHandler):
       }
       context_metadata = NoteMetadata(
         note_id=note_id,
-        key="signing_context"
+        key="my_plugin:signing_context"
       )
       effects.append(context_metadata.upsert(json.dumps(context_data)))
 
@@ -141,12 +128,12 @@ class NoteMetadataHandler(BaseHandler):
 
 1. **Use Descriptive Names**: Choose keys that clearly indicate the purpose of the metadata
 
-- Good: `external_system_id`, `workflow_stage`, `integration_source`
+- Good: `external_system_id`, `workflow_stage`, `signing_source`
 - Avoid: `data1`, `temp`, `misc`
 
-2. **Namespace Your Keys**: When building integrations or modules, prefix keys to avoid collisions
+2. **Namespace Your Keys**: Prefix keys with your plugin name to avoid collisions with other plugins
 
-- Example: `integration_note_id`, `workflow_current_stage`, `automation_trigger_id`
+- Example: `my_plugin:external_system_id`, `my_plugin:workflow_stage`, `my_plugin:signing_source`
 
 ### Value Storage
 
@@ -157,8 +144,8 @@ class NoteMetadataHandler(BaseHandler):
    from canvas_sdk.effects.note_metadata import NoteMetadata
 
    metadata = NoteMetadata(
-       note_id="550e8400e29b41d4a716446655440000",
-       key="workflow_state"
+       note_id="803ce56a-350e-49a4-abae-019d9f5f24b2",
+       key="my_plugin:workflow_state"
    )
    complex_data = {"stage": "review", "approvers": ["user1", "user2"], "timestamp": "2025-01-15T10:30:00Z"}
    metadata.upsert(json.dumps(complex_data))
@@ -170,8 +157,8 @@ class NoteMetadataHandler(BaseHandler):
 
    needs_followup = True
    metadata = NoteMetadata(
-       note_id="550e8400e29b41d4a716446655440000",
-       key="requires_followup"
+       note_id="803ce56a-350e-49a4-abae-019d9f5f24b2",
+       key="my_plugin:requires_followup"
    )
    metadata.upsert("true" if needs_followup else "false")
    ```
