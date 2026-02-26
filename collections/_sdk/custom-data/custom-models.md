@@ -631,7 +631,7 @@ delete associated records correctly.
 
 ## The CustomModel Lifecycle
 
-Managing database schemas necessarily introduces complexity, because there is state to maintained over time as the software evolves. 
+Managing database schemas necessarily introduces complexity, because there is state to maintain over time as the software evolves. 
 Common pitfalls include expensive table rewrite operations, migrations that fail in some environments due to manual changes,
 database system-specific nuances, unsatisfied foreign key constraints due to data corruption or improper order of operations, etc.
 

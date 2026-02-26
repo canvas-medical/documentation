@@ -78,6 +78,30 @@ Use this when you need to store data that doesn't naturally belong to any existi
 
 [Learn more about AttributeHubs →](/sdk/custom-data-attribute-hubs/)
 
+## Getting Started
+
+To use custom data in your plugin, declare a `custom_data` section in your `CANVAS_MANIFEST.json` with a namespace and access level.
+The namespace is a unique identifier scoped to your organization (formatted as `organization__name` with a double underscore),
+and the access level controls whether the plugin can read only or read and write data. Any secrets your plugin needs—such as
+API keys for external services—should be listed in the manifest's `secrets` array. When the first `read_write` plugin is installed
+into a namespace, the system automatically initializes a data namespace, prepares tables, and generates `namespace_read_access_key`
+and `namespace_read_write_access_key` secrets that control access for other plugins joining the same namespace.
+
+```json
+{
+  "sdk_version": "0.1.4",
+  "plugin_version": "1.0.0",
+  "name": "my_plugin",
+  "secrets": ["API_TOKEN", "namespace_read_write_access_key"],
+  "custom_data": {
+    "namespace": "acme_corp__shared_data",
+    "access": "read_write"
+  }
+}
+```
+
+For details on how multiple plugins can share a namespace using these keys, see the [Sharing Data](/sdk/custom-data-sharing-data/) guide.
+For managing API tokens and other sensitive configuration, see [Managing Secrets](/sdk/secrets/).
 
 ---
 
