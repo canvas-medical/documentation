@@ -678,8 +678,8 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.NOTE_BODY_UPDATED)
+class NoteHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self):
         return [
@@ -716,8 +716,8 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.NOTE_SIGNED)
+class NoteHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self):
         return [
