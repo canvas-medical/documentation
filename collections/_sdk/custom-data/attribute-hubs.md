@@ -213,12 +213,12 @@ class CampaignEnrollmentHandler(BaseHandler):
 
 ### Performance
 
-1. **Use get_or_create** - Always use `get_or_create()` to avoid duplicate hubs
 2. **Batch attribute updates** - Use `set_attributes()` to set multiple values at once
 3. **Cache hub lookups** - If accessing the same hub multiple times, store the reference
 
 ### Data Integrity
 
+1. **Use get_or_create** - Use `get_or_create()` to avoid duplicate hubs
 1. **Handle None values** - Always check if an attribute exists before using it
 2. **Validate data** - Validate data before storing in AttributeHub
 3. **Clean up unused data** - Remove AttributeHub instances that are no longer needed

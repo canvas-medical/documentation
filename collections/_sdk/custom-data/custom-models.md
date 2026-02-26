@@ -263,21 +263,27 @@ ProviderQualification.objects.all().delete()
 
 ## Extend Canvas Data Model using Proxy Models
 
-A proxy is a Django ORM model that extends another model and allows customizations without changing the base model. 
-It cannot define new database fields, but inherits all
+CustomModels may attach to a "proxy" of a core SDK model. A proxy is a Django ORM model that extends another model 
+and allows customizations without changing the base model. It cannot define new database fields, but inherits all
 of those from its base model.
 
-We will define them like so:
+Extend existing SDK models by subclassing the SDK model and `ModelExtension`. The latter adds CustomAttribute support
+and sets up the proxy relationship.
 
 ```python
-from canvas_sdk.v1.data import Staff
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff):
-    """Proxy for Staff to use with custom models."""
-    class Meta:
-        proxy = True
+class StaffProxy(Staff, ModelExtension):
+    """A proxy for Staff with CustomAttribute capabilities"""
+    pass
 ```
+
+You can name your proxy class as you wish, but it **must**:
+1. subclass a core model,
+1. include `ModelExtension`.
+
+The mixin automatically configures the class as a Django proxy model.
 
 ---
 
@@ -289,15 +295,14 @@ Use `OneToOneField` to define this relationship.
 ### Basic One-to-One
 
 ```python
-from canvas_sdk.v1.data import Staff
+from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 from django.db.models import DateTimeField, DecimalField, DO_NOTHING, OneToOneField, TextField
 
 
-class StaffProxy(Staff):
+class StaffProxy(Staff, ModelExtension):
     """Proxy for Staff to use with custom models."""
-    class Meta:
-        proxy = True
+    pass
 
 class Biography(CustomModel):
 
@@ -372,28 +377,26 @@ Use `ForeignKey` to define this relationship.
 ### Basic One-to-Many
 
 ```python
-from canvas_sdk.v1.data import Staff
+from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 from django.db.models import DateTimeField, DecimalField, DO_NOTHING, ForeignKey, TextField
 
 
-class StaffProxy(Staff):
-    """Proxy for Staff to use with custom models."""
-    class Meta:
-        proxy = True
+class StaffProxy(Staff, ModelExtension):
+  """Proxy for Staff to use with custom models."""
+  pass
 
 class Biography(CustomModel):
+  biography = TextField()
+  language = TextField()
+  version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
+  last_modified_at = DateTimeField(auto_now_add=True)
 
-    biography = TextField()
-    language = TextField()
-    version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
-    last_modified_at = DateTimeField(auto_now_add=True)
-
-    # Same as one-to-one, but a Foreign key with a plural 'related_name'. Now, each staff may have multiple biographies,
-    # perhaps in different languages.
-    staff = ForeignKey(
-        StaffProxy, to_field="dbid", on_delete=DO_NOTHING, related_name="biographies"
-    )
+  # Same as one-to-one, but a Foreign key with a plural 'related_name'. Now, each staff may have multiple biographies,
+  # perhaps in different languages.
+  staff = ForeignKey(
+    StaffProxy, to_field="dbid", on_delete=DO_NOTHING, related_name="biographies"
+  )
 ```
 
 ### Creating One-to-Many Records
@@ -483,41 +486,40 @@ The Canvas SDK does **not** support the Django `ManyToManyField` at this time.
 ```python
 from django.db.models import ForeignKey, Index, TextField, DO_NOTHING
 from canvas_sdk.v1.data.base import CustomModel
-from canvas_sdk.v1.data import Staff
+from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff):
-    """Proxy for Staff to use with custom models."""
-    class Meta:
-        proxy = True
-
+class StaffProxy(Staff, ModelExtension):
+  """Proxy for Staff to use with custom models."""
+  pass
 
 class Specialty(CustomModel):
-    """Medical specialty (e.g., Cardiology, Neurology)."""
+  """Medical specialty (e.g., Cardiology, Neurology)."""
 
-    name = TextField()
+  name = TextField()
 
-    class Meta:
-        indexes = [
-            Index(fields=["name"]),
-        ]
+  class Meta:
+    indexes = [
+      Index(fields=["name"]),
+    ]
+
 
 # Declaring this class will result in a join table called `staffspecialty`
 class StaffSpecialty(CustomModel):
-    """Many-to-many relationship: Staff can have many specialties, specialties can have many staff."""
+  """Many-to-many relationship: Staff can have many specialties, specialties can have many staff."""
 
-    staff = ForeignKey(
-        StaffProxy,
-        to_field="dbid",
-        on_delete=DO_NOTHING,
-        related_name="staff_specialties"
-    )
-    specialty = ForeignKey(
-        Specialty,
-        to_field="dbid",
-        on_delete=DO_NOTHING,
-        related_name="staff_specialties"
-    )
+  staff = ForeignKey(
+    StaffProxy,
+    to_field="dbid",
+    on_delete=DO_NOTHING,
+    related_name="staff_specialties"
+  )
+  specialty = ForeignKey(
+    Specialty,
+    to_field="dbid",
+    on_delete=DO_NOTHING,
+    related_name="staff_specialties"
+  )
 ```
 
 This creates a many-to-many relationship where:
