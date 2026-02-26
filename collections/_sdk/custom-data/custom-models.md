@@ -629,6 +629,30 @@ delete associated records correctly.
 
 ---
 
+## The CustomModel Lifecycle
+
+Managing database schemas necessarily introduces complexity, because there is state to maintained over time as the software evolves. 
+Common pitfalls include expensive table rewrite operations, migrations that fail in some environments due to manual changes,
+database system-specific nuances, unsatisfied foreign key constraints due to data corruption or improper order of operations, etc.
+
+The Canvas SDK Custom Data feature aims to simplify maintenance, while sacrificing some rigor found in a full migration system like Django's.
+
+| Operation    | Allowed | Explanation                                                                                                                                                                            |
+|--------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Create Model | Yes     | A table corresponding to your CustomModel will be created if it does not exist. An autoincrementing column named `dbid` will be its sole attribute.                                    |
+| Add Field    | Yes     | A column corresponding to a Field declared within your CustomModel will be added to the table if it does not exist. It will be nullable, without defaults to eliminate table rewrites. |
+| Alter Field  | No      | This can cause a table rewrite, and requires a full migration metadata system. Create a new Field in your model. Copy data from old to new.                                            |
+| Drop Field   | No      | This will cause a table rewrite, and requires a full migration metadata system. Remove the Field from your model and it will be ignored.                                               |
+| Alter Model  | No      | Requires a full migration metadata system. Create a new Model in your plugin. Copy data from old to new.                                                                               |
+| Drop Model   | No      | Requires a full migration metadata system. Remove the model from your plugin and it will be ignored.                                                                                   |
+
+### Best Practices 
+1. Emphasize [local development](#local-db-seeding-via-run-plugin) over use of a development EMR instance.
+2. Write [automated tests](/sdk/custom-data-testing/) exercising your business logic.
+3. Extract business logic and CRUD operations into "service" classes that can be tested in isolation.
+
+---
+
 ## Advanced Patterns
 
 ### Combining Approaches
