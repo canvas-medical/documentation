@@ -76,7 +76,7 @@ note = Note(instance_id="803ce56a-350e-49a4-abae-019d9f5f24b2")
 effect = note.upsert_metadata(key="my_plugin:external_system_id", value="EXT-12345")
 ```
 
-### Protocol Example
+### Example
 
 ```python
 import json
