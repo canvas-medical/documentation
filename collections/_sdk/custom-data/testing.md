@@ -23,8 +23,6 @@ Each test runs inside a transaction and automatically rolls back at the end, pro
 
 See [Testing Utilities](/sdk/testing-utils/) for complete setup instructions.
 
----
-
 ## Creating Factories for Proxy Models
 
 Define factories for proxy models by extending the base SDK factories:
@@ -46,8 +44,6 @@ class PatientProxyFactory(PatientFactory, factory.django.DjangoModelFactory[Pati
     class Meta:
         model = PatientProxy
 ```
-
----
 
 ## Creating Factories for Custom Models
 
@@ -90,8 +86,6 @@ class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
     staff = factory.SubFactory(StaffProxyFactory)
     specialty = factory.SubFactory(SpecialtyFactory)
 ```
-
----
 
 ## Testing CustomAttributes
 
@@ -203,8 +197,6 @@ def test_delete_attribute():
     assert deleted_again is False
 ```
 
----
-
 ## Testing AttributeHub
 
 Test that AttributeHub stores and retrieves data correctly:
@@ -289,8 +281,6 @@ def test_attribute_hub_json_storage():
     assert retrieved["biography"] == "Experienced physician"
     assert len(retrieved["specialties"]) == 2
 ```
-
----
 
 ## Testing Custom Models
 
@@ -476,8 +466,6 @@ def test_many_to_many_query_filtering():
     assert len(multi_specialty_ids) == 2
 ```
 
----
-
 ## Testing with Factories
 
 Use factories to simplify test data creation:
@@ -583,8 +571,6 @@ def test_factory_with_custom_attributes():
     assert staff.first_name is not None  # From factory
     assert staff.get_attribute("board_certified") is True  # Custom attribute
 ```
-
----
 
 ## Testing Queries and Prefetching
 
@@ -735,8 +721,6 @@ def test_relationship_prefetch():
         assert len(specialties) > 0
 ```
 
----
-
 ## Testing Data Integrity
 
 Test data validation, constraints, and cascade behavior:
@@ -852,8 +836,6 @@ def test_transaction_rollback():
     assert specialty.name == "Test Specialty"
 ```
 
----
-
 ## Testing Best Practices
 
 1. **Use factories** for consistent test data generation
@@ -866,8 +848,6 @@ def test_transaction_rollback():
 8. **Verify constraints** like uniqueness behavior
 9. **Clean up manually** - Custom models use `DO_NOTHING` for foreign keys, so related records must be deleted manually before deleting the parent
 
----
-
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Introduction to custom data storage
@@ -876,3 +856,7 @@ def test_transaction_rollback():
 - [Custom Models](/sdk/custom-data-custom-models/) - Django models for structured data
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
 - [Caching API](/sdk/caching) - Auto-expiring transient data
+
+<br/>
+<br/>
+<br/>

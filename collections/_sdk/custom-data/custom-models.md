@@ -627,8 +627,6 @@ At this time the SDK does **not** support `CASCADE`, `PROTECT`, or `SET_NULL` fo
 to `ForeignKey` and `OneToOneField`. Only `DO_NOTHING` is allowed. It is the responsibility of the plugin to 
 delete associated records correctly.
 
----
-
 ## The CustomModel Lifecycle
 
 Managing database schemas necessarily introduces complexity, because there is state to maintain over time as the software evolves. 
@@ -650,8 +648,6 @@ The Canvas SDK Custom Data feature aims to simplify maintenance, while sacrifici
 1. Emphasize [local development](#local-db-seeding-via-run-plugin) over use of a development EMR instance.
 2. Write [automated tests](/sdk/custom-data-testing/) exercising your business logic.
 3. Extract business logic and CRUD operations into "service" classes that can be tested in isolation.
-
----
 
 ## Advanced Patterns
 
@@ -798,8 +794,6 @@ for specialty in specialty_counts:
     print(f"{specialty.name}: {specialty.staff_count} staff members")
 ```
 
----
-
 ## Best Practices
 
 ### Model Design
@@ -838,8 +832,6 @@ for specialty in specialty_counts:
 4. **Test data quality** - The plugin is responsible for ensuring uniqueness and validity of foreign keys 
 5. **Test edge cases** - Test with null values, empty strings, boundary conditions
 
----
-
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
@@ -849,3 +841,7 @@ for specialty in specialty_counts:
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Caching API](/sdk/caching) - Auto-expiring transient data
+
+<br/>
+<br/>
+<br/>

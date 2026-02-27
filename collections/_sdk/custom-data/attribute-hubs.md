@@ -21,8 +21,6 @@ or plugin-specific configuration.
 - Plugin session data
 - Feature flags
 
----
-
 ## Creating an AttributeHub
 
 Create a hub for a specific purpose using the `type` and `id` fields, which together form a unique key.
@@ -38,8 +36,6 @@ hub = AttributeHub.objects.create(
     id="staff_id:abc123"
 )
 ```
-
----
 
 ## Storing Data in AttributeHub
 
@@ -82,8 +78,6 @@ hub.set_attributes({
 })
 ```
 
----
-
 ## Retrieving Data from AttributeHub
 
 Use the get-or-create pattern to retrieve existing hubs or create new ones:
@@ -115,8 +109,6 @@ calorie_goal = hub.get_attribute("calorie_goal")
 # Handle missing attributes gracefully
 notes = hub.get_attribute("daily_notes")  # Returns None if not set
 ```
-
----
 
 ## Use Case Example: CRM Campaign Sync
 
@@ -194,8 +186,6 @@ class CampaignEnrollmentHandler(BaseHandler):
         return []
 ```
 
----
-
 ## Best Practices
 
 ### Data Organization
@@ -206,8 +196,7 @@ class CampaignEnrollmentHandler(BaseHandler):
 
 ### Data Privacy and Isolation
 
-1. **Understand plugin data scoping** - All AttributeHub data is isolated to your plugin by default
-2. **Use APIs for data sharing** - Never attempt to access another plugin's AttributeHub data directly
+1. **Understand plugin data scoping** - All AttributeHub data is isolated to your plugin's namespace
 3. **Implement proper authorization** - Secure all APIs that expose AttributeHub data
 4. **Follow PHI guidelines** - Treat all patient-related data with appropriate security measures
 
@@ -226,10 +215,7 @@ class CampaignEnrollmentHandler(BaseHandler):
 ### Testing
 
 1. **Use get_or_create in tests** - This pattern works well for test isolation
-2. **Verify persistence** - Reload hubs from the database to ensure data persists
-3. **Test with different data types** - Verify that strings, numbers, booleans, datetimes, and JSON objects all work correctly
-
----
+3. **Isolate test data** - Create all data required by the test, within the test
 
 ## See Also
 
@@ -241,3 +227,7 @@ class CampaignEnrollmentHandler(BaseHandler):
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Caching API](/sdk/caching) - Auto-expiring transient data
 - [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration
+
+<br/>
+<br/>
+<br/>

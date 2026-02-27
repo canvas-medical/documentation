@@ -20,8 +20,6 @@ or simple key-value associations with core models.
 - Storing provider preferences
 - Temporary or experimental data fields
 
----
-
 ## Creating a Proxy for the SDK Model
 
 CustomAttributes attach to a "proxy" of a core SDK model. A proxy is a Django ORM model that extends another model 
@@ -46,8 +44,6 @@ You can name your proxy class as you wish, but it **must**:
 
 The mixin automatically configures the class as a Django proxy model and assigns a `CustomAttributeAwareManager`
 as the `objects` manager for efficient attribute retrieval. No `Meta` class or explicit manager assignment is needed.
-
----
 
 ## Setting Attributes
 
@@ -84,9 +80,6 @@ staff.set_attributes({
 
 Setting attributes in bulk via `set_attributes` will be more performant with larger numbers of individual attributes.
 
-
----
-
 ## Getting Attributes
 
 Retrieve custom attribute values by name:
@@ -107,8 +100,6 @@ specialty = staff.get_attribute("specialty")  # Returns "Cardiology"
 # Returns None if attribute doesn't exist
 unknown = staff.get_attribute("nonexistent")  # Returns None
 ```
-
----
 
 ## Supported Value Types
 
@@ -163,8 +154,6 @@ Values are stored in appropriately typed columns for the value, and these column
 | `bool_value`      | `BooleanField`    | `boolean`                  |
 
 
----
-
 ## Querying by CustomAttributes
 
 Filter models by their custom attributes:
@@ -201,8 +190,6 @@ matching_staff = (
 )
 ```
 
----
-
 ## Optimizing Queries with Prefetch
 
 Reduce database queries by prefetching custom attributes with the `CustomAttributeAwareManager` model manager. By default,
@@ -230,8 +217,6 @@ staff = StaffProxy.objects.with_only([
 ]).get(id="staff-uuid")
 ```
 
----
-
 ## Deleting Attributes
 
 Remove custom attributes when no longer needed:
@@ -254,22 +239,19 @@ if deleted:
     print("Attribute removed")
 ```
 
----
-
 ## Best Practices
 
 ### Data Privacy and Isolation
 
-1. **Understand plugin data scoping** - All custom data is isolated to your plugin by default
-2. **Use APIs for data sharing** - Never attempt to access another plugin's data directly
-3. **Implement proper authorization** - Secure all APIs that expose plugin data
-4. **Follow PHI guidelines** - Treat all patient-related custom data with appropriate security measures
+1. **Understand plugin data scoping** - All custom data is isolated to your plugin's namespace by default
+2. **Implement proper authorization** - Secure all APIs that expose plugin data
+3. **Follow PHI guidelines** - Treat all patient-related custom data with appropriate security measures
 
 ### Performance
 
-2. **CustomAttributeAwareManager is auto-assigned** - The mixin automatically assigns `CustomAttributeAwareManager()` as the `objects` manager for efficient attribute retrieval
-3. **Filter at the database level** rather than in Python
-4. **Use with_only()** to prefetch only specific attributes when you don't need all custom attributes
+1. **CustomAttributeAwareManager is auto-assigned** - The mixin automatically assigns `CustomAttributeAwareManager()` as the `objects` manager for efficient attribute retrieval
+2. **Filter at the database level** rather than in Python
+3. **Use with_only()** to prefetch only specific attributes when you don't need all custom attributes
 
 ### Data Integrity
 
@@ -279,9 +261,7 @@ if deleted:
 ### Testing
 
 1. **Use factories** to create test data consistently
-3. **Test with and without prefetching** to ensure correct behavior
-
----
+2. **Isolate test data** - Create all data required by the test, within the test
 
 ## See Also
 
@@ -292,3 +272,7 @@ if deleted:
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Caching API](/sdk/caching) - Auto-expiring transient data
 - [Data Models](/sdk/data/) - Core SDK data models
+
+<br/>
+<br/>
+<br/>

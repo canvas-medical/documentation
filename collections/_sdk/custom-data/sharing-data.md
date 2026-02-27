@@ -55,7 +55,7 @@ The lifecycle of a namespace depends on whether a plugin is creating a new names
 [//]: # (    O --> I)
 [//]: # (```)
 
-<img src="/assets/images/sdk/custom-data/installation_flowchart.png" width="100%">
+<img src="/assets/images/sdk/custom-data/installation_flowchart.jpg" width="80%">
 
 #### Creating a New Namespace
 
@@ -120,7 +120,7 @@ Each plugin that joins a namespace must:
 
 ```json
 {
-  "secrets": ["read_write_access_key"],
+  "secrets": ["namespace_read_write_access_key"],
   "custom_data": {
     "namespace": "acme_corp__shared_data",
     "access": "read_write"
@@ -135,7 +135,7 @@ Provide the access key using the `--secret` flag:
 ```bash
 canvas install my_plugin \
   --host demo.canvasmedical.com \
-  --secret read_write_access_key=3b35fad9-6462-4e83-83f5-c0e4bde49b71
+  --secret namespace_read_write_access_key=3b35fad9-6462-4e83-83f5-c0e4bde49b71
 ```
 
 **Alternative: Setting secrets via Admin UI:**
@@ -143,10 +143,8 @@ canvas install my_plugin \
 If you've already installed the plugin without the secret:
 
 1. Go to **Settings → Plugins → Your Plugin → Secrets**
-2. Set the `read_access_key` or `read_write_access_key` value
+2. Set the `namespace_read_access_key` or `namespace_read_write_access_key` value
 3. **Reinstall the plugin** to pick up the secret
-
-> **Warning:** Secrets omitted from the `secrets` array are deleted upon installation. Always include `read_access_key` or `read_write_access_key` in the array.
 
 ### Manifest Configuration
 
@@ -155,7 +153,7 @@ If you've already installed the plugin without the secret:
   "sdk_version": "0.1.4",
   "plugin_version": "1.0.0",
   "name": "my_plugin",
-  "secrets": ["read_write_access_key"],
+  "secrets": ["namespace_read_write_access_key"],
   "custom_data": {
     "namespace": "acme_corp__shared_data",
     "access": "read_write"
@@ -166,7 +164,7 @@ If you've already installed the plugin without the secret:
 **Namespace naming requirements:**
 - Must contain `__` (double underscore) to separate organization from name
 - Cannot use reserved PostgreSQL names (`public`, `pg_catalog`, etc.)
-- Cannot start with `pg_`
+- Organizations and names must start with a letter
 
 **Access levels:**
 - `read` - Can only read data from the namespace
@@ -176,13 +174,13 @@ If you've already installed the plugin without the secret:
 
 | Permission                               | `read` | `read_write` |
 |------------------------------------------|--------|--------------|
-| Query CustomAttributes                   | ✓ | ✓ |
-| Query AttributeHubs                      | ✓ | ✓ |
-| Query CustomModels                       | ✓ | ✓ |
-| Set/delete CustomAttributes              | ✗ | ✓ |
-| Create/update/delete AttributeHubs       | ✗ | ✓ |
-| Create/update/delete CustomModel records | ✗ | ✓ |
-| Create/update custom database tables     | ✗ | ✓ |
+| Query CustomAttributes                   | ✅      | ✅            |
+| Query AttributeHubs                      | ✅      | ✅            |
+| Query CustomModels                       | ✅      | ✅            |
+| Set/delete CustomAttributes              | ❌      | ✅            |
+| Create/update/delete AttributeHubs       | ❌      | ✅            |
+| Create/update/delete CustomModel records | ❌      | ✅            |
+| Create/update custom database tables     | ❌      | ✅            |
 
 ### Example: Sharing CustomAttributes
 
@@ -351,8 +349,6 @@ except NamespaceWriteDenied as e:
 - Your plugin has `"access": "read"` but is attempting a write operation
 - Change to `"access": "read_write"` and use `read_write_access_key`
 
----
-
 ## API Sharing
 
 API sharing is the recommended approach when:
@@ -423,7 +419,7 @@ class MyAPI(SimpleAPI):
     @api.get("/profile_for_staff/<staff_id>")
     def get_single_profile_via_api(self) -> list[Response | Effect]:
         staff_id = self.request.path_params["staff_id"]
-        canvas_host = "demo.canvasmedical.com"
+        canvas_host = f"{self.environment['CUSTOMER_IDENTIFIER']}.canvasmedical.com"
         token = self.secrets["profile_api_token"]
 
         other_plugin_api = f"https://{canvas_host}/plugin-io/api/other_plugin/staff-profiles/{staff_id}"
@@ -450,18 +446,16 @@ class MyAPI(SimpleAPI):
 - **Consider PHI implications** when exposing patient-related data via APIs
 - **Follow least privilege** principle - grant minimum necessary access
 
----
-
 ## Choosing Between Namespace and API Sharing
 
-| Factor | Namespace Sharing | API Sharing |
-|--------|-------------------|-------------|
-| **Ownership** | Same organization | Different organizations |
-| **Coupling** | Tight | Loose |
-| **Performance** | Direct DB access | HTTP overhead |
-| **Schema Evolution** | Coordinated updates | Independent versioning |
-| **Access Control** | Binary (read/read_write) | Fine-grained |
-| **Setup Complexity** | Lower | Higher |
+| Factor               | Namespace Sharing        | API Sharing             |
+|----------------------|--------------------------|-------------------------|
+| **Ownership**        | Same organization        | Different organizations |
+| **Coupling**         | Tight                    | Loose                   |
+| **Performance**      | Direct DB access         | HTTP overhead           |
+| **Schema Evolution** | Coordinated updates      | Independent versioning  |
+| **Access Control**   | Binary (read/read_write) | Fine-grained            |
+| **Setup Complexity** | Lower                    | Higher                  |
 
 ## See Also
 
@@ -473,3 +467,7 @@ class MyAPI(SimpleAPI):
 - [Caching API](/sdk/caching) - Auto-expiring transient data
 - [Simple API](/sdk/handlers-simple-api-http) - HTTP API handlers
 - [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration
+
+<br/>
+<br/>
+<br/>
