@@ -779,6 +779,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Default Homepage"
+    url: /sdk/default-homepage-effect/
+    description: Set a provider's default homepage in Canvas.
   - title: "External Events"
     url: /sdk/effect-external-event/
     description: Create or update external clinical events from ADT feeds.
