@@ -26,11 +26,11 @@ This effect enables custom scoring of questionnaires in Canvas.
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.questionnaire_result import CreateQuestionnaireResult
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data.command import Command
 
 
-class MChatQuestionnaireResult(BaseProtocol):
+class MChatQuestionnaireResult(BaseHandler):
     """
     Return a CreateQuestionnaireResult effect in response to a committed Questionnaire Command that
     contains questions coded for the M-CHAT questionnaire.

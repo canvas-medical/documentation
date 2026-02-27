@@ -31,6 +31,18 @@ for diagnosis in diagnosis_codes:
     print(f"Rank {diagnosis.rank}: {diagnosis.code} - {diagnosis.display}")
 ```
 
+To access banner alerts for a claim:
+
+```python
+from canvas_sdk.v1.data.claim import Claim
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+active_alerts = claim.banner_alerts.filter(status="active")
+
+for alert in active_alerts:
+    print(f"[{alert.intent}] {alert.narrative}")
+```
+
 ## Filtering
 
 ```python
@@ -76,6 +88,7 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | line_items                 | [ClaimLineItem](#claimlineitem)[]           |
 | labels                     | [TaskLabel](/sdk/data-task/#tasklabel)[]    |
 | metadata                   | [ClaimMetadata](#claimmetadata)[]           |
+| banner_alerts              | [ClaimBannerAlert](#claimbanneralert)[]     |
 | provider                   | [ClaimProvider](#claimprovider)             |
 
 **Computed Properties**:
@@ -200,6 +213,23 @@ Represents a free-text comment made on a Claim.
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
 | committer        | [CanvasUser](/sdk/data-canvasuser) |
 | comment          | String                             |
+
+### ClaimBannerAlert
+
+Represents banner alerts associated with a claim. Banner alerts are displayed in the UI to surface important information about a claim. To create or remove `ClaimBannerAlert` records, see [Claim Effects](/sdk/effect-claims/#add-banner).
+
+| Field Name  | Type                                                           |
+| ----------- | -------------------------------------------------------------- |
+| dbid        | Integer                                                        |
+| claim       | [Claim](#claim)                                                |
+| plugin_name | String                                                         |
+| key         | String                                                         |
+| narrative   | String                                                         |
+| intent      | [BannerAlertIntent](/sdk/data-banner-alert/#banneralertintent) |
+| href        | String                                                         |
+| status      | [BannerAlertStatus](/sdk/data-banner-alert/#banneralertstatus) |
+| created     | DateTime                                                       |
+| modified    | DateTime                                                       |
 
 ### ClaimDiagnosisCode
 

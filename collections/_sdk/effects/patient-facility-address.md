@@ -96,7 +96,7 @@ from canvas_sdk.effects.patient_facility_address import PatientFacilityAddress, 
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class MyProtocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         effect = PatientFacilityAddress(
             patient_id="patient-uuid-here",
@@ -114,7 +114,7 @@ from canvas_sdk.effects.patient_facility_address import PatientFacilityAddress, 
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class MyProtocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         effect = PatientFacilityAddress(
             patient_id="patient-uuid-here",
@@ -139,7 +139,7 @@ from canvas_sdk.effects.patient_facility_address import PatientFacilityAddress
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class MyProtocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         # Update to use a different existing facility
         effect = PatientFacilityAddress(
@@ -157,7 +157,7 @@ from canvas_sdk.effects.patient_facility_address import PatientFacilityAddress
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class MyProtocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         effect = PatientFacilityAddress(
             id="existing-address-uuid",
