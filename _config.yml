@@ -32,6 +32,9 @@ collections:
   sdk:
     output: true
     permalink: /:collection/:title/
+  fdb-changelogs:
+    output: true
+    permalink: /:collection/:title/
   learn:
     output: true
     permalink: /:collection/:title/
@@ -57,6 +60,10 @@ defaults:
       path          : "collections/_sdk/**/*"
     values:
       layout        : "sdk"
+  - scope:
+      path          : "collections/_fdb-changelogs/**/*"
+    values:
+      layout        : "fdb-changelog"
   - scope:
       path          : "collections/_learn/**/*"
     values:
