@@ -320,6 +320,30 @@ class MyHandler(BaseHandler):
 
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
+### Upsert Metadata
+
+Creates or updates a metadata entry for the specified note. For detailed documentation on note metadata management, see [NoteMetadata Effect](/sdk/effect-note-metadata/).
+
+#### Parameters
+
+| Parameter     | Type            | Description                                                      | Required |
+|---------------|-----------------|------------------------------------------------------------------|----------|
+| `instance_id` | `UUID` or `str` | Identifier of the note (set on the `Note` effect)                | Yes      |
+| `key`         | `str`           | Unique identifier for the metadata entry within the note context | Yes      |
+| `value`       | `str`           | The metadata value to store                                      | Yes      |
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note = Note(instance_id="existing-note-uuid")
+        return [note.upsert_metadata(key="my_plugin:custom_key", value="custom_value")]
+```
 
 ## ScheduleEvent Effect
 
