@@ -7,7 +7,7 @@ hidden: false
 
 ## Overview
 
-This allows developers to set a provider's default homepage in Canvas. The default homepage is the page that a provider sees when they log in to Canvas. This effect can be used to set the default homepage to a specific page or a plugin application.
+This allows developers to set a provider's default homepage in Canvas. The default homepage is the page that a provider sees when they log in to Canvas. This effect can be used to set the default homepage to a specific page or a plugin application. For more guidance please reference "[How to set a default homepage for the provider application](/guides/set-default-homepage/)"
 
 ```python
 from canvas_sdk.effects.default_homepage import DefaultHomepageEffect
