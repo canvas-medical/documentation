@@ -110,6 +110,66 @@ calorie_goal = hub.get_attribute("calorie_goal")
 notes = hub.get_attribute("daily_notes")  # Returns None if not set
 ```
 
+## Querying AttributeHubs by Attribute Values
+
+Find AttributeHubs based on the values stored in their attributes using `custom_attributes__value`.
+The SDK automatically routes the filter to the correct typed column based on the Python type of the
+value you pass in:
+
+```python
+from canvas_sdk.v1.data import AttributeHub
+
+# Find hubs with a specific string attribute
+lunch_hubs = AttributeHub.objects.filter(
+    type="meal_entry",
+    custom_attributes__name="meal_type",
+    custom_attributes__value="lunch",
+)
+
+# Find hubs with a calorie count above a threshold
+high_calorie = AttributeHub.objects.filter(
+    type="meal_entry",
+    custom_attributes__name="calories",
+    custom_attributes__value__gte=500,
+)
+
+# Find hubs with a boolean flag
+active_flags = AttributeHub.objects.filter(
+    type="feature_flags",
+    custom_attributes__name="enabled",
+    custom_attributes__value=True,
+)
+```
+
+You can also filter CustomAttribute objects directly, for example when working with a hub's
+related attributes:
+
+```python
+hub = AttributeHub.objects.get(type="meal_entry", id="patient:abc:meal:2024-01-15T12:00")
+
+# Filter the hub's own attributes
+high_cal_attrs = hub.custom_attributes.filter(value__gte=500)
+```
+
+### When to Use Explicit Field Names
+
+In most cases `custom_attributes__value` (or `value` on a hub's related attributes) is sufficient.
+However, you must reference the typed column directly for:
+
+- **JSON containment queries** (`json_value__contains`) — `value__contains` with a string targets
+  `text_value`, not `json_value`. Use `json_value__contains` for PostgreSQL `@>` JSON containment.
+- **Custom JSON lookups** like `json_value__has_key` or key-path access (`json_value__foods__0__name`).
+- **Ambiguous types** — when the Python type of your filter value doesn't match the intended storage
+  column (e.g., passing a string but querying `json_value`).
+- **Null checks across relations** — `custom_attributes__value=None` and
+  `custom_attributes__value__isnull` are not supported on `AttributeHub.objects.filter(...)` and
+  will raise `TypeError`. Use the explicit column name instead (e.g.,
+  `custom_attributes__text_value__isnull=True`). Direct queries on a hub's own attributes
+  (`hub.custom_attributes.filter(value__isnull=True)`) are unaffected.
+
+See [CustomAttributes — When to Use Explicit Field Names](/sdk/custom-data-custom-attributes/#when-to-use-explicit-field-names)
+for a full discussion and examples.
+
 ## Use Case Example: CRM Campaign Sync
 
 Store synchronization state between a custom data model and an external CRM using AttributeHub:

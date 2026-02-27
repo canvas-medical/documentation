@@ -156,10 +156,10 @@ Values are stored in appropriately typed columns for the value, and these column
 
 ## Querying by CustomAttributes
 
-Filter models by their custom attributes:
+Filter models by their custom attribute values using `custom_attributes__value`. The SDK automatically
+routes the filter to the correct typed column based on the Python type of the value you pass in:
 
 ```python
-from django.db.models import Q
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
@@ -167,28 +167,98 @@ class StaffProxy(Staff, ModelExtension):
     pass
 
 
-# Find staff with a specific specialty assigned as a text value
-cardiologists = (
-    StaffProxy.objects
-    .filter(
-        custom_attributes__name="specialty",
-        custom_attributes__text_value="Cardiology"
-    )
-    .all()
+# String → text_value
+cardiologists = StaffProxy.objects.filter(
+    custom_attributes__name="specialty",
+    custom_attributes__value="Cardiology",
 )
 
-# Find staff with multiple specialties assigned using a JSON array using OR conditions
-specialties = ["Cardiology", "Internal Medicine"]
-specialty_filters = Q()
-for specialty in specialties:
-    specialty_filters |= Q(custom_attributes__json_value__contains=specialty)
+# Integer → int_value
+senior_staff = StaffProxy.objects.filter(
+    custom_attributes__name="practicing_since",
+    custom_attributes__value__lte=2010,
+)
 
-matching_staff = (
-    StaffProxy.objects
-    .filter(Q(custom_attributes__name="specialties") & specialty_filters)
-    .all()
+# Boolean → bool_value (not confused with int 0/1)
+available = StaffProxy.objects.filter(
+    custom_attributes__name="accepting_patients",
+    custom_attributes__value=True,
 )
 ```
+
+Standard Django lookups (`__gte`, `__lte`, `__contains`, `__in`, `__isnull`, etc.) work with `value`:
+
+```python
+# Find staff whose bio mentions "cardiology"
+StaffProxy.objects.filter(
+    custom_attributes__name="bio",
+    custom_attributes__value__contains="cardiology",
+)
+
+# Find staff with practicing since 2010 or earlier
+StaffProxy.objects.filter(
+    custom_attributes__name="practicing_since",
+    custom_attributes__value__lte=2010,
+)
+```
+
+### When to Use Explicit Field Names
+
+In most cases `custom_attributes__value` is sufficient. However, there are situations where you must
+reference the typed column (`text_value`, `json_value`, etc.) directly:
+
+- **JSON containment queries.** PostgreSQL's `@>` containment operator on `jsonb` has different
+  semantics from the `LIKE '%...%'` that `__contains` produces on a text column. Since `value__contains`
+  with a string argument targets `text_value`, you must use `json_value__contains` to perform JSON
+  containment checks:
+
+  ```python
+  from django.db.models import Q
+
+  # Find staff whose "specialties" JSON array contains "Cardiology"
+  StaffProxy.objects.filter(
+      custom_attributes__name="specialties",
+      custom_attributes__json_value__contains="Cardiology",
+  )
+
+  # OR across multiple JSON values
+  specialty_filters = Q()
+  for specialty in ["Cardiology", "Internal Medicine"]:
+      specialty_filters |= Q(custom_attributes__json_value__contains=specialty)
+
+  StaffProxy.objects.filter(
+      Q(custom_attributes__name="specialties") & specialty_filters
+  )
+  ```
+
+- **Ambiguous Python types.** The `value` rewriter uses `type()` (not `isinstance()`) to select
+  the column. If you pass a string but intend to query `json_value` (or vice versa), the rewriter
+  will target the wrong column. Use the explicit field name when the Python type of your filter
+  value doesn't match the storage column.
+
+- **Custom JSON lookups.** Django's `JSONField` supports lookups like `__has_key`, `__contained_by`,
+  and key-path access (`json_value__key__nested`). These are only available on the `json_value`
+  column directly.
+
+- **Null checks across relations.** `custom_attributes__value=None` and
+  `custom_attributes__value__isnull` are not supported on parent-model queries (e.g.,
+  `StaffProxy.objects.filter(...)`) and will raise `TypeError`. Null checks require testing every
+  typed column, which produces unreliable results when combined with Django's cross-relation JOIN
+  machinery. Use explicit column names instead:
+
+  ```python
+  # Check whether a specific column is null across the relation
+  StaffProxy.objects.filter(
+      custom_attributes__name="specialty",
+      custom_attributes__text_value__isnull=True,
+  )
+  ```
+
+  Note that `value=None` and `value__isnull` *are* supported for direct CustomAttribute queries
+  (e.g., `hub.custom_attributes.filter(value__isnull=True)`), where no cross-relation join is involved.
+
+Refer to the [Supported Value Types](#supported-value-types) table above for the mapping between
+Python types and database columns.
 
 ## Optimizing Queries with Prefetch
 
