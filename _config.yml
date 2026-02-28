@@ -10,6 +10,7 @@ url: "https://docs.canvasmedical.com" # the base hostname & protocol for your si
 theme_color: '#eee9d9'
 logo: assets/images/canvas-docs-meta.png
 timezone: America/Los_Angeles
+future: true
 
 ### Cookie consent
 #cookie_consent: true
