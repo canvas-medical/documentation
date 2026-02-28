@@ -1031,6 +1031,8 @@ releasenotes:
 releasenotes_product_updates:
   - title: "Changelog"
     url: /product-updates/release-notes/
+  - title: "FDB Drug Database"
+    url: /product-updates/fdb-changelogs/
   - title: "Important Dates"
     url: /product-updates/important-dates/
   - title: "Roadmap"
