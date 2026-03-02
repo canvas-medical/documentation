@@ -347,30 +347,45 @@ Direct HTTP methods (get, post, put, patch) are not available.
 
 ### Searching for pharmacies
 
-Search for pharmacies by name, with optional location-based filtering.
+Search for pharmacies using full-text search, specific field filters, or location-based ordering.
 
 **Parameters**:
 
-| Name           | Type     | Required | Description                                                  |
-| :------------- | :------- | :------- | :----------------------------------------------------------- |
-| `search_term`  | _string_ | `true`   | The search query for pharmacy name or organization.          |
-| `latitude`     | _string_ | `false`  | Latitude coordinate for location-based search.               |
-| `longitude`    | _string_ | `false`  | Longitude coordinate for location-based search.              |
+| Name                | Type      | Required | Description                                                       |
+| :------------------ | :-------- | :------- | :---------------------------------------------------------------- |
+| `search_term`       | _string_  | `false`  | Full-text search across name, address, city, state, zip, and NCPDP ID. |
+| `latitude`          | _string_  | `false`  | Latitude coordinate for location-based ordering.                  |
+| `longitude`         | _string_  | `false`  | Longitude coordinate for location-based ordering.                 |
+| `id`                | _integer_ | `false`  | Exact pharmacy ID match.                                          |
+| `ncpdp_id`          | _string_  | `false`  | Exact NCPDP ID match.                                             |
+| `organization_name` | _string_  | `false`  | Case-insensitive contains match on organization name.             |
+| `specialty_type`    | _string_  | `false`  | Case-insensitive contains match on specialty type (e.g. "Retail"). |
+| `state`             | _string_  | `false`  | Case-insensitive exact match on state (e.g. "NY").                |
+| `zip_code_prefix`   | _string_  | `false`  | One or more comma-separated zip code prefixes (e.g. "100,902").   |
 
 **Example**:
 
 ```python
 from canvas_sdk.utils.http import pharmacy_http
 
-# Basic search by name
+# Full-text search by name
 results = pharmacy_http.search_pharmacies("CVS")
 
-# Search with location filtering
+# Search with location-based ordering
 results = pharmacy_http.search_pharmacies(
     "pharmacy",
     latitude="40.7128",
     longitude="-74.0060"
 )
+
+# Filter by state and specialty type
+results = pharmacy_http.search_pharmacies(state="NY", specialty_type="Retail")
+
+# Filter by zip code prefixes
+results = pharmacy_http.search_pharmacies(zip_code_prefix="100,902")
+
+# Look up by exact NCPDP ID
+results = pharmacy_http.search_pharmacies(ncpdp_id="1234567")
 
 # The results list contains pharmacy objects like:
 # [
