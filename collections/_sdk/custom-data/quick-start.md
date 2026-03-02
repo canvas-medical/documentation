@@ -45,7 +45,7 @@ and `namespace_read_write_access_key` secrets that control access for other plug
    from canvas_sdk.v1.data import (Note, ModelExtension)
    class CustomNote(Note, ModelExtension):
        """Extends the SDK Note model with CustomAttribute support
-          and reverse mappings from CustomModels."""
+          and will allow `related_name` reverse mappings from CustomModels."""
        pass 
    ```
 1. Open `handlers/event_handlers.py` in your editor. Add `from hello_custom_data.models import CustomNote` to the imports
@@ -54,9 +54,10 @@ and `namespace_read_write_access_key` secrets that control access for other plug
    3. `set_attributes`
    4. `get_attribute`
 1. Add the following lines **after** the `note` reference has been initialized in the code
-    ```python
-    note.set_attribute("tagged_by_plugin", "hello-custom-data")
-    log.info(f"Note tagged by: {note.get_attribute('tagged_by_plugin')}")```
+   ```python
+   note.set_attribute("tagged_by_plugin", "hello-custom-data")
+   log.info(f"Note tagged by: {note.get_attribute('tagged_by_plugin')}")
+   ```
 1. Install the plugin to your development environment
 1. Tail the logs with `canvas logs`
 1. Log into Canvas, navigate to a patient chart, and create a new note

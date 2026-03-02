@@ -50,8 +50,6 @@ which is awkward and slow in SQL. Downstream systems expecting conventional tabl
 **Use instead:** [CustomModel](/sdk/custom-data-custom-models/) columns map directly to report columns with no
 transformation needed.
 
----
-
 ## AttributeHubs — When to Reconsider
 
 AttributeHubs use the same EAV storage as CustomAttributes but are standalone — not attached to any Canvas model.
@@ -88,8 +86,6 @@ or indexes. You're paying the cost of EAV without the benefit of flexibility.
 
 **Use instead:** A [CustomModel](/sdk/custom-data-custom-models/) gives you type safety, column-level indexes,
 and cleaner queries.
-
----
 
 ## CustomModels — When to Reconsider
 
@@ -130,8 +126,6 @@ Over-engineering the schema early is costly because tables cannot be dropped if 
 
 **Use instead:** Start with fewer models. A single `JSONField` column or an [AttributeHub](/sdk/custom-data-attribute-hubs/)
 can hold loosely structured data until access patterns stabilize and justify a richer schema.
-
----
 
 ## Quick Reference
 
