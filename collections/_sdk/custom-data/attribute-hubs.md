@@ -280,8 +280,8 @@ class CampaignEnrollmentHandler(BaseHandler):
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
-- [CustomAttributes on Proxy Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes on existing models
-- [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships
+- [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes on existing models
+- [CustomModels](/sdk/custom-data-custom-models/) - Structured models with relationships
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Data Models](/sdk/data/) - Core SDK data models

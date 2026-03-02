@@ -462,7 +462,7 @@ class MyAPI(SimpleAPI):
 - [Custom Data Overview](/sdk/custom-data/) - Introduction to custom data storage
 - [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value storage
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
-- [Custom Models](/sdk/custom-data-custom-models/) - Django models for structured data
+- [CustomModels](/sdk/custom-data-custom-models/) - Django models for structured data
 - [Testing Utils](/sdk/testing-utils/) - Factories for testing custom data
 - [Caching API](/sdk/caching) - Auto-expiring transient data
 - [Simple API](/sdk/handlers-simple-api-http) - HTTP API handlers

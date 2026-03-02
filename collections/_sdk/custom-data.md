@@ -13,8 +13,6 @@ or define fully structured data models with relationships among entities:
 
 Each technique serves different use cases and provides different levels of structure and type safety. All three techniques may be used together.
 
----
-
 ## When to Use Each Technique
 
 ### CustomAttributes for SDK Models
@@ -78,39 +76,13 @@ Use this when you need to store data that doesn't naturally belong to any existi
 
 [Learn more about AttributeHubs →](/sdk/custom-data-attribute-hubs/)
 
-## Getting Started
-
-To use custom data in your plugin, declare a `custom_data` section in your `CANVAS_MANIFEST.json` with a namespace and access level.
-The namespace is a unique identifier scoped to your organization (formatted as `organization__name` with a double underscore),
-and the access level controls whether the plugin can read only or read and write data. Any secrets your plugin needs—such as
-API keys for external services—should be listed in the manifest's `secrets` array. When the first `read_write` plugin is installed
-into a namespace, the system automatically initializes a data namespace, prepares tables, and generates `namespace_read_access_key`
-and `namespace_read_write_access_key` secrets that control access for other plugins joining the same namespace.
-
-```json
-{
-  "sdk_version": "0.1.4",
-  "plugin_version": "1.0.0",
-  "name": "my_plugin",
-  "secrets": ["API_TOKEN", "namespace_read_write_access_key"],
-  "custom_data": {
-    "namespace": "acme_corp__shared_data",
-    "access": "read_write"
-  }
-}
-```
-
 For details on how multiple plugins can share a namespace using these keys, see the [Sharing Data](/sdk/custom-data-sharing-data/) guide.
 For managing API tokens and other sensitive configuration, see [Managing Secrets](/sdk/secrets/).
-
----
 
 ## Caching
 
 If your use case represents transient data that should expire via TTL, use the
 [Caching API](/sdk/caching) instead of the Custom Data features.
-
----
 
 ## Data Privacy and Plugin Isolation
 
@@ -170,23 +142,23 @@ class Specialty(CustomModel):
 The Canvas SDK provides comprehensive testing utilities for all custom data approaches. 
 See the [Testing Custom Data](/sdk/custom-data-testing/) guide for detailed examples and best practices.
 
----
-
 ### Sharing Data
 
 Use APIs to make data available and accessible to and from other plugins and external services. See the
 [Sharing Data](/sdk/custom-data-sharing-data/) guide for detailed examples and best practices.
 
----
-
 ## See Also
 
 - [CustomAttributes on SDK Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
-- [Custom Data Models](/sdk/custom-data-custom-models/) - Structured models with relationships among entities
+- [CustomModels](/sdk/custom-data-custom-models/) - Structured models with relationships among entities
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Caching API](/sdk/caching) - Auto-expiring transient data
 - [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins
 - [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration
+
+<br/>
+<br/>
+<br/>

@@ -853,7 +853,7 @@ def test_transaction_rollback():
 - [Custom Data Overview](/sdk/custom-data/) - Introduction to custom data storage
 - [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value storage
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
-- [Custom Models](/sdk/custom-data-custom-models/) - Django models for structured data
+- [CustomModels](/sdk/custom-data-custom-models/) - Django models for structured data
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
 - [Caching API](/sdk/caching) - Auto-expiring transient data
 
