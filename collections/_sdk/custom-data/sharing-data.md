@@ -192,11 +192,11 @@ CustomAttributes attach key-value data to existing Canvas models (Patient, Staff
 # CANVAS_MANIFEST.json: "access": "read_write"
 from canvas_sdk.v1.data import Patient, ModelExtension
 
-class PatientProxy(Patient, ModelExtension):
+class CustomPatient(Patient, ModelExtension):
     pass
 
 patient_id = 123
-patient = PatientProxy.objects.get(id=patient_id)
+patient = CustomPatient.objects.get(id=patient_id)
 patient.set_attribute("risk_score", 85)
 patient.set_attribute("care_program", "diabetes_management")
 ```
@@ -207,11 +207,11 @@ patient.set_attribute("care_program", "diabetes_management")
 # CANVAS_MANIFEST.json: "access": "read"
 from canvas_sdk.v1.data import Patient, ModelExtension
 
-class PatientProxy(Patient, ModelExtension):
+class CustomPatient(Patient, ModelExtension):
     pass
 
 patient_id = 123
-patient = PatientProxy.objects.with_only(
+patient = CustomPatient.objects.with_only(
     attribute_names=["risk_score", "care_program"]
 ).get(id=patient_id)
 
@@ -366,7 +366,7 @@ from canvas_sdk.effects.simple_api import JSONResponse
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
@@ -388,7 +388,7 @@ class ProfileAPI(SimpleAPI):
     def get_profile(self):
         """Return staff profile data."""
         staff_id = self.request.path_params["staff_id"]
-        staff = StaffProxy.objects.with_only(
+        staff = CustomStaff.objects.with_only(
             attribute_names=["specialty", "accepting_patients"]
         ).get(id=staff_id)
 

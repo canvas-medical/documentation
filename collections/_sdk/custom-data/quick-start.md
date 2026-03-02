@@ -44,8 +44,8 @@ and `namespace_read_write_access_key` secrets that control access for other plug
    ```python 
    from canvas_sdk.v1.data import (Note, ModelExtension)
    class CustomNote(Note, ModelExtension):
-       """A proxy class to the SDK Note model that will allow us to 
-          attach CustomAttributes, and reverse mappings from CustomModels"""
+       """Extends the SDK Note model with CustomAttribute support
+          and reverse mappings from CustomModels."""
        pass 
    ```
 1. Open `handlers/event_handlers.py` in your editor. Add `from hello_custom_data.models import CustomNote` to the imports

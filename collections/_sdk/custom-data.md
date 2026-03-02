@@ -51,7 +51,7 @@ Use this when you need structured, typed data with relationships and normalized 
 - Integration-specific data structures
 - Practice-specific business operation concepts and logic
 
-**CustomModels may build around and be related to core SDK models using proxies.**
+**CustomModels may build around and be related to core SDK models using extended models.**
 
 [Learn more about Custom Data Models →](/sdk/custom-data-custom-models/)
 
@@ -103,14 +103,14 @@ a namespace and are only visible to plugins co-located within the namespace, eve
 
 ```python
 # In one plugin and namespace
-from my_plugin.models.proxy import StaffProxy
-staff = StaffProxy.objects.get(id="abc")
+from my_plugin.models import CustomStaff
+staff = CustomStaff.objects.get(id="abc")
 staff.set_attribute("specialty", "Cardiology")  # Only accessible within "my_plugin"
 ```
 ```python
 # In another plugin and different namespace
-from your_plugin.models.proxy import StaffProxy
-staff = StaffProxy.objects.get(id="abc")
+from your_plugin.models import CustomStaff
+staff = CustomStaff.objects.get(id="abc")
 staff.get_attribute("specialty")  # Returns None - cannot see "my_plugin" data
 staff.set_attribute("specialty", "Cardiac")  # Creates separate attribute in "your_plugin"
 ```

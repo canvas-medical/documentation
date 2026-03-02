@@ -20,30 +20,26 @@ or simple key-value associations with core models.
 - Storing provider preferences
 - Temporary or experimental data fields
 
-## Creating a Proxy for the SDK Model
+## Extending an SDK Model
 
-CustomAttributes attach to a "proxy" of a core SDK model. A proxy is a Django ORM model that extends another model 
-and allows customizations without changing the base model. It cannot define new database fields, but inherits all
-of those from its base model.
-
-Extend existing SDK models by subclassing the SDK model and `ModelExtension`. The latter adds CustomAttribute support
-and sets up the proxy relationship.
+Extend an existing SDK model by subclassing it along with `ModelExtension`. This enables CustomAttribute support
+on model instances, allowing you to attach flexible key-value data without changing the base model.
 
 ```python
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
-    """A proxy for Staff with CustomAttribute capabilities"""
+class CustomStaff(Staff, ModelExtension):
+    """Extends Staff with custom attribute support."""
     pass
 ```
 
-You can name your proxy class as you wish, but it **must**:
+You can name your class as you wish, but it **must**:
 1. subclass a core model,
 1. include `ModelExtension`.
 
-The mixin automatically configures the class as a Django proxy model and assigns a `CustomAttributeAwareManager`
-as the `objects` manager for efficient attribute retrieval. No `Meta` class or explicit manager assignment is needed.
+The mixin automatically configures the class and assigns a manager for efficient attribute retrieval.
+No `Meta` class or explicit manager assignment is needed.
 
 ## Setting Attributes
 
@@ -53,18 +49,18 @@ Set individual or multiple custom attributes on a model instance:
 from canvas_sdk.v1.data import Staff, Patient, ModelExtension
 
 
-# Define proxy models (typically in your plugin's models.py)
-class StaffProxy(Staff, ModelExtension):
+# Define extended models (typically in your plugin's models/__init__.py)
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-class PatientProxy(Patient, ModelExtension):
+class CustomPatient(Patient, ModelExtension):
     pass
 
 
 # Get model instances
-staff = StaffProxy.objects.get(id="staff-uuid")
-patient = PatientProxy.objects.get(id="patient-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
+patient = CustomPatient.objects.get(id="patient-uuid")
 
 # Set a single attribute
 staff.set_attribute("specialty", "Cardiology")
@@ -88,11 +84,11 @@ Retrieve custom attribute values by name:
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 
 # Get a single attribute
 specialty = staff.get_attribute("specialty")  # Returns "Cardiology"
@@ -110,11 +106,11 @@ from datetime import date, datetime
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 
 # String values
 staff.set_attribute("bio", "Board-certified cardiologist")
@@ -163,24 +159,24 @@ routes the filter to the correct typed column based on the Python type of the va
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
 # String → text_value
-cardiologists = StaffProxy.objects.filter(
+cardiologists = CustomStaff.objects.filter(
     custom_attributes__name="specialty",
     custom_attributes__value="Cardiology",
 )
 
 # Integer → int_value
-senior_staff = StaffProxy.objects.filter(
+senior_staff = CustomStaff.objects.filter(
     custom_attributes__name="practicing_since",
     custom_attributes__value__lte=2010,
 )
 
 # Boolean → bool_value (not confused with int 0/1)
-available = StaffProxy.objects.filter(
+available = CustomStaff.objects.filter(
     custom_attributes__name="accepting_patients",
     custom_attributes__value=True,
 )
@@ -190,13 +186,13 @@ Standard Django lookups (`__gte`, `__lte`, `__contains`, `__in`, `__isnull`, etc
 
 ```python
 # Find staff whose bio mentions "cardiology"
-StaffProxy.objects.filter(
+CustomStaff.objects.filter(
     custom_attributes__name="bio",
     custom_attributes__value__contains="cardiology",
 )
 
 # Find staff with practicing since 2010 or earlier
-StaffProxy.objects.filter(
+CustomStaff.objects.filter(
     custom_attributes__name="practicing_since",
     custom_attributes__value__lte=2010,
 )
@@ -216,7 +212,7 @@ reference the typed column (`text_value`, `json_value`, etc.) directly:
   from django.db.models import Q
 
   # Find staff whose "specialties" JSON array contains "Cardiology"
-  StaffProxy.objects.filter(
+  CustomStaff.objects.filter(
       custom_attributes__name="specialties",
       custom_attributes__json_value__contains="Cardiology",
   )
@@ -226,7 +222,7 @@ reference the typed column (`text_value`, `json_value`, etc.) directly:
   for specialty in ["Cardiology", "Internal Medicine"]:
       specialty_filters |= Q(custom_attributes__json_value__contains=specialty)
 
-  StaffProxy.objects.filter(
+  CustomStaff.objects.filter(
       Q(custom_attributes__name="specialties") & specialty_filters
   )
   ```
@@ -242,13 +238,13 @@ reference the typed column (`text_value`, `json_value`, etc.) directly:
 
 - **Null checks across relations.** `custom_attributes__value=None` and
   `custom_attributes__value__isnull` are not supported on parent-model queries (e.g.,
-  `StaffProxy.objects.filter(...)`) and will raise `TypeError`. Null checks require testing every
+  `CustomStaff.objects.filter(...)`) and will raise `TypeError`. Null checks require testing every
   typed column, which produces unreliable results when combined with Django's cross-relation JOIN
   machinery. Use explicit column names instead:
 
   ```python
   # Check whether a specific column is null across the relation
-  StaffProxy.objects.filter(
+  CustomStaff.objects.filter(
       custom_attributes__name="specialty",
       custom_attributes__text_value__isnull=True,
   )
@@ -262,25 +258,25 @@ Python types and database columns.
 
 ## Optimizing Queries with Prefetch
 
-Reduce database queries by prefetching custom attributes with the `CustomAttributeAwareManager` model manager. By default,
-this manager will prefetch all attributes associated to the record.
+Reduce database queries by prefetching custom attributes. By default, the manager will prefetch all attributes
+associated to the record.
 
 ```python
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
 # Prefetch all custom attributes
-staff_list = StaffProxy.objects.all()  # Automatically prefetches
+staff_list = CustomStaff.objects.all()  # Automatically prefetches
 
 # Prefetch only specific attributes
-staff = StaffProxy.objects.with_only("accepting_patients").get(id="staff-uuid")
+staff = CustomStaff.objects.with_only("accepting_patients").get(id="staff-uuid")
 
 # Prefetch multiple specific attributes
-staff = StaffProxy.objects.with_only([
+staff = CustomStaff.objects.with_only([
     "accepting_patients",
     "specialty",
     "years_experience"
@@ -295,11 +291,11 @@ Remove custom attributes when no longer needed:
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 
 # Delete a single attribute
 deleted = staff.delete_attribute("old_field")  # Returns True if deleted
@@ -319,7 +315,7 @@ if deleted:
 
 ### Performance
 
-1. **CustomAttributeAwareManager is auto-assigned** - The mixin automatically assigns `CustomAttributeAwareManager()` as the `objects` manager for efficient attribute retrieval
+1. **Efficient manager is auto-assigned** - `ModelExtension` automatically configures the `objects` manager for efficient attribute retrieval
 2. **Filter at the database level** rather than in Python
 3. **Use with_only()** to prefetch only specific attributes when you don't need all custom attributes
 

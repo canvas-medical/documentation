@@ -23,26 +23,26 @@ Each test runs inside a transaction and automatically rolls back at the end, pro
 
 See [Testing Utilities](/sdk/testing-utils/) for complete setup instructions.
 
-## Creating Factories for Proxy Models
+## Creating Factories for Extended Models
 
-Define factories for proxy models by extending the base SDK factories:
+Define factories for extended models by extending the base SDK factories:
 
 ```python
 import factory
 from canvas_sdk.test_utils.factories import StaffFactory, PatientFactory
-from staff_plus.models.proxy import StaffProxy, PatientProxy
+from staff_plus.models import CustomStaff, CustomPatient
 
 
-class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
-    """Factory for creating StaffProxy instances."""
+class CustomStaffFactory(StaffFactory, factory.django.DjangoModelFactory[CustomStaff]):
+    """Factory for creating CustomStaff instances."""
     class Meta:
-        model = StaffProxy
+        model = CustomStaff
 
 
-class PatientProxyFactory(PatientFactory, factory.django.DjangoModelFactory[PatientProxy]):
-    """Factory for creating PatientProxy instances."""
+class CustomPatientFactory(PatientFactory, factory.django.DjangoModelFactory[CustomPatient]):
+    """Factory for creating CustomPatient instances."""
     class Meta:
-        model = PatientProxy
+        model = CustomPatient
 ```
 
 ## Creating Factories for Custom Models
@@ -72,7 +72,7 @@ class BiographyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Biography
 
-    staff = factory.SubFactory(StaffProxyFactory)
+    staff = factory.SubFactory(CustomStaffFactory)
     biography = factory.Faker("paragraph", nb_sentences=5)
     language = factory.Faker("language_name")
     practicing_since = factory.Faker("year")
@@ -83,7 +83,7 @@ class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = StaffSpecialty
 
-    staff = factory.SubFactory(StaffProxyFactory)
+    staff = factory.SubFactory(CustomStaffFactory)
     specialty = factory.SubFactory(SpecialtyFactory)
 ```
 
@@ -98,29 +98,29 @@ from canvas_sdk.test_utils.factories import StaffFactory, PatientFactory
 from canvas_sdk.v1.data import Staff, Patient, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-class PatientProxy(Patient, ModelExtension):
+class CustomPatient(Patient, ModelExtension):
     pass
 
 
-class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+class CustomStaffFactory(StaffFactory, factory.django.DjangoModelFactory[CustomStaff]):
     class Meta:
-        model = StaffProxy
+        model = CustomStaff
 
 
-class PatientProxyFactory(PatientFactory, factory.django.DjangoModelFactory[PatientProxy]):
+class CustomPatientFactory(PatientFactory, factory.django.DjangoModelFactory[CustomPatient]):
     class Meta:
-        model = PatientProxy
+        model = CustomPatient
 
 
-def test_custom_attributes_on_proxy():
-    """Test CustomAttributes on proxy models."""
+def test_custom_attributes_on_extended_model():
+    """Test CustomAttributes on extended models."""
     # Create test instances
-    staff = StaffProxyFactory.create()
-    patient = PatientProxyFactory.create()
+    staff = CustomStaffFactory.create()
+    patient = CustomPatientFactory.create()
 
     # Set attributes
     staff.set_attribute("specialty", "Cardiology")
@@ -128,13 +128,13 @@ def test_custom_attributes_on_proxy():
     patient.set_attribute("preferred_language", "Spanish")
 
     # Verify attributes persist to database
-    staff_from_db = StaffProxy.objects.get(id=staff.id)
+    staff_from_db = CustomStaff.objects.get(id=staff.id)
     assert staff_from_db.get_attribute("specialty") == "Cardiology"
     assert staff_from_db.get_attribute("years_experience") == 15
 
     # Verify attributes are isolated between objects
     assert staff_from_db.get_attribute("preferred_language") is None
-    patient_from_db = PatientProxy.objects.get(id=patient.id)
+    patient_from_db = CustomPatient.objects.get(id=patient.id)
     assert patient_from_db.get_attribute("specialty") is None
 
 
@@ -142,7 +142,7 @@ def test_custom_attributes_multiple_types():
     """Test CustomAttributes with different value types."""
     from datetime import datetime
 
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
 
     # Set different types
     staff.set_attribute("text_field", "some text")
@@ -153,7 +153,7 @@ def test_custom_attributes_multiple_types():
     staff.set_attribute("json_field", {"key": "value", "list": [1, 2, 3]})
 
     # Verify retrieval
-    staff_from_db = StaffProxy.objects.get(id=staff.id)
+    staff_from_db = CustomStaff.objects.get(id=staff.id)
     assert staff_from_db.get_attribute("text_field") == "some text"
     assert staff_from_db.get_attribute("int_field") == 42
     assert staff_from_db.get_attribute("bool_field") is True
@@ -162,7 +162,7 @@ def test_custom_attributes_multiple_types():
 
 def test_set_attributes_bulk():
     """Test setting multiple attributes at once."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
 
     attributes = {
         "accepting_patients": True,
@@ -173,7 +173,7 @@ def test_set_attributes_bulk():
 
     staff.set_attributes(attributes)
 
-    staff_from_db = StaffProxy.objects.get(id=staff.id)
+    staff_from_db = CustomStaff.objects.get(id=staff.id)
     assert staff_from_db.get_attribute("accepting_patients") is True
     assert staff_from_db.get_attribute("board_certified") is True
     assert staff_from_db.get_attribute("years_experience") == 10
@@ -181,7 +181,7 @@ def test_set_attributes_bulk():
 
 def test_delete_attribute():
     """Test deleting CustomAttributes."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
     staff.set_attribute("temporary_field", "value")
 
     # Verify it exists
@@ -208,13 +208,13 @@ from canvas_sdk.test_utils.factories import StaffFactory
 from canvas_sdk.v1.data import AttributeHub, Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+class CustomStaffFactory(StaffFactory, factory.django.DjangoModelFactory[CustomStaff]):
     class Meta:
-        model = StaffProxy
+        model = CustomStaff
 
 
 def test_attribute_hub_creation():
@@ -236,7 +236,7 @@ def test_attribute_hub_creation():
 
 def test_attribute_hub_get_or_create():
     """Test get_or_create pattern with AttributeHub."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
 
     # First call creates
     hub1, created1 = AttributeHub.objects.get_or_create(
@@ -298,13 +298,13 @@ from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+class CustomStaffFactory(StaffFactory, factory.django.DjangoModelFactory[CustomStaff]):
     class Meta:
-        model = StaffProxy
+        model = CustomStaff
 
 
 class Specialty(CustomModel):
@@ -318,7 +318,7 @@ class Specialty(CustomModel):
 
 class Biography(CustomModel):
     staff = OneToOneField(
-        StaffProxy,
+        CustomStaff,
         to_field="dbid",
         on_delete=DO_NOTHING,
         related_name="biography"
@@ -330,7 +330,7 @@ class Biography(CustomModel):
 
 class Language(CustomModel):
     staff = ForeignKey(
-        StaffProxy,
+        CustomStaff,
         to_field="dbid",
         on_delete=DO_NOTHING,
         related_name="languages"
@@ -342,7 +342,7 @@ class Language(CustomModel):
 
 class StaffSpecialty(CustomModel):
     staff = ForeignKey(
-        StaffProxy,
+        CustomStaff,
         to_field="dbid",
         on_delete=DO_NOTHING,
         related_name="staff_specialties"
@@ -368,7 +368,7 @@ def test_custom_model_creation():
 
 def test_one_to_one_relationship():
     """Test one-to-one relationships."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
 
     # Create related biography
     biography = Biography.objects.create(
@@ -382,14 +382,14 @@ def test_one_to_one_relationship():
     assert biography.staff.id == staff.id
 
     # Access from staff to biography (reverse relation)
-    staff_from_db = StaffProxy.objects.get(id=staff.id)
+    staff_from_db = CustomStaff.objects.get(id=staff.id)
     assert staff_from_db.biography.biography == "Experienced cardiologist"
     assert staff_from_db.biography.practicing_since == 2005
 
 
 def test_one_to_many_relationship():
     """Test one-to-many relationships."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
 
     # Create multiple related languages
     Language.objects.create(staff=staff, name="English", code="en")
@@ -408,7 +408,7 @@ def test_one_to_many_relationship():
 
 def test_many_to_many_relationship():
     """Test many-to-many relationships via junction table."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
     cardiology = Specialty.objects.create(name="Cardiology")
     internal_med = Specialty.objects.create(name="Internal Medicine")
 
@@ -435,8 +435,8 @@ def test_many_to_many_relationship():
 
 def test_many_to_many_query_filtering():
     """Test querying across many-to-many relationships."""
-    staff1 = StaffProxyFactory.create()
-    staff2 = StaffProxyFactory.create()
+    staff1 = CustomStaffFactory.create()
+    staff2 = CustomStaffFactory.create()
 
     cardiology = Specialty.objects.create(name="Cardiology")
     neurology = Specialty.objects.create(name="Neurology")
@@ -478,18 +478,18 @@ from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+class CustomStaffFactory(StaffFactory, factory.django.DjangoModelFactory[CustomStaff]):
     class Meta:
-        model = StaffProxy
+        model = CustomStaff
 
 
 class Biography(CustomModel):
     staff = OneToOneField(
-        StaffProxy,
+        CustomStaff,
         to_field="dbid",
         on_delete=DO_NOTHING,
         related_name="biography"
@@ -503,7 +503,7 @@ class BiographyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Biography
 
-    staff = factory.SubFactory(StaffProxyFactory)
+    staff = factory.SubFactory(CustomStaffFactory)
     biography = factory.Faker("paragraph", nb_sentences=5)
     language = factory.Faker("language_name")
     practicing_since = factory.Faker("year")
@@ -525,7 +525,7 @@ def test_with_factories():
 
 class StaffSpecialty(CustomModel):
     staff = ForeignKey(
-        StaffProxy,
+        CustomStaff,
         to_field="dbid",
         on_delete=DO_NOTHING,
         related_name="staff_specialties"
@@ -542,7 +542,7 @@ class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = StaffSpecialty
 
-    staff = factory.SubFactory(StaffProxyFactory)
+    staff = factory.SubFactory(CustomStaffFactory)
     specialty = factory.SubFactory(SpecialtyFactory)
 
 
@@ -558,7 +558,7 @@ def test_many_to_many_with_factories():
 
 def test_factory_with_custom_attributes():
     """Combine factories with CustomAttributes."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
 
     # Add custom attributes to factory-created object
     staff.set_attributes({
@@ -587,18 +587,18 @@ from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+class CustomStaffFactory(StaffFactory, factory.django.DjangoModelFactory[CustomStaff]):
     class Meta:
-        model = StaffProxy
+        model = CustomStaff
 
 
 class Biography(CustomModel):
     staff = OneToOneField(
-        StaffProxy,
+        CustomStaff,
         to_field="dbid",
         on_delete=DO_NOTHING,
         related_name="biography"
@@ -618,7 +618,7 @@ class Specialty(CustomModel):
 
 class StaffSpecialty(CustomModel):
     staff = ForeignKey(
-        StaffProxy,
+        CustomStaff,
         to_field="dbid",
         on_delete=DO_NOTHING,
         related_name="staff_specialties"
@@ -635,7 +635,7 @@ class BiographyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Biography
 
-    staff = factory.SubFactory(StaffProxyFactory)
+    staff = factory.SubFactory(CustomStaffFactory)
     biography = factory.Faker("paragraph")
     practicing_since = factory.Faker("year")
 
@@ -651,20 +651,20 @@ class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = StaffSpecialty
 
-    staff = factory.SubFactory(StaffProxyFactory)
+    staff = factory.SubFactory(CustomStaffFactory)
     specialty = factory.SubFactory(SpecialtyFactory)
 
 
 def test_custom_attributes_prefetch():
     """Test prefetching CustomAttributes."""
-    staff1 = StaffProxyFactory.create()
-    staff2 = StaffProxyFactory.create()
+    staff1 = CustomStaffFactory.create()
+    staff2 = CustomStaffFactory.create()
 
     staff1.set_attribute("specialty", "Cardiology")
     staff2.set_attribute("specialty", "Neurology")
 
     # Query with automatic prefetch
-    all_staff = StaffProxy.objects.all()
+    all_staff = CustomStaff.objects.all()
 
     # Access attributes without additional queries
     for staff in all_staff:
@@ -674,7 +674,7 @@ def test_custom_attributes_prefetch():
 
 def test_custom_attributes_with_only():
     """Test selective attribute prefetching."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
     staff.set_attributes({
         "specialty": "Cardiology",
         "years_experience": 15,
@@ -683,7 +683,7 @@ def test_custom_attributes_with_only():
 
     # Prefetch only specific attributes
     staff_from_db = (
-        StaffProxy.objects
+        CustomStaff.objects
         .with_only(["specialty", "accepting_patients"])
         .get(id=staff.id)
     )
@@ -695,8 +695,8 @@ def test_custom_attributes_with_only():
 
 def test_relationship_prefetch():
     """Test prefetching related models."""
-    staff1 = StaffProxyFactory.create()
-    staff2 = StaffProxyFactory.create()
+    staff1 = CustomStaffFactory.create()
+    staff2 = CustomStaffFactory.create()
 
     BiographyFactory.create(staff=staff1)
     BiographyFactory.create(staff=staff2)
@@ -707,7 +707,7 @@ def test_relationship_prefetch():
 
     # Prefetch all relationships
     all_staff = (
-        StaffProxy.objects
+        CustomStaff.objects
         .prefetch_related("biography")
         .prefetch_related("staff_specialties__specialty")
         .all()
@@ -734,13 +734,13 @@ from canvas_sdk.v1.data.base import CustomModel
 from canvas_sdk.v1.data.custom_attribute import CustomAttribute
 
 
-class StaffProxy(Staff, ModelExtension):
+class CustomStaff(Staff, ModelExtension):
     pass
 
 
-class StaffProxyFactory(StaffFactory, factory.django.DjangoModelFactory[StaffProxy]):
+class CustomStaffFactory(StaffFactory, factory.django.DjangoModelFactory[CustomStaff]):
     class Meta:
-        model = StaffProxy
+        model = CustomStaff
 
 
 class Specialty(CustomModel):
@@ -761,7 +761,7 @@ class SpecialtyFactory(factory.django.DjangoModelFactory):
 
 class StaffSpecialty(CustomModel):
     staff = ForeignKey(
-        StaffProxy,
+        CustomStaff,
         to_field="dbid",
         on_delete=DO_NOTHING,
         related_name="staff_specialties"
@@ -778,13 +778,13 @@ class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = StaffSpecialty
 
-    staff = factory.SubFactory(StaffProxyFactory)
+    staff = factory.SubFactory(CustomStaffFactory)
     specialty = factory.SubFactory(SpecialtyFactory)
 
 
 def test_manual_cleanup_on_delete():
     """Test manual cleanup since DO_NOTHING doesn't cascade."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
     specialty = SpecialtyFactory.create()
     ss = StaffSpecialtyFactory.create(staff=staff, specialty=specialty)
 
@@ -800,7 +800,7 @@ def test_manual_cleanup_on_delete():
 
 def test_unique_constraint():
     """Test unique constraints on CustomAttributes."""
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
 
     # Set attribute
     staff.set_attribute("unique_field", "value1")
@@ -809,7 +809,7 @@ def test_unique_constraint():
     staff.set_attribute("unique_field", "value2")
 
     # Verify only one attribute exists
-    staff_from_db = StaffProxy.objects.get(id=staff.id)
+    staff_from_db = CustomStaff.objects.get(id=staff.id)
     assert staff_from_db.get_attribute("unique_field") == "value2"
 
     # Verify no duplicates in database
@@ -825,7 +825,7 @@ def test_transaction_rollback():
     # This test demonstrates automatic rollback
     # Data created here won't exist in subsequent tests
 
-    staff = StaffProxyFactory.create()
+    staff = CustomStaffFactory.create()
     staff_id = staff.id
 
     specialty = SpecialtyFactory.create(name="Test Specialty")

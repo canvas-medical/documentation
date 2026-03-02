@@ -1043,7 +1043,7 @@ data_module:
 
 custom_data_module:
   - title: "Quick Start"
-    url: /sdk/custom-data-quick-start
+    url: /sdk/custom-data-quick-start/
     description: Brief example code to get started using Custom Data features
   - title: "Custom Attributes"
     url: /sdk/custom-data-custom-attributes/

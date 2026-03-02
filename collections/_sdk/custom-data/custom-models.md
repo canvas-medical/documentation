@@ -23,10 +23,12 @@ of plugin installation and maintenance.
 - Integration-specific data structures
 - Practice-specific business entities
 
-Custom models may be associated to core SDK data models via proxy classes, or may be entirely standalone.
+Custom models may be associated to core SDK data models by extending them with `ModelExtension`, or may be entirely standalone.
+As an example, a `StaffBiography` CustomModel could attach to a `CustomStaff(Staff, ModelExtension)` class,
+and be accessible via a `biography` property on `CustomStaff`.
 
-Custom models must be defined within a `models` directory under the plugin top-level directory. E.g., `/my_plugin/models/custom_model_a.py`. 
-If not, then database migrations will not be applied. (Proxy models may be defined anywhere since they do not require any database modifications.)
+Custom models must be defined within a `models` directory under the plugin top-level directory. E.g., `/my_plugin/models/custom_model_a.py`.
+If not, then database migrations will not be applied. (Extended SDK models may be defined anywhere since they do not require any database modifications.)
 
 ---
 
@@ -261,29 +263,26 @@ ProviderQualification.objects.filter(
 ProviderQualification.objects.all().delete()
 ```
 
-## Extend Canvas Data Model using Proxy Models
+## Extending the Canvas Data Model
 
-CustomModels may attach to a "proxy" of a core SDK model. A proxy is a Django ORM model that extends another model 
-and allows customizations without changing the base model. It cannot define new database fields, but inherits all
-of those from its base model.
+CustomModels may reference core SDK models by extending them with `ModelExtension`. This allows you to
+create foreign key relationships from your custom tables to Canvas models, and enables CustomAttribute support
+on the extended model instances.
 
-Extend existing SDK models by subclassing the SDK model and `ModelExtension`. The latter adds CustomAttribute support
-and sets up the proxy relationship.
+Extend existing SDK models by subclassing the SDK model and `ModelExtension`:
 
 ```python
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
-    """A proxy for Staff with CustomAttribute capabilities"""
+class CustomStaff(Staff, ModelExtension):
+    """Extends Staff with custom attribute support."""
     pass
 ```
 
-You can name your proxy class as you wish, but it **must**:
+You can name your class as you wish, but it **must**:
 1. subclass a core model,
 1. include `ModelExtension`.
-
-The mixin automatically configures the class as a Django proxy model.
 
 ---
 
@@ -300,8 +299,8 @@ from canvas_sdk.v1.data.base import CustomModel
 from django.db.models import DateTimeField, DecimalField, DO_NOTHING, OneToOneField, TextField
 
 
-class StaffProxy(Staff, ModelExtension):
-    """Proxy for Staff to use with custom models."""
+class CustomStaff(Staff, ModelExtension):
+    """Extends Staff with custom attribute support."""
     pass
 
 class Biography(CustomModel):
@@ -312,21 +311,21 @@ class Biography(CustomModel):
     last_modified_at = DateTimeField(auto_now_add=True)
 
     staff = OneToOneField(
-        StaffProxy, to_field="dbid", on_delete=DO_NOTHING, related_name="biography"
+        CustomStaff, to_field="dbid", on_delete=DO_NOTHING, related_name="biography"
     )
 ```
 
 The above will create a table with a `serial` primary key, two `text` columns, a `numeric(1,3)` column, a `timestamptz` column, 
-and an `integer` column named `staff_id` that contains a foreign key into the SDK `Staff` model. The `StaffProxy` class 
-defined in this plugin will contain the reverse mapping via `related_name`.
+and an `integer` column named `staff_id` that contains a foreign key into the SDK `Staff` model. The `CustomStaff`
+class will contain the reverse mapping via `related_name`.
 
 ### Creating One-to-One Records
 
 ```python
-from my_plugin.models import StaffProxy, Biography
+from my_plugin.models import CustomStaff, Biography
 
 # Get the staff member
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 
 # Create biography
 biography = Biography.objects.create(
@@ -340,7 +339,7 @@ biography = Biography.objects.create(
 ### Querying One-to-One Relationships
 
 ```python
-from my_plugin.models import StaffProxy, Biography
+from my_plugin.models import CustomStaff, Biography
 
 
 # Access from biography to staff
@@ -348,21 +347,21 @@ biography = Biography.objects.get(dbid=1)
 staff_member = biography.staff
 
 # Access from staff to biography (using related_name)
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 try:
     bio = staff.biography
 except Biography.DoesNotExist:
     print("No biography found")
 
 # Find all staff with biographies in Spanish
-spanish_providers = StaffProxy.objects.filter(
+spanish_providers = CustomStaff.objects.filter(
     biography__language="Spanish"
 )
 
 # Find staff whose biography was last updated before a certain date
 from datetime import datetime, timedelta
 
-outdated_bios = StaffProxy.objects.filter(
+outdated_bios = CustomStaff.objects.filter(
     biography__last_modified_at__lte=datetime.now() - timedelta(days=365)
 )
 ```
@@ -382,8 +381,8 @@ from canvas_sdk.v1.data.base import CustomModel
 from django.db.models import DateTimeField, DecimalField, DO_NOTHING, ForeignKey, TextField
 
 
-class StaffProxy(Staff, ModelExtension):
-  """Proxy for Staff to use with custom models."""
+class CustomStaff(Staff, ModelExtension):
+  """Extends Staff with custom attribute support."""
   pass
 
 class Biography(CustomModel):
@@ -395,18 +394,18 @@ class Biography(CustomModel):
   # Same as one-to-one, but a Foreign key with a plural 'related_name'. Now, each staff may have multiple biographies,
   # perhaps in different languages.
   staff = ForeignKey(
-    StaffProxy, to_field="dbid", on_delete=DO_NOTHING, related_name="biographies"
+    CustomStaff, to_field="dbid", on_delete=DO_NOTHING, related_name="biographies"
   )
 ```
 
 ### Creating One-to-Many Records
 
 ```python
-from plugins.my_plugin.models import StaffProxy, Biography
+from my_plugin.models import CustomStaff, Biography
 
 
 # Get staff member
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 
 # Create multiple biographies for one provider (e.g., in different languages)
 english_bio = Biography.objects.create(
@@ -427,7 +426,7 @@ spanish_bio = Biography.objects.create(
 ### Querying One-to-Many Relationships
 
 ```python
-from plugins.my_plugin.models import StaffProxy, Biography
+from my_plugin.models import CustomStaff, Biography
 
 
 # Access from biography to staff (forward)
@@ -436,7 +435,7 @@ provider = biography.staff
 print(f"Provider: {provider.first_name} {provider.last_name}")
 
 # Access from staff to biographies (reverse, using related_name)
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 biographies = staff.biographies.all()
 for bio in biographies:
     print(f"- {bio.language}: {bio.biography[:50]}... (v{bio.version})")
@@ -446,14 +445,14 @@ english_bios = staff.biographies.filter(language="English")
 
 # Query across relationship
 # Find all staff who have biographies in Spanish
-spanish_speaking_providers = StaffProxy.objects.filter(
+spanish_speaking_providers = CustomStaff.objects.filter(
     biographies__language="Spanish"
 )
 
 # Find staff with multiple biography versions
 from django.db.models import Count
 
-providers_with_multiple_bios = StaffProxy.objects.annotate(
+providers_with_multiple_bios = CustomStaff.objects.annotate(
     bio_count=Count('biographies')
 ).filter(bio_count__gt=1)
 
@@ -477,7 +476,7 @@ Many-to-many relationships are implemented using an explicit through model (also
 The through model contains ForeignKey fields to both sides of the relationship.
 
 In the example above, `StaffSpecialty` is the through model that creates the many-to-many relationship 
-between `StaffProxy` and `Specialty`.
+between `CustomStaff` and `Specialty`.
 
 `StaffSpecialty` may include additional fields to describe the nature of the association between `Staff` and `Specialty`.
 
@@ -489,8 +488,8 @@ from canvas_sdk.v1.data.base import CustomModel
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
-  """Proxy for Staff to use with custom models."""
+class CustomStaff(Staff, ModelExtension):
+  """Extends Staff with custom attribute support."""
   pass
 
 class Specialty(CustomModel):
@@ -509,7 +508,7 @@ class StaffSpecialty(CustomModel):
   """Many-to-many relationship: Staff can have many specialties, specialties can have many staff."""
 
   staff = ForeignKey(
-    StaffProxy,
+    CustomStaff,
     to_field="dbid",
     on_delete=DO_NOTHING,
     related_name="staff_specialties"
@@ -530,7 +529,7 @@ This creates a many-to-many relationship where:
 ### Creating Many-to-Many Records
 
 ```python
-from my_plugin.models import StaffProxy, Specialty, StaffSpecialty
+from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
 
 
 # Create specialties
@@ -539,7 +538,7 @@ internal_medicine = Specialty.objects.create(name="Internal Medicine")
 emergency_medicine = Specialty.objects.create(name="Emergency Medicine")
 
 # Get staff member
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 
 # Create associations between staff and specialties
 StaffSpecialty.objects.create(staff=staff, specialty=cardiology)
@@ -567,11 +566,11 @@ StaffSpecialty.objects.bulk_create(new_staff_specialties)
 ### Querying Many-to-Many Relationships
 
 ```python
-from plugins.my_plugin.models import StaffProxy, Specialty, StaffSpecialty
+from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
 
 
 # Access staff member's specialties through the join table
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 staff_specialty_records = staff.staff_specialties.all()
 for staff_specialty in staff_specialty_records:
     print(f"- {staff_specialty.specialty.name}")
@@ -592,7 +591,7 @@ staff_ids = StaffSpecialty.objects.filter(
 ).values_list("staff_id", flat=True)
 
 # Find staff members with a specific specialty
-cardiologists = StaffProxy.objects.filter(
+cardiologists = CustomStaff.objects.filter(
     staff_specialties__specialty__name="Cardiology"
 ).distinct()
 
@@ -604,7 +603,7 @@ specialty_count = staff.staff_specialties.count()
 
 # Efficient querying with prefetch_related
 staff_with_specialties = (
-    StaffProxy.objects
+    CustomStaff.objects
     .prefetch_related("staff_specialties__specialty")
     .all()
 )
@@ -619,7 +618,7 @@ for staff in staff_with_specialties:
 - `staff.staff_specialties.all()` returns `StaffSpecialty` objects (not `Specialty` objects)
 - To get the actual specialties, access through the join table: `[ss.specialty for ss in staff.staff_specialties.all()]`
 - You can add additional fields to the through model to store metadata about the relationship (e.g., date assigned, certification level, etc.)
-- Query across the relationship using double underscores: `StaffProxy.objects.filter(staff_specialties__specialty__name="Cardiology")`
+- Query across the relationship using double underscores: `CustomStaff.objects.filter(staff_specialties__specialty__name="Cardiology")`
 
 ## No Cascaded Operations
 
@@ -661,8 +660,8 @@ from django.db.models import DO_NOTHING, ForeignKey, TextField
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
-class StaffProxy(Staff, ModelExtension):
-    """Staff proxy with CustomAttribute support."""
+class CustomStaff(Staff, ModelExtension):
+    """Extends Staff with custom attribute support."""
     pass
 
 
@@ -677,7 +676,7 @@ class StaffDepartment(CustomModel):
     """Staff can belong to multiple departments."""
 
     staff = ForeignKey(
-        StaffProxy, on_delete=DO_NOTHING, related_name="department_assignments"
+        CustomStaff, on_delete=DO_NOTHING, related_name="department_assignments"
     )
     department = ForeignKey(
         Department, on_delete=DO_NOTHING, related_name="staff_members"
@@ -686,7 +685,7 @@ class StaffDepartment(CustomModel):
 
 
 # Usage: Combine structured relationships with flexible attributes
-staff = StaffProxy.objects.get(id="staff-uuid")
+staff = CustomStaff.objects.get(id="staff-uuid")
 
 # Use Custom Model for structured data
 dept = Department.objects.get(code="CARDIO")
@@ -709,7 +708,7 @@ staff.set_attributes({
 Optimize database queries using `select_related` and `prefetch_related`:
 
 ```python
-from my_plugin.models import Specialty, StaffSpecialty, StaffProxy
+from my_plugin.models import Specialty, StaffSpecialty, CustomStaff
 
 
 # Use select_related for ForeignKey (SQL JOIN)
@@ -721,7 +720,7 @@ for ss in staff_specialties:
 
 # Use prefetch_related for reverse ForeignKey relationships
 # Load staff with all their specialties efficiently
-staff_list = StaffProxy.objects.prefetch_related("staff_specialties__specialty").all()
+staff_list = CustomStaff.objects.prefetch_related("staff_specialties__specialty").all()
 for staff in staff_list:
     # No additional queries - staff_specialties and specialties are already loaded
     for ss in staff.staff_specialties.all():
@@ -737,7 +736,7 @@ for specialty in specialties_list:
 from django.db.models import Prefetch
 
 # Only load staff specialties with specific specialty names
-staff_with_filtered_specialties = StaffProxy.objects.prefetch_related(
+staff_with_filtered_specialties = CustomStaff.objects.prefetch_related(
     Prefetch(
         "staff_specialties",
         queryset=StaffSpecialty.objects.filter(
@@ -753,11 +752,11 @@ Use Django's Q objects for complex filtering and aggregation:
 
 ```python
 from django.db.models import Q, Count
-from plugins.my_plugin.models import StaffProxy, Specialty, StaffSpecialty
+from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
 
 
 # OR conditions - Find staff with Cardiology OR Neurology specialty
-staff_with_cardio_or_neuro = StaffProxy.objects.filter(
+staff_with_cardio_or_neuro = CustomStaff.objects.filter(
     Q(staff_specialties__specialty__name="Cardiology") |
     Q(staff_specialties__specialty__name="Neurology")
 ).distinct()
@@ -768,20 +767,20 @@ cardio_or_medicine = Specialty.objects.filter(
 )
 
 # Negation - Find staff WITHOUT a specific specialty
-staff_without_cardiology = StaffProxy.objects.exclude(
+staff_without_cardiology = CustomStaff.objects.exclude(
     staff_specialties__specialty__name="Cardiology"
 )
 
 # Complex filtering - Staff with multiple specific specialties
 # Note: This requires DISTINCT because joins can create duplicate rows
-staff_with_multiple = StaffProxy.objects.filter(
+staff_with_multiple = CustomStaff.objects.filter(
     staff_specialties__specialty__name="Cardiology"
 ).filter(
     staff_specialties__specialty__name="Internal Medicine"
 ).distinct()
 
 # Count related objects - Staff with specialty counts
-staff_with_counts = StaffProxy.objects.annotate(
+staff_with_counts = CustomStaff.objects.annotate(
     specialty_count=Count("staff_specialties")
 ).filter(specialty_count__gte=2)
 
