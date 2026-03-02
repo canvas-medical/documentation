@@ -10,16 +10,19 @@ This approach is ideal for cross-cutting concerns that span multiple models, tem
 or plugin-specific configuration.
 
 **Best for:**
-- Cross-cutting concerns that span multiple models
-- Temporary (but not auto-expiring) data storage
+- Cross-cutting state that spans multiple models (sync cursors, external IDs)
+- One-off or small-collection configuration and state
+- Data with no natural schema (varying fields per record)
 - External system state tracking
-- Plugin-specific configuration
 
 **Example use cases:**
 - API synchronization state
 - External system identifiers
-- Plugin session data
-- Feature flags
+- Plugin configuration and feature flags
+
+**Not ideal for** entities with relationships, large collections you need to search or paginate, or data
+requiring aggregation or reporting. See [Design Considerations](/sdk/custom-data-design-considerations/) for
+detailed guidance.
 
 ## Creating an AttributeHub
 
@@ -280,6 +283,7 @@ class CampaignEnrollmentHandler(BaseHandler):
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
+- [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
 - [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes on existing models
 - [CustomModels](/sdk/custom-data-custom-models/) - Structured models with relationships
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins

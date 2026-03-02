@@ -10,15 +10,19 @@ without defining a formal schema. This approach is ideal for storing variable co
 or simple key-value associations with core models.
 
 **Best for:**
-- Storing variable or configuration data on existing models
-- Rapid prototyping
-- Data that doesn't require strict typing
-- Simple key-value associations with core models
+- A small number of independent metadata fields on existing models
+- Configuration flags or identifiers on patients, staff, etc.
+- Rapid prototyping before committing to a schema
+- Data that doesn't need compound filtering or aggregation
 
 **Example use cases:**
-- Adding practice-specific flags or identifiers to patients
-- Storing provider preferences
+- Adding practice-specific flags or identifiers to clinical concepts or people
+- Storing provider preferences (notification settings, display options)
 - Temporary or experimental data fields
+
+**Not ideal for** many related fields that form a natural schema, relationships between models, high-frequency
+writes, or data consumed by reports. See [Design Considerations](/sdk/custom-data-design-considerations/) for
+detailed guidance.
 
 ## Extending an SDK Model
 
@@ -332,6 +336,7 @@ if deleted:
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
+- [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [CustomModels](/sdk/custom-data-custom-models/) - Structured models with relationships
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins

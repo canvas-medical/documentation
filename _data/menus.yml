@@ -1054,6 +1054,9 @@ custom_data_module:
   - title: "AttributeHubs"
     url: /sdk/custom-data-attribute-hubs/
     description: Grouping custom attributes independently of core data models
+  - title: "Design Considerations"
+    url: /sdk/custom-data-design-considerations/
+    description: How to evaluate which approach is best for your use case
   - title: "Testing"
     url: /sdk/custom-data-testing/
     description: Automated tests using all three kinds of custom data storage

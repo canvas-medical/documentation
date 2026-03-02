@@ -20,14 +20,14 @@ Each technique serves different use cases and provides different levels of struc
 Use this when you need to add flexible data to existing SDK models without defining a schema.
 
 **Best for:**
-- Storing variable or configuration data on existing models
-- Rapid prototyping
-- Data that doesn't require strict typing
-- Simple key-value associations with core models
+- A small number of independent metadata fields on existing models
+- Configuration flags or identifiers on patients, staff, etc.
+- Rapid prototyping before committing to a schema
+- Data that doesn't need compound filtering or aggregation
 
 **Example use cases:**
 - Adding practice-specific flags or identifiers to patients
-- Storing provider preferences
+- Storing provider preferences (notification settings, display options)
 - Temporary or experimental data fields
 
 [Learn more about CustomAttributes →](/sdk/custom-data-custom-attributes/)
@@ -37,12 +37,10 @@ Use this when you need to add flexible data to existing SDK models without defin
 Use this when you need structured, typed data with relationships and normalized data.
 
 **Best for:**
-- Associating new tables to existing Canvas tables
-- Creating new associations among Canvas tables
-- Complex domain models
-- Data requiring validation and normalization
-- Relational data with foreign keys
-- Performance-critical queries
+- Structured data with a stable, known schema
+- Relationships between entities (foreign keys, join tables)
+- Data requiring compound filtering, sorting, or aggregation
+- Data consumed by reports or analytics
 
 **Example use cases:**
 - Provider specialties and certifications
@@ -63,19 +61,19 @@ CustomModels build upon the Canvas data model, AttributeHubs allow easy, standal
 Use this when you need to store data that doesn't naturally belong to any existing or imagined model. 
 
 **Best for:**
-- Cross-cutting concerns that span multiple models
-- Temporary data storage
+- Cross-cutting state that spans multiple models (sync cursors, external IDs)
+- One-off or small-collection configuration and state
+- Data with no natural schema (varying fields per record)
 - External system state tracking
-- Plugin-specific configuration
 
 **Example use cases:**
 - API synchronization state
 - External system identifiers
-- Plugin session data
-- Feature flags
+- Plugin configuration and feature flags
 
 [Learn more about AttributeHubs →](/sdk/custom-data-attribute-hubs/)
 
+For help choosing between these techniques, see [Design Considerations](/sdk/custom-data-design-considerations/).
 For details on how multiple plugins can share a namespace using these keys, see the [Sharing Data](/sdk/custom-data-sharing-data/) guide.
 For managing API tokens and other sensitive configuration, see [Managing Secrets](/sdk/secrets/).
 
@@ -152,6 +150,7 @@ Use APIs to make data available and accessible to and from other plugins and ext
 - [CustomAttributes on SDK Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [CustomModels](/sdk/custom-data-custom-models/) - Structured models with relationships among entities
+- [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
 - [Data Models](/sdk/data/) - Core SDK data models

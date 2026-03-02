@@ -12,16 +12,21 @@ The functionality expressed is a subset of the total ORM. The SDK omits some fea
 of plugin installation and maintenance.
 
 **Best for:**
-- Complex domain models
-- Data requiring validation and normalization
-- Relational data with foreign keys
-- Performance-critical queries
+- Structured data with a stable, known schema
+- Relationships between entities (foreign keys, join tables)
+- Data requiring compound filtering, sorting, or aggregation
+- Data consumed by reports or analytics
 
 **Example use cases:**
 - Provider specialties and certifications
+- Constructing new associations among Canvas SDK models
 - Custom workflows and forms
 - Integration-specific data structures
 - Practice-specific business entities
+
+**Not ideal for** simple metadata on existing models, highly variable or schemaless data, or ephemeral data.
+Tables and columns cannot be dropped once created. See [Design Considerations](/sdk/custom-data-design-considerations/)
+for detailed guidance.
 
 Custom models may be associated to core SDK data models by extending them with `ModelExtension`, or may be entirely standalone.
 As an example, a `StaffBiography` CustomModel could attach to a `CustomStaff(Staff, ModelExtension)` class,
@@ -834,6 +839,7 @@ for specialty in specialty_counts:
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
+- [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
 - [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
