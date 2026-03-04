@@ -55,7 +55,7 @@ The lifecycle of a namespace depends on whether a plugin is creating a new names
 [//]: # (    O --> I)
 [//]: # (```)
 
-<img src="/assets/images/sdk/custom-data/installation_flowchart.svg" width="80%">
+<img src="/assets/images/sdk/custom-data/installation_flowchart.jpg" width="80%">
 
 #### Creating a New Namespace
 

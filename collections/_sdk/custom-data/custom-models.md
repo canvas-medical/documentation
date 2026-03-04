@@ -1,12 +1,12 @@
 ---
-title: "Custom Data Models"
+title: "CustomModels"
 slug: "custom-data-custom-models"
 ---
 
 ## Overview
 
-Custom Data Models allow you to define fully structured, typed data models with relationships among entities and normalized data. 
-Built on Django's ORM, Custom Models provide the most powerful and flexible approach to storing custom data in Canvas plugins.
+CustomModels allow you to define fully structured, typed data models with relationships among entities and normalized data. 
+Built on Django's ORM, CustomModels provide the most powerful and flexible approach to storing custom data in Canvas plugins.
 
 The functionality expressed is a subset of the total ORM. The SDK omits some features in order to simplify the lifecycle 
 of plugin installation and maintenance.
@@ -37,7 +37,7 @@ If not, then database migrations will not be applied. (Extended SDK models may b
 
 ---
 
-## Basic Custom Model
+## Basic CustomModel
 
 Create a custom model by extending `CustomModel`:
 

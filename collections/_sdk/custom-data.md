@@ -8,7 +8,7 @@ The Canvas SDK provides three techniques for storing custom data in your plugins
 or define fully structured data models with relationships among entities:
 
 1. **[CustomAttributes for SDK Models](/sdk/custom-data-custom-attributes/)** - Augment existing SDK data models (like Patient or Staff) with flexible key-value attributes
-2. **[Custom Data Models](/sdk/custom-data-custom-models/)** - Extend the Canvas data model by adding fully structured models with typed fields and relationships
+2. **[CustomModels](/sdk/custom-data-custom-models/)** - Build your own data model or expand the Canvas data model by adding fully structured models with typed fields and relationships
 3. **[AttributeHubs](/sdk/custom-data-attribute-hubs/)** - Store arbitrary key-value pairs and JSON data independently of the Canvas data model
 
 Each technique serves different use cases and provides different levels of structure and type safety. All three techniques may be used together.
@@ -32,7 +32,7 @@ Use this when you need to add flexible data to existing SDK models without defin
 
 [Learn more about CustomAttributes →](/sdk/custom-data-custom-attributes/)
 
-### Custom Data Models
+### CustomModels
 
 Use this when you need structured, typed data with relationships and normalized data.
 
@@ -51,7 +51,7 @@ Use this when you need structured, typed data with relationships and normalized 
 
 **CustomModels may build around and be related to core SDK models using extended models.**
 
-[Learn more about Custom Data Models →](/sdk/custom-data-custom-models/)
+[Learn more about CustomModels →](/sdk/custom-data-custom-models/)
 
 ### AttributeHubs
 
@@ -84,7 +84,7 @@ If your use case represents transient data that should expire via TTL, use the
 
 ## Data Privacy and Plugin Isolation
 
-All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or Custom Data Models—is scoped to a namespace. 
+All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or CustomModels—is scoped to a namespace. 
 This isolation ensures that plugins cannot directly access or modify another plugin's data, maintaining security and data integrity 
 across the system. 
 
@@ -115,7 +115,7 @@ staff.set_attribute("specialty", "Cardiac")  # Creates separate attribute in "yo
 
 **AttributeHubs** similarly store data within the plugin's namespace and are not accessible to other plugins in other namespaces.
 
-**Custom Data Models** created by a plugin exist within namespaces. Tables and data are completely isolated from other namespaces.
+**CustomModels** created by a plugin exist within namespaces. Tables and data are completely isolated from other namespaces.
 
 ```python
 # In a plugin named "my_plugin": Creates a table "specialty" in the "my_plugin" namespace
