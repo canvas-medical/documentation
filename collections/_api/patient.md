@@ -310,15 +310,8 @@ sections:
                     description: End date with inclusive boundary, if not ongoing
           - name: photo
             type: array[json]
-            description: >-
-                Image of the patient. This image shows on the patient avatar in the Canvas UI.
-            attributes: 
-              - name: data
-                description: A base64-encoded string of the patient's photo
-                exclude_in: read,search
-              - name: url
-                description: URI where the image can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
-                exclude_in: create,update
+            create_and_update_description: >-
+              When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
           - name: contact
             type: array[json]
             required: false
