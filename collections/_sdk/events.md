@@ -953,6 +953,26 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": appointment_id
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+       <td><pre>"patient_id": int
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Command Metadata
 
 <table>
@@ -1831,7 +1851,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1850,239 +1870,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-##### Prescription status events
-
-The following events fire when a prescription's status changes during the e-prescribing lifecycle. These events always fire alongside a `PRESCRIPTION_CREATED` or `PRESCRIPTION_UPDATED` event. For example, when a prescription is first created, both `PRESCRIPTION_CREATED` and `PRESCRIPTION_OPENED` will fire. When a prescription's status is updated to "transmitted", both `PRESCRIPTION_UPDATED` and `PRESCRIPTION_TRANSMITTED` will fire.
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_OPENED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription's status is set to open. This is the default status when a prescription is first created.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_PENDING</th></tr>
-    <tr><td colspan="2">Occurs when a prescription's status changes to pending.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_ACCEPTED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been ultimately accepted.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_ERRORED</th></tr>
-    <tr><td colspan="2">Occurs when an error occurs during prescription processing.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_CANCEL_REQUESTED</th></tr>
-    <tr><td colspan="2">Occurs when a cancellation has been requested for a prescription.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_CANCELED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been successfully canceled.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_CANCEL_DENIED</th></tr>
-    <tr><td colspan="2">Occurs when a cancellation request for a prescription has been denied.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_RECEIVED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been received by the e-prescribing network.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_SIGNED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been signed.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_INQUEUE</th></tr>
-    <tr><td colspan="2">Occurs when a prescription is in queue for transmission.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_TRANSMITTED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been transmitted to the pharmacy.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PRESCRIPTION_DELIVERED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been delivered to the pharmacy.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -2262,7 +2050,6 @@ The following events fire when a prescription's status changes during the e-pres
       <td><pre>"id": letter_action_event_id
 "type": <a href='/sdk/data-letter-action-event/'>LetterActionEvent</a></pre></td>
       <td><pre>empty</pre></td>
-    </tr>
   </tbody>
 </table>
 
@@ -20308,6 +20095,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   </tbody>
 </table>
 
+
 <table>
   <thead>
     <tr><th colspan="2">SHOW_NOTE_BODY_BUTTON</th></tr>
@@ -20712,110 +20500,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     </tr>
   </tbody>
 </table>
-
-### Patient Group
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_GROUP_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient group is created</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": patient_group_id
-"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_GROUP_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient group is updated</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": patient_group_id
-"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
-      <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient is added as a member of a group</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": patient_group_id
-"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
-      <td><pre>"patient":
-        "id": str
-      "group": 
-        "id": str
-      </pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a patient’s group membership is updated</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": patient_group_id
-"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
-      <td><pre>"patient":
-        "id": str
-      "group": 
-        "id": str
-      </pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when a patient member is removed from a patient group</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-     <td><pre>"id": patient_group_id
-"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
-      <td><pre>"patient":
-        "id": str
-      "group": 
-        "id": str</pre></td>
-    </tr>
-  </tbody>
-</table>
-
 
 ### Other Events
 
