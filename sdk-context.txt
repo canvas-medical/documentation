@@ -6113,7 +6113,6 @@ Field Name | Type | Description | Required
 Name | Type | Required | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The externally exposable id of the questionnaire being answered by the patient.  
-`result` | _string_ | `false` | A summary of the result of the patient's answers.  
 ###  Toggle Questions Feature 
 The PhysicalExamCommand includes special functionality for toggling questions on/off. When working with a PhysicalExam Command, the following methods are available:
 **Methods** :
@@ -6223,14 +6222,12 @@ In addition to the basic parameters, this command supports a dynamic response in
 Name | Type | Required | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The externally exposable id of the questionnaire being answered by the patient.  
-`result` | _string_ | `false` | A summary of the result of the patient's answers.  
 **Example** :
     ```python
     from canvas_sdk.commands import QuestionnaireCommand
     questionnaire = QuestionnaireCommand(
         note_uuid='rk786p',
-        questionnaire_id='g73hd9',
-        result='The patient is feeling average today.'
+        questionnaire_id='g73hd9'
     )
     ```
 ###  Usage Example 
@@ -6476,7 +6473,6 @@ Name | Type | Required | Description
 Name | Type | Required | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The externally exposable id of the questionnaire being answered by the patient.  
-`result` | _string_ | `false` | A summary of the result of the patient's answers.  
 ###  Toggle Questions Feature 
 The ReviewOfSystemsCommand includes the same toggle functionality as PhysicalExamCommand, allowing practitioners to enable or disable specific system review questions based on patient relevance. You can find an extra example of this functionality on the Physical Exam Command Documentation.
 **Methods** :
@@ -6543,14 +6539,12 @@ Name | Type | Required | Description
 Name | Type | Required | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The externally exposable id of the questionnaire being answered by the patient.  
-`result` | _string_ | `false` | A summary of the result of the patient's answers.  
 **Example** :
     ```python
     from canvas_sdk.commands import StructuredAssessmentCommand
     questionnaire = StructuredAssessmentCommand(
         note_uuid='rk786p',
-        questionnaire_id='g73hd9',
-        result='The patient is feeling average today.'
+        questionnaire_id='g73hd9'
     )
     ```
 **Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the Questionnaire Command Documentation.
@@ -15873,8 +15867,17 @@ The Canvas SDK includes functionality for handling questionnaire-related events.
 ##  Creating a Questionnaire 
 Creating a questionnaire via the SDK requires current requires defining a YAML template and referencing it in your `CANVAS_MANIFEST.json` file. Read more [here](/sdk/questionnaires/).
 ##  Creating a Questionnaire Result 
-The `CreateQuestionnaireResult` effect causes a new entry to appear in the Social Determinants section of the left side of the chart.
-This effect enables custom scoring of questionnaires in Canvas.
+The `CreateQuestionnaireResult` effect allows you to create custom scoring of questionnaires in Canvas. It adds a narrative to the command in the UI and can appear in the Social Determinants section of the left side of the chart if the questionnaire is configured to show in that section (see [here](/sdk/questionnaires) for how to control setting `display_result_in_social_history_section` for questionnaires).
+###  Attributes 
+Attribute | Required | Type | Description  
+---|---|---|---  
+interview_id | Yes | string | The id of the interview to associate the result with.  
+score | Yes | float | The numerical score of the questionnaire result.  
+abnormal | No | bool | Whether the result is considered abnormal. Defaults to `False`.  
+narrative | No | string | A text description of the result and any recommended follow-up actions. Defaults to an empty string.  
+code_system | Yes* | string | The code system used to identify the questionnaire (e.g., `"INTERNAL"`).  
+code | Yes* | string | The code identifying the questionnaire within the code system (e.g., `"mchat_scoring"`).  
+*Note: Questionnaire Results create an associated Observation record. The `code` and `code_system` fields are required in order to distinguish the Observation results.
 ###  Example 
 **Note:** This example assumes that an M-CHAT questionnaire created and loaded into the Canvas instance.
     ```python
@@ -15890,7 +15893,7 @@ This effect enables custom scoring of questionnaires in Canvas.
         """
         RESPONDS_TO = [EventType.Name(EventType.QUESTIONNAIRE_COMMAND__POST_COMMIT)]
         MCHAT_CODE_SYSTEM = "INTERNAL"
-        MCHAT_CODE = "mchat"
+        MCHAT_CODE = "mchat_scoring"
         def compute(self) -> list[Effect]:
             # Get the interview object, which will be the anchor object on the Questionnaire command.
             command = Command.objects.get(id=self.event.target.id)
