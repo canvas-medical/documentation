@@ -79,14 +79,3 @@ PRESIGNED_URL=$(curl -s -o /dev/null -w '%{redirect_url}' \
 # Step 2: Download the file
 curl -o downloaded_file.pdf "$PRESIGNED_URL"
 ```
-
-## Getting the filename from resource metadata
-
-The pre-signed S3 URL does not contain the original filename. To determine the filename or content type, read it from the resource's attributes before downloading. For example:
-
-- **DocumentReference**: `content[0].attachment.title` and `content[0].attachment.contentType`
-- **Media**: `content.title` and `content.contentType`
-- **Consent**: `sourceAttachment.title` and `sourceAttachment.contentType`
-- **DiagnosticReport**: `presentedForm[0].contentType`
-- **Patient**: `photo[0].contentType`
-- **Practitioner**: `photo[0].contentType`
