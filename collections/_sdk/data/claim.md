@@ -87,6 +87,7 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | comments                   | [ClaimComment](#claimcomment)[]             |
 | line_items                 | [ClaimLineItem](#claimlineitem)[]           |
 | labels                     | [TaskLabel](/sdk/data-task/#tasklabel)[]    |
+| metadata                   | [ClaimMetadata](#claimmetadata)[]           |
 | banner_alerts              | [ClaimBannerAlert](#claimbanneralert)[]     |
 | provider                   | [ClaimProvider](#claimprovider)             |
 
@@ -297,6 +298,20 @@ Represents labels assigned to the claim.
 | dbid       | Integer                                |
 | claim      | [Claim](#claim)                        |
 | label      | [TaskLabel](/sdk/data-task/#tasklabel) |
+
+### ClaimMetadata
+
+Represents key-value metadata associated with a claim. Each claim-key pair is unique.
+
+| Field Name | Type                  |
+| ---------- | --------------------- |
+| id         | UUID                  |
+| dbid       | Integer               |
+| claim      | [Claim](#claim)       |
+| key        | String (max 32 chars) |
+| value      | String                |
+| created    | DateTime              |
+| modified   | DateTime              |
 
 ### ClaimProvider
 

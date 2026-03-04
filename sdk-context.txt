@@ -7526,6 +7526,7 @@ diagnosis_codes | ClaimDiagnosisCode[]
 comments | ClaimComment[]  
 line_items | ClaimLineItem[]  
 labels | [TaskLabel](/sdk/data-task/#tasklabel)[]  
+metadata | ClaimMetadata[]  
 banner_alerts | ClaimBannerAlert[]  
 provider | ClaimProvider  
 **Computed Properties** :
@@ -7705,6 +7706,17 @@ id | UUID
 dbid | Integer  
 claim | Claim  
 label | [TaskLabel](/sdk/data-task/#tasklabel)  
+###  ClaimMetadata 
+Represents key-value metadata associated with a claim. Each claim-key pair is unique.
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+claim | Claim  
+key | String (max 32 chars)  
+value | String  
+created | DateTime  
+modified | DateTime  
 ###  ClaimProvider 
 Captures provider-level data related to a specific claim.
 Field Name | Type  
@@ -13294,6 +13306,7 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
   - moving claim to a queue
   - adding comments to claims
   - posting payments to claims
+  - upserting metadata on claims
   - adding banner alerts to claims
   - removing banner alerts from claims
 Additionally, the SDK provides a separate effect to update claim line items.
@@ -13669,6 +13682,36 @@ With the above plugin installed, an example call to the endpoint would look like
             }
         ]
     }'
+    ```
+###  Upsert Metadata 
+`ClaimEffect.upsert_metadata()`: upserts a key-value metadata record on a claim. If a metadata record with the given key already exists for the claim, its value will be updated. Otherwise, a new metadata record will be created.
+####  Parameters 
+Parameter | Type | Description | Required  
+---|---|---|---  
+`key` | `str` | The key of the metadata | Yes  
+`value` | `str` | The value of the metadata | Yes  
+####  Implementation Details 
+  - Validates `claim_id` is provided and that the associated claim exists
+  - The claim-key pair is unique; upserting with an existing key will update the value rather than creating a duplicate
+  - If a metadata record already exists with the same claim, key, and value, no update is performed
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.effects.claim import ClaimEffect
+    from canvas_sdk.v1.data import Note
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self) -> list[Effect]:
+            """When a note is locked, store the lock timestamp as metadata on the claim."""
+            note = Note.objects.get(id=self.event.context["note_id"])
+            claim = note.get_claim()
+            state = self.event.context["state"]
+            if state == "LKD":
+                claim_effect = ClaimEffect(claim_id=claim.id)
+                return [claim_effect.upsert_metadata(key="locked_at", value=str(note.modified))]
+            return []
     ```
 ###  Add Banner 
 `ClaimEffect.add_banner()`: adds a banner alert to a claim. Banner alerts are displayed in the UI to surface important information about a claim.
