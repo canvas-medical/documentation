@@ -2284,7 +2284,7 @@ update_goal = UpdateGoalCommand(
 | `weight_lbs`                       | _integer_ | `false`  | Weight in pounds.                                |
 | `weight_oz`                        | _integer_ | `false`  | Weight in ounces.                                |
 | `waist_circumference`              | _integer_ | `false`  | Waist circumference in inches.                   |
-| `body_temperature`                 | _integer_ | `false`  | Body temperature in Fahrenheit.                  |
+| `body_temperature`                 | _float_   | `false`  | Body temperature in Fahrenheit.                  |
 | `body_temperature_site`            | _enum_    | `false`  | Site of body temperature measurement.            |
 | `blood_pressure_systole`           | _integer_ | `false`  | Systolic blood pressure.                         |
 | `blood_pressure_diastole`          | _integer_ | `false`  | Diastolic blood pressure.                        |
