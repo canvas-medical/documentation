@@ -13,10 +13,21 @@ Creating a questionnaire via the SDK requires current requires defining a YAML t
 
 ## Creating a Questionnaire Result
 
-The `CreateQuestionnaireResult` effect causes a new entry to appear in the Social Determinants section of the left side
-of the chart.
+The `CreateQuestionnaireResult` effect allows you to create custom scoring of questionnaires in Canvas. It adds a narrative to the command in the UI and can appear in the Social Determinants section of the left side of the chart if the questionnaire is configured to show in that section.
 
-This effect enables custom scoring of questionnaires in Canvas.
+
+### Attributes
+
+| Attribute    | Required | Type             | Description                                                                                                  |
+|--------------|----------|------------------|--------------------------------------------------------------------------------------------------------------|
+| interview_id | Yes      | string           | The id of the interview to associate the result with.           |
+| score        | Yes      | float            | The numerical score of the questionnaire result.                                                             |
+| abnormal     | No       | bool             | Whether the result is considered abnormal. Defaults to `False`.                                              |
+| narrative    | No       | string           | A text description of the result and any recommended follow-up actions. Defaults to an empty string.         |
+| code_system  | Yes*     | string           | The code system used to identify the questionnaire (e.g., `"INTERNAL"`).                                     |
+| code         | Yes*     | string           | The code identifying the questionnaire within the code system (e.g., `"mchat_scoring"`).                             |
+
+*Note: Questionnaire Results do create an associated Observation record, we require code/code_system so it easier to distinguish the observation results. 
 
 ### Example
 
@@ -39,7 +50,7 @@ class MChatQuestionnaireResult(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.QUESTIONNAIRE_COMMAND__POST_COMMIT)]
 
     MCHAT_CODE_SYSTEM = "INTERNAL"
-    MCHAT_CODE = "mchat"
+    MCHAT_CODE = "mchat_scoring"
 
     def compute(self) -> list[Effect]:
         # Get the interview object, which will be the anchor object on the Questionnaire command.
