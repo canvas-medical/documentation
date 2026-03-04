@@ -13,7 +13,7 @@ Creating a questionnaire via the SDK requires current requires defining a YAML t
 
 ## Creating a Questionnaire Result
 
-The `CreateQuestionnaireResult` effect allows you to create custom scoring of questionnaires in Canvas. It adds a narrative to the command in the UI and can appear in the Social Determinants section of the left side of the chart if the questionnaire is configured to show in that section.
+The `CreateQuestionnaireResult` effect allows you to create custom scoring of questionnaires in Canvas. It adds a narrative to the command in the UI and can appear in the Social Determinants section of the left side of the chart if the questionnaire is configured to show in that section (see [here](/sdk/questionnaires) for how to control setting `display_result_in_social_history_section` for questionnaires).
 
 
 ### Attributes
