@@ -9,8 +9,8 @@ This guide explains how to set a default homepage for the provider application. 
 
 ## What you'll learn:
 
-- Use the [`Application`](/sdk/data/application) model to get a specific application.
-- Use the [`DefaultHomepageEffect`](/sdk/effects/default-homepage-effect) to set the default homepage.
+- Use the [`Application`](/sdk/data-application) model to get a specific application.
+- Use the [`DefaultHomepageEffect`](/sdk/default-homepage-effect) to set the default homepage.
 
 ## Default homepage plugin
 

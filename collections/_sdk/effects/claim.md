@@ -511,12 +511,12 @@ curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment"
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.claim import ClaimEffect, BannerAlertIntent
 from canvas_sdk.v1.data import Note
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self) -> list[Effect]:
@@ -555,12 +555,12 @@ class Protocol(BaseProtocol):
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.claim import ClaimEffect
 from canvas_sdk.v1.data import Note
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self) -> list[Effect]:
