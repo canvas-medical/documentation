@@ -312,6 +312,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | encounter           | [Encounter](/sdk/data-encounter)       |                                                                                                                                                                                                      |
 | commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                                                                                                                                                               |
 | note_tasks          | QuerySet[[NoteTask](/sdk/data-task)]   | All tasks associated with this note                                                                                                                                                                  |
+| metadata            | QuerySet[[NoteMetadata](#notemetadata)] | All metadata key-value pairs associated with this note                                                                                                                                              |
 
 ### NoteType
 
@@ -343,6 +344,28 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | deprecated_at                               | DateTime                                           |
 | is_patient_required                         | Boolean                                            |
 | allow_custom_title                          | Boolean                                            |
+
+### NoteMetadata
+
+| Field Name | Type              |
+|------------|-------------------|
+| id         | UUID              |
+| dbid       | Integer           |
+| note       | [Note](#note)     |
+| key        | String            |
+| value      | String            |
+
+```python
+from canvas_sdk.v1.data.note import Note
+from logger import log
+
+note_id = "89992c23-c298-4118-864a-26cb3e1ae822"
+note = Note.objects.get(id=note_id)
+note_metadata = note.metadata.all()
+
+for metadata in note_metadata:
+   log.info(f"Note metadata: {metadata.key}, {metadata.value}")
+```
 
 ### NoteStateChangeEvent
 

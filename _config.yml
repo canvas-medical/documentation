@@ -10,6 +10,7 @@ url: "https://docs.canvasmedical.com" # the base hostname & protocol for your si
 theme_color: '#eee9d9'
 logo: assets/images/canvas-docs-meta.png
 timezone: America/Los_Angeles
+future: true
 
 ### Cookie consent
 #cookie_consent: true
@@ -30,6 +31,9 @@ collections:
     output: true
     permalink: /:collection/:title/
   sdk:
+    output: true
+    permalink: /:collection/:title/
+  fdb-changelogs:
     output: true
     permalink: /:collection/:title/
   learn:
@@ -57,6 +61,10 @@ defaults:
       path          : "collections/_sdk/**/*"
     values:
       layout        : "sdk"
+  - scope:
+      path          : "collections/_fdb-changelogs/**/*"
+    values:
+      layout        : "fdb-changelog"
   - scope:
       path          : "collections/_learn/**/*"
     values:
