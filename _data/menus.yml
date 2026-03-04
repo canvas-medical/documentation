@@ -779,6 +779,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Default Homepage"
+    url: /sdk/default-homepage-effect/
+    description: Set a provider's default homepage in Canvas.
   - title: "External Events"
     url: /sdk/effect-external-event/
     description: Create or update external clinical events from ADT feeds.
@@ -922,15 +925,24 @@ data_module:
   - title: "Imaging"
     url: /sdk/data-imaging/
     description: Analysis of imaging tests to obtain information about the health of a patient.
+  - title: "ImagingReportTemplate"
+    url: /sdk/data-imaging-report-template/
+    description: Templates used for imaging reports, defining fields and options.
   - title: "Immunization"
     url: /sdk/data-immunization/
     description: A record of a vaccination that is being administered to a patient, either now, in the past, or in the future.
+  - title: "IntegrationTask"
+    url: /sdk/data-integration-task/
+    description: Incoming documents that need processing, including faxes, uploads, and portal submissions.
   - title: "Labs"
     url: /sdk/data-labs/
     description: Analysis of clinical specimens to obtain information about the health of a patient.
   - title: "LabPartner"
     url: /sdk/data-lab-partner-and-test/
     description: Lab partners and the tests they offer within Canvas.
+  - title: "LabReportTemplate"
+    url: /sdk/data-lab-report-template/
+    description: Templates for point-of-care labs and custom lab reports, defining fields and options.
   - title: "Letter"
     url: /sdk/data-letter/
     description: Patient correspondence letters created within Canvas.
@@ -991,6 +1003,9 @@ data_module:
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.
+  - title: "SpecialtyReportTemplate"
+    url: /sdk/data-specialty-report-template/
+    description: Templates for specialty and referral reports, including specialty taxonomy codes.
   - title: "Staff"
     url: /sdk/data-staff/
     description: Data associated with Staff members.
@@ -1016,6 +1031,8 @@ releasenotes:
 releasenotes_product_updates:
   - title: "Changelog"
     url: /product-updates/release-notes/
+  - title: "FDB Drug Database"
+    url: /product-updates/fdb-changelogs/
   - title: "Important Dates"
     url: /product-updates/important-dates/
   - title: "Roadmap"
