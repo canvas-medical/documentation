@@ -27,7 +27,7 @@ The `CreateQuestionnaireResult` effect allows you to create custom scoring of qu
 | code_system  | Yes*     | string           | The code system used to identify the questionnaire (e.g., `"INTERNAL"`).                                     |
 | code         | Yes*     | string           | The code identifying the questionnaire within the code system (e.g., `"mchat_scoring"`).                             |
 
-*Note: Questionnaire Results do create an associated Observation record, we require code/code_system so it easier to distinguish the observation results. 
+*Note: Questionnaire Results create an associated Observation record. The `code` and `code_system` fields are required in order to distinguish the Observation results. 
 
 ### Example
 
