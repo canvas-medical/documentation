@@ -18,7 +18,7 @@ Several Canvas FHIR resources include a `url` attribute that points to an attach
 
 ## The redirect and the dual-auth problem
 
-When you make an authenticated `GET` request to one of these `/files/` URLs, the server validates your Bearer token and responds with a **302 redirect** to a pre-signed S3 URL. The pre-signed URL already contains authentication credentials in its query parameters.
+When you make an authenticated `GET` request to one of these `/files/` URLs, the server validates your Bearer token and responds with a **redirect** and will contain a URL in the response header. If the URL is to S3 it already contains authentication credentials in its query parameters and **expires after 10 minutes**.
 
 Most HTTP clients (including `requests` in Python and `curl` by default) automatically follow redirects **and forward all headers**, including `Authorization`. When S3 receives both the pre-signed query parameters *and* an `Authorization` header, it rejects the request with a dual-auth error:
 
