@@ -149,7 +149,7 @@ sections:
             attributes:
                 - name: url
                   type: string
-                  description: Uri where the data can be found.
+                  description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
                 - name: extension
                   type: json
                   description: Extension for backward-compatible URLs 
