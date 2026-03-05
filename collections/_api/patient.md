@@ -56,13 +56,13 @@ sections:
 
             | value | description |
             | :---- | ---------   |
-            | **446151000124109** | Identifies as Male |
-            | **446141000124107** | Identifies as Female |
-            | **407377005** | Female-to-Male (FTM)/Transgender Male/Trans Man |
-            | **407376001** | Male-to-Female (MTF)/Transgender Female/Trans Woman |
-            | **446131000124102** | Genderqueer, neither exclusively male nor female |
-            | **OTH** | Additional gender category or other, please specify |
-            | **ASKU** | Choose not to disclose |
+            | **446151000124109** | Identifies as male gender (finding) |
+            | **446141000124107** | Identifies as female gender (finding) |
+            | **407377005** | Female-to-male transsexual (finding) |
+            | **407376001** | Male-to-female transsexual (finding) |
+            | **446131000124102** | Identifies as non-conforming gender (finding) |
+            | **OTH** | other |
+            | **ASKU** | asked but unknown |
 
           **`sexual-orientation`**
           <br><br>
