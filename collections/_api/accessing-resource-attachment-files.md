@@ -20,7 +20,7 @@ There are two ways to retrieve the file, depending on whether you want the raw f
 
 ## Option 1: Follow the redirect to get the file content
 
-The simplest approach is to let your HTTP client follow the redirect automatically. The pre-signed S3 URL contains its own authentication in the query parameters, so no additional headers are needed for the second request. Per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-15.4), compliant HTTP clients should strip the `Authorization` header when following a redirect to a different host.
+The simplest approach is to let your HTTP client follow the redirect automatically. The pre-signed S3 URL contains its own authentication in the query parameters, so no additional headers are needed for the second request.
 
 {% tabs attachment-follow-redirect %}
 
@@ -57,6 +57,7 @@ const response = await axios.get(url, {
   responseType: 'arraybuffer',
 });
 // response.data contains the raw file content
+writeFileSync('downloaded_file.pdf', Buffer.from(response.data));
 ```
   {% endtab %}
 
@@ -64,7 +65,7 @@ const response = await axios.get(url, {
 
 ## Option 2: Capture the pre-signed URL without following the redirect
 
-If you need the pre-signed S3 URL itself — for example, to load it in an `<iframe>`, pass it to a frontend, or open it in a browser — you can stop at the redirect and read the `Location` header.
+If you need the pre-signed S3 URL itself — for example, to load it in an `<iframe>`, pass it to a frontend, or open it in a browser — you can configure your client to not follow redirects, and read the `Location` header in the response.
 
 {% tabs attachment-capture-url %}
 
@@ -114,7 +115,7 @@ const presignedUrl = response.headers['location'];
 
 ## Note on HTTP client redirect behavior
 
-Some HTTP clients do not strip the `Authorization` header when following cross-origin redirects, which can cause S3 to reject the request with a dual-auth error:
+Per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-15.4), compliant HTTP clients should strip the `Authorization` header when following a redirect to a different host. However, some HTTP clients do not do this, which can cause S3 to reject the request with a dual-auth error:
 
 ```xml
 <Error>
