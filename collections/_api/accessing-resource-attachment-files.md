@@ -3,7 +3,9 @@ title: "Accessing Resource Attachment Files"
 layout: apipage
 ---
 
-Several Canvas FHIR resources include a `url` attribute that points to an attachment file stored in S3. When you read or search these resources, the `url` value will be a `/files/` path on the Canvas FHIR server. Fetching that URL requires a **Bearer token** and returns a **302 redirect** to a pre-signed S3 URL.
+Several Canvas FHIR resources include a `url` attribute that points to an attachment file stored in S3. When you read or search these resources, the `url` value will be a `/files/` path on the Canvas FHIR server. Fetching that URL requires a **Bearer token** and returns a **redirect** to a pre-signed S3 URL that **expires after 10 minutes**.
+
+There are two ways to retrieve the file, depending on whether you want the raw file content or the pre-signed URL itself.
 
 ## Endpoints that return file URLs
 
@@ -16,39 +18,73 @@ Several Canvas FHIR resources include a `url` attribute that points to an attach
 | [Patient](/api/patient) | `GET /Patient/{id}/files/photo` |
 | [Practitioner](/api/practitioner) | `GET /Practitioner/{id}/files/signature` |
 
-## The redirect and the dual-auth problem
+## Option 1: Follow the redirect to get the file content
 
-When you make an authenticated `GET` request to one of these `/files/` URLs, the server validates your Bearer token and responds with a **redirect** and will contain a URL in the response header. If the URL is to S3 it already contains authentication credentials in its query parameters and **expires after 10 minutes**.
+The simplest approach is to let your HTTP client follow the redirect automatically. The pre-signed S3 URL contains its own authentication in the query parameters, so no additional headers are needed for the second request. Per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-15.4), compliant HTTP clients should strip the `Authorization` header when following a redirect to a different host.
 
-Most HTTP clients (including `requests` in Python and `curl` by default) automatically follow redirects **and forward all headers**, including `Authorization`. When S3 receives both the pre-signed query parameters *and* an `Authorization` header, it rejects the request with a dual-auth error:
+{% tabs attachment-follow-redirect %}
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<Error>
-  <Code>InvalidArgument</Code>
-  <Message>Only one auth mechanism allowed; only the X-Amz-Algorithm
-  query parameter or the Authorization header should be specified,
-  not both.</Message>
-  <ArgumentName>Authorization</ArgumentName>
-  <ArgumentValue>Bearer xxxxxxxxx</ArgumentValue>
-  <RequestId>...</RequestId>
-  <HostId>...</HostId>
-</Error>
+  {% tab attachment-follow-redirect curl %}
+```bash
+curl -L -o downloaded_file.pdf \
+  -H "Authorization: Bearer $TOKEN" \
+  "https://fumage-{instance}.canvasmedical.com/DocumentReference/abc123/files/content"
 ```
+  {% endtab %}
 
-The solution is to **not follow the redirect automatically** so you can strip the `Authorization` header before requesting the pre-signed S3 URL.
-
-## Python example
-
-Use `allow_redirects=False` to capture the 302 response, then make a second request to the pre-signed URL without the `Authorization` header:
-
+  {% tab attachment-follow-redirect python %}
 ```python
 import requests
 
 base_url = "https://fumage-{instance}.canvasmedical.com"
 token = "your_bearer_token"
 
-# Step 1: Request the file URL without following the redirect
+file_url = f"{base_url}/DocumentReference/abc123/files/content"
+response = requests.get(
+    file_url,
+    headers={"Authorization": f"Bearer {token}"},
+)
+
+with open("downloaded_file.pdf", "wb") as f:
+    f.write(response.content)
+```
+  {% endtab %}
+
+  {% tab attachment-follow-redirect javascript %}
+```javascript
+const response = await axios.get(url, {
+  headers: { Authorization: `Bearer ${token}` },
+  responseType: 'arraybuffer',
+});
+// response.data contains the raw file content
+```
+  {% endtab %}
+
+{% endtabs %}
+
+## Option 2: Capture the pre-signed URL without following the redirect
+
+If you need the pre-signed S3 URL itself — for example, to load it in an `<iframe>`, pass it to a frontend, or open it in a browser — you can stop at the redirect and read the `Location` header.
+
+{% tabs attachment-capture-url %}
+
+  {% tab attachment-capture-url curl %}
+```bash
+PRESIGNED_URL=$(curl -s -o /dev/null -w '%{redirect_url}' \
+  -H "Authorization: Bearer $TOKEN" \
+  "https://fumage-{instance}.canvasmedical.com/DocumentReference/abc123/files/content")
+
+echo "$PRESIGNED_URL"
+```
+  {% endtab %}
+
+  {% tab attachment-capture-url python %}
+```python
+import requests
+
+base_url = "https://fumage-{instance}.canvasmedical.com"
+token = "your_bearer_token"
+
 file_url = f"{base_url}/DocumentReference/abc123/files/content"
 response = requests.get(
     file_url,
@@ -56,26 +92,37 @@ response = requests.get(
     allow_redirects=False,
 )
 
-# Step 2: Get the pre-signed S3 URL from the Location header
 presigned_url = response.headers["Location"]
+# This URL works without auth and expires after 10 minutes
+```
+  {% endtab %}
 
-# Step 3: Download the file — no Authorization header needed
-file_response = requests.get(presigned_url)
+  {% tab attachment-capture-url javascript %}
+```javascript
+const response = await axios.get(url, {
+  maxRedirects: 0,
+  validateStatus: (status) => status === 307,
+  headers: { Authorization: `Bearer ${token}` },
+});
 
-with open("downloaded_file.pdf", "wb") as f:
-    f.write(file_response.content)
+const presignedUrl = response.headers['location'];
+// This URL works without auth — use it in an iframe, open in browser, etc.
+```
+  {% endtab %}
+
+{% endtabs %}
+
+## Note on HTTP client redirect behavior
+
+Some HTTP clients do not strip the `Authorization` header when following cross-origin redirects, which can cause S3 to reject the request with a dual-auth error:
+
+```xml
+<Error>
+  <Code>InvalidArgument</Code>
+  <Message>Only one auth mechanism allowed; only the X-Amz-Algorithm
+  query parameter or the Authorization header should be specified,
+  not both.</Message>
+</Error>
 ```
 
-## curl example
-
-With `curl`, use `-s` to suppress the progress bar and capture the redirect `Location` header, then fetch the pre-signed URL separately:
-
-```bash
-# Step 1: Get the pre-signed URL from the redirect
-PRESIGNED_URL=$(curl -s -o /dev/null -w '%{redirect_url}' \
-  -H "Authorization: Bearer $TOKEN" \
-  "https://fumage-{instance}.canvasmedical.com/DocumentReference/abc123/files/content")
-
-# Step 2: Download the file
-curl -o downloaded_file.pdf "$PRESIGNED_URL"
-```
+If you encounter this error, your client is forwarding the Bearer token to S3. Use **Option 2** above to handle the redirect manually, or configure your client to strip authorization headers on cross-origin redirects.
