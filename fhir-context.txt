@@ -2385,9 +2385,9 @@ The requested resource was not found.
 put
 /Appointment/{id}
 #### Appointment update
-Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database.   
+This is almost identical to the [Appointment Create](/api/appointment/#create). You must include **all required fields** in the request body, even if only some fields are changing; omitting required fields will result in a validation error. Optional fields that are omitted will be ignored and left as they are currently set in the Canvas database.  
 A FHIR Appointment update interaction behaves differently than a rescheduling workflow in the Canvas UI. FHIR updates will directly modify the Appointment referred to by the `id` rather than creating a new appointment.  
-Canvas prevents updating the patient an appointment is already associated to. Best practices is to cancel the existing appointment and create a new appointment with the correct patient.
+Canvas prevents updating the patient an appointment is already associated to. Best practice is to cancel the existing appointment and create a new appointment with the correct patient.
 ### Attributes
 resourceType 
 string 
