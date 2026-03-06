@@ -12,6 +12,7 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
 - [moving claim to a queue](#move-to-queue)
 - [adding comments](#add-comment) to claims
 - [posting payments](#post-payment) to claims
+- [upserting metadata](#upsert-metadata) on claims
 - [adding banner alerts](#add-banner) to claims
 - [removing banner alerts](#remove-banner) from claims
 - [updating provider information](#update-provider) on claims
@@ -479,6 +480,47 @@ curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment"
         }
     ]
 }'
+```
+
+### Upsert Metadata
+
+`ClaimEffect.upsert_metadata()`: upserts a key-value metadata record on a claim. If a metadata record with the given key already exists for the claim, its value will be updated. Otherwise, a new metadata record will be created.
+
+#### Parameters
+
+| Parameter | Type  | Description               | Required |
+| --------- | ----- | ------------------------- | -------- |
+| `key`     | `str` | The key of the metadata   | Yes      |
+| `value`   | `str` | The value of the metadata | Yes      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- The claim-key pair is unique; upserting with an existing key will update the value rather than creating a duplicate
+- If a metadata record already exists with the same claim, key, and value, no update is performed
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, store the lock timestamp as metadata on the claim."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "LKD":
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.upsert_metadata(key="locked_at", value=str(note.modified))]
+        return []
 ```
 
 ### Add Banner
