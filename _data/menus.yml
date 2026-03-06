@@ -984,6 +984,9 @@ data_module:
   - title: "PracticeLocation"
     url: /sdk/data-practicelocation/
     description: The practice locations present in the Canvas EMR.
+  - title: "Prescription"
+    url: /sdk/data-prescription/
+    description: The practice locations present in the Canvas EMR.
   - title: "ProtocolCurrent"
     url: /sdk/data-protocol-current/
     description: The current state of clinical protocols applied to patients within Canvas.
