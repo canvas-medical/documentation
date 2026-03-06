@@ -35,6 +35,9 @@ To implement a custom action button, you need to create a handler class that inh
 - **`PRIORITY`**
   An optional integer that specifies the order in which the button should appear relative to other buttons in the same location. Lower values appear first. If not specified, no order is guaranteed.
 
+- **`COLOR`**
+  An optional string that specifies the color of the button. This constant only applies to buttons located on the patient header. The color should be defined using a valid HEX color value (e.g., "#FF0000").
+
 ### Optional: Implement the `visible()` Method
 
 By default, the `ActionButton` class assumes the button is always visible (`return True`). If you want the button to only be visible under certain conditions, you can override the `visible()` method. This method must return a boolean value (`True` to show the button, `False` to hide it).
@@ -51,6 +54,8 @@ The `ActionButton` class defines several locations where the button can be place
 |---------------------------------------------|---------------------------------------------------------------------------------|
 | `NOTE_HEADER`                               | The button will appear in the header of each note.                              |
 | `NOTE_FOOTER`                               | The button will appear in the footer of each note.                              |
+| `PROFILE_PATIENT_HEADER`                    | The button will appear in the patient header on the profile page.               |
+| `CHART_PATIENT_HEADER`                      | The button will appear in the patient header on the chart page.                 |
 | `CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION` | The button will appear in the Social Determinants section of the chart summary. |
 | `CHART_SUMMARY_GOALS_SECTION`               | The button will appear in the Goals section of the chart summary.               |
 | `CHART_SUMMARY_CONDITIONS_SECTION`          | The button will appear in the Conditions section of the chart summary.          |
