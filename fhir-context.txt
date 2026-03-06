@@ -9,6 +9,95 @@ You can access our full terms of use [here](/api/terms-of-use)
 ----- END PAGE https://docs.canvasmedical.com/api/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/api/accessing-resource-attachment-files/
+Several Canvas FHIR resources include a `url` attribute that points to an attachment file stored in S3. When you read or search these resources, the `url` value will be a `/files/` path on the Canvas FHIR server. Fetching that URL requires a **Bearer token** and returns a **redirect** to a pre-signed S3 URL that **expires after 10 minutes**.
+There are two ways to retrieve the file, depending on whether you want the raw file content or the pre-signed URL itself.
+##  Endpoints that return file URLs 
+Resource | URL pattern  
+---|---  
+[Consent](/api/consent) | `GET /Consent/{id}/files/sourceAttachment`  
+[DiagnosticReport](/api/diagnosticreport) | `GET /DiagnosticReport/{id}/files/presentedForm`  
+[DocumentReference](/api/documentreference) | `GET /DocumentReference/{id}/files/content`  
+[Media](/api/media) | `GET /Media/{id}/files/content`  
+[Patient](/api/patient) | `GET /Patient/{id}/files/photo`  
+[Practitioner](/api/practitioner) | `GET /Practitioner/{id}/files/signature`  
+##  Option 1: Follow the redirect to get the file content 
+The simplest approach is to let your HTTP client follow the redirect automatically. The pre-signed S3 URL contains its own authentication in the query parameters, so no additional headers are needed for the second request.
+  - **curl**
+        ```bash
+        curl -L -o downloaded_file.pdf \
+          -H "Authorization: Bearer $TOKEN" \
+          "https://fumage-{instance}.canvasmedical.com/DocumentReference/abc123/files/content"
+        ```
+  - **python**
+        ```python
+        import requests
+        base_url = "https://fumage-{instance}.canvasmedical.com"
+        token = "your_bearer_token"
+        file_url = f"{base_url}/DocumentReference/abc123/files/content"
+        response = requests.get(
+            file_url,
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        with open("downloaded_file.pdf", "wb") as f:
+            f.write(response.content)
+        ```
+  - **javascript**
+        ```javascript
+        const response = await axios.get(url, {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: 'arraybuffer',
+        });
+        // response.data contains the raw file content
+        writeFileSync('downloaded_file.pdf', Buffer.from(response.data));
+        ```
+##  Option 2: Capture the pre-signed URL without following the redirect 
+If you need the pre-signed S3 URL itself — for example, to load it in an `<iframe>`, pass it to a frontend, or open it in a browser — you can configure your client to not follow redirects, and read the `Location` header in the response.
+  - **curl**
+        ```bash
+        PRESIGNED_URL=$(curl -s -o /dev/null -w '%{redirect_url}' \
+          -H "Authorization: Bearer $TOKEN" \
+          "https://fumage-{instance}.canvasmedical.com/DocumentReference/abc123/files/content")
+        echo "$PRESIGNED_URL"
+        ```
+  - **python**
+        ```python
+        import requests
+        base_url = "https://fumage-{instance}.canvasmedical.com"
+        token = "your_bearer_token"
+        file_url = f"{base_url}/DocumentReference/abc123/files/content"
+        response = requests.get(
+            file_url,
+            headers={"Authorization": f"Bearer {token}"},
+            allow_redirects=False,
+        )
+        presigned_url = response.headers["Location"]
+        # This URL works without auth and expires after 10 minutes
+        ```
+  - **javascript**
+        ```javascript
+        const response = await axios.get(url, {
+          maxRedirects: 0,
+          validateStatus: (status) => status === 307,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const presignedUrl = response.headers['location'];
+        // This URL works without auth — use it in an iframe, open in browser, etc.
+        ```
+##  Note on HTTP client redirect behavior 
+Per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-15.4), compliant HTTP clients should strip the `Authorization` header when following a redirect to a different host. However, some HTTP clients do not do this, which can cause S3 to reject the request with a dual-auth error:
+    ```xml
+    <Error>
+      <Code>InvalidArgument</Code>
+      <Message>Only one auth mechanism allowed; only the X-Amz-Algorithm
+      query parameter or the Authorization header should be specified,
+      not both.</Message>
+    </Error>
+    ```
+If you encounter this error, your client is forwarding the Bearer token to S3. Use **Option 2** above to handle the redirect manually, or configure your client to strip authorization headers on cross-origin redirects.
+----- END PAGE https://docs.canvasmedical.com/api/accessing-resource-attachment-files/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/allergen/
 ### 
 A substance that, upon exposure to an individual, may cause a harmful or undesirable physiological response.   
@@ -2385,9 +2474,9 @@ The requested resource was not found.
 put
 /Appointment/{id}
 #### Appointment update
-Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database.   
+This is almost identical to the [Appointment Create](/api/appointment/#create). You must include **all required fields** in the request body, even if only some fields are changing; omitting required fields will result in a validation error. Optional fields that are omitted will be ignored and left as they are currently set in the Canvas database.  
 A FHIR Appointment update interaction behaves differently than a rescheduling workflow in the Canvas UI. FHIR updates will directly modify the Appointment referred to by the `id` rather than creating a new appointment.  
-Canvas prevents updating the patient an appointment is already associated to. Best practices is to cancel the existing appointment and create a new appointment with the correct patient.
+Canvas prevents updating the patient an appointment is already associated to. Best practice is to cancel the existing appointment and create a new appointment with the correct patient.
 ### Attributes
 resourceType 
 string 
@@ -10130,7 +10219,7 @@ The source on which this consent statement is based.
 Canvas returns the `sourceAttachment.url` for the document associated with the consent that has the latest period.start date.
 Click to view child attributes
 url 
-Uri where the data can be found.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 provision 
 json 
 Constraints to the base Consent.  
@@ -10253,7 +10342,7 @@ The source on which this consent statement is based.
 Canvas returns the `sourceAttachment.url` for the document associated with the consent that has the latest period.start date.
 Click to view child attributes
 url 
-Uri where the data can be found.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 provision 
 json 
 Constraints to the base Consent.  
@@ -17767,7 +17856,7 @@ Entire report as issued. There is also a [DocumentReference](/api/documentrefere
 Click to view child attributes
 url 
 string 
-Uri where the data can be found.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 extension 
 json 
 Extension for backward-compatible URLs
@@ -17959,7 +18048,7 @@ Entire report as issued. There is also a [DocumentReference](/api/documentrefere
 Click to view child attributes
 url 
 string 
-Uri where the data can be found.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 extension 
 json 
 Extension for backward-compatible URLs
@@ -18698,7 +18787,7 @@ string
 Mime type of the content, with charset etc.
 url 
 string 
-URI where the data can be found. Please note that urls may have an AWSAccessKeyId and an Expires attribute. By default documents stored in AWS S3 will expire 10 minutes after the response payload is returned.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 extension 
 json 
 Extension for backward-compatible URLs
@@ -19019,7 +19108,7 @@ string
 Mime type of the content, with charset etc.
 url 
 string 
-URI where the data can be found. Please note that urls may have an AWSAccessKeyId and an Expires attribute. By default documents stored in AWS S3 will expire 10 minutes after the response payload is returned.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 extension 
 json 
 Extension for backward-compatible URLs
@@ -24795,7 +24884,7 @@ string
 Label to display in place of the data. This will appear on the Visual Exam Finding Command in the patient's chart.
 url 
 string 
-Uri where the data can be found.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 note 
 array[json] 
 Comments made about the media  
@@ -24923,7 +25012,7 @@ string
 Label to display in place of the data. This will appear on the Visual Exam Finding Command in the patient's chart.
 url 
 string 
-Uri where the data can be found.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 note 
 array[json] 
 Comments made about the media  
@@ -31506,13 +31595,13 @@ This extension provides concepts to describe the gender a person identifies as.
 Please note that if this extension is included, it will override the root `gender` field. Supported values are:
 value | description  
 ---|---  
-**446151000124109** | Identifies as Male  
-**446141000124107** | Identifies as Female  
-**407377005** | Female-to-Male (FTM)/Transgender Male/Trans Man  
-**407376001** | Male-to-Female (MTF)/Transgender Female/Trans Woman  
-**446131000124102** | Genderqueer, neither exclusively male nor female  
-**OTH** | Additional gender category or other, please specify  
-**ASKU** | Choose not to disclose  
+**446151000124109** | Identifies as male gender (finding)  
+**446141000124107** | Identifies as female gender (finding)  
+**407377005** | Female-to-male transsexual (finding)  
+**407376001** | Male-to-female transsexual (finding)  
+**446131000124102** | Identifies as non-conforming gender (finding)  
+**OTH** | other  
+**ASKU** | asked but unknown  
 **`sexual-orientation`**   
 http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation   
 Sexual orientation of the patient. Supported values are:
@@ -31712,7 +31801,10 @@ date
 End date with inclusive boundary, if not ongoing
 photo 
 array[json] 
-When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
+Image of the patient. This image shows on the patient avatar in the Canvas UI.
+Click to view child attributes
+data 
+A base64-encoded string of the patient's photo
 contact 
 array[json] 
 A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient profile page in the Canvas UI.
@@ -31981,6 +32073,9 @@ End date with inclusive boundary, if not ongoing
 photo 
 array[json] 
 Image of the patient. This image shows on the patient avatar in the Canvas UI.
+Click to view child attributes
+url 
+URI where the image can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 contact 
 array[json] 
 A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient profile page in the Canvas UI.
@@ -32246,7 +32341,10 @@ date
 End date with inclusive boundary, if not ongoing
 photo 
 array[json] 
-When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
+Image of the patient. This image shows on the patient avatar in the Canvas UI.
+Click to view child attributes
+data 
+A base64-encoded string of the patient's photo
 contact 
 array[json] 
 A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient profile page in the Canvas UI.
@@ -32589,6 +32687,9 @@ End date with inclusive boundary, if not ongoing
 photo 
 array[json] 
 Image of the patient. This image shows on the patient avatar in the Canvas UI.
+Click to view child attributes
+url 
+URI where the image can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 contact 
 array[json] 
 A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient profile page in the Canvas UI.
@@ -36176,7 +36277,7 @@ json
 Extension for backward-compatible URLs
 url 
 string 
-Uri where the data can be found.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 extension 
 array[json] 
 For the Role extensions where the url is `http://schemas.canvasmedical.com/fhir/extensions/roles`, the `extension` attribute is used to define the list of role's this practitioner has at the practice.
@@ -36732,7 +36833,7 @@ json
 Extension for backward-compatible URLs
 url 
 string 
-Uri where the data can be found.
+URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 extension 
 array[json] 
 For the Role extensions where the url is `http://schemas.canvasmedical.com/fhir/extensions/roles`, the `extension` attribute is used to define the list of role's this practitioner has at the practice.

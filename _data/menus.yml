@@ -37,6 +37,8 @@ api_canvas_fhir:
     url: /api/errors/
   - title: "Service Base URLs"
     url: /api/service-base-urls/
+  - title: "Accessing Resource Attachment Files"
+    url: /api/accessing-resource-attachment-files/
 
 api_resources:
   - title: "Allergen"
