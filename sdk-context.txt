@@ -11573,6 +11573,130 @@ state | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-practicelocation/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-prescription/
+##  Introduction 
+The `Prescription` model represents a prescription for a medication that has been written for a patient. Prescriptions track the full lifecycle of a medication order, including dosage details, pharmacy information, and electronic prescribing status.
+##  Basic usage 
+To get a prescription by identifier, use the `get` method on the `Prescription` model manager:
+    ```python
+    from canvas_sdk.v1.data.prescription import Prescription
+    prescription = Prescription.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient object, the prescriptions for a patient can be accessed with the `prescriptions` attribute on a `Patient` object:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    prescriptions = patient.prescriptions.all()
+    ```
+If you have a patient ID, you can get the prescriptions for the patient with the `for_patient` method on the `Prescription` model manager:
+    ```python
+    from canvas_sdk.v1.data.prescription import Prescription
+    patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+    prescriptions = Prescription.objects.for_patient(patient_id)
+    ```
+##  Filtering 
+Prescriptions can be filtered by any attribute that exists on the model.
+Filtering for prescriptions is done with the `filter` method on the `Prescription` model manager.
+###  By attribute 
+Specify an attribute with `filter` to filter by that attribute:
+    ```python
+    from canvas_sdk.v1.data.prescription import Prescription, PrescriptionStatus
+    prescriptions = Prescription.objects.filter(status=PrescriptionStatus.OPEN)
+    ```
+    ```python
+    from canvas_sdk.v1.data.prescription import Prescription, PrescriptionResponse
+    approved_prescriptions = Prescription.objects.filter(response_type=PrescriptionResponse.APPROVED)
+    ```
+###  Active prescriptions 
+The `active` method returns committed prescriptions that have not been denied:
+    ```python
+    from canvas_sdk.v1.data.prescription import Prescription
+    active_prescriptions = Prescription.objects.active()
+    ```
+###  Committed prescriptions 
+The `committed` method returns prescriptions that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data.prescription import Prescription
+    committed_prescriptions = Prescription.objects.committed()
+    ```
+##  Attributes 
+###  Prescription 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+patient | [Patient](/sdk/data-patient/)  
+note | [Note](/sdk/data-note/)  
+prescriber | [Staff](/sdk/data-staff/)  
+supervising_provider | [Staff](/sdk/data-staff/)  
+medication | [Medication](/sdk/data-medication/)  
+compound_medication | [CompoundMedication](/sdk/data-compound-medication/)  
+previous_medication | [Medication](/sdk/data-medication/)  
+indications | [Assessment](/sdk/data-assessment/)[]  
+related_refill | Prescription  
+status | PrescriptionStatus  
+response_type | PrescriptionResponse  
+is_refill | Boolean  
+is_adjustment | Boolean  
+is_epcs | Boolean  
+generic_substitutions_allowed | Boolean  
+written_date | DateTime  
+dispensed_date | DateTime  
+end_date | Date  
+end_date_original_input | String  
+sig_original_input | String  
+dose_form | String  
+dose_route | String  
+dose_quantity | Float  
+dose_frequency | Float  
+dose_frequency_interval | String  
+maximum_daily_dose | String  
+potency_quantity | Float  
+dispense_quantity | Float  
+duration_in_days | Integer  
+count_of_refills_allowed | Integer  
+note_to_pharmacist | String  
+pharmacy_name | String  
+pharmacy_ncpdp_id | String  
+pharmacy_address | String  
+pharmacy_phone_number | String  
+pharmacy_fax_number | String  
+pharmacy_is_read_only | Boolean  
+message_id | String  
+prescription_order_number | String  
+reason_code | String  
+error_message | String  
+deleted | Boolean  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+created | DateTime  
+modified | DateTime  
+##  Enumeration types 
+###  PrescriptionStatus 
+Enum | Value | Label  
+---|---|---  
+OPEN | open | Open  
+PENDING | pending | Pending  
+ACCEPTED | ultimately-accepted | Ultimately Accepted  
+ERROR | error | Error  
+CANCEL_REQUESTED | cancel-requested | Cancel Requested  
+CANCELED | canceled | Canceled  
+CANCEL_DENIED | cancel-denied | Cancel Denied  
+RECEIVED | received | Received by DrFirst  
+SIGNED | signed | Signed  
+INQUEUE | inqueue | In Queue  
+TRANSMITTED | transmitted | Transmitted  
+DELIVERED | delivered | Delivered  
+###  PrescriptionResponse 
+Enum | Value | Label  
+---|---|---  
+APPROVED | A | Approved  
+APPROVED_WITH_CHANGES | C | Approved with changes  
+DENIED | D | Denied  
+DENIED_PRESCRIPTION_TO_FOLLOW | N | Denied, new prescription to follow  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-prescription/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-protocol-current/
 ##  Introduction 
 The `ProtocolCurrent` object represents the current state of clinical protocols applied to patients within Canvas. Protocols are typically structured plans or guidelines that outline specific medical interventions, treatments, or care pathways for managing various health conditions. The `ProtocolCurrent` object contains essential information about the protocol's status, associated patient, and relevant clinical details.
@@ -12777,7 +12901,7 @@ The following code is an example of a custom `ValueSet` in use within a plugin:
 The data module provides you with data to compute on. It provides curated, secure access to both PHI (e.g. patient data) and non-PHI (e.g. staff and practice-level data), representing the current state of your target Canvas instance. The module's classes offer convenience methods and operators that make business logic and clinical logic easy to express with standard terminologies like ICD-10, SNOMED-CT, CPT, and the like.
 Data module classes are Django ORM models, which allow easy retrieval of data at runtime through Django's expressive [QuerySet API](https://docs.djangoproject.com/en/5.1/ref/models/querysets/).
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -17241,7 +17365,7 @@ PRESCRIPTION_UPDATED
 Occurs when a prescription is updated.  
 Target object | Context object  
     "id": prescription_id
-    "type": [Medication](/sdk/data-medication/#medication)
+    "type": [Prescription](/sdk/data-prescription)
 | 
     "patient":
        "id": pt_id  
@@ -17250,7 +17374,117 @@ PRESCRIPTION_CREATED
 Occurs when a prescription is created for a patient using the Prescribe command. Additional details for the prescription become available with subsequent PRESCRIPTION_UPDATED events.  
 Target object | Context object  
     "id": prescription_id
-    "type": [Medication](/sdk/data-medication/#medication)
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+#####  Prescription status events 
+The following events fire when a prescription's status changes during the e-prescribing lifecycle. These events always fire alongside a `PRESCRIPTION_CREATED` or `PRESCRIPTION_UPDATED` event. For example, when a prescription is first created, both `PRESCRIPTION_CREATED` and `PRESCRIPTION_OPENED` will fire. When a prescription's status is updated to "transmitted", both `PRESCRIPTION_UPDATED` and `PRESCRIPTION_TRANSMITTED` will fire.
+PRESCRIPTION_OPENED  
+---  
+Occurs when a prescription's status is set to open. This is the default status when a prescription is first created.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_PENDING  
+---  
+Occurs when a prescription's status changes to pending.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_ACCEPTED  
+---  
+Occurs when a prescription has been ultimately accepted.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_ERRORED  
+---  
+Occurs when an error occurs during prescription processing.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_CANCEL_REQUESTED  
+---  
+Occurs when a cancellation has been requested for a prescription.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_CANCELED  
+---  
+Occurs when a prescription has been successfully canceled.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_CANCEL_DENIED  
+---  
+Occurs when a cancellation request for a prescription has been denied.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_RECEIVED  
+---  
+Occurs when a prescription has been received by the e-prescribing network.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_SIGNED  
+---  
+Occurs when a prescription has been signed.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_INQUEUE  
+---  
+Occurs when a prescription is in queue for transmission.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_TRANSMITTED  
+---  
+Occurs when a prescription has been transmitted to the pharmacy.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
+| 
+    "patient":
+       "id": pt_id  
+PRESCRIPTION_DELIVERED  
+---  
+Occurs when a prescription has been delivered to the pharmacy.  
+Target object | Context object  
+    "id": prescription_id
+    "type": [Prescription](/sdk/data-prescription)
 | 
     "patient":
        "id": pt_id  
