@@ -21,7 +21,7 @@ authenticated requests.
     "name": "api_samples",
     "description": "Example usages of the SimpleAPI handler",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "api_samples.routes.hello_world:HelloWorldAPI",
                 "description": "Returns a json message"

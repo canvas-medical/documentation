@@ -23,14 +23,14 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
     "name": "patient_summary_chart_groups",
     "description": "A plugin that groups Psychiatry conditions and medications in the patient summary chart.",
     "components": {
-        "protocols": [
+        "handlers": [
             {
-                "class": "patient_summary_chart_groups.protocols.my_protocol:Conditions",
-                "description": "A protocol that groups Psychiatry conditions"
+                "class": "patient_summary_chart_groups.handlers.my_protocol:Conditions",
+                "description": "A handler that groups Psychiatry conditions"
             },
             {
-                "class": "patient_summary_chart_groups.protocols.my_protocol:Medications",
-                "description": "A protocol that groups Psychiatry medications"
+                "class": "patient_summary_chart_groups.handlers.my_protocol:Medications",
+                "description": "A handler that groups Psychiatry medications"
             }
         ],
         "commands": [],
@@ -47,11 +47,11 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
 }
 ```
 
-## protocols/
+## handlers/
 
 ### my_protocol.py
 
-This file defines two custom protocol handlers, `Conditions` and `Medications`, using the Canvas SDK. These handlers listen for specific events related to a patient's medical chart and group relevant diagnoses or medications into a "Psychiatry" category, returning these as effects for further processing or display in the Canvas UI.
+This file defines two custom handlers, `Conditions` and `Medications`, using the Canvas SDK. These handlers listen for specific events related to a patient's medical chart and group relevant diagnoses or medications into a "Psychiatry" category, returning these as effects for further processing or display in the Canvas UI.
 
 **Section: `Conditions` Handler**
 
@@ -146,7 +146,7 @@ class Medications(BaseHandler):
 
 ## Customize
 
-- The protocol is extensible: additional groups or more refined code logic could be added in the future.
+- The handler is extensible: additional groups or more refined code logic could be added in the future.
 <br/>
 <br/>
 <br/>
