@@ -163,6 +163,98 @@ requests = [
 responses = http.batch_requests(requests, timeout=10)
 ```
 
+## Generating PDFs
+
+Plugin authors can generate PDFs using the `pdf_generator` client. There are two approaches: generating from a URL that serves HTML, or generating directly from an HTML string. Both methods upload the resulting PDF to S3 and return a presigned URL.
+
+```python
+from canvas_sdk.utils.pdf import pdf_generator
+```
+
+The client exposes only `from_url` and `from_html`. Direct HTTP methods (get, post, put, patch) are not available.
+
+### from_url
+
+Generates a PDF from a URL that returns HTML. The service fetches the HTML from the given URL, converts it to PDF, uploads it to S3, and returns a presigned URL.
+
+**Parameters**:
+
+| Name        | Type             | Required | Description                                                                       |
+|:------------|:-----------------|:---------|:----------------------------------------------------------------------------------|
+| `print_url` | _string_         | `true`   | The path to the HTML endpoint.                                                    |
+| `auth`      | _PdfAuthRequest_ | `false`  | Credentials forwarded to the PDF service so it can fetch authenticated endpoints. |
+
+**Returns**: `PdfUrlResponse | None` — `None` if PDF generation failed.
+
+When using `from_url`, the PDF service fetches the HTML from your endpoint directly. If that endpoint requires authentication, the SimpleAPI serving the HTML should use [`BasicAuthMixin`](/sdk/handlers/simple-api/api/#basic) and pass the credentials via `PdfAuthRequest`.
+
+**Example**:
+
+```python
+from canvas_sdk.utils.pdf import PdfAuthRequest, pdf_generator
+
+# The PDF service will fetch this endpoint to get the HTML.
+# Because the endpoint uses BasicAuthMixin, we pass credentials
+# so the service can authenticate on our behalf.
+auth = PdfAuthRequest(
+    username="user",
+    password="password",
+)
+
+response = pdf_generator.from_url(
+    print_url="plugin-io/api/my_plugin/printout/html?note_uuid=abc-123",
+    auth=auth,
+)
+
+if response and response.url:
+    # response.url is a presigned S3 URL to the generated PDF
+    pdf_url = response.url
+```
+
+### from_html
+
+Generates a PDF from a raw HTML string. Use this when you already have the HTML content and don't need the service to fetch it from a URL.
+
+**Parameters**:
+
+| Name      | Type     | Required | Description                  |
+|:----------|:---------|:---------|:-----------------------------|
+| `content` | _string_ | `true`   | The HTML content to convert. |
+
+**Returns**: `PdfUrlResponse | None` — `None` if PDF generation failed.
+
+**Example**:
+
+```python
+from canvas_sdk.templates import render_to_string
+from canvas_sdk.utils.pdf import pdf_generator
+
+html = render_to_string("templates/note_printout.html", {
+    "patient_name": "Jane Doe",
+    "note_type": "Office Visit",
+})
+
+response = pdf_generator.from_html(content=html)
+
+if response and response.url:
+    pdf_url = response.url
+```
+
+### PdfUrlResponse
+
+Both methods return a `PdfUrlResponse` on success, or `None` on failure.
+
+| Attribute | Type     | Description                            |
+|:----------|:---------|:---------------------------------------|
+| `url`     | _string_ | Presigned S3 URL to the generated PDF. |
+
+### Choosing between the two methods
+
+| Use case                                                                  | Method                              |
+|:--------------------------------------------------------------------------|:------------------------------------|
+| Plugin serves an HTML page via SimpleAPI that requires authentication     | `from_url` with `PdfAuthRequest`    |
+| You already have the HTML string in memory (e.g. from `render_to_string`) | `from_html`                         |
+
 ## Making requests to the Ontologies service
 
 Plugin authors can make requests to our Ontologies service using the
