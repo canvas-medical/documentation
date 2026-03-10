@@ -116,7 +116,7 @@ class ProviderQualification(CustomModel):
     last_name = TextField()
     board_certified = BooleanField()
     practicing_since_year = IntegerField()
-    degrees = JSONField()
+    extended_attributes = JSONField()
     created_at = DateTimeField()
     
     class Meta:
@@ -153,7 +153,7 @@ qualification = ProviderQualification(
     last_name="Smith",
     board_certified=True,
     practicing_since_year=2005,
-    extended_attribtes={ "biography": "Lives in Fresno with her..." }
+    extended_attributes={ "biography": "Lives in Fresno with her..." }
 )
 qualification.save()
 
@@ -163,7 +163,7 @@ qualification = ProviderQualification.objects.create(
     last_name="Smith",
     board_certified=True,
     practicing_since_year=2005,
-    extended_attribtes={ "biography": "Lives in Fresno with her..." }
+    extended_attributes={ "biography": "Lives in Fresno with her..." }
 )
 
 # Get or create (avoids duplicates)
@@ -270,8 +270,8 @@ ProviderQualification.objects.all().delete()
 
 ## Extending the Canvas Data Model
 
-CustomModels may reference core SDK models by extending them with `ModelExtension`. This allows you to
-create foreign key relationships from your custom tables to Canvas models, and enables CustomAttribute support
+CustomModels may reference core SDK models by extending SDK models with `ModelExtension`. This allows you to
+create foreign key relationships from your custom tables to Canvas models, and also enables CustomAttribute support
 on the extended model instances.
 
 Extend existing SDK models by subclassing the SDK model and `ModelExtension`:
@@ -281,13 +281,14 @@ from canvas_sdk.v1.data import Staff, ModelExtension
 
 
 class CustomStaff(Staff, ModelExtension):
-    """Extends Staff with custom attribute support."""
+    """Extends Staff with custom attribute support and 
+    will allow `related_name` reverse mappings from CustomModels."""
     pass
 ```
 
-You can name your class as you wish, but it **must**:
-1. subclass a core model,
-1. include `ModelExtension`.
+You can name your extension class as you wish, but it **must**:
+1. subclass a core model
+1. subclass `ModelExtension`
 
 ---
 
