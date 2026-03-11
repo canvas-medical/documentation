@@ -22,7 +22,7 @@ This effect stores a C-CDA document, generating or otherwise sourcing that docum
 | Value      | Description                                      |
 |------------|--------------------------------------------------|
 | `CCD`      | Continuity of Care Document (default)            |
-| `Referral` | Referral document                                |
+| `REFERRAL` | Referral document                                |
 
 ## Validation
 
