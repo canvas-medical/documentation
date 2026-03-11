@@ -51,6 +51,7 @@ Represents a file attachment linked to a message.
 | `file`         | `Text`                     | Storage path or identifier for the file.   |
 | `content_type` | `String`                   | MIME type of the attachment.               |
 | `message`      | [Message](#message)        | The parent message to which this belongs.  |
+| `file_url`     | String (property)          | Presigned S3 URL for accessing the file.   |
 
 ## MessageTransmission
 
