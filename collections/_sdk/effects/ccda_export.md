@@ -1,11 +1,11 @@
 ---
-title: "CreateCCDAExport"
+title: "CreateCCDA"
 slug: "effect-create-ccda-export"
 excerpt: "Effect to create a C-CDA (Consolidated Clinical Document Architecture) document for a patient."
 hidden: false
 ---
 
-Creates a C-CDA document for a patient with the provided XML content. This effect allows plugins to generate and store C-CDA XML documents, which can be used for clinical document exchange, patient summaries, or referrals.
+The `CreateCCDA` effect creates a C-CDA document for a patient with the provided XML content. This effect allows plugins to store C-CDA XML documents, which can be used for clinical document exchange, patient summaries, or referrals.
 
 This effect stores a C-CDA document, generating or otherwise sourcing that document is the responsibility of the plugin.
 
@@ -37,9 +37,9 @@ The effect performs the following validations before execution:
 ### Basic CCD Creation
 
 ```python
-from canvas_sdk.effects.ccda import CreateCCDAExport, DocumentType
+from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
 
-# Sample CCDA XML content
+# Sample C-CDA XML content
 ccda_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <ClinicalDocument xmlns="urn:hl7-org:v3">
     <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
@@ -53,7 +53,7 @@ ccda_xml = """<?xml version="1.0" encoding="UTF-8"?>
     <languageCode code="en-US"/>
 </ClinicalDocument>"""
 
-effect = CreateCCDAExport(
+effect = CreateCCDA(
     patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     content=ccda_xml,
     document_type=DocumentType.CCD
@@ -65,9 +65,9 @@ return [effect.apply()]
 ### Creating a Referral Document
 
 ```python
-from canvas_sdk.effects.ccda import CreateCCDAExport, DocumentType
+from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
 
-effect = CreateCCDAExport(
+effect = CreateCCDA(
     patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     content=referral_xml_content,
     document_type=DocumentType.REFERRAL
@@ -81,14 +81,14 @@ return [effect.apply()]
 When `document_type` is not specified, it defaults to `CCD`:
 
 ```python
-from canvas_sdk.effects.ccda import CreateCCDAExport
+from canvas_sdk.effects.ccda import CreateCCDA
 
-effect = CreateCCDAExport(
+effect = CreateCCDA(
     patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     content=ccda_xml
 )
 
-# document_type will be "CCD"
+# document_type defaults to DocumentType.CCD
 return [effect.apply()]
 ```
 
@@ -101,7 +101,8 @@ return [effect.apply()]
 
 ## Notes
 
-- The created C-CDA is stored and associated with the patient record.
+- The C-CDA XML content is stored as a file on the patient's record.
+- The created document can be accessed via the FHIR DocumentReference endpoint.
 
 <br/>
 <br/>
