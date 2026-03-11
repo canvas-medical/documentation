@@ -37,7 +37,10 @@ The effect performs the following validations before execution:
 ### Basic CCD Creation
 
 ```python
+from canvas_sdk.effects import Effect
 from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
 
 
 class Protocol(BaseProtocol):
@@ -70,13 +73,18 @@ class Protocol(BaseProtocol):
 ### Creating a Referral Document
 
 ```python
+from canvas_sdk.effects import Effect
 from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
 
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
 
     def compute(self) -> list[Effect]:
+        referral_xml_content = "<ClinicalDocument>...</ClinicalDocument>"
+
         effect = CreateCCDA(
             patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
             content=referral_xml_content,
@@ -91,13 +99,18 @@ class Protocol(BaseProtocol):
 When `document_type` is not specified, it defaults to `CCD`:
 
 ```python
+from canvas_sdk.effects import Effect
 from canvas_sdk.effects.ccda import CreateCCDA
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
 
 
 class Protocol(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
 
     def compute(self) -> list[Effect]:
+        ccda_xml = "<ClinicalDocument>...</ClinicalDocument>"
+
         effect = CreateCCDA(
             patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
             content=ccda_xml,
