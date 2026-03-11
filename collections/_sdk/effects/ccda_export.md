@@ -102,7 +102,7 @@ When `document_type` is not specified, it defaults to `CCD`:
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.ccda import CreateCCDA
 from canvas_sdk.events import EventType
-from canvas_sdk.handlers import BaseHandlers
+from canvas_sdk.handlers import BaseHandler
 
 
 class MyHandler(BaseHandler):
