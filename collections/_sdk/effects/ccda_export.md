@@ -94,7 +94,7 @@ return [effect.apply()]
 
 ## Use Cases
 
-- **Clinical Document Exchange**: Generate CCDAs for sharing patient information with external systems or providers.
+- **Clinical Document Exchange**: Generate C-CDAs for sharing patient information with external systems or providers.
 - **Patient Summaries**: Create Continuity of Care Documents containing a patient's clinical summary.
 - **Referral Documentation**: Generate referral documents when referring patients to specialists.
 - **Integration with External Systems**: Produce standardized C-CDA documents for healthcare interoperability.
