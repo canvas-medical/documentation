@@ -28,7 +28,7 @@ all_docs = DocumentReference.objects.all()
 ```python
 from canvas_sdk.v1.data import DocumentReference
 
-patient_docs = DocumentReference.objects.for_patient("b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+patient_docs = DocumentReference.objects.for_patient("b80b1cdc2e6a4aca90ccebc02e683f35")
 ```
 
 ### By status
