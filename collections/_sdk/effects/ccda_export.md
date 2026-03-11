@@ -40,10 +40,10 @@ The effect performs the following validations before execution:
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
 
     def compute(self) -> list[Effect]:
@@ -76,10 +76,10 @@ class Protocol(BaseProtocol):
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
 
     def compute(self) -> list[Effect]:
@@ -102,10 +102,10 @@ When `document_type` is not specified, it defaults to `CCD`:
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.ccda import CreateCCDA
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandlers
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
 
     def compute(self) -> list[Effect]:
