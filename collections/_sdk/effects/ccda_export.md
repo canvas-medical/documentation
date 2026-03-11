@@ -15,7 +15,7 @@ This effect stores a C-CDA document, generating or otherwise sourcing that docum
 |----------------|----------------|----------|-----------------------------------------------------------------------------|
 | `patient_id`   | `str`          | Yes      | The patient's key (UUID).                                                   |
 | `content`      | `str`          | Yes      | The C-CDA XML content as a string. Must be valid XML.                        |
-| `document_type`| `DocumentType` | No       | Type of C-CDA document. Defaults to `DocumentType.CCD`.                      |
+| `document_type` | `DocumentType` | No       | Type of C-CDA document. Defaults to `DocumentType.CCD`.                      |
 
 ## DocumentType Enum
 
