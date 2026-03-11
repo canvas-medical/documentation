@@ -727,9 +727,9 @@ effects_module:
   - title: "Billing Line Items"
     url: /sdk/effect-billing-line-items/
     description: Add, modify, or remove billing codes on a note.
-  - title: "CCDA Export"
+  - title: "C-CDA Export"
     url: /sdk/effect-create-ccda-export/
-    description: Create a CCDA (Consolidated Clinical Document Architecture) document for a patient.
+    description: Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient.
   - title: "Claims"
     url: /sdk/effect-claims/
     description: Manage labels, update line items, move to a queue, or post a payment.

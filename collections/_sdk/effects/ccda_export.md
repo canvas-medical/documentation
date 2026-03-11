@@ -1,19 +1,21 @@
 ---
 title: "CreateCCDAExport"
 slug: "effect-create-ccda-export"
-excerpt: "Effect to create a CCDA (Consolidated Clinical Document Architecture) document for a patient."
+excerpt: "Effect to create a C-CDA (Consolidated Clinical Document Architecture) document for a patient."
 hidden: false
 ---
 
-Creates a CCDA document for a patient with the provided XML content. This effect allows plugins to generate and store CCDA XML documents, which can be used for clinical document exchange, patient summaries, or referrals.
+Creates a C-CDA document for a patient with the provided XML content. This effect allows plugins to generate and store C-CDA XML documents, which can be used for clinical document exchange, patient summaries, or referrals.
+
+This effect stores a C-CDA document, generating or otherwise sourcing that document is the responsibility of the plugin.
 
 ## Attributes
 
 | Name           | Type           | Required | Description                                                                 |
 |----------------|----------------|----------|-----------------------------------------------------------------------------|
 | `patient_id`   | `str`          | Yes      | The patient's key (UUID).                                                   |
-| `content`      | `str`          | Yes      | The CCDA XML content as a string. Must be valid XML.                        |
-| `document_type`| `DocumentType` | No       | Type of CCDA document. Defaults to `DocumentType.CCD`.                      |
+| `content`      | `str`          | Yes      | The C-CDA XML content as a string. Must be valid XML.                        |
+| `document_type`| `DocumentType` | No       | Type of C-CDA document. Defaults to `DocumentType.CCD`.                      |
 
 ## DocumentType Enum
 
@@ -95,11 +97,11 @@ return [effect.apply()]
 - **Clinical Document Exchange**: Generate CCDAs for sharing patient information with external systems or providers.
 - **Patient Summaries**: Create Continuity of Care Documents containing a patient's clinical summary.
 - **Referral Documentation**: Generate referral documents when referring patients to specialists.
-- **Integration with External Systems**: Produce standardized CCDA documents for healthcare interoperability.
+- **Integration with External Systems**: Produce standardized C-CDA documents for healthcare interoperability.
 
 ## Notes
 
-- The created CCDA is stored and associated with the patient record.
+- The created C-CDA is stored and associated with the patient record.
 
 <br/>
 <br/>
