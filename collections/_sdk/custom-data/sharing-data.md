@@ -25,76 +25,9 @@ then it must do so via API calls.
 
 ### Namespace Lifecycle
 
-The lifecycle of a namespace depends on whether a plugin is creating a new namespace or joining an existing one.
+For a full overview of how namespaces are created, managed, and cleaned up during development, see [Namespace Lifecycle](/sdk/custom-data-namespace-lifecycle/).
 
-#### Installation Flow
-
-[//]: # (COMMENTED OUT SINCE JEKYLL DOESN'T SUPPORT MERMAID)
-[//]: # (```mermaid)
-[//]: # (flowchart TD)
-[//]: # (    A[Plugin Installation Begins] --> B{Access level?})
-[//]: # ()
-[//]: # (    B -->|read_write| C{Namespace exists?})
-[//]: # (    B -->|read| D{Namespace exists?})
-[//]: # ()
-[//]: # (    C -->|No| E[Create PostgreSQL Schema])
-[//]: # (    E --> F[Generate Authentication Keys])
-[//]: # (    F --> G[Store Keys as Plugin Secrets])
-[//]: # (    G --> H[Create Custom Tables])
-[//]: # (    H --> I[✅ Plugin Installed Successfully])
-[//]: # ()
-[//]: # (    C -->|Yes| J{Has valid read_write key?})
-[//]: # (    J -->|Yes| K[Create Custom Tables])
-[//]: # (    J -->|No| L[❌ Installation Fails])
-[//]: # (    K --> I)
-[//]: # ()
-[//]: # (    D -->|No| M[❌ Installation Fails])
-[//]: # (    D -->|Yes| N{Has valid access key?})
-[//]: # (    N -->|Yes| O[Ready for Read Access])
-[//]: # (    N -->|No| P[❌ Installation Fails])
-[//]: # (    O --> I)
-[//]: # (```)
-
-<img src="/assets/images/sdk/custom-data/installation_flowchart.jpg" width="80%">
-
-#### Creating a New Namespace
-
-The **first plugin** installed with a given namespace name automatically creates it. This happens when:
-
-1. The manifest declares a `custom_data.namespace` that doesn't yet exist
-2. The plugin declares `"access": "read_write"`
-
-When the namespace is created:
-
-1. **Schema Creation** - A PostgreSQL schema is created with the namespace name
-2. **Key Generation** - Two authentication keys are generated:
-   - `read_access_key` - Grants read-only access to the namespace
-   - `read_write_access_key` - Grants full read/write access
-3. **Secret Storage** - The keys are automatically stored as secrets in the creating plugin
-4. **Table Creation** - Any CustomModel tables defined by the plugin are created
-
-> **Note:** The creating plugin does not need to provide an access key—it generates the keys and is inherently trusted.
-
-#### Joining an Existing Namespace
-
-Subsequent plugins that want to access an existing namespace must:
-
-1. **Obtain the access key** from the namespace creator (see [Discovering Access Keys](#discovering-access-keys))
-2. **Declare the namespace** in their manifest with the appropriate access level
-2. **Configure the secret** in using the `--secret` parameter during installation via the CLI.
-
-The installation process validates the access key:
-
-| Declared Access | Namespace Exists | Key Provided | Result |
-|-----------------|------------------|--------------|--------|
-| `read` | No | N/A | ❌ Installation fails |
-| `read` | Yes | Valid `read_access_key` | ✅ Plugin installed with read access |
-| `read` | Yes | Invalid or missing | ❌ Installation fails |
-| `read_write` | No | N/A | ✅ Creates namespace and tables |
-| `read_write` | Yes | Valid `read_write_access_key` | ✅ Plugin installed, tables created |
-| `read_write` | Yes | Invalid or missing | ❌ Installation fails |
-
-#### Discovering Access Keys
+### Discovering Access Keys
 
 After the namespace is created, you can find the generated keys in the **Canvas admin UI**:
 
@@ -110,7 +43,7 @@ Share these keys securely with developers of other plugins that need access:
 
 > **Important:** Store these keys in a secure location outside of Canvas. If the keys are accidentally removed from the manifest's `secrets` array, they will be deleted upon the next installation.
 
-#### Configuring Plugin Access
+### Configuring Plugin Access
 
 Each plugin that joins a namespace must:
 
@@ -460,6 +393,7 @@ class MyAPI(SimpleAPI):
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Introduction to custom data storage
+- [Namespace Lifecycle](/sdk/custom-data-namespace-lifecycle/) - Managing namespaces during development
 - [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value storage
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [CustomModels](/sdk/custom-data-custom-models/) - Django models for structured data
