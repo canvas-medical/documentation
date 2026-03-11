@@ -39,27 +39,32 @@ The effect performs the following validations before execution:
 ```python
 from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
 
-# Sample C-CDA XML content
-ccda_xml = """<?xml version="1.0" encoding="UTF-8"?>
-<ClinicalDocument xmlns="urn:hl7-org:v3">
-    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
-    <templateId root="2.16.840.1.113883.10.20.22.1.1"/>
-    <id root="document-id"/>
-    <code code="34133-9" displayName="Summarization of Episode Note"
-          codeSystem="2.16.840.1.113883.6.1"/>
-    <title>Patient Summary</title>
-    <effectiveTime value="20240101120000"/>
-    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
-    <languageCode code="en-US"/>
-</ClinicalDocument>"""
 
-effect = CreateCCDA(
-    patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    content=ccda_xml,
-    document_type=DocumentType.CCD
-)
+class Protocol(BaseProtocol):
+    RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
 
-return [effect.apply()]
+    def compute(self) -> list[Effect]:
+        # Sample C-CDA XML content
+        ccda_xml = """<?xml version="1.0" encoding="UTF-8"?>
+        <ClinicalDocument xmlns="urn:hl7-org:v3">
+            <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+            <templateId root="2.16.840.1.113883.10.20.22.1.1"/>
+            <id root="document-id"/>
+            <code code="34133-9" displayName="Summarization of Episode Note"
+                  codeSystem="2.16.840.1.113883.6.1"/>
+            <title>Patient Summary</title>
+            <effectiveTime value="20240101120000"/>
+            <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+            <languageCode code="en-US"/>
+        </ClinicalDocument>"""
+
+        effect = CreateCCDA(
+            patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            content=ccda_xml,
+            document_type=DocumentType.CCD,
+        )
+
+        return [effect.apply()]
 ```
 
 ### Creating a Referral Document
@@ -67,13 +72,18 @@ return [effect.apply()]
 ```python
 from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
 
-effect = CreateCCDA(
-    patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    content=referral_xml_content,
-    document_type=DocumentType.REFERRAL
-)
 
-return [effect.apply()]
+class Protocol(BaseProtocol):
+    RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
+
+    def compute(self) -> list[Effect]:
+        effect = CreateCCDA(
+            patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            content=referral_xml_content,
+            document_type=DocumentType.REFERRAL,
+        )
+
+        return [effect.apply()]
 ```
 
 ### Using Default Document Type
@@ -83,13 +93,18 @@ When `document_type` is not specified, it defaults to `CCD`:
 ```python
 from canvas_sdk.effects.ccda import CreateCCDA
 
-effect = CreateCCDA(
-    patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    content=ccda_xml
-)
 
-# document_type defaults to DocumentType.CCD
-return [effect.apply()]
+class Protocol(BaseProtocol):
+    RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
+
+    def compute(self) -> list[Effect]:
+        effect = CreateCCDA(
+            patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            content=ccda_xml,
+        )
+
+        # document_type defaults to DocumentType.CCD
+        return [effect.apply()]
 ```
 
 ## Use Cases
