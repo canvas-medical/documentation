@@ -912,6 +912,9 @@ data_module:
   - title: "Device"
     url: /sdk/data-device/
     description: Type of a manufactured item that is used in the provision of healthcare.
+  - title: "DocumentReference"
+    url: /sdk/data-document-reference/
+    description: References to documents stored in Canvas, with presigned URL support.
   - title: "EligibilitySummary"
     url: /sdk/data-coverage/#eligilibitysummary/
     description: Summary of copay and coinsurance for a Coverage.
@@ -1008,6 +1011,9 @@ data_module:
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.
+  - title: "Snapshot"
+    url: /sdk/data-snapshot/
+    description: Images captured via the Canvas iOS application.
   - title: "SpecialtyReportTemplate"
     url: /sdk/data-specialty-report-template/
     description: Templates for specialty and referral reports, including specialty taxonomy codes.
