@@ -65,17 +65,19 @@ of `text`, `integer`, `numeric(3,8)`, `boolean`, `jsonb`,`date`, and `timestamp 
 
 ## Schema Rules and Constraints
 
-To maintain safety on potentially large datasets, constraints on CustomModels are not enforced within the database. 
-They must be enforced within plugin code.
+To maintain safety on potentially large datasets, most constraints on CustomModels are not enforced within the database
+and must be enforced within plugin code.
 
-Unsupported contraints
+Unsupported constraints:
 * `not null`
-* `unique`
 * `max_length`
-* `references`
+* `references` (foreign key constraints)
 
-If applied to an existing dataset, some constraints could result in a full table rewrite operation, or prevent
+If applied to an existing dataset, these constraints could result in a full table rewrite operation, or prevent
 plugin installation.
+
+Uniqueness constraints **are** supported via `UniqueConstraint` in `Meta.constraints`.
+See [Uniqueness Constraints](#uniqueness-constraints) below.
 
 ### Field Types
 
@@ -91,7 +93,7 @@ The Canvas SDK provides Django-based field types for defining your models:
 | `DateTimeField`   | Date and time values      | `auto_now`, `auto_now_add`, `default`    |
 | `JSONField`       | JSON-serializable data    | `default`                                |
 | `ForeignKey`      | Many-to-one relationship  | `related_name`, `on_delete=DO_NOTHING`   |
-| `OneToOneField`   | One-to-one relationship   | `related_name`, `on_delete=DO_NOTHING`   |
+| `OneToOneField`   | One-to-one relationship   | `related_name`, `on_delete=DO_NOTHING`, `primary_key` |
 
 If `default` is supplied it will be applied by the Django ORM, and will not be a PostgreSQL default. 
 As a result, only new records will receive the value, and it will not cause a mass edit of existing records.
@@ -136,6 +138,71 @@ class ProviderQualification(CustomModel):
 - Index fields used in `filter()` and `order_by()`
 - Create composite indexes for common multi-field queries
 - Foreign key fields are indexed automatically
+
+### Uniqueness Constraints
+
+Use `UniqueConstraint` in `Meta.constraints` to enforce uniqueness on one or more columns.
+Uniqueness is enforced at the database level via a `CREATE UNIQUE INDEX`.
+
+```python
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import TextField, UniqueConstraint
+
+
+class Specialty(CustomModel):
+
+    name = TextField()
+    code = TextField()
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["code"], name="uq_specialty_code"),
+        ]
+```
+
+Composite uniqueness (multiple columns together must be unique):
+
+```python
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import DO_NOTHING, ForeignKey, TextField, UniqueConstraint
+from canvas_sdk.v1.data import Staff, ModelExtension
+
+
+class CustomStaff(Staff, ModelExtension):
+    pass
+
+class StaffCertification(CustomModel):
+
+    staff = ForeignKey(CustomStaff, to_field="dbid", on_delete=DO_NOTHING, related_name="%(app_label)s__certifications")
+    certification_code = TextField()
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["staff_id", "certification_code"], name="uq_staff_cert"),
+        ]
+```
+
+Each `UniqueConstraint` requires a `name` parameter — this is a standard Django requirement. Choose a descriptive
+name that won't collide with other constraints in your plugin.
+
+**Important:** Do not use `unique=True` on individual fields. The SDK will reject it with
+an error directing you to use `UniqueConstraint` instead. This is because `unique=True` modifies
+the column definition itself, and our DDL pipeline cannot retroactively alter existing columns — meaning
+a `unique=True` added after the initial deployment would silently have no effect.
+
+**Constraint placement:** `UniqueConstraint` must be placed in `Meta.constraints`, not `Meta.indexes`.
+Although they are structurally similar to indexes, placing a `UniqueConstraint` in `Meta.indexes` would
+create a non-unique index. The SDK validates this and raises an error if it detects the mistake.
+
+**Lifecycle:** Unique indexes are created with `CREATE UNIQUE INDEX IF NOT EXISTS`, making them safe to
+add at any time — they are applied idempotently on every deployment. However, if the table already
+contains duplicate values for the constrained columns, the index creation will fail. Clean up duplicates
+before adding the constraint.
+
+| Operation               | Allowed | Explanation                                                                                                     |
+|-------------------------|---------|-----------------------------------------------------------------------------------------------------------------|
+| Add UniqueConstraint    | Yes     | A unique index will be created if it does not already exist.                                                    |
+| Remove UniqueConstraint | No      | Remove the constraint from your model and it will be ignored, but the index will remain in the database.        |
 
 ---
 
@@ -294,7 +361,7 @@ You can name your extension class as you wish, but it **must**:
 
 ## One-to-One Relationships
 
-A one-to-one relationship links one record in a model to exactly one record in another model. 
+A one-to-one relationship links one record in a model to exactly one record in another model.
 Use `OneToOneField` to define this relationship.
 
 ### Basic One-to-One
@@ -321,9 +388,45 @@ class Biography(CustomModel):
     )
 ```
 
-The above will create a table with a `serial` primary key, two `text` columns, a `numeric(1,3)` column, a `timestamptz` column, 
+The above will create a table with a `serial` primary key, two `text` columns, a `numeric(1,3)` column, a `timestamptz` column,
 and an `integer` column named `staff_id` that contains a foreign key into the SDK `Staff` model. The `CustomStaff`
 class will contain the reverse mapping via `related_name`.
+
+**Uniqueness:** A `OneToOneField` implies that the foreign key column is unique — each target record can be
+referenced by at most one row. The SDK automatically creates a `UNIQUE INDEX` on the foreign key column
+to enforce this at the database level. You do not need to add a separate `UniqueConstraint` for it.
+
+### One-to-One with `primary_key=True`
+
+A `OneToOneField` can serve as the table's primary key by setting `primary_key=True`. This replaces
+the default auto-incrementing `dbid` column — the foreign key column becomes the sole primary key.
+
+This pattern is useful when the child record has a strict 1:1 relationship with its parent and
+there is no need for a separate surrogate key.
+
+```python
+from canvas_sdk.v1.data import Patient, ModelExtension
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import DO_NOTHING, JSONField, OneToOneField
+
+
+class CustomPatient(Patient, ModelExtension):
+    pass
+
+class PatientPreferences(CustomModel):
+
+    patient = OneToOneField(
+        CustomPatient, to_field="dbid", on_delete=DO_NOTHING,
+        related_name="preferences", primary_key=True
+    )
+    preferences = JSONField(default=dict)
+```
+
+The above will create a table with a single `integer` primary key column `patient_id` (no `dbid` column)
+and a `jsonb` column. The primary key inherently enforces uniqueness, so no additional unique index is created.
+
+**Note:** `primary_key=True` is only supported on `OneToOneField`. Setting it on a `ForeignKey` or any
+other field type will raise an error — use a `OneToOneField` instead when you need a shared primary key.
 
 ### Creating One-to-One Records
 
@@ -640,14 +743,18 @@ database system-specific nuances, unsatisfied foreign key constraints due to dat
 
 The Canvas SDK Custom Data feature aims to simplify maintenance, while sacrificing some rigor found in a full migration system like Django's.
 
-| Operation    | Allowed | Explanation                                                                                                                                                                            |
-|--------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Create Model | Yes     | A table corresponding to your CustomModel will be created if it does not exist. An autoincrementing column named `dbid` will be its sole attribute.                                    |
-| Add Field    | Yes     | A column corresponding to a Field declared within your CustomModel will be added to the table if it does not exist. It will be nullable, without defaults to eliminate table rewrites. |
-| Alter Field  | No      | This can cause a table rewrite, and requires a full migration metadata system. Create a new Field in your model. Copy data from old to new.                                            |
-| Drop Field   | No      | This will cause a table rewrite, and requires a full migration metadata system. Remove the Field from your model and it will be ignored.                                               |
-| Alter Model  | No      | Requires a full migration metadata system. Create a new Model in your plugin. Copy data from old to new.                                                                               |
-| Drop Model   | No      | Requires a full migration metadata system. Remove the model from your plugin and it will be ignored.                                                                                   |
+| Operation                | Allowed | Explanation                                                                                                                                                                            |
+|--------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Create Model             | Yes     | A table corresponding to your CustomModel will be created if it does not exist. An autoincrementing column named `dbid` will be its sole attribute.                                    |
+| Add Field                | Yes     | A column corresponding to a Field declared within your CustomModel will be added to the table if it does not exist. It will be nullable, without defaults to eliminate table rewrites. |
+| Add UniqueConstraint     | Yes     | A unique index will be created if it does not already exist. Fails if existing data contains duplicates for the constrained columns.                                                   |
+| Add Index                | Yes     | An index will be created if it does not already exist.                                                                                                                                 |
+| Alter Field              | No      | This can cause a table rewrite, and requires a full migration metadata system. Create a new Field in your model. Copy data from old to new.                                            |
+| Drop Field               | No      | This will cause a table rewrite, and requires a full migration metadata system. Remove the Field from your model and it will be ignored.                                               |
+| Drop UniqueConstraint    | No      | Remove the constraint from your model and it will be ignored, but the unique index will remain in the database.                                                                        |
+| Drop Index               | No      | Remove the index from your model and it will be ignored, but the index will remain in the database.                                                                                    |
+| Alter Model              | No      | Requires a full migration metadata system. Create a new Model in your plugin. Copy data from old to new.                                                                               |
+| Drop Model               | No      | Requires a full migration metadata system. Remove the model from your plugin and it will be ignored.                                                                                   |
 
 ### Best Practices 
 1. Emphasize [local development](#local-db-seeding-via-run-plugin) over use of a development EMR instance.
@@ -824,10 +931,10 @@ for specialty in specialty_counts:
 
 ### Data Integrity
 
-1. **Ensure uniqueness of records** - Prevent duplicate data by checking for the presence of a record before creating a new one
-3. **Validate in model methods** - Add custom validation in `clean()` method
-4. **Use transactions** - Wrap multiple operations in atomic transactions
-5. **Handle DoesNotExist** - Always catch exceptions when using `get()`
+1. **Enforce uniqueness with UniqueConstraint** - Use `UniqueConstraint` in `Meta.constraints` to prevent duplicate data at the database level
+2. **Validate in model methods** - Add custom validation in `clean()` method
+3. **Use transactions** - Wrap multiple operations in atomic transactions
+4. **Handle DoesNotExist** - Always catch exceptions when using `get()`
 
 ### Testing
 
