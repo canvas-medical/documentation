@@ -20723,12 +20723,13 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
       <td>Context object</td>
     </tr>
     <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
       <td><pre>"patient":
         "id": str
       "group": 
         "id": str
       </pre></td>
-      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20744,12 +20745,12 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
       <td>Context object</td>
     </tr>
     <tr>
-     <td><pre>"patient":
+     <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
         "id": str
       "group": 
-        "id": str
-      </pre></td>
-      <td><pre>empty</pre></td>
+        "id": str</pre></td>
     </tr>
   </tbody>
 </table>
