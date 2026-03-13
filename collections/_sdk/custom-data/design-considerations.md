@@ -6,53 +6,44 @@ slug: "custom-data-design-considerations"
 Choosing the right storage technique prevents performance problems, data inconsistencies, and unnecessary code complexity
 down the road. This page describes common anti-patterns for each technique and recommends alternatives.
 
-For an overview of all three techniques, see the [Custom Data Overview](/sdk/custom-data/).
+For an overview of available techniques, see the [Custom Data Overview](/sdk/custom-data/).
 
-## CustomAttributes — When to Reconsider
+## Extending SDK Models with Custom Data
 
-CustomAttributes store key-value pairs in an [EAV](https://en.wikipedia.org/wiki/Entity%E2%80%93attribute%E2%80%93value_model)
-table. Each attribute is a separate row joined to the parent model. This is lightweight for a handful of independent
-metadata fields but breaks down when used beyond that scope.
+To attach custom fields to existing SDK models (Patient, Staff, etc.), use a
+[CustomModel](/sdk/custom-data-custom-models/) with a `OneToOneField` pointing at the SDK model.
+This gives you typed, indexed columns with full ORM support — `select_related`, reverse lookups
+via `related_name`, and compound filtering in a single query.
 
-### Building a shadow schema
+```python
+from canvas_sdk.v1.data import Patient, ModelExtension
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import BooleanField, DO_NOTHING, IntegerField, OneToOneField, TextField
 
-If you find yourself setting 5+ related attributes on the same model instance — for example, `street`, `city`,
-`state`, `zip`, and `country` on a Patient — you are recreating a table row across separate EAV entries. Compound
-queries like "patients where `risk_score > 80 AND care_program = 'diabetes' AND language = 'Spanish'`" require a
-separate JOIN per condition, and performance degrades linearly with each additional filter.
 
-**Use instead:** A [CustomModel](/sdk/custom-data-custom-models/) with typed, indexed columns handles compound
-queries in a single table scan.
+class CustomPatient(Patient, ModelExtension):
+    pass
 
-### Encoding relationships as strings
+class PatientProfile(CustomModel):
+    patient = OneToOneField(
+        CustomPatient, to_field="dbid", on_delete=DO_NOTHING,
+        related_name="profile"
+    )
+    preferred_language = TextField()
+    risk_score = IntegerField()
+    is_vip = BooleanField()
+```
 
-Storing `patient.set_attribute("referring_provider_id", "abc123")` loses JOINs, reverse lookups, `select_related`,
-and referential integrity. You can't traverse the relationship with Django's ORM — every lookup requires manual
-code to resolve the string ID.
+CustomModels with `OneToOneField` are preferred because they offer typed columns, indexing, compound queries,
+and a schema that is visible and self-documenting. See [Extending SDK Models](/sdk/custom-data-extending-sdk-models/)
+for details on proxy models and `related_name` namespacing.
 
-**Use instead:** A [CustomModel](/sdk/custom-data-custom-models/) with a `ForeignKey` gives you ORM relationship
-traversal, reverse lookups via `related_name`, and `select_related`/`prefetch_related` for efficient loading.
-
-### High-write-frequency counters
-
-Each `set_attribute` call performs a full `INSERT ... ON CONFLICT DO UPDATE`. For a counter incremented on every
-event, this is heavier than necessary.
-
-**Use instead:** A [CustomModel](/sdk/custom-data-custom-models/) with an integer field supports atomic
-increments via `Model.objects.filter(...).update(counter=F('counter') + 1)` — a single SQL statement with no
-read required.
-
-### Data consumed by reports or analytics
-
-CustomAttributes live in an EAV table. Extracting a "flat" view for analytics requires pivoting rows into columns,
-which is awkward and slow in SQL. Downstream systems expecting conventional table structures will struggle.
-
-**Use instead:** [CustomModel](/sdk/custom-data-custom-models/) columns map directly to report columns with no
-transformation needed.
+For truly simple, one-off metadata that doesn't justify a table (e.g., a single configuration flag),
+an [AttributeHub](/sdk/custom-data-attribute-hubs/) can be a lighter-weight alternative.
 
 ## AttributeHubs — When to Reconsider
 
-AttributeHubs use the same EAV storage as CustomAttributes but are standalone — not attached to any Canvas model.
+AttributeHubs use EAV (entity-attribute-value) storage and are standalone — not attached to any Canvas model.
 They are convenient for one-off state and configuration, but the same EAV limitations apply when used at scale.
 
 ### Modeling entities with relationships
@@ -95,12 +86,11 @@ removed.
 
 ### Simple metadata on existing models
 
-Don't create a `PatientFlags` CustomModel with a `OneToOneField` to Patient just to store
-`is_vip = BooleanField()`. The table, foreign key, and model definition are overhead for what a single
-`patient.set_attribute("is_vip", True)` accomplishes with no schema.
-
-**Use instead:** [CustomAttributes](/sdk/custom-data-custom-attributes/) for a small number of independent
-metadata fields on existing SDK models.
+For a small number of independent metadata fields on an SDK model (e.g., a single `is_vip` flag on
+Patient), a full CustomModel with `OneToOneField` is the recommended approach — it gives you typed
+columns, indexing, and compound queries. However, if the overhead of a table feels excessive for
+truly one-off data, an [AttributeHub](/sdk/custom-data-attribute-hubs/) keyed by entity type and ID
+can serve as a lightweight alternative.
 
 ### Highly dynamic or schemaless data
 
@@ -131,12 +121,12 @@ can hold loosely structured data until access patterns stabilize and justify a r
 
 | Situation | Recommended Approach |
 |-----------|---------------------|
-| A few metadata flags on Patient or Staff | CustomAttributes |
-| Provider preferences (notification settings, display options) | CustomAttributes |
-| Rapid prototyping before committing to a schema | CustomAttributes |
+| Custom fields on Patient, Staff, or other SDK models | CustomModel with `OneToOneField` |
+| Provider preferences (notification settings, display options) | CustomModel with `OneToOneField` |
 | API sync cursors, external system state | AttributeHub |
 | Plugin configuration or feature flags | AttributeHub |
-| One-off or small-collection key-value data unrelated to a Canvas model | AttributeHub |
+| One-off key-value data unrelated to a Canvas model | AttributeHub |
+| Rapid prototyping before committing to a schema | AttributeHub |
 | Structured entities with a stable, known schema | CustomModel |
 | Relationships between entities (foreign keys, join tables) | CustomModel |
 | Data requiring compound filtering, sorting, or aggregation | CustomModel |
@@ -147,7 +137,7 @@ can hold loosely structured data until access patterns stabilize and justify a r
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Introduction to custom data storage
-- [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value storage
+- [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) - Proxy models and referencing SDK models
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [CustomModels](/sdk/custom-data-custom-models/) - Django models for structured data
 - [Caching API](/sdk/caching) - Auto-expiring transient data

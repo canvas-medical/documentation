@@ -338,25 +338,25 @@ ProviderQualification.objects.all().delete()
 
 ## Extending the Canvas Data Model
 
-CustomModels may reference core SDK models by extending SDK models with `ModelExtension`. This allows you to
-create foreign key relationships from your custom tables to Canvas models, and also enables CustomAttribute support
-on the extended model instances.
-
-Extend existing SDK models by subclassing the SDK model and `ModelExtension`:
+CustomModels may reference core SDK models by creating a proxy model with `ModelExtension`.
+This gives each plugin its own private handle on a shared SDK model, keeping `related_name`
+attributes isolated across plugins.
 
 ```python
 from canvas_sdk.v1.data import Staff, ModelExtension
 
 
 class CustomStaff(Staff, ModelExtension):
-    """Extends Staff with custom attribute support and 
-    will allow `related_name` reverse mappings from CustomModels."""
     pass
 ```
 
-You can name your extension class as you wish, but it **must**:
-1. subclass a core model
-1. subclass `ModelExtension`
+No new table is created — `CustomStaff` shares the `Staff` table and behaves identically for
+queries. Point your `ForeignKey` or `OneToOneField` at the proxy to get clean, un-namespaced
+reverse lookups.
+
+For a full explanation of why proxy models exist, how `related_name` namespacing works, and
+how to reference SDK models directly without a proxy, see
+[Extending SDK Models](/sdk/custom-data-extending-sdk-models/).
 
 ---
 
@@ -764,7 +764,8 @@ staff = ManyToManyField(
 ```
 
 This is the same namespacing requirement that applies to `ForeignKey` and `OneToOneField` when
-targeting SDK models.
+targeting SDK models. See [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) for a
+full explanation of when namespacing is required and how proxy models avoid it.
 
 ### Creating Many-to-Many Records
 
@@ -903,16 +904,15 @@ The Canvas SDK Custom Data feature aims to simplify maintenance, while sacrifici
 
 ### Combining Approaches
 
-You can combine Custom Models with CustomAttributes for maximum flexibility:
+You can combine CustomModels with [AttributeHubs](/sdk/custom-data-attribute-hubs/) for maximum flexibility:
 
 ```python
-from canvas_sdk.v1.data.custom import CustomModel
-from django.db.models import DO_NOTHING, ForeignKey, TextField 
-from canvas_sdk.v1.data import Staff, ModelExtension
+from canvas_sdk.v1.data.base import CustomModel
+from canvas_sdk.v1.data import AttributeHub, Staff, ModelExtension
+from django.db.models import DO_NOTHING, ForeignKey, TextField
 
 
 class CustomStaff(Staff, ModelExtension):
-    """Extends Staff with custom attribute support."""
     pass
 
 
@@ -935,10 +935,8 @@ class StaffDepartment(CustomModel):
     role = TextField()
 
 
-# Usage: Combine structured relationships with flexible attributes
+# Use CustomModels for structured data with relationships
 staff = CustomStaff.objects.get(id="staff-uuid")
-
-# Use Custom Model for structured data
 dept = Department.objects.get(code="CARDIO")
 StaffDepartment.objects.create(
     staff=staff,
@@ -946,8 +944,12 @@ StaffDepartment.objects.create(
     role="Lead Physician"
 )
 
-# Use CustomAttributes for flexible data
-staff.set_attributes({
+# Use an AttributeHub for flexible, unstructured data
+hub, created = AttributeHub.objects.get_or_create(
+    type="staff_preferences",
+    id=f"staff:{staff.id}"
+)
+hub.set_attributes({
     "pager_number": "555-1234",
     "preferred_contact": "email",
     "office_hours": {"monday": "9-5", "tuesday": "9-5"}
@@ -1085,8 +1087,8 @@ for specialty in specialty_counts:
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
+- [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) - Proxy models, `related_name` namespacing, and referencing SDK models
 - [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
-- [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples

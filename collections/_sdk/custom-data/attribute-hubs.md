@@ -5,9 +5,10 @@ slug: "custom-data-attribute-hubs"
 
 ## Overview
 
-`AttributeHubs` provide a simple mechanism for storing arbitrary key-value data that doesn't belong to existing models. 
+`AttributeHubs` provide a simple mechanism for storing arbitrary data that doesn't belong to existing models,
+or does not conform to a traditional database schema. An AttributeHub is merely a collection of named attributes with values.
 This approach is ideal for cross-cutting concerns that span multiple models, temporary data storage, external system state tracking, 
-or plugin-specific configuration.
+data model prototyping, or plugin-specific configuration.
 
 **Best for:**
 - Cross-cutting state that spans multiple models (sync cursors, external IDs)
@@ -113,6 +114,55 @@ calorie_goal = hub.get_attribute("calorie_goal")
 notes = hub.get_attribute("daily_notes")  # Returns None if not set
 ```
 
+## Supported Value Types
+
+Attributes are automatically stored in appropriately typed database columns. The column is
+selected based on the Python type of the value you pass to `set_attribute()`:
+
+```python
+from datetime import date, datetime
+from canvas_sdk.v1.data import AttributeHub
+
+hub = AttributeHub.objects.get(type="staff_profile", id="staff_id:abc123")
+
+# String values
+hub.set_attribute("bio", "Board-certified cardiologist")
+
+# Integer values
+hub.set_attribute("patient_capacity", 100)
+
+# Boolean values
+hub.set_attribute("accepting_patients", True)
+
+# Decimal values
+hub.set_attribute("rating", 4.8)
+
+# Date values
+hub.set_attribute("creation_date", date.today())
+
+# Datetime values
+hub.set_attribute("last_updated", datetime.now())
+
+# JSON/Complex objects (dicts, lists)
+hub.set_attribute("preferences", {
+    "notification_email": True,
+    "notification_sms": False
+})
+```
+
+| Field Name        | Python Type                  | Django Field Type | PostgreSQL Data Type       |
+|-------------------|------------------------------|-------------------|----------------------------|
+| `text_value`      | `str`                        | `TextField`       | `text`                     |
+| `int_value`       | `int`                        | `IntegerField`    | `integer`                  |
+| `bool_value`      | `bool`                       | `BooleanField`    | `boolean`                  |
+| `decimal_value`   | `float`, `Decimal`           | `DecimalField`    | `decimal(20,10)`           |
+| `date_value`      | `date`                       | `DateField`       | `date`                     |
+| `timestamp_value` | `datetime`                   | `DateTimeField`   | `timestamp with time zone` |
+| `json_value`      | `dict`, `list`               | `JSONField`       | `jsonb`                    |
+
+These typed columns can be referenced directly in queries. See [When to Use Explicit Field Names](#when-to-use-explicit-field-names)
+for cases where you need to target a specific column.
+
 ## Querying AttributeHubs by Attribute Values
 
 Find AttributeHubs based on the values stored in their attributes using `custom_attributes__value`.
@@ -144,7 +194,7 @@ active_flags = AttributeHub.objects.filter(
 )
 ```
 
-You can also filter CustomAttribute objects directly, for example when working with a hub's
+You can also filter attribute objects directly, for example when working with a hub's
 related attributes:
 
 ```python
@@ -157,21 +207,102 @@ high_cal_attrs = hub.custom_attributes.filter(value__gte=500)
 ### When to Use Explicit Field Names
 
 In most cases `custom_attributes__value` (or `value` on a hub's related attributes) is sufficient.
-However, you must reference the typed column directly for:
+However, you must reference the typed column directly in the following cases:
 
-- **JSON containment queries** (`json_value__contains`) — `value__contains` with a string targets
-  `text_value`, not `json_value`. Use `json_value__contains` for PostgreSQL `@>` JSON containment.
-- **Custom JSON lookups** like `json_value__has_key` or key-path access (`json_value__foods__0__name`).
-- **Ambiguous types** — when the Python type of your filter value doesn't match the intended storage
-  column (e.g., passing a string but querying `json_value`).
-- **Null checks across relations** — `custom_attributes__value=None` and
+- **JSON containment queries.** PostgreSQL's `@>` containment operator on `jsonb` has different
+  semantics from the `LIKE '%...%'` that `__contains` produces on a text column. Since `value__contains`
+  with a string argument targets `text_value`, you must use `json_value__contains` to perform JSON
+  containment checks:
+
+  ```python
+  from django.db.models import Q
+
+  # Find hubs whose "specialties" JSON array contains "Cardiology"
+  AttributeHub.objects.filter(
+      type="staff_profile",
+      custom_attributes__name="specialties",
+      custom_attributes__json_value__contains="Cardiology",
+  )
+
+  # OR across multiple JSON values
+  specialty_filters = Q()
+  for specialty in ["Cardiology", "Internal Medicine"]:
+      specialty_filters |= Q(custom_attributes__json_value__contains=specialty)
+
+  AttributeHub.objects.filter(
+      Q(custom_attributes__name="specialties") & specialty_filters
+  )
+  ```
+
+- **Custom JSON lookups.** Django's `JSONField` supports lookups like `__has_key`, `__contained_by`,
+  and key-path access (`json_value__key__nested`). These are only available on the `json_value`
+  column directly.
+
+- **Ambiguous Python types.** The `value` rewriter uses `type()` (not `isinstance()`) to select
+  the column. If you pass a string but intend to query `json_value` (or vice versa), the rewriter
+  will target the wrong column. Use the explicit field name when the Python type of your filter
+  value doesn't match the storage column.
+
+- **Null checks across relations.** `custom_attributes__value=None` and
   `custom_attributes__value__isnull` are not supported on `AttributeHub.objects.filter(...)` and
-  will raise `TypeError`. Use the explicit column name instead (e.g.,
-  `custom_attributes__text_value__isnull=True`). Direct queries on a hub's own attributes
-  (`hub.custom_attributes.filter(value__isnull=True)`) are unaffected.
+  will raise `TypeError`. Null checks require testing every typed column, which produces unreliable
+  results when combined with Django's cross-relation JOIN machinery. Use explicit column names instead:
 
-See [CustomAttributes — When to Use Explicit Field Names](/sdk/custom-data-custom-attributes/#when-to-use-explicit-field-names)
-for a full discussion and examples.
+  ```python
+  # Check whether a specific column is null across the relation
+  AttributeHub.objects.filter(
+      type="staff_profile",
+      custom_attributes__name="specialty",
+      custom_attributes__text_value__isnull=True,
+  )
+  ```
+
+  Note that `value=None` and `value__isnull` *are* supported for direct queries on a hub's own
+  attributes (e.g., `hub.custom_attributes.filter(value__isnull=True)`), where no cross-relation
+  join is involved.
+
+Refer to [Supported Value Types](#supported-value-types) for the mapping between Python types and
+database columns.
+
+## Optimizing Queries with Prefetch
+
+By default, the AttributeHub manager prefetches all custom attributes when you query hubs. This means
+accessing `hub.get_attribute(...)` after a query does not trigger additional database queries:
+
+```python
+from canvas_sdk.v1.data import AttributeHub
+
+# All custom attributes are prefetched automatically
+hubs = AttributeHub.objects.filter(type="meal_entry")
+for hub in hubs:
+    # No additional queries — attributes are already loaded
+    meal_type = hub.get_attribute("meal_type")
+    calories = hub.get_attribute("calories")
+```
+
+### Prefetching Specific Attributes
+
+When a hub has many attributes but you only need a few, use `with_only()` to prefetch only the
+attributes you need. This reduces the amount of data transferred from the database:
+
+```python
+from canvas_sdk.v1.data import AttributeHub
+
+# Prefetch only the "calories" and "meal_type" attributes
+hubs = AttributeHub.objects.with_only(["calories", "meal_type"]).filter(type="meal_entry")
+for hub in hubs:
+    calories = hub.get_attribute("calories")       # Loaded from prefetch cache
+    meal_type = hub.get_attribute("meal_type")     # Loaded from prefetch cache
+    notes = hub.get_attribute("notes")             # Falls back to a DB query (not prefetched)
+
+# Prefetch a single attribute
+hub = AttributeHub.objects.with_only("campaign_status").get(
+    type="crm_sync", id="patient:abc123"
+)
+```
+
+If you access an attribute that was not included in `with_only()`, it will fall back to a database
+query. Use `with_only()` as an optimization, not a filter.
 
 ## Use Case Example: CRM Campaign Sync
 
@@ -284,7 +415,6 @@ class CampaignEnrollmentHandler(BaseHandler):
 
 - [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
 - [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
-- [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes on existing models
 - [CustomModels](/sdk/custom-data-custom-models/) - Structured models with relationships
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples

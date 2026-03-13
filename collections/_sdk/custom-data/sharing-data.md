@@ -107,50 +107,11 @@ If you've already installed the plugin without the secret:
 
 | Permission                               | `read` | `read_write` |
 |------------------------------------------|--------|--------------|
-| Query CustomAttributes                   | ✅      | ✅            |
 | Query AttributeHubs                      | ✅      | ✅            |
 | Query CustomModels                       | ✅      | ✅            |
-| Set/delete CustomAttributes              | ❌      | ✅            |
 | Create/update/delete AttributeHubs       | ❌      | ✅            |
 | Create/update/delete CustomModel records | ❌      | ✅            |
 | Create/update custom database tables     | ❌      | ✅            |
-
-### Example: Sharing CustomAttributes
-
-CustomAttributes attach key-value data to existing Canvas models (Patient, Staff, etc.).
-
-**Plugin A (write access) - Sets patient attributes:**
-
-```python
-# CANVAS_MANIFEST.json: "access": "read_write"
-from canvas_sdk.v1.data import Patient, ModelExtension
-
-class CustomPatient(Patient, ModelExtension):
-    pass
-
-patient_id = 123
-patient = CustomPatient.objects.get(id=patient_id)
-patient.set_attribute("risk_score", 85)
-patient.set_attribute("care_program", "diabetes_management")
-```
-
-**Plugin B (read access) - Reads patient attributes:**
-
-```python
-# CANVAS_MANIFEST.json: "access": "read"
-from canvas_sdk.v1.data import Patient, ModelExtension
-
-class CustomPatient(Patient, ModelExtension):
-    pass
-
-patient_id = 123
-patient = CustomPatient.objects.with_only(
-    attribute_names=["risk_score", "care_program"]
-).get(id=patient_id)
-
-risk_score = patient.get_attribute("risk_score")  # 85
-care_program = patient.get_attribute("care_program")  # "diabetes_management"
-```
 
 ### Example: Sharing AttributeHubs
 
@@ -162,8 +123,8 @@ AttributeHubs store standalone key-value data not attached to Canvas models.
 # CANVAS_MANIFEST.json: "access": "read_write"
 from canvas_sdk.v1.data import AttributeHub
 
-# Create a configuration hub
-config = AttributeHub.objects.create(type="clinic_config", id="main")
+# Create or retrieve a configuration hub
+config, created = AttributeHub.objects.get_or_create(type="clinic_config", id="main")
 config.set_attribute("max_daily_appointments", 50)
 config.set_attribute("appointment_duration_minutes", 30)
 config.set_attribute("accepting_new_patients", True)
@@ -297,10 +258,21 @@ API sharing is the recommended approach when:
 from canvas_sdk.handlers.simple_api import SimpleAPI, APIKeyCredentials, api
 from canvas_sdk.effects.simple_api import JSONResponse
 from canvas_sdk.v1.data import Staff, ModelExtension
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import BooleanField, DO_NOTHING, OneToOneField, TextField
 
 
 class CustomStaff(Staff, ModelExtension):
     pass
+
+
+class StaffProfile(CustomModel):
+    staff = OneToOneField(
+        CustomStaff, to_field="dbid", on_delete=DO_NOTHING,
+        related_name="profile"
+    )
+    specialty = TextField()
+    accepting_patients = BooleanField(default=True)
 
 
 class ProfileAPI(SimpleAPI):
@@ -321,17 +293,15 @@ class ProfileAPI(SimpleAPI):
     def get_profile(self):
         """Return staff profile data."""
         staff_id = self.request.path_params["staff_id"]
-        staff = CustomStaff.objects.with_only(
-            attribute_names=["specialty", "accepting_patients"]
-        ).get(id=staff_id)
+        staff = CustomStaff.objects.select_related("profile").get(id=staff_id)
 
         # Explicitly choose what data to expose
         profile = {
             "staff_id": staff.id,
             "first_name": staff.first_name,
             "last_name": staff.last_name,
-            "specialty": staff.get_attribute("specialty"),
-            "accepting_patients": staff.get_attribute("accepting_patients")
+            "specialty": staff.profile.specialty,
+            "accepting_patients": staff.profile.accepting_patients
         }
 
         return [JSONResponse(profile)]
@@ -394,7 +364,6 @@ class MyAPI(SimpleAPI):
 
 - [Custom Data Overview](/sdk/custom-data/) - Introduction to custom data storage
 - [Namespace Lifecycle](/sdk/custom-data-namespace-lifecycle/) - Managing namespaces during development
-- [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value storage
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [CustomModels](/sdk/custom-data-custom-models/) - Django models for structured data
 - [Testing Utils](/sdk/testing-utils/) - Factories for testing custom data

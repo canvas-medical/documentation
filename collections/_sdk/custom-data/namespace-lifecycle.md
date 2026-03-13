@@ -4,7 +4,7 @@ slug: "custom-data-namespace-lifecycle"
 ---
 
 Every plugin that uses custom data operates within a **namespace** — an isolated PostgreSQL schema that holds the plugin's
-CustomAttributes, AttributeHubs, and CustomModels. During iterative development, namespaces accumulate tables, columns,
+AttributeHubs and CustomModels. During iterative development, namespaces accumulate tables, columns,
 and data that can get in the way. This page explains how namespaces are created and managed, and how to use
 the Canvas CLI to inspect and clean up namespaces as you work.
 

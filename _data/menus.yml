@@ -1045,9 +1045,9 @@ custom_data_module:
   - title: "Quick Start"
     url: /sdk/custom-data-quick-start/
     description: Brief example code to get started using Custom Data features
-  - title: "CustomAttributes"
-    url: /sdk/custom-data-custom-attributes/
-    description: Flexible key value storage to augment core data models
+  - title: "Extending SDK Models"
+    url: /sdk/custom-data-extending-sdk-models/
+    description: Create proxy models and reference SDK models from your CustomModels
   - title: "CustomModels"
     url: /sdk/custom-data-custom-models/
     description: Create user defined database tables for normalized data

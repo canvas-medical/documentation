@@ -87,116 +87,6 @@ class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
     specialty = factory.SubFactory(SpecialtyFactory)
 ```
 
-## Testing CustomAttributes
-
-Test that CustomAttributes persist correctly and maintain isolation between objects:
-
-```python
-from datetime import datetime
-import factory
-from canvas_sdk.test_utils.factories import StaffFactory, PatientFactory
-from canvas_sdk.v1.data import Staff, Patient, ModelExtension
-
-
-class CustomStaff(Staff, ModelExtension):
-    pass
-
-
-class CustomPatient(Patient, ModelExtension):
-    pass
-
-
-class CustomStaffFactory(StaffFactory, factory.django.DjangoModelFactory[CustomStaff]):
-    class Meta:
-        model = CustomStaff
-
-
-class CustomPatientFactory(PatientFactory, factory.django.DjangoModelFactory[CustomPatient]):
-    class Meta:
-        model = CustomPatient
-
-
-def test_custom_attributes_on_extended_model():
-    """Test CustomAttributes on extended models."""
-    # Create test instances
-    staff = CustomStaffFactory.create()
-    patient = CustomPatientFactory.create()
-
-    # Set attributes
-    staff.set_attribute("specialty", "Cardiology")
-    staff.set_attribute("years_experience", 15)
-    patient.set_attribute("preferred_language", "Spanish")
-
-    # Verify attributes persist to database
-    staff_from_db = CustomStaff.objects.get(id=staff.id)
-    assert staff_from_db.get_attribute("specialty") == "Cardiology"
-    assert staff_from_db.get_attribute("years_experience") == 15
-
-    # Verify attributes are isolated between objects
-    assert staff_from_db.get_attribute("preferred_language") is None
-    patient_from_db = CustomPatient.objects.get(id=patient.id)
-    assert patient_from_db.get_attribute("specialty") is None
-
-
-def test_custom_attributes_multiple_types():
-    """Test CustomAttributes with different value types."""
-    from datetime import datetime
-
-    staff = CustomStaffFactory.create()
-
-    # Set different types
-    staff.set_attribute("text_field", "some text")
-    staff.set_attribute("int_field", 42)
-    staff.set_attribute("bool_field", True)
-    staff.set_attribute("float_field", 3.14)
-    staff.set_attribute("datetime_field", datetime.now())
-    staff.set_attribute("json_field", {"key": "value", "list": [1, 2, 3]})
-
-    # Verify retrieval
-    staff_from_db = CustomStaff.objects.get(id=staff.id)
-    assert staff_from_db.get_attribute("text_field") == "some text"
-    assert staff_from_db.get_attribute("int_field") == 42
-    assert staff_from_db.get_attribute("bool_field") is True
-    assert staff_from_db.get_attribute("json_field") == {"key": "value", "list": [1, 2, 3]}
-
-
-def test_set_attributes_bulk():
-    """Test setting multiple attributes at once."""
-    staff = CustomStaffFactory.create()
-
-    attributes = {
-        "accepting_patients": True,
-        "board_certified": True,
-        "languages_spoken": ["English", "Spanish"],
-        "years_experience": 10
-    }
-
-    staff.set_attributes(attributes)
-
-    staff_from_db = CustomStaff.objects.get(id=staff.id)
-    assert staff_from_db.get_attribute("accepting_patients") is True
-    assert staff_from_db.get_attribute("board_certified") is True
-    assert staff_from_db.get_attribute("years_experience") == 10
-
-
-def test_delete_attribute():
-    """Test deleting CustomAttributes."""
-    staff = CustomStaffFactory.create()
-    staff.set_attribute("temporary_field", "value")
-
-    # Verify it exists
-    assert staff.get_attribute("temporary_field") == "value"
-
-    # Delete and verify
-    deleted = staff.delete_attribute("temporary_field")
-    assert deleted is True
-    assert staff.get_attribute("temporary_field") is None
-
-    # Deleting non-existent attribute returns False
-    deleted_again = staff.delete_attribute("temporary_field")
-    assert deleted_again is False
-```
-
 ## Testing AttributeHub
 
 Test that AttributeHub stores and retrieves data correctly:
@@ -554,22 +444,6 @@ def test_many_to_many_with_factories():
 
     # Verify relationships
     assert ss1.staff.staff_specialties.count() == 2
-
-
-def test_factory_with_custom_attributes():
-    """Combine factories with CustomAttributes."""
-    staff = CustomStaffFactory.create()
-
-    # Add custom attributes to factory-created object
-    staff.set_attributes({
-        "board_certified": True,
-        "accepting_patients": True,
-        "patient_capacity": 100
-    })
-
-    # Verify both factory fields and custom attributes
-    assert staff.first_name is not None  # From factory
-    assert staff.get_attribute("board_certified") is True  # Custom attribute
 ```
 
 ## Testing Queries and Prefetching
@@ -583,7 +457,7 @@ from django.db.models import (
     Index, DO_NOTHING, Count
 )
 from canvas_sdk.test_utils.factories import StaffFactory
-from canvas_sdk.v1.data import Staff, ModelExtension
+from canvas_sdk.v1.data import AttributeHub, Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
 
 
@@ -655,42 +529,42 @@ class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
     specialty = factory.SubFactory(SpecialtyFactory)
 
 
-def test_custom_attributes_prefetch():
-    """Test prefetching CustomAttributes."""
-    staff1 = CustomStaffFactory.create()
-    staff2 = CustomStaffFactory.create()
+def test_attribute_hub_prefetch():
+    """Test prefetching AttributeHub attributes."""
+    hub1 = AttributeHub.objects.create(type="profile", id="staff_1")
+    hub2 = AttributeHub.objects.create(type="profile", id="staff_2")
 
-    staff1.set_attribute("specialty", "Cardiology")
-    staff2.set_attribute("specialty", "Neurology")
+    hub1.set_attribute("specialty", "Cardiology")
+    hub2.set_attribute("specialty", "Neurology")
 
-    # Query with automatic prefetch
-    all_staff = CustomStaff.objects.all()
+    # Query with automatic prefetch (default behavior)
+    hubs = AttributeHub.objects.filter(type="profile")
 
     # Access attributes without additional queries
-    for staff in all_staff:
-        specialty = staff.get_attribute("specialty")
-        assert specialty in [None, "Cardiology", "Neurology"]
+    for hub in hubs:
+        specialty = hub.get_attribute("specialty")
+        assert specialty in ["Cardiology", "Neurology"]
 
 
-def test_custom_attributes_with_only():
-    """Test selective attribute prefetching."""
-    staff = CustomStaffFactory.create()
-    staff.set_attributes({
+def test_attribute_hub_with_only():
+    """Test selective attribute prefetching on AttributeHub."""
+    hub = AttributeHub.objects.create(type="profile", id="staff_1")
+    hub.set_attributes({
         "specialty": "Cardiology",
         "years_experience": 15,
         "accepting_patients": True
     })
 
     # Prefetch only specific attributes
-    staff_from_db = (
-        CustomStaff.objects
+    hub_from_db = (
+        AttributeHub.objects
         .with_only(["specialty", "accepting_patients"])
-        .get(id=staff.id)
+        .get(dbid=hub.dbid)
     )
 
     # Prefetched attributes accessible
-    assert staff_from_db.get_attribute("specialty") == "Cardiology"
-    assert staff_from_db.get_attribute("accepting_patients") is True
+    assert hub_from_db.get_attribute("specialty") == "Cardiology"
+    assert hub_from_db.get_attribute("accepting_patients") is True
 
 
 def test_relationship_prefetch():
@@ -729,9 +603,8 @@ Test data validation, constraints, and cascade behavior:
 import factory
 from django.db.models import ForeignKey, TextField, Index, DO_NOTHING
 from canvas_sdk.test_utils.factories import StaffFactory
-from canvas_sdk.v1.data import Staff, ModelExtension
+from canvas_sdk.v1.data import AttributeHub, Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
-from canvas_sdk.v1.data.custom_attribute import CustomAttribute
 
 
 class CustomStaff(Staff, ModelExtension):
@@ -798,26 +671,19 @@ def test_manual_cleanup_on_delete():
     assert not Specialty.objects.filter(dbid=specialty_id).exists()
 
 
-def test_unique_constraint():
-    """Test unique constraints on CustomAttributes."""
-    staff = CustomStaffFactory.create()
+def test_attribute_hub_upsert():
+    """Test that set_attribute updates existing values rather than creating duplicates."""
+    hub = AttributeHub.objects.create(type="test", id="upsert_test")
 
     # Set attribute
-    staff.set_attribute("unique_field", "value1")
+    hub.set_attribute("field", "value1")
 
     # Setting same attribute name should update, not create duplicate
-    staff.set_attribute("unique_field", "value2")
+    hub.set_attribute("field", "value2")
 
-    # Verify only one attribute exists
-    staff_from_db = CustomStaff.objects.get(id=staff.id)
-    assert staff_from_db.get_attribute("unique_field") == "value2"
-
-    # Verify no duplicates in database
-    count = CustomAttribute.objects.filter(
-        object_id=staff.dbid,
-        name="unique_field"
-    ).count()
-    assert count == 1
+    # Verify only the updated value exists
+    hub_from_db = AttributeHub.objects.get(dbid=hub.dbid)
+    assert hub_from_db.get_attribute("field") == "value2"
 
 
 def test_transaction_rollback():
@@ -851,9 +717,8 @@ def test_transaction_rollback():
 ## See Also
 
 - [Custom Data Overview](/sdk/custom-data/) - Introduction to custom data storage
-- [CustomAttributes](/sdk/custom-data-custom-attributes/) - Flexible key-value storage
-- [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [CustomModels](/sdk/custom-data-custom-models/) - Django models for structured data
+- [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
 - [Caching API](/sdk/caching) - Auto-expiring transient data
 

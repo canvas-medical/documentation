@@ -4,61 +4,44 @@ title: "Custom Data"
 
 ## Overview
 
-The Canvas SDK provides three techniques for storing custom data in your plugins, allowing you to extend existing models, create flexible key-value stores, 
-or define fully structured data models with relationships among entities:
+The Canvas SDK provides two techniques for storing custom data in your plugins, allowing you to define fully structured
+data models with relationships among entities, or create flexible key-value stores:
 
-1. **[CustomAttributes for SDK Models](/sdk/custom-data-custom-attributes/)** - Augment existing SDK data models (like Patient or Staff) with flexible key-value attributes
-2. **[CustomModels](/sdk/custom-data-custom-models/)** - Build your own data model or expand the Canvas data model by adding fully structured models with typed fields and relationships
-3. **[AttributeHubs](/sdk/custom-data-attribute-hubs/)** - Store arbitrary key-value pairs and JSON data independently of the Canvas data model
+1. **[CustomModels](/sdk/custom-data-custom-models/)** - Build your own data model or expand the Canvas data model by adding fully structured models with typed fields and relationships
+2. **[AttributeHubs](/sdk/custom-data-attribute-hubs/)** - Store arbitrary key-value pairs and JSON data independently of the Canvas data model
 
-Each technique serves different use cases and provides different levels of structure and type safety. All three techniques may be used together.
+Each technique serves different use cases and provides different levels of structure and type safety. Both techniques may be used together.
 
 ## When to Use Each Technique
 
-### CustomAttributes for SDK Models
-
-Use this when you need to add flexible data to existing SDK models without defining a schema.
-
-**Best for:**
-- A small number of independent metadata fields on existing models
-- Configuration flags or identifiers on patients, staff, etc.
-- Rapid prototyping before committing to a schema
-- Data that doesn't need compound filtering or aggregation
-
-**Example use cases:**
-- Adding practice-specific flags or identifiers to patients
-- Storing provider preferences (notification settings, display options)
-- Temporary or experimental data fields
-
-[Learn more about CustomAttributes →](/sdk/custom-data-custom-attributes/)
-
 ### CustomModels
 
-Use this when you need structured, typed data with relationships and normalized data.
+Use this when you need structured, typed data with relationships and normalized data. CustomModels can also
+extend existing SDK models (like Patient or Staff) with custom fields via `OneToOneField`.
 
 **Best for:**
 - Structured data with a stable, known schema
+- Custom fields on existing SDK models (e.g., provider preferences, patient flags)
 - Relationships between entities (foreign keys, join tables)
 - Data requiring compound filtering, sorting, or aggregation
 - Data consumed by reports or analytics
 
 **Example use cases:**
 - Provider specialties and certifications
+- Adding practice-specific fields to patients or staff
 - Linking `Staff` to `Note` creating a `supervising_provider` association
 - Custom workflows and forms
 - Integration-specific data structures
 - Practice-specific business operation concepts and logic
-
-**CustomModels may build around and be related to core SDK models using extended models.**
 
 [Learn more about CustomModels →](/sdk/custom-data-custom-models/)
 
 ### AttributeHubs
 
 AttributeHubs provide a key/value and document store free from the burden of defining any schema or linking to Canvas models.
-They are for storing irregular or unstructured information that doesn't have a natural home. Whereas CustomAttributes and 
-CustomModels build upon the Canvas data model, AttributeHubs allow easy, standalone persistence of information. 
-Use this when you need to store data that doesn't naturally belong to any existing or imagined model. 
+They are for storing irregular or unstructured information that doesn't have a natural home. Whereas
+CustomModels build upon the Canvas data model, AttributeHubs allow easy, standalone persistence of information.
+Use this when you need to store data that doesn't naturally belong to any existing or imagined model.
 
 **Best for:**
 - Cross-cutting state that spans multiple models (sync cursors, external IDs)
@@ -84,9 +67,9 @@ If your use case represents transient data that should expire via TTL, use the
 
 ## Data Privacy and Plugin Isolation
 
-All custom data created by a plugin—whether using CustomAttributes, AttributeHubs, or CustomModels—is scoped to a namespace. 
-This isolation ensures that plugins cannot directly access or modify another plugin's data, maintaining security and data integrity 
-across the system. 
+All custom data created by a plugin — whether using CustomModels or AttributeHubs — is scoped to a namespace.
+This isolation ensures that plugins cannot directly access or modify another plugin's data, maintaining security and data integrity
+across the system.
 
 Plugins may share data in two ways:
 * By explicit co-location within a namespace, allowing direct database access
@@ -95,25 +78,6 @@ Plugins may share data in two ways:
 [Learn more about data sharing](/sdk/custom-data-sharing-data)
 
 ### Data Isolation
-
-**CustomAttributes** attached to SDK models (like Patient or Staff) are scoped to the plugin's namespace. Custom attributes live within
-a namespace and are only visible to plugins co-located within the namespace, even when attached to the same core model instance.
-
-```python
-# In one plugin and namespace
-from my_plugin.models import CustomStaff
-staff = CustomStaff.objects.get(id="abc")
-staff.set_attribute("specialty", "Cardiology")  # Only accessible within "my_plugin"
-```
-```python
-# In another plugin and different namespace
-from your_plugin.models import CustomStaff
-staff = CustomStaff.objects.get(id="abc")
-staff.get_attribute("specialty")  # Returns None - cannot see "my_plugin" data
-staff.set_attribute("specialty", "Cardiac")  # Creates separate attribute in "your_plugin"
-```
-
-**AttributeHubs** similarly store data within the plugin's namespace and are not accessible to other plugins in other namespaces.
 
 **CustomModels** created by a plugin exist within namespaces. Tables and data are completely isolated from other namespaces.
 
@@ -135,6 +99,8 @@ class Specialty(CustomModel):
 # In "your_plugin": Cannot access the "my_plugin" Specialty model or data
 ```
 
+**AttributeHubs** similarly store data within the plugin's namespace and are not accessible to plugins in other namespaces.
+
 ## Testing Custom Data
 
 The Canvas SDK provides comprehensive testing utilities for all custom data approaches. 
@@ -147,9 +113,9 @@ Use APIs to make data available and accessible to and from other plugins and ext
 
 ## See Also
 
-- [CustomAttributes on SDK Models](/sdk/custom-data-custom-attributes/) - Flexible key-value attributes
-- [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [CustomModels](/sdk/custom-data-custom-models/) - Structured models with relationships among entities
+- [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) - Proxy models, `related_name` namespacing, and referencing SDK models
+- [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
