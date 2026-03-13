@@ -85,10 +85,10 @@ Secrets defined in your manifest and configured in the admin UI are exposed to y
 This is a Python dictionary containing all secret values.
 
 ```python
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects import Effect
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     def compute(self) -> list[Effect]:
         api_token = self.secrets["API_TOKEN"]
         ...

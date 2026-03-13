@@ -7,7 +7,9 @@ sections:
         name: Practitioner
         article: "a"
         description: >-
-         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).<br><br>
+         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>
+         [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html)<br><br>
+          To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).<br><br>
           
         attributes:
           - name: id
@@ -76,7 +78,7 @@ sections:
                     exclude_in: create, update
                   - name: url
                     type: string
-                    description: Uri where the data can be found.
+                    description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
                     exclude_in: create, update
               - name: extension
                 type: array[json]

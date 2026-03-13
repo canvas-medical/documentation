@@ -12,6 +12,10 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
 - [moving claim to a queue](#move-to-queue)
 - [adding comments](#add-comment) to claims
 - [posting payments](#post-payment) to claims
+- [upserting metadata](#upsert-metadata) on claims
+- [adding banner alerts](#add-banner) to claims
+- [removing banner alerts](#remove-banner) from claims
+- [updating provider information](#update-provider) on claims
 
 Additionally, the SDK provides a separate effect to [update claim line items](#updateclaimlineitem).
 
@@ -68,14 +72,14 @@ The `Label` dataclass represents a label with specific properties, including col
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.effects.claim import ClaimEffect, Label
 from canvas_sdk.v1.data import Note
 from canvas_sdk.v1.data.common import ColorEnum
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self) -> list[Effect]:
@@ -114,13 +118,13 @@ class Protocol(BaseProtocol):
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.effects.claim import ClaimEffect
 from canvas_sdk.v1.data import Note
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self) -> list[Effect]:
@@ -154,12 +158,12 @@ class Protocol(BaseProtocol):
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.claim import ClaimEffect
 from canvas_sdk.v1.data import Note
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
 
     def compute(self) -> list[Effect]:
@@ -190,12 +194,12 @@ class Protocol(BaseProtocol):
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.claim import ClaimEffect
 from canvas_sdk.v1.data import Patient, Claim
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.COVERAGE_CREATED)
 
     def compute(self) -> list[Effect]:
@@ -478,6 +482,291 @@ curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment"
 }'
 ```
 
+### Upsert Metadata
+
+`ClaimEffect.upsert_metadata()`: upserts a key-value metadata record on a claim. If a metadata record with the given key already exists for the claim, its value will be updated. Otherwise, a new metadata record will be created.
+
+#### Parameters
+
+| Parameter | Type  | Description               | Required |
+| --------- | ----- | ------------------------- | -------- |
+| `key`     | `str` | The key of the metadata   | Yes      |
+| `value`   | `str` | The value of the metadata | Yes      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- The claim-key pair is unique; upserting with an existing key will update the value rather than creating a duplicate
+- If a metadata record already exists with the same claim, key, and value, no update is performed
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, store the lock timestamp as metadata on the claim."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "LKD":
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.upsert_metadata(key="locked_at", value=str(note.modified))]
+        return []
+```
+
+### Add Banner
+
+`ClaimEffect.add_banner()`: adds a banner alert to a claim. Banner alerts are displayed in the UI to surface important information about a claim.
+
+#### Parameters
+
+| Parameter   | Type                                                     | Description                                    | Required |
+| ----------- | -------------------------------------------------------- | ---------------------------------------------- | -------- |
+| `key`       | `str`                                                    | A unique key identifying the banner alert      | Yes      |
+| `narrative` | `str`                                                    | The banner text to display (max 90 characters) | Yes      |
+| `intent`    | [BannerAlertIntent](#banneralertintent-enumeration-type) | The visual intent/severity of the banner       | Yes      |
+| `href`      | `str`                                                    | An optional link URL for the banner            | No       |
+
+#### BannerAlertIntent Enumeration Type
+
+| Enum      | Value   |
+| :-------- | :------ |
+| `INFO`    | info    |
+| `WARNING` | warning |
+| `ALERT`   | alert   |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- The `narrative` field has a maximum length of 90 characters
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect, BannerAlertIntent
+from canvas_sdk.v1.data import Note
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is unlocked, add a warning banner to the claim."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "ULK":
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [
+                claim_effect.add_banner(
+                    key="review-needed",
+                    narrative="This claim needs review before resubmission.",
+                    intent=BannerAlertIntent.WARNING,
+                )
+            ]
+        return []
+```
+
+### Remove Banner
+
+`ClaimEffect.remove_banner()`: removes a banner alert from a claim by its key.
+
+#### Parameters
+
+| Parameter | Type  | Description                                  | Required |
+| --------- | ----- | -------------------------------------------- | -------- |
+| `key`     | `str` | The unique key of the banner alert to remove | Yes      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, remove the review-needed banner from the claim."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "LKD":
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.remove_banner(key="review-needed")]
+        return []
+```
+
+### Update Provider
+
+`ClaimEffect.update_provider()`: updates provider information on a claim, including billing provider, rendering/attending provider, referring provider, ordering provider, and facility details. All parameters are optional — only the fields you provide will be updated.
+
+#### Parameters
+
+| Parameter            | Type                                                        | Description                                 | Required |
+| -------------------- | ----------------------------------------------------------- | ------------------------------------------- | -------- |
+| `billing_provider`   | [ClaimBillingProvider](#claimbillingprovider) or `None`     | Billing provider information                | No       |
+| `provider`           | [ClaimProvider](#claimprovider) or `None`                   | Rendering or attending provider information | No       |
+| `referring_provider` | [ClaimReferringProvider](#claimreferringprovider) or `None` | Referring provider information              | No       |
+| `ordering_provider`  | [ClaimOrderingProvider](#claimorderingprovider) or `None`   | Ordering provider information               | No       |
+| `facility`           | [ClaimFacility](#claimfacility) or `None`                   | Facility information                        | No       |
+
+#### ClaimBillingProvider
+
+| Attribute     | Type            | Description                    |
+| ------------- | --------------- | ------------------------------ |
+| `name`        | `str` or `None` | Provider name (max 255 chars)  |
+| `phone`       | `str` or `None` | Phone number (max 15 chars)    |
+| `addr1`       | `str` or `None` | Address line 1 (max 255 chars) |
+| `addr2`       | `str` or `None` | Address line 2 (max 255 chars) |
+| `city`        | `str` or `None` | City (max 255 chars)           |
+| `state`       | `str` or `None` | State code (max 2 chars)       |
+| `zip`         | `str` or `None` | ZIP code (max 255 chars)       |
+| `npi`         | `str` or `None` | NPI number (max 10 chars)      |
+| `tax_id`      | `str` or `None` | Tax ID (max 100 chars)         |
+| `tax_id_type` | `str` or `None` | Tax ID type (max 1 char)       |
+| `taxonomy`    | `str` or `None` | Taxonomy code (max 100 chars)  |
+| `clia_number` | `str` or `None` | CLIA number (max 100 chars)    |
+
+#### ClaimProvider
+
+Represents the rendering or attending provider.
+
+| Attribute         | Type            | Description                    |
+| ----------------- | --------------- | ------------------------------ |
+| `first_name`      | `str` or `None` | First name (max 255 chars)     |
+| `last_name`       | `str` or `None` | Last name (max 255 chars)      |
+| `middle_name`     | `str` or `None` | Middle name (max 255 chars)    |
+| `npi`             | `str` or `None` | NPI number (max 10 chars)      |
+| `tax_id`          | `str` or `None` | Tax ID (max 100 chars)         |
+| `tax_id_type`     | `str` or `None` | Tax ID type (max 1 char)       |
+| `taxonomy`        | `str` or `None` | Taxonomy code (max 100 chars)  |
+| `ptan_identifier` | `str` or `None` | PTAN identifier (max 50 chars) |
+
+#### ClaimReferringProvider
+
+| Attribute         | Type            | Description                    |
+| ----------------- | --------------- | ------------------------------ |
+| `first_name`      | `str` or `None` | First name (max 255 chars)     |
+| `last_name`       | `str` or `None` | Last name (max 255 chars)      |
+| `middle_name`     | `str` or `None` | Middle name (max 255 chars)    |
+| `npi`             | `str` or `None` | NPI number (max 10 chars)      |
+| `ptan_identifier` | `str` or `None` | PTAN identifier (max 50 chars) |
+
+#### ClaimOrderingProvider
+
+| Attribute     | Type            | Description                 |
+| ------------- | --------------- | --------------------------- |
+| `first_name`  | `str` or `None` | First name (max 255 chars)  |
+| `last_name`   | `str` or `None` | Last name (max 255 chars)   |
+| `middle_name` | `str` or `None` | Middle name (max 255 chars) |
+| `npi`         | `str` or `None` | NPI number (max 10 chars)   |
+
+#### ClaimFacility
+
+| Attribute        | Type             | Description                    |
+| ---------------- | ---------------- | ------------------------------ |
+| `name`           | `str` or `None`  | Facility name (max 255 chars)  |
+| `npi`            | `str` or `None`  | NPI number (max 10 chars)      |
+| `addr1`          | `str` or `None`  | Address line 1 (max 255 chars) |
+| `addr2`          | `str` or `None`  | Address line 2 (max 255 chars) |
+| `city`           | `str` or `None`  | City (max 255 chars)           |
+| `state`          | `str` or `None`  | State code (max 2 chars)       |
+| `zip`            | `str` or `None`  | ZIP code (max 255 chars)       |
+| `hosp_from_date` | `date` or `None` | Hospitalization start date     |
+| `hosp_to_date`   | `date` or `None` | Hospitalization end date       |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- Validates that the claim has existing provider information (i.e., the claim's provider record is populated)
+- Only fields with non-`None` values are included in the update — any fields left as `None` are excluded
+- Date fields (`hosp_from_date`, `hosp_to_date`) are serialized to ISO format strings
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Claim, Note, PatientFacilityAddress
+from canvas_sdk.v1.data.common import AddressState
+from canvas_sdk.effects.claim.claim import ClaimEffect, ClaimBillingProvider, ClaimFacility
+
+
+class ClaimProviderHandler(BaseHandler):
+    RESPONDS_TO = [
+        EventType.Name(EventType.CLAIM_CREATED),
+        EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED),
+    ]
+
+    def get_claim(self) -> Claim | None:
+        if self.event.type == EventType.CLAIM_CREATED:
+            return Claim.objects.get(id=self.event.target.id)
+
+        if self.event.context["state"] not in ["LKD", "PSH", "DSC"]:
+            # claim provider details can change when notes are locked, pushed, or discharged
+            return None
+        return Note.objects.get(self.event.target.id).get_claim()
+
+    def get_patient_facility(self, claim) -> PatientFacilityAddress | None:
+        return PatientFacilityAddress.objects.filter(
+            patient=claim.note.patient, state=AddressState.ACTIVE
+        ).first()
+
+    def compute(self) -> list[Effect]:
+        """When a claim is created, or note is locked/pushed/charged, update the claim's provider information."""
+        if not (claim := self.get_claim()):
+            return []
+        if not (facility := self.get_patient_facility(claim)):
+            return []
+
+        billing = ClaimBillingProvider(
+            name=facility.facility.name,
+            phone=facility.facility.phone_number,
+            addr1=facility.line1,
+            addr2=facility.line2,
+            city=facility.city,
+            state=facility.state_code,
+            zip=facility.postal_code,
+            npi=facility.facility.npi_number,
+        )
+        facility = ClaimFacility(
+            name=facility.facility.name,
+            npi=facility.facility.npi_number,
+            addr1=facility.line1,
+            addr2=facility.line2,
+            city=facility.city,
+            state=facility.state_code,
+            zip=facility.postal_code,
+        )
+        return [
+            ClaimEffect(claim_id=claim.id).update_provider(
+                billing_provider=billing, facility=facility
+            )
+        ]
+```
+
 ---
 
 ## UpdateClaimLineItem
@@ -505,12 +794,12 @@ Updating charge amount.
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note, ClaimLineItem
 from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     """When a note is unlocked, update the associated claim's line items to have a charge of $0.00.
     When a note is locked, update the associated claim's line items to have a charge of $500.00."""
     RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
@@ -539,12 +828,12 @@ Linking and un-linking diagnosis codes.
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note, ClaimLineItem
 from canvas_sdk.effects.claim_line_item import UpdateClaimLineItem
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED),
     ]

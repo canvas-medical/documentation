@@ -112,7 +112,7 @@ The following code is an example of a custom `ValueSet` in use within a plugin:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 from canvas_sdk.v1.data.patient import Patient
@@ -130,7 +130,7 @@ class MyCustomValueSet(ValueSet):
     }
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self):

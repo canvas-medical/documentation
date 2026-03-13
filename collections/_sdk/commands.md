@@ -1511,7 +1511,6 @@ prescription = PrescribeCommand(
 | Name               | Type     | Required | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 ### Toggle Questions Feature
 
@@ -1658,7 +1657,6 @@ In addition to the basic parameters, this command supports a dynamic response in
 | Name               | Type     | Required | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 **Example**:
 
@@ -1667,8 +1665,7 @@ from canvas_sdk.commands import QuestionnaireCommand
 
 questionnaire = QuestionnaireCommand(
     note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+    questionnaire_id='g73hd9'
 )
 ```
 
@@ -1684,7 +1681,7 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note, Questionnaire
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
 
     def compute(self) -> list[Effect]:
       q = Questionnaire.objects.filter(name="Exercise").first()
@@ -1993,7 +1990,6 @@ ResolveConditionCommand(
 | Name               | Type     | Required | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 
 ### Toggle Questions Feature
@@ -2089,7 +2085,6 @@ stop_medication = StopMedicationCommand(
 | Name               | Type     | Required | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 **Example**:
 
@@ -2098,8 +2093,7 @@ from canvas_sdk.commands import StructuredAssessmentCommand
 
 questionnaire = StructuredAssessmentCommand(
     note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+    questionnaire_id='g73hd9'
 )
 ```
 
@@ -2290,7 +2284,7 @@ update_goal = UpdateGoalCommand(
 | `weight_lbs`                       | _integer_ | `false`  | Weight in pounds.                                |
 | `weight_oz`                        | _integer_ | `false`  | Weight in ounces.                                |
 | `waist_circumference`              | _integer_ | `false`  | Waist circumference in inches.                   |
-| `body_temperature`                 | _integer_ | `false`  | Body temperature in Fahrenheit.                  |
+| `body_temperature`                 | _float_   | `false`  | Body temperature in Fahrenheit.                  |
 | `body_temperature_site`            | _enum_    | `false`  | Site of body temperature measurement.            |
 | `blood_pressure_systole`           | _integer_ | `false`  | Systolic blood pressure.                         |
 | `blood_pressure_diastole`          | _integer_ | `false`  | Diastolic blood pressure.                        |

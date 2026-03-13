@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.<br><br>
-          [https://hl7.org/fhir/R4/questionnaireresponse.html](https://hl7.org/fhir/R4/questionnaireresponse.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-questionnaireresponse.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-questionnaireresponse.html)<br><br>
           See this [article](https://help.canvasmedical.com/articles/7017593857-creating-questionnaires) for information about how to build questionnaires in Canvas.<br><br>
           Questionnaires can map to four different commands in the Canvas UI depending on what the use case in charting is set to: 
 

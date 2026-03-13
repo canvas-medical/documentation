@@ -457,6 +457,25 @@ class MyAPI(SimpleAPIRoute):
 Any effects present in the list returned by an endpoint will be processed by your Canvas instance,
 and the response object, if provided, will be sent back to the original requester.
 
+### Asynchronous requests
+
+By default, **SimpleAPI** requests are processed synchronously—the caller waits for the plugin to
+finish executing before receiving a response. If you prefer an immediate acknowledgement instead,
+include the `Prefer: respond-async` header in your request:
+
+```bash
+curl --location 'https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/<route>' \
+     --header 'Authorization: <api-key>' \
+     --header 'Prefer: respond-async'
+```
+
+When this header is present, Canvas will return a **202 Accepted** response right away and continue
+executing the plugin in the background. Any effects returned by the handler will still be processed
+by your Canvas instance; however, no response body from the handler will be delivered to the caller.
+
+Note that authentication failures and plugin-not-found errors are always returned synchronously,
+regardless of this header.
+
 ### Authentication
 
 Defining an `authenticate` method on your handler is required. By default, **SimpleAPI** handlers

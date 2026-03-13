@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           A reference to a document of any kind for any purpose. Provides metadata about the document so that the document can be discovered and managed. The scope of a document is any seralized object with a mime-type, so includes formal patient centric documents (CDA), clinical notes, scanned paper, and non-patient specific documents like policy text.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-documentreference.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-documentreference.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-documentreference.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-documentreference.html)<br><br>
           A Document Reference can represent many different PDFs generated in Canvas:
           
 
@@ -221,7 +221,6 @@ sections:
                       - value: referralreport
                         exclude_in: create
                       - value: uncategorizedclinicaldocument
-            type: array[json]
           - name: subject
             description: Who/what is the subject of the document.
             type: json
@@ -297,7 +296,7 @@ sections:
                     required_in: create
                     exclude_in: create
                   - name: url
-                    description: URI where the data can be found. Please note that urls may have an AWSAccessKeyId and an Expires attribute. By default documents stored in AWS S3 will expire 10 minutes after the response payload is returned.
+                    description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
                     exclude_in: create
                     type: string
                   - name: data
