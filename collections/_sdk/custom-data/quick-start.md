@@ -114,6 +114,7 @@ They're a good fit for one-off state, configuration, and data that doesn't have 
 ## See Also
 
 - [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) - Why proxy models exist and how `related_name` namespacing works
+- [Transactions](/sdk/custom-data-transactions/) - All-or-nothing writes with `transaction.atomic()`
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
 - [Data Models](/sdk/data/) - Core SDK data models

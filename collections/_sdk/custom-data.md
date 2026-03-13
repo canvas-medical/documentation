@@ -117,6 +117,7 @@ Use APIs to make data available and accessible to and from other plugins and ext
 - [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) - Proxy models, `related_name` namespacing, and referencing SDK models
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
+- [Transactions](/sdk/custom-data-transactions/) - All-or-nothing writes with `transaction.atomic()`
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
 - [Data Models](/sdk/data/) - Core SDK data models

@@ -153,6 +153,7 @@ or proxy models are exempt because those targets are already plugin-private.
 - [CustomModels](/sdk/custom-data-custom-models/) - Defining structured models, relationships, and queries
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
+- [Transactions](/sdk/custom-data-transactions/) - All-or-nothing writes with `transaction.atomic()`
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
 - [Data Models](/sdk/data/) - Core SDK data models
 

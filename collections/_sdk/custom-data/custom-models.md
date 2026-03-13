@@ -1090,6 +1090,7 @@ for specialty in specialty_counts:
 - [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) - Proxy models, `related_name` namespacing, and referencing SDK models
 - [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
+- [Transactions](/sdk/custom-data-transactions/) - All-or-nothing writes with `transaction.atomic()`
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
 - [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
 - [Data Models](/sdk/data/) - Core SDK data models

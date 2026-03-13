@@ -45,11 +45,13 @@ an [AttributeHub](/sdk/custom-data-attribute-hubs/) can be a lighter-weight alte
 
 AttributeHubs use EAV (entity-attribute-value) storage and are standalone — not attached to any Canvas model.
 They are convenient for one-off state and configuration, but the same EAV limitations apply when used at scale.
+Their best application is storing a collection of attributes that will mainly be retrieved by identifier rather than
+by value.
 
 ### Modeling entities with relationships
 
 If you have "departments" and need to assign staff to them, encoding `staff_id` as a string attribute means no
-JOINs, no referential integrity, and no cascade behavior. The plugin must manually maintain consistency.
+JOINs, no referential integrity, potentially duplicated data. The plugin must manually maintain consistency.
 
 **Use instead:** [CustomModels](/sdk/custom-data-custom-models/) with `ForeignKey` fields and junction tables
 handle relationships naturally, with ORM-level traversal and `prefetch_related` support.
@@ -140,6 +142,7 @@ can hold loosely structured data until access patterns stabilize and justify a r
 - [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) - Proxy models and referencing SDK models
 - [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
 - [CustomModels](/sdk/custom-data-custom-models/) - Django models for structured data
+- [Transactions](/sdk/custom-data-transactions/) - All-or-nothing writes with `transaction.atomic()`
 - [Caching API](/sdk/caching) - Auto-expiring transient data
 
 <br/>
