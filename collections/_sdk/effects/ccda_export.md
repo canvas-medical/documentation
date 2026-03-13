@@ -129,8 +129,7 @@ class MyHandler(BaseHandler):
 
 ## Notes
 
-- The C-CDA XML content is stored as a file on the patient's record.
-- The created document can be accessed via the FHIR DocumentReference endpoint.
+- The C-CDA XML content is stored as a file on the patient's record. You can access the record in Settings > CCDAs to be able to view, transmit, or download the file. 
 
 <br/>
 <br/>
