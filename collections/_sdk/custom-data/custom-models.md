@@ -94,6 +94,7 @@ The Canvas SDK provides Django-based field types for defining your models:
 | `JSONField`       | JSON-serializable data    | `default`                                |
 | `ForeignKey`      | Many-to-one relationship  | `related_name`, `on_delete=DO_NOTHING`   |
 | `OneToOneField`   | One-to-one relationship   | `related_name`, `on_delete=DO_NOTHING`, `primary_key` |
+| `ManyToManyField` | Many-to-many relationship | `through` (required), `related_name`     |
 
 If `default` is supplied it will be applied by the Django ORM, and will not be a PostgreSQL default. 
 As a result, only new records will receive the value, and it will not cause a mass edit of existing records.
@@ -579,20 +580,27 @@ has_spanish_bio = staff.biographies.filter(language="Spanish").exists()
 
 A many-to-many relationship allows multiple records in one model to be associated with multiple records in another model.
 
-### Many-to-Many with Through Model
+Many-to-many relationships require an **explicit through model** — a CustomModel that contains ForeignKey
+fields to both sides of the relationship. Standard Django allows `ManyToManyField` to create an implicit
+join table automatically, but the Canvas SDK does not support implicit through tables because each table
+must be a CustomModel with a managed schema lifecycle.
 
-Many-to-many relationships are implemented using an explicit through model (also called a join table or junction table).
-The through model contains ForeignKey fields to both sides of the relationship.
+You can define the relationship in two ways:
 
-In the example above, `StaffSpecialty` is the through model that creates the many-to-many relationship 
-between `CustomStaff` and `Specialty`.
+1. **Through model only** — Define the through model with ForeignKeys and query through it directly.
+2. **Through model + `ManyToManyField`** — Add a `ManyToManyField` with an explicit `through` parameter for cleaner ORM access.
 
-`StaffSpecialty` may include additional fields to describe the nature of the association between `Staff` and `Specialty`.
+Both approaches create the same database tables. The `ManyToManyField` adds ORM convenience (e.g.,
+`specialty.staff.all()` instead of traversing the join table manually) but does not change the
+underlying schema.
 
-The Canvas SDK does **not** support the Django `ManyToManyField` at this time.
+### Through Model Only
+
+The simplest approach is to define just the through model. This works well when the through model
+has additional metadata fields or when you prefer to query the join table directly.
 
 ```python
-from django.db.models import ForeignKey, Index, TextField, DO_NOTHING
+from django.db.models import DO_NOTHING, ForeignKey, Index, TextField, UniqueConstraint
 from canvas_sdk.v1.data.base import CustomModel
 from canvas_sdk.v1.data import Staff, ModelExtension
 
@@ -628,6 +636,14 @@ class StaffSpecialty(CustomModel):
     on_delete=DO_NOTHING,
     related_name="staff_specialties"
   )
+
+  class Meta:
+    constraints = [
+      UniqueConstraint(
+        fields=["staff_id", "specialty_id"],
+        name="unique_staff_specialty",
+      ),
+    ]
 ```
 
 This creates a many-to-many relationship where:
@@ -635,7 +651,125 @@ This creates a many-to-many relationship where:
 - One specialty can be assigned to multiple staff members
 - `StaffSpecialty` is the through model that connects them
 
+**Preventing duplicate associations:** Through models typically need a uniqueness constraint on
+the pair of foreign key columns to prevent the same association from being created twice. Add a
+`UniqueConstraint` to the through model's `Meta.constraints` referencing both FK column names
+(e.g., `staff_id` and `specialty_id`). Without this, calling `StaffSpecialty.objects.create(staff=staff, specialty=cardiology)`
+twice would create two identical rows. See [Uniqueness Constraints](#uniqueness-constraints) for
+more details on constraint naming and lifecycle.
+
+### Through Model + ManyToManyField
+
+Adding a `ManyToManyField` with an explicit `through` parameter gives you direct ORM access to the
+related objects without manually traversing the join table.
+
+**Important:** The `through` parameter is **required**. A `ManyToManyField` without `through` will
+cause an error because the SDK cannot manage implicit join tables.
+
+```python
+from django.db.models import DO_NOTHING, ForeignKey, Index, ManyToManyField, TextField, UniqueConstraint
+from canvas_sdk.v1.data.base import CustomModel
+from canvas_sdk.v1.data import Staff, ModelExtension
+
+
+class CustomStaff(Staff, ModelExtension):
+  """Extends Staff with custom attribute support."""
+  pass
+
+class Specialty(CustomModel):
+  """Medical specialty (e.g., Cardiology, Neurology)."""
+
+  name = TextField()
+  staff = ManyToManyField(
+    CustomStaff,
+    through="StaffSpecialty",
+    related_name="%(app_label)s_specialties",
+  )
+
+  class Meta:
+    indexes = [
+      Index(fields=["name"]),
+    ]
+
+
+class StaffSpecialty(CustomModel):
+  """Through model for the staff-specialty relationship."""
+
+  staff = ForeignKey(
+    CustomStaff,
+    to_field="dbid",
+    on_delete=DO_NOTHING,
+    related_name="%(app_label)s_staff_specialties",
+  )
+  specialty = ForeignKey(
+    Specialty,
+    to_field="dbid",
+    on_delete=DO_NOTHING,
+    related_name="staff_specialties",
+  )
+
+  class Meta:
+    constraints = [
+      UniqueConstraint(
+        fields=["staff_id", "specialty_id"],
+        name="unique_staff_specialty",
+      ),
+    ]
+```
+
+With the `ManyToManyField` declared, you can traverse the relationship directly:
+
+```python
+# Direct access to related objects (returns Staff queryset, not StaffSpecialty)
+specialty = Specialty.objects.get(name="Cardiology")
+staff_members = specialty.staff.all()
+
+# Reverse access from staff to specialties
+staff = CustomStaff.objects.get(id="staff-uuid")
+specialties = staff.staff_plus_specialties.all()  # uses the ManyToManyField's related_name
+```
+
+Compare this with the through-model-only approach, where you must navigate through the join table:
+
+```python
+# Without ManyToManyField — must traverse the join table
+staff_members = [ss.staff for ss in specialty.staff_specialties.all()]
+```
+
+#### Differences from Standard Django ManyToManyField
+
+| Behavior                         | Standard Django                          | Canvas SDK                                                       |
+|----------------------------------|------------------------------------------|------------------------------------------------------------------|
+| `through` parameter              | Optional — Django creates an implicit join table | **Required** — must reference a CustomModel                |
+| `.add()`, `.remove()`, `.set()`  | Available when no explicit through model | **Not available** — use the through model's `.objects.create()` and `.delete()` instead |
+| `.clear()`                       | Available                                | **Not available** — use `StaffSpecialty.objects.filter(...).delete()` instead |
+| `.all()`, filtering, `prefetch_related` | Available                         | Available                                                        |
+
+Because Django requires you to use the through model directly for creating and deleting relationships
+when an explicit `through` is declared, the CRUD patterns are the same whether or not you add the
+`ManyToManyField`. The field's value is in query convenience — direct `.all()` access and cleaner
+`prefetch_related` lookups.
+
+#### related_name with ManyToManyField
+
+When a `ManyToManyField` targets a core SDK model (like `Staff` or `Patient`), you **must** use
+the `%(app_label)s_` prefix in `related_name` to avoid naming collisions between plugins:
+
+```python
+staff = ManyToManyField(
+    CustomStaff,
+    through="StaffSpecialty",
+    related_name="%(app_label)s_specialties",  # becomes e.g. "my_plugin_specialties"
+)
+```
+
+This is the same namespacing requirement that applies to `ForeignKey` and `OneToOneField` when
+targeting SDK models.
+
 ### Creating Many-to-Many Records
+
+Regardless of whether you use `ManyToManyField`, create and delete relationships through the
+through model directly:
 
 ```python
 from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
@@ -671,6 +805,10 @@ new_staff_specialties = [
 ]
 StaffSpecialty.objects.bulk_create(new_staff_specialties)
 ```
+
+**Note:** Do not use `.add()`, `.remove()`, `.set()`, or `.clear()` on the `ManyToManyField`.
+Django disables these methods when an explicit `through` model is declared. Use the through model's
+manager (e.g., `StaffSpecialty.objects`) for all create and delete operations.
 
 ### Querying Many-to-Many Relationships
 
@@ -721,11 +859,11 @@ for staff in staff_with_specialties:
     print(f"{staff.first_name} {staff.last_name}: {', '.join(specialties)}")
 ```
 
-**Key points about through models:**
+**Key points about many-to-many relationships:**
 
 - Both sides of the relationship can access the through model using `related_name`
-- `staff.staff_specialties.all()` returns `StaffSpecialty` objects (not `Specialty` objects)
-- To get the actual specialties, access through the join table: `[ss.specialty for ss in staff.staff_specialties.all()]`
+- Without `ManyToManyField`: `staff.staff_specialties.all()` returns `StaffSpecialty` objects — access the related object via `ss.specialty`
+- With `ManyToManyField`: `specialty.staff.all()` returns `Staff` objects directly
 - You can add additional fields to the through model to store metadata about the relationship (e.g., date assigned, certification level, etc.)
 - Query across the relationship using double underscores: `CustomStaff.objects.filter(staff_specialties__specialty__name="Cardiology")`
 
