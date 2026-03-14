@@ -180,8 +180,8 @@ Test custom model creation, relationships, and queries:
 import factory
 from datetime import datetime
 from django.db.models import (
-    ForeignKey, OneToOneField, TextField, IntegerField, DateTimeField,
-    Index, DO_NOTHING
+    ForeignKey, ManyToManyField, OneToOneField, TextField, IntegerField,
+    DateTimeField, Index, DO_NOTHING
 )
 from canvas_sdk.test_utils.factories import StaffFactory
 from canvas_sdk.v1.data import Staff, ModelExtension
@@ -204,6 +204,11 @@ class Specialty(CustomModel):
         ]
 
     name = TextField()
+    staff_members = ManyToManyField(
+        "CustomStaff",
+        through="StaffSpecialty",
+        related_name="specialties",
+    )
 
 
 class Biography(CustomModel):
@@ -354,6 +359,24 @@ def test_many_to_many_query_filtering():
     )
 
     assert len(multi_specialty_ids) == 2
+
+
+def test_many_to_many_through_field():
+    """Test direct M2M traversal via ManyToManyField(through=...)."""
+    staff = CustomStaffFactory.create()
+    cardiology = Specialty.objects.create(name="Cardiology")
+    internal_med = Specialty.objects.create(name="Internal Medicine")
+
+    StaffSpecialty.objects.create(staff=staff, specialty=cardiology)
+    StaffSpecialty.objects.create(staff=staff, specialty=internal_med)
+
+    # Direct M2M traversal — Specialty → staff
+    assert staff in cardiology.staff_members.all()
+
+    # Reverse M2M traversal — staff → specialties
+    specialty_names = [s.name for s in staff.specialties.all()]
+    assert "Cardiology" in specialty_names
+    assert "Internal Medicine" in specialty_names
 ```
 
 ## Testing with Factories
@@ -593,6 +616,24 @@ def test_relationship_prefetch():
         specialties = [ss.specialty.name for ss in staff.staff_specialties.all()]
         assert bio is not None
         assert len(specialties) > 0
+
+
+def test_select_related():
+    """Test select_related for FK and OneToOne joins."""
+    staff = CustomStaffFactory.create()
+    BiographyFactory.create(staff=staff)
+    StaffSpecialtyFactory.create(staff=staff)
+
+    # select_related eagerly loads FK/O2O relations in a single query
+    specialty_assoc = (
+        StaffSpecialty.objects
+        .select_related("staff", "specialty")
+        .filter(staff=staff)
+        .first()
+    )
+
+    assert specialty_assoc.staff.first_name is not None
+    assert specialty_assoc.specialty.name is not None
 ```
 
 ## Testing Data Integrity
@@ -600,8 +641,15 @@ def test_relationship_prefetch():
 Test data validation, constraints, and cascade behavior:
 
 ```python
+from datetime import datetime
+
 import factory
-from django.db.models import ForeignKey, TextField, Index, DO_NOTHING
+import pytest
+from django.db import IntegrityError
+from django.db.models import (
+    CASCADE, DateTimeField, ForeignKey, TextField, Index,
+    UniqueConstraint, DO_NOTHING
+)
 from canvas_sdk.test_utils.factories import StaffFactory
 from canvas_sdk.v1.data import AttributeHub, Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
@@ -655,8 +703,54 @@ class StaffSpecialtyFactory(factory.django.DjangoModelFactory):
     specialty = factory.SubFactory(SpecialtyFactory)
 
 
+class Team(CustomModel):
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["name"], name="unique_team_name"),
+        ]
+
+    name = TextField()
+
+
+class TeamMember(CustomModel):
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=["team", "staff"],
+                name="unique_team_staff",
+            ),
+        ]
+
+    team = ForeignKey(Team, to_field="dbid", on_delete=CASCADE, related_name="members")
+    staff = ForeignKey(
+        CustomStaff, to_field="dbid", on_delete=DO_NOTHING, related_name="team_memberships"
+    )
+    joined_at = DateTimeField()
+
+
+class TeamFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Team
+
+    name = factory.Sequence(lambda n: f"Team {n + 1}")
+
+
+class TeamMemberFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = TeamMember
+
+    team = factory.SubFactory(TeamFactory)
+    staff = factory.SubFactory(CustomStaffFactory)
+    joined_at = factory.LazyFunction(datetime.now)
+
+
 def test_manual_cleanup_on_delete():
-    """Test manual cleanup since DO_NOTHING doesn't cascade."""
+    """Test manual cleanup for DO_NOTHING foreign keys.
+
+    ForeignKeys to SDK models (Staff, Patient, etc.) must use DO_NOTHING
+    because those tables are managed externally. Related records must be
+    deleted manually before deleting the parent.
+    """
     staff = CustomStaffFactory.create()
     specialty = SpecialtyFactory.create()
     ss = StaffSpecialtyFactory.create(staff=staff, specialty=specialty)
@@ -669,6 +763,35 @@ def test_manual_cleanup_on_delete():
     # Verify both are gone
     assert not StaffSpecialty.objects.filter(specialty_id=specialty_id).exists()
     assert not Specialty.objects.filter(dbid=specialty_id).exists()
+
+
+def test_cascade_delete():
+    """Test CASCADE deletion between custom models.
+
+    ForeignKeys between your own CustomModels can use CASCADE to
+    automatically delete related records.
+    """
+    team = TeamFactory.create()
+    TeamMemberFactory.create(team=team)
+    TeamMemberFactory.create(team=team)
+
+    assert TeamMember.objects.filter(team=team).count() == 2
+
+    # Deleting the team cascades to members
+    team.delete()
+    assert not TeamMember.objects.filter(team=team).exists()
+
+
+def test_unique_constraint_violation():
+    """Test that UniqueConstraint prevents duplicate records."""
+    team = TeamFactory.create()
+    staff = CustomStaffFactory.create()
+
+    TeamMember.objects.create(team=team, staff=staff, joined_at=datetime.now())
+
+    # Same team + staff violates the UniqueConstraint
+    with pytest.raises(IntegrityError):
+        TeamMember.objects.create(team=team, staff=staff, joined_at=datetime.now())
 
 
 def test_attribute_hub_upsert():
@@ -702,6 +825,47 @@ def test_transaction_rollback():
     assert specialty.name == "Test Specialty"
 ```
 
+## Testing proxy_field
+
+The `proxy_field` descriptor lets a `ModelExtension` proxy transparently return another proxy class from a ForeignKey lookup, so you can access custom methods on related objects:
+
+```python
+from canvas_sdk.v1.data import Note, Patient, Staff, ModelExtension
+from canvas_sdk.v1.data.base import proxy_field
+from canvas_sdk.test_utils.factories import NoteFactory
+
+
+class CustomPatient(Patient, ModelExtension):
+    @property
+    def display_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
+
+
+class CustomNote(Note, ModelExtension):
+    # Without proxy_field, accessing note.patient returns a plain Patient.
+    # With proxy_field, it returns a CustomPatient instead.
+    patient = proxy_field(CustomPatient)
+
+
+def test_proxy_field_returns_proxy_class():
+    """proxy_field swaps __class__ so the returned object is CustomPatient."""
+    note = NoteFactory.create()
+    custom_note = CustomNote.objects.select_related("patient").get(dbid=note.dbid)
+
+    # The patient is a CustomPatient, not a plain Patient
+    assert type(custom_note.patient) is CustomPatient
+    assert custom_note.patient.display_name == (
+        f"{note.patient.first_name} {note.patient.last_name}"
+    )
+
+
+def test_proxy_field_handles_null():
+    """proxy_field returns None when the FK is null."""
+    note = NoteFactory.create(patient=None)
+    custom_note = CustomNote.objects.get(dbid=note.dbid)
+    assert custom_note.patient is None
+```
+
 ## Testing Best Practices
 
 1. **Use factories** for consistent test data generation
@@ -712,7 +876,7 @@ def test_transaction_rollback():
 6. **Use descriptive test names** that explain what is being tested
 7. **Test query optimization** to ensure prefetching works as expected
 8. **Verify constraints** like uniqueness behavior
-9. **Clean up manually** - Custom models use `DO_NOTHING` for foreign keys, so related records must be deleted manually before deleting the parent
+9. **Choose the right `on_delete`** - ForeignKeys to SDK models (Staff, Patient, etc.) must use `DO_NOTHING` and related records must be deleted manually. ForeignKeys between your own CustomModels can use `CASCADE` for automatic cleanup
 
 ## See Also
 

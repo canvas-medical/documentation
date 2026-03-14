@@ -148,7 +148,8 @@ class ProviderQualification(CustomModel):
 **Index Best Practices:**
 - Index fields used in `filter()` and `order_by()`
 - Create composite indexes for common multi-field queries
-- Foreign key fields are indexed automatically
+- **Do not** index `ForeignKey` or `OneToOneField` columns — they are indexed automatically.
+  The SDK will raise an error if you declare a single-column index that duplicates an auto-indexed column.
 
 ### Uniqueness Constraints
 
@@ -189,12 +190,16 @@ class StaffCertification(CustomModel):
 
     class Meta:
         constraints = [
-            UniqueConstraint(fields=["staff_id", "certification_code"], name="uq_staff_cert"),
+            UniqueConstraint(fields=["staff", "certification_code"], name="uq_staff_cert"),
         ]
 ```
 
 Each `UniqueConstraint` requires a `name` parameter — this is a standard Django requirement. Choose a descriptive
 name that won't collide with other constraints in your plugin.
+
+Use Django field names (e.g., `"staff"`) rather than database column names (e.g., `"staff_id"`) in the `fields`
+list — the SDK resolves field names to column names automatically. The same applies to `Index` fields in
+`Meta.indexes`.
 
 **Important:** Do not use `unique=True` on individual fields. The SDK will reject it with
 an error directing you to use `UniqueConstraint` instead. This is because `unique=True` modifies
@@ -405,7 +410,8 @@ class will contain the reverse mapping via `related_name`.
 
 **Uniqueness:** A `OneToOneField` implies that the foreign key column is unique — each target record can be
 referenced by at most one row. The SDK automatically creates a `UNIQUE INDEX` on the foreign key column
-to enforce this at the database level. You do not need to add a separate `UniqueConstraint` for it.
+to enforce this at the database level. Do not add a separate `UniqueConstraint` for it — the SDK will
+raise an error if you declare a single-column `UniqueConstraint` or `Index` on an auto-indexed column.
 
 ### One-to-One with `primary_key=True`
 
@@ -650,7 +656,7 @@ class StaffSpecialty(CustomModel):
   class Meta:
     constraints = [
       UniqueConstraint(
-        fields=["staff_id", "specialty_id"],
+        fields=["staff", "specialty"],
         name="unique_staff_specialty",
       ),
     ]
@@ -663,8 +669,8 @@ This creates a many-to-many relationship where:
 
 **Preventing duplicate associations:** Through models typically need a uniqueness constraint on
 the pair of foreign key columns to prevent the same association from being created twice. Add a
-`UniqueConstraint` to the through model's `Meta.constraints` referencing both FK column names
-(e.g., `staff_id` and `specialty_id`). Without this, calling `StaffSpecialty.objects.create(staff=staff, specialty=cardiology)`
+`UniqueConstraint` to the through model's `Meta.constraints` referencing both FK field names
+(e.g., `staff` and `specialty`). Without this, calling `StaffSpecialty.objects.create(staff=staff, specialty=cardiology)`
 twice would create two identical rows. See [Uniqueness Constraints](#uniqueness-constraints) for
 more details on constraint naming and lifecycle.
 
@@ -721,7 +727,7 @@ class StaffSpecialty(CustomModel):
   class Meta:
     constraints = [
       UniqueConstraint(
-        fields=["staff_id", "specialty_id"],
+        fields=["staff", "specialty"],
         name="unique_staff_specialty",
       ),
     ]
