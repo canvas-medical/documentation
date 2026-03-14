@@ -71,10 +71,12 @@ and must be enforced within plugin code.
 Unsupported constraints:
 * `not null`
 * `max_length`
-* `references` (foreign key constraints)
+* `references` (database-level foreign key constraints)
 
 If applied to an existing dataset, these constraints could result in a full table rewrite operation, or prevent
-plugin installation.
+plugin installation. Note that while database-level `REFERENCES` constraints are not created, Django's ORM
+enforces `on_delete` behavior (`CASCADE`, `SET_NULL`, `DO_NOTHING`) at the application level — see
+[Delete Behavior](#delete-behavior) below.
 
 Uniqueness constraints **are** supported via `UniqueConstraint` in `Meta.constraints`.
 See [Uniqueness Constraints](#uniqueness-constraints) below.
@@ -92,16 +94,24 @@ The Canvas SDK provides Django-based field types for defining your models:
 | `DateField`       | Date values               | `auto_now`, `auto_now_add`, `default`    |
 | `DateTimeField`   | Date and time values      | `auto_now`, `auto_now_add`, `default`    |
 | `JSONField`       | JSON-serializable data    | `default`                                |
-| `ForeignKey`      | Many-to-one relationship  | `related_name`, `on_delete=DO_NOTHING`   |
-| `OneToOneField`   | One-to-one relationship   | `related_name`, `on_delete=DO_NOTHING`, `primary_key` |
+| `ForeignKey`      | Many-to-one relationship  | `related_name`, `on_delete`, `to_field`  |
+| `OneToOneField`   | One-to-one relationship   | `related_name`, `on_delete`, `to_field`, `primary_key` |
 | `ManyToManyField` | Many-to-many relationship | `through` (required), `related_name`     |
 
 If `default` is supplied it will be applied by the Django ORM, and will not be a PostgreSQL default. 
 As a result, only new records will receive the value, and it will not cause a mass edit of existing records.
 
-Note: `on_delete=CASCADE` is unsupported because it relies upon database-level foreign key constraints
-which are not implemented at this time. Plugins are responsible for maintaining data integrity and
-preventing orphaned records during delete operations.
+The `on_delete` parameter is required on `ForeignKey` and `OneToOneField`. It controls what happens
+to child records when the referenced parent record is deleted:
+
+| Value         | Behavior                                                                                     |
+|---------------|----------------------------------------------------------------------------------------------|
+| `CASCADE`     | Automatically delete the child record when the parent is deleted.                            |
+| `SET_NULL`    | Set the foreign key column to `NULL` when the parent is deleted. The child record is kept.   |
+| `DO_NOTHING`  | Take no action. The plugin is responsible for cleaning up or preventing orphaned references. |
+
+These behaviors are enforced by Django's ORM at the application level. They apply when deleting
+via `model.delete()` or `queryset.delete()`, but not when using raw SQL.
 
 ### Indexes
 
@@ -370,7 +380,7 @@ Use `OneToOneField` to define this relationship.
 ```python
 from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import DateTimeField, DecimalField, DO_NOTHING, OneToOneField, TextField
+from django.db.models import CASCADE, DateTimeField, DecimalField, OneToOneField, TextField
 
 
 class CustomStaff(Staff, ModelExtension):
@@ -385,7 +395,7 @@ class Biography(CustomModel):
     last_modified_at = DateTimeField(auto_now_add=True)
 
     staff = OneToOneField(
-        CustomStaff, to_field="dbid", on_delete=DO_NOTHING, related_name="biography"
+        CustomStaff, to_field="dbid", on_delete=CASCADE, related_name="biography"
     )
 ```
 
@@ -408,7 +418,7 @@ there is no need for a separate surrogate key.
 ```python
 from canvas_sdk.v1.data import Patient, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import DO_NOTHING, JSONField, OneToOneField
+from django.db.models import CASCADE, JSONField, OneToOneField
 
 
 class CustomPatient(Patient, ModelExtension):
@@ -417,7 +427,7 @@ class CustomPatient(Patient, ModelExtension):
 class PatientPreferences(CustomModel):
 
     patient = OneToOneField(
-        CustomPatient, to_field="dbid", on_delete=DO_NOTHING,
+        CustomPatient, to_field="dbid", on_delete=CASCADE,
         related_name="preferences", primary_key=True
     )
     preferences = JSONField(default=dict)
@@ -488,7 +498,7 @@ Use `ForeignKey` to define this relationship.
 ```python
 from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import DateTimeField, DecimalField, DO_NOTHING, ForeignKey, TextField
+from django.db.models import CASCADE, DateTimeField, DecimalField, ForeignKey, TextField
 
 
 class CustomStaff(Staff, ModelExtension):
@@ -504,7 +514,7 @@ class Biography(CustomModel):
   # Same as one-to-one, but a Foreign key with a plural 'related_name'. Now, each staff may have multiple biographies,
   # perhaps in different languages.
   staff = ForeignKey(
-    CustomStaff, to_field="dbid", on_delete=DO_NOTHING, related_name="biographies"
+    CustomStaff, to_field="dbid", on_delete=CASCADE, related_name="biographies"
   )
 ```
 
@@ -600,7 +610,7 @@ The simplest approach is to define just the through model. This works well when 
 has additional metadata fields or when you prefer to query the join table directly.
 
 ```python
-from django.db.models import DO_NOTHING, ForeignKey, Index, TextField, UniqueConstraint
+from django.db.models import CASCADE, ForeignKey, Index, TextField, UniqueConstraint
 from canvas_sdk.v1.data.base import CustomModel
 from canvas_sdk.v1.data import Staff, ModelExtension
 
@@ -627,13 +637,13 @@ class StaffSpecialty(CustomModel):
   staff = ForeignKey(
     CustomStaff,
     to_field="dbid",
-    on_delete=DO_NOTHING,
+    on_delete=CASCADE,
     related_name="staff_specialties"
   )
   specialty = ForeignKey(
     Specialty,
     to_field="dbid",
-    on_delete=DO_NOTHING,
+    on_delete=CASCADE,
     related_name="staff_specialties"
   )
 
@@ -667,7 +677,7 @@ related objects without manually traversing the join table.
 cause an error because the SDK cannot manage implicit join tables.
 
 ```python
-from django.db.models import DO_NOTHING, ForeignKey, Index, ManyToManyField, TextField, UniqueConstraint
+from django.db.models import CASCADE, ForeignKey, Index, ManyToManyField, TextField, UniqueConstraint
 from canvas_sdk.v1.data.base import CustomModel
 from canvas_sdk.v1.data import Staff, ModelExtension
 
@@ -698,13 +708,13 @@ class StaffSpecialty(CustomModel):
   staff = ForeignKey(
     CustomStaff,
     to_field="dbid",
-    on_delete=DO_NOTHING,
+    on_delete=CASCADE,
     related_name="%(app_label)s_staff_specialties",
   )
   specialty = ForeignKey(
     Specialty,
     to_field="dbid",
-    on_delete=DO_NOTHING,
+    on_delete=CASCADE,
     related_name="staff_specialties",
   )
 
@@ -868,11 +878,25 @@ for staff in staff_with_specialties:
 - You can add additional fields to the through model to store metadata about the relationship (e.g., date assigned, certification level, etc.)
 - Query across the relationship using double underscores: `CustomStaff.objects.filter(staff_specialties__specialty__name="Cardiology")`
 
-## No Cascaded Operations
+## Delete Behavior
 
-At this time the SDK does **not** support `CASCADE`, `PROTECT`, or `SET_NULL` for the required `on_delete` attribute 
-to `ForeignKey` and `OneToOneField`. Only `DO_NOTHING` is allowed. It is the responsibility of the plugin to 
-delete associated records correctly.
+The `on_delete` parameter on `ForeignKey` and `OneToOneField` controls what happens to child records
+when a parent record is deleted. The SDK supports three values:
+
+- **`CASCADE`** — Delete the child record automatically. This is the most common choice for
+  tightly-coupled relationships like join table entries, child records that have no meaning without
+  their parent, or `OneToOneField` with `primary_key=True`.
+- **`SET_NULL`** — Set the foreign key column to `NULL`, keeping the child record. Useful when the
+  child has independent value even if its parent is removed (e.g., an audit log entry whose
+  associated staff member has been deactivated).
+- **`DO_NOTHING`** — Take no automatic action. The plugin is fully responsible for preventing
+  orphaned references.
+
+These behaviors are enforced at the Django ORM level, not by database-level foreign key constraints.
+They apply when deleting via `model.delete()` or `queryset.delete()`.
+
+**Tip:** Use `CASCADE` on through-model (join table) foreign keys so that deleting either side of
+a many-to-many relationship automatically cleans up the association rows.
 
 ## The CustomModel Lifecycle
 
@@ -909,7 +933,7 @@ You can combine CustomModels with [AttributeHubs](/sdk/custom-data-attribute-hub
 ```python
 from canvas_sdk.v1.data.base import CustomModel
 from canvas_sdk.v1.data import AttributeHub, Staff, ModelExtension
-from django.db.models import DO_NOTHING, ForeignKey, TextField
+from django.db.models import CASCADE, ForeignKey, SET_NULL, TextField
 
 
 class CustomStaff(Staff, ModelExtension):
@@ -927,10 +951,10 @@ class StaffDepartment(CustomModel):
     """Staff can belong to multiple departments."""
 
     staff = ForeignKey(
-        CustomStaff, on_delete=DO_NOTHING, related_name="department_assignments"
+        CustomStaff, on_delete=SET_NULL, related_name="department_assignments"
     )
     department = ForeignKey(
-        Department, on_delete=DO_NOTHING, related_name="staff_members"
+        Department, on_delete=CASCADE, related_name="staff_members"
     )
     role = TextField()
 
@@ -1058,7 +1082,7 @@ for specialty in specialty_counts:
 
 1. **Choose the right relationship type** - OneToOne for 1:1, ForeignKey for 1:many, join tables and "through" models for many:many
 2. **Use through models** - To create a join table bridging two other entities, create a CustomModel representing the relationship
-3. **Delete dependencies** - To prevent orphaned records, delete join table entries prior to deleting child records
+3. **Handle deletions** - Use `CASCADE` on join table foreign keys so associations are cleaned up automatically. Use `SET_NULL` when child records should survive parent deletion. Use `DO_NOTHING` only when you manage cleanup explicitly in plugin code
 
 ### Performance
 
