@@ -106,10 +106,15 @@ class Specialty(CustomModel):
 The Canvas SDK provides comprehensive testing utilities for all custom data approaches. 
 See the [Testing Custom Data](/sdk/custom-data-testing/) guide for detailed examples and best practices.
 
-### Sharing Data
+## Sharing Data
 
 Use APIs to make data available and accessible to and from other plugins and external services. See the
 [Sharing Data](/sdk/custom-data-sharing-data/) guide for detailed examples and best practices.
+
+## Read Replica Databases
+
+All the data managed by plugin is available via the database read replica. To access it, alter the PostgreSQL
+[search_path](https://www.postgresql.org/docs/18/ddl-schemas.html#DDL-SCHEMAS-PATH) to include the namespaces that intend to query.
 
 ## See Also
 
