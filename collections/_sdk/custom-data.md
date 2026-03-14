@@ -114,7 +114,8 @@ Use APIs to make data available and accessible to and from other plugins and ext
 ## Read Replica Databases
 
 All the data managed by plugin is available via the database read replica. To access it, alter the PostgreSQL
-[search_path](https://www.postgresql.org/docs/18/ddl-schemas.html#DDL-SCHEMAS-PATH) to include the namespaces that intend to query.
+[search_path](https://www.postgresql.org/docs/18/ddl-schemas.html#DDL-SCHEMAS-PATH) to include the namespaces that you 
+intend to query.
 
 ## See Also
 

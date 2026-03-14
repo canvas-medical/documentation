@@ -337,7 +337,7 @@ class CRMSyncAPI(SimpleAPI):
             "crm_contact_id": crm_data.get("contact_id"),
             "campaign_status": crm_data.get("status"),
             "enrollment_date": crm_data.get("enrolled_at"),
-            "last_synced": str(datetime.now()),
+            "last_synced": datetime.now(),
             "sync_direction": "crm_to_canvas"
         })
 

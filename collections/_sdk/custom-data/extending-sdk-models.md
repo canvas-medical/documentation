@@ -126,6 +126,98 @@ and the proxy class is reusable across multiple CustomModels in the same plugin.
 
 ---
 
+## Proxying Related Objects with `proxy_field`
+
+When you use `ModelExtension` proxies and follow related objects through ForeignKey fields, the
+returned instance is the base SDK class — not your proxy. For example:
+
+```python
+class CustomPatient(Patient, ModelExtension):
+    def full_display_name(self):
+        # custom method only available on CustomPatient
+        return f"{self.first_name} {self.last_name} (DOB: {self.birth_date})"
+
+
+class CustomNote(Note, ModelExtension):
+    pass
+
+
+note = CustomNote.objects.get(id=note_id)
+note.patient                       # returns a Patient, not CustomPatient
+note.patient.full_display_name()   # AttributeError!
+```
+
+This happens because Django's ForeignKey descriptor resolves the relation to the concrete model
+(`Patient`), unaware of your proxy class. You would need an extra query to "re-fetch" the object
+as a `CustomPatient`.
+
+### The `proxy_field` descriptor
+
+`proxy_field` solves this by intercepting the ForeignKey access and transparently returning the
+proxy class instead:
+
+```python
+from canvas_sdk.v1.data import Note, Patient, ModelExtension, proxy_field
+
+
+class CustomPatient(Patient, ModelExtension):
+    def full_display_name(self):
+        return f"{self.first_name} {self.last_name} (DOB: {self.birth_date})"
+
+
+class CustomNote(Note, ModelExtension):
+    patient = proxy_field(CustomPatient)
+
+
+note = CustomNote.objects.get(id=note_id)
+note.patient                       # returns a CustomPatient instance
+note.patient.full_display_name()   # works!
+```
+
+No extra queries are issued — `proxy_field` reuses the already-fetched row and swaps its Python
+class to the proxy. Because proxy models share the same database table, this is safe and
+efficient.
+
+### How it works
+
+`proxy_field` is a Python [descriptor](https://docs.python.org/3/howto/descriptor.html). When
+you declare `patient = proxy_field(CustomPatient)` on a model class:
+
+1. `__set_name__` runs at class creation time and finds the original FK descriptor (`patient`)
+   from the parent class in the MRO.
+2. `__get__` delegates to that original descriptor to load the related object, then sets
+   `__class__` on the result to your proxy class.
+3. `__set__` passes assignment through to the original descriptor, so `note.patient = some_patient`
+   continues to work normally.
+4. Accessing the attribute on the class (e.g., `CustomNote.patient`) returns the descriptor
+   itself, not a model instance.
+
+### When to use `proxy_field`
+
+Use `proxy_field` when:
+
+- You have `ModelExtension` proxies for multiple SDK models and need to navigate between them
+  while keeping access to your custom methods or `related_name` fields.
+- You want to avoid extra database queries to "re-fetch" a related object as the proxy type.
+
+`proxy_field` is not needed when:
+
+- You don't add custom methods, properties or `related_name` fields to your proxy class.
+- You access the related object's fields directly (e.g., `note.patient.first_name`) without
+  needing proxy-specific behavior.
+
+### Null foreign keys
+
+`proxy_field` handles nullable ForeignKeys safely — if the relation is `None`, it returns `None`
+without error:
+
+```python
+note = CustomNote.objects.get(id=note_id)
+note.patient  # returns None if the FK is null, not an error
+```
+
+---
+
 ## Common Errors
 
 ### `ValueError`: non-namespaced `related_name` on SDK model target
