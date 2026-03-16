@@ -64,7 +64,7 @@ Patient groups and memberships can be filtered by any attribute that exists on t
 ```python
 from canvas_sdk.v1.data.patient_group import PatientGroup
 
-group = PatientGroup.objects.filter(name="Diabetes Management")
+groups = PatientGroup.objects.filter(name="Diabetes Management")
 ```
 
 ### By active membership

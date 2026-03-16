@@ -20679,7 +20679,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_GROUP_CREATED</th></tr>
-    <tr><td colspan="2">Occurs on a patient group is created</td></tr>
+    <tr><td colspan="2">Occurs when a patient group is created</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -20697,7 +20697,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_GROUP_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs on a patient group is updated</td></tr>
+    <tr><td colspan="2">Occurs when a patient group is updated</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -20715,7 +20715,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_CREATED</th></tr>
-    <tr><td colspan="2">Occurs on a patient becomes a member of a group</td></tr>
+    <tr><td colspan="2">Occurs when a patient is added as a member of a group</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -20737,7 +20737,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_DELETED</th></tr>
-    <tr><td colspan="2">Occurs on a patient no longer is a member of a group</td></tr>
+    <tr><td colspan="2">Occurs when a patient member is removed from a patient group</td></tr>
   </thead>
   <tbody>
     <tr>
