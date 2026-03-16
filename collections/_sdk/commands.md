@@ -440,7 +440,7 @@ AdjustPrescriptionCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1477,7 +1477,7 @@ prescription = PrescribeCommand(
     quantity_to_dispense=30,
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1918,7 +1918,7 @@ RefillCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
