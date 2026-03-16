@@ -440,7 +440,7 @@ AdjustPrescriptionCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1417,7 +1417,7 @@ prescription = PrescribeCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1425,6 +1425,8 @@ prescription = PrescribeCommand(
 ```
 
 ***Option 2: Existing Compound Medication (by ID)***
+
+Note: `type_to_dispense` should not be provided for compound medications as this field will auto-populate in the command when it is inserted in the note
 ```python
 from canvas_sdk.commands.constants import ClinicalQuantity
 from canvas_sdk.commands import PrescribeCommand
@@ -1443,13 +1445,9 @@ prescription = PrescribeCommand(
     sig="Take one tablet daily after meals",
     days_supply=30,
     quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1477,13 +1475,9 @@ prescription = PrescribeCommand(
     sig="Apply thin layer to affected area twice daily",
     days_supply=30,
     quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1924,7 +1918,7 @@ RefillCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
