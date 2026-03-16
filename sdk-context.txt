@@ -8580,6 +8580,94 @@ procedure_id | Integer
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-device/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-document-reference/
+#  DocumentReference 
+The `DocumentReference` model represents references to documents stored in Canvas, such as uploaded PDFs, scanned files, and other clinical documents. Each document reference can link to a file stored in S3 and provides secure access via presigned URLs.
+##  Basic Usage 
+    ```python
+    from canvas_sdk.v1.data import DocumentReference
+    # Get a specific document reference
+    doc_ref = DocumentReference.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+    # Get all document references
+    all_docs = DocumentReference.objects.all()
+    ```
+##  Filtering 
+###  By patient 
+    ```python
+    from canvas_sdk.v1.data import DocumentReference
+    patient_docs = DocumentReference.objects.for_patient("b80b1cdc2e6a4aca90ccebc02e683f35")
+    ```
+###  By status 
+    ```python
+    from canvas_sdk.v1.data import DocumentReference, DocumentReferenceStatus
+    current_docs = DocumentReference.objects.filter(status=DocumentReferenceStatus.CURRENT)
+    ```
+###  By category or type 
+    ```python
+    from canvas_sdk.v1.data import DocumentReference
+    docs = DocumentReference.objects.filter(category__code="clinical-note")
+    ```
+##  Accessing Document Files 
+The `document_url` property returns a presigned S3 URL for securely accessing the document file. If no S3 file is present, it falls back to the `document_absolute_url` field.
+    ```python
+    from canvas_sdk.v1.data import DocumentReference
+    doc_ref = DocumentReference.objects.exclude(document="").first()
+    # Returns a presigned S3 URL (valid for 1 hour)
+    url = doc_ref.document_url
+    ```
+##  Attributes 
+###  DocumentReference 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+document | String  
+document_absolute_url | String  
+document_content_type | String  
+business_identifier | String  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+subject | [CanvasUser](/sdk/data-canvasuser)  
+type | DocumentReferenceCoding  
+category | DocumentReferenceCategory  
+status | DocumentReferenceStatus  
+date | Date  
+encounter | [Encounter](/sdk/data-encounter)  
+team | [Team](/sdk/data-team/#team)  
+related_object_document_title | String  
+related_object_document_comment | String  
+document_url | String (property) — presigned S3 URL or absolute URL  
+###  DocumentReferenceCoding 
+A coding entry representing the type of a document reference.
+Field Name | Type  
+---|---  
+dbid | Integer  
+system | String  
+version | String  
+code | String  
+display | String  
+user_selected | Boolean  
+###  DocumentReferenceCategory 
+A coding entry representing the category of a document reference.
+Field Name | Type  
+---|---  
+dbid | Integer  
+system | String  
+version | String  
+code | String  
+display | String  
+user_selected | Boolean  
+###  DocumentReferenceStatus 
+An enum representing the status of a document reference.
+Member | Value | Description  
+---|---|---  
+`CURRENT` | `current` | Current  
+`SUPERSEDED` | `superseded` | Superseded  
+`ENTERED_IN_ERROR` | `entered-in-error` | Entered in Error
+----- END PAGE https://docs.canvasmedical.com/sdk/data-document-reference/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-encounter/
 ##  Introduction 
 The `Encounter` model represents a patient encounter connected to a Note in Canvas.
@@ -10400,6 +10488,7 @@ Name | Type | Description
 `file` | `Text` | Storage path or identifier for the file.  
 `content_type` | `String` | MIME type of the attachment.  
 `message` | Message | The parent message to which this belongs.  
+`file_url` | String (property) | Presigned S3 URL for accessing the file.  
 ##  MessageTransmission 
 Tracks delivery attempts and status for a message.
 ###  Fields 
@@ -11132,6 +11221,7 @@ dependent_coverages | [Coverage](/sdk/data-coverage/#coverage)[]
 detected_issues | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[]  
 devices | [Device](/sdk/data-device/#device)[]  
 external_identifiers | PatientExternalIdentifier[]  
+identification_cards | PatientIdentificationCard[]  
 imaging_orders | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]  
 imaging_reports | [ImagingReport](/sdk/data-imaging/#imagingreport)[]  
 imaging_reviews | [ImagingReview](/sdk/data-imaging/#imagingreview)[]  
@@ -11250,6 +11340,25 @@ value | Text
     patient_metadata = patient.metadata.all()
     for metadata in patient_metadata:
        log.info(f"Patient metadata: {metadata.key}, {metadata.value}") # favorite_color - red
+    ```
+###  PatientIdentificationCard 
+Represents a patient identification card image (e.g., driver's license, insurance card).
+Field Name | Type  
+---|---  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+patient | Patient  
+image | String  
+title | String  
+active | Boolean  
+image_url | String (property) — presigned S3 URL  
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    from logger import log
+    patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+    for card in patient.identification_cards.filter(active=True):
+        log.info(f"ID card: {card.title}, URL: {card.image_url}")
     ```
 ###  PatientFacilityAddress 
 Field Name | Type  
@@ -12155,6 +12264,59 @@ notes | String
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-serviceprovider/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-snapshot/
+#  Snapshot Models 
+The `Snapshot` and `SnapshotImage` models represent images captured via the Canvas iOS application or uploaded directly through the coverages modal. A `Snapshot` groups related images together, while each `SnapshotImage` represents an individual image with presigned URL support for secure access.
+Snapshots are primarily used for storing coverage card images. Note that there is currently no way to navigate from a `Snapshot` to the `Coverage` it is associated with via the SDK. This linkage will be addressed in a future release.
+##  Basic Usage 
+    ```python
+    from canvas_sdk.v1.data import Snapshot, SnapshotImage
+    # Get all snapshots
+    snapshots = Snapshot.objects.all()
+    # Get a specific snapshot
+    snapshot = Snapshot.objects.get(dbid=42)
+    # Get images for a snapshot
+    images = snapshot.images.all()
+    # Get all snapshot images
+    all_images = SnapshotImage.objects.all()
+    ```
+##  Accessing Image Files 
+The `image_url` property on `SnapshotImage` returns a presigned S3 URL for securely accessing the image file.
+    ```python
+    from canvas_sdk.v1.data import SnapshotImage
+    image = SnapshotImage.objects.exclude(image="").first()
+    # Returns a presigned S3 URL (valid for 1 hour)
+    url = image.image_url
+    ```
+##  Attributes 
+###  Snapshot 
+Field Name | Type  
+---|---  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+deleted | Boolean  
+entered_in_error | Boolean  
+title | String  
+description | String  
+images | SnapshotImage[]  
+###  SnapshotImage 
+Field Name | Type  
+---|---  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+snapshot | Snapshot  
+image | String  
+title | String  
+instruction | String  
+tag | String  
+image_url | String (property) — presigned S3 URL
+----- END PAGE https://docs.canvasmedical.com/sdk/data-snapshot/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-specialty-report-template/
 ##  Introduction 
 The `SpecialtyReportTemplate`, `SpecialtyReportTemplateField`, and `SpecialtyReportTemplateFieldOption` models represent the templates used for specialty and referral reports. Templates define the structure of a specialty report, including what fields need to be filled in and what options are available for each field. Each template can be associated with a medical specialty via taxonomy codes.
@@ -12901,7 +13063,7 @@ The following code is an example of a custom `ValueSet` in use within a plugin:
 The data module provides you with data to compute on. It provides curated, secure access to both PHI (e.g. patient data) and non-PHI (e.g. staff and practice-level data), representing the current state of your target Canvas instance. The module's classes offer convenience methods and operators that make business logic and clinical logic easy to express with standard terminologies like ICD-10, SNOMED-CT, CPT, and the like.
 Data module classes are Django ORM models, which allow easy retrieval of data at runtime through Django's expressive [QuerySet API](https://docs.djangoproject.com/en/5.1/ref/models/querysets/).
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -13427,6 +13589,7 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
   - upserting metadata on claims
   - adding banner alerts to claims
   - removing banner alerts from claims
+  - updating provider information on claims
 Additionally, the SDK provides a separate effect to update claim line items.
 The following standalone effect classes are deprecated and will be removed in a future release. Please use the `ClaimEffect` class instead.
 Deprecated Class | Old Import Path | New Equivalent  
@@ -13901,6 +14064,130 @@ Parameter | Type | Description | Required
                 return [claim_effect.remove_banner(key="review-needed")]
             return []
     ```
+###  Update Provider 
+`ClaimEffect.update_provider()`: updates provider information on a claim, including billing provider, rendering/attending provider, referring provider, ordering provider, and facility details. All parameters are optional — only the fields you provide will be updated.
+####  Parameters 
+Parameter | Type | Description | Required  
+---|---|---|---  
+`billing_provider` | ClaimBillingProvider or `None` | Billing provider information | No  
+`provider` | ClaimProvider or `None` | Rendering or attending provider information | No  
+`referring_provider` | ClaimReferringProvider or `None` | Referring provider information | No  
+`ordering_provider` | ClaimOrderingProvider or `None` | Ordering provider information | No  
+`facility` | ClaimFacility or `None` | Facility information | No  
+####  ClaimBillingProvider 
+Attribute | Type | Description  
+---|---|---  
+`name` | `str` or `None` | Provider name (max 255 chars)  
+`phone` | `str` or `None` | Phone number (max 15 chars)  
+`addr1` | `str` or `None` | Address line 1 (max 255 chars)  
+`addr2` | `str` or `None` | Address line 2 (max 255 chars)  
+`city` | `str` or `None` | City (max 255 chars)  
+`state` | `str` or `None` | State code (max 2 chars)  
+`zip` | `str` or `None` | ZIP code (max 255 chars)  
+`npi` | `str` or `None` | NPI number (max 10 chars)  
+`tax_id` | `str` or `None` | Tax ID (max 100 chars)  
+`tax_id_type` | `str` or `None` | Tax ID type (max 1 char)  
+`taxonomy` | `str` or `None` | Taxonomy code (max 100 chars)  
+`clia_number` | `str` or `None` | CLIA number (max 100 chars)  
+####  ClaimProvider 
+Represents the rendering or attending provider.
+Attribute | Type | Description  
+---|---|---  
+`first_name` | `str` or `None` | First name (max 255 chars)  
+`last_name` | `str` or `None` | Last name (max 255 chars)  
+`middle_name` | `str` or `None` | Middle name (max 255 chars)  
+`npi` | `str` or `None` | NPI number (max 10 chars)  
+`tax_id` | `str` or `None` | Tax ID (max 100 chars)  
+`tax_id_type` | `str` or `None` | Tax ID type (max 1 char)  
+`taxonomy` | `str` or `None` | Taxonomy code (max 100 chars)  
+`ptan_identifier` | `str` or `None` | PTAN identifier (max 50 chars)  
+####  ClaimReferringProvider 
+Attribute | Type | Description  
+---|---|---  
+`first_name` | `str` or `None` | First name (max 255 chars)  
+`last_name` | `str` or `None` | Last name (max 255 chars)  
+`middle_name` | `str` or `None` | Middle name (max 255 chars)  
+`npi` | `str` or `None` | NPI number (max 10 chars)  
+`ptan_identifier` | `str` or `None` | PTAN identifier (max 50 chars)  
+####  ClaimOrderingProvider 
+Attribute | Type | Description  
+---|---|---  
+`first_name` | `str` or `None` | First name (max 255 chars)  
+`last_name` | `str` or `None` | Last name (max 255 chars)  
+`middle_name` | `str` or `None` | Middle name (max 255 chars)  
+`npi` | `str` or `None` | NPI number (max 10 chars)  
+####  ClaimFacility 
+Attribute | Type | Description  
+---|---|---  
+`name` | `str` or `None` | Facility name (max 255 chars)  
+`npi` | `str` or `None` | NPI number (max 10 chars)  
+`addr1` | `str` or `None` | Address line 1 (max 255 chars)  
+`addr2` | `str` or `None` | Address line 2 (max 255 chars)  
+`city` | `str` or `None` | City (max 255 chars)  
+`state` | `str` or `None` | State code (max 2 chars)  
+`zip` | `str` or `None` | ZIP code (max 255 chars)  
+`hosp_from_date` | `date` or `None` | Hospitalization start date  
+`hosp_to_date` | `date` or `None` | Hospitalization end date  
+####  Implementation Details 
+  - Validates `claim_id` is provided and that the associated claim exists
+  - Validates that the claim has existing provider information (i.e., the claim's provider record is populated)
+  - Only fields with non-`None` values are included in the update — any fields left as `None` are excluded
+  - Date fields (`hosp_from_date`, `hosp_to_date`) are serialized to ISO format strings
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import Claim, Note, PatientFacilityAddress
+    from canvas_sdk.v1.data.common import AddressState
+    from canvas_sdk.effects.claim.claim import ClaimEffect, ClaimBillingProvider, ClaimFacility
+    class ClaimProviderHandler(BaseHandler):
+        RESPONDS_TO = [
+            EventType.Name(EventType.CLAIM_CREATED),
+            EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED),
+        ]
+        def get_claim(self) -> Claim | None:
+            if self.event.type == EventType.CLAIM_CREATED:
+                return Claim.objects.get(id=self.event.target.id)
+            if self.event.context["state"] not in ["LKD", "PSH", "DSC"]:
+                # claim provider details can change when notes are locked, pushed, or discharged
+                return None
+            return Note.objects.get(self.event.target.id).get_claim()
+        def get_patient_facility(self, claim) -> PatientFacilityAddress | None:
+            return PatientFacilityAddress.objects.filter(
+                patient=claim.note.patient, state=AddressState.ACTIVE
+            ).first()
+        def compute(self) -> list[Effect]:
+            """When a claim is created, or note is locked/pushed/charged, update the claim's provider information."""
+            if not (claim := self.get_claim()):
+                return []
+            if not (facility := self.get_patient_facility(claim)):
+                return []
+            billing = ClaimBillingProvider(
+                name=facility.facility.name,
+                phone=facility.facility.phone_number,
+                addr1=facility.line1,
+                addr2=facility.line2,
+                city=facility.city,
+                state=facility.state_code,
+                zip=facility.postal_code,
+                npi=facility.facility.npi_number,
+            )
+            facility = ClaimFacility(
+                name=facility.facility.name,
+                npi=facility.facility.npi_number,
+                addr1=facility.line1,
+                addr2=facility.line2,
+                city=facility.city,
+                state=facility.state_code,
+                zip=facility.postal_code,
+            )
+            return [
+                ClaimEffect(claim_id=claim.id).update_provider(
+                    billing_provider=billing, facility=facility
+                )
+            ]
+    ```
 * * *
 ##  UpdateClaimLineItem 
 The `UpdateClaimLineItem` effect allows you to update the `charge` field and `linked_diagnosis_codes` on a specified claim line item.
@@ -14223,6 +14510,100 @@ Both effects perform validation before execution:
 ##  Error Handling 
 If validation fails, a `ValidationError` is raised with detailed error messages indicating which fields failed validation and why. Error messages are aggregated to provide comprehensive feedback about all validation failures at once.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-compound-medication/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-create-ccda-export/
+The `CreateCCDA` effect creates a C-CDA document for a patient with the provided XML content. This effect allows plugins to store C-CDA XML documents, which can be used for clinical document exchange, patient summaries, or referrals.
+This effect stores a C-CDA document, generating or otherwise sourcing that document is the responsibility of the plugin.
+##  Attributes 
+Name | Type | Required | Description  
+---|---|---|---  
+`patient_id` | `str` | Yes | The patient's key (UUID).  
+`content` | `str` | Yes | The C-CDA XML content as a string. Must be valid XML.  
+`document_type` | `DocumentType` | No | Type of C-CDA document. Defaults to `DocumentType.CCD`.  
+##  DocumentType Enum 
+Value | Description  
+---|---  
+`CCD` | Continuity of Care Document (default)  
+`REFERRAL` | Referral document  
+##  Validation 
+The effect performs the following validations before execution:
+  - **Patient Exists** : Verifies that a patient with the given `patient_id` exists in the system.
+  - **Valid XML** : Validates that the `content` field contains well-formed XML. Malformed XML will result in a validation error.
+  - **Required Fields** : Both `patient_id` and `content` must be non-empty strings.
+##  Example Usage 
+###  Basic CCD Creation 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
+        def compute(self) -> list[Effect]:
+            # Sample C-CDA XML content
+            ccda_xml = """<?xml version="1.0" encoding="UTF-8"?>
+            <ClinicalDocument xmlns="urn:hl7-org:v3">
+                <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+                <templateId root="2.16.840.1.113883.10.20.22.1.1"/>
+                <id root="document-id"/>
+                <code code="34133-9" displayName="Summarization of Episode Note"
+                      codeSystem="2.16.840.1.113883.6.1"/>
+                <title>Patient Summary</title>
+                <effectiveTime value="20240101120000"/>
+                <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+                <languageCode code="en-US"/>
+            </ClinicalDocument>"""
+            effect = CreateCCDA(
+                patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                content=ccda_xml,
+                document_type=DocumentType.CCD,
+            )
+            return [effect.apply()]
+    ```
+###  Creating a Referral Document 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.ccda import CreateCCDA, DocumentType
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
+        def compute(self) -> list[Effect]:
+            referral_xml_content = "<ClinicalDocument>...</ClinicalDocument>"
+            effect = CreateCCDA(
+                patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                content=referral_xml_content,
+                document_type=DocumentType.REFERRAL,
+            )
+            return [effect.apply()]
+    ```
+###  Using Default Document Type 
+When `document_type` is not specified, it defaults to `CCD`:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.ccda import CreateCCDA
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.PATIENT_UPDATED)]
+        def compute(self) -> list[Effect]:
+            ccda_xml = "<ClinicalDocument>...</ClinicalDocument>"
+            effect = CreateCCDA(
+                patient_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                content=ccda_xml,
+            )
+            # document_type defaults to DocumentType.CCD
+            return [effect.apply()]
+    ```
+##  Use Cases 
+  - **Clinical Document Exchange** : Generate C-CDAs for sharing patient information with external systems or providers.
+  - **Patient Summaries** : Create Continuity of Care Documents containing a patient's clinical summary.
+  - **Referral Documentation** : Generate referral documents when referring patients to specialists.
+  - **Integration with External Systems** : Produce standardized C-CDA documents for healthcare interoperability.
+##  Notes 
+  - The C-CDA XML content is stored as a file on the patient's record. You can access the record in Settings > CCDAs to be able to view, transmit, or download the file.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-create-ccda-export/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-create-patient-external-identifier/
@@ -16363,7 +16744,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 Effect | Description  
@@ -34332,6 +34713,68 @@ Name | Type | Required | Description
     ]
     responses = http.batch_requests(requests, timeout=10)
     ```
+##  Generating PDFs 
+Plugin authors can generate PDFs using the `pdf_generator` client. There are two approaches: generating from a URL that serves HTML, or generating directly from an HTML string. Both methods upload the resulting PDF to S3 and return a presigned URL.
+    ```python
+    from canvas_sdk.utils.pdf import pdf_generator
+    ```
+The client exposes only `from_url` and `from_html`. Direct HTTP methods (get, post, put, patch) are not available.
+###  from_url 
+Generates a PDF from a URL that returns HTML. The service fetches the HTML from the given URL, converts it to PDF, uploads it to S3, and returns a presigned URL.
+**Parameters** :
+Name | Type | Required | Description  
+---|---|---|---  
+`print_url` | _string_ | `true` | The path to the HTML endpoint.  
+`auth` | _PdfAuthRequest_ | `false` | Credentials forwarded to the PDF service so it can fetch authenticated endpoints.  
+**Returns** : `PdfUrlResponse | None` — `None` if PDF generation failed.
+When using `from_url`, the PDF service fetches the HTML from your endpoint directly. If that endpoint requires authentication, the SimpleAPI serving the HTML should use [`BasicAuthMixin`](/sdk/handlers/simple-api/api/#basic) and pass the credentials via `PdfAuthRequest`.
+**Example** :
+    ```python
+    from canvas_sdk.utils.pdf import PdfAuthRequest, pdf_generator
+    # The PDF service will fetch this endpoint to get the HTML.
+    # Because the endpoint uses BasicAuthMixin, we pass credentials
+    # so the service can authenticate on our behalf.
+    auth = PdfAuthRequest(
+        username="user",
+        password="password",
+    )
+    response = pdf_generator.from_url(
+        print_url="plugin-io/api/my_plugin/printout/html?note_uuid=abc-123",
+        auth=auth,
+    )
+    if response and response.url:
+        # response.url is a presigned S3 URL to the generated PDF
+        pdf_url = response.url
+    ```
+###  from_html 
+Generates a PDF from a raw HTML string. Use this when you already have the HTML content and don't need the service to fetch it from a URL.
+**Parameters** :
+Name | Type | Required | Description  
+---|---|---|---  
+`content` | _string_ | `true` | The HTML content to convert.  
+**Returns** : `PdfUrlResponse | None` — `None` if PDF generation failed.
+**Example** :
+    ```python
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.utils.pdf import pdf_generator
+    html = render_to_string("templates/note_printout.html", {
+        "patient_name": "Jane Doe",
+        "note_type": "Office Visit",
+    })
+    response = pdf_generator.from_html(content=html)
+    if response and response.url:
+        pdf_url = response.url
+    ```
+###  PdfUrlResponse 
+Both methods return a `PdfUrlResponse` on success, or `None` on failure.
+Attribute | Type | Description  
+---|---|---  
+`url` | _string_ | Presigned S3 URL to the generated PDF.  
+###  Choosing between the two methods 
+Use case | Method  
+---|---  
+Plugin serves an HTML page via SimpleAPI that requires authentication | `from_url` with `PdfAuthRequest`  
+You already have the HTML string in memory (e.g. from `render_to_string`) | `from_html`  
 ##  Making requests to the Ontologies service 
 Plugin authors can make requests to our Ontologies service using the `ontologies_http` wrapper.
 In addition to the `json()` method of the response, which you'll use to access the response itself, you can also access the `status_code` to verify that the request was succcessful.
