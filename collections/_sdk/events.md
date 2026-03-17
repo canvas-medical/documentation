@@ -2224,6 +2224,7 @@ The following events fire when a prescription's status changes during the e-pres
       <td><pre>"id": letter_action_event_id
 "type": <a href='/sdk/data-letter-action-event/'>LetterActionEvent</a></pre></td>
       <td><pre>empty</pre></td>
+    </tr>
   </tbody>
 </table>
 
