@@ -17945,8 +17945,8 @@ Target object | Context object
     "id": letter_action_event_id
     "type": [LetterActionEvent](/sdk/data-letter-action-event/)
 | 
-    empty
-</tbody> </table> | LETTER_ACTION_EVENT_UPDATED  
+    empty  
+LETTER_ACTION_EVENT_UPDATED  
 ---  
 Occurs when a letter action event is updated.  
 Target object | Context object  
@@ -17954,7 +17954,8 @@ Target object | Context object
     "type": [LetterActionEvent](/sdk/data-letter-action-event/)
 | 
     empty  
-#### Observations  OBSERVATION_CREATED  
+####  Observations 
+OBSERVATION_CREATED  
 ---  
 Occurs when an observation is created.  
 Target object | Context object  
@@ -17972,7 +17973,8 @@ Target object | Context object
 | 
     "patient":
        "id": pt_id  
-#### Protocol Overrides  PROTOCOL_OVERRIDE_CREATED  
+####  Protocol Overrides 
+PROTOCOL_OVERRIDE_CREATED  
 ---  
 Target object | Context object  
     "id": protocoloverride_id
@@ -17996,7 +17998,8 @@ Target object | Context object
 | 
     "patient":
        "id": pt_id  
-#### Referral Reports  REFERRAL_REPORT_CREATED  
+####  Referral Reports 
+REFERRAL_REPORT_CREATED  
 ---  
 Occurs when a specialist consult report is created in Data Integration.  
 Target object | Context object  
@@ -18014,7 +18017,8 @@ Target object | Context object
 | 
     "patient":
        "id": pt_id  
-#### Tasks  TASK_CREATED  
+####  Tasks 
+TASK_CREATED  
 ---  
 Occurs when a task is created.  
 Target object | Context object  
@@ -18086,7 +18090,8 @@ Target object | Context object
 | 
     "patient":
        "id": pt_id  
-#### Staff  STAFF_CREATED  
+####  Staff 
+STAFF_CREATED  
 ---  
 Occurs when a staff is created.  
 Target object | Context object  
@@ -18118,7 +18123,8 @@ Target object | Context object
     "type": [Staff](/sdk/data-staff/#staff)
 | 
     empty  
-#### Vital Signs  VITAL_SIGN_CREATED  
+####  Vital Signs 
+VITAL_SIGN_CREATED  
 ---  
 Occurs when a vitals entry is created for a patient using the vitals command. Additional details for the vitals become available with subsequent VITAL_SIGN_UPDATED events.  
 Target object | Context object  
@@ -18134,7 +18140,10 @@ Target object | Context object
     "type": None
 | 
     empty  
-### Command lifecycle events These events fire during the command lifecycle. #### Generic events  Event | Occurs when | PRE_COMMAND_ORIGINATE | Before any command is entered into a note.  
+###  Command lifecycle events 
+These events fire during the command lifecycle.
+####  Generic events 
+Event | Occurs when | PRE_COMMAND_ORIGINATE | Before any command is entered into a note.  
 ---|---  
 POST_COMMAND_ORIGINATE | After any command is entered into a note.  
 PRE_COMMAND_UPDATE | Before the data in any command is updated.  
@@ -18149,7 +18158,29 @@ PRE_COMMAND_EXECUTE_ACTION | Before an action is executed on any command.
 POST_COMMAND_EXECUTE_ACTION | After an action is executed on any command.  
 POST_COMMAND_INSERTED_INTO_NOTE | After a command is added to a note in the UI.  
 AVAILABLE_ACTIONS | When a command is rendered in the UI, after any update to data, state, or other changes  
-##### Context Overview Each command lifecycle event provides specific context to the handler, depending on the stage of the command lifecycle. **Base Context (All Events Except `PRE_COMMAND_ORIGINATE`)**: ```json { "note": { "uuid": "note-123" }, "patient": { "id": "patient-123" }, "fields": { "key": "value" } } ``` \- `note.uuid`: The unique identifier of the note associated with the command. \- `patient.id`: The unique identifier of the patient associated with the note. \- `fields`: A dictionary containing command-specific details. See examples for each command. **`PRE_COMMAND_ORIGINATE` Context**: Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` event context only includes: ```json { "fields": { "key": "value" } } ``` \- `fields`: Contains details specific to the command being originated. \--- #### Adjust Prescription Command  ADJUST_PRESCRIPTION_COMMAND__POST_COMMIT  
+#####  Context Overview 
+Each command lifecycle event provides specific context to the handler, depending on the stage of the command lifecycle.
+**Base Context (All Events Except`PRE_COMMAND_ORIGINATE`)**:
+    ```json
+    {
+      "note": { "uuid": "note-123" },
+      "patient": { "id": "patient-123" },
+      "fields": { "key": "value" }
+    }
+    ```
+  - `note.uuid`: The unique identifier of the note associated with the command.
+  - `patient.id`: The unique identifier of the patient associated with the note.
+  - `fields`: A dictionary containing command-specific details. See examples for each command.
+**`PRE_COMMAND_ORIGINATE` Context**: Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` event context only includes:
+    ```json
+    {
+      "fields": { "key": "value" }
+    }
+    ```
+  - `fields`: Contains details specific to the command being originated.
+* * *
+####  Adjust Prescription Command 
+ADJUST_PRESCRIPTION_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -18589,7 +18620,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Allergy Command  ALLERGY_COMMAND__POST_COMMIT  
+####  Allergy Command 
+ALLERGY_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -18842,7 +18874,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Assess Command  ASSESS_COMMAND__CONDITION_SELECTED  
+####  Assess Command 
+ASSESS_COMMAND__CONDITION_SELECTED  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -19084,7 +19117,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[ConditionSearchResult]  
-#### Cancel Prescription Command  Event | Description | CANCEL_PRESCRIPTION_COMMAND__PRE_ORIGINATE |   
+####  Cancel Prescription Command 
+Event | Description | CANCEL_PRESCRIPTION_COMMAND__PRE_ORIGINATE |   
 ---|---  
 CANCEL_PRESCRIPTION_COMMAND__POST_ORIGINATE |   
 CANCEL_PRESCRIPTION_COMMAND__PRE_UPDATE |   
@@ -19101,7 +19135,8 @@ CANCEL_PRESCRIPTION_COMMAND__PRE_EXECUTE_ACTION |
 CANCEL_PRESCRIPTION_COMMAND__POST_EXECUTE_ACTION |   
 CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__PRE_SEARCH |   
 CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__POST_SEARCH |   
-#### Change Medication Command  CHANGE_MEDICATION_COMMAND__POST_COMMIT  
+####  Change Medication Command 
+CHANGE_MEDICATION_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -19302,7 +19337,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Clipboard Command  CLIPBOARD_COMMAND__POST_COMMIT  
+####  Clipboard Command 
+CLIPBOARD_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -19480,7 +19516,24 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
-##### Clipboard Fields Context The Clipboard Command provides the following fields in its context: | Field | Type | Description | | ------ | -------- | --------------------------------------------- | | `text` | _string_ | The raw text content copied to the clipboard. | Refer to the [base context documentation](#context-overview) for additional details about the full context structure. ```json { "note": { "uuid": "note-123" }, "patient": { "id": "patient-123" }, "fields": { "text": "Patient complains of persistent headaches for the past two weeks." } } ``` \--- #### Close Goal Command  CLOSE_GOAL_COMMAND__POST_COMMIT  
+#####  Clipboard Fields Context 
+The Clipboard Command provides the following fields in its context:
+Field | Type | Description  
+---|---|---  
+`text` | _string_ | The raw text content copied to the clipboard.  
+Refer to the base context documentation for additional details about the full context structure.
+    ```json
+    {
+      "note": { "uuid": "note-123" },
+      "patient": { "id": "patient-123" },
+      "fields": {
+        "text": "Patient complains of persistent headaches for the past two weeks."
+      }
+    }
+    ```
+* * *
+####  Close Goal Command 
+CLOSE_GOAL_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -19694,7 +19747,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Diagnose Command  DIAGNOSE_COMMAND__POST_COMMIT  
+####  Diagnose Command 
+DIAGNOSE_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -19947,7 +20001,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Educational Material Command  EDUCATIONAL_MATERIAL_COMMAND__POST_COMMIT  
+####  Educational Material Command 
+EDUCATIONAL_MATERIAL_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -20144,7 +20199,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Family History Command  FAMILY_HISTORY_COMMAND__POST_COMMIT  
+####  Family History Command 
+FAMILY_HISTORY_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -20380,7 +20436,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Follow Up Command  FOLLOW_UP_COMMAND__POST_COMMIT  
+####  Follow Up Command 
+FOLLOW_UP_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -20642,7 +20699,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Goal Command  GOAL_COMMAND__POST_COMMIT  
+####  Goal Command 
+GOAL_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -20873,7 +20931,8 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
-#### History of Present Illness Command  HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_COMMIT  
+####  History of Present Illness Command 
+HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -21039,7 +21098,8 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
-#### Imaging Order Command  IMAGING_ORDER_COMMAND__POST_COMMIT  
+####  Imaging Order Command 
+IMAGING_ORDER_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -21384,7 +21444,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Imaging Review Command  IMAGING_REVIEW_COMMAND__POST_COMMIT  
+####  Imaging Review Command 
+IMAGING_REVIEW_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -21608,7 +21669,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Immunization Statement Command  IMMUNIZATION_STATEMENT_COMMAND__POST_COMMIT  
+####  Immunization Statement Command 
+IMMUNIZATION_STATEMENT_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -21848,7 +21910,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Immunize Command  IMMUNIZE_COMMAND__POST_COMMIT  
+####  Immunize Command 
+IMMUNIZE_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -22158,7 +22221,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Instruct Command  INSTRUCT_COMMAND__POST_COMMIT  
+####  Instruct Command 
+INSTRUCT_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -22359,7 +22423,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Lab Order Command  LAB_ORDER_COMMAND__POST_COMMIT  
+####  Lab Order Command 
+LAB_ORDER_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -22678,7 +22743,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Lab Review Command  LAB_REVIEW_COMMAND__POST_COMMIT  
+####  Lab Review Command 
+LAB_REVIEW_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -22902,7 +22968,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Medical History Command  MEDICAL_HISTORY_COMMAND__POST_COMMIT  
+####  Medical History Command 
+MEDICAL_HISTORY_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -23238,7 +23305,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Medication Statement Command  MEDICATION_STATEMENT_COMMAND__POST_COMMIT  
+####  Medication Statement Command 
+MEDICATION_STATEMENT_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -23439,7 +23507,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[MedicationSearchResult]  
-#### Perform Command  PERFORM_COMMAND__POST_COMMIT  
+####  Perform Command 
+PERFORM_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -23640,7 +23709,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Physical Exam Command  PHYSICAL_EXAM_COMMAND__POST_COMMIT  
+####  Physical Exam Command 
+PHYSICAL_EXAM_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -23828,7 +23898,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Plan Command  PLAN_COMMAND__POST_COMMIT  
+####  Plan Command 
+PLAN_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -23994,7 +24065,8 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
-#### Prescribe Command  PRESCRIBE_COMMAND__POST_COMMIT  
+####  Prescribe Command 
+PRESCRIBE_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -24400,7 +24472,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Questionnaire Command  QUESTIONNAIRE_COMMAND__POST_COMMIT  
+####  Questionnaire Command 
+QUESTIONNAIRE_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -24601,7 +24674,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Reason for Visit Command  REASON_FOR_VISIT_COMMAND__POST_COMMIT  
+####  Reason for Visit Command 
+REASON_FOR_VISIT_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -24815,7 +24889,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Refer Command  REFER_COMMAND__POST_COMMIT  
+####  Refer Command 
+REFER_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -25173,7 +25248,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Referral Review Command  REFERRAL_REVIEW_COMMAND__POST_COMMIT  
+####  Referral Review Command 
+REFERRAL_REVIEW_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -25397,7 +25473,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Refill Prescription Command  REFILL_COMMAND__POST_COMMIT  
+####  Refill Prescription Command 
+REFILL_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -25803,7 +25880,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Remove Allergy Command  REMOVE_ALLERGY_COMMAND__POST_COMMIT  
+####  Remove Allergy Command 
+REMOVE_ALLERGY_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -26004,7 +26082,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Resolve Condition Command  RESOLVE_CONDITION_COMMAND__POST_COMMIT  
+####  Resolve Condition Command 
+RESOLVE_CONDITION_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -26218,7 +26297,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[ConditionSearchResult]  
-#### Review of Systems Command  ROS_COMMAND__POST_COMMIT  
+####  Review of Systems Command 
+ROS_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -26406,7 +26486,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Snooze Protocol Command  Event | Description | SNOOZE_PROTOCOL_COMMAND__PRE_ORIGINATE |   
+####  Snooze Protocol Command 
+Event | Description | SNOOZE_PROTOCOL_COMMAND__PRE_ORIGINATE |   
 ---|---  
 SNOOZE_PROTOCOL_COMMAND__POST_ORIGINATE |   
 SNOOZE_PROTOCOL_COMMAND__PRE_UPDATE |   
@@ -26423,7 +26504,8 @@ SNOOZE_PROTOCOL_COMMAND__PRE_EXECUTE_ACTION |
 SNOOZE_PROTOCOL_COMMAND__POST_EXECUTE_ACTION |   
 SNOOZE_PROTOCOL__PROTOCOL__PRE_SEARCH |   
 SNOOZE_PROTOCOL__PROTOCOL__POST_SEARCH |   
-#### Stop Medication Command  STOP_MEDICATION_COMMAND__POST_COMMIT  
+####  Stop Medication Command 
+STOP_MEDICATION_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -26624,7 +26706,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Structured Assessment Command  STRUCTURED_ASSESSMENT_COMMAND__POST_COMMIT  
+####  Structured Assessment Command 
+STRUCTURED_ASSESSMENT_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -26812,7 +26895,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Surgical History Command  SURGICAL_HISTORY_COMMAND__POST_COMMIT  
+####  Surgical History Command 
+SURGICAL_HISTORY_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -27052,7 +27136,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Task Command  TASK_COMMAND__POST_COMMIT  
+####  Task Command 
+TASK_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -27327,7 +27412,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Update Diagnosis Command  Event | Description | UPDATE_DIAGNOSIS_COMMAND__PRE_ORIGINATE |   
+####  Update Diagnosis Command 
+Event | Description | UPDATE_DIAGNOSIS_COMMAND__PRE_ORIGINATE |   
 ---|---  
 UPDATE_DIAGNOSIS_COMMAND__POST_ORIGINATE |   
 UPDATE_DIAGNOSIS_COMMAND__PRE_UPDATE |   
@@ -27346,7 +27432,8 @@ UPDATE_DIAGNOSIS__CONDITION__PRE_SEARCH |
 UPDATE_DIAGNOSIS__CONDITION__POST_SEARCH |   
 UPDATE_DIAGNOSIS__NEW_CONDITION__PRE_SEARCH |   
 UPDATE_DIAGNOSIS__NEW_CONDITION__POST_SEARCH |   
-#### Update Goal Command  UPDATE_GOAL_COMMAND__POST_COMMIT  
+####  Update Goal Command 
+UPDATE_GOAL_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -27586,7 +27673,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Uncategorized Document Review Command  UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND__POST_COMMIT  
+####  Uncategorized Document Review Command 
+UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -27810,7 +27898,8 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
-#### Vitals Command  VITALS_COMMAND__POST_COMMIT  
+####  Vitals Command 
+VITALS_COMMAND__POST_COMMIT  
 ---  
 Target object | Context object  
     "id": command_uuid
@@ -28145,7 +28234,9 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
-### Patient Portal lifecycle events The following events are emitted during the lifecycle of a patient portal session.  PATIENT_PORTAL__APPOINTMENT_CANCELED  
+###  Patient Portal lifecycle events 
+The following events are emitted during the lifecycle of a patient portal session.
+PATIENT_PORTAL__APPOINTMENT_CANCELED  
 ---  
 Occurs after an appointment is canceled  
 Target | Target type | Context object  
@@ -28244,7 +28335,9 @@ Target | Target type | Context object
     None
 | 
     "providers": list[dict]  
-### Action Buttons Events For more information on handling these events, see [Action Buttons](/sdk/handlers-action-buttons).  SHOW_NOTE_HEADER_BUTTON  
+###  Action Buttons Events 
+For more information on handling these events, see [Action Buttons](/sdk/handlers-action-buttons).
+SHOW_NOTE_HEADER_BUTTON  
 ---  
 Occurs when patient notes are being loaded  
 Target | Context object  
@@ -28405,7 +28498,9 @@ Target | Context object
       "user":
         "id": str
         "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
-### Application Events For more information on these events, see [Applications](/sdk/handlers-applications).  APPLICATION__ON_OPEN  
+###  Application Events 
+For more information on these events, see [Applications](/sdk/handlers-applications).
+APPLICATION__ON_OPEN  
 ---  
 Occurs when a user clicks on an application icon to open it  
 Target | Context object  
@@ -28416,7 +28511,8 @@ Target | Context object
       "user":
         "id": str
         "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
-### Patient Portal Events  PATIENT_PORTAL__GET_FORMS  
+###  Patient Portal Events 
+PATIENT_PORTAL__GET_FORMS  
 ---  
 Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value  
 Target | Target type | Context object  
@@ -28431,7 +28527,8 @@ Target | Target type | Context object
                           "my-health" |
                           "payment" |
                           "search-appointment"]  
-### Patient Chart Configuration  PATIENT_CHART__CONDITIONS  
+###  Patient Chart Configuration 
+PATIENT_CHART__CONDITIONS  
 ---  
 Occurs when the conditions are loaded on the patient chart.  
 Target object | Context object  
@@ -28457,7 +28554,8 @@ Target object | Context object
           "code": str
           "system": str
           "display": str  
-### Patient Timeline Configuration  PATIENT_TIMELINE__GET_CONFIGURATION  
+###  Patient Timeline Configuration 
+PATIENT_TIMELINE__GET_CONFIGURATION  
 ---  
 Occurs when a patient's timeline is loaded. Allows plugins to configure which note types are visible on the timeline. See the [Patient Timeline effect](/sdk/effect-patient-timeline/) for usage details.  
 Target object | Context object  
@@ -28465,7 +28563,8 @@ Target object | Context object
     "type": [Patient](/sdk/data-patient/)
 | 
     empty  
-### Other Events  Event | Occurs when | UNKNOWN | Default event type unlikely to ever be emitted.  
+###  Other Events 
+Event | Occurs when | UNKNOWN | Default event type unlikely to ever be emitted.  
 ---|---  
 CRON | This event fires regularly and can be used for scheduled tasks. See [CronTask](/sdk/handlers-crontask/).  
 CLAIM__CONDITIONS | The conditions are loaded within the claim summary.  
@@ -28483,7 +28582,93 @@ Context object:
         "id": str
         "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
 GET_HOMEPAGE_CONFIGURATION | Homepage is loading. See [Set default homepage](/guides/set-default-homepage/) for examples of how to use this event.  
-### Search Result Data Structures Many event payloads include search results. This section documents the common structures within them. #### MedicationSearchResult Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, `PRESCRIBE__PRESCRIBE__POST_SEARCH`, etc.) return results that follow this structure: ```json { "text": "acetaminophen 500 mg tablet", "disabled": false, "description": null, "annotations": null, "extra": { "coding": [ { "code": 206813, "display": "acetaminophen 500 mg tablet", "system": "http://www.fdbhealth.com/" }, { "code": "198440", "display": "acetaminophen 500 mg tablet", "system": "http://www.nlm.nih.gov/research/umls/rxnorm" } ], "clinical_quantities": [ { "erx_quantity": "1.0000000", "representative_ndc": "57896021910", "clinical_quantity_description": "tablet", "erx_ncpdp_script_quantity_qualifier_code": "C48542", "erx_ncpdp_script_quantity_qualifier_description": "Tablet" } ] }, "value": 206813 } ``` For detailed information about medication data structures, see [Medication](/sdk/data-medication/). For examples of working with medication search results, see the [Customize Search Results](/guides/customize-search-results/) guide. #### ConditionSearchResult Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH`, etc.) return results that follow this structure: ```json { "text": "Broken internal left hip prosthesis, subsequent encounter", "disabled": false, "description": null, "annotations": ["T84.011D"], "extra": { "coding": [ { "code": "T84011D", "display": "Broken internal left hip prosthesis, subsequent encounter", "system": "ICD-10" }, { "code": 404684003, "display": "Broken internal left hip prosthesis, subsequent encounter", "system": "http://snomed.info/sct" } ] }, "value": "T84011D" } ``` For detailed information about condition data structures, see [Condition](/sdk/data-condition/). #### AllergySearchResult Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY__ALLERGY__POST_SEARCH`, etc.) return results that follow this structure: ```json { "text": "Penicillins (allergy group)", "disabled": false, "description": null, "annotations": null, "extra": { "coding": [ { "code": 476, "display": "Penicillins", "system": "http://www.fdbhealth.com/" } ], "category_id": 1, "category": "allergy group" }, "value": 476 } ``` For detailed information about allergy data structures, see [Allergy Intolerance](/sdk/data-allergy-intolerance/). 
+###  Search Result Data Structures 
+Many event payloads include search results. This section documents the common structures within them.
+####  MedicationSearchResult 
+Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, `PRESCRIBE__PRESCRIBE__POST_SEARCH`, etc.) return results that follow this structure:
+    ```json
+    {
+      "text": "acetaminophen 500 mg tablet",
+      "disabled": false,
+      "description": null,
+      "annotations": null,
+      "extra": {
+        "coding": [
+          {
+            "code": 206813,
+            "display": "acetaminophen 500 mg tablet",
+            "system": "http://www.fdbhealth.com/"
+          },
+          {
+            "code": "198440",
+            "display": "acetaminophen 500 mg tablet",
+            "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
+          }
+        ],
+        "clinical_quantities": [
+          {
+            "erx_quantity": "1.0000000",
+            "representative_ndc": "57896021910",
+            "clinical_quantity_description": "tablet",
+            "erx_ncpdp_script_quantity_qualifier_code": "C48542",
+            "erx_ncpdp_script_quantity_qualifier_description": "Tablet"
+          }
+        ]
+      },
+      "value": 206813
+    }
+    ```
+For detailed information about medication data structures, see [Medication](/sdk/data-medication/).
+For examples of working with medication search results, see the [Customize Search Results](/guides/customize-search-results/) guide.
+####  ConditionSearchResult 
+Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH`, etc.) return results that follow this structure:
+    ```json
+    {
+      "text": "Broken internal left hip prosthesis, subsequent encounter",
+      "disabled": false,
+      "description": null,
+      "annotations": ["T84.011D"],
+      "extra": {
+        "coding": [
+          {
+            "code": "T84011D",
+            "display": "Broken internal left hip prosthesis, subsequent encounter",
+            "system": "ICD-10"
+          },
+          {
+            "code": 404684003,
+            "display": "Broken internal left hip prosthesis, subsequent encounter",
+            "system": "http://snomed.info/sct"
+          }
+        ]
+      },
+      "value": "T84011D"
+    }
+    ```
+For detailed information about condition data structures, see [Condition](/sdk/data-condition/).
+####  AllergySearchResult 
+Allergy search events (such as `ALLERGY__ALLERGY__POST_SEARCH`, `REMOVE_ALLERGY__ALLERGY__POST_SEARCH`, etc.) return results that follow this structure:
+    ```json
+    {
+      "text": "Penicillins (allergy group)",
+      "disabled": false,
+      "description": null,
+      "annotations": null,
+      "extra": {
+        "coding": [
+          {
+            "code": 476,
+            "display": "Penicillins",
+            "system": "http://www.fdbhealth.com/"
+          }
+        ],
+        "category_id": 1,
+        "category": "allergy group"
+      },
+      "value": 476
+    }
+    ```
+For detailed information about allergy data structures, see [Allergy Intolerance](/sdk/data-allergy-intolerance/).
 ----- END PAGE https://docs.canvasmedical.com/sdk/events/
 
 
