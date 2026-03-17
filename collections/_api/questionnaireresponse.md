@@ -176,7 +176,7 @@ sections:
                   description: A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
                 - name: text
                   type: string
-                  description: Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to non-FHIR questionnaires.
+                  description: Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
                 - name: answer
                   type: array[json]
                   required_in: create,update
