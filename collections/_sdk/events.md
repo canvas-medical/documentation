@@ -20736,6 +20736,28 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 
 <table>
   <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient’s group membership is updated</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str
+      </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_DELETED</th></tr>
     <tr><td colspan="2">Occurs when a patient member is removed from a patient group</td></tr>
   </thead>

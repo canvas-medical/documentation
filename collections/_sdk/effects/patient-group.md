@@ -7,76 +7,66 @@ hidden: false
 
 The Canvas SDK provides effects for managing patient membership in groups. These effects are idempotent — adding a patient who is already a member or deactivating a patient who is not an active member will have no effect.
 
-## PatientGroupAddMember
+## PatientGroupEffect
 
-Ensures one or more patients are members of a group.
+An effect class for performing actions on a patient group. Instantiate it with a `group_id`, then call methods to add or deactivate members.
 
 ### Attributes
 
-| Attribute     | Type         | Description                                                              | Required |
-| ------------- | ------------ | ------------------------------------------------------------------------ | -------- |
-| `patient_ids` | `list[str]`  | List of [patient](/sdk/data-patient/) ids to add to the group            | Yes      |
-| `group_id`    | `str`        | The id of the group to add the patients to                               | Yes      |
+| Attribute  | Type      | Description                                              | Required |
+| ---------- |-----------| -------------------------------------------------------- | -------- |
+| `group_id` | `UUID`    | The id of the [patient group](/sdk/data-patient-group/)  | Yes      |
+
+### Methods
+
+#### `add_member(patient_ids: list[str]) -> Effect`
+
+Ensures one or more patients are members of the group.
+
+| Parameter     | Type         | Description                                                              |
+| ------------- | ------------ | ------------------------------------------------------------------------ |
+| `patient_ids` | `list[str]`  | List of [patient](/sdk/data-patient/) ids to add to the group            |
+
+#### `deactivate_member(patient_ids: list[str]) -> Effect`
+
+Ensures one or more patients are not active members of the group. If a patient is currently locked in the group, this effect will be ignored for that patient.
+
+| Parameter     | Type         | Description                                                                    |
+| ------------- | ------------ | ------------------------------------------------------------------------------ |
+| `patient_ids` | `list[str]`  | List of [patient](/sdk/data-patient/) ids to deactivate from the group         |
 
 ### Example Usage
 
 ```python
 from canvas_sdk.effects import Effect
+from canvas_sdk.effects.patient_group import PatientGroupEffect
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
-from canvas_sdk.effects.patient_group import PatientGroupAddMember
-from canvas_sdk.v1.data.patient import Patient
+from canvas_sdk.v1.data import Patient, PatientGroup
 
 
-class MyHandler(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
-
-    def compute(self) -> list[Effect]:
-        """Add a patient to a group when their record is updated."""
-        patient = Patient.objects.get(id=self.target)
-
-        add_member = PatientGroupAddMember(
-            patient_ids=[patient.id],
-            group_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-        )
-
-        return [add_member.apply()]
-```
-
-## PatientGroupDeactivateMember
-
-Ensures one or more patients are not active members of a group.
-
-### Attributes
-
-| Attribute     | Type         | Description                                                                    | Required |
-| ------------- | ------------ | ------------------------------------------------------------------------------ | -------- |
-| `patient_ids` | `list[str]`  | List of [patient](/sdk/data-patient/) ids to deactivate from the group         | Yes      |
-| `group_id`    | `str`        | The id of the group to deactivate the patients from                            | Yes      |
-
-### Example Usage
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.events import EventType
-from canvas_sdk.handlers import BaseHandler
-from canvas_sdk.effects.patient_group import PatientGroupDeactivateMember
-from canvas_sdk.v1.data.patient import Patient
-
-
-class MyHandler(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
+class AddMemberHandler(BaseHandler):
+     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self) -> list[Effect]:
-        """Remove a patient from a group when their record is updated."""
+        """Add patients to a group."""
         patient = Patient.objects.get(id=self.target)
+        group = PatientGroup.objects.first()
 
-        deactivate_member = PatientGroupDeactivateMember(
-            patient_ids=[patient.id],
-            group_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-        )
+        effect = PatientGroupEffect(group_id=str(group.id))
+        return [effect.add_member(patient_ids=[str(patient.id)])]
 
-        return [deactivate_member.apply()]
+
+class DeactivateMemberHandler(BaseHandler):
+     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
+
+    def compute(self) -> list[Effect]:
+        """Deactivate a patient from a group."""
+        patient = Patient.objects.get(id=self.target)
+        group = PatientGroup.objects.first()
+
+        effect = PatientGroupEffect(group_id=str(group.id))
+        return [effect.deactivate_member(patient_ids=[str(patient.id)])]
 ```
 
 <br/>
