@@ -148,7 +148,7 @@ The `command_uuid` field must be set on the command object before calling `upser
 
 | Parameter | Type     | Description                                      |
 |-----------|----------|--------------------------------------------------|
-| `key`     | _string_ | The metadata key (max 32 characters).            |
+| `key`     | _string_ | The metadata key (max 256 characters).           |
 | `value`   | _string_ | The metadata value.                              |
 
 **Example**:
