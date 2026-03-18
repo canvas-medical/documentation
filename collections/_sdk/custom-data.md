@@ -117,6 +117,11 @@ All the data managed by plugin is available via the database read replica. To ac
 [search_path](https://www.postgresql.org/docs/18/ddl-schemas.html#DDL-SCHEMAS-PATH) to include the namespaces that you 
 intend to query.
 
+## Limitations (for Safety)
+
+* Values stored in `text` and `json` fields may not exceed 1mb as measured by character count.
+* Bulk operations (e.g., `bulk_create`) are limited to 10,000 records at a time.
+
 ## See Also
 
 - [CustomModels](/sdk/custom-data-custom-models/) - Structured models with relationships among entities
