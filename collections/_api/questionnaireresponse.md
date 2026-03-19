@@ -55,7 +55,7 @@ sections:
           - name: identifier
             type: json
             description: Unique id for this set of answers
-            exclude_in: create
+            exclude_in: create, update
             attributes:
               - name: system
                 type: string
