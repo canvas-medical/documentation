@@ -7,7 +7,7 @@ title: "Custom Data"
 The Canvas SDK provides two techniques for storing custom data in your plugins, allowing you to define fully structured
 data models with relationships among entities, or create flexible key-value stores:
 
-1. **[CustomModels](/sdk/custom-data-custom-models/)** - Build your own data model or expand the Canvas data model by adding fully structured models with typed fields and relationships
+1. **[CustomModels](/sdk/custom-data-custom-models/)** - Build your own data model or expand the Canvas data model by adding fully structured tables with typed fields, relationships, and indexes
 2. **[AttributeHubs](/sdk/custom-data-attribute-hubs/)** - Store arbitrary key-value pairs and JSON data independently of the Canvas data model
 
 Each technique serves different use cases and provides different levels of structure and type safety. Both techniques may be used together.
@@ -17,7 +17,7 @@ Each technique serves different use cases and provides different levels of struc
 ### CustomModels
 
 Use this when you need structured, typed data with relationships and normalized data. CustomModels can also
-extend existing SDK models (like Patient or Staff) with custom fields via `OneToOneField`.
+extend existing SDK models (like Patient or Staff) with custom fields via `OneToOneField`, `ForeignKey`, and `ManyToManyField`.
 
 **Best for:**
 - Structured data with a stable, known schema
