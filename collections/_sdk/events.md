@@ -20293,6 +20293,27 @@ For more information on handling these events, see <a href="/sdk/handlers-action
 
 <table>
   <thead>
+    <tr><th colspan="2">SHOW_NOTE_HEADER_DROPDOWN_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="3">SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON</th></tr>
     <tr><td colspan="3">Occurs when patient chart summary is being loaded, specifically for social determinants section</td></tr>
   </thead>
