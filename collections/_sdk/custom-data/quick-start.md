@@ -82,6 +82,16 @@ In the logs you will see our message: `Note tagged by: hello-custom-data`
 
 What just happened? When you installed the plugin, a new database namespace called `my_org__hello_custom_data`
 was created. Within the namespace are tables that hold information owned by, and managed by, the `my_org` plugins.
+The `NoteTag` model you defined turned into a PostgreSQL table with the following structure:
+
+```sql 
+create table my_org__hello_custom_data.notetag
+(
+    note_id   bigint not null primary key,
+    tagged_by text
+);
+```
+
 Creating the `NoteTag` record caused a new row to be inserted into the `notetag` table in the
 `my_org__hello_custom_data` namespace. This table is private to the namespace. The Note itself is unmodified —
 the `NoteTag` CustomModel stores the additional data in its own table and links back to the note via a
