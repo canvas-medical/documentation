@@ -78,7 +78,8 @@ sections:
               - name: extension
                 description: >-
                   Extensions on the `questionnaire` attribute. Supported extensions include questionnaire name and URL.<br><br>
-                  To create a QuestionnaireResponse that responds to a non-FHIR questionnaire, like an external PDF file, the URL extension must be provided, and the `questionnaire` attribute must be omitted. In this scenario, there is no `Questionnaire` resource referenced by the `questionnaire` attribute. Question text must be provided for each `item`, and only `valueString` answers are permitted.
+                  To create a QuestionnaireResponse that responds to a non-FHIR questionnaire, like an external PDF file, the URL extension must be provided, and the `questionnaire` attribute must be omitted. In this scenario, there is no `Questionnaire` resource referenced by the `questionnaire` attribute. Question text must be provided for each `item`, and only `valueString` answers are permitted.<br><br>
+                  When a QuestionnaireResponse is created in this manner, it does <strong>not</strong> result in the insertion of a command into a note.
                 type: array[json]
                 attributes:
                   - name: url
