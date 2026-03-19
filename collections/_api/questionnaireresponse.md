@@ -220,7 +220,7 @@ sections:
                 - name: item
                   type: array[json]
                   description: >-
-                    Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group.
+                    Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
         search_parameters:
           - name: _id
             description: The identifier of the QuestionnaireResponse.
