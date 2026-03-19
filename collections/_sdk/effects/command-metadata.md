@@ -52,12 +52,12 @@ The effect performs comprehensive validation before execution:
 
 1. **Command Existence Validation**: Verifies that the referenced command exists with the given `command_uuid` and `schema_key`
 
-- Returns a descriptive error if the command is not found
+    - Returns a descriptive error if the command is not found
 
 2. **Field Validation**: Ensures all required fields are provided and properly formatted
 
-- `command_uuid` must be set on the command effect
-- Both `key` and `value` must be provided
+    - `command_uuid` must be set on the command effect
+    - Both `key` and `value` must be provided
 
 ## Example Usage
 
@@ -121,16 +121,16 @@ class CommandMetadataListener(BaseHandler):
 
 1. **Use Descriptive Names**: Choose keys that clearly indicate the purpose of the metadata
 
-- Good: `workflow_stage`, `external_id`, `review_status`
-- Avoid: `data1`, `temp`, `misc`
+    - Good: `workflow_stage`, `external_id`, `review_status`
+    - Avoid: `data1`, `temp`, `misc`
 
 2. **Namespace Your Keys**: Prefix keys with your plugin name to avoid collisions with other plugins
 
-- Example: `my_plugin:workflow_stage`, `my_plugin:external_id`
+    - Example: `my_plugin:workflow_stage`, `my_plugin:external_id`
 
 ### Value Storage
 
-1. **String Serialization**: All values are stored as strings. For complex data types, serialize to JSON:
+**String Serialization**: All values are stored as strings. For complex data types, serialize to JSON:
 
    ```python
    import json
