@@ -127,6 +127,6 @@ tasks = referral.get_task_objects().all()
 | internal_comment              | String                                 |
 | message_to_patient            | String                                 |
 | status                        | String                                 |
-| note                          | [Note](/sdk/data-note/)                |
+| note                          | [Note](/sdk/data-note/#note)                |
 | patient                       | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method  | String                                 |
