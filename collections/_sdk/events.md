@@ -20244,7 +20244,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -20265,7 +20265,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -20286,7 +20286,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -20307,7 +20307,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
