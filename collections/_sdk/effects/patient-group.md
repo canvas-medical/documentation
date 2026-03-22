@@ -46,7 +46,7 @@ from canvas_sdk.v1.data import Patient, PatientGroup
 
 
 class AddMemberHandler(BaseHandler):
-     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self) -> list[Effect]:
         """Add patients to a group."""
@@ -58,7 +58,7 @@ class AddMemberHandler(BaseHandler):
 
 
 class DeactivateMemberHandler(BaseHandler):
-     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self) -> list[Effect]:
         """Deactivate a patient from a group."""

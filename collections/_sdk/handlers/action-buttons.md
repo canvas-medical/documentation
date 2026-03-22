@@ -29,14 +29,19 @@ To implement a custom action button, you need to create a handler class that inh
 - **`BUTTON_KEY`**  
   A unique identifier for your button. This key is used to route events, such as a click, to the appropriate handler method (`handle()`).
 
-- **`BUTTON_LOCATION`**  
+- **`BUTTON_LOCATION`**
   Specifies where the button will appear within the Canvas UI. The button can be placed in various locations, such as the note header or footer, or other areas within the chart summary.
 
-- **`PRIORITY`**
-  An optional integer that specifies the order in which the button should appear relative to other buttons in the same location. Lower values appear first. If not specified, no order is guaranteed.
+### Optional Constants
 
-- **`COLOR`**
-  An optional string that specifies the color of the button. This constant only applies to buttons located on the patient header. The color should be defined using a valid HEX color value (e.g., "#FF0000").
+- **`PRIORITY`**
+  An integer that specifies the order in which the button should appear relative to other buttons in the same location. Lower values appear first. If not specified, no order is guaranteed.
+
+- **`BUTTON_TEXT_COLOR`**
+  A string that specifies the text color of the button, defined as a HEX color value (e.g., `"#FF0000"`). If not specified, the text color is automatically chosen to contrast with the background.
+
+- **`BUTTON_BACKGROUND_COLOR`**
+  A string that specifies the background color of the button, defined as a HEX color value (e.g., `"#4CAF50"`). If not specified, the button uses the default gray styling.
 
 ### Optional: Implement the `visible()` Method
 
