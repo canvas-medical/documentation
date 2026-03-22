@@ -40,7 +40,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ### Patient
 
 | Field Name               | Type                                                                      |
-| ------------------------ | ------------------------------------------------------------------------- |
+|--------------------------|---------------------------------------------------------------------------|
 | id                       | String                                                                    |
 | dbid                     | Integer                                                                   |
 | first_name               | String                                                                    |
@@ -105,7 +105,8 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | subscribed_coverages     | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | tasks                    | [Task](/sdk/data-task/#task)[]                                            |
 | telecom                  | [PatientContactPoint](#patientcontactpoint)[]                             |
-| user                     | [CanvasUser](/sdk/data-canvasuser/)[]                                           |
+| user                     | [CanvasUser](/sdk/data-canvasuser/)[]                                     |
+| patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
 
 ### PatientAddress
 
