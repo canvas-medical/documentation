@@ -23,6 +23,7 @@ To get the members of a group:
 
 ```python
 from canvas_sdk.v1.data.patient_group import PatientGroup
+from logger import log
 
 group = PatientGroup.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 
@@ -45,6 +46,7 @@ The `PatientGroupMember` model represents a patient's membership in a group. To 
 
 ```python
 from canvas_sdk.v1.data.patient_group import PatientGroup, PatientGroupMember
+from logger import log
 
 group = PatientGroup.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 
