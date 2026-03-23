@@ -8,6 +8,14 @@ AttributeHubs and CustomModels. During iterative development, namespaces accumul
 and data that can get in the way. This page explains how namespaces are created and managed, and how to use
 the Canvas CLI to inspect and clean up namespaces as you work.
 
+## Namespace Naming Rules
+
+Namespace names use the format `org__name` (two parts separated by a double underscore). Each part must start
+with a lowercase letter and contain only lowercase letters, digits, and single underscores. The total length
+must not exceed **63 characters** (PostgreSQL's identifier limit).
+
+Examples of valid names: `acme__shared_data`, `myorg__analytics`
+
 ## How Namespaces Are Created
 
 A namespace is created automatically when the **first plugin** with `"access": "read_write"` is installed into it.
