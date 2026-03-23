@@ -222,14 +222,15 @@ Note Applications appear as tabs within a patient's note, allowing you to embed 
 
 To create a Note Application, your handler class should inherit from `NoteApplication` and define two required class attributes:
 
-| Attribute | Description |
-| --------- | ----------- |
-| `NAME` | The display title shown on the tab (supports emojis) |
+| Attribute    | Description                                                                    |
+|--------------|--------------------------------------------------------------------------------|
+| `NAME`       | The display title shown on the tab (supports emojis)                           |
 | `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`) |
+| `PRIORITY`   | Controls tab order — lower values appear first. Defaults to `0`                |
 
-Your class must implement the `on_open()` method, which is called when the user clicks on the tab.
+Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
 
-> **Note:** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`.
+> **Note:** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -268,10 +269,10 @@ The `on_open()` method has access to context data through `self.context`:
 
 Additional data is available through the event object:
 
-| Property | Description |
-| -------- | ----------- |
-| `self.event.target` | The note associated with the event |
-| `self.event.actor` | The authenticated user who triggered the event |
+| Property            | Description                                    |
+|---------------------|------------------------------------------------|
+| `self.event.target` | The patient associated with the note           |
+| `self.event.actor`  | The authenticated user who triggered the event |
 
 ### Controlling Visibility
 
@@ -331,6 +332,8 @@ class AutoOpenApp(NoteApplication):
 You can control the order in which Note Application tabs appear by setting the `PRIORITY` class attribute. Tabs are sorted in ascending order, so lower values appear first. The default is `0`.
 
 ```python
+from canvas_sdk.handlers.application import NoteApplication
+
 class HighPriorityApp(NoteApplication):
     NAME = "First Tab"
     IDENTIFIER = "my_plugin__first"
