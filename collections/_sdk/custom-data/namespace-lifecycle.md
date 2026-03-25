@@ -119,18 +119,18 @@ Namespace: acme_corp__shared_data
 
 System tables:
   namespace_auth       ~2 rows
-  django_content_type  ~4 rows
+  schema_version       ~2 rows
   custom_attribute     ~150 rows
   attribute_hub        ~3 rows
 
 Custom tables:
   customnote   ~25 rows
     dbid     bigint    not null
-    title    text      not null
+    title    text      nullable
     body     text      nullable
   specialty    ~8 rows
     dbid     bigint    not null
-    name     character varying    not null
+    name     character varying    nullable
 ```
 
 This is useful for verifying that your models were created correctly after installation, or for understanding
@@ -198,7 +198,7 @@ All tables that will be dropped:
   attribute_hub        ~3 rows
   custom_attribute     ~150 rows
   customnote           ~25 rows
-  django_content_type  ~4 rows
+  schema_version       ~4 rows
   namespace_auth       ~2 rows
   specialty            ~8 rows
 
