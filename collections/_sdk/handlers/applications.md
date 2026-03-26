@@ -246,7 +246,8 @@ class PatientIntakeApp(NoteApplication):
 
     def on_open(self) -> Effect | list[Effect]:
         """Launch the intake form when the tab is clicked."""
-        note_id = self.context.get("note_id")
+        note_id = self.event.context.get("note_id")
+        patient_id = self.event.context.get("patient", {}).get("id")
 
         return LaunchModalEffect(
             target=LaunchModalEffect.TargetType.NOTE,
@@ -259,20 +260,49 @@ class PatientIntakeApp(NoteApplication):
 
 ### Context and Event Data
 
-The `on_open()` method has access to context data through `self.context`:
+Both `on_open()` and `handle()` have access to context data through `self.event.context`:
 
-| Key | Description |
-| --- | ----------- |
-| `note_id` | The database ID of the current note |
-| `note` | A dict containing the note's external `id` (UUID) |
-| `user` | Information about the current user |
+| Key       | Description                                       |
+|-----------|---------------------------------------------------|
+| `note_id` | The database ID of the current note               |
+| `note`    | A dict containing the note's external `id` (UUID) |
+| `patient` | A dict containing the patient's `id` (key)        |
+| `user`    | Information about the current user                |
 
-Additional data is available through the event object:
+#### `on_open()` — recommended
 
-| Property            | Description                                    |
-|---------------------|------------------------------------------------|
-| `self.event.target` | The patient associated with the note           |
-| `self.event.actor`  | The authenticated user who triggered the event |
+When using `on_open()`, the patient is available through `self.event.context`:
+
+```python
+from canvas_sdk.effects import Effect
+
+def on_open(self) -> Effect | list[Effect]:
+    note_id = self.event.context.get("note_id")
+    patient_id = self.event.context.get("patient", {}).get("id")
+    ...
+```
+
+`self.event.target.id` contains the application identifier used internally for routing, not the patient.
+
+#### `handle()` — deprecated
+
+When using the deprecated `handle()`, `self.event.target.id` is automatically set to the patient UUID before `handle()` is called, preserving the original behavior that old plugins relied on:
+
+```python
+from canvas_sdk.effects import Effect
+
+def handle(self) -> list[Effect]:
+    patient_id = self.event.target.id  # backfilled from patient context
+    ...
+```
+
+> **Note:** This backfilling only happens when `handle()` is called. Plugins that override `on_open()` directly should read the patient from `self.event.context` as shown above.
+
+| Property                              | `on_open()`                          | `handle()` (deprecated)   |
+|---------------------------------------|--------------------------------------|---------------------------|
+| `self.event.target.id`                | Application identifier (for routing) | Patient UUID (backfilled) |
+| `self.event.context["patient"]["id"]` | Patient UUID                         | Patient UUID              |
+| `self.event.actor`                    | Authenticated user                   | Authenticated user        |
 
 ### Controlling Visibility
 
