@@ -144,7 +144,7 @@ class CustomNote(Note, ModelExtension):
     pass
 
 
-note = CustomNote.objects.get(id=note_id)
+note = CustomNote.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 note.patient                       # returns a Patient, not CustomPatient
 note.patient.full_display_name()   # AttributeError!
 ```
@@ -171,7 +171,7 @@ class CustomNote(Note, ModelExtension):
     patient = proxy_field(CustomPatient)
 
 
-note = CustomNote.objects.get(id=note_id)
+note = CustomNote.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 note.patient                       # returns a CustomPatient instance
 note.patient.full_display_name()   # works!
 ```

@@ -108,6 +108,7 @@ If you don't need a structured model and just want to store a simple key-value p
 
 ```python
 from canvas_sdk.v1.data import AttributeHub
+from logger import log
 
 hub = AttributeHub.objects.create(
     type="note_tag",
