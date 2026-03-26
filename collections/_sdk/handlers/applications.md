@@ -254,7 +254,7 @@ class PatientIntakeApp(NoteApplication):
         ]
 ```
 
-![Note Application Tabs](../../../assets/images/note-application-tabs.png)
+<div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/note-application-tabs.png" alt="note applications" /></div>
 
 ### Context and Event Data
 
