@@ -214,7 +214,7 @@ Use `proxy_field` when:
 without error:
 
 ```python?partial=true
-note = CustomNote.objects.get(id=note_id)
+note = CustomNote.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 note.patient  # returns None if the FK is null, not an error
 ```
 
