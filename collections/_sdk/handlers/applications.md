@@ -222,12 +222,15 @@ Note Applications appear as tabs within a patient's note, allowing you to embed 
 
 To create a Note Application, your handler class should inherit from `NoteApplication` and define two required class attributes:
 
-| Attribute | Description |
-| --------- | ----------- |
-| `NAME` | The display title shown on the tab (supports emojis) |
+| Attribute    | Description                                                                    |
+|--------------|--------------------------------------------------------------------------------|
+| `NAME`       | The display title shown on the tab (supports emojis)                           |
 | `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`) |
+| `PRIORITY`   | Controls tab order — lower values appear first. Defaults to `0`                |
 
-Your class must implement the `handle()` method, which is called when the user clicks on the tab. This method should return a list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`.
+Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
+
+> **Note:** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -241,45 +244,45 @@ class PatientIntakeApp(NoteApplication):
     NAME = "📋 Patient Intake"
     IDENTIFIER = "my_plugin__patient_intake"
 
-    def handle(self) -> list[Effect]:
+    def on_open(self) -> Effect | list[Effect]:
         """Launch the intake form when the tab is clicked."""
         note_id = self.context.get("note_id")
 
-        return [
-            LaunchModalEffect(
-                target=LaunchModalEffect.TargetType.NOTE,
-                content="<html>Your form HTML here</html>",
-                title="Patient Intake Form"
-            ).apply()
-        ]
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.NOTE,
+            content="<html>Your form HTML here</html>",
+            title="Patient Intake Form"
+        ).apply()
 ```
 
 <div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/note-application-tabs.png" alt="note applications" /></div>
 
 ### Context and Event Data
 
-The `handle()` method has access to context data through `self.context`:
+The `on_open()` method has access to context data through `self.context`:
 
 | Key | Description |
 | --- | ----------- |
 | `note_id` | The database ID of the current note |
+| `note` | A dict containing the note's external `id` (UUID) |
 | `user` | Information about the current user |
 
 Additional data is available through the event object:
 
-| Property | Description |
-| -------- | ----------- |
-| `self.event.target` | The patient associated with the note |
-| `self.event.actor` | The authenticated user who triggered the event |
+| Property            | Description                                    |
+|---------------------|------------------------------------------------|
+| `self.event.target` | The patient associated with the note           |
+| `self.event.actor`  | The authenticated user who triggered the event |
 
 ### Controlling Visibility
 
-You can control when your Note Application tab is visible by overriding the `visible()` method. This method has access to the same context and event data as `handle()`:
+You can control when your Note Application tab is visible by overriding the `visible()` method. This method has access to the same context and event data as `on_open()`:
 
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import NoteApplication
+
 
 class ConditionalIntakeApp(NoteApplication):
     NAME = "📋 Intake"
@@ -290,12 +293,56 @@ class ConditionalIntakeApp(NoteApplication):
         # Add your visibility logic here
         return True
 
-    def handle(self) -> list[Effect]:
-        return [LaunchModalEffect(
+    def on_open(self) -> Effect | list[Effect]:
+        return LaunchModalEffect(
             target=LaunchModalEffect.TargetType.NOTE,
             content="<html>Form content</html>",
             title="Intake"
-        ).apply()]
+        ).apply()
+```
+
+### Opening by Default
+
+You can make a Note Application tab open automatically when a note is first viewed by overriding `open_by_default()`. If multiple applications return `True`, the first one (by priority order) will be opened.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import NoteApplication
+
+
+class AutoOpenApp(NoteApplication):
+    NAME = "📋 Intake"
+    IDENTIFIER = "my_plugin__auto_open_intake"
+
+    def open_by_default(self) -> bool:
+        """Open automatically when the note is viewed."""
+        return True
+
+    def on_open(self) -> Effect | list[Effect]:
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.NOTE,
+            content="<html>Form content</html>",
+            title="Intake"
+        ).apply()
+```
+
+### Tab Ordering
+
+You can control the order in which Note Application tabs appear by setting the `PRIORITY` class attribute. Tabs are sorted in ascending order, so lower values appear first. The default is `0`.
+
+```python
+from canvas_sdk.handlers.application import NoteApplication
+
+class HighPriorityApp(NoteApplication):
+    NAME = "First Tab"
+    IDENTIFIER = "my_plugin__first"
+    PRIORITY = 1
+
+class LowPriorityApp(NoteApplication):
+    NAME = "Second Tab"
+    IDENTIFIER = "my_plugin__second"
+    PRIORITY = 10
 ```
 
 ## Panel Display
