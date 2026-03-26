@@ -71,6 +71,7 @@ Provides support for enumerations, useful for defining sets of named constants s
 ##### `functools`
 Provides utilities for higher-order functions and operations on callable objects. [read more](https://docs.python.org/3/library/functools.html)
 - `reduce`
+- `wraps`
 
 ##### `hashlib`
 Provides secure hash and message digest algorithms for data integrity verification and security purposes. [read more](https://docs.python.org/3/library/hashlib.html)
@@ -104,6 +105,7 @@ Provides functions for generating random numbers and making random selections, u
 Provides regular expression matching operations for pattern matching and text processing. [read more](https://docs.python.org/3/library/re.html)
 - `compile`
 - `DOTALL`
+- `findall`
 - `IGNORECASE`
 - `match`
 - `search`
@@ -123,7 +125,9 @@ Provides time-related functions for measuring execution time and adding delays i
 ##### `typing`
 Provides support for type hints and static type checking to improve code clarity and IDE support. [read more](https://docs.python.org/3/library/typing.html)
 - `Any`
+- `Callable`
 - `cast`
+- `ClassVar`
 - `Dict`
 - `Final`
 - `Iterable`
@@ -131,12 +135,12 @@ Provides support for type hints and static type checking to improve code clarity
 - `Literal`
 - `NamedTuple`
 - `NotRequired`
+- `Pattern`
 - `Protocol`
 - `Optional`
 - `Sequence`
 - `Tuple`
 - `Type`
-- `TypeGuard`
 - `TypedDict`
 - `TypeGuard`
 - `Union`
@@ -203,6 +207,10 @@ Django's QuerySet class for database query operations and result handling. [read
 - `Prefetch`
 - `QuerySet`
 
+##### `django.db`
+Django's database module providing core database exceptions. [read more](https://docs.djangoproject.com/en/stable/ref/exceptions/#database-exceptions)
+- `IntegrityError`
+
 ##### `django.utils.functional`
 Django's functional programming utilities including caching and lazy evaluation tools. [read more](https://docs.djangoproject.com/en/stable/ref/utils/)
 - `cached_property`
@@ -241,6 +249,7 @@ A simple and elegant HTTP library for making web requests and API calls. [read m
 - `request`
 - `RequestException`
 - `Response`
+- `Session`
 
 ## Canvas SDK Modules
 
