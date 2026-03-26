@@ -61,13 +61,13 @@ and `namespace_read_write_access_key` secrets that control access for other plug
        tagged_by = TextField()
    ```
 1. Open `handlers/event_handlers.py` in your editor. Update the imports:
-   ```python
+   ```python?partial=true
    from hello_custom_data.models import CustomNote, NoteTag
    ```
 1. In the code, replace uses of `Note` with `CustomNote`. These objects behave the same as the SDK model.
    (See [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) for why proxy models are used.)
 1. Add the following lines **after** the `note` reference has been initialized in the code:
-   ```python
+   ```python?partial=true
    tag, created = NoteTag.objects.get_or_create(
        note=note,
        defaults={"tagged_by": "hello-custom-data"}

@@ -18,7 +18,7 @@ When you need multiple operations to succeed or fail together, use `transaction.
 
 Wrap related operations in an `atomic()` block to ensure all-or-nothing behavior:
 
-```python
+```python?partial=true
 from django.db.transaction import atomic
 
 
@@ -61,7 +61,7 @@ You do **not** need a transaction for:
 This example accepts a JSON payload and upserts a staff profile spanning multiple CustomModels.
 The `atomic()` block ensures that either the entire profile is saved or nothing is:
 
-```python
+```python?partial=true
 from django.db.transaction import atomic
 from canvas_sdk.effects.simple_api import JSONResponse
 from canvas_sdk.handlers.simple_api import SimpleAPI, api
@@ -130,7 +130,7 @@ propagates out, it is rolled back.
 inner block rolls back only that block's changes (not the entire outer transaction), provided
 you catch the exception:
 
-```python
+```python?partial=true
 from django.db.transaction import atomic
 
 

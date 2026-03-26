@@ -82,7 +82,7 @@ class Biography(CustomModel):
 
 Reverse lookup works through the proxy:
 
-```python
+```python?partial=true
 staff = CustomStaff.objects.get(id="some-uuid")
 bio = staff.biography  # accesses the Biography via related_name
 ```
@@ -131,7 +131,9 @@ and the proxy class is reusable across multiple CustomModels in the same plugin.
 When you use `ModelExtension` proxies and follow related objects through ForeignKey fields, the
 returned instance is the base SDK class — not your proxy. For example:
 
-```python
+```python?partial=true
+from canvas_sdk.v1.data import Note, Patient, ModelExtension
+
 class CustomPatient(Patient, ModelExtension):
     def full_display_name(self):
         # custom method only available on CustomPatient
@@ -211,7 +213,7 @@ Use `proxy_field` when:
 `proxy_field` handles nullable ForeignKeys safely — if the relation is `None`, it returns `None`
 without error:
 
-```python
+```python?partial=true
 note = CustomNote.objects.get(id=note_id)
 note.patient  # returns None if the FK is null, not an error
 ```
@@ -225,7 +227,7 @@ note.patient  # returns None if the FK is null, not an error
 If you point a `ForeignKey` or `OneToOneField` directly at an SDK model with a plain
 `related_name`, installation will fail with:
 
-```
+```text
 ValueError: CustomModel 'Biography' declares related_name='biography' on field 'staff'
 targeting SDK model 'Staff'. To prevent collisions across plugins, use a namespaced
 related_name like related_name='%(app_label)s_biography', or related_name='+' to

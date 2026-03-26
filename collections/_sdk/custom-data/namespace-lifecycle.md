@@ -98,7 +98,7 @@ canvas namespace list --host dev-instance
 
 Output shows each namespace with its total table count and the number of custom (non-system) tables:
 
-```
+```text
 acme_corp__shared_data    tables: 7    custom: 3
 acme_corp__analytics      tables: 5    custom: 1
 ```
@@ -114,7 +114,7 @@ canvas namespace inspect acme_corp__shared_data --host dev-instance
 Output separates system tables (managed by the framework) from custom tables (defined by your plugin),
 and shows column details for custom tables:
 
-```
+```text
 Namespace: acme_corp__shared_data
 
 System tables:
@@ -148,7 +148,7 @@ By default, reset runs in **dry-run mode** and only shows what would happen:
 canvas namespace reset acme_corp__shared_data --host dev-instance
 ```
 
-```
+```text
 Namespace: acme_corp__shared_data
 
 Custom tables to drop:
@@ -168,7 +168,7 @@ To actually perform the reset, add `--execute`. You will be prompted to confirm 
 canvas namespace reset acme_corp__shared_data --host dev-instance --execute
 ```
 
-```
+```text
 This will reset namespace 'acme_corp__shared_data'. This cannot be undone.
 Type the full namespace name to confirm: acme_corp__shared_data
 
@@ -191,7 +191,7 @@ Dry-run mode (default):
 canvas namespace drop acme_corp__shared_data --host dev-instance
 ```
 
-```
+```text
 Namespace: acme_corp__shared_data
 
 All tables that will be dropped:

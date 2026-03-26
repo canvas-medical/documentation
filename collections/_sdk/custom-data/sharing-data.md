@@ -172,7 +172,7 @@ class Specialty(CustomModel):
 
 **Plugin A (write access) - Creates and manages specialties:**
 
-```python
+```python?partial=true
 # CANVAS_MANIFEST.json: "access": "read_write"
 from .models.specialty import Specialty
 
@@ -194,7 +194,7 @@ dermatology.save()
 
 **Plugin B (read access) - Queries specialties:**
 
-```python
+```python?partial=true
 # CANVAS_MANIFEST.json: "access": "read"
 from .models.specialty import Specialty
 
@@ -214,7 +214,7 @@ specialty.save()  # Raises NamespaceWriteDenied!
 
 When a plugin with `read` access attempts a write operation, a `NamespaceWriteDenied` exception is raised:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data.base import NamespaceWriteDenied
 
 try:

@@ -198,6 +198,8 @@ You can also filter attribute objects directly, for example when working with a 
 related attributes:
 
 ```python
+from canvas_sdk.v1.data import AttributeHub
+
 hub = AttributeHub.objects.get(type="meal_entry", id="patient:abc:meal:2024-01-15T12:00")
 
 # Filter the hub's own attributes
@@ -216,6 +218,7 @@ However, you must reference the typed column directly in the following cases:
 
   ```python
   from django.db.models import Q
+  from canvas_sdk.v1.data import AttributeHub
 
   # Find hubs whose "specialties" JSON array contains "Cardiology"
   AttributeHub.objects.filter(
@@ -249,6 +252,8 @@ However, you must reference the typed column directly in the following cases:
   results when combined with Django's cross-relation JOIN machinery. Use explicit column names instead:
 
   ```python
+  from canvas_sdk.v1.data import AttributeHub
+
   # Check whether a specific column is null across the relation
   AttributeHub.objects.filter(
       type="staff_profile",

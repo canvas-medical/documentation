@@ -27,7 +27,7 @@ See [Testing Utilities](/sdk/testing-utils/) for complete setup instructions.
 
 Define factories for extended models by extending the base SDK factories:
 
-```python
+```python?partial=true
 import factory
 from canvas_sdk.test_utils.factories import StaffFactory, PatientFactory
 from staff_plus.models import CustomStaff, CustomPatient
@@ -49,7 +49,7 @@ class CustomPatientFactory(PatientFactory, factory.django.DjangoModelFactory[Cus
 
 Define factories for your custom models with appropriate field values:
 
-```python
+```python?partial=true
 import factory
 from my_plugin.models import Specialty, StaffSpecialty
 from my_plugin.models import Biography
@@ -383,7 +383,7 @@ def test_many_to_many_through_field():
 
 Use factories to simplify test data creation:
 
-```python
+```python?partial=true
 import factory
 from django.db.models import OneToOneField, TextField, IntegerField, DO_NOTHING
 from canvas_sdk.test_utils.factories import StaffFactory

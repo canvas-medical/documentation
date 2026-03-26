@@ -226,7 +226,7 @@ before adding the constraint.
 
 ### Creating Records
 
-```python
+```python?partial=true
 from my_plugin.models import ProviderQualification
 
 
@@ -263,7 +263,7 @@ qualification = ProviderQualification.objects.get_or_create(
 
 ### Querying Records
 
-```python
+```python?partial=true
 from my_plugin.models import ProviderQualification
 from datetime import date
 
@@ -305,7 +305,7 @@ top_five = ProviderQualification.objects.order_by("practicing_since_year")[:5]
 
 ### Updating Records
 
-```python
+```python?partial=true
 from my_plugin.models import ProviderQualification
 
 
@@ -333,7 +333,7 @@ qualification, created = ProviderQualification.objects.update_or_create(
 
 ### Deleting Records
 
-```python
+```python?partial=true
 from my_plugin.models import ProviderQualification
 
 
@@ -447,7 +447,7 @@ other field type will raise an error — use a `OneToOneField` instead when you 
 
 ### Creating One-to-One Records
 
-```python
+```python?partial=true
 from my_plugin.models import CustomStaff, Biography
 
 # Get the staff member
@@ -464,7 +464,7 @@ biography = Biography.objects.create(
 
 ### Querying One-to-One Relationships
 
-```python
+```python?partial=true
 from my_plugin.models import CustomStaff, Biography
 
 
@@ -526,7 +526,7 @@ class Biography(CustomModel):
 
 ### Creating One-to-Many Records
 
-```python
+```python?partial=true
 from my_plugin.models import CustomStaff, Biography
 
 
@@ -551,7 +551,7 @@ spanish_bio = Biography.objects.create(
 
 ### Querying One-to-Many Relationships
 
-```python
+```python?partial=true
 from my_plugin.models import CustomStaff, Biography
 
 
@@ -735,7 +735,7 @@ class StaffSpecialty(CustomModel):
 
 With the `ManyToManyField` declared, you can traverse the relationship directly:
 
-```python
+```python?partial=true
 # Direct access to related objects (returns Staff queryset, not StaffSpecialty)
 specialty = Specialty.objects.get(name="Cardiology")
 staff_members = specialty.staff.all()
@@ -747,7 +747,7 @@ specialties = staff.staff_plus_specialties.all()  # uses the ManyToManyField's r
 
 Compare this with the through-model-only approach, where you must navigate through the join table:
 
-```python
+```python?partial=true
 # Without ManyToManyField — must traverse the join table
 staff_members = [ss.staff for ss in specialty.staff_specialties.all()]
 ```
@@ -771,7 +771,7 @@ when an explicit `through` is declared, the CRUD patterns are the same whether o
 When a `ManyToManyField` targets a core SDK model (like `Staff` or `Patient`), you **must** use
 the `%(app_label)s_` prefix in `related_name` to avoid naming collisions between plugins:
 
-```python
+```python?partial=true
 staff = ManyToManyField(
     CustomStaff,
     through="StaffSpecialty",
@@ -788,7 +788,7 @@ full explanation of when namespacing is required and how proxy models avoid it.
 Regardless of whether you use `ManyToManyField`, create and delete relationships through the
 through model directly:
 
-```python
+```python?partial=true
 from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
 
 
@@ -829,7 +829,7 @@ manager (e.g., `StaffSpecialty.objects`) for all create and delete operations.
 
 ### Querying Many-to-Many Relationships
 
-```python
+```python?partial=true
 from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
 
 
@@ -990,7 +990,7 @@ hub.set_attributes({
 
 Optimize database queries using `select_related` and `prefetch_related`:
 
-```python
+```python?partial=true
 from my_plugin.models import Specialty, StaffSpecialty, CustomStaff
 
 
@@ -1033,7 +1033,7 @@ staff_with_filtered_specialties = CustomStaff.objects.prefetch_related(
 
 Use Django's Q objects for complex filtering and aggregation:
 
-```python
+```python?partial=true
 from django.db.models import Q, Count
 from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
 
