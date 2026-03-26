@@ -4,6 +4,8 @@ title: "Caching API"
 
 The Canvas SDK provides a caching API for plugin developers to store and retrieve temporary data efficiently.
 
+For persistent storage of plugin data, use instead the [Custom Data](/sdk/custom-data/) features.
+
 ---
 
 ## Getting the Cache Client
