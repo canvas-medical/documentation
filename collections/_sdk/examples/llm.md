@@ -41,7 +41,7 @@ Your [OpenAI API key](https://platform.openai.com/api-keys).
   "name": "llm_manip",
   "description": "use LLM to interact with the user",
   "components": {
-    "protocols": [
+    "handlers": [
       {
         "class": "llm_manip.handlers.llm_manip:LlmManip",
         "description": "LLM communication wrapper"

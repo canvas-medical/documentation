@@ -30,7 +30,7 @@ send_all_prescriptions/
     "name": "send_all_prescriptions",
     "description": "Adds a 'Send Prescriptions' button to note footers that allows providers to send all committed prescriptions in a note with a single click, streamlining the prescription workflow.",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "send_all_prescriptions.handlers.handler:SendPrescriptionButtonHandler",
                 "description": "Action button that sends all committed prescriptions in the current note.",

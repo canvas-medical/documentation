@@ -45,7 +45,7 @@ The name of your S3 bucket.
   "name": "aws_manip",
   "description": "use AWS S3 to store, retrieve and delete documents",
   "components": {
-    "protocols": [
+    "handlers": [
       {
         "class": "aws_manip.handlers.aws_manip:AwsManip",
         "description": "AWS extractor based on AWS S3"

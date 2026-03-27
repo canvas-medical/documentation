@@ -68,7 +68,7 @@ This is the authorization needed for Canvas when using APIKeyAuthMixin. [Read mo
     "name": "example_patient_sync",
     "description": "Example bidirectional patient synchronization between Canvas and a 3rd party system",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "example_patient_sync.handlers.patient_sync:PatientSync",
                 "description": "Create or update patients in an external system based on Canvas events",

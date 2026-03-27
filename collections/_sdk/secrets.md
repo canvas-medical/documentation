@@ -20,10 +20,10 @@ These declared secrets become available for configuration in the Canvas Admin UI
   "name": "live_notifications",
   "description": "Edit the description in CANVAS_MANIFEST.json",
   "components": {
-    "protocols": [
+    "handlers": [
       {
-        "class": "live_notifications.protocols.my_protocol:Protocol",
-        "description": "A protocol that does xyz..."
+        "class": "live_notifications.handlers.my_protocol:Protocol",
+        "description": "A handler that does xyz..."
       }
     ]
   },

@@ -20,7 +20,7 @@ To include a questionnaire in your plugin, add a reference to its YAML template 
     "name": "example_questionnaire",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
-        "protocols": [],
+        "handlers": [],
         "commands": [],
         "content": [],
         "effects": [],

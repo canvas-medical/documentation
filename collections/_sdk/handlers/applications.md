@@ -323,7 +323,7 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
     }
   ],
   "components": {
-    "protocols": [],
+    "handlers": [],
     "applications": [
       {
         "class": "my_application.apps.iframe:IFrameApp",
