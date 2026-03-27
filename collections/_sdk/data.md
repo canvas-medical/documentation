@@ -13,6 +13,12 @@ terminologies like ICD-10, SNOMED-CT, CPT, and the like.
 Data module classes are Django ORM models, which allow easy retrieval of data
 at runtime through Django's expressive [QuerySet API](https://docs.djangoproject.com/en/5.1/ref/models/querysets/).
 
+Access to these models is **read-only**, and mutations to them are allowed only
+via use of [Effects](/sdk/effects/) and the FHIR API.
+
+Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining
+your plugin's own data.
+
 The pages below provide listings of the models, their attributes, and examples of usage.
 
 <div class="sdk-card-list">
