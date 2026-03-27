@@ -34583,7 +34583,16 @@ Property | Description | Required
 `responses_code_system` | The coding system for responses. Options: `SNOMED`, `LOINC`, `INTERNAL`, `ICD-10`, `CPT`. | Yes  
 `responses_type` | Response type: `SING` (Single Select), `MULT` (Multi Select), `TXT` (Free Text). | Yes  
 `display_result_in_social_history_section` | Determines if the response should be shown in the Social History (SHX) section. Values: `TRUE` or `FALSE`. Default: `FALSE`. | No  
+`enabled_behavior` | Specifies if `all` or `any` of the `enabled_conditions` must be met to enable this question. Only needed when there are multiple conditions. Values: `all`, `any`. | No  
+`enabled_conditions` | List of conditions that control when this question is displayed. See below. | No  
 `responses` | List of responses for the question. See below. | Yes  
+###  Enabled Condition Settings 
+Property | Description | Required  
+---|---|---  
+`question_code` | The code of the question whose answer is evaluated. | Yes  
+`operator` | The comparison operator. Supported values: `=`, `!=`, `exists`, `not_exists`. | Yes  
+`value_code` | The response option code to match against. Used with `=` or `!=` for single/multi select questions. | No  
+`value_string` | The free text value to match against. Used with `=` or `!=` for free text questions. | No  
 ###  Response Settings 
 Property | Description | Required  
 ---|---|---  
@@ -34642,6 +34651,61 @@ Property | Description | Required
             code: QUES_EXAMPLE_NAME_Q3_A1
             value: "This is a default pre-populated free text response."
     ```
+###  Example Questionnaire with Conditional Logic (Branching) 
+    ```yaml
+    name: Branching Example
+    form_type: QUES
+    code_system: INTERNAL
+    code: QUES_BRANCHING_EXAMPLE
+    can_originate_in_charting: true
+    prologue: This questionnaire demonstrates conditional logic with enabled_conditions and enabled_behavior.
+    questions:
+      - content: "Do you have any allergies?"
+        code_system: INTERNAL
+        code: QUES_BRANCH_Q1
+        responses_code_system: INTERNAL
+        responses_type: SING
+        responses:
+          - name: "Yes"
+            code: QUES_BRANCH_Q1_YES
+          - name: "No"
+            code: QUES_BRANCH_Q1_NO
+      - content: "Please describe your allergies"
+        code_system: INTERNAL
+        code: QUES_BRANCH_Q2
+        responses_code_system: INTERNAL
+        responses_type: TXT
+        enabled_conditions:
+          - question_code: QUES_BRANCH_Q1
+            operator: "="
+            value_code: QUES_BRANCH_Q1_YES
+        responses:
+          - name: "TXT"
+            code: QUES_BRANCH_Q2_A1
+      - content: "How severe are your allergies?"
+        code_system: INTERNAL
+        code: QUES_BRANCH_Q3
+        responses_code_system: INTERNAL
+        responses_type: SING
+        enabled_behavior: all
+        enabled_conditions:
+          - question_code: QUES_BRANCH_Q1
+            operator: "="
+            value_code: QUES_BRANCH_Q1_YES
+          - question_code: QUES_BRANCH_Q2
+            operator: exists
+        responses:
+          - name: "Mild"
+            code: QUES_BRANCH_Q3_MILD
+          - name: "Moderate"
+            code: QUES_BRANCH_Q3_MODERATE
+          - name: "Severe"
+            code: QUES_BRANCH_Q3_SEVERE
+    ```
+In this example:
+  - **Q1** is always visible.
+  - **Q2** only appears if Q1 is answered "Yes" (using `=` with `value_code`).
+  - **Q3** only appears if Q1 is "Yes" **and** Q2 has been answered (using `enabled_behavior: all` with two conditions).
 ##  Load Questionnaire definition from YAML file 
 You can use the `questionnaire_from_yaml` function from `canvas_sdk.questionnaires` within your plugin to load a questionnaire definition from a YAML file. The function takes the path to the YAML file as an argument and returns a dictionary containing the questionnaire definition.
     ```python
