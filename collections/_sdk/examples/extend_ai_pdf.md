@@ -33,7 +33,7 @@ Your Extend AI API key.
   "name": "pdf_manip",
   "description": "use extent.ai to extract information from a PDF document",
   "components": {
-    "protocols": [
+    "handlers": [
       {
         "class": "pdf_manip.handlers.pdf_manip:PdfManip",
         "description": "PDF extractor based on extent.ai"

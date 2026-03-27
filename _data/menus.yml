@@ -37,6 +37,8 @@ api_canvas_fhir:
     url: /api/errors/
   - title: "Service Base URLs"
     url: /api/service-base-urls/
+  - title: "Accessing Resource Attachment Files"
+    url: /api/accessing-resource-attachment-files/
 
 api_resources:
   - title: "Allergen"
@@ -773,6 +775,9 @@ effects_module:
   - title: "Billing Line Items"
     url: /sdk/effect-billing-line-items/
     description: Add, modify, or remove billing codes on a note.
+  - title: "C-CDA Export"
+    url: /sdk/effect-create-ccda-export/
+    description: Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient.
   - title: "Claims"
     url: /sdk/effect-claims/
     description: Manage labels, update line items, move to a queue, or post a payment.
@@ -818,6 +823,9 @@ effects_module:
   - title: "Patient"
     url: /sdk/effect-patient/
     description: Interact with patient data.
+  - title: "Patient Group"
+    url: /sdk/effect-patient-group/
+    description: Interact with patient group data.
   - title: "Patient Facility Address"
     url: /sdk/effect-patient-facility-address/
     description: Create, update, or delete patient facility address associations.
@@ -910,6 +918,9 @@ data_module:
   - title: "Device"
     url: /sdk/data-device/
     description: Type of a manufactured item that is used in the provision of healthcare.
+  - title: "DocumentReference"
+    url: /sdk/data-document-reference/
+    description: References to documents stored in Canvas, with presigned URL support.
   - title: "EligibilitySummary"
     url: /sdk/data-coverage/#eligilibitysummary/
     description: Summary of copay and coinsurance for a Coverage.
@@ -982,6 +993,9 @@ data_module:
   - title: "PracticeLocation"
     url: /sdk/data-practicelocation/
     description: The practice locations present in the Canvas EMR.
+  - title: "Prescription"
+    url: /sdk/data-prescription/
+    description: The practice locations present in the Canvas EMR.
   - title: "ProtocolCurrent"
     url: /sdk/data-protocol-current/
     description: The current state of clinical protocols applied to patients within Canvas.
@@ -1003,6 +1017,9 @@ data_module:
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.
+  - title: "Snapshot"
+    url: /sdk/data-snapshot/
+    description: Images captured via the Canvas iOS application.
   - title: "SpecialtyReportTemplate"
     url: /sdk/data-specialty-report-template/
     description: Templates for specialty and referral reports, including specialty taxonomy codes.

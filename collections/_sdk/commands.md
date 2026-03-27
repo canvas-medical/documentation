@@ -140,6 +140,28 @@ def compute():
     return [existing_plan.enter_in_error()]
 ```
 
+#### upsert_metadata
+
+Returns an effect that creates or updates a metadata key-value pair on a command. If metadata with the given key already exists on the command, its value will be updated. Otherwise, a new metadata record will be created.
+
+The `command_uuid` field must be set on the command object before calling `upsert_metadata`.
+
+| Parameter | Type     | Description                                      |
+|-----------|----------|--------------------------------------------------|
+| `key`     | _string_ | The metadata key (max 256 characters).           |
+| `value`   | _string_ | The metadata value.                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.upsert_metadata(key="priority", value="high")]
+```
+
 ## Command Constants
 
 The `canvas_sdk.commands.constants` module provides essential classes and enumerations used across various Canvas SDK command implementations. These constants ensure consistency and provide structured data types for common medical and administrative elements.
@@ -440,7 +462,7 @@ AdjustPrescriptionCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1417,7 +1439,7 @@ prescription = PrescribeCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1425,6 +1447,8 @@ prescription = PrescribeCommand(
 ```
 
 ***Option 2: Existing Compound Medication (by ID)***
+
+Note: `type_to_dispense` should not be provided for compound medications as this field will auto-populate in the command when it is inserted in the note
 ```python
 from canvas_sdk.commands.constants import ClinicalQuantity
 from canvas_sdk.commands import PrescribeCommand
@@ -1443,13 +1467,9 @@ prescription = PrescribeCommand(
     sig="Take one tablet daily after meals",
     days_supply=30,
     quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1477,13 +1497,9 @@ prescription = PrescribeCommand(
     sig="Apply thin layer to affected area twice daily",
     days_supply=30,
     quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1924,7 +1940,7 @@ RefillCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."

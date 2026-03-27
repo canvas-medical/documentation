@@ -22,7 +22,7 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
     "name": "abnormal_lab_task_notification",
     "description": "A plugin that creates task notifications for abnormal lab values",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "abnormal_lab_task_notification.handlers.abnormal_lab_handler:AbnormalLabHandler",
                 "description": "Monitors lab reports and creates tasks for abnormal values",

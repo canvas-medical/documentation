@@ -145,25 +145,25 @@ The API can be leveraged to create coding gaps in various states. There are also
 
 ## Annotate ICD-10 Codes
 
-Adding an HCC tag as an annotation to ICD-10 is an easy way to increase awareness for clinicians. The example protocols below leverage a static list of ICD-codes. You could also reference a file contained within the plugin pacakge. Depending on which [HCC model](https://www.cms.gov/medicare/payment/medicare-advantage-rates-statistics/risk-adjustment) you follow, you can swap out the codes accordingly. 
+Adding an HCC tag as an annotation to ICD-10 is an easy way to increase awareness for clinicians. The example handlers below leverage a static list of ICD-codes. You could also reference a file contained within the plugin pacakge. Depending on which [HCC model](https://www.cms.gov/medicare/payment/medicare-advantage-rates-statistics/risk-adjustment) you follow, you can swap out the codes accordingly. 
 
 ### Adding "HCC" to Command Search Results
 
-The following protocol leverages [command `POST_SEARCH` lifecycle events](/sdk/events/#command-lifecycle-events) and adds an `HCC` annotation to the associated ICD-10 codes within the results for the diagnose, past medical history, create coding gap, and assess coding gap commands.  
+The following handler leverages [command `POST_SEARCH` lifecycle events](/sdk/events/#command-lifecycle-events) and adds an `HCC` annotation to the associated ICD-10 codes within the results for the diagnose, past medical history, create coding gap, and assess coding gap commands.  
 
 ``` python
 import json
 
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 ICD_CODES = {
     "HCC": {"A0103", "A0104", "A0105", "A021", "A0222", "A0223", "A0224", "A065", "A072", "A202", "ADD_MORE_CODES..."}
 }
 
 
-class AnnotateSearchResults(BaseProtocol):
+class AnnotateSearchResults(BaseHandler):
 
     RESPONDS_TO = [
         EventType.Name(EventType.DIAGNOSE__DIAGNOSE__POST_SEARCH),
@@ -205,7 +205,7 @@ class AnnotateSearchResults(BaseProtocol):
 
 ### Adding Annotations to Conditions and Detected Issues
 
-The following event/effect pairings can be leveraged to add annotations (such as the `HCC` tag) to conditions and detected issues in the patient summary as well as on claims using the protocol code below.
+The following event/effect pairings can be leveraged to add annotations (such as the `HCC` tag) to conditions and detected issues in the patient summary as well as on claims using the handler code below.
 
 - `CLAIM__CONDITIONS` and `ANNOTATE_CLAIM_CONDITION_RESULTS`
 - `PATIENT_CHART__CONDITIONS` and `ANNOTATE_PATIENT_CHART_CONDITION_RESULTS`
@@ -217,7 +217,7 @@ import json
 
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
 ICD_CODES = {
@@ -230,7 +230,7 @@ ICD_CODES = {
 HCC = "HCC"
 
 
-class PatientChartConditionAnnotation(BaseProtocol):
+class PatientChartConditionAnnotation(BaseHandler):
     """
     Annotate Conditions in the Patient Chart with an HCC tag
     """
@@ -256,7 +256,7 @@ class PatientChartConditionAnnotation(BaseProtocol):
         return [Effect(type=EffectType.ANNOTATE_PATIENT_CHART_CONDITION_RESULTS, payload=json.dumps(payload))]
 
 
-class ClaimConditionAnnotation(BaseProtocol):
+class ClaimConditionAnnotation(BaseHandler):
     """
     Annotate Conditions in the Claim modal with an HCC tag
     """
@@ -282,7 +282,7 @@ class ClaimConditionAnnotation(BaseProtocol):
         return [Effect(type=EffectType.ANNOTATE_CLAIM_CONDITION_RESULTS, payload=json.dumps(payload))]
 
 
-class DetectedIssueAnnotation(BaseProtocol):
+class DetectedIssueAnnotation(BaseHandler):
     """
     Annotate Detected Issues in the Patient Chart with ICD-10 codes from evidence
     """

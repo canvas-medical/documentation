@@ -33,7 +33,7 @@ Your [SendGrid API key](https://docs.sendgrid.com/ui/account-and-settings/api-ke
   "name": "email_sender",
   "description": "use Sendgrid to send emails, retrieve sent emails, manage inbound and outbound webhooks",
   "components": {
-    "protocols": [
+    "handlers": [
       {
         "class": "email_sender.handlers.email_manip:EmailManip",
         "description": "Emails with Sendgrid"

@@ -15,6 +15,7 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
 - [upserting metadata](#upsert-metadata) on claims
 - [adding banner alerts](#add-banner) to claims
 - [removing banner alerts](#remove-banner) from claims
+- [updating provider information](#update-provider) on claims
 
 Additionally, the SDK provides a separate effect to [update claim line items](#updateclaimlineitem).
 
@@ -614,6 +615,156 @@ class MyHandler(BaseHandler):
             claim_effect = ClaimEffect(claim_id=claim.id)
             return [claim_effect.remove_banner(key="review-needed")]
         return []
+```
+
+### Update Provider
+
+`ClaimEffect.update_provider()`: updates provider information on a claim, including billing provider, rendering/attending provider, referring provider, ordering provider, and facility details. All parameters are optional — only the fields you provide will be updated.
+
+#### Parameters
+
+| Parameter            | Type                                                        | Description                                 | Required |
+| -------------------- | ----------------------------------------------------------- | ------------------------------------------- | -------- |
+| `billing_provider`   | [ClaimBillingProvider](#claimbillingprovider) or `None`     | Billing provider information                | No       |
+| `provider`           | [ClaimProvider](#claimprovider) or `None`                   | Rendering or attending provider information | No       |
+| `referring_provider` | [ClaimReferringProvider](#claimreferringprovider) or `None` | Referring provider information              | No       |
+| `ordering_provider`  | [ClaimOrderingProvider](#claimorderingprovider) or `None`   | Ordering provider information               | No       |
+| `facility`           | [ClaimFacility](#claimfacility) or `None`                   | Facility information                        | No       |
+
+#### ClaimBillingProvider
+
+| Attribute     | Type            | Description                    |
+| ------------- | --------------- | ------------------------------ |
+| `name`        | `str` or `None` | Provider name (max 255 chars)  |
+| `phone`       | `str` or `None` | Phone number (max 15 chars)    |
+| `addr1`       | `str` or `None` | Address line 1 (max 255 chars) |
+| `addr2`       | `str` or `None` | Address line 2 (max 255 chars) |
+| `city`        | `str` or `None` | City (max 255 chars)           |
+| `state`       | `str` or `None` | State code (max 2 chars)       |
+| `zip`         | `str` or `None` | ZIP code (max 255 chars)       |
+| `npi`         | `str` or `None` | NPI number (max 10 chars)      |
+| `tax_id`      | `str` or `None` | Tax ID (max 100 chars)         |
+| `tax_id_type` | `str` or `None` | Tax ID type (max 1 char)       |
+| `taxonomy`    | `str` or `None` | Taxonomy code (max 100 chars)  |
+| `clia_number` | `str` or `None` | CLIA number (max 100 chars)    |
+
+#### ClaimProvider
+
+Represents the rendering or attending provider.
+
+| Attribute         | Type            | Description                    |
+| ----------------- | --------------- | ------------------------------ |
+| `first_name`      | `str` or `None` | First name (max 255 chars)     |
+| `last_name`       | `str` or `None` | Last name (max 255 chars)      |
+| `middle_name`     | `str` or `None` | Middle name (max 255 chars)    |
+| `npi`             | `str` or `None` | NPI number (max 10 chars)      |
+| `tax_id`          | `str` or `None` | Tax ID (max 100 chars)         |
+| `tax_id_type`     | `str` or `None` | Tax ID type (max 1 char)       |
+| `taxonomy`        | `str` or `None` | Taxonomy code (max 100 chars)  |
+| `ptan_identifier` | `str` or `None` | PTAN identifier (max 50 chars) |
+
+#### ClaimReferringProvider
+
+| Attribute         | Type            | Description                    |
+| ----------------- | --------------- | ------------------------------ |
+| `first_name`      | `str` or `None` | First name (max 255 chars)     |
+| `last_name`       | `str` or `None` | Last name (max 255 chars)      |
+| `middle_name`     | `str` or `None` | Middle name (max 255 chars)    |
+| `npi`             | `str` or `None` | NPI number (max 10 chars)      |
+| `ptan_identifier` | `str` or `None` | PTAN identifier (max 50 chars) |
+
+#### ClaimOrderingProvider
+
+| Attribute     | Type            | Description                 |
+| ------------- | --------------- | --------------------------- |
+| `first_name`  | `str` or `None` | First name (max 255 chars)  |
+| `last_name`   | `str` or `None` | Last name (max 255 chars)   |
+| `middle_name` | `str` or `None` | Middle name (max 255 chars) |
+| `npi`         | `str` or `None` | NPI number (max 10 chars)   |
+
+#### ClaimFacility
+
+| Attribute        | Type             | Description                    |
+| ---------------- | ---------------- | ------------------------------ |
+| `name`           | `str` or `None`  | Facility name (max 255 chars)  |
+| `npi`            | `str` or `None`  | NPI number (max 10 chars)      |
+| `addr1`          | `str` or `None`  | Address line 1 (max 255 chars) |
+| `addr2`          | `str` or `None`  | Address line 2 (max 255 chars) |
+| `city`           | `str` or `None`  | City (max 255 chars)           |
+| `state`          | `str` or `None`  | State code (max 2 chars)       |
+| `zip`            | `str` or `None`  | ZIP code (max 255 chars)       |
+| `hosp_from_date` | `date` or `None` | Hospitalization start date     |
+| `hosp_to_date`   | `date` or `None` | Hospitalization end date       |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- Validates that the claim has existing provider information (i.e., the claim's provider record is populated)
+- Only fields with non-`None` values are included in the update — any fields left as `None` are excluded
+- Date fields (`hosp_from_date`, `hosp_to_date`) are serialized to ISO format strings
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Claim, Note, PatientFacilityAddress
+from canvas_sdk.v1.data.common import AddressState
+from canvas_sdk.effects.claim.claim import ClaimEffect, ClaimBillingProvider, ClaimFacility
+
+
+class ClaimProviderHandler(BaseHandler):
+    RESPONDS_TO = [
+        EventType.Name(EventType.CLAIM_CREATED),
+        EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED),
+    ]
+
+    def get_claim(self) -> Claim | None:
+        if self.event.type == EventType.CLAIM_CREATED:
+            return Claim.objects.get(id=self.event.target.id)
+
+        if self.event.context["state"] not in ["LKD", "PSH", "DSC"]:
+            # claim provider details can change when notes are locked, pushed, or discharged
+            return None
+        return Note.objects.get(self.event.target.id).get_claim()
+
+    def get_patient_facility(self, claim) -> PatientFacilityAddress | None:
+        return PatientFacilityAddress.objects.filter(
+            patient=claim.note.patient, state=AddressState.ACTIVE
+        ).first()
+
+    def compute(self) -> list[Effect]:
+        """When a claim is created, or note is locked/pushed/charged, update the claim's provider information."""
+        if not (claim := self.get_claim()):
+            return []
+        if not (facility := self.get_patient_facility(claim)):
+            return []
+
+        billing = ClaimBillingProvider(
+            name=facility.facility.name,
+            phone=facility.facility.phone_number,
+            addr1=facility.line1,
+            addr2=facility.line2,
+            city=facility.city,
+            state=facility.state_code,
+            zip=facility.postal_code,
+            npi=facility.facility.npi_number,
+        )
+        facility = ClaimFacility(
+            name=facility.facility.name,
+            npi=facility.facility.npi_number,
+            addr1=facility.line1,
+            addr2=facility.line2,
+            city=facility.city,
+            state=facility.state_code,
+            zip=facility.postal_code,
+        )
+        return [
+            ClaimEffect(claim_id=claim.id).update_provider(
+                billing_provider=billing, facility=facility
+            )
+        ]
 ```
 
 ---

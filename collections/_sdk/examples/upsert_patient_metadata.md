@@ -18,7 +18,7 @@ In this example, we extract key-value pairs from a plan command's narrative and 
     "name": "upsert_patient_metadata",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "upsert_patient_metadata.handlers.my_handler:MyHandler",
                 "description": "A handler that does xyz..."

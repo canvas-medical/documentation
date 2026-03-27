@@ -19,13 +19,13 @@ project. For this exercise, use `my_api` as your project (i.e. plugin) name.
 
 Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
 class names as you see fit in your project, but for this exercise, we are just going to set the
-value at `components -> protocols -> 0 -> class` to be `my_api.protocols.my_protocol:MyAPI`.
+value at `components -> handlers -> 0 -> class` to be `my_api.handlers.my_protocol:MyAPI`.
 
 We're going to need a secret value for authentication. The instructions for declaring secrets are
 outlined on the [Your First Plugin (Manual)](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 Declare a secret in `CANVAS_MANIFEST.json` named `my-api-key`.
 
-Open `my_api/protocols/my_protocol.py` and replace the contents of the file with this code:
+Open `my_api/handlers/my_protocol.py` and replace the contents of the file with this code:
 
 ```python
 from hmac import compare_digest
