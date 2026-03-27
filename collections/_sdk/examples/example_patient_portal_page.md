@@ -31,7 +31,7 @@ This plugin demonstrates how to embed custom patient facing content and tools to
                 "icon": "assets/icon.png"
             }
         ],
-        "protocols": [
+        "handlers": [
             {
                 "class": "example_patient_portal_page.handlers.my_web_app:MyWebApp",
                 "description": "Serves the application"

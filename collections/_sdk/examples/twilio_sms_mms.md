@@ -41,7 +41,7 @@ Your [Twilio API Key Secret](https://www.twilio.com/docs/iam/api-keys).
   "name": "twilio_sms_mms",
   "description": "use Twillio to send and receive SMS/MMS",
   "components": {
-    "protocols": [
+    "handlers": [
       {
         "class": "twilio_sms_mms.handlers.sms_manip:SmsManip",
         "description": "SMS/MMS with Twilio"
