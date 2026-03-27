@@ -47,7 +47,7 @@ You can define your default host with `is_default=true`. If no default is explic
 
 The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for newer versions. If an update is available, a notice is printed to standard error after the command output:
 
-```
+```shell
 [notice] A newer version of canvas is available (0.112.0 → 0.113.0). Upgrade with: pip install --upgrade canvas
 ```
 
