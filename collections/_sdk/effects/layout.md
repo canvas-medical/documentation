@@ -212,6 +212,59 @@ Values in the `PanelPatientSection` enum are:
 | TASK                   | task                  |
 | UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
 
+## Patient Note Header Dropdown Configuration
+
+This effect allows you to define which items appear in the dropdown menu on a patient's note header (the "..." button at the top of a note).
+
+The order in the dropdown is preserved and grouped into specific sections, rather than being based on the plugin item order.
+
+![Before and after](/assets/images/sdk/note-header-configuration.png)(width:60%)
+
+```python
+from canvas_sdk.effects.patient_note_header_dropdown_configuration import PatientNoteHeaderDropdownConfiguration
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects import Effect
+
+
+class NoteHeaderDropdownHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_NOTE_HEADER_DROPDOWN__SECTION_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [PatientNoteHeaderDropdownConfiguration(items=[
+            PatientNoteHeaderDropdownConfiguration.Items.PRINT_NOTE,
+            PatientNoteHeaderDropdownConfiguration.Items.PRINT_SUPERBILL,
+            PatientNoteHeaderDropdownConfiguration.Items.LINK_TO_PHONE,
+        ]).apply()]
+```
+
+### Attributes
+
+| Attribute | Type         | Description                            |
+| --------- | ------------ | -------------------------------------- |
+| `items`   | `list[Items]` | List of dropdown items to display.    |
+
+Values in the `PatientNoteHeaderDropdownConfiguration.Items` enum are:
+
+| Constant                  | Description              |
+| ------------------------- | ------------------------ |
+| LINK_TO_PHONE             | link_to_phone            |
+| SOAP                      | soap                     |
+| APSO                      | apso                     |
+| CHANGE_LOCATION           | change_location          |
+| CHANGE_PROVIDER           | change_provider          |
+| CHANGE_DATE_OF_SERVICE    | change_date_of_service   |
+| PRINT_SUPERBILL           | print_superbill          |
+| PRINT_ROOMING_SHEET       | print_rooming_sheet      |
+| PRINT_AFTER_VISIT_SUMMARY | print_after_visit_summary |
+| COPY_LINK                 | copy_link                |
+| PRINT_NOTE                | print_note               |
+| FAX_NOTE                  | fax_note                 |
+| MOVE_COMMANDS             | move_commands            |
+
+<br/>
+<br/>
+
 ## Modals
 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
