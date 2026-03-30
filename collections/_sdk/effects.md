@@ -133,6 +133,7 @@ The following effects are available to be applied in Canvas.
 | SHOW_ACTION_BUTTON | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SHOW_APPLICATION | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | REDIRECT_CONTEXT | Can be used to redirect the user to a different context. Check out [Layout Effects](/sdk/handlers-applications/#context-change-events). |
+| SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS               | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration/).                                    |
 
 
 ### Search Results

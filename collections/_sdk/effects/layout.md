@@ -214,7 +214,7 @@ Values in the `PanelPatientSection` enum are:
 
 ## Patient Note Header Dropdown Configuration
 
-This effect allows you to define which items appear in the dropdown menu on a patient's note header (the "..." button at the top of a note).
+The `PatientNoteHeaderDropdownConfiguration` effect allows you to define which items appear in the dropdown menu on a patient's note header (the triple dots at the top right of each note).
 
 The order in the dropdown is preserved and grouped into specific sections, rather than being based on the plugin item order.
 
@@ -246,21 +246,21 @@ class NoteHeaderDropdownHandler(BaseHandler):
 
 Values in the `PatientNoteHeaderDropdownConfiguration.Items` enum are:
 
-| Constant                  | Description              |
-| ------------------------- | ------------------------ |
-| LINK_TO_PHONE             | link_to_phone            |
-| SOAP                      | soap                     |
-| APSO                      | apso                     |
-| CHANGE_LOCATION           | change_location          |
-| CHANGE_PROVIDER           | change_provider          |
-| CHANGE_DATE_OF_SERVICE    | change_date_of_service   |
-| PRINT_SUPERBILL           | print_superbill          |
-| PRINT_ROOMING_SHEET       | print_rooming_sheet      |
-| PRINT_AFTER_VISIT_SUMMARY | print_after_visit_summary |
-| COPY_LINK                 | copy_link                |
-| PRINT_NOTE                | print_note               |
-| FAX_NOTE                  | fax_note                 |
-| MOVE_COMMANDS             | move_commands            |
+| Constant                  | Description                                                                |
+| ------------------------- |----------------------------------------------------------------------------|
+| LINK_TO_PHONE             | Show QR code to link mobile device to note                                 |
+| SOAP                      | Sort note sections in SOAP order (Subjective, Objective, Assessment, Plan) |
+| APSO                      | Sort note sections in APSO order (Assessment, Plan, Subjective, Objective) |
+| CHANGE_LOCATION           | Change the note's practice location                                        |
+| CHANGE_PROVIDER           | Change the note's provider                                                 |
+| CHANGE_DATE_OF_SERVICE    | Change the note's date of service                                          |
+| PRINT_SUPERBILL           | Print the superbill for billing                                            |
+| PRINT_ROOMING_SHEET       | Print the rooming sheet for care team                                      |
+| PRINT_AFTER_VISIT_SUMMARY | Print the patient after visit summary                                      |
+| COPY_LINK                 | Copy the note's permalink to clipboard                                     |
+| PRINT_NOTE                | Print the note for care team                                               |
+| FAX_NOTE                  | Fax the note to an external recipient                                      |
+| MOVE_COMMANDS             | Move commands from this note to another note                               |
 
 <br/>
 <br/>
