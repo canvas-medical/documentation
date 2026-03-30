@@ -354,6 +354,8 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 |------------|-------------------|
 | id         | UUID              |
 | dbid       | Integer           |
+| created    | DateTime          |
+| modified   | DateTime          |
 | note       | [Note](#note)     |
 | key        | String            |
 | value      | String            |
