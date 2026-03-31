@@ -149,6 +149,19 @@ Represents a diagnosis code for a given ClaimLineItem. There exists one ClaimLin
 | created              | DateTime                                  |
 | modified             | DateTime                                  |
 
+### ClaimLineItemModifier
+
+Represents a modifier code for a given ClaimLineItem.
+
+| Field Name           | Type                                      |
+| -------------------- | ----------------------------------------- |
+| id                   | UUID                                      |
+| dbid                 | Integer                                   |
+| line_item            | [ClaimLineItem](#claimlineitem)           |
+| modifier             | String                                    |
+| created              | DateTime                                  |
+| modified             | DateTime                                  |
+
 ### ClaimCoverage
 
 Links a claim to a specific insurance coverage.
