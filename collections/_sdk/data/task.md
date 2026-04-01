@@ -203,6 +203,8 @@ for note_task in note_tasks:
 |------------|-------------------|
 | id         | UUID              |
 | dbid       | Integer           |
+| created    | DateTime          |
+| modified   | DateTime          |
 | task       | [Task](#task)     |
 | key        | String            |
 | value      | String            |

@@ -953,6 +953,26 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": appointment_id
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+       <td><pre>"patient_id": int
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Command Metadata
 
 <table>

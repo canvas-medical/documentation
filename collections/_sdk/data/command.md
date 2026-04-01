@@ -166,6 +166,8 @@ print(entry.value)
 |------------|-----------------------------------------|
 | id         | UUID                                    |
 | dbid       | Integer                                 |
+| created    | DateTime                                |
+| modified   | DateTime                                |
 | command    | [Command](/sdk/data-command/#command)   |
 | key        | String                                  |
 | value      | String                                  |

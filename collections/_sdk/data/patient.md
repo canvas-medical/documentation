@@ -215,10 +215,13 @@ for identifier in patient_external_identifiers:
 
 | Field Name | Type                |
 | ---------- | ------------------- |
+| id         | UUID                |
 | dbid       | Integer             |
+| created    | DateTime            |
+| modified   | DateTime            |
 | patient    | [Patient](#patient) |
 | key        | String              |
-| value      | Text                |
+| value      | String              |
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
