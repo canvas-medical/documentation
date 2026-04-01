@@ -953,6 +953,64 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": appointment_id
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+       <td><pre>"patient_id": int
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Command Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">COMMAND_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when metadata is created on a command.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": commandmetadata_id
+"type": <a href='/sdk/data-command/#commandmetadata'>CommandMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COMMAND_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when metadata on a command is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": commandmetadata_id
+"type": <a href='/sdk/data-command/#commandmetadata'>CommandMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Appointment Metadata
 
 <table>
@@ -20695,6 +20753,110 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     </tr>
   </tbody>
 </table>
+
+### Patient Group
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient group is created</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient group is updated</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient is added as a member of a group</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str
+      </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient’s group membership is updated</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str
+      </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a patient member is removed from a patient group</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+     <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 
 ### Other Events
 

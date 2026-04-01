@@ -147,6 +147,31 @@ __PLEASE NOTE__ the Commands Module is under development and Canvas is working t
 | data               | JSON                                  |
 | origination_source | String                                |
 
+### CommandMetadata
+
+`CommandMetadata` stores custom key-value pairs associated with a command. Metadata can be upserted using the `upsert_metadata` method on any command effect class — see [CommandMetadata Effect](/sdk/effect-command-metadata/) for full details.
+
+```python
+from canvas_sdk.v1.data.command import CommandMetadata
+
+# Get all metadata for a command
+metadata_entries = CommandMetadata.objects.filter(command__id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+# Get a specific metadata value
+entry = CommandMetadata.objects.get(command__id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35", key="my_plugin:priority")
+print(entry.value)
+```
+
+| Field Name | Type                                    |
+|------------|-----------------------------------------|
+| id         | UUID                                    |
+| dbid       | Integer                                 |
+| created    | DateTime                                |
+| modified   | DateTime                                |
+| command    | [Command](/sdk/data-command/#command)   |
+| key        | String                                  |
+| value      | String                                  |
+
 <br/>
 <br/>
 <br/>

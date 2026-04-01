@@ -29,11 +29,19 @@ To implement a custom action button, you need to create a handler class that inh
 - **`BUTTON_KEY`**  
   A unique identifier for your button. This key is used to route events, such as a click, to the appropriate handler method (`handle()`).
 
-- **`BUTTON_LOCATION`**  
+- **`BUTTON_LOCATION`**
   Specifies where the button will appear within the Canvas UI. The button can be placed in various locations, such as the note header or footer, or other areas within the chart summary.
 
+### Optional Constants
+
 - **`PRIORITY`**
-  An optional integer that specifies the order in which the button should appear relative to other buttons in the same location. Lower values appear first. If not specified, no order is guaranteed.
+  An integer that specifies the order in which the button should appear relative to other buttons in the same location. Lower values appear first. If not specified, no order is guaranteed.
+
+- **`BUTTON_TEXT_COLOR`**
+  A string that specifies the text color of the button, defined as a HEX color value (e.g., `"#FF0000"`). If not specified, the text color is automatically chosen to contrast with the background.
+
+- **`BUTTON_BACKGROUND_COLOR`**
+  A string that specifies the background color of the button, defined as a HEX color value (e.g., `"#4CAF50"`). If not specified, the button uses the default gray styling.
 
 ### Optional: Implement the `visible()` Method
 
@@ -52,6 +60,7 @@ The `ActionButton` class defines several locations where the button can be place
 | `NOTE_HEADER`                               | The button will appear in the header of each note.                              |
 | `NOTE_FOOTER`                               | The button will appear in the footer of each note.                              |
 | `NOTE_HEADER_DROPDOWN`                      | The button will appear in the note header dropdown.                             |
+| `CHART_PATIENT_HEADER`                      | The button will appear in the patient header on the patient page.               |
 | `CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION` | The button will appear in the Social Determinants section of the chart summary. |
 | `CHART_SUMMARY_GOALS_SECTION`               | The button will appear in the Goals section of the chart summary.               |
 | `CHART_SUMMARY_CONDITIONS_SECTION`          | The button will appear in the Conditions section of the chart summary.          |

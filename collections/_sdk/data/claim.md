@@ -308,7 +308,7 @@ Represents key-value metadata associated with a claim. Each claim-key pair is un
 | id         | UUID                  |
 | dbid       | Integer               |
 | claim      | [Claim](#claim)       |
-| key        | String (max 32 chars) |
+| key        | String                |
 | value      | String                |
 | created    | DateTime              |
 | modified   | DateTime              |

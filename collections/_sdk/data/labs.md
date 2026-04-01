@@ -310,6 +310,7 @@ for report in lab_reports:
 | internal_comment             | String                                |
 | message_to_patient           | String                                |
 | status                       | String                                |
+| note                         | [Note](/sdk/data-note/#note)               |
 | patient                      | [Patient](/sdk/data-patient/#patient) |
 | patient_communication_method | String                                |
 | reports                      | [LabReport](#labreport)[]             |

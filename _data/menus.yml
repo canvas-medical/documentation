@@ -660,6 +660,9 @@ sdk_overview:
   - title: "Data Module"
     url: /sdk/data/
     identifier: data_module
+  - title: "Custom Data"
+    url: /sdk/custom-data/
+    identifier: custom_data_module
   - title: "Effects Module"
     url: /sdk/effects/
     identifier: effects_module
@@ -823,6 +826,9 @@ effects_module:
   - title: "Patient"
     url: /sdk/effect-patient/
     description: Interact with patient data.
+  - title: "Patient Group"
+    url: /sdk/effect-patient-group/
+    description: Interact with patient group data.
   - title: "Patient Facility Address"
     url: /sdk/effect-patient-facility-address/
     description: Create, update, or delete patient facility address associations.
@@ -856,7 +862,6 @@ effects_module:
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.
-
 data_module:
   - title: "AllergyIntolerance"
     url: /sdk/data-allergy-intolerance/
@@ -1035,6 +1040,35 @@ data_module:
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
+
+custom_data_module:
+  - title: "Quick Start"
+    url: /sdk/custom-data-quick-start/
+    description: Brief example code to get started using Custom Data features
+  - title: "Extending SDK Models"
+    url: /sdk/custom-data-extending-sdk-models/
+    description: Create proxy models and reference SDK models from your CustomModels
+  - title: "CustomModels"
+    url: /sdk/custom-data-custom-models/
+    description: Create user defined database tables for normalized data
+  - title: "AttributeHubs"
+    url: /sdk/custom-data-attribute-hubs/
+    description: Group custom attributes independently of core data models
+  - title: "Transactions"
+    url: /sdk/custom-data-transactions/
+    description: Use transaction.atomic() for all-or-nothing multi-write operations
+  - title: "Design Considerations"
+    url: /sdk/custom-data-design-considerations/
+    description: How to evaluate which approach is best for your use case
+  - title: "Testing"
+    url: /sdk/custom-data-testing/
+    description: Automated tests using all three kinds of custom data storage
+  - title: "Namespace Lifecycle"
+    url: /sdk/custom-data-namespace-lifecycle/
+    description: Managing namespaces during development with the Canvas CLI
+  - title: "Sharing Data"
+    url: /sdk/custom-data-sharing-data/
+    description: How to share data with other plugins or external systems
 
 releasenotes:
   - title: "Product Updates"

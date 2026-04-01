@@ -88,7 +88,14 @@ class MyHandler(BaseHandler):
         return effects
 ```
 
+## Supported Events
+
+| Event | Behavior |
+|---|---|
+| [`NOTE_STATE_CHANGE_EVENT_PRE_CREATE`](/sdk/events/#notes) | Blocks the note state change (e.g. lock, push charges) and displays errors in the UI. |
+| [`APPOINTMENT__FORM__UPDATED`](/sdk/events/#appointments) | Disables the Book button on the appointment scheduling modal and displays errors as a tooltip. |
+
 ## Implementation Details
 
 - If an `EventValidationError` is returned, the event is aborted and the error message is shown in the UI (if initiated from the UI).
-- This effect is typically used for pre-create validation of events, such as note state changes.
+- This effect is typically used for pre-create validation of events, such as note state changes or appointment scheduling.
