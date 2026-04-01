@@ -114,6 +114,7 @@ Represents individual billed procedures or services tied to a claim.
 | dbid              | Integer                                                     |
 | billing_line_item | [BillingLineItem](/sdk/data-billing-line-item/)             |
 | diagnosis_codes   | [ClaimLineItemDiagnosisCode](#claimlineitemdiagnosiscode)[] |
+| modifiers         | [ClaimLineItemModifier](#claimlineitemmodifier)[]           |
 | claim             | [Claim](#claim)                                             |
 | status            | [ClaimLineItemStatus](#claimlineitemstatus)                 |
 | charge            | Decimal                                                     |
