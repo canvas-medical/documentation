@@ -59,6 +59,7 @@ The `ActionButton` class defines several locations where the button can be place
 |---------------------------------------------|---------------------------------------------------------------------------------|
 | `NOTE_HEADER`                               | The button will appear in the header of each note.                              |
 | `NOTE_FOOTER`                               | The button will appear in the footer of each note.                              |
+| `NOTE_HEADER_DROPDOWN`                      | The button will appear in the note header dropdown.                             |
 | `CHART_PATIENT_HEADER`                      | The button will appear in the patient header on the patient page.               |
 | `CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION` | The button will appear in the Social Determinants section of the chart summary. |
 | `CHART_SUMMARY_GOALS_SECTION`               | The button will appear in the Goals section of the chart summary.               |
