@@ -9,7 +9,7 @@ hidden: false
 
 The `Snapshot` and `SnapshotImage` models represent images captured via the Canvas iOS application or uploaded directly through the coverages modal. A `Snapshot` groups related images together, while each `SnapshotImage` represents an individual image with presigned URL support for secure access.
 
-Snapshots are primarily used for storing coverage card images. Note that there is currently no way to navigate from a `Snapshot` to the `Coverage` it is associated with via the SDK. This linkage will be addressed in a future release.
+Snapshots are primarily used to store coverage card images. To navigate from a [`Coverage`](/sdk/data-coverage/#coverage) to its linked `Snapshot`, use `coverage.snapshot`. There is currently no way to navigate from a `Snapshot` back to its associated `Coverage`.
 
 ## Basic Usage
 

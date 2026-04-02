@@ -47,6 +47,19 @@ Find the latest eligibility summary for a patient:
         print(elig_summary_from_cvg.copay_cents, elig_summary_from_cvg.coinsurance) # 1000 5
 ```
 
+Access insurance card images for a coverage:
+
+```python
+from canvas_sdk.v1.data.coverage import Coverage
+
+coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+
+# Navigate to the linked snapshot and its images
+if coverage.snapshot:
+    for image in coverage.snapshot.images.all():
+        print(image.image_url)  # Returns a presigned S3 URL for the image
+```
+
 ## Filtering
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
@@ -103,6 +116,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | comments                           | Text                                                  |
 | stack                              | [CoverageStack](#coveragestack)                       |
 | eligibility_summary                | [EligibilitySummary](#eligibilitysummary)             |
+| snapshot                           | [Snapshot](/sdk/data-snapshot/#snapshot)              |
 
 ### Transactor
 
