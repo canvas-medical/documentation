@@ -1035,6 +1035,8 @@ Built-in validations ensure that:
 
 - Only lab partners with electronic ordering enabled support the `send()` method.
 - The command must be committed/signed before it can be sent electronically.
+- The patient must have an address and phone number on file.
+- The ordering provider must have an NPI.
 
 **Command-specific parameters**:
 
