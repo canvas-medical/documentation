@@ -202,6 +202,101 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Patient Groups
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient group is created.</td></tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/#patientgroup'>PatientGroup</a></pre></td>
+    <td><pre>empty</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient group is updated.</td></tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/#patientgroup'>PatientGroup</a></pre></td>
+    <td><pre>empty</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient is added to a group.</td></tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": patient_group_member_id
+"type": <a href='/sdk/data-patient-group/#patientgroupmember'>PatientGroupMember</a></pre></td>
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient's group membership is updated.</td></tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": patient_group_member_id
+"type": <a href='/sdk/data-patient-group/#patientgroupmember'>PatientGroupMember</a></pre></td>
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a patient is removed from a group.</td></tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": patient_group_member_id
+"type": <a href='/sdk/data-patient-group/#patientgroupmember'>PatientGroupMember</a></pre></td>
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
+  </tr>
+  </tbody>
+</table>
+
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_ADDRESS_CREATED</th></tr>
