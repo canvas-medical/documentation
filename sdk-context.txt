@@ -2291,6 +2291,14 @@ Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas 
     ```
 You can define your default host with `is_default=true`. If no default is explicitly defined, the Canvas CLI will use the first instance in the file as the default for each of the CLI commands.
 **You are now ready to use the Canvas CLI**
+##  Update Notifications 
+The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for newer versions. If an update is available, a notice is printed to standard error after the command output:
+    ```shell
+    [notice] A newer version of canvas is available (0.112.0 → 0.113.0). Upgrade with: pip install --upgrade canvas
+    ```
+  - The check runs at most once every 12 hours; the result is cached locally to avoid unnecessary network requests.
+  - Because the notice is printed to standard error, it will not interfere with piped or redirected command output.
+  - To disable update checks, set the environment variable `CANVAS_NO_UPDATE_CHECK=1`.
 ##  Usage 
     ```console
     $ canvas [OPTIONS] COMMAND [ARGS]...
@@ -9559,6 +9567,8 @@ Field Name | Type
 ---|---  
 id | UUID  
 dbid | Integer  
+created | DateTime  
+modified | DateTime  
 appointment | Appointment  
 key | String  
 value | String  
@@ -10165,6 +10175,7 @@ id | UUID
 dbid | Integer  
 billing_line_item | [BillingLineItem](/sdk/data-billing-line-item/)  
 diagnosis_codes | ClaimLineItemDiagnosisCode[]  
+modifiers | ClaimLineItemModifier[]  
 claim | Claim  
 status | ClaimLineItemStatus  
 charge | Decimal  
@@ -10194,6 +10205,16 @@ claim_diagnosis_code | ClaimDiagnosisCode
 code | String  
 poa | String  
 linked | Boolean  
+created | DateTime  
+modified | DateTime  
+###  ClaimLineItemModifier 
+Represents a modifier code for a given ClaimLineItem.
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+line_item | ClaimLineItem  
+modifier | String  
 created | DateTime  
 modified | DateTime  
 ###  ClaimCoverage 
@@ -10332,7 +10353,7 @@ Field Name | Type
 id | UUID  
 dbid | Integer  
 claim | Claim  
-key | String (max 32 chars)  
+key | String  
 value | String  
 created | DateTime  
 modified | DateTime  
@@ -10623,6 +10644,8 @@ Field Name | Type
 ---|---  
 id | UUID  
 dbid | Integer  
+created | DateTime  
+modified | DateTime  
 command | [Command](/sdk/data-command/#command)  
 key | String  
 value | String  
@@ -10885,6 +10908,7 @@ issuer_address | TransactorAddress
 issuer_phone | TransactorPhone  
 comments | Text  
 stack | CoverageStack  
+snapshot | [Snapshot](/sdk/data-snapshot/#snapshot)  
 eligibility_summary | EligibilitySummary  
 ###  Transactor 
 Field Name | Type  
@@ -13401,6 +13425,8 @@ Field Name | Type
 ---|---  
 id | UUID  
 dbid | Integer  
+created | DateTime  
+modified | DateTime  
 note | Note  
 key | String  
 value | String  
@@ -14043,10 +14069,13 @@ value | JSON
 ###  PatientMetadata 
 Field Name | Type  
 ---|---  
+id | UUID  
 dbid | Integer  
+created | DateTime  
+modified | DateTime  
 patient | Patient  
 key | String  
-value | Text  
+value | String  
     ```python
     from canvas_sdk.v1.data.patient import Patient
     from logger import log
@@ -14983,7 +15012,7 @@ notes | String
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-snapshot/
 #  Snapshot Models 
 The `Snapshot` and `SnapshotImage` models represent images captured via the Canvas iOS application or uploaded directly through the coverages modal. A `Snapshot` groups related images together, while each `SnapshotImage` represents an individual image with presigned URL support for secure access.
-Snapshots are primarily used for storing coverage card images. Note that there is currently no way to navigate from a `Snapshot` to the `Coverage` it is associated with via the SDK. This linkage will be addressed in a future release.
+Snapshots are primarily used for storing coverage card images. You can navigate from a `Coverage` to its `Snapshot` via the `snapshot` field, and from a `Snapshot` back to its `Coverage` via the `coverage` reverse relation.
 ##  Basic Usage 
     ```python
     from canvas_sdk.v1.data import Snapshot, SnapshotImage
@@ -14995,6 +15024,13 @@ Snapshots are primarily used for storing coverage card images. Note that there i
     images = snapshot.images.all()
     # Get all snapshot images
     all_images = SnapshotImage.objects.all()
+    # Get all snapshot images for a specific coverage
+    from canvas_sdk.v1.data.coverage import Coverage
+    coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+    if coverage.snapshot:
+        images = coverage.snapshot.images.all()
+        for image in images:
+            print(image.image_url)
     ```
 ##  Accessing Image Files 
 The `image_url` property on `SnapshotImage` returns a presigned S3 URL for securely accessing the image file.
@@ -15017,6 +15053,7 @@ deleted | Boolean
 entered_in_error | Boolean  
 title | String  
 description | String  
+coverage | [Coverage](/sdk/data-coverage/#coverage)  
 images | SnapshotImage[]  
 ###  SnapshotImage 
 Field Name | Type  
@@ -15496,6 +15533,8 @@ Field Name | Type
 ---|---  
 id | UUID  
 dbid | Integer  
+created | DateTime  
+modified | DateTime  
 task | Task  
 key | String  
 value | String  
@@ -17541,9 +17580,14 @@ Return an `EventValidationError` from your protocol's `compute` method to block 
                 effects.append(v)
             return effects
     ```
+##  Supported Events 
+Event | Behavior  
+---|---  
+[`NOTE_STATE_CHANGE_EVENT_PRE_CREATE`](/sdk/events/#notes) | Blocks the note state change (e.g. lock, push charges) and displays errors in the UI.  
+[`APPOINTMENT__FORM__UPDATED`](/sdk/events/#appointments) | Disables the Book button on the appointment scheduling modal and displays errors as a tooltip.  
 ##  Implementation Details 
   - If an `EventValidationError` is returned, the event is aborted and the error message is shown in the UI (if initiated from the UI).
-  - This effect is typically used for pre-create validation of events, such as note state changes.
+  - This effect is typically used for pre-create validation of events, such as note state changes or appointment scheduling.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-event-validation-error/
 
 
@@ -19768,7 +19812,16 @@ To make plugin code react to an event, you can add the event types listed below 
 The plugin author can enter custom workflow code into the `compute` method that will execute every time an Allergy Intolerance is created in Canvas.
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 ##  Event Actor 
-The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`. It should be available for events that are directly initiated or triggered by a user — for example, SimpleAPI events, command pre- and post-search events, action button events. For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`. For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+The actor is available in the following contexts:
+  - [**SimpleAPI**](/sdk/handlers-simple-api/) handlers — HTTP and WebSocket requests
+  - [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
+  - [**Application**](/sdk/handlers-applications/) handlers
+  - **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+  - **Appointment scheduling events** — all `APPOINTMENT__*` events
+  - **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
+  - **Claim events** — `CLAIM__CONDITIONS`
+  - **Patient portal events** — all `PATIENT_PORTAL__*` events
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.handlers import BaseHandler
@@ -20208,6 +20261,16 @@ Target object | Context object
     "id": appointment_id
     "type": [Appointment](/sdk/data-appointment/#appointment/)
 | 
+    "category": [NoteTypeCategories](/sdk/data-note/#notetypecategories)  
+APPOINTMENT__FORM__UPDATED  
+---  
+Occurs when a schedule appointment form is updated.  
+Target object | Context object  
+    "id": appointment_id
+    "type": [Appointment](/sdk/data-appointment/#appointment/)
+| 
+    "patient_id": int
+    "selected_values": dict
     "category": [NoteTypeCategories](/sdk/data-note/#notetypecategories)  
 ####  Command Metadata 
 COMMAND_METADATA_CREATED  
@@ -31118,8 +31181,7 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
-###  Patient Portal lifecycle events 
-The following events are emitted during the lifecycle of a patient portal session.
+###  Patient Portal Events 
 PATIENT_PORTAL__APPOINTMENT_CANCELED  
 ---  
 Occurs after an appointment is canceled  
@@ -31219,6 +31281,21 @@ Target | Target type | Context object
     None
 | 
     "providers": list[dict]  
+PATIENT_PORTAL__GET_FORMS  
+---  
+Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value  
+Target | Target type | Context object  
+    patient_id
+| 
+    [Patient](/sdk/data-patient/)
+| 
+    "requested_from": str["appointment" |
+                          "labs" |
+                          "login" |
+                          "messaging" |
+                          "my-health" |
+                          "payment" |
+                          "search-appointment"]  
 ###  Action Buttons Events 
 For more information on handling these events, see [Action Buttons](/sdk/handlers-action-buttons).
 SHOW_NOTE_HEADER_BUTTON  
@@ -31230,7 +31307,7 @@ Target | Context object
       "note_id": str
       "user":
         "id": str
-        "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
+        "type": [Staff](/sdk/data-staff/)  
 SHOW_NOTE_FOOTER_BUTTON  
 ---  
 Occurs when patient notes are being loaded  
@@ -31240,7 +31317,7 @@ Target | Context object
       "note_id": str
       "user":
         "id": str
-        "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
+        "type": [Staff](/sdk/data-staff/)  
 SHOW_NOTE_BODY_BUTTON  
 ---  
 Occurs when patient notes are being loaded  
@@ -31250,7 +31327,17 @@ Target | Context object
       "note_id": str
       "user":
         "id": str
-        "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
+        "type": [Staff](/sdk/data-staff/)  
+SHOW_NOTE_HEADER_DROPDOWN_BUTTON  
+---  
+Occurs when patient notes are being loaded  
+Target | Context object  
+    patient_id
+| 
+      "note_id": str
+      "user":
+        "id": str
+        "type": [Staff](/sdk/data-staff/)  
 SHOW_CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION_BUTTON  
 ---  
 Occurs when patient chart summary is being loaded, specifically for social determinants section  
@@ -31395,22 +31482,6 @@ Target | Context object
       "user":
         "id": str
         "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
-###  Patient Portal Events 
-PATIENT_PORTAL__GET_FORMS  
----  
-Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value  
-Target | Target type | Context object  
-    patient_id
-| 
-    [Patient](/sdk/data-patient/)
-| 
-    "requested_from": str["appointment" |
-                          "labs" |
-                          "login" |
-                          "messaging" |
-                          "my-health" |
-                          "payment" |
-                          "search-appointment"]  
 ###  Patient Chart Configuration 
 PATIENT_CHART__CONDITIONS  
 ---  
@@ -35373,8 +35444,8 @@ The `ActionButton` class defines several locations where the button can be place
 ---|---  
 `NOTE_HEADER` | The button will appear in the header of each note.  
 `NOTE_FOOTER` | The button will appear in the footer of each note.  
-`PROFILE_PATIENT_HEADER` | The button will appear in the patient header on the profile page.  
-`CHART_PATIENT_HEADER` | The button will appear in the patient header on the chart page.  
+`NOTE_HEADER_DROPDOWN` | The button will appear in the note header dropdown.  
+`CHART_PATIENT_HEADER` | The button will appear in the patient header on the patient page.  
 `CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION` | The button will appear in the Social Determinants section of the chart summary.  
 `CHART_SUMMARY_GOALS_SECTION` | The button will appear in the Goals section of the chart summary.  
 `CHART_SUMMARY_CONDITIONS_SECTION` | The button will appear in the Conditions section of the chart summary.  
