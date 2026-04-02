@@ -20716,7 +20716,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
-<<<<<<< HEAD
 <table>
   <thead>
     <tr><th colspan="2">APPLICATION__ON_CONTEXT_CHANGE</th></tr>
@@ -20744,63 +20743,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
-### Patient Portal Events
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"requested_from": str["appointment" |
-                      "labs" |
-                      "login" |
-                      "messaging" |
-                      "my-health" |
-                      "payment" |
-                      "search-appointment"]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-||||||| 4b47a19b
-### Patient Portal Events
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"requested_from": str["appointment" |
-                      "labs" |
-                      "login" |
-                      "messaging" |
-                      "my-health" |
-                      "payment" |
-                      "search-appointment"]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-=======
->>>>>>> main
 ### Patient Chart Configuration
 
 <table>
