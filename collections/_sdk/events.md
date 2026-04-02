@@ -20638,6 +20638,29 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__ON_GET</th></tr>
+    <tr><td colspan="2">Occurs when Canvas requests metadata for embedded applications within a specific scope. Handlers should return a <code>SHOW_APPLICATION</code> effect to register the application.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>N/A</pre></td>
+      <td><pre>
+  "scope": str (e.g., "note")
+  "patient":
+    "id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Patient Portal Events
 
 <table>
