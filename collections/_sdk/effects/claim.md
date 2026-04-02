@@ -711,7 +711,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Claim, Note, PatientFacilityAddress
 from canvas_sdk.v1.data.common import AddressState
-from canvas_sdk.effects.claim.claim import ClaimEffect, ClaimBillingProvider, ClaimFacility
+from canvas_sdk.effects.claim import ClaimEffect, ClaimBillingProvider, ClaimFacility
 
 
 class ClaimProviderHandler(BaseHandler):
