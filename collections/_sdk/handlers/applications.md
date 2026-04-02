@@ -214,9 +214,79 @@ Applications with the `full_chart` scope appear as navigation tabs at the top of
 }
 ```
 
+## Embedded Applications
+
+Embedded applications integrate directly into specific UI contexts rather than appearing in the app drawer. They register dynamically and render within their designated scope.
+
+### ApplicationScope Enum
+
+The `ApplicationScope` enum defines where embedded applications appear:
+
+| Scope | Value | Description |
+|-------|-------|-------------|
+| `NOTE` | `"note"` | Application appears as a tab within patient notes |
+
+### EmbeddedApplication Class
+
+`EmbeddedApplication` is an abstract base class for scope-based applications. It handles the `APPLICATION__ON_GET` event automatically, which Canvas uses to discover applications for a given scope.
+
+Define the following class attributes:
+
+| Attribute | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `NAME` | `str` | Yes | The display name shown in the UI |
+| `SCOPE` | `ApplicationScope` | Yes | Determines where the application is visible |
+| `IDENTIFIER` | `str \| None` | No | Unique identifier for the application. Defaults to `module:classname` if not provided |
+| `PRIORITY` | `int` | No | Controls display order (lower values appear first). Defaults to `0` |
+
+Your class must implement `on_open()` to handle what happens when the application opens.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import ApplicationScope, EmbeddedApplication
+
+
+class MyEmbeddedApp(EmbeddedApplication):
+    NAME = "My Application"
+    SCOPE = ApplicationScope.NOTE
+    IDENTIFIER = "my_plugin__my_app"
+    PRIORITY = 5
+
+    def on_open(self) -> Effect | list[Effect]:
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.NOTE,
+            content="<html>Application content</html>",
+            title="My Application"
+        ).apply()
+```
+
+### Visibility Control
+
+Override `visible()` to control when your application appears. This method runs during the `APPLICATION__ON_GET` event:
+
+```python
+def visible(self) -> bool:
+    """Only show for specific conditions."""
+    # Check context or other conditions
+    return self.event.context.get("some_condition") is True
+```
+
+By default, `visible()` returns `True`, making applications visible whenever the scope matches.
+
+### Open by Default
+
+Override `open_by_default()` to open your application automatically when the user enters its scope:
+
+```python
+def open_by_default(self) -> bool:
+    """Open automatically when entering scope."""
+    return True
+```
+
 ## Note Applications
 
-Note Applications appear as tabs within a patient's note, allowing you to embed custom interfaces directly in the clinical documentation workflow.
+Note Applications appear as tabs within a patient's note. They inherit from `EmbeddedApplication` with the scope set to `ApplicationScope.NOTE`.
 
 ### Implementing a Note Application
 

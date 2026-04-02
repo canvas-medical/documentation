@@ -20618,6 +20618,29 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 
 <table>
   <thead>
+    <tr><th colspan="2">APPLICATION__ON_GET</th></tr>
+    <tr><td colspan="2">Occurs when Canvas requests available embedded applications for a given scope. Used internally by <a href="/sdk/handlers-applications/#embedded-applications">EmbeddedApplication</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>scope</pre></td>
+      <td><pre>
+  "scope": str
+  "patient":
+    "id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">APPLICATION__ON_OPEN</th></tr>
     <tr><td colspan="2">Occurs when a user clicks on an application icon to open it</td></tr>
   </thead>
@@ -20634,6 +20657,33 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__ON_CONTEXT_CHANGE</th></tr>
+    <tr><td colspan="2">Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "url": str
+  "patient":
+    "id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a>
+  "claim": (optional)
+    "id": str
+  "claim_queue": (optional)
+    "dbid": str</pre></td>
     </tr>
   </tbody>
 </table>
