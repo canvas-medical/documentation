@@ -2792,6 +2792,16 @@ These events fire during the command lifecycle.
   </tbody>
 </table>
 
+##### Transaction Behavior
+
+Pre-event handlers (`PRE_COMMAND_ORIGINATE`, `PRE_COMMAND_COMMIT`, `PRE_COMMAND_UPDATE`) run synchronously inside the same database transaction as the command operation. Your handler can perform validation or modify data, and if it raises an exception, both your changes and the command operation roll back together.
+
+Post-event handlers (`POST_COMMAND_ORIGINATE`, `POST_COMMAND_COMMIT`, `POST_COMMAND_UPDATE`) use Django's `on_commit` mechanism and execute only after the outermost transaction commits successfully. If you wrap a command operation inside a `transaction.atomic()` block, the post-event handlers won't fire until that outer transaction commits.
+
+This model lets you combine command operations with other database writes in a single atomic unit. You can originate a command and update related records together, knowing that either all operations succeed or none do.
+
+See [Transactions](/sdk/custom-data-transactions/) for more on using `transaction.atomic()` in your plugins.
+
 ##### Context Overview
 
 Each command lifecycle event provides specific context to the handler, depending on the stage of the command lifecycle.
