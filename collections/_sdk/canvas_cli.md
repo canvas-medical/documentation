@@ -43,6 +43,18 @@ You can define your default host with `is_default=true`. If no default is explic
 
 **You are now ready to use the Canvas CLI**
 
+## Update Notifications
+
+The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for newer versions. If an update is available, a notice is printed to standard error after the command output:
+
+```shell
+[notice] A newer version of canvas is available (0.112.0 → 0.113.0). Upgrade with: pip install --upgrade canvas
+```
+
+- The check runs at most once every 12 hours; the result is cached locally to avoid unnecessary network requests.
+- Because the notice is printed to standard error, it will not interfere with piped or redirected command output.
+- To disable update checks, set the environment variable `CANVAS_NO_UPDATE_CHECK=1`.
+
 ## Usage
 
 ```console
