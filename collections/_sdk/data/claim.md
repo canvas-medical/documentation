@@ -114,6 +114,7 @@ Represents individual billed procedures or services tied to a claim.
 | dbid              | Integer                                                     |
 | billing_line_item | [BillingLineItem](/sdk/data-billing-line-item/)             |
 | diagnosis_codes   | [ClaimLineItemDiagnosisCode](#claimlineitemdiagnosiscode)[] |
+| modifiers         | [ClaimLineItemModifier](#claimlineitemmodifier)[]           |
 | claim             | [Claim](#claim)                                             |
 | status            | [ClaimLineItemStatus](#claimlineitemstatus)                 |
 | charge            | Decimal                                                     |
@@ -146,6 +147,19 @@ Represents a diagnosis code for a given ClaimLineItem. There exists one ClaimLin
 | code                 | String                                    |
 | poa                  | String                                    |
 | linked               | Boolean                                   |
+| created              | DateTime                                  |
+| modified             | DateTime                                  |
+
+### ClaimLineItemModifier
+
+Represents a modifier code for a given ClaimLineItem.
+
+| Field Name           | Type                                      |
+| -------------------- | ----------------------------------------- |
+| id                   | UUID                                      |
+| dbid                 | Integer                                   |
+| line_item            | [ClaimLineItem](#claimlineitem)           |
+| modifier             | String                                    |
 | created              | DateTime                                  |
 | modified             | DateTime                                  |
 
