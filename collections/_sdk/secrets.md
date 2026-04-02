@@ -22,7 +22,7 @@ These declared secrets become available for configuration in the Canvas Admin UI
   "components": {
     "handlers": [
       {
-        "class": "live_notifications.handlers.my_protocol:Protocol",
+        "class": "live_notifications.handlers.my_handler:Handler",
         "description": "A handler that does xyz..."
       }
     ]

@@ -43,7 +43,7 @@ from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     """
     When a task is created, log a message
     """
@@ -69,9 +69,9 @@ created a task, you should see this in your log stream:
 ```sh
 INFO 2024-09-26 17:04:08,396 Starting server, listening on port 50051
 INFO 2024-09-26 17:04:08,396 Loading custom-plugins/task_webhook
-INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.my_protocol:Protocol'
+INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.my_handler:Handler'
 INFO 2024-09-26 17:04:24,410 A Task was created!
-INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.my_protocol:Protocol.compute() completed (0 ms)
+INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.my_handler:Handler.compute() completed (0 ms)
 INFO 2024-09-26 17:04:24,411 Responded to Event TASK_CREATED (1 ms)
 ```
 
@@ -92,7 +92,7 @@ from canvas_sdk.utils import Http
 from logger import log
 
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     """
     When a task is created, hit a webhook
     """
@@ -125,9 +125,9 @@ created a task, you should see this in your log stream:
 
 ```sh
 INFO 2024-09-26 17:18:23,206 Loading custom-plugins/task_webhook
-INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.my_protocol:Protocol'
+INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.my_handler:Handler'
 INFO 2024-09-26 17:18:33,850 Successfully notified API of task creation!
-INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.my_protocol:Protocol.compute() completed (693 ms)
+INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.my_handler:Handler.compute() completed (693 ms)
 INFO 2024-09-26 17:18:33,851 Responded to Event TASK_CREATED (696 ms)
 ```
 
@@ -151,7 +151,7 @@ specifically going to incorporate the event's `target` and `secrets`.
 
 ### Make an authenticated HTTP request that includes the newly created Task's ID
 
-Within your `Protocol` class, you have access to `self.target`, which
+Within your `Handler` class, you have access to `self.target`, which
 represents the ID of the subject of the event. In our case, it will be the
 Task's ID. This is the same ID used in the [FHIR Task endpoints](/api/task/),
 so you can use it to make FHIR API requests.
@@ -173,7 +173,7 @@ auth token. Here's what the manifest file looks like with secrets declared:
     "components": {
         "handlers": [
             {
-                "class": "task_webhook.handlers.my_protocol:Protocol",
+                "class": "task_webhook.handlers.my_handler:Handler",
                 "description": "Hit an API when a task is created",
                 "data_access": {
                     "event": "",
@@ -209,7 +209,7 @@ from canvas_sdk.utils import Http
 from logger import log
 
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     """
     When a task is created, hit a webhook
     """
@@ -262,7 +262,7 @@ from canvas_sdk.utils import Http
 from logger import log
 
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     """
     When a task is created or updated, hit a webhook
     """
@@ -280,7 +280,7 @@ class Protocol(BaseHandler):
         headers = {"Authorization": f"Bearer {self.secrets['AUTH_TOKEN']}"}
 
         # self.event.type is a member of the EventType enum corresponding to
-        # one of the event types in the plugin's RESPONDS_TO attribute
+        # one of the event types in the handler's RESPONDS_TO attribute
         verb = 'created' if self.event.type == EventType.TASK_CREATED else 'updated'
 
         payload = {

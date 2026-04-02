@@ -70,7 +70,7 @@ class HelloWorld(ActionButton):
     BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_HEADER
 
     def handle(self) -> list[Effect]:
-        launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { "title": "hello world" }))
+        launch_modal = LaunchModalEffect(content=render_to_string("templates/hello-world.html", { "title": "hello world" }))
 
         return [launch_modal.apply()]
 ```
@@ -225,7 +225,7 @@ from canvas_sdk.templates import render_to_string
 who_boys_length_age = ... # from growth_charts.graphs.who_boys_length_age
 
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     def compute(self):
         # list of graphs
         length_for_age = {} # filled in the actual implementation, see linked GitHub repository
