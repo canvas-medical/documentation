@@ -82,6 +82,11 @@ Provides hash-based message authentication code (HMAC) functions for secure mess
 - `compare_digest`
 - `new`
 
+##### `html`
+Provides functions for escaping and unescaping HTML entities, useful for safely handling HTML text in web applications. [read more](https://docs.python.org/3/library/html.html)
+- `escape`
+- `unescape`
+
 ##### `http`
 Provides HTTP status codes and related constants for web API development and HTTP response handling. [read more](https://docs.python.org/3/library/http.html)
 - `HTTPStatus`
@@ -151,8 +156,9 @@ Provides modules for working with URLs, including URL parsing and manipulation. 
 
 ##### `urllib.parse`
 Provides URL parsing utilities for breaking apart and constructing URLs and query strings. [read more](https://docs.python.org/3/library/urllib.parse.html)
-- `urlencode`
 - `quote`
+- `unquote`
+- `urlencode`
 
 ##### `uuid`
 Provides functions for generating universally unique identifiers (UUIDs) for creating unique record identifiers. [read more](https://docs.python.org/3/library/uuid.html)
@@ -181,6 +187,8 @@ Django's database abstraction layer for defining database models and performing 
 - `CharField`
 - `Count`
 - `Exists`
+- `FloatField`
+- `Func`
 - `IntegerField`
 - `Max`
 - `Min`
@@ -188,10 +196,13 @@ Django's database abstraction layer for defining database models and performing 
 - `OuterRef`
 - `Prefetch`
 - `Q`
+- `RowRange`
 - `Subquery`
 - `Sum`
 - `Value`
+- `ValueRange`
 - `When`
+- `Window`
 
 ##### `django.db.models.expressions`
 Django's database expressions for complex query operations and conditional logic. [read more](https://docs.djangoproject.com/en/stable/ref/models/expressions/)
@@ -201,6 +212,22 @@ Django's database expressions for complex query operations and conditional logic
 - `Subquery`
 - `Value`
 - `When`
+
+##### `django.db.models.functions`
+Django's database functions for transforming and computing values in queries, including window functions for analytics. [read more](https://docs.djangoproject.com/en/stable/ref/models/database-functions/)
+- `Coalesce`
+- `CumeDist`
+- `DenseRank`
+- `FirstValue`
+- `Lag`
+- `LastValue`
+- `Lead`
+- `NthValue`
+- `Ntile`
+- `PercentRank`
+- `Rank`
+- `RowNumber`
+- `Trim`
 
 ##### `django.db.models.query`
 Django's QuerySet class for database query operations and result handling. [read more](https://docs.djangoproject.com/en/stable/ref/models/querysets/)
