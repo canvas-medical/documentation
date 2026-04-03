@@ -345,6 +345,113 @@ class MyHandler(BaseHandler):
         return [note.upsert_metadata(key="my_plugin:custom_key", value="custom_value")]
 ```
 
+### Freeze Note
+
+Temporarily freezes a note from concurrent edits. When a note is frozen, other users see a freeze banner and optionally blurred content. The freeze automatically expires after a configurable duration.
+
+This effect is useful for plugins that need exclusive access to a note while performing operations, preventing race conditions from concurrent edits.
+
+#### Attributes
+
+| Attribute  | Type            | Description                                                                 | Required |
+|------------|-----------------|-----------------------------------------------------------------------------|----------|
+| `note_id`  | `UUID` or `str` | Identifier of the note to freeze                                            | Yes      |
+| `duration` | `int`           | Duration in seconds before auto-unfreeze (default: 300)                     | No       |
+| `user_id`  | `str` or `None` | User ID of the lock owner. The lock owner won't see the freeze banner.      | No       |
+| `blur`     | `bool`          | Whether to blur note content for non-owners (default: false)                | No       |
+
+#### Implementation Details
+
+- The freeze state is stored in note metadata as JSON: `{frozen: true, lockedByUserId: str, blur: bool}`
+- An automatic unfreeze task is scheduled when freezing. If a new freeze is applied before the timer expires, the previous timer is cancelled
+- The lock owner (identified by `user_id`) can continue editing while others see the freeze banner
+- Frontend displays a freeze banner and optionally blurs the note body for non-owners
+
+#### Example Usage
+
+```python
+import json
+
+from canvas_sdk.effects import Effect, EffectType
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class NoteFreezeHandler(BaseHandler):
+    """
+    Freezes the note when body content changes, giving the current user
+    temporary exclusive edit access.
+    """
+
+    RESPONDS_TO = EventType.Name(EventType.NOTE_BODY_UPDATED)
+
+    def compute(self):
+        note_id = self.event.target.id
+        user_id = self.event.context.get("user", {}).get("id")
+
+        return [
+            Effect(
+                type=EffectType.FREEZE_NOTE,
+                payload=json.dumps({
+                    "data": {
+                        "note_id": str(note_id),
+                        "duration": 60,  # Freeze for 60 seconds
+                        "user_id": user_id,  # Lock owner won't see freeze banner
+                        "blur": True,  # Blur content for other users
+                    }
+                }),
+            )
+        ]
+```
+
+### Unfreeze Note
+
+Manually removes a freeze from a previously frozen note before the automatic expiration. Use this when your plugin has completed its operation and wants to release the note for others to edit.
+
+#### Attributes
+
+| Attribute | Type            | Description                        | Required |
+|-----------|-----------------|------------------------------------|----------|
+| `note_id` | `UUID` or `str` | Identifier of the note to unfreeze | Yes      |
+
+#### Implementation Details
+
+- Removes the freeze state from note metadata
+- Cancels any pending auto-unfreeze task
+- Broadcasts the change to connected frontend clients
+
+#### Example Usage
+
+```python
+import json
+
+from canvas_sdk.effects import Effect, EffectType
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class NoteUnfreezeHandler(BaseHandler):
+    """
+    Unfreezes a note when a specific action completes.
+    """
+
+    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_COMMIT)
+
+    def compute(self):
+        note_id = self.event.context.get("note", {}).get("uuid")
+
+        return [
+            Effect(
+                type=EffectType.UNFREEZE_NOTE,
+                payload=json.dumps({
+                    "data": {
+                        "note_id": str(note_id),
+                    }
+                }),
+            )
+        ]
+```
+
 ## ScheduleEvent Effect
 
 The `ScheduleEvent` effect enables creating, updating, and deleting schedule events for providers, with optional patient association.

@@ -2239,6 +2239,67 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": <a href='/sdk/data-note/'>Note</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is updated, including changes to fields, commands, or body content.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": <a href='/sdk/data-note/'>Note</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id
+"user":
+    "id": staff_key</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_BODY_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the body content of a note is modified. This event fires only when the note body actually changes, detected via checksum comparison. Use this event instead of <code>NOTE_UPDATED</code> when you need to respond specifically to content changes rather than all note modifications.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": <a href='/sdk/data-note/'>Note</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id
+"user":
+    "id": staff_key</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Letters
 
 <table>
