@@ -494,9 +494,9 @@ education_series:
   - title: "Sandboxing and Allowed Imports"
     url: /learn/sandboxing-and-allowed-imports/
     description: Learn about sandboxing and allowed imports in the Canvas SDK
-  - title: "Secrets"
+  - title: "Variables"
     url: /learn/secrets/
-    description: Learn about secrets in the Canvas SDK
+    description: Learn about plugin variables and secrets in the Canvas SDK
   - title: "Caching"
     url: /learn/caching/
     description: Learn about caching in the Canvas SDK
@@ -677,7 +677,7 @@ sdk_overview:
     url: /sdk/questionnaires/
   - title: "Sandboxing and Allowed Imports"
     url: /sdk/sandboxing-and-allowed-imports/
-  - title: "Secrets"
+  - title: "Variables"
     url: /sdk/secrets/
   - title: "SimpleAPI"
     url: /sdk/handlers-simple-api/

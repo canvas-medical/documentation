@@ -1,17 +1,15 @@
 ---
-title: "Managing Secrets"
+title: "Managing Variables"
 slug: "secrets"
 hidden: false
 ---
 
-Canvas provides a secure key-value secret store that allows your plugins to access sensitive information (such as API tokens) without hardcoding them into source files. 
-This guide explains how to define, configure, and access secrets within your plugins.
+Canvas provides a key-value store that lets your plugins access configuration without hardcoding values into source files. Variables can be sensitive (like API tokens, which are write-only) or non-sensitive (for regular configuration). This guide covers how to define, configure, and access variables in your plugins.
 
 
-### Declaring Secrets in `CANVAS_MANIFEST.json`
+### Declaring Variables in `CANVAS_MANIFEST.json`
 
-Secrets are declared in your plugin's `CANVAS_MANIFEST.json` file under the top-level `secrets` field. 
-These declared secrets become available for configuration in the Canvas Admin UI when the plugin is installed.
+Variables are declared in your plugin's `CANVAS_MANIFEST.json` file under the top-level `variables` field. Each variable is an object with a `name` and an optional `sensitive` flag. Variables marked as `sensitive: true` are write-only and behave like secrets. These declared variables become available for configuration in the Canvas Admin UI when the plugin is installed.
 
 ```json
 {
@@ -22,19 +20,29 @@ These declared secrets become available for configuration in the Canvas Admin UI
   "components": {
     "handlers": [
       {
-        "class": "live_notifications.handlers.my_protocol:Protocol",
+        "class": "live_notifications.handlers.my_handler:Handler",
         "description": "A handler that does xyz..."
       }
     ]
   },
-  "secrets": ["API_TOKEN"],
+  "variables": [
+    {"name": "API_TOKEN", "sensitive": true},
+    {"name": "WEBHOOK_URL"}
+  ],
   "tags": {}
 }
 ```
 
-### Configuring Secrets in the Admin UI
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | The variable name used in your plugin code |
+| `sensitive` | boolean | No | When `true`, the variable is write-only (default: `false`) |
 
-Once your plugin is installed, you can update secret values through the Admin interface:
+{% include alert.html type="warning" content="<b>Deprecation Notice:</b> The legacy <code>secrets</code> array format is deprecated. Use the <code>variables</code> format shown above instead. The legacy format will continue to work but displays a deprecation warning during <code>canvas validate-manifest</code>." %}
+
+### Configuring Variables in the Admin UI
+
+Once your plugin is installed, you can update variable values through the Admin interface:
 
 Navigation path:
 `Home` › `Plugin_IO` › `Plugins` › `(your plugin)`
@@ -43,46 +51,46 @@ Or, go directly to:
 ```generic
 https://<your_canvas_instance>/admin/plugin_io/plugin/<plugin_id>/change/
 ```
-On this page, you will find input fields for each secret defined in your manifest. 
+On this page, you will find input fields for each variable defined in your manifest.
 
 <div style="text-align:center;">
-  <img src="/assets/images/sdk/secrets/plugins_secrets_settings_with_permissions.png" alt="Setting plugin secrets" width="100%">
+  <img src="/assets/images/sdk/secrets/plugins_secrets_settings_with_permissions.png" alt="Setting plugin variables" width="100%">
 </div>
 
-Plugin secrets can be protected by managing user permissions. Only users explicitly assigned as "managing users" for a plugin can view or modify its secrets (as well as other sensitive settings like the plugin package file download link). Other users can see basic plugin details and enable or disable plugins, but they will not be able to access or change secret values. To add or remove managing users for a plugin, use the "Managing users" section on the plugin detail page in the Admin UI. This ensures that sensitive configuration, such as API tokens, remains visible only to authorized personnel.
+Sensitive variables can be protected by managing user permissions. Only users explicitly assigned as "managing users" for a plugin can view or modify its sensitive variables (as well as other sensitive settings like the plugin package file download link). Other users can see basic plugin details and enable or disable plugins, but they will not be able to access or change sensitive variable values. To add or remove managing users for a plugin, use the "Managing users" section on the plugin detail page in the Admin UI. This ensures that sensitive configuration, such as API tokens, remains visible only to authorized personnel.
 
 
-### Configuring Secrets in the CLI
+### Configuring Variables in the CLI
 
-You can set secrets either after a plugin is installed or as part of the install.
-Secrets must be listed under the secrets field in the plugin’s `CANVAS_MANIFEST.json`.
+You can set variable values either after a plugin is installed or as part of the install.
+Variables must be listed under the `variables` field in the plugin’s `CANVAS_MANIFEST.json`.
 
-Set (or update) secrets on an installed plugin:
+Set (or update) variables on an installed plugin:
 ```console
 $ canvas config set <plugin_name> API_TOKEN=your_api_token_value
 ```
 
-Provide secrets during install:
+Provide variable values during install:
 ```console
 $ canvas install <plugin_name> --secret API_TOKEN=your_api_token_value
 ```
 
-Set multiple secrets:
+Set multiple variables:
 
 ```console
-# Pass multiple key=value pairs. 
-$ canvas config set <plugin_name> API_TOKEN=abc123 OTHER_KEY=xyz
+# Pass multiple key=value pairs.
+$ canvas config set <plugin_name> API_TOKEN=abc123 WEBHOOK_URL=https://example.com
 
 # For installs, repeat --secret
 $ canvas install <plugin_name> \
   --secret API_TOKEN=abc123 \
-  --secret OTHER_KEY=xyz
+  --secret WEBHOOK_URL=https://example.com
 ```
 
-### Accessing Secrets in Your Plugin
+### Accessing Variables in Your Plugin
 
-Secrets defined in your manifest and configured in the admin UI are exposed to your plugin code through the `self.secrets`. 
-This is a Python dictionary containing all secret values.
+Variables defined in your manifest and configured in the admin UI are exposed to your plugin code through `self.secrets`.
+This is a Python dictionary containing all variable values, including both sensitive and non-sensitive variables.
 
 ```python
 from canvas_sdk.handlers import BaseHandler
@@ -91,5 +99,6 @@ from canvas_sdk.effects import Effect
 class MyHandler(BaseHandler):
     def compute(self) -> list[Effect]:
         api_token = self.secrets["API_TOKEN"]
+        webhook_url = self.secrets["WEBHOOK_URL"]
         ...
 ```
