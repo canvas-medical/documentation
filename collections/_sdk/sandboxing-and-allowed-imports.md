@@ -133,6 +133,10 @@ Provides time-related functions for measuring execution time and adding delays i
 - `time`
 - `time_ns`
 
+##### `traceback`
+Provides functions for extracting, formatting, and printing stack traces. [read more](https://docs.python.org/3/library/traceback.html)
+- `format_exc`
+
 ##### `typing`
 Provides support for type hints and static type checking to improve code clarity and IDE support. [read more](https://docs.python.org/3/library/typing.html)
 - `Any`
@@ -324,6 +328,7 @@ The following Python builtin functions are available within the sandbox:
 - `classmethod`
 - `dict`
 - `enumerate`
+- `extract_exc_frames`
 - `filter`
 - `getattr`
 - `hasattr`
@@ -341,6 +346,26 @@ The following Python builtin functions are available within the sandbox:
 - `vars`
 
 Plus all the standard safe builtins from RestrictedPython including basic types (`bool`, `int`, `float`, `str`, `tuple`, etc.) and safe operations.
+
+### `extract_exc_frames()`
+
+A sandbox-provided function that extracts frame information from the current exception's traceback. Must be called from within an `except` block. Returns an empty list if no exception is active.
+
+Each frame exposes only safe attributes:
+- `filename` — the file path
+- `lineno` — the line number
+- `name` — the function name
+
+Source code lines and local variables are not accessible.
+
+```python
+try:
+    some_operation()
+except Exception:
+    frames = extract_exc_frames()
+    for frame in frames:
+        log.info(f"{frame.filename}:{frame.lineno} in {frame.name}")
+```
 
 ## Requesting Additional Imports
 
