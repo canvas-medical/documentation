@@ -297,19 +297,6 @@ A fast string matching library for fuzzy string comparison and search operations
 - `process`
 - `utils`
 
-##### `requests`
-A simple and elegant HTTP library for making web requests and API calls. [read more](https://docs.python-requests.org/en/latest/)
-- `codes`
-- `delete`
-- `get`
-- `patch`
-- `post`
-- `put`
-- `request`
-- `RequestException`
-- `Response`
-- `Session`
-
 ## Canvas SDK Modules
 
 All Canvas SDK modules are available for import and use within your plugins:
