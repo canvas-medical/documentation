@@ -269,6 +269,7 @@ A fast string matching library for fuzzy string comparison and search operations
 
 ##### `requests`
 A simple and elegant HTTP library for making web requests and API calls. [read more](https://docs.python-requests.org/en/latest/)
+- `codes`
 - `delete`
 - `get`
 - `patch`
