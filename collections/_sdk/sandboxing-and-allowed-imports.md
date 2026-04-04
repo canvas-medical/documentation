@@ -341,14 +341,16 @@ The `extract_exc_frames` function provides safe access to exception traceback in
 
 This is useful for logging or debugging exception context without exposing sensitive sandbox internals.
 
-```python
+```python?partial=true
+from logger import log
+
 try:
     # code that may raise an exception
     raise ValueError("Something went wrong")
 except ValueError:
     frames = extract_exc_frames()
     for frame in frames:
-        logger.info(f"{frame.filename}:{frame.lineno} in {frame.name}")
+        log.info(f"{frame.filename}:{frame.lineno} in {frame.name}")
 ```
 
 ## Allowed Dunder Attributes
@@ -364,14 +366,16 @@ The sandbox restricts access to dunder attributes (those with double underscore 
 
 The `__traceback__` attribute provides safe access to exception tracebacks using the standard Python traversal pattern:
 
-```python
+```python?partial=true
+from logger import log
+
 try:
     raise ValueError("test error")
 except ValueError as error:
     tb = error.__traceback__
     while tb is not None:
         frame = tb.tb_frame
-        logger.info(f"{frame.f_code.co_filename}:{tb.tb_lineno} in {frame.f_code.co_name}")
+        log.info(f"{frame.f_code.co_filename}:{tb.tb_lineno} in {frame.f_code.co_name}")
         tb = tb.tb_next
 ```
 
