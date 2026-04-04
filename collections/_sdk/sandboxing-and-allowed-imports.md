@@ -125,8 +125,9 @@ Provides string constants and template classes for string manipulation and forma
 
 ##### `time`
 Provides time-related functions for measuring execution time and adding delays in processing. [read more](https://docs.python.org/3/library/time.html)
-- `time`
 - `sleep`
+- `time`
+- `time_ns`
 
 ##### `typing`
 Provides support for type hints and static type checking to improve code clarity and IDE support. [read more](https://docs.python.org/3/library/typing.html)
