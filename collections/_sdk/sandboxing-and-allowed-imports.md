@@ -43,6 +43,7 @@ This module provides a decorator and functions for automatically adding generate
 Provides classes for working with dates and times, essential for medical applications that need to track appointment schedules and patient timelines. [read more](https://docs.python.org/3/library/datetime.html)
 - `date`
 - `datetime`
+- `time`
 - `timedelta`
 - `timezone`
 - `UTC`
