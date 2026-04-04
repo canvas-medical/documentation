@@ -228,6 +228,8 @@ To create a Note Application, your handler class should inherit from `NoteApplic
 | `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`) |
 | `PRIORITY`   | Controls tab order — lower values appear first. Defaults to `0`                |
 
+> **Tip:** If your Note Application is named "Note", it may cause confusion with the built-in Note tab. Administrators can rename the built-in tab using the `NOTE_BODY_TAB_LABEL` setting in Django admin to avoid duplication.
+
 Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
 
 > **⚠️  Important** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
