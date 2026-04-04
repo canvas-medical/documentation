@@ -129,6 +129,10 @@ Provides time-related functions for measuring execution time and adding delays i
 - `time`
 - `time_ns`
 
+##### `traceback`
+Provides utilities for extracting and formatting exception tracebacks. [read more](https://docs.python.org/3/library/traceback.html)
+- `format_exc`
+
 ##### `typing`
 Provides support for type hints and static type checking to improve code clarity and IDE support. [read more](https://docs.python.org/3/library/typing.html)
 - `Any`
@@ -308,6 +312,7 @@ The following Python builtin functions are available within the sandbox:
 - `classmethod`
 - `dict`
 - `enumerate`
+- `extract_exc_frames`
 - `filter`
 - `getattr`
 - `hasattr`
@@ -325,6 +330,52 @@ The following Python builtin functions are available within the sandbox:
 - `vars`
 
 Plus all the standard safe builtins from RestrictedPython including basic types (`bool`, `int`, `float`, `str`, `tuple`, etc.) and safe operations.
+
+### extract_exc_frames
+
+The `extract_exc_frames` function provides safe access to exception traceback information within the sandbox. Call it from inside an `except` block to get a list of frame summaries with the following attributes:
+
+- `filename` - The source file path
+- `lineno` - The line number
+- `name` - The function name
+
+This is useful for logging or debugging exception context without exposing sensitive sandbox internals.
+
+```python
+try:
+    # code that may raise an exception
+    raise ValueError("Something went wrong")
+except ValueError:
+    frames = extract_exc_frames()
+    for frame in frames:
+        logger.info(f"{frame.filename}:{frame.lineno} in {frame.name}")
+```
+
+## Allowed Dunder Attributes
+
+The sandbox restricts access to dunder attributes (those with double underscore prefixes and suffixes) for security. The following dunder attributes can be read:
+
+- `__args__` - Type arguments for generic types (e.g., `List[str].__args__` returns `(str,)`)
+- `__members__` - Dictionary of enum members (e.g., `MyEnum.__members__`)
+- `__origin__` - Origin type for generic types (e.g., `List[str].__origin__` returns `list`)
+- `__traceback__` - Exception traceback object, wrapped in a safe proxy that exposes only `tb_frame`, `tb_lineno`, and `tb_next`
+
+### Using `__traceback__` for exception handling
+
+The `__traceback__` attribute provides safe access to exception tracebacks using the standard Python traversal pattern:
+
+```python
+try:
+    raise ValueError("test error")
+except ValueError as error:
+    tb = error.__traceback__
+    while tb is not None:
+        frame = tb.tb_frame
+        logger.info(f"{frame.f_code.co_filename}:{tb.tb_lineno} in {frame.f_code.co_name}")
+        tb = tb.tb_next
+```
+
+The traceback proxy blocks access to sensitive attributes like `f_locals`, `f_globals`, and bytecode internals that could be used to escape the sandbox.
 
 ## Requesting Additional Imports
 
