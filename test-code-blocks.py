@@ -16,7 +16,7 @@ from markdown_it import MarkdownIt
 
 Kind = Literal["PYTHON"] | Literal["PYTHON_IMPORTS_ONLY"] | Literal["MISSING"]
 
-BUILTINS = set(dir(builtins))
+BUILTINS = set(dir(builtins) + ["__classdict__"])
 
 
 def extract_code_blocks(
