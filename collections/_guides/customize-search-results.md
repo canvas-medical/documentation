@@ -5,6 +5,7 @@ guide_for:
 - /sdk/events/
 - /sdk/effects/
 - /sdk/protocols/
+- /sdk/handlers/
 ---
 In a typical visit note, it's common for clinicians to make 20, 30, even 50 or more selections from structured terminologies with commands like Diagnose, Prescribe, Family History, and many more. You can help clinicians make faster and more accurate selections with Canvas plugins. Write simple plugin code to apply custom filtering, sorting, and search result annotations in real time with near zero latency.
 
@@ -46,10 +47,10 @@ import json
 
 from canvas_sdk.events import EventType
 from canvas_sdk.effects import Effect, EffectType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class Protocol(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
     def compute(self):
@@ -95,17 +96,17 @@ This code can be broken down into the following sections:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class Protocol(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
     def compute(self):
         results = self.context.get("results")
 ```
 
-The class inherits from `BaseProtocol`, which clues the plugin-runner into
+The class inherits from `BaseHandler`, which clues the plugin-runner into
 registering your code as interested in the event or events listed in the
 `RESPONDS_TO` class constant. We only specify one event here,
 `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, but you could make this value

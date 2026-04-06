@@ -33,7 +33,18 @@ For more information on writing plugins, see the guide [here](/guides/your-first
 ## Event Actor
 
 The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
-It should be available for events that are directly initiated or triggered by a user — for example, SimpleAPI events, command pre- and post-search events, action button events. For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+
+The actor is available in the following contexts:
+
+- [**SimpleAPI**](/sdk/handlers-simple-api/) handlers — HTTP and WebSocket requests
+- [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
+- [**Application**](/sdk/handlers-applications/) handlers
+- **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+- **Appointment scheduling events** — all `APPOINTMENT__*` events
+- **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
+- **Claim events** — `CLAIM__CONDITIONS`
+- **Patient portal events** — all `PATIENT_PORTAL__*` events
 
 ```python
 from canvas_sdk.effects import Effect
@@ -949,6 +960,64 @@ These events fire as a result of records being created, updated, or deleted.
        <td><pre>"id": appointment_id
 "type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": appointment_id
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+       <td><pre>"patient_id": int
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Command Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">COMMAND_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when metadata is created on a command.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": commandmetadata_id
+"type": <a href='/sdk/data-command/#commandmetadata'>CommandMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COMMAND_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when metadata on a command is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": commandmetadata_id
+"type": <a href='/sdk/data-command/#commandmetadata'>CommandMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20011,9 +20080,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
-### Patient Portal lifecycle events
-
-The following events are emitted during the lifecycle of a patient portal session.
+### Patient Portal Events
 
 <table>
   <thead>
@@ -20224,6 +20291,31 @@ The following events are emitted during the lifecycle of a patient portal sessio
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
+    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"requested_from": str["appointment" |
+                      "labs" |
+                      "login" |
+                      "messaging" |
+                      "my-health" |
+                      "payment" |
+                      "search-appointment"]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
@@ -20244,7 +20336,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -20265,7 +20357,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -20286,7 +20378,28 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SHOW_NOTE_HEADER_DROPDOWN_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -20580,33 +20693,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
-### Patient Portal Events
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"requested_from": str["appointment" |
-                      "labs" |
-                      "login" |
-                      "messaging" |
-                      "my-health" |
-                      "payment" |
-                      "search-appointment"]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
 ### Patient Chart Configuration
 
 <table>
@@ -20674,6 +20760,110 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     </tr>
   </tbody>
 </table>
+
+### Patient Group
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient group is created</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient group is updated</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient is added as a member of a group</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str
+      </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient’s group membership is updated</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str
+      </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a patient member is removed from a patient group</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+     <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 
 ### Other Events
 

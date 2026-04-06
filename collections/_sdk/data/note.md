@@ -313,6 +313,9 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                                                                                                                                                               |
 | note_tasks          | QuerySet[[NoteTask](/sdk/data-task)]   | All tasks associated with this note                                                                                                                                                                  |
 | metadata            | QuerySet[[NoteMetadata](#notemetadata)] | All metadata key-value pairs associated with this note                                                                                                                                              |
+| lab_reviews            | QuerySet[[LabReview](/sdk/data-labs/#labreview)] | All lab reviews associated with this note                                                                                                                                              |
+| imaging_reviews            | QuerySet[[ImagingReview](/sdk/data-imaging/#imagingreview)] | All imaging reviews associated with this note                                                                                                                                              |
+| referral_reviews            | QuerySet[[ReferralReview](/sdk/data-referral/#referralreview)] | All referral reviews associated with this note                                                                                                                                              |
 
 ### NoteType
 
@@ -351,6 +354,8 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 |------------|-------------------|
 | id         | UUID              |
 | dbid       | Integer           |
+| created    | DateTime          |
+| modified   | DateTime          |
 | note       | [Note](#note)     |
 | key        | String            |
 | value      | String            |

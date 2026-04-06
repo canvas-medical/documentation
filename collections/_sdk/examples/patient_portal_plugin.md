@@ -56,7 +56,7 @@ In order to deal with `SECRETS` take a look at the
     "name": "patient_portal_plugin",
     "description": "Patient Portal Plugin for Canvas",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "patient_portal_plugin.handlers.patient_portal_handler:PatientPortalHandler",
                 "description": "The handler that listens for the patient portal `PATIENT_PORTAL__WIDGET_CONFIGURATION` and responds with the patient portal widgets"

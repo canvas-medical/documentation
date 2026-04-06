@@ -33,7 +33,7 @@ Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admi
     "name": "ai_note_titles",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "ai_note_titles.handlers.rename_note:Handler",
                 "description": "Renames Notes when locked using OpenAI and the contents of the Note"

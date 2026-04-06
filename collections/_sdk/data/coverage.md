@@ -102,6 +102,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | issuer_phone                       | [TransactorPhone](#transactorphone)                   |
 | comments                           | Text                                                  |
 | stack                              | [CoverageStack](#coveragestack)                       |
+| snapshot                           | [Snapshot](/sdk/data-snapshot/#snapshot)               |
 | eligibility_summary                | [EligibilitySummary](#eligibilitysummary)             |
 
 ### Transactor
