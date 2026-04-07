@@ -1144,6 +1144,246 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+
+#### Clinical Documents
+
+These events fire during the lifecycle of documents in the <a href="https://canvas-medical.help.usepylon.com/articles/4617508394-data-integration">Data Integration</a> module — including inbound faxes, uploaded documents, and electronic transmissions. Each event's context includes document metadata from the underlying <a href="/sdk/data-integration-task/">IntegrationTask</a>.
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_RECEIVED</th></tr>
+    <tr><td colspan="2">Occurs when a new clinical document is received via fax, upload, or electronic transmission.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"patient":
+  "id": pt_id
+"available_document_types":
+    "key": str
+    "name": str
+    "report_type": str
+    "template_type": str
+    "template_fields":
+        "name": str
+        "label": str
+        "type": str
+        "required": bool</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_LINKED_TO_PATIENT</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is linked to a patient.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"patient":
+  "id": pt_id
+"previous_patient":
+  "id": pt_id
+"linked_at": datetime str
+"available_document_types":
+    "key": str
+    "name": str
+    "report_type": str
+    "template_type": str
+    "template_fields":
+        "name": str
+        "label": str
+        "type": str
+        "required": bool</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_CATEGORIZED</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is categorized.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"previous_document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"categorized_at": datetime str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REVIEWER_ASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a reviewer (Staff or Team) is assigned or reassigned on the Data Integration document review panel. This does not fire when a reviewer is assigned on a LabReport or ImagingReport — only when the <a href="/sdk/data-integration-task/">IntegrationTaskReview</a> reviewer changes.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"assigned_at": datetime str
+"reviewer":
+  "type": str
+  "id": reviewer_id
+  "name": str
+"previous_reviewer":
+  "type": str
+  "id": reviewer_id
+  "name": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REVIEWED</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Review or Imaging Review command is completed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"review":
+  "reviewer":
+    "type": str
+    "id": reviewer_id
+    "name": str
+  "status": str
+  "patient_communication_method": str
+  "internal_comment": str
+  "message_to_patient": str
+"reviewed_at": datetime str
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a document is junked/deleted from the Data Integration panel. This does not fire when a report is junked from the patient chart.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"deleted_at": datetime str
+"patient":
+  "id": pt_id
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"deleted_by":
+  "id": user_id
+  "name": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Conditions
 
 <table>
@@ -2713,243 +2953,6 @@ The following events fire when a prescription's status changes during the e-pres
       <td><pre>"id": vitalsign_id
 "type": None</pre></td>
       <td><pre>empty</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Clinical Documents
-
-<table>
-  <thead>
-    <tr><th colspan="2">DOCUMENT_RECEIVED</th></tr>
-    <tr><td colspan="2">Occurs when a new clinical document is received via fax, upload, or electronic transmission.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": document_id
-"type": None</pre></td>
-      <td><pre>"document":
-  "id": document_id
-  "channel": str
-  "status": str
-  "title": str
-  "type": str
-  "content_url": str
-  "content_type": str
-  "created_at": str
-"patient":
-  "id": pt_id
-"available_document_types":
-  - "key": str
-    "name": str
-    "report_type": str
-    "template_type": str
-    "template_fields":
-      - "name": str
-        "label": str
-        "type": str
-        "required": bool</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DOCUMENT_LINKED_TO_PATIENT</th></tr>
-    <tr><td colspan="2">Occurs when a clinical document is linked to a patient.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": document_id
-"type": None</pre></td>
-      <td><pre>"document":
-  "id": document_id
-  "channel": str
-  "status": str
-  "title": str
-  "type": str
-  "content_url": str
-  "content_type": str
-  "created_at": str
-"patient":
-  "id": pt_id
-"previous_patient":
-  "id": pt_id
-"linked_at": str
-"available_document_types":
-  - "key": str
-    "name": str
-    "report_type": str
-    "template_type": str
-    "template_fields":
-      - "name": str
-        "label": str
-        "type": str
-        "required": bool</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DOCUMENT_CATEGORIZED</th></tr>
-    <tr><td colspan="2">Occurs when a clinical document is categorized.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": document_id
-"type": None</pre></td>
-      <td><pre>"document":
-  "id": document_id
-  "channel": str
-  "status": str
-  "title": str
-  "type": str
-  "content_url": str
-  "content_type": str
-  "created_at": str
-"document_type":
-  "key": str
-  "name": str
-  "report_type": str
-  "template_type": str
-"previous_document_type":
-  "key": str
-  "name": str
-  "report_type": str
-  "template_type": str
-"categorized_at": str
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DOCUMENT_REVIEWER_ASSIGNED</th></tr>
-    <tr><td colspan="2">Occurs when a reviewer is assigned to a clinical document. This event fires for both initial assignments and reassignments, providing information about the current reviewer and the previous reviewer if applicable.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": document_id
-"type": None</pre></td>
-      <td><pre>"document":
-  "id": document_id
-  "channel": str
-  "status": str
-  "title": str
-  "type": str
-  "content_url": str
-  "content_type": str
-  "created_at": str
-"assigned_at": str
-"reviewer":
-  "type": str
-  "id": reviewer_id
-  "name": str
-"previous_reviewer":
-  "type": str
-  "id": reviewer_id
-  "name": str
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DOCUMENT_REVIEWED</th></tr>
-    <tr><td colspan="2">Occurs when a clinical document is reviewed.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": document_id
-"type": None</pre></td>
-      <td><pre>"document":
-  "id": document_id
-  "channel": str
-  "status": str
-  "title": str
-  "type": str
-  "content_url": str
-  "content_type": str
-  "created_at": str
-"review":
-  "reviewer":
-    "type": str
-    "id": reviewer_id
-    "name": str
-  "status": str
-  "patient_communication_method": str
-  "internal_comment": str
-  "message_to_patient": str
-"reviewed_at": str
-"document_type":
-  "key": str
-  "name": str
-  "report_type": str
-  "template_type": str
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DOCUMENT_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when a clinical document is deleted.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": document_id
-"type": None</pre></td>
-      <td><pre>"document":
-  "id": document_id
-  "channel": str
-  "status": str
-  "title": str
-  "type": str
-  "content_url": str
-  "content_type": str
-  "created_at": str
-"deleted_at": str
-"patient":
-  "id": pt_id
-"document_type":
-  "key": str
-  "name": str
-  "report_type": str
-  "template_type": str
-"deleted_by":
-  "id": user_id
-  "name": str</pre></td>
     </tr>
   </tbody>
 </table>
