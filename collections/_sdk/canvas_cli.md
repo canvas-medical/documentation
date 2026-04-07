@@ -76,8 +76,8 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `list`: List all plugins from a Canvas instance
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
-- `config list`: List all secrets from a plugin
-- `config set`: Configure plugin secrets
+- `config list`: List plugin variables on a Canvas instance
+- `config set`: Set plugin variables on a Canvas instance
 
 ### `canvas init`
 
@@ -109,7 +109,8 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Options**:
 
-- `--secret TEXT`:  Secrets to set, e.g. Key=value
+- `--variable TEXT`: Non-sensitive variables to set, e.g. Key=value
+- `--secret TEXT`: Sensitive variables to set (treated as sensitive=true), e.g. Key=value
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
@@ -244,7 +245,7 @@ $ canvas logs [OPTIONS]
 
 ### `canvas config list`
 
-List all secrets from a plugin.
+List plugin variables on a Canvas instance. Sensitive variables display as `[set]` or `[not set]` without revealing their values, while non-sensitive variables display their actual values.
 
 **Usage**:
 
@@ -254,28 +255,37 @@ $ canvas config list [OPTIONS] PLUGIN
 
 **Arguments**:
 
- - `PLUGIN`:  Plugin name to list secrets for
+ - `PLUGIN`:  Plugin name to list variables for
 
 **Options**:
 
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
+**Example Output**:
+
+```console
+$ canvas config list my_plugin
+  API_TOKEN = [set]  (sensitive)
+  WEBHOOK_URL = https://example.com/webhook
+  DEBUG_MODE = [not set]
+```
+
 
 ### `canvas config set`
 
-Configure plugin secrets.
+Set plugin variables on a Canvas instance.
 
 **Usage**:
 
 ```console
-$ canvas config set [OPTIONS] PLUGIN
+$ canvas config set [OPTIONS] PLUGIN VARIABLES...
 ```
 
 **Arguments**:
 
- - `PLUGIN`:  Plugin name to list secrets for
- - `SECRETS...`: Secrets to set, e.g. Key=value 
+ - `PLUGIN`:  Plugin name to set variables for
+ - `VARIABLES...`: Variables to set, e.g. Key=value
 
 **Options**:
 

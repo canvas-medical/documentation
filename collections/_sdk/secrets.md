@@ -62,30 +62,33 @@ Sensitive variables can be protected by managing user permissions. Only users ex
 
 ### Configuring Variables in the CLI
 
-You can set variable values either after a plugin is installed or as part of the install.
+You can set variable values either after a plugin is installed or during install.
 Variables must be listed under the `variables` field in the plugin’s `CANVAS_MANIFEST.json`.
 
-Set (or update) variables on an installed plugin:
+**Set (or update) variables on an installed plugin:**
 ```console
-$ canvas config set <plugin_name> API_TOKEN=your_api_token_value
+$ canvas config set <plugin_name> API_TOKEN=your_api_token_value WEBHOOK_URL=https://example.com
 ```
 
-Provide variable values during install:
+**Provide variable values during install:**
+
+Use `--variable` for non-sensitive variables and `--secret` for sensitive variables:
 ```console
-$ canvas install <plugin_name> --secret API_TOKEN=your_api_token_value
-```
-
-Set multiple variables:
-
-```console
-# Pass multiple key=value pairs.
-$ canvas config set <plugin_name> API_TOKEN=abc123 WEBHOOK_URL=https://example.com
-
-# For installs, repeat --secret
 $ canvas install <plugin_name> \
   --secret API_TOKEN=abc123 \
-  --secret WEBHOOK_URL=https://example.com
+  --variable WEBHOOK_URL=https://example.com
 ```
+
+You can also use `--secret` for all variables if you prefer a single flag—values passed with `--secret` are treated as sensitive.
+
+**List configured variables:**
+```console
+$ canvas config list <plugin_name>
+  API_TOKEN = [set]  (sensitive)
+  WEBHOOK_URL = https://example.com
+```
+
+Sensitive variables display as `[set]` or `[not set]` without revealing their values. Non-sensitive variables display their actual values.
 
 ### Accessing Variables in Your Plugin
 
