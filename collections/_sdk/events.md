@@ -33,7 +33,18 @@ For more information on writing plugins, see the guide [here](/guides/your-first
 ## Event Actor
 
 The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
-It should be available for events that are directly initiated or triggered by a user — for example, SimpleAPI events, command pre- and post-search events, action button events. For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+
+The actor is available in the following contexts:
+
+- [**SimpleAPI**](/sdk/handlers-simple-api/) handlers — HTTP and WebSocket requests
+- [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
+- [**Application**](/sdk/handlers-applications/) handlers
+- **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+- **Appointment scheduling events** — all `APPOINTMENT__*` events
+- **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
+- **Claim events** — `CLAIM__CONDITIONS`
+- **Patient portal events** — all `PATIENT_PORTAL__*` events
 
 ```python
 from canvas_sdk.effects import Effect
@@ -1129,6 +1140,246 @@ These events fire as a result of records being created, updated, or deleted.
 "type": <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItem</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+
+#### Clinical Documents
+
+These events fire during the lifecycle of documents in the <a href="https://canvas-medical.help.usepylon.com/articles/4617508394-data-integration">Data Integration</a> module — including inbound faxes, uploaded documents, and electronic transmissions. Each event's context includes document metadata from the underlying <a href="/sdk/data-integration-task/">IntegrationTask</a>.
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_RECEIVED</th></tr>
+    <tr><td colspan="2">Occurs when a new clinical document is received via fax, upload, or electronic transmission.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"patient":
+  "id": pt_id
+"available_document_types":
+    "key": str
+    "name": str
+    "report_type": str
+    "template_type": str
+    "template_fields":
+        "name": str
+        "label": str
+        "type": str
+        "required": bool</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_LINKED_TO_PATIENT</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is linked to a patient.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"patient":
+  "id": pt_id
+"previous_patient":
+  "id": pt_id
+"linked_at": datetime str
+"available_document_types":
+    "key": str
+    "name": str
+    "report_type": str
+    "template_type": str
+    "template_fields":
+        "name": str
+        "label": str
+        "type": str
+        "required": bool</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_CATEGORIZED</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is categorized.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"previous_document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"categorized_at": datetime str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REVIEWER_ASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a reviewer (Staff or Team) is assigned or reassigned on the Data Integration document review panel. This does not fire when a reviewer is assigned on a LabReport or ImagingReport — only when the <a href="/sdk/data-integration-task/">IntegrationTaskReview</a> reviewer changes.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"assigned_at": datetime str
+"reviewer":
+  "type": str
+  "id": reviewer_id
+  "name": str
+"previous_reviewer":
+  "type": str
+  "id": reviewer_id
+  "name": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REVIEWED</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Review or Imaging Review command is completed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"review":
+  "reviewer":
+    "type": str
+    "id": reviewer_id
+    "name": str
+  "status": str
+  "patient_communication_method": str
+  "internal_comment": str
+  "message_to_patient": str
+"reviewed_at": datetime str
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a document is junked/deleted from the Data Integration panel. This does not fire when a report is junked from the patient chart.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"deleted_at": datetime str
+"patient":
+  "id": pt_id
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"deleted_by":
+  "id": user_id
+  "name": str</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20069,9 +20320,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
-### Patient Portal lifecycle events
-
-The following events are emitted during the lifecycle of a patient portal session.
+### Patient Portal Events
 
 <table>
   <thead>
@@ -20282,6 +20531,31 @@ The following events are emitted during the lifecycle of a patient portal sessio
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
+    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"requested_from": str["appointment" |
+                      "labs" |
+                      "login" |
+                      "messaging" |
+                      "my-health" |
+                      "payment" |
+                      "search-appointment"]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
@@ -20302,7 +20576,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -20323,7 +20597,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -20344,7 +20618,28 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SHOW_NOTE_HEADER_DROPDOWN_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -20634,33 +20929,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
-    </tr>
-  </tbody>
-</table>
-
-### Patient Portal Events
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"requested_from": str["appointment" |
-                      "labs" |
-                      "login" |
-                      "messaging" |
-                      "my-health" |
-                      "payment" |
-                      "search-appointment"]</pre></td>
     </tr>
   </tbody>
 </table>
