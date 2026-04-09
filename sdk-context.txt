@@ -5598,16 +5598,17 @@ Name | Type | Required | Description
 `note` | _string_ | `false` | Additional notes or context about the family history.  
 **Coding Support** :
 The `family_history` parameter accepts either:
-  - **String** : Searches for matching family history condition
+  - **String** : Searches for matching family history conditions and selects the first result.
   - **Coding object** : Allows structured or unstructured coding 
     - Supported systems: `SNOMED`, `UNSTRUCTURED`
     - Required fields: `system`, `code`
     - Optional field: `display`
+The `relative` parameter also searches and selects the first result when a string is provided. Use specific terms (e.g., `"Paternal Grandfather"`, `"Maternal Grandfather"`) to avoid ambiguous matches.
 **Example** :
     ```python
     from canvas_sdk.commands import FamilyHistoryCommand
     from canvas_sdk.commands.constants import CodeSystems, Coding
-    # Using a string (searches for matching conditions)
+    # Using a string (searches and takes the first result — may be ambiguous)
     family_history = FamilyHistoryCommand(
         note_uuid="rk786p",
         family_history="Diabetes Type 2",
@@ -5985,15 +5986,24 @@ Communication Method | Value | Description
 **Command-specific parameters** :
 Name | Type | Required | Description  
 ---|---|---|---  
-`past_medical_history` | _string_ | `true` | A description of the past medical condition or history.  
+`past_medical_history` | _string_ | `true` | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below).  
 `approximate_start_date` | _date_ | `false` | Approximate start date of the condition.  
 `approximate_end_date` | _date_ | `false` | Approximate end date of the condition.  
 `show_on_condition_list` | _boolean_ | `false` | Whether the condition should appear on the condition list.  
 `comments` | _string_ | `false` | Additional comments (max length: 1000 characters).  
+**Important: Use ICD-10 codes for accurate matching.** The `past_medical_history` field searches for matching conditions and selects the first result. When a text description is provided, similar conditions may match first. To guarantee the correct condition, pass the ICD-10 code directly (e.g., `"I1010"`).
 **Example** :
     ```python
     from canvas_sdk.commands import MedicalHistoryCommand
     from datetime import date
+    # Preferred: use the ICD-10 code for exact matching
+    MedicalHistoryCommand(
+        past_medical_history="I1010",  # Resistant Hypertension
+        approximate_start_date=date(2015, 1, 1),
+        show_on_condition_list=True,
+        comments="Controlled with medication."
+    )
+    # Also works but may match a different condition if the description is ambiguous
     MedicalHistoryCommand(
         past_medical_history="Resistant Hypertension",
         approximate_start_date=date(2015, 1, 1),
@@ -6054,7 +6064,7 @@ Name | Type | Required | Description
 `comment` | _string_ | `false` | Additional comments (max length: 1000 characters).  
 **Coding Support** :
 The `past_surgical_history` parameter accepts either:
-  - **String** : Searches for matching surgical procedures
+  - **String** : Searches for matching surgical procedures and selects the first result.
   - **Coding object** : Allows structured or unstructured coding 
     - Supported systems: `SNOMED`, `UNSTRUCTURED`
     - Required fields: `system`, `code`
@@ -6064,7 +6074,7 @@ The `past_surgical_history` parameter accepts either:
     from canvas_sdk.commands import PastSurgicalHistoryCommand
     from canvas_sdk.commands.constants import CodeSystems, Coding
     from datetime import date
-    # Using a string (searches for matching procedures)
+    # Using a string (searches and takes the first result)
     PastSurgicalHistoryCommand(
         past_surgical_history="Appendectomy",
         approximate_date=date(2008, 6, 15),
@@ -19813,6 +19823,7 @@ Effect | Description
 SHOW_PATIENT_CHART_SUMMARY_SECTIONS | Can be used to reorder or hide the summary sections in a patient chart. Check out [this effect class](/sdk/layout-effect/#patient-summary).  
 SHOW_PATIENT_PROFILE_SECTIONS | Can be used to reorder or hide sections in the patient profile. Check out [Layout Effects](/sdk/layout-effect/#patient-profile).  
 SHOW_PANEL_SECTIONS | Can be used to reorder or hide sections in the side panel. Check out [Layout Effects](/sdk/layout-effect/#panel-configuration).  
+SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration/).  
 PATIENT_CHART__GROUP_ITEMS | Can be used to group items within a specific patient chart section. Check out [Patient Chart Group](/sdk/patient-chart-group-effect/).  
 PATIENT_TIMELINE__CONFIGURATION | Can be used to configure the patient timeline display. Check out [Patient Timeline](/sdk/effect-patient-timeline/).  
 HOMEPAGE_CONFIGURATION | Can be used to configure the homepage layout. Check out [Default Homepage](/sdk/default-homepage-effect/).  
@@ -37094,6 +37105,44 @@ REFERRAL_REPORT | referralReport
 REFILL_REQUEST | refillRequest  
 TASK | task  
 UNCATEGORIZED_DOCUMENT | uncategorizedDocument  
+##  Patient Note Header Dropdown Configuration 
+The `PatientNoteHeaderDropdownConfiguration` effect allows you to define which items appear in the dropdown menu on a patient's note header (the triple dots at the top right of each note).
+The order in the dropdown is preserved and grouped into specific sections, rather than being based on the plugin item order.
+![Before and after](/assets/images/sdk/note-header-configuration.png)(width:60%)
+    ```python
+    from canvas_sdk.effects.patient_note_header_dropdown_configuration import PatientNoteHeaderDropdownConfiguration
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.effects import Effect
+    class NoteHeaderDropdownHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_NOTE_HEADER_DROPDOWN__SECTION_CONFIGURATION)
+        def compute(self) -> list[Effect]:
+            return [PatientNoteHeaderDropdownConfiguration(items=[
+                PatientNoteHeaderDropdownConfiguration.Items.PRINT_NOTE,
+                PatientNoteHeaderDropdownConfiguration.Items.PRINT_SUPERBILL,
+                PatientNoteHeaderDropdownConfiguration.Items.LINK_TO_PHONE,
+            ]).apply()]
+    ```
+###  Attributes 
+Attribute | Type | Description  
+---|---|---  
+`items` | `list[Items]` | List of dropdown items to display.  
+Values in the `PatientNoteHeaderDropdownConfiguration.Items` enum are:
+Constant | Description  
+---|---  
+LINK_TO_PHONE | Show QR code to link mobile device to note  
+SOAP | Sort note sections in SOAP order (Subjective, Objective, Assessment, Plan)  
+APSO | Sort note sections in APSO order (Assessment, Plan, Subjective, Objective)  
+CHANGE_LOCATION | Change the note's practice location  
+CHANGE_PROVIDER | Change the note's provider  
+CHANGE_DATE_OF_SERVICE | Change the note's date of service  
+PRINT_SUPERBILL | Print the superbill for billing  
+PRINT_ROOMING_SHEET | Print the rooming sheet for care team  
+PRINT_AFTER_VISIT_SUMMARY | Print the patient after visit summary  
+COPY_LINK | Copy the note's permalink to clipboard  
+PRINT_NOTE | Print the note for care team  
+FAX_NOTE | Fax the note to an external recipient  
+MOVE_COMMANDS | Move commands from this note to another note  
 ##  Modals 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
 ###  Example Usage 
