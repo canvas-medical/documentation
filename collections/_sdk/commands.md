@@ -140,6 +140,40 @@ def compute():
     return [existing_plan.enter_in_error()]
 ```
 
+#### delegate
+
+Returns an Effect that delegates an existing, staged command by creating a task.
+
+**Limited availability** The `delegate()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferCommand
+
+def compute():
+    existing_refer = ReferCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_refer.delegate()]
+```
+
+#### sign
+
+Returns an Effect that signs an existing, staged command, transitioning it to a committed state.
+
+**Limited availability** The `sign()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ImagingOrderCommand
+
+def compute():
+    existing_imaging_order = ImagingOrderCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_imaging_order.sign()]
+```
+
 #### upsert_metadata
 
 Returns an effect that creates or updates a metadata key-value pair on a command. If metadata with the given key already exists on the command, its value will be updated. Otherwise, a new metadata record will be created.
