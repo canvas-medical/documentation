@@ -63,7 +63,7 @@ The access token obtained through this flow carries the identity of the user who
 
 Open the following URL in the user's browser:
 
-```
+```text
 {YOUR_CANVAS_EHR_INSTANCE}/auth/authorize/?response_type=code&client_id={CLIENT_ID}&scope={SCOPES}&redirect_uri={REDIRECT_URI}&launch={LAUNCH_CONTEXT}
 ```
 
@@ -87,13 +87,13 @@ Open the following URL in the user's browser:
 
 **Example authorize URL:**
 
-```
-https://your-instance.canvasmedical.com/auth/authorize/?response_type=code&client_id=YOUR_CLIENT_ID&scope=user%2F*.read%20user%2F*.write&redirect_uri=https://your-app.com/callback&launch=eyJwYXRpZW50IjoiIn0=
+```text
+{YOUR_CANVAS_EHR_INSTANCE}/auth/authorize/?response_type=code&client_id={CLIENT_ID}&scope=user%2F*.read%20user%2F*.write&redirect_uri=https://your-app.com/callback&launch=eyJwYXRpZW50IjoiIn0=
 ```
 
 After the user clicks **Authorize**, they are redirected to your `redirect_uri` with a `code` parameter:
 
-```
+```text
 https://your-app.com/callback?code=AUTHORIZATION_CODE
 ```
 
