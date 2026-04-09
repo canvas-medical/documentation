@@ -170,10 +170,11 @@ The `canvas_sdk.commands.constants` module provides essential classes and enumer
 
 `ClinicalQuantity` represents detailed information about the form or unit of medication, particularly for prescription-related commands.
 
-| Field Name                      | Type     | Description                                           |
-|---------------------------------|----------|-------------------------------------------------------|
-| `representative_ndc`            | _string_ | National Drug Code (NDC) representing the medication. |
-| `ncpdp_quantity_qualifier_code` | _string_ | NCPDP code indicating the quantity qualifier.         |
+| Field Name                      | Type     | Required | Description                                           |
+|---------------------------------|----------|----------|-------------------------------------------------------|
+| `representative_ndc`            | _string_ | `true`   | National Drug Code (NDC) representing the medication. |
+| `ncpdp_quantity_qualifier_code` | _string_ | `true`   | NCPDP code indicating the quantity qualifier.         |
+| `description`                   | _string_ | `false`  | The clinical quantity description to dispense (e.g. `"0.5 mL vial"`). Use this field to narrow the selection to the correct clinical quantity when multiple options are available for the same NDC and qualifier code. If omitted, the first available clinical quantity is used. |
 
 **Usage Example**:
 
@@ -181,10 +182,17 @@ The `canvas_sdk.commands.constants` module provides essential classes and enumer
 from canvas_sdk.commands import PrescribeCommand
 from canvas_sdk.commands.constants import ClinicalQuantity
 
-# Using ClinicalQuantity in a prescription
+# Without description — selects the first available clinical quantity
 clinical_quantity = ClinicalQuantity(
     representative_ndc="12843016128",
     ncpdp_quantity_qualifier_code="C48542"
+)
+
+# With description — narrows to the correct clinical quantity when multiple options share the same NDC and qualifier code
+clinical_quantity = ClinicalQuantity(
+    representative_ndc="00002024304",
+    ncpdp_quantity_qualifier_code="C28254",
+    description="0.5 mL vial"
 )
 
 prescribe = PrescribeCommand(
