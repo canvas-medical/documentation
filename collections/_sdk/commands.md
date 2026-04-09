@@ -687,7 +687,7 @@ family_history_unstructured = FamilyHistoryCommand(
     ),
     relative="Father"
 )
-
+```
 ---
 
 ## FollowUp
