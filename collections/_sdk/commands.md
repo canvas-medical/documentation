@@ -140,6 +140,40 @@ def compute():
     return [existing_plan.enter_in_error()]
 ```
 
+#### delegate
+
+Returns an Effect that delegates an existing, staged command by creating a task.
+
+**Limited availability** The `delegate()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferCommand
+
+def compute():
+    existing_refer = ReferCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_refer.delegate()]
+```
+
+#### sign
+
+Returns an Effect that signs an existing, staged command, transitioning it to a committed state.
+
+**Limited availability** The `sign()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ImagingOrderCommand
+
+def compute():
+    existing_imaging_order = ImagingOrderCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_imaging_order.sign()]
+```
+
 #### upsert_metadata
 
 Returns an effect that creates or updates a metadata key-value pair on a command. If metadata with the given key already exists on the command, its value will be updated. Otherwise, a new metadata record will be created.
@@ -643,11 +677,13 @@ diagnose = DiagnoseCommand(
 **Coding Support**:
 
 The `family_history` parameter accepts either:
-- **String**: Searches for matching family history condition
+- **String**: Searches for matching family history conditions and selects the first result.
 - **Coding object**: Allows structured or unstructured coding
   - Supported systems: `SNOMED`, `UNSTRUCTURED`
   - Required fields: `system`, `code`
   - Optional field: `display`
+
+The `relative` parameter also searches and selects the first result when a string is provided. Use specific terms (e.g., `"Paternal Grandfather"`, `"Maternal Grandfather"`) to avoid ambiguous matches.
 
 **Example**:
 
@@ -655,7 +691,8 @@ The `family_history` parameter accepts either:
 from canvas_sdk.commands import FamilyHistoryCommand
 from canvas_sdk.commands.constants import CodeSystems, Coding
 
-# Using a string (searches for matching conditions)
+
+# Using a string (searches and takes the first result — may be ambiguous)
 family_history = FamilyHistoryCommand(
     note_uuid="rk786p",
     family_history="Diabetes Type 2",
@@ -685,7 +722,6 @@ family_history_unstructured = FamilyHistoryCommand(
     relative="Father"
 )
 ```
-
 ---
 
 ## FollowUp
@@ -1151,11 +1187,13 @@ lab_review = LabReviewCommand(
 
 | Name                     | Type      | Required | Description                                                |
 |--------------------------|-----------|----------|------------------------------------------------------------|
-| `past_medical_history`   | _string_  | `true`   | A description of the past medical condition or history.    |
+| `past_medical_history`   | _string_  | `true`   | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below). |
 | `approximate_start_date` | _date_    | `false`  | Approximate start date of the condition.                   |
 | `approximate_end_date`   | _date_    | `false`  | Approximate end date of the condition.                     |
 | `show_on_condition_list` | _boolean_ | `false`  | Whether the condition should appear on the condition list. |
 | `comments`               | _string_  | `false`  | Additional comments (max length: 1000 characters).         |
+
+**Important: Use ICD-10 codes for accurate matching.** The `past_medical_history` field searches for matching conditions and selects the first result. When a text description is provided, similar conditions may match first. To guarantee the correct condition, pass the ICD-10 code directly (e.g., `"I1010"`).
 
 **Example**:
 
@@ -1163,6 +1201,15 @@ lab_review = LabReviewCommand(
 from canvas_sdk.commands import MedicalHistoryCommand
 from datetime import date
 
+# Preferred: use the ICD-10 code for exact matching
+MedicalHistoryCommand(
+    past_medical_history="I1010",  # Resistant Hypertension
+    approximate_start_date=date(2015, 1, 1),
+    show_on_condition_list=True,
+    comments="Controlled with medication."
+)
+
+# Also works but may match a different condition if the description is ambiguous
 MedicalHistoryCommand(
     past_medical_history="Resistant Hypertension",
     approximate_start_date=date(2015, 1, 1),
@@ -1240,7 +1287,7 @@ medication_statement_unstructured = MedicationStatementCommand(
 **Coding Support**:
 
 The `past_surgical_history` parameter accepts either:
-- **String**: Searches for matching surgical procedures
+- **String**: Searches for matching surgical procedures and selects the first result.
 - **Coding object**: Allows structured or unstructured coding
   - Supported systems: `SNOMED`, `UNSTRUCTURED`
   - Required fields: `system`, `code`
@@ -1253,7 +1300,7 @@ from canvas_sdk.commands import PastSurgicalHistoryCommand
 from canvas_sdk.commands.constants import CodeSystems, Coding
 from datetime import date
 
-# Using a string (searches for matching procedures)
+# Using a string (searches and takes the first result)
 PastSurgicalHistoryCommand(
     past_surgical_history="Appendectomy",
     approximate_date=date(2008, 6, 15),
