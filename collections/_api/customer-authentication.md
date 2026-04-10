@@ -131,7 +131,7 @@ Use the access token as a Bearer token in the `Authorization` header:
 
 ```shell
 # FHIR API example
-curl --request GET '{YOUR_CANVAS_EHR_INSTANCE}/Patient' \
+curl --request GET '{FUMAGE_BASE_URL}/Patient' \
 --header 'Authorization: Bearer {ACCESS_TOKEN}'
 
 # SimpleAPI plugin endpoint example
