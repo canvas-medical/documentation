@@ -5226,6 +5226,26 @@ Returns an effect that enter-in-errors an existing, committed command in the not
         existing_plan = PlanCommand(command_uuid='63hdik')
         return [existing_plan.enter_in_error()]
     ```
+####  delegate 
+Returns an Effect that delegates an existing, staged command by creating a task.
+**Limited availability** The `delegate()` method can only be called on ImagingOrder and Refer command objects. Other command types do not support this operation.
+**Example** :
+    ```python
+    from canvas_sdk.commands import ReferCommand
+    def compute():
+        existing_refer = ReferCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+        return [existing_refer.delegate()]
+    ```
+####  sign 
+Returns an Effect that signs an existing, staged command, transitioning it to a committed state.
+**Limited availability** The `sign()` method can only be called on ImagingOrder and Refer command objects. Other command types do not support this operation.
+**Example** :
+    ```python
+    from canvas_sdk.commands import ImagingOrderCommand
+    def compute():
+        existing_imaging_order = ImagingOrderCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+        return [existing_imaging_order.sign()]
+    ```
 ####  upsert_metadata 
 Returns an effect that creates or updates a metadata key-value pair on a command. If metadata with the given key already exists on the command, its value will be updated. Otherwise, a new metadata record will be created.
 The `command_uuid` field must be set on the command object before calling `upsert_metadata`.
@@ -37142,6 +37162,7 @@ PRINT_AFTER_VISIT_SUMMARY | Print the patient after visit summary
 COPY_LINK | Copy the note's permalink to clipboard  
 PRINT_NOTE | Print the note for care team  
 FAX_NOTE | Fax the note to an external recipient  
+FAX_EVENT_HISTORY | View fax event history for the note  
 MOVE_COMMANDS | Move commands from this note to another note  
 ##  Modals 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
