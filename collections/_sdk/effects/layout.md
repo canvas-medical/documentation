@@ -260,6 +260,7 @@ Values in the `PatientNoteHeaderDropdownConfiguration.Items` enum are:
 | COPY_LINK                 | Copy the note's permalink to clipboard                                     |
 | PRINT_NOTE                | Print the note for care team                                               |
 | FAX_NOTE                  | Fax the note to an external recipient                                      |
+| FAX_EVENT_HISTORY         | View fax event history for the note                                        |
 | MOVE_COMMANDS             | Move commands from this note to another note                               |
 
 <br/>
