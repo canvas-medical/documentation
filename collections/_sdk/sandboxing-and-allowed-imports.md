@@ -358,9 +358,11 @@ Each frame exposes only safe attributes:
 
 Source code lines and local variables are not accessible.
 
-```python
+```python?partial=true
+from logger import log 
+
 try:
-    some_operation()
+    raise Exception("some failed operation")
 except Exception:
     frames = extract_exc_frames()
     for frame in frames:
