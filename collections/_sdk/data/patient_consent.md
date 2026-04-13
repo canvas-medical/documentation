@@ -42,6 +42,15 @@ And you can also access all of the PatientConsents for a given PatientConsentCod
 ['accepted', 'accepted_via_patient_portal', 'rejected']
 ```
 
+Each `PatientConsentCoding` has a `document` field containing the URL to the consent template document:
+
+```python
+>>> from canvas_sdk.v1.data import PatientConsentCoding
+>>> coding = PatientConsentCoding.objects.first()
+>>> print(coding.document)
+'consent_templates/hipaa_consent.pdf'
+```
+
 ## Attributes
 
 ### PatientConsent
@@ -73,6 +82,7 @@ And you can also access all of the PatientConsents for a given PatientConsentCod
 | is_proof_required      | Boolean                                                       |
 | show_in_patient_portal | Boolean                                                       |
 | summary                | String                                                        |
+| document               | String                                                        |
 
 ### PatientConsentRejectionCoding
 
