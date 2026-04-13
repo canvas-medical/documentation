@@ -1122,9 +1122,9 @@ These events fire as a result of records being created, updated, or deleted.
 "note":
   "id": note_id
 "queue_entered":
-  "id": queue_dbid
+  "id": queue_id
 "queue_exited":
-  "id": queue_dbid</pre></td>
+  "id": queue_id</pre></td>
     </tr>
   </tbody>
 </table>

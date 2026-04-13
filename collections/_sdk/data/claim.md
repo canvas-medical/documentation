@@ -267,6 +267,7 @@ Defines the metadata for claim queues used in revenue workflows.
 
 | Field Name          | Type                                            |
 | ------------------- | ----------------------------------------------- |
+| id                  | UUID                                            |
 | dbid                | Integer                                         |
 | queue_sort_ordering | Integer                                         |
 | name                | String                                          |
