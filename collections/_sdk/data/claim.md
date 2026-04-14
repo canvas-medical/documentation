@@ -358,6 +358,11 @@ Captures provider-level data related to a specific claim.
 | provider_tax_id_type               | String          |
 | provider_taxonomy                  | String          |
 | provider_ptan_identifier           | String          |
+| provider_addr1                     | String          |
+| provider_addr2                     | String          |
+| provider_city                      | String          |
+| provider_state                     | String          |
+| provider_zip                       | String          |
 | referring_provider_id              | String          |
 | referring_provider_first_name      | String          |
 | referring_provider_last_name       | String          |
