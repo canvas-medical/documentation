@@ -55,6 +55,43 @@ sections:
                 - name: value
                   type: string
                   description: The value that is unique.
+          - name: type
+            description: >-
+              The kind of organization. <br><br>Maps Canvas data types to the <code>http://terminology.hl7.org/CodeSystem/organization-type</code> value set:<br>
+              <code>prov</code> — ServiceProviders and Organizations<br>
+              <code>pay</code> — Transactors/Insurers<br>
+              <code>other</code> — the Canvas Vendor
+            type: array[json]
+            attributes:
+              - name: coding
+                type: array[json]
+                description: Code defined by a terminology system.
+                attributes:
+                  - name: system
+                    description: The system url of the coding.
+                    type: string
+                    enum_options:
+                      - value: http://terminology.hl7.org/CodeSystem/organization-type
+                  - name: code
+                    description: The code for the organization type.
+                    type: string
+                    enum_options:
+                      - value: prov
+                        description: Healthcare Provider
+                      - value: pay
+                        description: Payer
+                      - value: other
+                        description: Other
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
+              - name: text
+                type: string
+                description: Plain text representation of the type.
+                enum_options:
+                  - value: Healthcare Provider
+                  - value: Payer
+                  - value: Other
           - name: active
             description: Whether the organization's record is still in active use. 
             type: boolean
@@ -109,6 +146,16 @@ sections:
           - name: name
             description: A portion of the organization's name
             type: string
+          - name: type
+            description: A code for the type of organization.
+            type: token
+            search_options:
+              - value: prov
+                description: Healthcare Provider
+              - value: pay
+                description: Payer
+              - value: other
+                description: Other
         endpoints: [read, search]
         read:
           description: Read an Organization resource.
@@ -156,6 +203,18 @@ sections:
             },
             "system": "urn:oid:2.16.840.1.113883.4.4",
             "value": "123456789"
+        }
+    ],
+    "type": [
+        {
+            "coding": [
+                {
+                    "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                    "code": "prov",
+                    "display": "Healthcare Provider"
+                }
+            ],
+            "text": "Healthcare Provider"
         }
     ],
     "active": true,
@@ -293,6 +352,18 @@ sections:
             "resource": {
                 "resourceType": "Organization",
                 "id": "00000000-0000-0000-0002-000000000000",
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                                "code": "other",
+                                "display": "Other"
+                            }
+                        ],
+                        "text": "Other"
+                    }
+                ],
                 "active": true,
                 "name": "Canvas Medical",
                 "telecom": [
@@ -347,6 +418,18 @@ sections:
                         },
                         "system": "urn:oid:2.16.840.1.113883.4.4",
                         "value": "123456789"
+                    }
+                ],
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                                "code": "prov",
+                                "display": "Healthcare Provider"
+                            }
+                        ],
+                        "text": "Healthcare Provider"
                     }
                 ],
                 "active": true,
