@@ -764,6 +764,8 @@ sdk_handlers:
     url: /sdk/handlers-basehandler/
   - title: "CronTask"
     url: /sdk/handlers-crontask/
+  - title: "Patient Chart Summary Custom Section"
+    url: /sdk/patient-chart-summary-custom-section-handler/
 
 simple_api_handlers:
   - title: "HTTP API"
@@ -853,6 +855,9 @@ effects_module:
   - title: "Patient Chart Group"
     url: /sdk/patient-chart-group-effect/
     description: Effect for grouping items on a patient chart section.
+  - title: "Patient Chart Summary Custom Section"
+    url: /sdk/patient-chart-summary-custom-section-effect/
+    description: Serve content for a custom section in the patient chart summary.
   - title: "Patient External ID"
     url: /sdk/effect-create-patient-external-identifier/
     description: Create a new external identifier for a patient.
