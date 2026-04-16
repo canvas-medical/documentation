@@ -212,6 +212,60 @@ Values in the `PanelPatientSection` enum are:
 | TASK                   | task                  |
 | UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
 
+## Patient Note Header Dropdown Configuration
+
+The `PatientNoteHeaderDropdownConfiguration` effect allows you to define which items appear in the dropdown menu on a patient's note header (the triple dots at the top right of each note).
+
+The order in the dropdown is preserved and grouped into specific sections, rather than being based on the plugin item order.
+
+![Before and after](/assets/images/sdk/note-header-configuration.png)(width:60%)
+
+```python
+from canvas_sdk.effects.patient_note_header_dropdown_configuration import PatientNoteHeaderDropdownConfiguration
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects import Effect
+
+
+class NoteHeaderDropdownHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_NOTE_HEADER_DROPDOWN__SECTION_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [PatientNoteHeaderDropdownConfiguration(items=[
+            PatientNoteHeaderDropdownConfiguration.Items.PRINT_NOTE,
+            PatientNoteHeaderDropdownConfiguration.Items.PRINT_SUPERBILL,
+            PatientNoteHeaderDropdownConfiguration.Items.LINK_TO_PHONE,
+        ]).apply()]
+```
+
+### Attributes
+
+| Attribute | Type         | Description                            |
+| --------- | ------------ | -------------------------------------- |
+| `items`   | `list[Items]` | List of dropdown items to display.    |
+
+Values in the `PatientNoteHeaderDropdownConfiguration.Items` enum are:
+
+| Constant                  | Description                                                                |
+| ------------------------- |----------------------------------------------------------------------------|
+| LINK_TO_PHONE             | Show QR code to link mobile device to note                                 |
+| SOAP                      | Sort note sections in SOAP order (Subjective, Objective, Assessment, Plan) |
+| APSO                      | Sort note sections in APSO order (Assessment, Plan, Subjective, Objective) |
+| CHANGE_LOCATION           | Change the note's practice location                                        |
+| CHANGE_PROVIDER           | Change the note's provider                                                 |
+| CHANGE_DATE_OF_SERVICE    | Change the note's date of service                                          |
+| PRINT_SUPERBILL           | Print the superbill for billing                                            |
+| PRINT_ROOMING_SHEET       | Print the rooming sheet for care team                                      |
+| PRINT_AFTER_VISIT_SUMMARY | Print the patient after visit summary                                      |
+| COPY_LINK                 | Copy the note's permalink to clipboard                                     |
+| PRINT_NOTE                | Print the note for care team                                               |
+| FAX_NOTE                  | Fax the note to an external recipient                                      |
+| FAX_EVENT_HISTORY         | View fax event history for the note                                        |
+| MOVE_COMMANDS             | Move commands from this note to another note                               |
+
+<br/>
+<br/>
+
 ## Modals
 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
