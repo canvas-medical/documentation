@@ -75,6 +75,45 @@ class CustomChartLayout(BaseHandler):
         return [layout.apply()]
 ```
 
+### Delayed and Asynchronous Execution
+
+Effects execute synchronously by default. Use the `delay_seconds` parameter to execute them asynchronously or after a specified delay.
+
+| `delay_seconds` value | Behavior |
+|-----------------------|----------|
+| `None` (default)      | Synchronous execution |
+| `0`                   | Asynchronous execution with no delay |
+| Positive integer      | Asynchronous execution after the specified number of seconds |
+
+```python
+from canvas_sdk.effects.task import AddTask
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_CREATED)
+
+    def compute(self):
+        # Execute immediately but asynchronously
+        async_task = AddTask(
+            patient_id=self.target,
+            title="Welcome new patient",
+        ).apply(delay_seconds=0)
+
+        # Execute after 5 minutes
+        delayed_task = AddTask(
+            patient_id=self.target,
+            title="Follow up with new patient",
+        ).apply(delay_seconds=300)
+
+        return [async_task, delayed_task]
+```
+
+Negative values for `delay_seconds` will raise a `ValueError`.
+
+Any method that returns an `Effect` accepts `delay_seconds`. This includes `apply()`, `create()`, `update()`, `delete()`, `commit()`, `sign()`, and other action methods depending on the effect class.
+
 ### Disallowed Effect/Event Combinations
 
 Canvas prevents certain combinations of events and effects to avoid infinite loops that could occur when an effect triggers the same event that generated it. The following combinations are specifically disallowed:
@@ -405,6 +444,15 @@ Check out the [HTTP](/sdk/handlers-simple-api-http/) and [WebSocket](/sdk/handle
 |---|---|
 | SIMPLE_API_RESPONSE | Return a response from a SimpleAPI HTTP endpoint. |
 | SIMPLE_API_WEBSOCKET_BROADCAST | Broadcast a message to WebSocket connections. |
+
+
+### HTTP Requests
+
+Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
+
+| Effect | Description |
+|---|---|
+| HTTP_REQUEST | Make an HTTP request to an external service with optional effect chaining based on response status. |
 
 
 ### Revenue / Payment Processor
