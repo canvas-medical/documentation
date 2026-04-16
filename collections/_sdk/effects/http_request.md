@@ -20,7 +20,7 @@ To make an HTTP request, import the `HttpRequest` class and create an instance w
 | on_success | optional | list[Effect] | Effects to execute when the response status is 2xx.                                           |
 | on_failure | optional | list[Effect] | Effects to execute when the response status is non-2xx or the request fails with an error.    |
 
-```python
+```python?partial=true
 import json
 
 from canvas_sdk.effects.http_request import HttpRequest
@@ -65,7 +65,7 @@ The URL must be included in your plugin's `url_permissions` in `CANVAS_MANIFEST.
 
 Use `on_success` to chain effects that run when the response status is 2xx, and `on_failure` for effects that run when the response fails (non-2xx status or network error).
 
-```python
+```python?partial=true
 import json
 
 from canvas_sdk.effects.http_request import HttpRequest
@@ -100,7 +100,7 @@ class MyHandler(BaseHandler):
 
 Chained effects preserve `delay_seconds` values, letting you schedule follow-up actions after a delay:
 
-```python
+```python?partial=true
 http_effect = HttpRequest(
     url="https://api.example.com/submit",
     method="POST",
@@ -113,8 +113,6 @@ http_effect = HttpRequest(
         ).apply(delay_seconds=300),
     ],
 )
-
-return [http_effect.apply()]
 ```
 
 ## Supported HTTP Methods
