@@ -1,13 +1,13 @@
 ---
-title: "LabPartner & LabPartnerTest"
+title: "LabPartner, LabPartnerTest & AOE Questions"
 slug: "data-lab-partner-and-test"
-excerpt: "Canvas SDK LabPartner and LabPartnerTest models"
+excerpt: "Canvas SDK LabPartner, LabPartnerTest, LabPartnerTestQuestion, and LabPartnerTestQuestionChoice models"
 hidden: false
 ---
 
 ## Introduction
 
-The **LabPartner** and **LabPartnerTest** models represent external lab partners and the tests they offer within Canvas.
+The **LabPartner**, **LabPartnerTest**, **LabPartnerTestQuestion**, and **LabPartnerTestQuestionChoice** models represent external lab partners, the tests they offer, and the ask-at-order-entry (AOE) questions associated with each test within Canvas.
 
 ---
 
@@ -82,6 +82,91 @@ tests_with_code = LabPartnerTest.objects.filter(order_code="XYZ123")
 | order_name  | Text       | The name of the test order.                                                                  |
 | keywords    | Text       | Keywords associated with the test. May be blank.                                             |
 | cpt_code    | String     | The CPT code for the test, if available. Can be blank or null.                               |
+
+---
+
+## LabPartnerTestQuestion
+
+The `LabPartnerTestQuestion` model represents an ask-at-order-entry (AOE) question associated with a lab partner test. AOE questions are prompts that must be answered when ordering a specific lab test (e.g., "Is the patient fasting?", "Source of specimen").
+
+### Basic Usage
+
+To retrieve questions for a given lab partner test:
+
+```python
+from canvas_sdk.v1.data.lab import LabPartnerTest
+
+test = LabPartnerTest.objects.get(id="your-uuid-here")
+questions = test.questions.all()
+```
+
+To filter for required questions only:
+
+```python
+required_questions = test.questions.filter(required=True)
+```
+
+To directly query questions by code:
+
+```python
+from canvas_sdk.v1.data.lab import LabPartnerTestQuestion
+
+questions = LabPartnerTestQuestion.objects.filter(code="FAST")
+```
+
+---
+
+## LabPartnerTestQuestionChoice
+
+The `LabPartnerTestQuestionChoice` model represents a selectable answer option for an AOE question. Not all questions have predefined choices (e.g., free-text questions may have none).
+
+### Basic Usage
+
+To retrieve choices for a given question:
+
+```python
+question = test.questions.first()
+choices = question.choices.all()
+```
+
+### Example: Building AOE prompts for a lab test
+
+```python
+from canvas_sdk.v1.data.lab import LabPartnerTest
+
+test = LabPartnerTest.objects.get(id="your-uuid-here")
+
+for question in test.questions.all():
+    self.log.info(f"Question: {question.body} (required={question.required})")
+    for choice in question.choices.all():
+        self.log.info(f"  - {choice.label}: {choice.value}")
+```
+
+## Attributes
+
+### LabPartnerTestQuestion Attributes
+
+| Field Name       | Type       | Description                                                                                         |
+| ---------------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| dbid             | Integer    | The internal database identifier (primary key) for the question.                                    |
+| lab_partner_test | ForeignKey | A reference to the related `LabPartnerTest` (accessible via the related name `questions`).          |
+| required         | Boolean    | Whether this question must be answered when ordering the test.                                      |
+| code             | String     | A code identifying the question (e.g., "FAST" for fasting status).                                 |
+| body             | Text       | The full text of the question displayed to the user.                                                |
+| type             | String     | The question type (e.g., "text", "select", "date", "numeric").                                     |
+| created          | DateTime   | When the record was created.                                                                        |
+| modified         | DateTime   | When the record was last modified.                                                                  |
+
+### LabPartnerTestQuestionChoice Attributes
+
+| Field Name                 | Type       | Description                                                                                        |
+| -------------------------- | ---------- | -------------------------------------------------------------------------------------------------- |
+| dbid                       | Integer    | The internal database identifier (primary key) for the choice.                                     |
+| lab_partner_test_question  | ForeignKey | A reference to the related `LabPartnerTestQuestion` (accessible via the related name `choices`).   |
+| label                      | String     | The display label for this choice (shown to the user).                                             |
+| value                      | String     | The value submitted when this choice is selected.                                                  |
+| created                    | DateTime   | When the record was created.                                                                       |
+| modified                   | DateTime   | When the record was last modified.                                                                 |
 
 <br/>
 <br/>
