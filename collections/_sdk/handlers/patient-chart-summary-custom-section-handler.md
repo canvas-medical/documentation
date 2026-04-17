@@ -16,27 +16,31 @@ To implement a custom section you need two things:
 1. A `PatientChartSummaryConfiguration` handler that includes the section in the layout.
 2. A `PatientChartSummaryCustomSectionHandler` subclass that returns the section content.
 
+Both handlers must be registered in `CANVAS_MANIFEST.json`.
+
 ## Creating a Custom Section Handler
 
 Subclass `PatientChartSummaryCustomSectionHandler` and:
 
 1. Set `SECTION_KEY` to the unique identifier of your section. This must match the key used in `PatientChartSummaryConfiguration.CustomSection`.
 2. Implement `handle()` to return a `PatientChartSummaryCustomSection` effect.
+3. The patient key is available via `self.target`. Use it to scope database queries to the current patient.
 
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
 from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
 from canvas_sdk.templates import render_to_string
-
+from canvas_sdk.v1.data.patient import Patient
 
 class MySectionHandler(PatientChartSummaryCustomSectionHandler):
     SECTION_KEY = "my_section"
 
     def handle(self) -> list[Effect]:
+        patient = Patient.objects.get(id=self.target)
         return [
             PatientChartSummaryCustomSection(
-                content=render_to_string("templates/my_section.html"),
+                content=render_to_string("templates/my_section.html", { "patient_name": patient.full_name() }),
                 icon="📋",
             ).apply()
         ]
@@ -48,11 +52,11 @@ class MySectionHandler(PatientChartSummaryCustomSectionHandler):
   A unique string identifier for the section. Must match the key passed to `PatientChartSummaryConfiguration.CustomSection`. Omitting or leaving it empty will raise an `ImproperlyConfigured` error when the plugin loads.
 
 - **`handle()`**
-  Called when Canvas requests the content for this section. Must return a list containing a single `PatientChartSummaryCustomSection` effect.
+  Called when Canvas requests the content for this section. Must return a list containing a single [`PatientChartSummaryCustomSection`](/sdk/patient-chart-summary-custom-section-effect/) effect.
 
-## Registering the Section
+## Configuring Chart Summary Sections
 
-A custom section handler alone is not enough — the section must also be included in the chart summary layout. Use `PatientChartSummaryConfiguration` to declare which sections appear in the chart summary and in what order.
+A custom section handler alone is not enough — the section must also be included in the chart summary layout. Use `PatientChartSummaryConfiguration` to declare which sections appear in the chart summary and in what order. For the full list of available built-in sections, see [Patient Summary layout effects](/sdk/layout-effect/#patient-summary).
 
 ```python
 from canvas_sdk.effects import Effect
@@ -75,8 +79,6 @@ class MySummaryConfiguration(BaseHandler):
             ).apply()
         ]
 ```
-
-Both handlers must be registered in `CANVAS_MANIFEST.json`.
 
 ## Full Example
 
@@ -141,6 +143,7 @@ class MySummaryConfiguration(BaseHandler):
 
 ### `templates/my_section.html`
 
+{% raw %}
 ```html
 <ul>
   {% for item in items %}
@@ -150,6 +153,7 @@ class MySummaryConfiguration(BaseHandler):
   {% endfor %}
 </ul>
 ```
+{% endraw %}
 
 ### `CANVAS_MANIFEST.json`
 
