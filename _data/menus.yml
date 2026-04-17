@@ -814,9 +814,6 @@ effects_module:
   - title: "Form Result"
     url: /sdk/form-result-effect/
     description: Effect for dynamically displaying forms in the Patient Portal.
-  - title: "HTTP Request"
-    url: /sdk/effect-http-request/
-    description: Make HTTP requests to external services with optional effect chaining.
   - title: "Layout Effects"
     url: /sdk/layout-effect/
     description: Modify or interact with the layout in Canvas.

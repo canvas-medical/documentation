@@ -446,15 +446,6 @@ Check out the [HTTP](/sdk/handlers-simple-api-http/) and [WebSocket](/sdk/handle
 | SIMPLE_API_WEBSOCKET_BROADCAST | Broadcast a message to WebSocket connections. |
 
 
-### HTTP Requests
-
-Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
-
-| Effect | Description |
-|---|---|
-| HTTP_REQUEST | Make an HTTP request to an external service with optional effect chaining based on response status. |
-
-
 ### Revenue / Payment Processor
 
 | Effect | Description |
