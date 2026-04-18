@@ -657,6 +657,7 @@ sdk_overview:
     url: /sdk/canvas_cli/
   - title: "Commands Module"
     url: /sdk/commands/
+    identifier: commands_module
   - title: "Data Module"
     url: /sdk/data/
     identifier: data_module
@@ -709,15 +710,20 @@ clients_module:
     url: /sdk/clients-twilio/
     description: Send SMS/MMS messages and manage phone numbers with Twilio.
 
+commands_module:
+  - title: "Custom Command"
+    url: /sdk/commands-custom-command/
+    description: Create plugin-defined commands that embed read-only HTML content in a note.
+
 example_plugins:
+  - title: "Abnormal Lab Task Notification"
+    url: /sdk/example-abnormal_lab_task_notification/
   - title: "AI Note Titles"
     url: /sdk/example-ai_note_titles/
   - title: "API Samples"
     url: /sdk/example-api_samples/
   - title: "AWS S3"
     url: /sdk/example-aws_s3/
-  - title: "Abnormal Lab Task Notification"
-    url: /sdk/example-abnormal_lab_task_notification/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
   - title: "Example Chart Application"
@@ -730,6 +736,8 @@ example_plugins:
     url: /sdk/example-llm/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
+  - title: "Patient Portal Customization"
+    identifier: portal_customization
   - title: "Send All Prescriptions"
     url: /sdk/example-send_all_prescriptions/
   - title: "SendGrid Email"
@@ -740,8 +748,6 @@ example_plugins:
     url: /sdk/example-upsert_patient_metadata/
   - title: "Vitals Visualizer"
     url: /sdk/example-vitals_visualizer_plugin/
-  - title: "Patient Portal Customization"
-    identifier: portal_customization
 
 portal_customization:
   - title: "Launch an Application"
@@ -766,18 +772,24 @@ simple_api_handlers:
     url: /sdk/handlers-simple-api-websocket/
 
 effects_module:
-  - title: "Appointments"
-    url: /sdk/effect-notes/#appointment-effect
-    description: Create, update, and cancel patient appointments.
+  - title: "Appointment Labels"
+    url: /sdk/effect-appointment-labels/
+    description: Programmatically manage labels on appointments for categorization and automation.
   - title: "Appointment Metadata"
     url: /sdk/effect-appointment-metadata/
     description: Interact with appointment metadata.
   - title: "Appointment Metadata Create Form"
     url: /sdk/appointment-metadata-create-form-effect/
     description: Effect for dynamically displaying forms when scheduling an appointment.
+  - title: "Appointments"
+    url: /sdk/effect-notes/#appointment-effect
+    description: Create, update, and cancel patient appointments.
   - title: "Banner Alerts"
     url: /sdk/effect-banner-alerts/
     description: Contextual information in a patient's chart.
+  - title: "Batch Originate Commands"
+    url: /sdk/effect-batch-originate/
+    description: Efficiently insert multiple commands into a note in a single batch operation.
   - title: "Billing Line Items"
     url: /sdk/effect-billing-line-items/
     description: Add, modify, or remove billing codes on a note.
@@ -787,39 +799,48 @@ effects_module:
   - title: "Claims"
     url: /sdk/effect-claims/
     description: Manage labels, update line items, move to a queue, or post a payment.
-  - title: "Compound Medications"
-    url: /sdk/effect-compound-medication/
-    description: Create or update compound medications.
-  - title: "Default Homepage"
-    url: /sdk/default-homepage-effect/
-    description: Set a provider's default homepage in Canvas.
-  - title: "External Events"
-    url: /sdk/effect-external-event/
-    description: Create or update external clinical events from ADT feeds.
+  - title: "Command Metadata"
+    url: /sdk/effect-command-metadata/
+    description: Attach custom key-value metadata to command records.
   - title: "Command Validation"
     url: /sdk/effect-command-validation/
     description: Validate commands and return structured error messages to users.
-  - title: "Custom HTML and Django Templates"
-    url: /sdk/layout-effect/#custom-html-and-django-templates/
-    description: Render custom HTML using Django templates.
+  - title: "Compound Medications"
+    url: /sdk/effect-compound-medication/
+    description: Create or update compound medications.
   - title: "Create Calendar"
     url: /sdk/calendar-create-effect/
     description: Create a calendar for a provider.
+  - title: "Create Patient Preferred Pharmacies"
+    url: /sdk/effect-create-patient-preferred-pharmacies/
+    description: Create preferred pharmacies for a patient.
+  - title: "Custom HTML and Django Templates"
+    url: /sdk/layout-effect/#custom-html-and-django-templates/
+    description: Render custom HTML using Django templates.
+  - title: "Default Homepage"
+    url: /sdk/default-homepage-effect/
+    description: Set a provider's default homepage in Canvas.
   - title: "Event Validation Error"
     url: /sdk/effect-event-validation-error/
     description: Effect for blocking event creation with a validation error message.
-  - title: "Manage Calendar Events"
-    url: /sdk/calendar-event-management-effects/
-    description: Manage calendar events.
+  - title: "External Events"
+    url: /sdk/effect-external-event/
+    description: Create or update external clinical events from ADT feeds.
   - title: "Form Result"
     url: /sdk/form-result-effect/
     description: Effect for dynamically displaying forms in the Patient Portal.
   - title: "Layout Effects"
     url: /sdk/layout-effect/
     description: Modify or interact with the layout in Canvas.
+  - title: "Manage Calendar Events"
+    url: /sdk/calendar-event-management-effects/
+    description: Manage calendar events.
   - title: "Messages"
     url: /sdk/effect-messages/
     description: Interact with messages in Canvas.
+  - title: "Note Metadata"
+    url: /sdk/effect-note-metadata/
+    description: Attach custom key-value metadata to note records.
   - title: "Notes"
     url: /sdk/effect-notes/
     description: Interact with notes in Canvas.
@@ -829,18 +850,18 @@ effects_module:
   - title: "Patient"
     url: /sdk/effect-patient/
     description: Interact with patient data.
-  - title: "Patient Group"
-    url: /sdk/effect-patient-group/
-    description: Interact with patient group data.
-  - title: "Patient Facility Address"
-    url: /sdk/effect-patient-facility-address/
-    description: Create, update, or delete patient facility address associations.
   - title: "Patient Chart Group"
     url: /sdk/patient-chart-group-effect/
     description: Effect for grouping items on a patient chart section.
   - title: "Patient External ID"
     url: /sdk/effect-create-patient-external-identifier/
     description: Create a new external identifier for a patient.
+  - title: "Patient Facility Address"
+    url: /sdk/effect-patient-facility-address/
+    description: Create, update, or delete patient facility address associations.
+  - title: "Patient Group"
+    url: /sdk/effect-patient-group/
+    description: Interact with patient group data.
   - title: "Patient Metadata"
     url: /sdk/effect-patient-metadata/
     description: Interact with patient metadata.
@@ -859,12 +880,12 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
-  - title: "Tasks"
-    url: /sdk/effect-tasks/
-    description: Create or update tasks.
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.
+  - title: "Tasks"
+    url: /sdk/effect-tasks/
+    description: Create or update tasks.
 data_module:
   - title: "AllergyIntolerance"
     url: /sdk/data-allergy-intolerance/
@@ -953,18 +974,21 @@ data_module:
   - title: "IntegrationTask"
     url: /sdk/data-integration-task/
     description: Incoming documents that need processing, including faxes, uploads, and portal submissions.
-  - title: "Labs"
-    url: /sdk/data-labs/
-    description: Analysis of clinical specimens to obtain information about the health of a patient.
   - title: "LabPartner"
     url: /sdk/data-lab-partner-and-test/
     description: Lab partners and the tests they offer within Canvas.
   - title: "LabReportTemplate"
     url: /sdk/data-lab-report-template/
     description: Templates for point-of-care labs and custom lab reports, defining fields and options.
+  - title: "Labs"
+    url: /sdk/data-labs/
+    description: Analysis of clinical specimens to obtain information about the health of a patient.
   - title: "Letter"
     url: /sdk/data-letter/
     description: Patient correspondence letters created within Canvas.
+  - title: "LetterActionEvent"
+    url: /sdk/data-letter-action-event/
+    description: Actions taken on a letter, such as printing or faxing.
   - title: "Medication"
     url: /sdk/data-medication/
     description: A record of a medication that is being consumed by a patient, either now, in the past, or in the future.
@@ -992,6 +1016,9 @@ data_module:
   - title: "PatientConsent"
     url: /sdk/data-patient-consent/
     description: Documented patient consents that ensure legal compliance and protect patient rights.
+  - title: "PatientGroup"
+    url: /sdk/data-patient-group/
+    description: A collection of patients.
   - title: "PayorSpecificCharge"
     url: /sdk/data-payor-specific-charge/
     description: A billing charge specific to a certain transactor in Canvas.
@@ -1010,9 +1037,6 @@ data_module:
   - title: "ProtocolOverride"
     url: /sdk/data-protocol-override/
     description: A record of a protocol being snoozed for a patient.
-  - title: "Stop Medication Event"
-    url: /sdk/data-stop-medication-event/
-    description: A record of a Stop Medication Event, when a medication is removed from a patient's medication list.
   - title: "Questionnaire"
     url: /sdk/data-questionnaire/
     description: Groups of coded questions and the coded patient responses.
@@ -1034,6 +1058,9 @@ data_module:
   - title: "Staff"
     url: /sdk/data-staff/
     description: Data associated with Staff members.
+  - title: "Stop Medication Event"
+    url: /sdk/data-stop-medication-event/
+    description: A record of a Stop Medication Event, when a medication is removed from a patient's medication list.
   - title: "Task"
     url: /sdk/data-task/
     description: Data associated with Tasks.
