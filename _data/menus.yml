@@ -658,12 +658,12 @@ sdk_overview:
   - title: "Commands Module"
     url: /sdk/commands/
     identifier: commands_module
-  - title: "Data Module"
-    url: /sdk/data/
-    identifier: data_module
   - title: "Custom Data"
     url: /sdk/custom-data/
     identifier: custom_data_module
+  - title: "Data Module"
+    url: /sdk/data/
+    identifier: data_module
   - title: "Effects Module"
     url: /sdk/effects/
     identifier: effects_module
@@ -672,6 +672,8 @@ sdk_overview:
   - title: "Handlers Module"
     url: /sdk/handlers/
     identifier: sdk_handlers
+  - title: "Logging"
+    url: /sdk/plugin-logs/
   - title: "Protocols Module"
     url: /sdk/protocols/
   - title: "Questionnaires"
@@ -683,12 +685,10 @@ sdk_overview:
   - title: "SimpleAPI"
     url: /sdk/handlers-simple-api/
     identifier: simple_api_handlers
-  - title: "Utils Module"
-    url: /sdk/utils/
   - title: "Testing Utilities"
     url: /sdk/testing-utils/
-  - title: "Logging"
-    url: /sdk/plugin-logs/
+  - title: "Utils Module"
+    url: /sdk/utils/
 
 clients_module:
   - title: "AWS S3"
@@ -750,10 +750,10 @@ example_plugins:
     url: /sdk/example-vitals_visualizer_plugin/
 
 portal_customization:
-  - title: "Launch an Application"
-    url: /sdk/example-portal-customization-launch_application/
   - title: "Customize with Widgets"
     url: /sdk/example-portal-customization-widgets/
+  - title: "Launch an Application"
+    url: /sdk/example-portal-customization-launch_application/
 
 sdk_handlers:
   - title: "Action Buttons"
