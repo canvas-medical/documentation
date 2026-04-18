@@ -938,6 +938,9 @@ data_module:
   - title: "Facility"
     url: /sdk/data-facility/
     description: A location where healthcare services are provided.
+  - title: "Goal"
+    url: /sdk/data-goal/
+    description: A goal for a patient.
   - title: "Imaging"
     url: /sdk/data-imaging/
     description: Analysis of imaging tests to obtain information about the health of a patient.
