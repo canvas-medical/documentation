@@ -31058,6 +31058,40 @@ The namespace for the identifier value.
 value 
 string 
 The value that is unique.
+type 
+array[json] 
+The kind of organization.   
+Maps Canvas data types to the `http://terminology.hl7.org/CodeSystem/organization-type` value set:  
+`prov` — ServiceProviders and Organizations  
+`pay` — Transactors/Insurers  
+`other` — the Canvas Vendor
+Click to view child attributes
+coding 
+array[json] 
+Code defined by a terminology system.
+Click to view child attributes
+system 
+string 
+The system url of the coding.
+**Value Options Supported:**
+  - http://terminology.hl7.org/CodeSystem/organization-type 
+code 
+string 
+The code for the organization type.
+**Value Options Supported:**
+  - prov (Healthcare Provider)
+  - pay (Payer)
+  - other (Other)
+display 
+string 
+The display name of the coding.
+text 
+string 
+Plain text representation of the type.
+**Value Options Supported:**
+  - Healthcare Provider 
+  - Payer 
+  - Other 
 active 
 boolean 
 Whether the organization's record is still in active use.
@@ -31128,6 +31162,13 @@ A server defined search that may match any of the string fields in the Address, 
 name 
 string 
 A portion of the organization's name
+type 
+token 
+A code for the type of organization.
+**Search Values Supported:**
+  - prov
+  - pay
+  - other
 ### Response Payload Attributes
 resourceType 
 string 
@@ -31199,6 +31240,40 @@ The namespace for the identifier value.
 value 
 string 
 The value that is unique.
+type 
+array[json] 
+The kind of organization.   
+Maps Canvas data types to the `http://terminology.hl7.org/CodeSystem/organization-type` value set:  
+`prov` — ServiceProviders and Organizations  
+`pay` — Transactors/Insurers  
+`other` — the Canvas Vendor
+Click to view child attributes
+coding 
+array[json] 
+Code defined by a terminology system.
+Click to view child attributes
+system 
+string 
+The system url of the coding.
+**Value Options Supported:**
+  - http://terminology.hl7.org/CodeSystem/organization-type 
+code 
+string 
+The code for the organization type.
+**Value Options Supported:**
+  - prov (Healthcare Provider)
+  - pay (Payer)
+  - other (Other)
+display 
+string 
+The display name of the coding.
+text 
+string 
+Plain text representation of the type.
+**Value Options Supported:**
+  - Healthcare Provider 
+  - Payer 
+  - Other 
 active 
 boolean 
 Whether the organization's record is still in active use.
@@ -31298,6 +31373,18 @@ The request requires user authorization.
                     },
                     "system": "urn:oid:2.16.840.1.113883.4.4",
                     "value": "123456789"
+                }
+            ],
+            "type": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                            "code": "prov",
+                            "display": "Healthcare Provider"
+                        }
+                    ],
+                    "text": "Healthcare Provider"
                 }
             ],
             "active": true,
@@ -31433,6 +31520,18 @@ The request requires user authorization.
                     "resource": {
                         "resourceType": "Organization",
                         "id": "00000000-0000-0000-0002-000000000000",
+                        "type": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                                        "code": "other",
+                                        "display": "Other"
+                                    }
+                                ],
+                                "text": "Other"
+                            }
+                        ],
                         "active": true,
                         "name": "Canvas Medical",
                         "telecom": [
@@ -31487,6 +31586,18 @@ The request requires user authorization.
                                 },
                                 "system": "urn:oid:2.16.840.1.113883.4.4",
                                 "value": "123456789"
+                            }
+                        ],
+                        "type": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                                        "code": "prov",
+                                        "display": "Healthcare Provider"
+                                    }
+                                ],
+                                "text": "Healthcare Provider"
                             }
                         ],
                         "active": true,
