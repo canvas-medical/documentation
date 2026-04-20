@@ -33,12 +33,12 @@ PatientChartSummaryCustomSection(
 
 ### Attributes
 
-| Attribute  | Required                                 | Type          | Description                                                                                     |
-|------------|------------------------------------------|---------------|-------------------------------------------------------------------------------------------------|
-| `content`  | required (if `url` is not provided)      | `str \| None` | Inline HTML content to render in the section. Mutually exclusive with `url`.                    |
-| `url`      | required (if `content` is not provided)  | `str \| None` | URL of the page to load in the section iframe. Mutually exclusive with `content`.               |
-| `icon`     | required (if `icon_url` is not provided) | `str \| None` | Text or emoji displayed as the section icon when collapsed. Mutually exclusive with `icon_url`. |
-| `icon_url` | required (if `icon` is not provided)     | `str \| None` | URL of an image to use as the section icon when collapsed. Mutually exclusive with `icon`.      |
+| Attribute  | Required                                 | Type            | Description                                                                                     |
+|------------|------------------------------------------|-----------------|-------------------------------------------------------------------------------------------------|
+| `content`  | required (if `url` is not provided)      | `str` \| `None` | Inline HTML content to render in the section. Mutually exclusive with `url`.                    |
+| `url`      | required (if `content` is not provided)  | `str` \| `None` | URL of the page to load in the section iframe. Mutually exclusive with `content`.               |
+| `icon`     | required (if `icon_url` is not provided) | `str` \| `None` | Text or emoji displayed as the section icon when collapsed. Mutually exclusive with `icon_url`. |
+| `icon_url` | required (if `icon` is not provided)     | `str` \| `None` | URL of an image to use as the section icon when collapsed. Mutually exclusive with `icon`.      |
 
 ### Validation
 

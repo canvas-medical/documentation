@@ -9,7 +9,7 @@ The `PatientChartSummaryCustomSectionHandler` is the base class for implementing
 
 ## Overview
 
-Custom chart summary sections are registered through [`PatientChartSummaryConfiguration`](/sdk/patient-chart-summary-configuration-effect/) and served by a `PatientChartSummaryCustomSectionHandler` subclass. Each handler is responsible for exactly one section, identified by its `SECTION_KEY`.
+Custom chart summary sections are registered through [`PatientChartSummaryConfiguration`](/sdk/layout-effect/#patient-summary) and served by a `PatientChartSummaryCustomSectionHandler` subclass. Each handler is responsible for exactly one section, identified by its `SECTION_KEY`.
 
 To implement a custom section you need two things:
 
@@ -25,6 +25,7 @@ Subclass `PatientChartSummaryCustomSectionHandler` and:
 1. Set `SECTION_KEY` to the unique identifier of your section. This must match the key used in `PatientChartSummaryConfiguration.CustomSection`.
 2. Implement `handle()` to return a `PatientChartSummaryCustomSection` effect.
 3. The patient key is available via `self.target`. Use it to scope database queries to the current patient.
+4. The logged-in user is available via `self.actor`. Use it to tailor the section content to the specific staff member viewing the chart.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -34,6 +35,11 @@ from canvas_sdk.templates import render_to_string
 from canvas_sdk.v1.data.patient import Patient
 
 class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+    """Handles the PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION event for 'my_section'.
+
+    Fetches the current patient and renders a template with their name.
+    """
+
     SECTION_KEY = "my_section"
 
     def handle(self) -> list[Effect]:
@@ -100,6 +106,12 @@ from canvas_sdk.v1.data.command import CommandMetadata
 
 
 class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+    """Handles the PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION event for 'my_section'.
+
+    Fetches all 'my_section' command metadata entries for the current patient
+    and renders them as a list in the section template.
+    """
+
     SECTION_KEY = "my_section"
 
     def handle(self) -> list[Effect]:
