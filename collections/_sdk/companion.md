@@ -30,10 +30,14 @@ provider surface only.
 
 ## How plugins extend the companion
 
-Companion integrations use the same `Application` handler you already use for
-other embedded apps (see [Applications](/sdk/handlers-applications/)). The
-only difference is the `scope` value in your manifest — it determines
-*where* inside the companion the app shows up.
+Canvas plugins contribute embedded apps through the `Application` handler —
+a Python class with an `on_open()` method that returns a URL for Canvas to
+iframe into its UI. Which surface your app appears on is controlled by the
+`scope` value in your plugin's `CANVAS_MANIFEST.json`. Companion apps work
+exactly the same way; they just use one of three companion-specific `scope`
+values. If you haven't built an embedded app before, start with the
+[Applications](/sdk/handlers-applications/) page — this page assumes you
+know the basics and focuses on what's companion-specific.
 
 There are three companion scopes:
 
@@ -342,6 +346,17 @@ URL's query string; the iframe sends it along on the POST to `/vitals`.
 The same pattern works for any SDK command that exposes an `originate()`
 method — assessments, prescriptions, lab orders, imaging orders, etc.
 
+**Attribution is the plugin author's responsibility.** Commands don't
+carry an explicit originator field; the platform attributes them to
+whoever the authenticated session belongs to when the effect is applied.
+The [`StaffSessionAuthMixin`](/sdk/handlers-simple-api-http/#staff-session)
+on the handler above ensures the request is gated on a logged-in staff
+session, so the originated command is attributed to that staff user
+rather than a generic plugin service identity. If your handler doesn't
+enforce a staff session, commands it originates won't be tied to the
+provider using the app — gate every command-originating route with
+`StaffSessionAuthMixin` (or a stricter equivalent).
+
 ## Sharing code across scopes
 
 You don't need a separate plugin per scope — a single plugin can register
@@ -582,9 +597,6 @@ just chooses where and when to render your iframe.
 
   The logged-in user is then available via
   `self.request.headers["canvas-logged-in-user-id"]`.
-- **Query clinical data with [`canvas_sdk.v1.data`](/sdk/data/)** models
-  server-side in your handler. Don't try to call Canvas's private GraphQL
-  endpoints from the iframe.
 - **Push live updates with a plugin-owned WebSocket.** If your app needs to
   stay in sync when data changes, add a `BaseHandler` that listens for the
   relevant domain events and broadcasts on a channel the iframe
@@ -618,5 +630,5 @@ just chooses where and when to render your iframe.
 - [WebSocket API](/sdk/handlers-simple-api-websocket/) — pushing live
   updates to an iframe.
 - [Data module](/sdk/data/) — read-only clinical data models.
-- Example plugin: `example_provider_companion_app` demonstrates one plugin
-  registering apps at all three companion scopes.
+- Example plugin: [`example_provider_companion_app`](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_provider_companion_app)
+  demonstrates one plugin registering apps at all three companion scopes.
