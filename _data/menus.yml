@@ -658,6 +658,8 @@ sdk_overview:
   - title: "Commands Module"
     url: /sdk/commands/
     identifier: commands_module
+  - title: "Provider Companion"
+    url: /sdk/companion/
   - title: "Custom Data"
     url: /sdk/custom-data/
     identifier: custom_data_module
