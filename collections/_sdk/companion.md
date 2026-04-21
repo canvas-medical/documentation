@@ -20,7 +20,7 @@ the same plugin to work across multiple scopes.
 
 The companion lives at `/companion/` on your Canvas instance:
 
-```
+```text
 https://<instance>.canvasmedical.com/companion/
 ```
 
@@ -77,7 +77,7 @@ to a chart.
 
 ### Example
 
-```python
+```python?partial=true
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import Application
@@ -147,7 +147,7 @@ the built-in Timeline tab, and when the user taps it, your handler's
 
 ### Event context
 
-```python
+```python?partial=true
 self.event.context["patient"]["id"]  # Patient key (UUID string)
 ```
 
@@ -162,7 +162,7 @@ self.event.context["patient"]["id"]  # Patient key (UUID string)
 
 ### Example
 
-```python
+```python?partial=true
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import Application
@@ -228,7 +228,7 @@ the note are passed in the event context.
 
 ### Event context
 
-```python
+```python?partial=true
 self.event.context["patient"]["id"]  # Patient key (UUID string)
 self.event.context["note"]["id"]     # Note UUID
 ```
@@ -244,7 +244,7 @@ self.event.context["note"]["id"]     # Note UUID
 
 ### Example
 
-```python
+```python?partial=true
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import Application
@@ -311,7 +311,7 @@ SDK command with it, and return the command's `originate()` effect
 alongside your JSON response — the platform will materialize the
 command in the note after your handler returns.
 
-```python
+```python?partial=true
 from http import HTTPStatus
 
 from canvas_sdk.commands.commands.vitals import VitalsCommand
@@ -422,7 +422,7 @@ The handler serves the same HTML for both scopes and branches on
 `patient_id` in its data endpoint: present → filter to that patient, absent
 → return the provider's entire task queue.
 
-```python
+```python?partial=true
 from http import HTTPStatus
 
 from canvas_sdk.effects.simple_api import HTMLResponse, JSONResponse
@@ -512,7 +512,7 @@ everything needed to identify the new record; the iframe polls a
 separate `GET /find` endpoint until the record appears (or a short
 timeout fires).
 
-```python
+```python?partial=true
 import datetime
 from http import HTTPStatus
 
@@ -587,7 +587,7 @@ just chooses where and when to render your iframe.
   instead of writing your own `authenticate()` — it rejects non-staff
   sessions (including patient-portal sessions) up front:
 
-  ```python
+  ```python?partial=true
   from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin
 
   class TaskDashboardAPI(StaffSessionAuthMixin, SimpleAPI):
