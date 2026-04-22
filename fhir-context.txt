@@ -39637,6 +39637,7 @@ type
 string 
 The type of questionnaire item this is.
 **Value Options Supported:**
+  - group (for nested groups of items) 
   - choice (for multiple or single choice questions) 
   - text (for free text questions) 
 repeats 
@@ -39679,7 +39680,7 @@ Controls whether `all` or `any` of the `enableWhen` conditions must be met. Only
 **Value Options Supported:**
   - all 
   - any 
-answerOptions 
+answerOption 
 array[json] 
 Permitted answers
 Click to view child attributes
@@ -39703,6 +39704,10 @@ The code of the answer.
 display 
 string 
 The display name of the coding.
+item 
+array[json] 
+Nested questionnaire items. A nested `item` attribute can represent questions nested under other questions, or groups of nested items. The attributes for nested items are the same as the attributes for items at the root level.  
+If `item` is nested under an `item` of type **group** , then it represents a member of a group. If `item` is nested under an `item` of any type other than **group** or **display** , then it represents an item nested under a question.
 ### Responses
 200 OK 
 Request was successful. 
@@ -39827,6 +39832,7 @@ type
 string 
 The type of questionnaire item this is.
 **Value Options Supported:**
+  - group (for nested groups of items) 
   - choice (for multiple or single choice questions) 
   - text (for free text questions) 
 repeats 
@@ -39869,7 +39875,7 @@ Controls whether `all` or `any` of the `enableWhen` conditions must be met. Only
 **Value Options Supported:**
   - all 
   - any 
-answerOptions 
+answerOption 
 array[json] 
 Permitted answers
 Click to view child attributes
@@ -39893,6 +39899,10 @@ The code of the answer.
 display 
 string 
 The display name of the coding.
+item 
+array[json] 
+Nested questionnaire items. A nested `item` attribute can represent questions nested under other questions, or groups of nested items. The attributes for nested items are the same as the attributes for items at the root level.  
+If `item` is nested under an `item` of type **group** , then it represents a member of a group. If `item` is nested under an `item` of any type other than **group** or **display** , then it represents an item nested under a question.
 ### Responses
 200 OK 
 Request was successful. 
@@ -40515,9 +40525,30 @@ valueId
 string 
 The valueId field is used for the Note extension and will be the note's unique identifier
 questionnaire 
-string required
+string 
 Form being answered.  
-The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
+The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search). Either the `questionnaire` attribute or the URL extension under `_questionnaire` must be provided.
+_questionnaire 
+json 
+This attribute contains the extensions for the `questionnaire` attribute.
+Click to view child attributes
+extension 
+array[json] 
+Extensions on the `questionnaire` attribute. Supported extensions include questionnaire name and URL.
+To create a QuestionnaireResponse that responds to a non-FHIR questionnaire, like an external PDF file, the URL extension must be provided, and the `questionnaire` attribute must be omitted. In this scenario, there is no `Questionnaire` resource referenced by the `questionnaire` attribute. Question text must be provided for each `item`, and only `valueString` answers are permitted.  
+When a QuestionnaireResponse is created in this manner, it does **not** result in the insertion of a command into a note.
+Click to view child attributes
+url 
+string 
+Source of the definition of the extension code.
+**Value Options Supported:**
+  -   - 
+valueString 
+string 
+Display name for the Questionnaire referenced by `questionnaire`
+valueUri 
+string 
+The location where a non-FHIR questionnaire/survey form can be found.
 status 
 string required
 The position of the questionnaire response within its overall lifecycle.
@@ -40570,7 +40601,7 @@ Canvas supports the following question formats:
 • Free text  
 • Single choice  
 • Multiple choice  
-Answers to free text questions are provided as a `valueString`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
+Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
 The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):  
 FHIR system uri | Canvas system value  
 ---|---  
@@ -40586,12 +40617,19 @@ string required
 A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
 text 
 string 
-Human readable text of the question. Not stored but can be helpful to include for troubleshooting.
+Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
 answer 
 array[json] required
 A list of one or more answers to this question.
 Click to view child attributes
+valueString 
+string 
 For question where the answer is a free-text field (i.e. Questionnaire item type = "text"), then the list will contain a single object containing a valueString field with the response text.
+valueDecimal 
+decimal 
+For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+valueCoding 
+json 
 For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
 Click to view child attributes
 system 
@@ -40610,6 +40648,12 @@ The code of the answer.
 display 
 string required
 The display name of the coding.
+item 
+array[json] 
+Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question.
+item 
+array[json] 
+Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
 ### Responses
 201 Created 
 The server has successfully processed the request; the new resource has been created and is now ready for interaction.  
@@ -40671,10 +40715,41 @@ The permalink extension will have a `valueString` returned that represents a url
 valueId 
 string 
 The valueId field is used for the Note extension and will be the note's unique identifier
+identifier 
+json 
+Unique id for this set of answers
+Click to view child attributes
+system 
+string 
+The namespace for the identifier value.
+**Value Options Supported:**
+  - http://schemas.canvasmedical.com/fhir/questionnaireresponse-identifier 
+value 
+string 
+The identifier value that is unique.
 questionnaire 
 string 
 Form being answered.  
-The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
+The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search). Either the `questionnaire` attribute or the URL extension under `_questionnaire` must be provided.
+_questionnaire 
+json 
+This attribute contains the extensions for the `questionnaire` attribute.
+Click to view child attributes
+extension 
+array[json] 
+Extensions on the `questionnaire` attribute. Supported extensions include questionnaire name and URL.
+Click to view child attributes
+url 
+string 
+Source of the definition of the extension code.
+**Value Options Supported:**
+  -   - 
+valueString 
+string 
+Display name for the Questionnaire referenced by `questionnaire`
+valueUri 
+string 
+The location where a non-FHIR questionnaire/survey form can be found.
 status 
 string 
 The position of the questionnaire response within its overall lifecycle.
@@ -40727,7 +40802,7 @@ Canvas supports the following question formats:
 • Free text  
 • Single choice  
 • Multiple choice  
-Answers to free text questions are provided as a `valueString`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
+Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
 The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):  
 FHIR system uri | Canvas system value  
 ---|---  
@@ -40743,12 +40818,19 @@ string
 A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
 text 
 string 
-Human readable text of the question. Not stored but can be helpful to include for troubleshooting.
+Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
 answer 
 array[json] 
 A list of one or more answers to this question.
 Click to view child attributes
+valueString 
+string 
 For question where the answer is a free-text field (i.e. Questionnaire item type = "text"), then the list will contain a single object containing a valueString field with the response text.
+valueDecimal 
+decimal 
+For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+valueCoding 
+json 
 For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
 Click to view child attributes
 system 
@@ -40767,6 +40849,12 @@ The code of the answer.
 display 
 string 
 The display name of the coding.
+item 
+array[json] 
+Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question.
+item 
+array[json] 
+Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
 ### Responses
 200 OK 
 Request was successful. 
@@ -40804,9 +40892,28 @@ valueId
 string 
 The valueId field is used for the Note extension and will be the note's unique identifier
 questionnaire 
-string required
+string 
 Form being answered.  
-The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
+The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search). Either the `questionnaire` attribute or the URL extension under `_questionnaire` must be provided.
+_questionnaire 
+json 
+This attribute contains the extensions for the `questionnaire` attribute.
+Click to view child attributes
+extension 
+array[json] 
+Extensions on the `questionnaire` attribute. Supported extensions include questionnaire name and URL.
+Click to view child attributes
+url 
+string 
+Source of the definition of the extension code.
+**Value Options Supported:**
+  -   - 
+valueString 
+string 
+Display name for the Questionnaire referenced by `questionnaire`
+valueUri 
+string 
+The location where a non-FHIR questionnaire/survey form can be found.
 status 
 string required
 The position of the questionnaire response within its overall lifecycle.
@@ -40858,7 +40965,7 @@ Canvas supports the following question formats:
 • Free text  
 • Single choice  
 • Multiple choice  
-Answers to free text questions are provided as a `valueString`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
+Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
 The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):  
 FHIR system uri | Canvas system value  
 ---|---  
@@ -40874,12 +40981,19 @@ string required
 A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
 text 
 string 
-Human readable text of the question. Not stored but can be helpful to include for troubleshooting.
+Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
 answer 
 array[json] required
 A list of one or more answers to this question.
 Click to view child attributes
+valueString 
+string 
 For question where the answer is a free-text field (i.e. Questionnaire item type = "text"), then the list will contain a single object containing a valueString field with the response text.
+valueDecimal 
+decimal 
+For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+valueCoding 
+json 
 For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
 Click to view child attributes
 system 
@@ -40898,6 +41012,12 @@ The code of the answer.
 display 
 string required
 The display name of the coding.
+item 
+array[json] 
+Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question.
+item 
+array[json] 
+Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
 ### Responses
 200 OK 
 The server has successfully processed the request.  
@@ -40999,10 +41119,41 @@ The permalink extension will have a `valueString` returned that represents a url
 valueId 
 string 
 The valueId field is used for the Note extension and will be the note's unique identifier
+identifier 
+json 
+Unique id for this set of answers
+Click to view child attributes
+system 
+string 
+The namespace for the identifier value.
+**Value Options Supported:**
+  - http://schemas.canvasmedical.com/fhir/questionnaireresponse-identifier 
+value 
+string 
+The identifier value that is unique.
 questionnaire 
 string 
 Form being answered.  
-The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
+The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search). Either the `questionnaire` attribute or the URL extension under `_questionnaire` must be provided.
+_questionnaire 
+json 
+This attribute contains the extensions for the `questionnaire` attribute.
+Click to view child attributes
+extension 
+array[json] 
+Extensions on the `questionnaire` attribute. Supported extensions include questionnaire name and URL.
+Click to view child attributes
+url 
+string 
+Source of the definition of the extension code.
+**Value Options Supported:**
+  -   - 
+valueString 
+string 
+Display name for the Questionnaire referenced by `questionnaire`
+valueUri 
+string 
+The location where a non-FHIR questionnaire/survey form can be found.
 status 
 string 
 The position of the questionnaire response within its overall lifecycle.
@@ -41055,7 +41206,7 @@ Canvas supports the following question formats:
 • Free text  
 • Single choice  
 • Multiple choice  
-Answers to free text questions are provided as a `valueString`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
+Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
 The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):  
 FHIR system uri | Canvas system value  
 ---|---  
@@ -41071,12 +41222,19 @@ string
 A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
 text 
 string 
-Human readable text of the question. Not stored but can be helpful to include for troubleshooting.
+Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
 answer 
 array[json] 
 A list of one or more answers to this question.
 Click to view child attributes
+valueString 
+string 
 For question where the answer is a free-text field (i.e. Questionnaire item type = "text"), then the list will contain a single object containing a valueString field with the response text.
+valueDecimal 
+decimal 
+For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+valueCoding 
+json 
 For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
 Click to view child attributes
 system 
@@ -41095,6 +41253,12 @@ The code of the answer.
 display 
 string 
 The display name of the coding.
+item 
+array[json] 
+Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question.
+item 
+array[json] 
+Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
 ### Responses
 200 OK 
 Request was successful. 
