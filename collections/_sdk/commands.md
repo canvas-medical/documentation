@@ -27,9 +27,16 @@ All commands have the following methods:
 
 Returns an Effect that originates a new command in the note body.
 
+**Parameters:**
+
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
+| `line_number` | `int` | No | `-1` | The line number in the note where the command should be inserted. By default the command will insert at the bottom of the note. |
+
 **See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
 
-**Example**:
+**Examples**:
 
 ```python
 from canvas_sdk.commands import PlanCommand
@@ -39,6 +46,20 @@ def compute():
     new_plan.narrative = 'newer'
 
     return [new_plan.originate()]
+```
+
+To originate and commit in a single effect:
+
+```python
+from canvas_sdk.commands import DiagnoseCommand
+
+def compute():
+    diagnose_command = DiagnoseCommand(
+        note_uuid='550e8400-e29b-41d4-a716-446655440000',
+        icd10_code='E11.9'
+    )
+
+    return [diagnose_command.originate(commit=True)]
 ```
 
 #### edit
@@ -432,11 +453,27 @@ class Handler(BaseHandler):
 
  ```
 
-## Chaining Methods with a User-set UUID
+## Originating and Committing Together
 
-A common use case is to originate and also commit a command in a single plugin action. However, attempting to commit a command without a `command_uuid` will throw an error. Because the `originate` method executes asynchronously, there is not currently a clean way to get the `command_uuid` back from the originate action and use it for the commit action in the same operation.
+The simplest way to originate and commit a command in a single plugin action is to pass `commit=True` to the `originate()` method:
 
-The solution is to set the UUID in the plugin -- using a valid Version 4 UUID -- and pass it through to both the originate and commit actions. This is accomplished by manually setting the `command_uuid` before calling the methods:
+```python
+from canvas_sdk.commands import DiagnoseCommand
+
+def compute():
+    diagnose_command = DiagnoseCommand(
+        note_uuid='550e8400-e29b-41d4-a716-446655440000',
+        icd10_code='E11.9'
+    )
+
+    return [diagnose_command.originate(commit=True)]
+```
+
+This handles the origination and commit in a single effect, without needing to manage a `command_uuid` yourself.
+
+### Chaining Methods with a User-set UUID
+
+If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This is also required for questionnaire-based commands, where `originate()` creates the command but does not add the answers — you must chain an `edit()` to populate the responses (see [Usage Example](#usage-example)). This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
 
 ```python
 from uuid import uuid4
