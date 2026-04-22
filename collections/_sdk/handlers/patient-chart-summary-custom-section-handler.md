@@ -185,13 +185,3 @@ class MySummaryConfiguration(BaseHandler):
   }
 }
 ```
-
-## Accessing Patient Data
-
-The patient key is available via `self.target`. Use it to scope database queries to the current patient.
-
-```python
-from canvas_sdk.v1.data.patient import Patient
-
-patient = Patient.objects.get(id=self.target)
-```
