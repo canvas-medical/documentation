@@ -539,6 +539,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Storing Remote Patient Management Readings"
+    url: /guides/remote-patient-monitoring-with-attribute-hubs/
+    description: Utilize AttributeHubs to store custom data from a variety of RPM devices
+    uses:
+      - sdk
+
   - title: "Embedding a SMART on FHIR App"
     url: /guides/embedding-a-smart-on-fhir-application/
     description: Embed a SMART app into Canvas
