@@ -86,6 +86,7 @@ sections:
                   type: string
                   description: The type of questionnaire item this is.
                   enum_options:
+                    - value: group (for nested groups of items)
                     - value: choice (for multiple or single choice questions)
                     - value: text (for free text questions)
                 - name: repeats
@@ -129,7 +130,7 @@ sections:
                   enum_options:
                     - value: all
                     - value: any
-                - name: answerOptions
+                - name: answerOption
                   type: array[json]
                   description: Permitted answers
                   attributes:
@@ -153,6 +154,11 @@ sections:
                         - name: display
                           description: The display name of the coding.
                           type: string
+                - name: item
+                  type: array[json]
+                  description: >-
+                    Nested questionnaire items. A nested `item` attribute can represent questions nested under other questions, or groups of nested items. The attributes for nested items are the same as the attributes for items at the root level.<br><br>
+                    If `item` is nested under an `item` of type **group**, then it represents a member of a group. If `item` is nested under an `item` of any type other than **group** or **display**, then it represents an item nested under a question.
         search_parameters:
           - name: _id
             description: The identifier of the Questionnaire.
