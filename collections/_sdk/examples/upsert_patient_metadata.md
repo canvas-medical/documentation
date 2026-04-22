@@ -18,10 +18,10 @@ In this example, we extract key-value pairs from a plan command's narrative and 
     "name": "upsert_patient_metadata",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
-        "protocols": [
+        "handlers": [
             {
-                "class": "upsert_patient_metadata.protocols.my_protocol:Protocol",
-                "description": "A protocol that does xyz..."
+                "class": "upsert_patient_metadata.handlers.my_handler:MyHandler",
+                "description": "A handler that does xyz..."
             }
         ],
         "commands": [],
@@ -38,15 +38,15 @@ In this example, we extract key-value pairs from a plan command's narrative and 
 }
 ```
 
-## protocols/
+## handlers/
 
-### my_protocol.py
+### my_handler.py
 
 This file defines a Canvas plugin handler that uses the update of a plan command as an excuse to trigger. When a user updates a plan command and includes certain key-value data in the narrative, this handler extracts that information and saves it as patient metadata.
 
 **Narrative Parsing**
 
-The protocol retrieves the narrative text from the event context. It uses regular expressions to look for patterns of the form:
+The handler retrieves the narrative text from the event context. It uses regular expressions to look for patterns of the form:
 
 - `key=somekey`
 - `value=somevalue`
@@ -72,7 +72,7 @@ from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     """
     Extracts key-value pairs from plan update narratives and stores them as patient metadata.
 

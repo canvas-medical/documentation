@@ -27,7 +27,40 @@ All commands have the following methods:
 
 Returns an Effect that originates a new command in the note body.
 
+**Parameters:**
+
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
+| `line_number` | `int` | No | `-1` | The line number in the note where the command should be inserted. By default the command will insert at the bottom of the note. |
+
 **See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
+
+**Examples**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
+    new_plan.narrative = 'newer'
+
+    return [new_plan.originate()]
+```
+
+To originate and commit in a single effect:
+
+```python
+from canvas_sdk.commands import DiagnoseCommand
+
+def compute():
+    diagnose_command = DiagnoseCommand(
+        note_uuid='550e8400-e29b-41d4-a716-446655440000',
+        icd10_code='E11.9'
+    )
+
+    return [diagnose_command.originate(commit=True)]
+```
 
 #### edit
 
@@ -38,30 +71,20 @@ Returns an Effect that edits an existing command with the values set on the comm
 - **No Changes:** Calling `edit()` without making any changes will result in a no-op; the command remains unchanged.
 - **Invalid Values:** If you attempt to set an invalid value, you should receive a validation error.
 
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik', narrative='something new')
+
+    return [existing_plan.edit()]
+```
+
 #### delete
 
 Returns an Effect that deletes an existing, non-committed command from the note body.
-
-#### commit
-
-Returns an Effect that commits an existing, non-committed command to the note body.
-
-#### review
-
-Returns an Effect that sets a command in review.
-
-**Limited availability** The `review()` method can only be called on [Prescribe](#prescribe) commands objects. Other command types do not support this operation.
-
-#### send
-
-Returns an Effect that sends a signed command.
-
-**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
-
-#### enter_in_error
-
-Returns an effect that enter-in-errors an existing, committed command in the note body.
-
 
 **Example**:
 
@@ -69,12 +92,129 @@ Returns an effect that enter-in-errors an existing, committed command in the not
 from canvas_sdk.commands import PlanCommand
 
 def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
 
-    existing_plan = PlanCommand(command_uuid='63hdik', narrative='something new')
-    new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
-    new_plan.narrative = 'newer'
+    return [existing_plan.delete()]
+```
 
-    return [existing_plan.edit(), new_plan.originate()]
+#### commit
+
+Returns an Effect that commits an existing, non-committed command to the note body.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.commit()]
+```
+
+#### review
+
+Returns an Effect that sets a command in review.
+
+**Limited availability** The `review()` method can only be called on [Prescribe](#prescribe) commands objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.review()]
+```
+
+#### send
+
+Returns an Effect that sends a signed command.
+
+**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.send()]
+```
+
+#### enter_in_error
+
+Returns an effect that enter-in-errors an existing, committed command in the note body.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.enter_in_error()]
+```
+
+#### delegate
+
+Returns an Effect that delegates an existing, staged command by creating a task.
+
+**Limited availability** The `delegate()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferCommand
+
+def compute():
+    existing_refer = ReferCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_refer.delegate()]
+```
+
+#### sign
+
+Returns an Effect that signs an existing, staged command, transitioning it to a committed state.
+
+**Limited availability** The `sign()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ImagingOrderCommand
+
+def compute():
+    existing_imaging_order = ImagingOrderCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_imaging_order.sign()]
+```
+
+#### upsert_metadata
+
+Returns an effect that creates or updates a metadata key-value pair on a command. If metadata with the given key already exists on the command, its value will be updated. Otherwise, a new metadata record will be created.
+
+The `command_uuid` field must be set on the command object before calling `upsert_metadata`.
+
+| Parameter | Type     | Description                                      |
+|-----------|----------|--------------------------------------------------|
+| `key`     | _string_ | The metadata key (max 256 characters).           |
+| `value`   | _string_ | The metadata value.                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.upsert_metadata(key="priority", value="high")]
 ```
 
 ## Command Constants
@@ -85,10 +225,11 @@ The `canvas_sdk.commands.constants` module provides essential classes and enumer
 
 `ClinicalQuantity` represents detailed information about the form or unit of medication, particularly for prescription-related commands.
 
-| Field Name                      | Type     | Description                                           |
-|---------------------------------|----------|-------------------------------------------------------|
-| `representative_ndc`            | _string_ | National Drug Code (NDC) representing the medication. |
-| `ncpdp_quantity_qualifier_code` | _string_ | NCPDP code indicating the quantity qualifier.         |
+| Field Name                      | Type     | Required | Description                                           |
+|---------------------------------|----------|----------|-------------------------------------------------------|
+| `representative_ndc`            | _string_ | `true`   | National Drug Code (NDC) representing the medication. |
+| `ncpdp_quantity_qualifier_code` | _string_ | `true`   | NCPDP code indicating the quantity qualifier.         |
+| `description`                   | _string_ | `false`  | The clinical quantity description to dispense (e.g. `"0.5 mL vial"`). Use this field to narrow the selection to the correct clinical quantity when multiple options are available for the same NDC and qualifier code. If omitted, the first available clinical quantity is used. |
 
 **Usage Example**:
 
@@ -96,10 +237,17 @@ The `canvas_sdk.commands.constants` module provides essential classes and enumer
 from canvas_sdk.commands import PrescribeCommand
 from canvas_sdk.commands.constants import ClinicalQuantity
 
-# Using ClinicalQuantity in a prescription
+# Without description — selects the first available clinical quantity
 clinical_quantity = ClinicalQuantity(
     representative_ndc="12843016128",
     ncpdp_quantity_qualifier_code="C48542"
+)
+
+# With description — narrows to the correct clinical quantity when multiple options share the same NDC and qualifier code
+clinical_quantity = ClinicalQuantity(
+    representative_ndc="00002024304",
+    ncpdp_quantity_qualifier_code="C28254",
+    description="0.5 mL vial"
 )
 
 prescribe = PrescribeCommand(
@@ -305,11 +453,27 @@ class Handler(BaseHandler):
 
  ```
 
-## Chaining Methods with a User-set UUID
+## Originating and Committing Together
 
-A common use case is to originate and also commit a command in a single plugin action. However, attempting to commit a command without a `command_uuid` will throw an error. Because the `originate` method executes asynchronously, there is not currently a clean way to get the `command_uuid` back from the originate action and use it for the commit action in the same operation.
+The simplest way to originate and commit a command in a single plugin action is to pass `commit=True` to the `originate()` method:
 
-The solution is to set the UUID in the plugin -- using a valid Version 4 UUID -- and pass it through to both the originate and commit actions. This is accomplished by manually setting the `command_uuid` before calling the methods:
+```python
+from canvas_sdk.commands import DiagnoseCommand
+
+def compute():
+    diagnose_command = DiagnoseCommand(
+        note_uuid='550e8400-e29b-41d4-a716-446655440000',
+        icd10_code='E11.9'
+    )
+
+    return [diagnose_command.originate(commit=True)]
+```
+
+This handles the origination and commit in a single effect, without needing to manage a `command_uuid` yourself.
+
+### Chaining Methods with a User-set UUID
+
+If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This is also required for questionnaire-based commands, where `originate()` creates the command but does not add the answers — you must chain an `edit()` to populate the responses (see [Usage Example](#usage-example)). This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
 
 ```python
 from uuid import uuid4
@@ -335,6 +499,20 @@ def compute():
 This pattern ensures that both the originate and commit operations use the same `command_uuid`, allowing them to be chained together reliably in a single plugin execution.
 
 Command-specific details for each command class can be found below.
+
+## Custom Commands
+
+For creating custom commands with HTML-rendered content that can be inserted into patient charts, see the [CustomCommand](/sdk/commands-custom-command/) documentation.
+
+Custom commands are different from standard commands:
+- They allow you to display read-only HTML content in the patient chart
+- They must be configured in your plugin's manifest before use
+- They support both display and print versions of content
+- They are designed for displaying formatted data, not for capturing user input
+
+Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
+
+---
 
 ## AdjustPrescription
 
@@ -363,7 +541,7 @@ AdjustPrescriptionCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -503,8 +681,6 @@ close_goal = CloseGoalCommand(
 )
 ```
 
----
-
 ## Diagnose
 
 **Command-specific parameters**:
@@ -546,11 +722,13 @@ diagnose = DiagnoseCommand(
 **Coding Support**:
 
 The `family_history` parameter accepts either:
-- **String**: Searches for matching family history condition
+- **String**: Searches for matching family history conditions and selects the first result.
 - **Coding object**: Allows structured or unstructured coding
   - Supported systems: `SNOMED`, `UNSTRUCTURED`
   - Required fields: `system`, `code`
   - Optional field: `display`
+
+The `relative` parameter also searches and selects the first result when a string is provided. Use specific terms (e.g., `"Paternal Grandfather"`, `"Maternal Grandfather"`) to avoid ambiguous matches.
 
 **Example**:
 
@@ -558,7 +736,8 @@ The `family_history` parameter accepts either:
 from canvas_sdk.commands import FamilyHistoryCommand
 from canvas_sdk.commands.constants import CodeSystems, Coding
 
-# Using a string (searches for matching conditions)
+
+# Using a string (searches and takes the first result — may be ambiguous)
 family_history = FamilyHistoryCommand(
     note_uuid="rk786p",
     family_history="Diabetes Type 2",
@@ -588,7 +767,6 @@ family_history_unstructured = FamilyHistoryCommand(
     relative="Father"
 )
 ```
-
 ---
 
 ## FollowUp
@@ -1054,11 +1232,13 @@ lab_review = LabReviewCommand(
 
 | Name                     | Type      | Required | Description                                                |
 |--------------------------|-----------|----------|------------------------------------------------------------|
-| `past_medical_history`   | _string_  | `true`   | A description of the past medical condition or history.    |
+| `past_medical_history`   | _string_  | `true`   | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below). |
 | `approximate_start_date` | _date_    | `false`  | Approximate start date of the condition.                   |
 | `approximate_end_date`   | _date_    | `false`  | Approximate end date of the condition.                     |
 | `show_on_condition_list` | _boolean_ | `false`  | Whether the condition should appear on the condition list. |
 | `comments`               | _string_  | `false`  | Additional comments (max length: 1000 characters).         |
+
+**Important: Use ICD-10 codes for accurate matching.** The `past_medical_history` field searches for matching conditions and selects the first result. When a text description is provided, similar conditions may match first. To guarantee the correct condition, pass the ICD-10 code directly (e.g., `"I1010"`).
 
 **Example**:
 
@@ -1066,6 +1246,15 @@ lab_review = LabReviewCommand(
 from canvas_sdk.commands import MedicalHistoryCommand
 from datetime import date
 
+# Preferred: use the ICD-10 code for exact matching
+MedicalHistoryCommand(
+    past_medical_history="I1010",  # Resistant Hypertension
+    approximate_start_date=date(2015, 1, 1),
+    show_on_condition_list=True,
+    comments="Controlled with medication."
+)
+
+# Also works but may match a different condition if the description is ambiguous
 MedicalHistoryCommand(
     past_medical_history="Resistant Hypertension",
     approximate_start_date=date(2015, 1, 1),
@@ -1143,7 +1332,7 @@ medication_statement_unstructured = MedicationStatementCommand(
 **Coding Support**:
 
 The `past_surgical_history` parameter accepts either:
-- **String**: Searches for matching surgical procedures
+- **String**: Searches for matching surgical procedures and selects the first result.
 - **Coding object**: Allows structured or unstructured coding
   - Supported systems: `SNOMED`, `UNSTRUCTURED`
   - Required fields: `system`, `code`
@@ -1156,7 +1345,7 @@ from canvas_sdk.commands import PastSurgicalHistoryCommand
 from canvas_sdk.commands.constants import CodeSystems, Coding
 from datetime import date
 
-# Using a string (searches for matching procedures)
+# Using a string (searches and takes the first result)
 PastSurgicalHistoryCommand(
     past_surgical_history="Appendectomy",
     approximate_date=date(2008, 6, 15),
@@ -1342,7 +1531,7 @@ prescription = PrescribeCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1350,6 +1539,8 @@ prescription = PrescribeCommand(
 ```
 
 ***Option 2: Existing Compound Medication (by ID)***
+
+Note: `type_to_dispense` should not be provided for compound medications as this field will auto-populate in the command when it is inserted in the note
 ```python
 from canvas_sdk.commands.constants import ClinicalQuantity
 from canvas_sdk.commands import PrescribeCommand
@@ -1368,13 +1559,9 @@ prescription = PrescribeCommand(
     sig="Take one tablet daily after meals",
     days_supply=30,
     quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1402,13 +1589,9 @@ prescription = PrescribeCommand(
     sig="Apply thin layer to affected area twice daily",
     days_supply=30,
     quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1436,7 +1619,6 @@ prescription = PrescribeCommand(
 | Name               | Type     | Required | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 ### Toggle Questions Feature
 
@@ -1583,7 +1765,6 @@ In addition to the basic parameters, this command supports a dynamic response in
 | Name               | Type     | Required | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 **Example**:
 
@@ -1592,8 +1773,7 @@ from canvas_sdk.commands import QuestionnaireCommand
 
 questionnaire = QuestionnaireCommand(
     note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+    questionnaire_id='g73hd9'
 )
 ```
 
@@ -1609,7 +1789,7 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note, Questionnaire
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
 
     def compute(self) -> list[Effect]:
       q = Questionnaire.objects.filter(name="Exercise").first()
@@ -1852,7 +2032,7 @@ RefillCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1918,7 +2098,6 @@ ResolveConditionCommand(
 | Name               | Type     | Required | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 
 ### Toggle Questions Feature
@@ -2014,7 +2193,6 @@ stop_medication = StopMedicationCommand(
 | Name               | Type     | Required | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 **Example**:
 
@@ -2023,8 +2201,7 @@ from canvas_sdk.commands import StructuredAssessmentCommand
 
 questionnaire = StructuredAssessmentCommand(
     note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+    questionnaire_id='g73hd9'
 )
 ```
 
@@ -2215,7 +2392,7 @@ update_goal = UpdateGoalCommand(
 | `weight_lbs`                       | _integer_ | `false`  | Weight in pounds.                                |
 | `weight_oz`                        | _integer_ | `false`  | Weight in ounces.                                |
 | `waist_circumference`              | _integer_ | `false`  | Waist circumference in inches.                   |
-| `body_temperature`                 | _integer_ | `false`  | Body temperature in Fahrenheit.                  |
+| `body_temperature`                 | _float_   | `false`  | Body temperature in Fahrenheit.                  |
 | `body_temperature_site`            | _enum_    | `false`  | Site of body temperature measurement.            |
 | `blood_pressure_systole`           | _integer_ | `false`  | Systolic blood pressure.                         |
 | `blood_pressure_diastole`          | _integer_ | `false`  | Diastolic blood pressure.                        |

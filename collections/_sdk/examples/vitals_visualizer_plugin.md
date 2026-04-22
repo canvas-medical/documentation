@@ -40,7 +40,7 @@ vitals_visualizer_plugin/
     "name": "vitals_visualizer_plugin",
     "description": "A plugin that adds visualization capabilities to patient vital signs in the chart summary",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "vitals_visualizer_plugin.handlers.vitals_button:VitalsVisualizerButton",
                 "description": "A button that opens vitals visualization modal",

@@ -12,14 +12,14 @@ By writing plugins that respond to events, plugin code is notified and can react
 
 **How do I use them?**
 
-To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseProtocol`. For example:
+To make plugin code react to an event, you can add the event types listed below into the `RESPONDS_TO` list of a plugin that inherits from `BaseHandler`. For example:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
     def compute(self):
@@ -31,8 +31,20 @@ The plugin author can enter custom workflow code into the `compute` method that 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
 ## Event Actor
+
 The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
-It should be available for events that are directly initiated or triggered by a user — for example, SimpleAPI events, command pre- and post-search events, action button events. For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+For side-effect events or automated events where the action cannot be attributed to a specific user, the actor may be absent.
+
+The actor is available in the following contexts:
+
+- [**SimpleAPI**](/sdk/handlers-simple-api/) handlers — HTTP and WebSocket requests
+- [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
+- [**Application**](/sdk/handlers-applications/) handlers
+- **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+- **Appointment scheduling events** — all `APPOINTMENT__*` events
+- **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
+- **Claim events** — `CLAIM__CONDITIONS`
+- **Patient portal events** — all `PATIENT_PORTAL__*` events
 
 ```python
 from canvas_sdk.effects import Effect
@@ -48,7 +60,7 @@ class CustomHandler(BaseHandler):
         log.info(actor.dbid)        # The database ID of the actor, if available
         log.info(actor.instance)  # The corresponding CanvasUser instance
         log.info(actor.instance.person_subclass) # The corresponding Staff or Patient instance
-    
+
         return []
 ```
 
@@ -71,11 +83,11 @@ Many events include common contextual information to help you understand the sco
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.ALLERGY_INTOLERANCE_CREATED)]
 
     def compute(self):
@@ -121,6 +133,25 @@ These events fire as a result of records being created, updated, or deleted.
     <td><pre>"id": pt_id
 "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
     <td><pre>empty</pre></td>
+  </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_PREFERRED_PHARMACY_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient's preferred pharmacy is created or updated.</td></tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Target object</td>
+    <td>Context object</td>
+  </tr>
+  <tr>
+    <td><pre>"id": pt_id
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    <td><pre>"patient":
+    "id": pt_id</pre></td>
   </tr>
   </tbody>
 </table>
@@ -410,6 +441,65 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Patient Facility Address
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_FACILITY_ADDRESS_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient facility address is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientfacilityaddress_id
+"type": <a href='/sdk/data-patient/#patientfacilityaddress'>PatientFacilityAddress</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_FACILITY_ADDRESS_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient facility address is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientfacilityaddress_id
+"type": <a href='/sdk/data-patient/#patientfacilityaddress'>PatientFacilityAddress</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_FACILITY_ADDRESS_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a patient facility address is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patientfacilityaddress_id
+"type": <a href='/sdk/data-patient/#patientfacilityaddress'>PatientFacilityAddress</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Patient Metadata
 
 <table>
@@ -602,6 +692,46 @@ These events fire as a result of records being created, updated, or deleted.
 "type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT_LABEL_ADDED</th></tr>
+    <tr><td colspan="2">Occurs when one or more labels are added to an appointment.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id
+"label": label_name</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT_LABEL_REMOVED</th></tr>
+    <tr><td colspan="2">Occurs when one or more labels are removed from an appointment.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": None</pre></td>
+      <td><pre>"patient":
+    "id": pt_id
+"label": label_name</pre></td>
     </tr>
   </tbody>
 </table>
@@ -834,6 +964,64 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT__FORM__UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a schedule appointment form is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": appointment_id
+"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+       <td><pre>"patient_id": int
+"selected_values": dict
+"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Command Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">COMMAND_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when metadata is created on a command.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": commandmetadata_id
+"type": <a href='/sdk/data-command/#commandmetadata'>CommandMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COMMAND_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when metadata on a command is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": commandmetadata_id
+"type": <a href='/sdk/data-command/#commandmetadata'>CommandMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Appointment Metadata
 
 <table>
@@ -871,7 +1059,6 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
   </tbody>
 </table>
-
 
 #### Claims
 
@@ -917,6 +1104,30 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM_QUEUE_MOVED</th></tr>
+    <tr><td colspan="2">Occurs when a claim moves from one queue to another.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"patient":
+  "id": pt_id
+"note":
+  "id": note_id
+"queue_entered":
+  "id": queue_id
+"queue_exited":
+  "id": queue_id</pre></td>
+    </tr>
+  </tbody>
+</table>
 
 #### Billing Line Items
 
@@ -954,6 +1165,246 @@ These events fire as a result of records being created, updated, or deleted.
 "type": <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItem</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+
+#### Clinical Documents
+
+These events fire during the lifecycle of documents in the <a href="https://canvas-medical.help.usepylon.com/articles/4617508394-data-integration">Data Integration</a> module — including inbound faxes, uploaded documents, and electronic transmissions. Each event's context includes document metadata from the underlying <a href="/sdk/data-integration-task/">IntegrationTask</a>.
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_RECEIVED</th></tr>
+    <tr><td colspan="2">Occurs when a new clinical document is received via fax, upload, or electronic transmission.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"patient":
+  "id": pt_id
+"available_document_types":
+    "key": str
+    "name": str
+    "report_type": str
+    "template_type": str
+    "template_fields":
+        "name": str
+        "label": str
+        "type": str
+        "required": bool</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_LINKED_TO_PATIENT</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is linked to a patient.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"patient":
+  "id": pt_id
+"previous_patient":
+  "id": pt_id
+"linked_at": datetime str
+"available_document_types":
+    "key": str
+    "name": str
+    "report_type": str
+    "template_type": str
+    "template_fields":
+        "name": str
+        "label": str
+        "type": str
+        "required": bool</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_CATEGORIZED</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is categorized.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"previous_document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"categorized_at": datetime str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REVIEWER_ASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a reviewer (Staff or Team) is assigned or reassigned on the Data Integration document review panel. This does not fire when a reviewer is assigned on a LabReport or ImagingReport — only when the <a href="/sdk/data-integration-task/">IntegrationTaskReview</a> reviewer changes.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"assigned_at": datetime str
+"reviewer":
+  "type": str
+  "id": reviewer_id
+  "name": str
+"previous_reviewer":
+  "type": str
+  "id": reviewer_id
+  "name": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REVIEWED</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Review or Imaging Review command is completed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"review":
+  "reviewer":
+    "type": str
+    "id": reviewer_id
+    "name": str
+  "status": str
+  "patient_communication_method": str
+  "internal_comment": str
+  "message_to_patient": str
+"reviewed_at": datetime str
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a document is junked/deleted from the Data Integration panel. This does not fire when a report is junked from the patient chart.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"deleted_at": datetime str
+"patient":
+  "id": pt_id
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"deleted_by":
+  "id": user_id
+  "name": str</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1676,7 +2127,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1695,7 +2146,239 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": prescription_id
-"type": <a href='/sdk/data-medication/#medication'>Medication</a></pre></td>
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+##### Prescription status events
+
+The following events fire when a prescription's status changes during the e-prescribing lifecycle. These events always fire alongside a `PRESCRIPTION_CREATED` or `PRESCRIPTION_UPDATED` event. For example, when a prescription is first created, both `PRESCRIPTION_CREATED` and `PRESCRIPTION_OPENED` will fire. When a prescription's status is updated to "transmitted", both `PRESCRIPTION_UPDATED` and `PRESCRIPTION_TRANSMITTED` will fire.
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_OPENED</th></tr>
+    <tr><td colspan="2">Occurs when a prescription's status is set to open. This is the default status when a prescription is first created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_PENDING</th></tr>
+    <tr><td colspan="2">Occurs when a prescription's status changes to pending.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_ACCEPTED</th></tr>
+    <tr><td colspan="2">Occurs when a prescription has been ultimately accepted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_ERRORED</th></tr>
+    <tr><td colspan="2">Occurs when an error occurs during prescription processing.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_CANCEL_REQUESTED</th></tr>
+    <tr><td colspan="2">Occurs when a cancellation has been requested for a prescription.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_CANCELED</th></tr>
+    <tr><td colspan="2">Occurs when a prescription has been successfully canceled.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_CANCEL_DENIED</th></tr>
+    <tr><td colspan="2">Occurs when a cancellation request for a prescription has been denied.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_RECEIVED</th></tr>
+    <tr><td colspan="2">Occurs when a prescription has been received by the e-prescribing network.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_SIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a prescription has been signed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_INQUEUE</th></tr>
+    <tr><td colspan="2">Occurs when a prescription is in queue for transmission.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_TRANSMITTED</th></tr>
+    <tr><td colspan="2">Occurs when a prescription has been transmitted to the pharmacy.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIPTION_DELIVERED</th></tr>
+    <tr><td colspan="2">Occurs when a prescription has been delivered to the pharmacy.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
     </tr>
@@ -1783,6 +2466,26 @@ These events fire as a result of records being created, updated, or deleted.
 
 <table>
   <thead>
+    <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_PRE_CREATE</th></tr>
+    <tr><td colspan="2">Occurs <b>before</b> a note state change event is created. This event allows protocols to perform validation and block the note state change if needed. If an <a href="/sdk/effect-event-validation-error"><code>EventValidationError</code></a> effect is returned, the note state change event is aborted and the error message is surfaced to the user.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": nsce_id
+"type": NoteStateChangeEvent</pre></td>
+      <td><pre>"note_id": note_id,
+"patient_id": pt_id,
+"state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
     <tr><td colspan="2">Occurs if a note state change event is updated. Locking and unlocking both trigger an update event, and there is an *additional* update event when an archived PDF copy of the note finishes generating; this is done asynchronously.</td></tr>
   </thead>
@@ -1797,6 +2500,82 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
 "state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Letters
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_id
+"type": <a href='/sdk/data-letter/'>Letter</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_id
+"type": <a href='/sdk/data-letter/'>Letter</a></pre></td>
+      <td><pre>"patient":
+   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter action event is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_action_event_id
+"type": <a href='/sdk/data-letter-action-event/'>LetterActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LETTER_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a letter action event is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": letter_action_event_id
+"type": <a href='/sdk/data-letter-action-event/'>LetterActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2473,6 +3252,39 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 <table>
   <thead>
+    <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "change_medication_to": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">ADJUST_PRESCRIPTION_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -3125,6 +3937,33 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 <table>
   <thead>
+    <tr><th colspan="2">ALLERGY_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "allergy": dict
+  "severity": str
+  "narrative": str
+  "approximate_date":
+    "input": str
+    "date": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">ALLERGY_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -3533,6 +4372,31 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 <table>
   <thead>
+    <tr><th colspan="2">ASSESS_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "status": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">ASSESS_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -3855,6 +4719,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td></td>
     </tr>
     <tr>
+      <td>CANCEL_PRESCRIPTION_COMMAND__POST_VALIDATION</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>CANCEL_PRESCRIPTION_COMMAND__PRE_EXECUTE_ACTION</td>
       <td></td>
     </tr>
@@ -3961,6 +4829,29 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHANGE_MEDICATION_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "medication": dict
+  "sig": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -4305,6 +5196,28 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 <table>
   <thead>
+    <tr><th colspan="2">CLIPBOARD_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "text": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">CLIPBOARD_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -4636,6 +5549,30 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CLOSE_GOAL_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "goal_id": dict
+  "achievement_status": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -4998,6 +5935,33 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DIAGNOSE_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "today_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5375,6 +6339,27 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">EDUCATIONAL_MATERIAL_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -5737,6 +6722,30 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">FAMILY_HISTORY_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "family_history": dict
+  "relative": dict
+  "note": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -6138,6 +7147,32 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">FOLLOW_UP_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "requested_date": dict
+  "note_type": dict
+  "coding": dict
+  "reason_for_visit": dict
+  "comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -6566,6 +7601,33 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">GOAL_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "goal_statement": str
+  "start_date": str
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">GOAL_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -6898,6 +7960,28 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -7200,6 +8284,35 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMAGING_ORDER_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "image": dict
+  "indications": list[dict]
+  "priority": str
+  "additional_details": str
+  "imaging_center": dict
+  "comment": str
+  "ordering_provider": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -8122,6 +9235,32 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "statement": dict
+  "date":
+    "date": str
+    "input": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">IMMUNIZATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -8499,6 +9638,34 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMMUNIZE_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "coding": dict
+  "lot_number": dict
+  "manufacturer": str
+  "exp_date_original": str
+  "sig_original": str
+  "consent_given": bool
+  "given_by": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -8975,6 +10142,29 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">INSTRUCT_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "instruct": dict
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">INSTRUCT_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -9322,6 +10512,33 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "lab_partner": dict
+  "tests": list[dict]
+  "ordering_provider": dict
+  "diagnosis": list[dict]
+  "fasting_status": bool
+  "comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10238,6 +11455,36 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "past_medical_history": dict
+  "approximate_start_date":
+    "date": str
+    "input": str
+  "approximate_end_date":
+    "date": str
+    "input": str
+  "show_on_condition_list": bool
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">MEDICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -10726,6 +11973,29 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "medication": dict
+  "sig": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">MEDICATION_STATEMENT_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -11061,6 +12331,29 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PERFORM_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "perform": dict
+  "notes": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11405,6 +12698,28 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "questionnaire": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">PHYSICAL_EXAM_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -11734,6 +13049,28 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">PLAN_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">PLAN_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -12045,6 +13382,38 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12641,6 +14010,29 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">QUESTIONNAIRE_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "questionnaire": dict
+  "result": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">QUESTIONNAIRE_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -12976,6 +14368,29 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "coding": dict
+  "comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13361,6 +14776,36 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFER_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "refer_to": dict
+  "indications": list[dict]
+  "clinical_question": str
+  "priority": str
+  "notes_to_specialist": str
+  "include_visit_note": bool
+  "internal_comment": str
+  "documents_to_include": dict
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14310,6 +15755,38 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">REFILL_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">REFILL_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -14900,6 +16377,29 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "allergy": dict
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">REMOVE_ALLERGY_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -15238,6 +16738,30 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">RESOLVE_CONDITION_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "show_in_condition_list": bool
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15591,6 +17115,28 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">ROS_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "questionnaire": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">ROS_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -15886,6 +17432,10 @@ Refer to the [base context documentation](#context-overview) for additional deta
     <td></td>
   </tr>
   <tr>
+    <td>SNOOZE_PROTOCOL_COMMAND__POST_VALIDATION</td>
+    <td></td>
+  </tr>
+  <tr>
     <td>SNOOZE_PROTOCOL_COMMAND__PRE_EXECUTE_ACTION</td>
     <td></td>
   </tr>
@@ -15993,6 +17543,29 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STOP_MEDICATION_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "medication": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16337,6 +17910,28 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "questionnaire": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">STRUCTURED_ASSESSMENT_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -16672,6 +18267,32 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SURGICAL_HISTORY_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "past_surgical_history": dict
+  "approximate_date":
+    "input": str
+    "date": str
+  "comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17052,6 +18673,33 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">TASK_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "assign_to": dict
+  "due_date": str
+  "comment": str
+  "labels": list[dict]
+  "linked_items": list[dict]
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17440,6 +19088,10 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td></td>
     </tr>
     <tr>
+      <td>UPDATE_DIAGNOSIS_COMMAND__POST_VALIDATION</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>UPDATE_DIAGNOSIS_COMMAND__PRE_EXECUTE_ACTION</td>
       <td></td>
     </tr>
@@ -17563,6 +19215,32 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "user":
   "staff": staff_id
 </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_GOAL_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "goal_statement": dict
+  "due_date": str
+  "achievement_status": str
+  "priority": str
+  "progress": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18359,6 +20037,41 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">VITALS_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "height": str
+  "weight_lbs": str
+  "weight_oz": str
+  "waist_circumference": str
+  "body_temperature": str
+  "body_temperature_site": str
+  "blood_pressure_systole": int
+  "blood_pressure_diastole": str
+  "blood_pressure_position_and_site": str
+  "pulse": str
+  "pulse_rhythm": str
+  "respiration_rate": int
+  "oxygen saturation": str
+  "note": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">VITALS_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
@@ -18672,9 +20385,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
-### Patient Portal lifecycle events
-
-The following events are emitted during the lifecycle of a patient portal session.
+### Patient Portal Events
 
 <table>
   <thead>
@@ -18885,6 +20596,31 @@ The following events are emitted during the lifecycle of a patient portal sessio
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
+    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"requested_from": str["appointment" |
+                      "labs" |
+                      "login" |
+                      "messaging" |
+                      "my-health" |
+                      "payment" |
+                      "search-appointment"]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
@@ -18905,7 +20641,7 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -18926,7 +20662,49 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "note_id": str
   "user":
     "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SHOW_NOTE_BODY_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SHOW_NOTE_HEADER_DROPDOWN_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when patient notes are being loaded</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -19220,33 +20998,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
-### Patient Portal Events
-
-<table>
-  <thead>
-    <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Target type</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>patient_id</pre></td>
-      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"requested_from": str["appointment" |
-                      "labs" |
-                      "login" |
-                      "messaging" |
-                      "my-health" |
-                      "payment" |
-                      "search-appointment"]</pre></td>
-    </tr>
-  </tbody>
-</table>
-
 ### Patient Chart Configuration
 
 <table>
@@ -19291,6 +21042,129 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
       "code": str
       "system": str
       "display": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+### Patient Timeline Configuration
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_TIMELINE__GET_CONFIGURATION</th></tr>
+    <tr><td colspan="2">Occurs when a patient's timeline is loaded. Allows plugins to configure which note types are visible on the timeline. See the <a href='/sdk/effect-patient-timeline/'>Patient Timeline effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_key
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+### Patient Group
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient group is created</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient group is updated</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient is added as a member of a group</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str
+      </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a patient’s group membership is updated</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str
+      </pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_GROUP_MEMBERSHIP_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a patient member is removed from a patient group</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+     <td><pre>"id": patient_group_id
+"type": <a href='/sdk/data-patient-group/'>Patient Group</a></pre></td>
+      <td><pre>"patient":
+        "id": str
+      "group": 
+        "id": str</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19353,6 +21227,10 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+    <tr>
+      <td>GET_HOMEPAGE_CONFIGURATION</td>
+      <td>Homepage is loading. See <a href="{% link _guides/set-default-homepage.md %}" target="_blank">Set default homepage</a> for examples of how to use this event.</td>
     </tr>
   </tbody>
 </table>

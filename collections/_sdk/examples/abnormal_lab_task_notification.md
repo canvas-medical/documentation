@@ -22,9 +22,9 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
     "name": "abnormal_lab_task_notification",
     "description": "A plugin that creates task notifications for abnormal lab values",
     "components": {
-        "protocols": [
+        "handlers": [
             {
-                "class": "abnormal_lab_task_notification.protocols.abnormal_lab_protocol:AbnormalLabProtocol",
+                "class": "abnormal_lab_task_notification.handlers.abnormal_lab_handler:AbnormalLabHandler",
                 "description": "Monitors lab reports and creates tasks for abnormal values",
                 "data_access": {
                     "event": "LAB_REPORT_CREATED",
@@ -50,17 +50,17 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
 }
 ```
 
-## protocols/
+## handlers/
 
-### abnormal_lab_protocol.py
+### abnormal_lab_handler.py
 
 **Purpose and Functionality**
 
-This file defines a protocol called AbnormalLabProtocol for use with the Canvas Medical SDK. Its primary function is to monitor for the creation of new laboratory reports (`LAB_REPORT_CREATED` events). When such an event occurs, the protocol inspects the report to determine if it contains any abnormal lab values. If abnormal results are found, it automatically creates a task for prompt clinical review.
+This file defines a handler called AbnormalLabHandler for use with the Canvas Medical SDK. Its primary function is to monitor for the creation of new laboratory reports (`LAB_REPORT_CREATED` events). When such an event occurs, the handler inspects the report to determine if it contains any abnormal lab values. If abnormal results are found, it automatically creates a task for prompt clinical review.
 
 **Event Handling**
 
-- The protocol listens for the LAB_REPORT_CREATED event.
+- The handler listens for the LAB_REPORT_CREATED event.
 - When triggered, it examines the relevant [lab report(/sdk/data-labs/#labreport)] for any values marked as abnormal.
 
 **Core Logic**
@@ -82,20 +82,20 @@ This file defines a protocol called AbnormalLabProtocol for use with the Canvas 
 
 **Summary**
 
-This protocol automates the process of flagging abnormal laboratory results for clinical review within Canvas Medical, enhancing the safety net for critical lab findings by ensuring they are not overlooked.
+This handler automates the process of flagging abnormal laboratory results for clinical review within Canvas Medical, enhancing the safety net for critical lab findings by ensuring they are not overlooked.
 
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.task import AddTask, TaskStatus
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data.lab import LabReport
 from logger import log
 
 
-class AbnormalLabProtocol(BaseProtocol):
+class AbnormalLabHandler(BaseHandler):
     """
-    A protocol that monitors lab reports and creates task notifications
+    A handler that monitors lab reports and creates task notifications
     for abnormal lab values to ensure prompt review.
 
     Triggers on: LAB_REPORT_CREATED events

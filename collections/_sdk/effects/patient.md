@@ -113,7 +113,7 @@ from canvas_sdk.v1.data.common import ContactPointSystem, ContactPointUse, Perso
 import datetime
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         patient = Patient(
             first_name="Jane",
@@ -163,7 +163,7 @@ from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.v1.data.common import AddressUse
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         # Update an existing patient
         updated_patient = Patient(

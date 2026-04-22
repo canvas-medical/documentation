@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           An action that is or was performed on or for a patient. This can be a physical intervention like an operation, or less invasive like long term services, counseling, or hypnotherapy.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-procedure.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-procedure.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-procedure.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-procedure.html)<br><br>
           See this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/5988007695-command-perform) for information on creating procedures with the `Perform` command.
         attributes:
           - name: resourceType

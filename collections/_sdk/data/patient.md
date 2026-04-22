@@ -40,7 +40,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ### Patient
 
 | Field Name               | Type                                                                      |
-| ------------------------ | ------------------------------------------------------------------------- |
+|--------------------------|---------------------------------------------------------------------------|
 | id                       | String                                                                    |
 | dbid                     | Integer                                                                   |
 | first_name               | String                                                                    |
@@ -88,6 +88,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | detected_issues          | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[]                |
 | devices                  | [Device](/sdk/data-device/#device)[]                                      |
 | external_identifiers     | [PatientExternalIdentifier](#patientexternalidentifier)[]                 |
+| identification_cards     | [PatientIdentificationCard](#patientidentificationcard)[]                 |
 | imaging_orders           | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                         |
 | imaging_reports          | [ImagingReport](/sdk/data-imaging/#imagingreport)[]                       |
 | imaging_reviews          | [ImagingReview](/sdk/data-imaging/#imagingreview)[]                       |
@@ -104,7 +105,8 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | subscribed_coverages     | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | tasks                    | [Task](/sdk/data-task/#task)[]                                            |
 | telecom                  | [PatientContactPoint](#patientcontactpoint)[]                             |
-| user                     | [CanvasUser](/sdk/data-canvasuser/)[]                                           |
+| user                     | [CanvasUser](/sdk/data-canvasuser/)[]                                     |
+| patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
 
 ### PatientAddress
 
@@ -213,7 +215,10 @@ for identifier in patient_external_identifiers:
 
 | Field Name | Type                |
 | ---------- | ------------------- |
+| id         | UUID                |
 | dbid       | Integer             |
+| created    | DateTime            |
+| modified   | DateTime            |
 | patient    | [Patient](#patient) |
 | key        | String              |
 | value      | String              |
@@ -228,6 +233,31 @@ patient_metadata = patient.metadata.all()
 
 for metadata in patient_metadata:
    log.info(f"Patient metadata: {metadata.key}, {metadata.value}") # favorite_color - red
+```
+
+### PatientIdentificationCard
+
+Represents a patient identification card image (e.g., driver's license, insurance card).
+
+| Field Name | Type                      |
+|------------|---------------------------|
+| dbid       | Integer                   |
+| created    | DateTime                  |
+| modified   | DateTime                  |
+| patient    | [Patient](#patient)       |
+| image      | String                    |
+| title      | String                    |
+| active     | Boolean                   |
+| image_url  | String (property) — presigned S3 URL |
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+for card in patient.identification_cards.filter(active=True):
+    log.info(f"ID card: {card.title}, URL: {card.image_url}")
 ```
 
 ### PatientFacilityAddress

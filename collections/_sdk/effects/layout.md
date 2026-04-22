@@ -78,11 +78,11 @@ import json
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.effects.patient_profile_configuration import PatientProfileConfiguration
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     """This protocol is used to configure which sections appear in the Patient Profile section.
 
     The SHOW_PATIENT_PROFILE_SECTIONS payload expects a list of sections where each section is a dict like { "type": str, "start_expanded": bool }
@@ -212,6 +212,60 @@ Values in the `PanelPatientSection` enum are:
 | TASK                   | task                  |
 | UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
 
+## Patient Note Header Dropdown Configuration
+
+The `PatientNoteHeaderDropdownConfiguration` effect allows you to define which items appear in the dropdown menu on a patient's note header (the triple dots at the top right of each note).
+
+The order in the dropdown is preserved and grouped into specific sections, rather than being based on the plugin item order.
+
+![Before and after](/assets/images/sdk/note-header-configuration.png)(width:60%)
+
+```python
+from canvas_sdk.effects.patient_note_header_dropdown_configuration import PatientNoteHeaderDropdownConfiguration
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects import Effect
+
+
+class NoteHeaderDropdownHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_NOTE_HEADER_DROPDOWN__SECTION_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [PatientNoteHeaderDropdownConfiguration(items=[
+            PatientNoteHeaderDropdownConfiguration.Items.PRINT_NOTE,
+            PatientNoteHeaderDropdownConfiguration.Items.PRINT_SUPERBILL,
+            PatientNoteHeaderDropdownConfiguration.Items.LINK_TO_PHONE,
+        ]).apply()]
+```
+
+### Attributes
+
+| Attribute | Type         | Description                            |
+| --------- | ------------ | -------------------------------------- |
+| `items`   | `list[Items]` | List of dropdown items to display.    |
+
+Values in the `PatientNoteHeaderDropdownConfiguration.Items` enum are:
+
+| Constant                  | Description                                                                |
+| ------------------------- |----------------------------------------------------------------------------|
+| LINK_TO_PHONE             | Show QR code to link mobile device to note                                 |
+| SOAP                      | Sort note sections in SOAP order (Subjective, Objective, Assessment, Plan) |
+| APSO                      | Sort note sections in APSO order (Assessment, Plan, Subjective, Objective) |
+| CHANGE_LOCATION           | Change the note's practice location                                        |
+| CHANGE_PROVIDER           | Change the note's provider                                                 |
+| CHANGE_DATE_OF_SERVICE    | Change the note's date of service                                          |
+| PRINT_SUPERBILL           | Print the superbill for billing                                            |
+| PRINT_ROOMING_SHEET       | Print the rooming sheet for care team                                      |
+| PRINT_AFTER_VISIT_SUMMARY | Print the patient after visit summary                                      |
+| COPY_LINK                 | Copy the note's permalink to clipboard                                     |
+| PRINT_NOTE                | Print the note for care team                                               |
+| FAX_NOTE                  | Fax the note to an external recipient                                      |
+| FAX_EVENT_HISTORY         | View fax event history for the note                                        |
+| MOVE_COMMANDS             | Move commands from this note to another note                               |
+
+<br/>
+<br/>
+
 ## Modals
 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
@@ -241,6 +295,8 @@ The `LaunchModalEffect` class has the following properties:
   - `NEW_WINDOW`: Opens the content in a new browser window.
   - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
   - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
+  - `PAGE`: Opens the content as a full page.
+  - `NOTE`: Opens the content within a note tab (used with Note Applications).
 - **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 
 ### Closing Modals from Applications
@@ -275,6 +331,35 @@ This twist on the _Holywood Principle_ ensures that your application remains sec
 
 <br/>
 <br/>
+
+## Resizing Modals
+
+Modal overlays can now be dynamically resized by embedded applications using the MessageChannel API. Applications launching with a `DEFAULT_MODAL` target can send a `RESIZE` message to adjust the modal's width and/or height:
+
+```html
+<script>
+    let messagePort = null;
+
+    // Listen for the port transfer from the Canvas Application
+    window.addEventListener('message', (event) => {
+      // Check if this is the INIT_CHANNEL message with a port
+      if (event.data?.type === 'INIT_CHANNEL' && event.ports?.[0]) {
+
+        // Store the port for later use
+        messagePort = event.ports[0];
+        messagePort.start();
+        // Example: Resize modal to specific dimensions
+        messagePort.postMessage({
+          type: 'RESIZE',
+          width: 800,  // pixels
+          height: 600  // pixels
+        });
+      }
+    });
+</script>
+```
+
+This enables embedded applications to optimize their display area based on content requirements, improving the user experience for dynamic or responsive plugin interfaces.
 
 ## Portal Landing Page Widgets
 

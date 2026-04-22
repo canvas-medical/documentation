@@ -1,0 +1,1131 @@
+---
+title: "CustomModels"
+slug: "custom-data-custom-models"
+---
+
+## Overview
+
+CustomModels allow you to define fully structured, typed data models with relationships among entities and normalized data. 
+Built on Django's ORM, CustomModels provide the most powerful and flexible approach to storing custom data in Canvas plugins.
+
+The functionality expressed is a subset of the total ORM. The SDK omits some features in order to simplify the lifecycle 
+of plugin installation and maintenance.
+
+**Best for:**
+- Structured data with a stable, known schema
+- Relationships between entities (foreign keys, join tables)
+- Data requiring compound filtering, sorting, or aggregation
+- Data consumed by reports or analytics
+
+**Example use cases:**
+- Provider specialties and certifications
+- Constructing new associations among Canvas SDK models
+- Custom workflows and forms
+- Integration-specific data structures
+- Practice-specific business entities
+
+**Not ideal for** simple metadata on existing models, highly variable or schemaless data, or ephemeral data.
+Tables and columns cannot be dropped once created. See [Design Considerations](/sdk/custom-data-design-considerations/)
+for detailed guidance.
+
+Custom models may be associated to core SDK data models by extending them with `ModelExtension`, or may be entirely standalone.
+As an example, a `StaffBiography` CustomModel could attach to a `CustomStaff(Staff, ModelExtension)` class,
+and be accessible via a `biography` property on `CustomStaff`.
+
+Custom models must be defined within a `models` directory under the plugin top-level directory. E.g., `/my_plugin/models/custom_model_a.py`.
+If not, then database migrations will not be applied. (Extended SDK models may be defined anywhere since they do not require any database modifications.)
+
+---
+
+## Basic CustomModel
+
+Create a custom model by extending `CustomModel`:
+
+```python
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import BooleanField, DateField, DateTimeField, DecimalField, IntegerField, JSONField, TextField 
+
+
+class HealthCoach(CustomModel):
+
+    name = TextField()
+    practicing_since = IntegerField()
+    version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
+    is_accepting_patients = BooleanField()
+    created_date = DateField(auto_now_add=True)
+    last_modified_at = DateTimeField(auto_now_add=True)
+    extended_attributes = JSONField()    
+ ```
+
+This above definition will result in a PostgreSQL table named `healthcoach`. It will have a primary key
+column named `dbid` of type `serial`, an auto-incrementing integer. It will have six additional columns
+of `text`, `integer`, `numeric(3,8)`, `boolean`, `jsonb`,`date`, and `timestamp with time zone`, respectively.
+
+---
+
+## Schema Rules and Constraints
+
+To maintain safety on potentially large datasets, most constraints on CustomModels are not enforced within the database
+and must be enforced within plugin code.
+
+Unsupported constraints:
+* `not null`
+* `max_length`
+* `references` (database-level foreign key constraints)
+
+If applied to an existing dataset, these constraints could result in a full table rewrite operation, or prevent
+plugin installation. Note that while database-level `REFERENCES` constraints are not created, Django's ORM
+enforces `on_delete` behavior (`CASCADE`, `SET_NULL`, `DO_NOTHING`) at the application level — see
+[Delete Behavior](#delete-behavior) below.
+
+Uniqueness constraints **are** supported via `UniqueConstraint` in `Meta.constraints`.
+See [Uniqueness Constraints](#uniqueness-constraints) below.
+
+### Field Types
+
+The Canvas SDK provides Django-based field types for defining your models:
+
+| Field Type        | Description               | Supported Parameters                     |
+|-------------------|---------------------------|------------------------------------------|
+| `TextField`       | Variable-length text      | `default`                                |
+| `IntegerField`    | Integer values            | `default`                                |
+| `DecimalField`    | Decimal numbers           | `default`, `max_digits`,`decimal_places` |
+| `BooleanField`    | True/False values         | `default`                                |
+| `DateField`       | Date values               | `auto_now`, `auto_now_add`, `default`    |
+| `DateTimeField`   | Date and time values      | `auto_now`, `auto_now_add`, `default`    |
+| `JSONField`       | JSON-serializable data    | `default`                                |
+| `ForeignKey`      | Many-to-one relationship  | `related_name`, `on_delete`, `to_field`  |
+| `OneToOneField`   | One-to-one relationship   | `related_name`, `on_delete`, `to_field`, `primary_key` |
+| `ManyToManyField` | Many-to-many relationship | `through` (required), `related_name`     |
+
+If `default` is supplied it will be applied by the Django ORM, and will not be a PostgreSQL default. 
+As a result, only new records will receive the value, and it will not cause a mass edit of existing records.
+
+The `on_delete` parameter is required on `ForeignKey` and `OneToOneField`. It controls what happens
+to child records when the referenced parent record is deleted:
+
+| Value         | Behavior                                                                                     |
+|---------------|----------------------------------------------------------------------------------------------|
+| `CASCADE`     | Automatically delete the child record when the parent is deleted.                            |
+| `SET_NULL`    | Set the foreign key column to `NULL` when the parent is deleted. The child record is kept.   |
+| `DO_NOTHING`  | Take no action. The plugin is responsible for cleaning up or preventing orphaned references. |
+
+These behaviors are enforced by Django's ORM at the application level. They apply when deleting
+via `model.delete()` or `queryset.delete()`, but not when using raw SQL.
+
+### Indexes
+
+Add indexes for frequently queried fields:
+
+```python
+from canvas_sdk.v1.data.base import CustomModel
+from django.contrib.postgres.indexes import GinIndex
+from django.db.models import BooleanField, DateTimeField, Index, IntegerField, JSONField, TextField 
+
+
+class ProviderQualification(CustomModel):
+
+    first_name = TextField()
+    last_name = TextField()
+    board_certified = BooleanField()
+    practicing_since_year = IntegerField()
+    extended_attributes = JSONField()
+    created_at = DateTimeField()
+    
+    class Meta:
+        indexes = [
+            # Single-column index
+            Index(fields=["practicing_since_year"]),
+            # Composite index for common search combinations
+            Index(fields=["first_name", "last_name"]),
+            # Descending index for ordering records
+            Index(fields=["-created_at"]),
+            # Gin index for efficient JSON queries
+            GinIndex(fields=["extended_attributes"])
+        ]
+```
+
+**Index Best Practices:**
+- Index fields used in `filter()` and `order_by()`
+- Create composite indexes for common multi-field queries
+- **Do not** index `ForeignKey` or `OneToOneField` columns — they are indexed automatically.
+  The SDK will raise an error if you declare a single-column index that duplicates an auto-indexed column.
+
+### Uniqueness Constraints
+
+Use `UniqueConstraint` in `Meta.constraints` to enforce uniqueness on one or more columns.
+Uniqueness is enforced at the database level via a `CREATE UNIQUE INDEX`.
+
+```python
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import TextField, UniqueConstraint
+
+
+class Specialty(CustomModel):
+
+    name = TextField()
+    code = TextField()
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["code"], name="uq_specialty_code"),
+        ]
+```
+
+Composite uniqueness (multiple columns together must be unique):
+
+```python
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import DO_NOTHING, ForeignKey, TextField, UniqueConstraint
+from canvas_sdk.v1.data import Staff, ModelExtension
+
+
+class CustomStaff(Staff, ModelExtension):
+    pass
+
+class StaffCertification(CustomModel):
+
+    staff = ForeignKey(CustomStaff, to_field="dbid", on_delete=DO_NOTHING, related_name="%(app_label)s__certifications")
+    certification_code = TextField()
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["staff", "certification_code"], name="uq_staff_cert"),
+        ]
+```
+
+Each `UniqueConstraint` requires a `name` parameter — this is a standard Django requirement. Choose a descriptive
+name that won't collide with other constraints in your plugin.
+
+Use Django field names (e.g., `"staff"`) rather than database column names (e.g., `"staff_id"`) in the `fields`
+list — the SDK resolves field names to column names automatically. The same applies to `Index` fields in
+`Meta.indexes`.
+
+**Important:** Do not use `unique=True` on individual fields. The SDK will reject it with
+an error directing you to use `UniqueConstraint` instead. This is because `unique=True` modifies
+the column definition itself, and our DDL pipeline cannot retroactively alter existing columns — meaning
+a `unique=True` added after the initial deployment would silently have no effect.
+
+**Constraint placement:** `UniqueConstraint` must be placed in `Meta.constraints`, not `Meta.indexes`.
+Although they are structurally similar to indexes, placing a `UniqueConstraint` in `Meta.indexes` would
+create a non-unique index. The SDK validates this and raises an error if it detects the mistake.
+
+**Lifecycle:** Unique indexes are created with `CREATE UNIQUE INDEX IF NOT EXISTS`, making them safe to
+add at any time — they are applied idempotently on every deployment. However, if the table already
+contains duplicate values for the constrained columns, the index creation will fail. Clean up duplicates
+before adding the constraint.
+
+| Operation               | Allowed | Explanation                                                                                                     |
+|-------------------------|---------|-----------------------------------------------------------------------------------------------------------------|
+| Add UniqueConstraint    | Yes     | A unique index will be created if it does not already exist.                                                    |
+| Remove UniqueConstraint | No      | Remove the constraint from your model and it will be ignored, but the index will remain in the database.        |
+
+---
+
+## Creating and Querying
+
+### Creating Records
+
+```python?partial=true
+from my_plugin.models import ProviderQualification
+
+
+# Create and save
+qualification = ProviderQualification(
+    first_name="Jessica",
+    last_name="Smith",
+    board_certified=True,
+    practicing_since_year=2005,
+    extended_attributes={ "biography": "Lives in Fresno with her..." }
+)
+qualification.save()
+
+# Create in one step
+qualification = ProviderQualification.objects.create(
+    first_name="Jessica",
+    last_name="Smith",
+    board_certified=True,
+    practicing_since_year=2005,
+    extended_attributes={ "biography": "Lives in Fresno with her..." }
+)
+
+# Get or create (avoids duplicates)
+qualification = ProviderQualification.objects.get_or_create(
+    first_name="Jessica",
+    last_name="Smith",
+    defaults={
+        "board_certified": True,
+        "practicing_since_year": 2005,
+        "extended_attributes": { "biography": "Lives in Fresno with her..." }
+    }
+)
+```
+
+### Querying Records
+
+```python?partial=true
+from my_plugin.models import ProviderQualification
+from datetime import date
+
+# Get all records
+all_qualifications = ProviderQualification.objects.all()
+
+# Filter records
+board_certified = ProviderQualification.objects.filter(board_certified=True)
+
+# Get providers with 10+ years experience 
+experienced = ProviderQualification.objects.filter(
+    practicing_since_year__lte=date.today().year - 10
+)
+
+# Get single record by database primary key
+try:
+    jessica = ProviderQualification.objects.get(dbid=123)
+except ProviderQualification.DoesNotExist:
+    jessica = None
+
+# Get single record by fields
+try:
+    jessica = ProviderQualification.objects.get(first_name="Jessica", last_name="Smith")
+except ProviderQualification.DoesNotExist:
+    jessica = None
+
+# Apply multiple filters
+senior_certified = ProviderQualification.objects.filter(
+    board_certified=True,
+    practicing_since_year__lte=2010  # Practicing since 2010 or earlier
+)
+
+# Order results
+by_experience = ProviderQualification.objects.order_by("practicing_since_year")
+
+# Limit results - get 5 most experienced (earliest practicing_since_year)
+top_five = ProviderQualification.objects.order_by("practicing_since_year")[:5]
+```
+
+### Updating Records
+
+```python?partial=true
+from my_plugin.models import ProviderQualification
+
+
+# Update single record
+qualification = ProviderQualification.objects.get(first_name="Jessica", last_name="Smith")
+qualification.practicing_since_year = 2004
+qualification.save()
+
+# Update multiple records
+ProviderQualification.objects.filter(
+    board_certified=False
+).update(board_certified=True)
+
+# Update or create
+qualification, created = ProviderQualification.objects.update_or_create(
+    first_name="Michael",
+    last_name="Johnson",
+    defaults={
+        "board_certified": True,
+        "practicing_since_year": 2015,
+        "extended_attributes": { "specialties": ["Cardiology", "Internal Medicine"] }
+    }
+)
+```
+
+### Deleting Records
+
+```python?partial=true
+from my_plugin.models import ProviderQualification
+
+
+# Delete single record
+qualification = ProviderQualification.objects.get(first_name="Jessica", last_name="Smith")
+qualification.delete()
+
+# Delete multiple records - remove providers who started this year
+from datetime import date
+ProviderQualification.objects.filter(
+    practicing_since_year=date.today().year
+).delete()
+
+# Delete all records (use with caution!)
+ProviderQualification.objects.all().delete()
+```
+
+## Extending the Canvas Data Model
+
+CustomModels may reference core SDK models by creating a proxy model with `ModelExtension`.
+This gives each plugin its own private handle on a shared SDK model, keeping `related_name`
+attributes isolated across plugins.
+
+```python
+from canvas_sdk.v1.data import Staff, ModelExtension
+
+
+class CustomStaff(Staff, ModelExtension):
+    pass
+```
+
+No new table is created — `CustomStaff` shares the `Staff` table and behaves identically for
+queries. Point your `ForeignKey` or `OneToOneField` at the proxy to get clean, un-namespaced
+reverse lookups.
+
+For a full explanation of why proxy models exist, how `related_name` namespacing works, and
+how to reference SDK models directly without a proxy, see
+[Extending SDK Models](/sdk/custom-data-extending-sdk-models/).
+
+---
+
+## One-to-One Relationships
+
+A one-to-one relationship links one record in a model to exactly one record in another model.
+Use `OneToOneField` to define this relationship.
+
+### Basic One-to-One
+
+```python
+from canvas_sdk.v1.data import Staff, ModelExtension
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import CASCADE, DateTimeField, DecimalField, OneToOneField, TextField
+
+
+class CustomStaff(Staff, ModelExtension):
+    """Extends Staff with custom attribute support."""
+    pass
+
+class Biography(CustomModel):
+
+    biography = TextField()
+    language = TextField()
+    version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
+    last_modified_at = DateTimeField(auto_now_add=True)
+
+    staff = OneToOneField(
+        CustomStaff, to_field="dbid", on_delete=CASCADE, related_name="biography"
+    )
+```
+
+The above will create a table with a `serial` primary key, two `text` columns, a `numeric(1,3)` column, a `timestamptz` column,
+and an `integer` column named `staff_id` that contains a foreign key into the SDK `Staff` model. The `CustomStaff`
+class will contain the reverse mapping via `related_name`.
+
+**Uniqueness:** A `OneToOneField` implies that the foreign key column is unique — each target record can be
+referenced by at most one row. The SDK automatically creates a `UNIQUE INDEX` on the foreign key column
+to enforce this at the database level. Do not add a separate `UniqueConstraint` for it — the SDK will
+raise an error if you declare a single-column `UniqueConstraint` or `Index` on an auto-indexed column.
+
+### One-to-One with `primary_key=True`
+
+A `OneToOneField` can serve as the table's primary key by setting `primary_key=True`. This replaces
+the default auto-incrementing `dbid` column — the foreign key column becomes the sole primary key.
+
+This pattern is useful when the child record has a strict 1:1 relationship with its parent and
+there is no need for a separate surrogate key.
+
+```python
+from canvas_sdk.v1.data import Patient, ModelExtension
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import CASCADE, JSONField, OneToOneField
+
+
+class CustomPatient(Patient, ModelExtension):
+    pass
+
+class PatientPreferences(CustomModel):
+
+    patient = OneToOneField(
+        CustomPatient, to_field="dbid", on_delete=CASCADE,
+        related_name="preferences", primary_key=True
+    )
+    preferences = JSONField(default=dict)
+```
+
+The above will create a table with a single `integer` primary key column `patient_id` (no `dbid` column)
+and a `jsonb` column. The primary key inherently enforces uniqueness, so no additional unique index is created.
+
+**Note:** `primary_key=True` is only supported on `OneToOneField`. Setting it on a `ForeignKey` or any
+other field type will raise an error — use a `OneToOneField` instead when you need a shared primary key.
+
+### Creating One-to-One Records
+
+```python?partial=true
+from my_plugin.models import CustomStaff, Biography
+
+# Get the staff member
+staff = CustomStaff.objects.get(id="staff-uuid")
+
+# Create biography
+biography = Biography.objects.create(
+    staff=staff,
+    biography="Dr. Smith is a board-certified cardiologist with over 20 years of experience...",
+    language="English",
+    version=1.0
+)
+```
+
+### Querying One-to-One Relationships
+
+```python?partial=true
+from my_plugin.models import CustomStaff, Biography
+
+
+# Access from biography to staff
+biography = Biography.objects.get(dbid=1)
+staff_member = biography.staff
+
+# Access from staff to biography (using related_name)
+staff = CustomStaff.objects.get(id="staff-uuid")
+try:
+    bio = staff.biography
+except Biography.DoesNotExist:
+    print("No biography found")
+
+# Find all staff with biographies in Spanish
+spanish_providers = CustomStaff.objects.filter(
+    biography__language="Spanish"
+)
+
+# Find staff whose biography was last updated before a certain date
+from datetime import datetime, timedelta
+
+outdated_bios = CustomStaff.objects.filter(
+    biography__last_modified_at__lte=datetime.now() - timedelta(days=365)
+)
+```
+
+---
+
+## One-to-Many Relationships
+
+A one-to-many (or many-to-one) relationship allows one record to be associated with multiple records in another model. 
+Use `ForeignKey` to define this relationship.
+
+### Basic One-to-Many
+
+```python
+from canvas_sdk.v1.data import Staff, ModelExtension
+from canvas_sdk.v1.data.base import CustomModel
+from django.db.models import CASCADE, DateTimeField, DecimalField, ForeignKey, TextField
+
+
+class CustomStaff(Staff, ModelExtension):
+  """Extends Staff with custom attribute support."""
+  pass
+
+class Biography(CustomModel):
+  biography = TextField()
+  language = TextField()
+  version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
+  last_modified_at = DateTimeField(auto_now_add=True)
+
+  # Same as one-to-one, but a Foreign key with a plural 'related_name'. Now, each staff may have multiple biographies,
+  # perhaps in different languages.
+  staff = ForeignKey(
+    CustomStaff, to_field="dbid", on_delete=CASCADE, related_name="biographies"
+  )
+```
+
+### Creating One-to-Many Records
+
+```python?partial=true
+from my_plugin.models import CustomStaff, Biography
+
+
+# Get staff member
+staff = CustomStaff.objects.get(id="staff-uuid")
+
+# Create multiple biographies for one provider (e.g., in different languages)
+english_bio = Biography.objects.create(
+    staff=staff,
+    biography="Dr. Smith is a board-certified cardiologist with over 20 years of experience in interventional cardiology.",
+    language="English",
+    version=1.0
+)
+
+spanish_bio = Biography.objects.create(
+    staff=staff,
+    biography="La Dra. Smith es una cardióloga certificada con más de 20 años de experiencia en cardiología intervencionista.",
+    language="Spanish",
+    version=1.0
+)
+```
+
+### Querying One-to-Many Relationships
+
+```python?partial=true
+from my_plugin.models import CustomStaff, Biography
+
+
+# Access from biography to staff (forward)
+biography = Biography.objects.get(language="Spanish")
+provider = biography.staff
+print(f"Provider: {provider.first_name} {provider.last_name}")
+
+# Access from staff to biographies (reverse, using related_name)
+staff = CustomStaff.objects.get(id="staff-uuid")
+biographies = staff.biographies.all()
+for bio in biographies:
+    print(f"- {bio.language}: {bio.biography[:50]}... (v{bio.version})")
+
+# Filter reverse relationship
+english_bios = staff.biographies.filter(language="English")
+
+# Query across relationship
+# Find all staff who have biographies in Spanish
+spanish_speaking_providers = CustomStaff.objects.filter(
+    biographies__language="Spanish"
+)
+
+# Find staff with multiple biography versions
+from django.db.models import Count
+
+providers_with_multiple_bios = CustomStaff.objects.annotate(
+    bio_count=Count('biographies')
+).filter(bio_count__gt=1)
+
+# Count related records
+biography_count = staff.biographies.count()
+
+# Check existence
+has_spanish_bio = staff.biographies.filter(language="Spanish").exists()
+```
+
+
+---
+
+## Many-to-Many Relationships
+
+A many-to-many relationship allows multiple records in one model to be associated with multiple records in another model.
+
+Many-to-many relationships require an **explicit through model** — a CustomModel that contains ForeignKey
+fields to both sides of the relationship. Standard Django allows `ManyToManyField` to create an implicit
+join table automatically, but the Canvas SDK does not support implicit through tables because each table
+must be a CustomModel with a managed schema lifecycle.
+
+You can define the relationship in two ways:
+
+1. **Through model only** — Define the through model with ForeignKeys and query through it directly.
+2. **Through model + `ManyToManyField`** — Add a `ManyToManyField` with an explicit `through` parameter for cleaner ORM access.
+
+Both approaches create the same database tables. The `ManyToManyField` adds ORM convenience (e.g.,
+`specialty.staff.all()` instead of traversing the join table manually) but does not change the
+underlying schema.
+
+### Through Model Only
+
+The simplest approach is to define just the through model. This works well when the through model
+has additional metadata fields or when you prefer to query the join table directly.
+
+```python
+from django.db.models import CASCADE, ForeignKey, Index, TextField, UniqueConstraint
+from canvas_sdk.v1.data.base import CustomModel
+from canvas_sdk.v1.data import Staff, ModelExtension
+
+
+class CustomStaff(Staff, ModelExtension):
+  """Extends Staff with custom attribute support."""
+  pass
+
+class Specialty(CustomModel):
+  """Medical specialty (e.g., Cardiology, Neurology)."""
+
+  name = TextField()
+
+  class Meta:
+    indexes = [
+      Index(fields=["name"]),
+    ]
+
+
+# Declaring this class will result in a join table called `staffspecialty`
+class StaffSpecialty(CustomModel):
+  """Many-to-many relationship: Staff can have many specialties, specialties can have many staff."""
+
+  staff = ForeignKey(
+    CustomStaff,
+    to_field="dbid",
+    on_delete=CASCADE,
+    related_name="staff_specialties"
+  )
+  specialty = ForeignKey(
+    Specialty,
+    to_field="dbid",
+    on_delete=CASCADE,
+    related_name="staff_specialties"
+  )
+
+  class Meta:
+    constraints = [
+      UniqueConstraint(
+        fields=["staff", "specialty"],
+        name="unique_staff_specialty",
+      ),
+    ]
+```
+
+This creates a many-to-many relationship where:
+- One staff member can have multiple specialties
+- One specialty can be assigned to multiple staff members
+- `StaffSpecialty` is the through model that connects them
+
+**Preventing duplicate associations:** Through models typically need a uniqueness constraint on
+the pair of foreign key columns to prevent the same association from being created twice. Add a
+`UniqueConstraint` to the through model's `Meta.constraints` referencing both FK field names
+(e.g., `staff` and `specialty`). Without this, calling `StaffSpecialty.objects.create(staff=staff, specialty=cardiology)`
+twice would create two identical rows. See [Uniqueness Constraints](#uniqueness-constraints) for
+more details on constraint naming and lifecycle.
+
+### Through Model + ManyToManyField
+
+Adding a `ManyToManyField` with an explicit `through` parameter gives you direct ORM access to the
+related objects without manually traversing the join table.
+
+**Important:** The `through` parameter is **required**. A `ManyToManyField` without `through` will
+cause an error because the SDK cannot manage implicit join tables.
+
+```python
+from django.db.models import CASCADE, ForeignKey, Index, ManyToManyField, TextField, UniqueConstraint
+from canvas_sdk.v1.data.base import CustomModel
+from canvas_sdk.v1.data import Staff, ModelExtension
+
+
+class CustomStaff(Staff, ModelExtension):
+  """Extends Staff with custom attribute support."""
+  pass
+
+class Specialty(CustomModel):
+  """Medical specialty (e.g., Cardiology, Neurology)."""
+
+  name = TextField()
+  staff = ManyToManyField(
+    CustomStaff,
+    through="StaffSpecialty",
+    related_name="%(app_label)s_specialties",
+  )
+
+  class Meta:
+    indexes = [
+      Index(fields=["name"]),
+    ]
+
+
+class StaffSpecialty(CustomModel):
+  """Through model for the staff-specialty relationship."""
+
+  staff = ForeignKey(
+    CustomStaff,
+    to_field="dbid",
+    on_delete=CASCADE,
+    related_name="%(app_label)s_staff_specialties",
+  )
+  specialty = ForeignKey(
+    Specialty,
+    to_field="dbid",
+    on_delete=CASCADE,
+    related_name="staff_specialties",
+  )
+
+  class Meta:
+    constraints = [
+      UniqueConstraint(
+        fields=["staff", "specialty"],
+        name="unique_staff_specialty",
+      ),
+    ]
+```
+
+With the `ManyToManyField` declared, you can traverse the relationship directly:
+
+```python?partial=true
+# Direct access to related objects (returns Staff queryset, not StaffSpecialty)
+specialty = Specialty.objects.get(name="Cardiology")
+staff_members = specialty.staff.all()
+
+# Reverse access from staff to specialties
+staff = CustomStaff.objects.get(id="staff-uuid")
+specialties = staff.staff_plus_specialties.all()  # uses the ManyToManyField's related_name
+```
+
+Compare this with the through-model-only approach, where you must navigate through the join table:
+
+```python?partial=true
+# Without ManyToManyField — must traverse the join table
+staff_members = [ss.staff for ss in specialty.staff_specialties.all()]
+```
+
+#### Differences from Standard Django ManyToManyField
+
+| Behavior                         | Standard Django                          | Canvas SDK                                                       |
+|----------------------------------|------------------------------------------|------------------------------------------------------------------|
+| `through` parameter              | Optional — Django creates an implicit join table | **Required** — must reference a CustomModel                |
+| `.add()`, `.remove()`, `.set()`  | Available when no explicit through model | **Not available** — use the through model's `.objects.create()` and `.delete()` instead |
+| `.clear()`                       | Available                                | **Not available** — use `StaffSpecialty.objects.filter(...).delete()` instead |
+| `.all()`, filtering, `prefetch_related` | Available                         | Available                                                        |
+
+Because Django requires you to use the through model directly for creating and deleting relationships
+when an explicit `through` is declared, the CRUD patterns are the same whether or not you add the
+`ManyToManyField`. The field's value is in query convenience — direct `.all()` access and cleaner
+`prefetch_related` lookups.
+
+#### related_name with ManyToManyField
+
+When a `ManyToManyField` targets a core SDK model (like `Staff` or `Patient`), you **must** use
+the `%(app_label)s_` prefix in `related_name` to avoid naming collisions between plugins:
+
+```python?partial=true
+staff = ManyToManyField(
+    CustomStaff,
+    through="StaffSpecialty",
+    related_name="%(app_label)s_specialties",  # becomes e.g. "my_plugin_specialties"
+)
+```
+
+This is the same namespacing requirement that applies to `ForeignKey` and `OneToOneField` when
+targeting SDK models. See [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) for a
+full explanation of when namespacing is required and how proxy models avoid it.
+
+### Creating Many-to-Many Records
+
+Regardless of whether you use `ManyToManyField`, create and delete relationships through the
+through model directly:
+
+```python?partial=true
+from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
+
+
+# Create specialties
+cardiology = Specialty.objects.create(name="Cardiology")
+internal_medicine = Specialty.objects.create(name="Internal Medicine")
+emergency_medicine = Specialty.objects.create(name="Emergency Medicine")
+
+# Get staff member
+staff = CustomStaff.objects.get(id="staff-uuid")
+
+# Create associations between staff and specialties
+StaffSpecialty.objects.create(staff=staff, specialty=cardiology)
+StaffSpecialty.objects.create(staff=staff, specialty=internal_medicine)
+
+# Bulk create multiple associations at once
+specialties_to_add = [emergency_medicine, cardiology]
+staff_specialties = [
+    StaffSpecialty(staff=staff, specialty=specialty) for specialty in specialties_to_add
+]
+StaffSpecialty.objects.bulk_create(staff_specialties)
+
+# Replace all specialties for a staff member
+# First, remove existing associations
+StaffSpecialty.objects.filter(staff=staff).delete()
+
+# Then create new associations
+new_specialties = [cardiology, emergency_medicine]
+new_staff_specialties = [
+    StaffSpecialty(staff=staff, specialty=specialty) for specialty in new_specialties
+]
+StaffSpecialty.objects.bulk_create(new_staff_specialties)
+```
+
+**Note:** Do not use `.add()`, `.remove()`, `.set()`, or `.clear()` on the `ManyToManyField`.
+Django disables these methods when an explicit `through` model is declared. Use the through model's
+manager (e.g., `StaffSpecialty.objects`) for all create and delete operations.
+
+### Querying Many-to-Many Relationships
+
+```python?partial=true
+from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
+
+
+# Access staff member's specialties through the join table
+staff = CustomStaff.objects.get(id="staff-uuid")
+staff_specialty_records = staff.staff_specialties.all()
+for staff_specialty in staff_specialty_records:
+    print(f"- {staff_specialty.specialty.name}")
+
+# Get just the specialty names
+specialty_names = [ss.specialty.name for ss in staff.staff_specialties.all()]
+
+# Access all staff members with a specific specialty (reverse)
+cardiology = Specialty.objects.get(name="Cardiology")
+cardiology_staff_records = cardiology.staff_specialties.all()
+for staff_specialty in cardiology_staff_records:
+    staff_member = staff_specialty.staff
+    print(f"- {staff_member.first_name} {staff_member.last_name}")
+
+# Find staff IDs with specific specialties
+staff_ids = StaffSpecialty.objects.filter(
+    specialty__name__in=["Cardiology", "Internal Medicine"]
+).values_list("staff_id", flat=True)
+
+# Find staff members with a specific specialty
+cardiologists = CustomStaff.objects.filter(
+    staff_specialties__specialty__name="Cardiology"
+).distinct()
+
+# Check if a staff member has a specific specialty
+has_cardiology = staff.staff_specialties.filter(specialty__name="Cardiology").exists()
+
+# Count specialties for a staff member
+specialty_count = staff.staff_specialties.count()
+
+# Efficient querying with prefetch_related
+staff_with_specialties = (
+    CustomStaff.objects
+    .prefetch_related("staff_specialties__specialty")
+    .all()
+)
+for staff in staff_with_specialties:
+    specialties = [ss.specialty.name for ss in staff.staff_specialties.all()]
+    print(f"{staff.first_name} {staff.last_name}: {', '.join(specialties)}")
+```
+
+**Key points about many-to-many relationships:**
+
+- Both sides of the relationship can access the through model using `related_name`
+- Without `ManyToManyField`: `staff.staff_specialties.all()` returns `StaffSpecialty` objects — access the related object via `ss.specialty`
+- With `ManyToManyField`: `specialty.staff.all()` returns `Staff` objects directly
+- You can add additional fields to the through model to store metadata about the relationship (e.g., date assigned, certification level, etc.)
+- Query across the relationship using double underscores: `CustomStaff.objects.filter(staff_specialties__specialty__name="Cardiology")`
+
+## Delete Behavior
+
+The `on_delete` parameter on `ForeignKey` and `OneToOneField` controls what happens to child records
+when a parent record is deleted. The SDK supports three values:
+
+- **`CASCADE`** — Delete the child record automatically. This is the most common choice for
+  tightly-coupled relationships like join table entries, child records that have no meaning without
+  their parent, or `OneToOneField` with `primary_key=True`.
+- **`SET_NULL`** — Set the foreign key column to `NULL`, keeping the child record. Useful when the
+  child has independent value even if its parent is removed (e.g., an audit log entry whose
+  associated staff member has been deactivated).
+- **`DO_NOTHING`** — Take no automatic action. The plugin is fully responsible for preventing
+  orphaned references.
+
+These behaviors are enforced at the Django ORM level, not by database-level foreign key constraints.
+They apply when deleting via `model.delete()` or `queryset.delete()`.
+
+**Tip:** Use `CASCADE` on through-model (join table) foreign keys so that deleting either side of
+a many-to-many relationship automatically cleans up the association rows.
+
+## The CustomModel Lifecycle
+
+Managing database schemas necessarily introduces complexity, because there is state to maintain over time as the software evolves. 
+Common pitfalls include expensive table rewrite operations, migrations that fail in some environments due to manual changes,
+database system-specific nuances, unsatisfied foreign key constraints due to data corruption or improper order of operations, etc.
+
+The Canvas SDK Custom Data feature aims to simplify maintenance, while sacrificing some rigor found in a full migration system like Django's.
+
+| Operation                | Allowed | Explanation                                                                                                                                                                            |
+|--------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Create Model             | Yes     | A table corresponding to your CustomModel will be created if it does not exist. An autoincrementing column named `dbid` will be its sole attribute.                                    |
+| Add Field                | Yes     | A column corresponding to a Field declared within your CustomModel will be added to the table if it does not exist. It will be nullable, without defaults to eliminate table rewrites. |
+| Add UniqueConstraint     | Yes     | A unique index will be created if it does not already exist. Fails if existing data contains duplicates for the constrained columns.                                                   |
+| Add Index                | Yes     | An index will be created if it does not already exist.                                                                                                                                 |
+| Alter Field              | No      | This can cause a table rewrite, and requires a full migration metadata system. Create a new Field in your model. Copy data from old to new.                                            |
+| Drop Field               | No      | This will cause a table rewrite, and requires a full migration metadata system. Remove the Field from your model and it will be ignored.                                               |
+| Drop UniqueConstraint    | No      | Remove the constraint from your model and it will be ignored, but the unique index will remain in the database.                                                                        |
+| Drop Index               | No      | Remove the index from your model and it will be ignored, but the index will remain in the database.                                                                                    |
+| Alter Model              | No      | Requires a full migration metadata system. Create a new Model in your plugin. Copy data from old to new.                                                                               |
+| Drop Model               | No      | Requires a full migration metadata system. Remove the model from your plugin and it will be ignored.                                                                                   |
+
+### Best Practices 
+1. Emphasize [local development](#local-db-seeding-via-run-plugin) over use of a development EMR instance.
+2. Write [automated tests](/sdk/custom-data-testing/) exercising your business logic.
+3. Extract business logic and CRUD operations into "service" classes that can be tested in isolation.
+
+## Advanced Patterns
+
+### Combining Approaches
+
+You can combine CustomModels with [AttributeHubs](/sdk/custom-data-attribute-hubs/) for maximum flexibility:
+
+```python
+from canvas_sdk.v1.data.base import CustomModel
+from canvas_sdk.v1.data import AttributeHub, Staff, ModelExtension
+from django.db.models import CASCADE, ForeignKey, SET_NULL, TextField
+
+
+class CustomStaff(Staff, ModelExtension):
+    pass
+
+
+class Department(CustomModel):
+    """Structured department model."""
+
+    name = TextField()
+    code = TextField()
+
+
+class StaffDepartment(CustomModel):
+    """Staff can belong to multiple departments."""
+
+    staff = ForeignKey(
+        CustomStaff, on_delete=SET_NULL, related_name="department_assignments"
+    )
+    department = ForeignKey(
+        Department, on_delete=CASCADE, related_name="staff_members"
+    )
+    role = TextField()
+
+
+# Use CustomModels for structured data with relationships
+staff = CustomStaff.objects.get(id="staff-uuid")
+dept = Department.objects.get(code="CARDIO")
+StaffDepartment.objects.create(
+    staff=staff,
+    department=dept,
+    role="Lead Physician"
+)
+
+# Use an AttributeHub for flexible, unstructured data
+hub, created = AttributeHub.objects.get_or_create(
+    type="staff_preferences",
+    id=f"staff:{staff.id}"
+)
+hub.set_attributes({
+    "pager_number": "555-1234",
+    "preferred_contact": "email",
+    "office_hours": {"monday": "9-5", "tuesday": "9-5"}
+})
+```
+
+### Query Optimization
+
+Optimize database queries using `select_related` and `prefetch_related`:
+
+```python?partial=true
+from my_plugin.models import Specialty, StaffSpecialty, CustomStaff
+
+
+# Use select_related for ForeignKey (SQL JOIN)
+# Load StaffSpecialty with related staff and specialty in one query
+staff_specialties = StaffSpecialty.objects.select_related("staff", "specialty").all()
+for ss in staff_specialties:
+    # No additional queries - both staff and specialty are already loaded
+    print(f"{ss.staff.first_name} {ss.staff.last_name}: {ss.specialty.name}")
+
+# Use prefetch_related for reverse ForeignKey relationships
+# Load staff with all their specialties efficiently
+staff_list = CustomStaff.objects.prefetch_related("staff_specialties__specialty").all()
+for staff in staff_list:
+    # No additional queries - staff_specialties and specialties are already loaded
+    for ss in staff.staff_specialties.all():
+        print(f"{staff.first_name}: {ss.specialty.name}")
+
+# Prefetch specialties for multiple staff members
+specialties_list = Specialty.objects.prefetch_related("staff_specialties__staff").all()
+for specialty in specialties_list:
+    staff_members = [ss.staff for ss in specialty.staff_specialties.all()]
+    print(f"{specialty.name}: {len(staff_members)} staff members")
+
+# Use Prefetch for custom filtering
+from django.db.models import Prefetch
+
+# Only load staff specialties with specific specialty names
+staff_with_filtered_specialties = CustomStaff.objects.prefetch_related(
+    Prefetch(
+        "staff_specialties",
+        queryset=StaffSpecialty.objects.filter(
+            specialty__name__in=["Cardiology", "Neurology"]
+        ).select_related("specialty")
+    )
+).all()
+```
+
+### Complex Queries
+
+Use Django's Q objects for complex filtering and aggregation:
+
+```python?partial=true
+from django.db.models import Q, Count
+from my_plugin.models import CustomStaff, Specialty, StaffSpecialty
+
+
+# OR conditions - Find staff with Cardiology OR Neurology specialty
+staff_with_cardio_or_neuro = CustomStaff.objects.filter(
+    Q(staff_specialties__specialty__name="Cardiology") |
+    Q(staff_specialties__specialty__name="Neurology")
+).distinct()
+
+# AND conditions - Find specialties with "Cardiology" or "Medicine" in the name
+cardio_or_medicine = Specialty.objects.filter(
+    Q(name__icontains="Cardiology") | Q(name__icontains="Medicine")
+)
+
+# Negation - Find staff WITHOUT a specific specialty
+staff_without_cardiology = CustomStaff.objects.exclude(
+    staff_specialties__specialty__name="Cardiology"
+)
+
+# Complex filtering - Staff with multiple specific specialties
+# Note: This requires DISTINCT because joins can create duplicate rows
+staff_with_multiple = CustomStaff.objects.filter(
+    staff_specialties__specialty__name="Cardiology"
+).filter(
+    staff_specialties__specialty__name="Internal Medicine"
+).distinct()
+
+# Count related objects - Staff with specialty counts
+staff_with_counts = CustomStaff.objects.annotate(
+    specialty_count=Count("staff_specialties")
+).filter(specialty_count__gte=2)
+
+# Group by and aggregate - Count how many staff have each specialty
+specialty_counts = Specialty.objects.annotate(
+    staff_count=Count("staff_specialties")
+).order_by("-staff_count")
+
+for specialty in specialty_counts:
+    print(f"{specialty.name}: {specialty.staff_count} staff members")
+```
+
+## Best Practices
+
+### Model Design
+
+1. **Use appropriate field types** - Choose the most specific field type for your data
+3. **Define related_name** - Always specify `related_name` for clear reverse relationships
+5. **Keep models focused** - Each model should represent a single, well-defined concept
+
+### Relationships
+
+1. **Choose the right relationship type** - OneToOne for 1:1, ForeignKey for 1:many, join tables and "through" models for many:many
+2. **Use through models** - To create a join table bridging two other entities, create a CustomModel representing the relationship
+3. **Handle deletions** - Use `CASCADE` on join table foreign keys so associations are cleaned up automatically. Use `SET_NULL` when child records should survive parent deletion. Use `DO_NOTHING` only when you manage cleanup explicitly in plugin code
+
+### Performance
+
+1. **Add indexes strategically** - Index frequently filtered fields - foreign key fields are automatically indexed
+2. **Use select_related** - For ForeignKey and OneToOneField to reduce queries
+3. **Use prefetch_related** - For reverse ForeignKey fields (including join tables for many-to-many fields)
+4. **Avoid N+1 queries** - Always prefetch related data when iterating
+5. **Use exists() for checks** - More efficient than count() or len()
+6. **Use iterator() for large datasets** - Reduces memory usage for processing many records
+
+### Data Integrity
+
+1. **Enforce uniqueness with UniqueConstraint** - Use `UniqueConstraint` in `Meta.constraints` to prevent duplicate data at the database level
+2. **Validate in model methods** - Add custom validation in `clean()` method
+3. **Use transactions** - Wrap multiple operations in atomic transactions
+4. **Handle DoesNotExist** - Always catch exceptions when using `get()`
+
+### Testing
+
+1. **Use model factories** - Create test data with factory patterns
+2. **Test model methods** - Verify custom model methods and properties
+3. **Test relationships** - Ensure relationships work in both directions
+4. **Test data quality** - The plugin is responsible for ensuring uniqueness and validity of foreign keys 
+5. **Test edge cases** - Test with null values, empty strings, boundary conditions
+
+## See Also
+
+- [Custom Data Overview](/sdk/custom-data/) - Overview of all custom data techniques
+- [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) - Proxy models, `related_name` namespacing, and referencing SDK models
+- [Design Considerations](/sdk/custom-data-design-considerations/) - Choosing the right technique and avoiding anti-patterns
+- [AttributeHubs](/sdk/custom-data-attribute-hubs/) - Standalone key-value storage
+- [Transactions](/sdk/custom-data-transactions/) - All-or-nothing writes with `transaction.atomic()`
+- [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data among plugins
+- [Testing Custom Data](/sdk/custom-data-testing/) - Testing utilities and examples
+- [Data Models](/sdk/data/) - Core SDK data models
+- [Caching API](/sdk/caching) - Auto-expiring transient data
+
+<br/>
+<br/>
+<br/>

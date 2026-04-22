@@ -40,13 +40,13 @@ commands = Command.objects.filter(state="committed")
 When events are fired as part of [Command Lifecycle Events](/sdk/events/#command-lifecycle-events), the `self.target` value that is available within a plugin will contain the `id` value of the command. For example:
 
 ```python
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.REASON_FOR_VISIT_COMMAND__POST_UPDATE),
     ]
@@ -60,12 +60,12 @@ Using this value, the `Command` model can be queried to fetch additional data ab
 ```python
 import json
 from canvas_sdk.effects import Effect
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data.command import Command
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     def compute(self) -> list[Effect]:
         command_instance = Command.objects.get(id=self.target)
         log.info(command_instance.schema_key)
@@ -146,6 +146,31 @@ __PLEASE NOTE__ the Commands Module is under development and Canvas is working t
 | schema_key         | String                                |
 | data               | JSON                                  |
 | origination_source | String                                |
+
+### CommandMetadata
+
+`CommandMetadata` stores custom key-value pairs associated with a command. Metadata can be upserted using the `upsert_metadata` method on any command effect class — see [CommandMetadata Effect](/sdk/effect-command-metadata/) for full details.
+
+```python
+from canvas_sdk.v1.data.command import CommandMetadata
+
+# Get all metadata for a command
+metadata_entries = CommandMetadata.objects.filter(command__id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+# Get a specific metadata value
+entry = CommandMetadata.objects.get(command__id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35", key="my_plugin:priority")
+print(entry.value)
+```
+
+| Field Name | Type                                    |
+|------------|-----------------------------------------|
+| id         | UUID                                    |
+| dbid       | Integer                                 |
+| created    | DateTime                                |
+| modified   | DateTime                                |
+| command    | [Command](/sdk/data-command/#command)   |
+| key        | String                                  |
+| value      | String                                  |
 
 <br/>
 <br/>

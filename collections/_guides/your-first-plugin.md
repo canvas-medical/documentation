@@ -1,5 +1,5 @@
 ---
-title: "Your First Plugin"
+title: "Your First Plugin (Manual)"
 guide_for:
 - /sdk/quickstart/
 - /sdk/canvas_cli/
@@ -10,6 +10,8 @@ guide_for:
 Plugins are your tool for customizing the Canvas experience. By using the
 modules of the Canvas SDK, you can react to [events](/sdk/events/) emitted from the EHR,
 request additional [data](/sdk/data/) if needed, and respond with [effects](/sdk/effects/) that alter workflows and add or change data in Canvas. You can also use [utils](/sdk/utils/) to do things like call out to web services with our provided HTTP client.
+
+{% include alert.html type="warning" content="This guide is for manual coding. Want a faster, AI-assisted approach? Check out <a href='/guides/your-first-plugin-with-claude-code/'>Your First Plugin (with Claude Code)</a>, which uses an AI assistant to guide you through building and deploying your plugin." %}
 
 ## Video
 
@@ -108,10 +110,10 @@ installation of the plugin.
     "name": "paperwork_eviscerator",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
-        "protocols": [
+        "handlers": [
             {
-                "class": "paperwork_eviscerator.protocols.my_protocol:Protocol",
-                "description": "A protocol that does xyz...",
+                "class": "paperwork_eviscerator.handlers.my_protocol:Protocol",
+                "description": "A handler that does xyz...",
                 "data_access": {
                     "event": "",
                     "read": [],
@@ -136,7 +138,7 @@ installation of the plugin.
 The name, plugin version, and description are all surfaced in your Canvas
 instance when viewing installed plugins.
 
-Only protocols declared here are invoked by the plugin runner. If they are
+Only handlers declared here are invoked by the plugin runner. If they are
 not declared, they will be ignored.
 
 Secrets can be declared (though not defined) here. Any secrets declared here
@@ -147,27 +149,27 @@ will be initialized on plugin install, and can be set in the plugin listing in t
 Share details about the purpose of your plugins and how it works in this
 README file.
 
-### protocols/my_protocol.py
+### handlers/my_protocol.py
 
-This file contains the protocol class declared in the manifest file. We've included
+This file contains the handler class declared in the manifest file. We've included
 some sample content and copious comments for inspiration.
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-# Inherit from BaseProtocol to properly get registered for events
-class Protocol(BaseProtocol):
+# Inherit from BaseHandler to properly get registered for events
+class Protocol(BaseHandler):
     """
-    You should put a helpful description of this protocol's behavior here.
+    You should put a helpful description of this handler's behavior here.
     """
 
     # Name the event type you wish to run in response to
     RESPONDS_TO = EventType.Name(EventType.ASSESS_COMMAND__CONDITION_SELECTED)
 
-    NARRATIVE_STRING = "I was inserted from my plugin's protocol."
+    NARRATIVE_STRING = "I was inserted from my plugin's handler."
 
     def compute(self):
         """

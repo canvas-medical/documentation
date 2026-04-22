@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to.<br><br>
-          [https://hl7.org/fhir/R4/questionnaireresponse.html](https://hl7.org/fhir/R4/questionnaireresponse.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-questionnaireresponse.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-questionnaireresponse.html)<br><br>
           See this [article](https://help.canvasmedical.com/articles/7017593857-creating-questionnaires) for information about how to build questionnaires in Canvas.<br><br>
           Questionnaires can map to four different commands in the Canvas UI depending on what the use case in charting is set to: 
 
@@ -52,12 +52,49 @@ sections:
                 - name: valueId
                   type: string
                   description: The valueId field is used for the Note extension and will be the note's unique identifier
+          - name: identifier
+            type: json
+            description: Unique id for this set of answers
+            exclude_in: create, update
+            attributes:
+              - name: system
+                type: string
+                description:  The namespace for the identifier value.
+                enum_options: 
+                  - value: http://schemas.canvasmedical.com/fhir/questionnaireresponse-identifier
+              - name: value
+                type: string
+                description: The identifier value that is unique.
           - name: questionnaire
-            required_in: create,update
             description: >-
               Form being answered.<br><br>
-              The `questionnaire` field contains a value that is formatted like a Questionnaire reference, e.g. `Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search).
+              The `questionnaire` field contains an absolute URL to a Questionnaire, e.g. `https://fumage-example.canvasmedical.com/Questionnaire/ac1da1a4-ccc4-492e-a9e0-7f70a58c2129`. Questionnaire IDs can be obtained using the [Questionnaire search endpoint](/api/questionnaire/#search). Either the `questionnaire` attribute or the URL extension under `_questionnaire` must be provided.
             type: string
+          - name: _questionnaire
+            description: >-
+              This attribute contains the extensions for the `questionnaire` attribute.
+            type: json
+            attributes:
+              - name: extension
+                description_for_all_endpoints: >-
+                  Extensions on the `questionnaire` attribute. Supported extensions include questionnaire name and URL.
+                create_description: >-
+                  To create a QuestionnaireResponse that responds to a non-FHIR questionnaire, like an external PDF file, the URL extension must be provided, and the `questionnaire` attribute must be omitted. In this scenario, there is no `Questionnaire` resource referenced by the `questionnaire` attribute. Question text must be provided for each `item`, and only `valueString` answers are permitted.<br><br>
+                  When a QuestionnaireResponse is created in this manner, it does <strong>not</strong> result in the insertion of a command into a note.
+                type: array[json]
+                attributes:
+                  - name: url
+                    description: Source of the definition of the extension code.
+                    type: string
+                    enum_options:
+                      - http://hl7.org/fhir/StructureDefinition/display
+                      - http://hl7.org/fhir/us/core/StructureDefinition/us-core-extension-questionnaire-uri
+                  - name: valueString
+                    description: Display name for the Questionnaire referenced by `questionnaire`
+                    type: string
+                  - name: valueUri
+                    description: The location where a non-FHIR questionnaire/survey form can be found.
+                    type: string
           - name: status
             required_in: create,update
             description: >-
@@ -122,7 +159,7 @@ sections:
               • Free text<br>
               • Single choice<br>
               • Multiple choice<br><br>
-              Answers to free text questions are provided as a `valueString`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.<br><br>
+              Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.<br><br>
               The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):<br><br>
 
                 | FHIR system uri                                                        | Canvas system value |
@@ -141,15 +178,20 @@ sections:
                   description: A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
                 - name: text
                   type: string
-                  description: Human readable text of the question. Not stored but can be helpful to include for troubleshooting.
+                  description: Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
                 - name: answer
                   type: array[json]
                   required_in: create,update
                   description: A list of one or more answers to this question.
                   attributes:
-                    - value: valueString
+                    - name: valueString
+                      type: string
                       description: For question where the answer is a free-text field (i.e. Questionnaire item type = "text"), then the list will contain a single object containing a valueString field with the response text.
-                    - value: valueCoding
+                    - name: valueDecimal
+                      type: decimal
+                      description: For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+                    - name: valueCoding
+                      type: json
                       description: For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
                       attributes:
                         - name: system
@@ -171,6 +213,14 @@ sections:
                           description: The display name of the coding.
                           type: string
                           required_in: create, update
+                    - name: item
+                      description: >-
+                        Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question. 
+                      type: array[json]
+                - name: item
+                  type: array[json]
+                  description: >-
+                    Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
         search_parameters:
           - name: _id
             description: The identifier of the QuestionnaireResponse.
@@ -183,7 +233,7 @@ sections:
             description: The patient that is the subject of the questionnaire response in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
           - name: questionnaire
-            description: The questionnaire the answers are provided for in the format "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd".
+            description: The questionnaire the answers are provided for in the format "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd".
             type: string
           - name: questionnaire.code
             description: Filters by the code and/or system of the associated questionnaire. You can search by just the code value or you can search by the system and code in the format `system|code` (e.g `http://snomed.info/sct|404684003`).
@@ -257,7 +307,7 @@ curl --request POST \
             "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "completed",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -341,7 +391,7 @@ payload = {
             "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "completed",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -438,7 +488,7 @@ print(response.text)
             "valueString": "https://example.canvasmedical.com/permalinks/v1/YWJjZGVmZ2hpamtsbW5vcHFycwo"
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "completed",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -577,7 +627,7 @@ curl --request PUT \
             "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "entered-in-error",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -661,7 +711,7 @@ payload = {
             "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
         }
     ],
-    "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+    "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
     "status": "entered-in-error",
     "subject": {
         "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",
@@ -778,7 +828,7 @@ print(response.text)
                         "valueString": "https://example.canvasmedical.com/permalinks/v1/YWJjZGVmZ2hpamtsbW5vcHFycwo"
                     }
                 ],
-                "questionnaire": "Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
+                "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
                 "status": "completed",
                 "subject": {
                     "reference": "Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0",

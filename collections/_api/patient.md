@@ -7,7 +7,8 @@ sections:
         name: Patient
         article: "a"
         description: >-
-          Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br> [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-patient.html)<br><br>
+          Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html)<br><br>
 
           **Supported Extensions**
           <br><br>
@@ -55,13 +56,13 @@ sections:
 
             | value | description |
             | :---- | ---------   |
-            | **446151000124109** | Identifies as Male |
-            | **446141000124107** | Identifies as Female |
-            | **407377005** | Female-to-Male (FTM)/Transgender Male/Trans Man |
-            | **407376001** | Male-to-Female (MTF)/Transgender Female/Trans Woman |
-            | **446131000124102** | Genderqueer, neither exclusively male nor female |
-            | **OTH** | Additional gender category or other, please specify |
-            | **ASKU** | Choose not to disclose |
+            | **446151000124109** | Identifies as male gender (finding) |
+            | **446141000124107** | Identifies as female gender (finding) |
+            | **407377005** | Female-to-male transsexual (finding) |
+            | **407376001** | Male-to-female transsexual (finding) |
+            | **446131000124102** | Identifies as non-conforming gender (finding) |
+            | **OTH** | other |
+            | **ASKU** | asked but unknown |
 
           **`sexual-orientation`**
           <br><br>
@@ -311,8 +312,13 @@ sections:
             type: array[json]
             description: >-
                 Image of the patient. This image shows on the patient avatar in the Canvas UI.
-            create_and_update_description: >-
-              When creating a `Patient` resource, a `data` attribute should include the photo as a base64-encoded string. This is different from a read or search, where a `url` attribute will contain a URL to the file.
+            attributes: 
+              - name: data
+                description: A base64-encoded string of the patient's photo
+                exclude_in: read,search
+              - name: url
+                description: URI where the image can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
+                exclude_in: create,update
           - name: contact
             type: array[json]
             required: false

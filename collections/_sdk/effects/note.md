@@ -42,7 +42,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(
             note_type_id="note-type-uuid",
@@ -80,7 +80,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         note_effect.title = "Updated Consultation Notes"
@@ -121,7 +121,7 @@ from canvas_sdk.effects.fax.note import FaxNoteEffect
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         # Basic fax without coversheet
         fax_effect = FaxNoteEffect(
@@ -140,7 +140,7 @@ from canvas_sdk.effects.fax.note import FaxNoteEffect
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         # Fax with coversheet
         fax_effect = FaxNoteEffect(
@@ -177,7 +177,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.push_charges()]
@@ -204,7 +204,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.lock()]
@@ -231,7 +231,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.sign()]
@@ -258,7 +258,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.unlock()]
@@ -285,7 +285,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.check_in()]
@@ -312,7 +312,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.no_show()]
@@ -320,6 +320,30 @@ class Protocol(BaseHandler):
 
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
+### Upsert Metadata
+
+Creates or updates a metadata entry for the specified note. For detailed documentation on note metadata management, see [NoteMetadata Effect](/sdk/effect-note-metadata/).
+
+#### Parameters
+
+| Parameter     | Type            | Description                                                      | Required |
+|---------------|-----------------|------------------------------------------------------------------|----------|
+| `instance_id` | `UUID` or `str` | Identifier of the note (set on the `Note` effect)                | Yes      |
+| `key`         | `str`           | Unique identifier for the metadata entry within the note context | Yes      |
+| `value`       | `str`           | The metadata value to store                                      | Yes      |
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note = Note(instance_id="existing-note-uuid")
+        return [note.upsert_metadata(key="my_plugin:custom_key", value="custom_value")]
+```
 
 ## ScheduleEvent Effect
 
@@ -355,7 +379,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(
             note_type_id="schedule-event-note-type-uuid",
@@ -397,7 +421,7 @@ from canvas_sdk.effects.note.base import AppointmentIdentifier
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
         schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -438,7 +462,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
         schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=3)
@@ -460,7 +484,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
 
@@ -501,7 +525,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(
             appointment_note_type_id="appointment-note-type-uuid",
@@ -544,7 +568,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
         appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=2)
@@ -582,7 +606,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
         appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -602,11 +626,44 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
 
         return appointment_effect.cancel()
+```
+
+## Managing Appointment Labels
+
+Canvas supports adding up to 3 labels per appointment for categorization and workflow automation. Labels can be managed programmatically using the appointment label effects.
+
+For detailed documentation on appointment label management, see [Appointment Label Effects](/sdk/effect-appointment-labels/).
+
+### Quick Example
+
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+
+class MyHandler(BaseHandler):
+
+    RESPONDS_TO = [EventType.Name(EventType.APPOINTMENT_LABEL_ADDED), EventType.Name(EventType.APPOINTMENT_LABEL_REMOVED)]
+
+    def compute(self):
+        # Add labels to an appointment
+        add_effect = AddAppointmentLabel(
+            appointment_id="appointment-uuid",
+            labels={"URGENT", "FOLLOW_UP"}
+        )
+        
+        # Remove labels from an appointment
+        remove_effect = RemoveAppointmentLabel(
+            appointment_id="appointment-uuid",
+            labels={"CANCELLED"}
+        )
+        
+        return [add_effect.apply(), remove_effect.apply()]
 ```
 
 ---

@@ -20,10 +20,10 @@ These declared secrets become available for configuration in the Canvas Admin UI
   "name": "live_notifications",
   "description": "Edit the description in CANVAS_MANIFEST.json",
   "components": {
-    "protocols": [
+    "handlers": [
       {
-        "class": "live_notifications.protocols.my_protocol:Protocol",
-        "description": "A protocol that does xyz..."
+        "class": "live_notifications.handlers.my_protocol:Protocol",
+        "description": "A handler that does xyz..."
       }
     ]
   },
@@ -85,10 +85,10 @@ Secrets defined in your manifest and configured in the admin UI are exposed to y
 This is a Python dictionary containing all secret values.
 
 ```python
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects import Effect
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     def compute(self) -> list[Effect]:
         api_token = self.secrets["API_TOKEN"]
         ...

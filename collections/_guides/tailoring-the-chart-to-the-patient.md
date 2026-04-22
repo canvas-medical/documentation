@@ -19,7 +19,7 @@ your patient.
 
 {% include alert.html type="info" content="This guide assumes pre-existing
 knowledge of the Canvas SDK. If you're starting from scratch, you may want to
-read and implement <a href='/guides/your-first-plugin/'>Your First Plugin</a> before
+read and implement <a href='/guides/your-first-plugin-with-claude-code/'>Your First Plugin (with Claude Code)</a> before
 working through this exercise." %}
 
 
@@ -43,7 +43,7 @@ Project created in /Users/andrew/src/canvas-plugins/pediatric-patient-chart-cust
 ```
 
 This output shows the location of our freshly generated plugin project. In this
-directory, you'll see a default class (`pediatric_patient_chart_customizations/protocols/my_protocol.py`) provided as a starting point for your
+directory, you'll see a default class (`pediatric_patient_chart_customizations/handlers/my_protocol.py`) provided as a starting point for your
 code.
 
 ```sh
@@ -51,7 +51,7 @@ $ tree pediatric_patient_chart_customizations/
 pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
 ├── README.md
-└── protocols
+└── handlers
     ├── __init__.py
     └── my_protocol.py
 
@@ -65,7 +65,7 @@ descriptive, and you'll need to update the references to the file in
 
 ### Move Immunizations to the Top of the Patient Summary
 
-I've created a new file, `protocols/pediatric_chart_layout.py`, and I've
+I've created a new file, `handlers/pediatric_chart_layout.py`, and I've
 updated my `CANVAS_MANIFEST.json` to reflect it.
 
 ```sh
@@ -73,7 +73,7 @@ $ tree pediatric_patient_chart_customizations/
 pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
 ├── README.md
-└── protocols
+└── handlers
     ├── __init__.py
     └── pediatric_chart_layout.py
 
@@ -247,7 +247,7 @@ of these "Adult Diagnoses". We can reference this list and filter them out of
 the diagnosis search results for pediatric patients. This increases the
 quality of your search and makes it easier for you to find the right choice.
 
-I've created a new file, `protocols/pediatric_condition_search.py`, and I've
+I've created a new file, `handlers/pediatric_condition_search.py`, and I've
 updated my `CANVAS_MANIFEST.json` to reflect it.
 
 Here's the updated plugin file structure:
@@ -257,7 +257,7 @@ $ tree pediatric_patient_chart_customizations/
 pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
 ├── README.md
-└── protocols
+└── handlers
     ├── __init__.py
     ├── pediatric_chart_layout.py
     └── pediatric_condition_search.py
@@ -274,9 +274,9 @@ And here's the updated `CANVAS_MANIFEST.json`:
     "name": "pediatric_patient_chart_customizations",
     "description": "Customizations for pediatric patients",
     "components": {
-        "protocols": [
+        "handlers": [
             {
-                "class": "pediatric_patient_chart_customizations.protocols.pediatric_chart_layout:PediatricChartLayout",
+                "class": "pediatric_patient_chart_customizations.handlers.pediatric_chart_layout:PediatricChartLayout",
                 "description": "Moves the immunization section to the top of the patient summary on pediatric charts.",
                 "data_access": {
                     "event": "",
@@ -285,7 +285,7 @@ And here's the updated `CANVAS_MANIFEST.json`:
                 }
             },
             {
-                "class": "pediatric_patient_chart_customizations.protocols.pediatric_condition_search:PediatricConditionSearch",
+                "class": "pediatric_patient_chart_customizations.handlers.pediatric_condition_search:PediatricConditionSearch",
                 "description": "Filters the condition search to eliminate adult-only conditions on pediatric charts.",
                 "data_access": {
                     "event": "",
