@@ -65,7 +65,7 @@ rpm-device-readings/
 │   ├── README.md
 │   └── handlers/
 │       ├── __init__.py
-│       └── my_protocol.py
+│       └── event_handlers.py
 ├── pyproject.toml
 └── tests/
     ├── __init__.py
@@ -76,7 +76,7 @@ We'll be using a [SimpleAPI](/sdk/handlers-simple-api-http/) route instead of an
 event handler, so you can remove the placeholder handler:
 
 ```sh
-rm rpm_device_readings/handlers/my_protocol.py
+rm rpm_device_readings/handlers/event_handlers.py
 ```
 
 ## Configure the manifest
@@ -133,6 +133,7 @@ following code:
 
 ```python
 from datetime import datetime
+from decimal import Decimal
 from hmac import compare_digest
 from http import HTTPStatus
 
@@ -147,6 +148,13 @@ def normalize_timestamp(value: str) -> str:
     """Parse an ISO 8601 timestamp and truncate to second precision."""
     dt = datetime.fromisoformat(value)
     return dt.replace(microsecond=0).isoformat()
+
+
+def json_safe(value):
+    """Convert Decimal values to float for JSON serialization."""
+    if isinstance(value, Decimal):
+        return float(value)
+    return value
 
 
 class DeviceReadingsAPI(SimpleAPI):
@@ -221,7 +229,7 @@ class DeviceReadingsAPI(SimpleAPI):
 
             metadata_keys = {"patient_id", "device_type", "recorded_at"}
             measurements = {
-                attr.name: attr.value
+                attr.name: json_safe(attr.value)
                 for attr in hub.custom_attributes.all()
                 if attr.name not in metadata_keys
             }
@@ -323,6 +331,11 @@ The `set_attributes` call stores all measurements as typed attributes.
 AttributeHub automatically maps Python types to the appropriate database
 columns: integers to `int_value`, booleans to `bool_value`, strings to
 `text_value`, floats to `decimal_value`, and so on.
+
+One consequence of this type mapping: Python `float` values like `3.2` are
+stored as `Decimal` in the database and returned as `Decimal` when read back.
+Since `json.dumps` cannot serialize `Decimal`, the `json_safe` helper converts
+them to `float` before building the JSON response.
 
 ### Retrieving readings
 
