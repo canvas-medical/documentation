@@ -662,6 +662,11 @@ Represents the rendering or attending provider.
 | `tax_id_type`     | `str` or `None` | Tax ID type (max 1 char)       |
 | `taxonomy`        | `str` or `None` | Taxonomy code (max 100 chars)  |
 | `ptan_identifier` | `str` or `None` | PTAN identifier (max 50 chars) |
+| `addr1`           | `str` or `None` | Address line 1 (max 255 chars) |
+| `addr2`           | `str` or `None` | Address line 2 (max 255 chars) |
+| `city`            | `str` or `None` | City (max 255 chars)           |
+| `state`           | `str` or `None` | State code (max 2 chars)       |
+| `zip`             | `str` or `None` | ZIP code (max 255 chars)       |
 
 #### ClaimReferringProvider
 
