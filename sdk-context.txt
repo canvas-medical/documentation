@@ -5157,14 +5157,29 @@ All parameters can be set upon initialization, and also updated on the class ins
 All commands have the following methods:
 ####  originate 
 Returns an Effect that originates a new command in the note body.
+**Parameters:**
+Name | Type | Required | Default | Description  
+---|---|---|---|---  
+`commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT.  
+`line_number` | `int` | No | `-1` | The line number in the note where the command should be inserted. By default the command will insert at the bottom of the note.  
 **See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
-**Example** :
+**Examples** :
     ```python
     from canvas_sdk.commands import PlanCommand
     def compute():
         new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
         new_plan.narrative = 'newer'
         return [new_plan.originate()]
+    ```
+To originate and commit in a single effect:
+    ```python
+    from canvas_sdk.commands import DiagnoseCommand
+    def compute():
+        diagnose_command = DiagnoseCommand(
+            note_uuid='550e8400-e29b-41d4-a716-446655440000',
+            icd10_code='E11.9'
+        )
+        return [diagnose_command.originate(commit=True)]
     ```
 ####  edit 
 Returns an Effect that edits an existing command with the values set on the command class instance.
@@ -5441,9 +5456,20 @@ Individual command types have additional actions tailored to their functionality
                 payload=json.dumps(filtered_actions)
             )]
     ```
-##  Chaining Methods with a User-set UUID 
-A common use case is to originate and also commit a command in a single plugin action. However, attempting to commit a command without a `command_uuid` will throw an error. Because the `originate` method executes asynchronously, there is not currently a clean way to get the `command_uuid` back from the originate action and use it for the commit action in the same operation.
-The solution is to set the UUID in the plugin – using a valid Version 4 UUID – and pass it through to both the originate and commit actions. This is accomplished by manually setting the `command_uuid` before calling the methods:
+##  Originating and Committing Together 
+The simplest way to originate and commit a command in a single plugin action is to pass `commit=True` to the `originate()` method:
+    ```python
+    from canvas_sdk.commands import DiagnoseCommand
+    def compute():
+        diagnose_command = DiagnoseCommand(
+            note_uuid='550e8400-e29b-41d4-a716-446655440000',
+            icd10_code='E11.9'
+        )
+        return [diagnose_command.originate(commit=True)]
+    ```
+This handles the origination and commit in a single effect, without needing to manage a `command_uuid` yourself.
+###  Chaining Methods with a User-set UUID 
+If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This is also required for questionnaire-based commands, where `originate()` creates the command but does not add the answers — you must chain an `edit()` to populate the responses (see Usage Example). This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
     ```python
     from uuid import uuid4
     from canvas_sdk.commands import DiagnoseCommand
@@ -10495,6 +10521,7 @@ modified | DateTime
 Defines the metadata for claim queues used in revenue workflows.
 Field Name | Type  
 ---|---  
+id | UUID  
 dbid | Integer  
 queue_sort_ordering | Integer  
 name | String  
@@ -10574,6 +10601,11 @@ provider_tax_id | String
 provider_tax_id_type | String  
 provider_taxonomy | String  
 provider_ptan_identifier | String  
+provider_addr1 | String  
+provider_addr2 | String  
+provider_city | String  
+provider_state | String  
+provider_zip | String  
 referring_provider_id | String  
 referring_provider_first_name | String  
 referring_provider_last_name | String  
@@ -17046,6 +17078,11 @@ Attribute | Type | Description
 `tax_id_type` | `str` or `None` | Tax ID type (max 1 char)  
 `taxonomy` | `str` or `None` | Taxonomy code (max 100 chars)  
 `ptan_identifier` | `str` or `None` | PTAN identifier (max 50 chars)  
+`addr1` | `str` or `None` | Address line 1 (max 255 chars)  
+`addr2` | `str` or `None` | Address line 2 (max 255 chars)  
+`city` | `str` or `None` | City (max 255 chars)  
+`state` | `str` or `None` | State code (max 2 chars)  
+`zip` | `str` or `None` | ZIP code (max 255 chars)  
 ####  ClaimReferringProvider 
 Attribute | Type | Description  
 ---|---|---  
@@ -17247,7 +17284,7 @@ Parameter | Type | Description | Required
 `key` | `str` | Unique identifier for the metadata entry within the command context | Yes  
 `value` | `str` | The metadata value to store | Yes  
 ####  Prerequisites 
-The command effect must be initialized with a `command_uuid` corresponding to an existing command.
+The command effect must be initialized with a `command_uuid`. This can be either the UUID of an existing command or the UUID of a command being originated in the same effect list.
 Attribute | Type | Description | Required  
 ---|---|---|---  
 `command_uuid` | `str` | Id of the command record to associate metadata with | Yes  
@@ -17260,18 +17297,41 @@ An `Effect` object configured for upserting command metadata.
   - Raises `ValueError` if `command_uuid` is not set on the command effect
 ##  Implementation Details 
 ###  Validation 
-The effect performs comprehensive validation before execution:
-  1. **Command Existence Validation** : Verifies that the referenced command exists with the given `command_uuid` and `schema_key`
-     - Returns a descriptive error if the command is not found
-  2. **Field Validation** : Ensures all required fields are provided and properly formatted
+The effect performs validation at two stages:
+  1. **SDK Validation** : Ensures all required fields are provided before the effect is created
      - `command_uuid` must be set on the command effect
      - Both `key` and `value` must be provided
+  2. **Server-Side Validation** : When the effect is processed, the server verifies that the referenced command exists
+     - Returns a descriptive error if the command is not found after all effects in the list have been processed
 ##  Example Usage 
 ###  Basic Usage 
     ```python
     from canvas_sdk.commands import PlanCommand
     plan = PlanCommand(command_uuid="63hdik")
     effect = plan.upsert_metadata(key="my_plugin:priority", value="high")
+    ```
+###  Example: Chaining with originate() 
+You can attach metadata to a command at the same time you originate it by returning both effects in the same list:
+    ```python
+    import uuid
+    from canvas_sdk.commands import PlanCommand
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class OriginateWithMetadata(BaseHandler):
+        """Originates a plan command with metadata attached in a single operation."""
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__SECTION__LOADED)
+        def compute(self) -> list[Effect]:
+            command_uuid = str(uuid.uuid4())
+            plan = PlanCommand(
+                note_uuid=self.context["note_id"],
+                command_uuid=command_uuid,
+                narrative="Follow up in 2 weeks",
+            )
+            return [
+                plan.originate(),
+                plan.upsert_metadata(key="my_plugin:source", value="auto_generated"),
+            ]
     ```
 ###  Example: Tagging a command on commit 
     ```python
@@ -20066,7 +20126,7 @@ Check out the [Commands documentation](/sdk/commands/) for full details.
 Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COMMAND`. The available actions are:
 Action | Description  
 ---|---  
-ORIGINATE | Create and open a new command in a note.  
+ORIGINATE | Create and open a new command in a note. Supports an optional `commit` flag to also commit the command in the same operation if the command is commit-able via SDK.  
 EDIT | Modify field values on an existing command.  
 DELETE | Remove an uncommitted command from a note.  
 COMMIT | Finalize and save a command.  
@@ -20654,6 +20714,21 @@ Target object | Context object
       "id": pt_id
     "note":
       "uuid": note_id  
+CLAIM_QUEUE_MOVED  
+---  
+Occurs when a claim moves from one queue to another.  
+Target object | Context object  
+    "id": claim_id
+    "type": [Claim](/sdk/data-claim/#claim)
+| 
+    "patient":
+      "id": pt_id
+    "note":
+      "id": note_id
+    "queue_entered":
+      "id": queue_id
+    "queue_exited":
+      "id": queue_id  
 ####  Billing Line Items 
 BILLING_LINE_ITEM_CREATED  
 ---  
@@ -38041,11 +38116,14 @@ This module provides a decorator and functions for automatically adding generate
   - `Field`
   - `fields`
   - `InitVar`
+  - `is_dataclass`
+  - `make_dataclass`
   - `replace`
 #####  `datetime`
 Provides classes for working with dates and times, essential for medical applications that need to track appointment schedules and patient timelines. [read more](https://docs.python.org/3/library/datetime.html)
   - `date`
   - `datetime`
+  - `time`
   - `timedelta`
   - `timezone`
   - `UTC`
@@ -38076,12 +38154,18 @@ Provides secure hash and message digest algorithms for data integrity verificati
 Provides hash-based message authentication code (HMAC) functions for secure message authentication. [read more](https://docs.python.org/3/library/hmac.html)
   - `compare_digest`
   - `new`
+#####  `html`
+Provides functions for escaping and unescaping HTML entities. [read more](https://docs.python.org/3/library/html.html)
+  - `escape`
+  - `HTML`
+  - `unescape`
 #####  `http`
 Provides HTTP status codes and related constants for web API development and HTTP response handling. [read more](https://docs.python.org/3/library/http.html)
   - `HTTPStatus`
 #####  `json`
 Provides functions for parsing and generating JSON data, essential for API communication and data serialization. [read more](https://docs.python.org/3/library/json.html)
   - `dumps`
+  - `JSONDecodeError`
   - `loads`
 #####  `operator`
 Provides function equivalents of operators for functional programming and complex data operations. [read more](https://docs.python.org/3/library/operator.html)
@@ -38089,13 +38173,14 @@ Provides function equivalents of operators for functional programming and comple
 #####  `random`
 Provides functions for generating random numbers and making random selections, useful for sampling and testing scenarios. [read more](https://docs.python.org/3/library/random.html)
   - `choices`
-  - `uniform`
   - `randint`
+  - `uniform`
 #####  `re`
 Provides regular expression matching operations for pattern matching and text processing. [read more](https://docs.python.org/3/library/re.html)
   - `compile`
   - `DOTALL`
   - `findall`
+  - `fullmatch`
   - `IGNORECASE`
   - `match`
   - `search`
@@ -38107,8 +38192,12 @@ Provides string constants and template classes for string manipulation and forma
   - `digits`
 #####  `time`
 Provides time-related functions for measuring execution time and adding delays in processing. [read more](https://docs.python.org/3/library/time.html)
-  - `time`
   - `sleep`
+  - `time`
+  - `time_ns`
+#####  `traceback`
+Provides functions for extracting, formatting, and printing stack traces. [read more](https://docs.python.org/3/library/traceback.html)
+  - `format_exc`
 #####  `typing`
 Provides support for type hints and static type checking to improve code clarity and IDE support. [read more](https://docs.python.org/3/library/typing.html)
   - `Any`
@@ -38122,11 +38211,12 @@ Provides support for type hints and static type checking to improve code clarity
   - `Literal`
   - `NamedTuple`
   - `NotRequired`
+  - `Optional`
   - `Pattern`
   - `Protocol`
-  - `Optional`
   - `Sequence`
   - `Tuple`
+  - `TYPE_CHECKING`
   - `Type`
   - `TypedDict`
   - `TypeGuard`
@@ -38136,8 +38226,9 @@ Provides modules for working with URLs, including URL parsing and manipulation. 
   - `parse`
 #####  `urllib.parse`
 Provides URL parsing utilities for breaking apart and constructing URLs and query strings. [read more](https://docs.python.org/3/library/urllib.parse.html)
-  - `urlencode`
   - `quote`
+  - `unquote`
+  - `urlencode`
 #####  `uuid`
 Provides functions for generating universally unique identifiers (UUIDs) for creating unique record identifiers. [read more](https://docs.python.org/3/library/uuid.html)
   - `uuid4`
@@ -38152,25 +38243,50 @@ A human-friendly approach to creating, manipulating, formatting and converting d
   - `get`
   - `now`
   - `utcnow`
+#####  `django.contrib.postgres.indexes`
+Django's PostgreSQL-specific index types for advanced indexing strategies. [read more](https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/)
+  - `GinIndex`
+#####  `django.db`
+Django's database module providing core database exceptions. [read more](https://docs.djangoproject.com/en/stable/ref/exceptions/#database-exceptions)
+  - `IntegrityError`
 #####  `django.db.models`
 Django's database abstraction layer for defining database models and performing queries. [read more](https://docs.djangoproject.com/en/stable/topics/db/models/)
   - `Avg`
   - `BigIntegerField`
+  - `BooleanField`
+  - `CASCADE`
   - `Case`
   - `CharField`
   - `Count`
+  - `DateField`
+  - `DateTimeField`
+  - `DecimalField`
+  - `DO_NOTHING`
   - `Exists`
+  - `F`
+  - `FloatField`
+  - `ForeignKey`
+  - `Func`
+  - `Index`
   - `IntegerField`
+  - `JSONField`
+  - `ManyToManyField`
   - `Max`
   - `Min`
-  - `Model`
+  - `OneToOneField`
   - `OuterRef`
   - `Prefetch`
   - `Q`
+  - `RowRange`
+  - `SET_NULL`
   - `Subquery`
   - `Sum`
+  - `TextField`
+  - `UniqueConstraint`
   - `Value`
+  - `ValueRange`
   - `When`
+  - `Window`
 #####  `django.db.models.expressions`
 Django's database expressions for complex query operations and conditional logic. [read more](https://docs.djangoproject.com/en/stable/ref/models/expressions/)
   - `Case`
@@ -38179,13 +38295,30 @@ Django's database expressions for complex query operations and conditional logic
   - `Subquery`
   - `Value`
   - `When`
+#####  `django.db.models.functions`
+Django's database functions for common SQL operations and window functions. [read more](https://docs.djangoproject.com/en/stable/ref/models/database-functions/)
+  - `Coalesce`
+  - `CumeDist`
+  - `DenseRank`
+  - `FirstValue`
+  - `Lag`
+  - `LastValue`
+  - `Lead`
+  - `NthValue`
+  - `Ntile`
+  - `PercentRank`
+  - `Rank`
+  - `RowNumber`
+  - `Trim`
 #####  `django.db.models.query`
 Django's QuerySet class for database query operations and result handling. [read more](https://docs.djangoproject.com/en/stable/ref/models/querysets/)
   - `Prefetch`
   - `QuerySet`
-#####  `django.db`
-Django's database module providing core database exceptions. [read more](https://docs.djangoproject.com/en/stable/ref/exceptions/#database-exceptions)
-  - `IntegrityError`
+#####  `django.db.transaction`
+Django's transaction management for atomic database operations. [read more](https://docs.djangoproject.com/en/stable/topics/db/transactions/)
+  - `atomic`
+  - `on_commit`
+  - `on_rollback`
 #####  `django.utils.functional`
 Django's functional programming utilities including caching and lazy evaluation tools. [read more](https://docs.djangoproject.com/en/stable/ref/utils/)
   - `cached_property`
@@ -38199,8 +38332,8 @@ A library for encoding and decoding JSON Web Tokens (JWT) for secure data transm
 #####  `pydantic`
 A data validation library using Python type annotations for parsing and validating data structures. [read more](https://docs.pydantic.dev/)
   - `BaseModel`
-  - `conint`
   - `ConfigDict`
+  - `conint`
   - `constr`
   - `Field`
   - `RootModel`
@@ -38210,17 +38343,6 @@ A fast string matching library for fuzzy string comparison and search operations
   - `fuzz`
   - `process`
   - `utils`
-#####  `requests`
-A simple and elegant HTTP library for making web requests and API calls. [read more](https://docs.python-requests.org/en/latest/)
-  - `delete`
-  - `get`
-  - `patch`
-  - `post`
-  - `put`
-  - `request`
-  - `RequestException`
-  - `Response`
-  - `Session`
 ##  Canvas SDK Modules 
 All Canvas SDK modules are available for import and use within your plugins:
   - `canvas_sdk.caching`
@@ -38243,6 +38365,7 @@ The following Python builtin functions are available within the sandbox:
   - `classmethod`
   - `dict`
   - `enumerate`
+  - `extract_exc_frames`
   - `filter`
   - `getattr`
   - `hasattr`
@@ -38259,6 +38382,22 @@ The following Python builtin functions are available within the sandbox:
   - `super`
   - `vars`
 Plus all the standard safe builtins from RestrictedPython including basic types (`bool`, `int`, `float`, `str`, `tuple`, etc.) and safe operations.
+###  `extract_exc_frames()`
+A sandbox-provided function that extracts frame information from the current exception's traceback. Must be called from within an `except` block. Returns an empty list if no exception is active.
+Each frame exposes only safe attributes:
+  - `filename` — the file path
+  - `lineno` — the line number
+  - `name` — the function name
+Source code lines and local variables are not accessible.
+    ```python
+    from logger import log 
+    try:
+        raise Exception("some failed operation")
+    except Exception:
+        frames = extract_exc_frames()
+        for frame in frames:
+            log.info(f"{frame.filename}:{frame.lineno} in {frame.name}")
+    ```
 ##  Requesting Additional Imports 
 If there is a library or function not on this list that you wish to import in your plugin, reach out on the [Canvas developer forum](https://github.com/canvas-medical/canvas-plugins/discussions). Additional imports can often be added after a security review.
 The allowed imports are defined in the [Canvas Plugins repository](https://github.com/canvas-medical/canvas-plugins/blob/main/plugin_runner/sandbox.py) and are regularly updated to support common development needs while maintaining security.
