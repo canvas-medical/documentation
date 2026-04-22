@@ -27,7 +27,7 @@ Creates or updates a metadata entry for the specified command.
 
 #### Prerequisites
 
-The command effect must be initialized with a `command_uuid` corresponding to an existing command.
+The command effect must be initialized with a `command_uuid`. This can be either the UUID of an existing command or the UUID of a command being originated in the same effect list.
 
 | Attribute      | Type  | Description                                        | Required |
 |----------------|-------|----------------------------------------------------|----------|
@@ -48,16 +48,16 @@ An `Effect` object configured for upserting command metadata.
 
 ### Validation
 
-The effect performs comprehensive validation before execution:
+The effect performs validation at two stages:
 
-1. **Command Existence Validation**: Verifies that the referenced command exists with the given `command_uuid` and `schema_key`
-
-    - Returns a descriptive error if the command is not found
-
-2. **Field Validation**: Ensures all required fields are provided and properly formatted
+1. **SDK Validation**: Ensures all required fields are provided before the effect is created
 
     - `command_uuid` must be set on the command effect
     - Both `key` and `value` must be provided
+
+2. **Server-Side Validation**: When the effect is processed, the server verifies that the referenced command exists
+
+    - Returns a descriptive error if the command is not found after all effects in the list have been processed
 
 ## Example Usage
 
@@ -68,6 +68,37 @@ from canvas_sdk.commands import PlanCommand
 
 plan = PlanCommand(command_uuid="63hdik")
 effect = plan.upsert_metadata(key="my_plugin:priority", value="high")
+```
+
+### Example: Chaining with originate()
+
+You can attach metadata to a command at the same time you originate it by returning both effects in the same list:
+
+```python
+import uuid
+
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class OriginateWithMetadata(BaseHandler):
+    """Originates a plan command with metadata attached in a single operation."""
+
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__SECTION__LOADED)
+
+    def compute(self) -> list[Effect]:
+        command_uuid = str(uuid.uuid4())
+        plan = PlanCommand(
+            note_uuid=self.context["note_id"],
+            command_uuid=command_uuid,
+            narrative="Follow up in 2 weeks",
+        )
+        return [
+            plan.originate(),
+            plan.upsert_metadata(key="my_plugin:source", value="auto_generated"),
+        ]
 ```
 
 ### Example: Tagging a command on commit
