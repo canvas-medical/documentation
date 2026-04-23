@@ -436,7 +436,7 @@ Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COM
 
 | Action | Description |
 |---|---|
-| ORIGINATE | Create and open a new command in a note. |
+| ORIGINATE | Create and open a new command in a note. Supports an optional `commit` flag to also commit the command in the same operation if the command is commit-able via SDK. |
 | EDIT | Modify field values on an existing command. |
 | DELETE | Remove an uncommitted command from a note. |
 | COMMIT | Finalize and save a command. |
