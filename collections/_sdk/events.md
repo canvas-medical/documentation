@@ -1332,7 +1332,7 @@ These events fire during the lifecycle of documents in the <a href="https://canv
 <table>
   <thead>
     <tr><th colspan="2">DOCUMENT_REVIEWED</th></tr>
-    <tr><td colspan="2">Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Review, Imaging Review, Referral Review, or Uncategorized Document Review command is completed.</td></tr>
+    <tr><td colspan="2">Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Results Review, Imaging Report Review, Consult Report Review, or Uncategorized Document Review command is committed.</td></tr>
   </thead>
   <tbody>
     <tr>
