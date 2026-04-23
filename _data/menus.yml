@@ -854,6 +854,9 @@ effects_module:
   - title: "Note Metadata"
     url: /sdk/effect-note-metadata/
     description: Attach custom key-value metadata to note records.
+  - title: "Note Restrictions"
+    url: /sdk/effect-note-restrictions/
+    description: Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects.
   - title: "Notes"
     url: /sdk/effect-notes/
     description: Interact with notes in Canvas.
