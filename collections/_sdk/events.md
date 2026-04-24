@@ -1169,6 +1169,29 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Patient Payments
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_PAYMENT_PROCESSED</th></tr>
+    <tr><td colspan="2">Occurs when a patient payment or receipt is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_externally_exposable_id
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"patient_externally_exposable_id": str
+"amount": str
+"claim_allocations":
+    "claim_id": str
+    "amount": str</pre></td>
+    </tr>
+  </tbody>
+</table>
 
 #### Clinical Documents
 
