@@ -64,6 +64,10 @@ Values in the `PatientChartSummaryConfiguration.Section` enum are:
 | FAMILY_HISTORY      | family_history      |
 | CODING_GAPS         | coding_gaps         |
 
+### Custom Sections
+
+In addition to the built-in sections above, you can add fully custom sections to the chart summary. Custom sections render plugin-provided content in an iframe and are identified by a unique key. See [Patient Chart Summary Custom Section Handler](/sdk/patient-chart-summary-custom-section-handler/) for details on how to implement one.
+
 ### Action Buttons
 
 Each section of the patient chart can also be customized with action buttons. Please refer to the [Action Buttons](/sdk/handlers-action-buttons/) documentation for more information.

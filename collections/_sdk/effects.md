@@ -164,6 +164,7 @@ The following effects are available to be applied in Canvas.
 | Effect                                      | Description |
 |---------------------------------------------|---|
 | SHOW_PATIENT_CHART_SUMMARY_SECTIONS         | Can be used to reorder or hide the summary sections in a patient chart. Check out [this effect class](/sdk/layout-effect/#patient-summary). |
+| PATIENT_CHART_SUMMARY__CUSTOM_SECTION       | Can be used to serve content for a custom patient chart summary section. Check out [Patient Chart Summary Custom Section](/sdk/patient-chart-summary-custom-section-effect/). |
 | SHOW_PATIENT_PROFILE_SECTIONS               | Can be used to reorder or hide sections in the patient profile. Check out [Layout Effects](/sdk/layout-effect/#patient-profile). |
 | SHOW_PANEL_SECTIONS                         | Can be used to reorder or hide sections in the side panel. Check out [Layout Effects](/sdk/layout-effect/#panel-configuration). |
 | SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS  | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration/).                                    |
