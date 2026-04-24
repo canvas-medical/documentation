@@ -19895,7 +19895,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -19908,6 +19908,7 @@ ADD_OR_UPDATE_PROTOCOL_CARD | Can be used to generate a ProtocolCard in the Canv
 Effect | Description  
 ---|---  
 SHOW_PATIENT_CHART_SUMMARY_SECTIONS | Can be used to reorder or hide the summary sections in a patient chart. Check out [this effect class](/sdk/layout-effect/#patient-summary).  
+PATIENT_CHART_SUMMARY__CUSTOM_SECTION | Can be used to serve content for a custom patient chart summary section. Check out [Patient Chart Summary Custom Section](/sdk/patient-chart-summary-custom-section-effect/).  
 SHOW_PATIENT_PROFILE_SECTIONS | Can be used to reorder or hide sections in the patient profile. Check out [Layout Effects](/sdk/layout-effect/#patient-profile).  
 SHOW_PANEL_SECTIONS | Can be used to reorder or hide sections in the side panel. Check out [Layout Effects](/sdk/layout-effect/#panel-configuration).  
 SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration/).  
@@ -32151,6 +32152,7 @@ Event | Occurs when | UNKNOWN | Default event type unlikely to ever be emitted.
 CRON | This event fires regularly and can be used for scheduled tasks. See [CronTask](/sdk/handlers-crontask/).  
 CLAIM__CONDITIONS | The conditions are loaded within the claim summary.  
 PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION | A patient chart's summary section is loading.  
+PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION | Canvas is requesting the content for a custom patient chart summary section. See [Patient Chart Summary Custom Section Handler](/sdk/patient-chart-summary-custom-section-handler/).  
 PANEL_SECTIONS_CONFIGURATION | The panel section is loading.  
 PLUGIN_CREATED | A plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
 PLUGIN_UPDATED | A plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
@@ -35985,9 +35987,9 @@ These properties ensure that the effect integrates seamlessly with the rest of t
 ###  **Attributes**
 Attribute | Type | Description  
 ---|---|---  
-`questionnaire_id` | `str | UUID` | The unique ID of the Questionnaire.  
+`questionnaire_id` | `str` | `UUID` | The unique ID of the Questionnaire.  
 `create_command` | `bool` | If `True`, a Questionnaire Command is created inside a Note.  
-`note_id` | `str | UUID | None` | Associates the response with an existing Note if applicable.  
+`note_id` | `str` | `UUID` | `None` | Associates the response with an existing Note if applicable.  
 ----- END PAGE https://docs.canvasmedical.com/sdk/form-result-effect/
 
 
@@ -37099,6 +37101,8 @@ IMMUNIZATIONS | immunizations
 SURGICAL_HISTORY | surgical_history  
 FAMILY_HISTORY | family_history  
 CODING_GAPS | coding_gaps  
+###  Custom Sections 
+In addition to the built-in sections above, you can add fully custom sections to the chart summary. Custom sections render plugin-provided content in an iframe and are identified by a unique key. See [Patient Chart Summary Custom Section Handler](/sdk/patient-chart-summary-custom-section-handler/) for details on how to implement one.
 ###  Action Buttons 
 Each section of the patient chart can also be customized with action buttons. Please refer to the [Action Buttons](/sdk/handlers-action-buttons/) documentation for more information.
 ##  Patient Profile 
@@ -37491,6 +37495,232 @@ Attribute | Type | Description
 ---|---|---  
 `items` | `dict[str, Group]` | list of Groups  
 ----- END PAGE https://docs.canvasmedical.com/sdk/patient-chart-group-effect/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/patient-chart-summary-custom-section-effect/
+##  Overview 
+The `PatientChartSummaryCustomSection` effect allows plugin developers to supply the content for a custom section in the patient chart summary. It is returned by a [`PatientChartSummaryCustomSectionHandler`](/sdk/patient-chart-summary-custom-section-handler/) in response to a request for the section's content.
+Content can be provided as an inline HTML string or as a URL to a hosted page. An icon must always be supplied — it is shown in the chart summary header when the section is collapsed.
+    ```python
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.templates import render_to_string
+    # Serve content as an inline HTML string
+    PatientChartSummaryCustomSection(
+        content=render_to_string("templates/my_section.html"),
+        icon="📋",
+    )
+    # Serve content from a hosted URL
+    PatientChartSummaryCustomSection(
+        url="/plugin-io/api/my_plugin/my-section",
+        icon_url="/plugin-io/api/my_plugin/icon.png",
+    )
+    ```
+##  Structure 
+###  Attributes 
+Attribute | Required | Type | Description  
+---|---|---|---  
+`content` | required (if `url` is not provided) | `str` | `None` | Inline HTML content to render in the section. Mutually exclusive with `url`.  
+`url` | required (if `content` is not provided) | `str` | `None` | URL of the page to load in the section iframe. Mutually exclusive with `content`.  
+`icon` | required (if `icon_url` is not provided) | `str` | `None` | Text or emoji displayed as the section icon when collapsed. Mutually exclusive with `icon_url`.  
+`icon_url` | required (if `icon` is not provided) | `str` | `None` | URL of an image to use as the section icon when collapsed. Mutually exclusive with `icon`.  
+###  Validation 
+Exactly one of `content` / `url` must be provided, and exactly one of `icon` / `icon_url` must be provided. Providing both fields in a pair or neither will raise a `ValidationError` when `.apply()` is called.
+##  Examples 
+###  Inline HTML content 
+Return a rendered HTML template as the section content.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    from canvas_sdk.templates import render_to_string
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            return [
+                PatientChartSummaryCustomSection(
+                    content=render_to_string("templates/my_section.html"),
+                    icon="📋",
+                ).apply()
+            ]
+    ```
+###  URL-based content 
+Load the section content from a hosted endpoint. This is useful when the section is a standalone page served by a [Simple API](/sdk/simple-api/) handler.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            return [
+                PatientChartSummaryCustomSection(
+                    url="/plugin-io/api/my_plugin/my-section",
+                    icon_url="/plugin-io/api/my_plugin/icon.png",
+                ).apply()
+            ]
+    ```
+###  Passing data to the template 
+Use `render_to_string` with a context dictionary to inject dynamic data into the HTML template.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data.patient import Patient
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            patient = Patient.objects.get(id=self.target)
+            return [
+                PatientChartSummaryCustomSection(
+                    content=render_to_string(
+                        "templates/my_section.html",
+                        {"patient_name": patient.first_name},
+                    ),
+                    icon="📋",
+                ).apply()
+            ]
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/patient-chart-summary-custom-section-effect/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/patient-chart-summary-custom-section-handler/
+The `PatientChartSummaryCustomSectionHandler` is the base class for implementing custom sections in the patient chart summary. When Canvas needs to render a custom section, it fires an event that this handler intercepts, and the handler returns a [`PatientChartSummaryCustomSection`](/sdk/patient-chart-summary-custom-section-effect/) effect with the content to display.
+##  Overview 
+Custom chart summary sections are registered through [`PatientChartSummaryConfiguration`](/sdk/layout-effect/#patient-summary) and served by a `PatientChartSummaryCustomSectionHandler` subclass. Each handler is responsible for exactly one section, identified by its `SECTION_KEY`.
+To implement a custom section you need two things:
+  1. A `PatientChartSummaryConfiguration` handler that includes the section in the layout.
+  2. A `PatientChartSummaryCustomSectionHandler` subclass that returns the section content.
+Both handlers must be registered in `CANVAS_MANIFEST.json`.
+##  Creating a Custom Section Handler 
+Subclass `PatientChartSummaryCustomSectionHandler` and:
+  1. Set `SECTION_KEY` to the unique identifier of your section. This must match the key used in `PatientChartSummaryConfiguration.CustomSection`.
+  2. Implement `handle()` to return a `PatientChartSummaryCustomSection` effect.
+  3. The patient key is available via `self.target`. Use it to scope database queries to the current patient.
+  4. The logged-in user is available via `self.actor`. Use it to tailor the section content to the specific staff member viewing the chart.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data.patient import Patient
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        """Handles the PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION event for 'my_section'.
+        Fetches the current patient and renders a template with their name.
+        """
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            patient = Patient.objects.get(id=self.target)
+            return [
+                PatientChartSummaryCustomSection(
+                    content=render_to_string("templates/my_section.html", { "patient_name": patient.full_name() }),
+                    icon="📋",
+                ).apply()
+            ]
+    ```
+###  Required 
+  - **`SECTION_KEY`** A unique string identifier for the section. Must match the key passed to `PatientChartSummaryConfiguration.CustomSection`. Omitting or leaving it empty will raise an `ImproperlyConfigured` error when the plugin loads.
+  - **`handle()`** Called when Canvas requests the content for this section. Must return a list containing a single [`PatientChartSummaryCustomSection`](/sdk/patient-chart-summary-custom-section-effect/) effect.
+##  Configuring Chart Summary Sections 
+A custom section handler alone is not enough — the section must also be included in the chart summary layout. Use `PatientChartSummaryConfiguration` to declare which sections appear in the chart summary and in what order. For the full list of available built-in sections, see [Patient Summary layout effects](/sdk/layout-effect/#patient-summary).
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_configuration import PatientChartSummaryConfiguration
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MySummaryConfiguration(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION)]
+        def compute(self) -> list[Effect]:
+            return [
+                PatientChartSummaryConfiguration(
+                    sections=[
+                        PatientChartSummaryConfiguration.CustomSection(name="my_section"),
+                        PatientChartSummaryConfiguration.Section.MEDICATIONS,
+                        PatientChartSummaryConfiguration.Section.CONDITIONS,
+                    ]
+                ).apply()
+            ]
+    ```
+##  Full Example 
+The following example shows a complete plugin with a custom section that displays a list of items fetched from command metadata.
+###  `handlers/my_section.py`
+    ```python
+    import json
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.effects.patient_chart_summary_configuration import PatientChartSummaryConfiguration
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data.command import CommandMetadata
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        """Handles the PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION event for 'my_section'.
+        Fetches all 'my_section' command metadata entries for the current patient
+        and renders them as a list in the section template.
+        """
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            entries = (
+                CommandMetadata.objects.filter(
+                    key="my_section",
+                    command__patient__id=self.target,
+                )
+                .order_by("created")
+            )
+            items = []
+            for entry in entries:
+                try:
+                    items.append(json.loads(entry.value))
+                except (json.JSONDecodeError, TypeError):
+                    items.append({"title": entry.value})
+            return [
+                PatientChartSummaryCustomSection(
+                    content=render_to_string("templates/my_section.html", {"items": items}),
+                    icon="📋",
+                ).apply()
+            ]
+    class MySummaryConfiguration(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION)]
+        def compute(self) -> list[Effect]:
+            return [
+                PatientChartSummaryConfiguration(
+                    sections=[
+                        PatientChartSummaryConfiguration.CustomSection(name="my_section"),
+                        PatientChartSummaryConfiguration.Section.MEDICATIONS,
+                        PatientChartSummaryConfiguration.Section.CONDITIONS,
+                    ]
+                ).apply()
+            ]
+    ```
+###  `templates/my_section.html`
+    ```html
+    <ul>
+      {% for item in items %}
+        <li>{{ item.title }}</li>
+      {% empty %}
+        <li>No items on record.</li>
+      {% endfor %}
+    </ul>
+    ```
+###  `CANVAS_MANIFEST.json`
+    ```json
+    {
+      "components": {
+        "handlers": [
+          {
+            "class": "my_plugin.handlers.my_section:MySectionHandler",
+            "description": "Serves content for the My Section custom chart section"
+          },
+          {
+            "class": "my_plugin.handlers.my_section:MySummaryConfiguration",
+            "description": "Configures the chart summary layout to include My Section"
+          }
+        ]
+      }
+    }
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/patient-chart-summary-custom-section-handler/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/patient-metadata-create-form-effect/
