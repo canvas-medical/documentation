@@ -21159,6 +21159,10 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
       <td>A patient chart's summary section is loading.</td>
     </tr>
     <tr>
+      <td>PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION</td>
+      <td>Canvas is requesting the content for a custom patient chart summary section. See <a href='/sdk/patient-chart-summary-custom-section-handler/'>Patient Chart Summary Custom Section Handler</a>.</td>
+    </tr>
+    <tr>
       <td>PANEL_SECTIONS_CONFIGURATION</td>
       <td>The panel section is loading.</td>
     </tr>
