@@ -21196,6 +21196,13 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
       <td>GET_HOMEPAGE_CONFIGURATION</td>
       <td>Homepage is loading. See <a href="{% link _guides/set-default-homepage.md %}" target="_blank">Set default homepage</a> for examples of how to use this event.</td>
     </tr>
+    <tr>
+      <td>COMMAND__FORM__GET_ADDITIONAL_FIELDS</td>
+      <td>Command is originated. See <a href="{% link _sdk/effects/command_metadata_create_form.md %}" target="_blank">Command metadata Create Form</a> for how to use this event.
+      <br />Context object:
+      <pre>"command_uuid": str
+"schema_key": str</pre></td>
+    </tr>
   </tbody>
 </table>
 
