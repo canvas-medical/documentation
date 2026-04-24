@@ -25,11 +25,11 @@ These properties ensure that the effect integrates seamlessly with the rest of t
 
 ### **Attributes**
 
-| Attribute          | Type   | Description                                                  |
-|--------------------|--------|--------------------------------------------------------------|
-| `questionnaire_id` | `str   | UUID`                                                        | The unique ID of the Questionnaire. |
-| `create_command`   | `bool` | If `True`, a Questionnaire Command is created inside a Note. |
-| `note_id`          | `str   | UUID                                                         | None` | Associates the response with an existing Note if applicable. |
+| Attribute          | Type                      | Description                                                  |
+|--------------------|---------------------------|--------------------------------------------------------------|
+| `questionnaire_id` | `str` \| `UUID`           | The unique ID of the Questionnaire.                          |
+| `create_command`   | `bool`                    | If `True`, a Questionnaire Command is created inside a Note. |
+| `note_id`          | `str` \| `UUID` \| `None` | Associates the response with an existing Note if applicable. |
 
 <br/>
 <br/>
