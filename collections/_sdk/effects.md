@@ -43,6 +43,9 @@ class MyHandler(BaseHandler):
 In the above example, the `Effect` object is constructed manually, with the
 `type` and `payload` set directly.
 
+{: .info }
+> **Import Path**: Always import `Effect` and `EffectType` from `canvas_sdk.effects`. The older import path `canvas_generated.messages.effects_pb2` is deprecated and does not support newer features like `set_async()`.
+
 Some effects have helper classes that assist you by providing payload validation
 and constructing the effect object for you. The example below shows the
 [`PatientChartSummaryConfiguration`](/sdk/layout-effect/#patient-summary) class in use:
@@ -75,15 +78,32 @@ class CustomChartLayout(BaseHandler):
         return [layout.apply()]
 ```
 
-### Delayed and Asynchronous Execution
+### Asynchronous Effect Execution
 
-Effects execute synchronously by default. Use the `delay_seconds` parameter to execute them asynchronously or after a specified delay.
+Effects execute synchronously by default. To opt into asynchronous execution backed by Celery, call the `set_async()` method on any effect. This method is chainable, so you can call it directly after `apply()`, `create()`, `update()`, `delete()`, `commit()`, `sign()`, or any other method that returns an `Effect`.
 
-| `delay_seconds` value | Behavior |
-|-----------------------|----------|
-| `None` (default)      | Synchronous execution |
-| `0`                   | Asynchronous execution with no delay |
-| Positive integer      | Asynchronous execution after the specified number of seconds |
+```python
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.CLAIM__POST_UPDATE)
+
+    def compute(self):
+        claim = ClaimEffect(id=self.target)
+
+        # Execute after 30 seconds
+        return [claim.add_comment("Processing complete").set_async(delay_seconds=30)]
+```
+
+#### set_async() Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `delay_seconds` | `int` (optional) | Number of seconds to wait before execution. Use `0` for immediate asynchronous execution. Must be non-negative. |
+| `max_retries` | `int` (optional) | Maximum retry attempts on failure. When omitted, the platform default applies. Pass `0` to disable retries. Must be non-negative. |
 
 ```python
 from canvas_sdk.effects.task import AddTask
@@ -99,20 +119,18 @@ class MyHandler(BaseHandler):
         async_task = AddTask(
             patient_id=self.target,
             title="Welcome new patient",
-        ).apply(delay_seconds=0)
+        ).apply().set_async(delay_seconds=0)
 
-        # Execute after 5 minutes
+        # Execute after 5 minutes with up to 3 retries
         delayed_task = AddTask(
             patient_id=self.target,
             title="Follow up with new patient",
-        ).apply(delay_seconds=300)
+        ).apply().set_async(delay_seconds=300, max_retries=3)
 
         return [async_task, delayed_task]
 ```
 
-Negative values for `delay_seconds` will raise a `ValueError`.
-
-Any method that returns an `Effect` accepts `delay_seconds`. This includes `apply()`, `create()`, `update()`, `delete()`, `commit()`, `sign()`, and other action methods depending on the effect class.
+Negative values for `delay_seconds` or `max_retries` raise a `ValueError`. Boolean values are also rejected.
 
 ### Disallowed Effect/Event Combinations
 
