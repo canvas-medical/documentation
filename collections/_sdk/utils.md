@@ -573,10 +573,9 @@ Both methods return pharmacy objects with the following key fields:
 ## Making requests to the Science service
 
 Plugin authors can make requests to our Science service using the
-`science_http` wrapper. The Science service backs much of the autocomplete
-behavior across the Canvas note UI: imaging order codes, imaging centers and
-other clinical contacts, and free-text search across conditions, family
-history, medical history, and surgical history concepts.
+`science_http` wrapper. The Science service backs autocomplete behavior in
+the Canvas note UI for imaging order codes (via parse templates) and for
+imaging centers and other clinical contacts.
 
 ```python
 from canvas_sdk.utils.http import science_http
@@ -585,9 +584,6 @@ from canvas_sdk.utils.http import science_http
 Like `ontologies_http` and `pharmacy_http`, `science_http` is a JSON-only
 client. You can call `get_json()` and access the response with `json()` and
 `status_code`. Direct `get`/`post`/`put`/`patch` methods are not available.
-
-Each search endpoint below accepts a `query` querystring parameter and
-returns a JSON object with a `results` array.
 
 ### Searching for imaging codes
 
@@ -668,52 +664,3 @@ search for any service provider — referring physicians, specialists, etc.
 Pass `service_provider` to
 [`ImagingOrderCommand`](/sdk/commands/#imagingorder) or other commands that
 accept a `ServiceProvider`.
-
-### Searching for conditions
-
-Search ICD-10 conditions for use in command diagnosis fields.
-
-```python
-from urllib.parse import urlencode
-from canvas_sdk.utils.http import science_http
-
-params = {"query": "diabetes", "format": "json", "limit": 25}
-response_json = science_http.get_json(f"/search/condition/?{urlencode(params)}").json()
-
-# response_json contains a "results" key with ICD-10 condition objects:
-# {
-#   "results": [
-#     {"icd10_code": "E11.9", "icd10_text": "Type 2 diabetes mellitus without complications"},
-#     ...
-#   ]
-# }
-```
-
-### Searching medical history, surgical history, and family history
-
-The Science service exposes additional concept searches used by the
-corresponding command autocompletes.
-
-```python
-from urllib.parse import urlencode
-from canvas_sdk.utils.http import science_http
-
-# Medical history conditions
-science_http.get_json(
-    f"/search/medical-history-condition/?{urlencode({'query': 'asthma', 'limit': 100})}"
-).json()
-
-# Surgical history procedures
-science_http.get_json(
-    f"/search/surgical-history-procedure/?{urlencode({'query': 'appendectomy', 'limit': 100})}"
-).json()
-
-# Family history conditions
-science_http.get_json(
-    f"/search/family-history/?{urlencode({'query': 'cancer', 'limit': 25})}"
-).json()
-```
-
-Each response returns a `results` array of concept objects shaped like
-`{"concept_id": ..., "term": "..."}` (or `{"icd10_code": ..., "icd10_text": ...}`
-for ICD-10 endpoints).
