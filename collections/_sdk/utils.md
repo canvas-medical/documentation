@@ -569,3 +569,151 @@ Both methods return pharmacy objects with the following key fields:
 - `service_level`: Services available (e.g., "New~Refill~Change~Cancel~ControlledSubstance")
 - `latitude`, `longitude`: Geographic coordinates
 - `distance_miles`: Distance from search location (only present in search results when location is provided)
+
+## Making requests to the Science service
+
+Plugin authors can make requests to our Science service using the
+`science_http` wrapper. The Science service backs much of the autocomplete
+behavior across the Canvas note UI: imaging order codes, imaging centers and
+other clinical contacts, and free-text search across conditions, family
+history, medical history, and surgical history concepts.
+
+```python
+from canvas_sdk.utils.http import science_http
+```
+
+Like `ontologies_http` and `pharmacy_http`, `science_http` is a JSON-only
+client. You can call `get_json()` and access the response with `json()` and
+`status_code`. Direct `get`/`post`/`put`/`patch` methods are not available.
+
+Each search endpoint below accepts a `query` querystring parameter and
+returns a JSON object with a `results` array.
+
+### Searching for imaging codes
+
+Use this to populate the `image_code` field of
+[`ImagingOrderCommand`](/sdk/commands/#imagingorder).
+
+```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import science_http
+from canvas_sdk.commands import ImagingOrderCommand
+
+params = {"query": "chest x-ray", "format": "json", "limit": 10}
+response_json = science_http.get_json(f"/parse-templates/imaging-reports/?{urlencode(params)}").json()
+
+# response_json contains a "results" key with imaging report templates:
+# {
+#   "results": [
+#     {
+#       "code": "71046",
+#       "name": "X-ray of chest, 2 views",
+#       "code_system": "CPT",
+#       ...
+#     },
+#     ...
+#   ]
+# }
+
+# Use the code on the command:
+command = ImagingOrderCommand(
+    note_uuid="...",
+    image_code=response_json["results"][0]["code"],
+    diagnosis_codes=["R05"],
+)
+```
+
+### Searching for imaging centers
+
+Imaging centers are stored as contacts with a radiology job title. Filter the
+generic `/contacts/` endpoint by `job_title__icontains=radiology` to limit
+results to imaging facilities. You can also pass
+`business_postal_code__in=<comma-separated zips>` to bias toward local
+results.
+
+```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import science_http
+
+params = {
+    "search": "advanced imaging",
+    "job_title__icontains": "radiology",
+    "format": "json",
+    "limit": 10,
+    # Optional location filter:
+    # "business_postal_code__in": "10001,10002",
+}
+response_json = science_http.get_json(f"/contacts/?{urlencode(params)}").json()
+
+# response_json contains a "results" key with contact objects:
+# {
+#   "results": [
+#     {
+#       "firstName": "...",
+#       "lastName": "...",
+#       "practiceName": "Advanced Imaging Center",
+#       "specialty": "Radiology",
+#       "businessPhone": "2125551234",
+#       "businessFax": "2125555678",
+#       "businessAddress": "123 Main St, New York, NY 10001",
+#       ...
+#     },
+#     ...
+#   ]
+# }
+```
+
+The `/contacts/` endpoint can also be used without the radiology filter to
+search for any service provider — referring physicians, specialists, etc.
+Pass `service_provider` to
+[`ImagingOrderCommand`](/sdk/commands/#imagingorder) or other commands that
+accept a `ServiceProvider`.
+
+### Searching for conditions
+
+Search ICD-10 conditions for use in command diagnosis fields.
+
+```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import science_http
+
+params = {"query": "diabetes", "format": "json", "limit": 25}
+response_json = science_http.get_json(f"/search/condition/?{urlencode(params)}").json()
+
+# response_json contains a "results" key with ICD-10 condition objects:
+# {
+#   "results": [
+#     {"icd10_code": "E11.9", "icd10_text": "Type 2 diabetes mellitus without complications"},
+#     ...
+#   ]
+# }
+```
+
+### Searching medical history, surgical history, and family history
+
+The Science service exposes additional concept searches used by the
+corresponding command autocompletes.
+
+```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import science_http
+
+# Medical history conditions
+science_http.get_json(
+    f"/search/medical-history-condition/?{urlencode({'query': 'asthma', 'limit': 100})}"
+).json()
+
+# Surgical history procedures
+science_http.get_json(
+    f"/search/surgical-history-procedure/?{urlencode({'query': 'appendectomy', 'limit': 100})}"
+).json()
+
+# Family history conditions
+science_http.get_json(
+    f"/search/family-history/?{urlencode({'query': 'cancer', 'limit': 25})}"
+).json()
+```
+
+Each response returns a `results` array of concept objects shaped like
+`{"concept_id": ..., "term": "..."}` (or `{"icd10_code": ..., "icd10_text": ...}`
+for ICD-10 endpoints).
