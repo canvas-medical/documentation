@@ -1185,10 +1185,13 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": patient_externally_exposable_id
 "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>"patient_externally_exposable_id": str
-"amount": str
-"claim_allocations":
-    "claim_id": str
-    "amount": str</pre></td>
+"total_amount_cents": str
+"timestamp": str
+"payment_method_and_description": str
+"claim_payments": [
+    "claim_externally_exposable_id": str
+    "allocated_cents": str
+]</pre></td>
     </tr>
   </tbody>
 </table>
