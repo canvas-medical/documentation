@@ -31735,350 +31735,397 @@ In this example, `entry` contains 10 Observation resources - following the relat
 ### 
 Demographics and other administrative information about an individual or animal receiving care or other health-related services.  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html>  
-**Supported Extensions**   
-Canvas supports specific FHIR extensions on this resource. In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match. Extensions are all `json` types and should be included in the `extension` array field as shown in the request/response examples on this page. The following extensions are supported:  
-**`birthsex`**   
-[http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-birthsex.html)   
-A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC). This extension aligns with the C-CDA Birth Sex Observation (LOINC 76689-9). After version 6.0.0, this extension is no longer a USCDI Requirement.   
-Supported values are:
-value | description  
----|---  
-**M** | Male  
-**F** | Female  
-**OTH** | Other  
-**UNK** | Unknown  
-**`sex`**   
-[http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-sex.html)   
-Reflects the the documentation of a person's sex. It is intended to support the exchange of a sex value that is not characterized as sex assigned at birth or birth sex.   
-Supported values are:
-value | description  
----|---  
-**184115007** | Patient sex unknown (finding)  
-**248152002** | Female (finding)  
-**248153007** | Male (finding)  
-**33791000087105** | Identifies as nonbinary gender (finding)  
-**asked-declined** | Asked But Declined  
-**`genderIdentity`**   
-[http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-genderIdentity.html)   
-This extension provides concepts to describe the gender a person identifies as.   
-Please note that if this extension is included, it will override the root `gender` field. Supported values are:
-value | description  
----|---  
-**446151000124109** | Identifies as male gender (finding)  
-**446141000124107** | Identifies as female gender (finding)  
-**407377005** | Female-to-male transsexual (finding)  
-**407376001** | Male-to-female transsexual (finding)  
-**446131000124102** | Identifies as non-conforming gender (finding)  
-**OTH** | other  
-**ASKU** | asked but unknown  
-**`sexual-orientation`**   
-http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation   
-Sexual orientation of the patient. Supported values are:
-value | description  
----|---  
-**20430005** | Straight or heterosexual  
-**38628009** | Lesbian, gay or homosexual  
-**42035005** | Bisexual  
-**OTH** | Something else, please describe  
-**UNK** | Don't Know  
-**ASKU** | Choose not to disclose  
-**`race`**   
-[http://hl7.org/fhir/us/core/StructureDefinition/us-core-race](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-race.html)  
-An extension to specify the races of a patient.   
-For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-race**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.  
-**`ethnicity`**   
-[http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-ethnicity.html)  
-An extension to specify the ethnicities of a patient.   
-For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity**. Additionally, a list of objects where each object contains a `valueCoding` object with the value **urn:oid:2.16.840.1.113883.6.238** and the appropriate code of each race needed from the ValueSet.  
-**`tribalAffiliation`**   
-[http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-tribal-affiliation.html)  
-An extension to specify the tribe or band with which a person associates.   
-For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation**. Additionally, a `valueCodeableConcept` with a list of codings representing the tribal affiliation.  
-**`timezone`**   
-[http://hl7.org/fhir/StructureDefinition/tz-code](https://build.fhir.org/ig/HL7/fhir-extensions/StructureDefinition-tz-code.html)   
-The timezone a patient lives in.   
-For create and update actions, the `url` attribute must equal **http://hl7.org/fhir/StructureDefinition/tz-code** , and the `valueCode` can contain any valid timezone code defined [here](http://build.fhir.org/valueset-timezones.html).  
-**`clinical-note`**   
-http://schemas.canvasmedical.com/fhir/extensions/clinical-note   
-This note displays under the patient's name in the clinical chart.   
-For create and update actions, the `url` attribute must equal **http://schemas.canvasmedical.com/fhir/extensions/clinical-note**. The `valueString` attribute is a free text field.  
-**`administrative-note`**   
-http://schemas.canvasmedical.com/fhir/extensions/administrative-note   
-This note displays under the patient's name in the administrative profile.   
-For create and update actions, the `url` attribute must equal **http://schemas.canvasmedical.com/fhir/extensions/administrative-note**. The `valueString` attribute is a free text field.  
-**`preferred-pharmacy`**   
-http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy   
-A patient can have multiple preferred pharmacies added to their profile.   
-For create and update actions, the `url` attribute must be equal to _http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy_. For each object in `extension`, a `url` attribute with the value **ncpdp-id** should be included along with a `valueIdentifier` object including the NCPDP number of the pharmacy under `value` and the url **http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber** under `system`.  
-**`default-provider`**   
-http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider   
-This extension determines the default Provider (Practitioner) for the Patient that is used for eligibility checks.   
-For create and update actions, the `url` attribute must be equal to _http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider_. The `valueReference` is a JSON object that contains the **required** `reference` attribute pointing to the respective reference Canvas resource, in this case, the Practitioner resource.  
-**`default-location`**   
-http://schemas.canvasmedical.com/fhir/extensions/patient-default-location   
-This extension determines the default Provider (Practitioner) for the Patient that is used for eligibility checks.   
-For create and update actions, the `url` attribute must be equal to _http://schemas.canvasmedical.com/fhir/extensions/patient-default-location_. The `valueReference` is a JSON object that contains the **required** `reference` attribute pointing to the respective reference Canvas resource, in this case, the Location resource.  
-**`business-line`**   
-http://schemas.canvasmedical.com/fhir/extensions/business-line   
-The business line that the patient belongs to.   
-Not all Canvas instances have Business Line functionality enabled. See [here](https://canvas-medical.help.usepylon.com/articles/1392971282-customized-patient-communication#h_01H0T0Z79XFX215GRSABFC91JZ) for information on Business Lines.  
-If using business line functionality, create and update actions should include a json object with the `url` attribute equal to **http://schemas.canvasmedical.com/fhir/extensions/business-line** and the `valueId` set to the externallyExposableId of the business line in Canvas.
+Canvas supports a number of FHIR extensions on this resource. See the `extension` attribute below for the full list of supported extension URLs and their value shapes. The `birthsex` extension is **required** on create and update.
 ### Endpoints
 post /Patient get /Patient/{id} put /Patient/{id} get /Patient
 post
 /Patient
 #### Patient create
-Upon successful creation, the Patient identifier can be found in the `Location` header of the response. The patient record in Canvas can be viewed at _https:// <instance>.canvasmedical.com/patient/<id>_.   
-Most of the fields that are populated through this endpoint will display and be editable on the Patient profile page.
+On success, the new Patient's identifier is returned in the `Location` header of the response. The patient record can be viewed in Canvas at _https:// <instance>.canvasmedical.com/patient/<id>_.   
+Most fields populated through this endpoint will display and be editable on the Patient profile page.
 ### Attributes
 resourceType 
-string 
+string required
 The FHIR Resource name.
-id 
-string 
-Unique Canvas identifier for this resource
-text 
-json 
-A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource.
 extension 
-array[json] 
-Reference the information at the top of this page to see the possible extensions contained in this resource. Please note that the `birthsex` extension is required.
-identifier 
-array[json] 
-The identifier list defines additional identifiers that are able to be stored for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system.
-Click to view child attributes
-use 
-string 
-Supported values are **usual** , **official** , **temp** , **secondary** and **old**. If omittted, the default value is **usual**.
-system 
-string 
-Free text field to identify what this value represents.
-value 
-string 
-Free text field to store the patient's identifier.
-period 
-date 
-This is used to specify the start and end dates (format YYYY-MM-DD). If period is omitted it will default to `start` = 1970-01-01 and `end` = 2100-12-31. There is currently no validation if the end date is before the start date.
-active 
-boolean 
-A boolean to specify if the patient is active in the healthcare system. If this value is not set, Canvas will default this to true.
-name 
 array[json] required
-A name associated with the patient. Name is a `required` list of objects.  
-One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example:   
-• the `family` attribute will populate the patient's last name.   
-• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space.   
-• the `prefix` list will be stored within Canvas's database but will not be displayed in the Canvas UI.  
-• the `suffix` list will populate the patient's suffix   
-The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.  
-In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.  
-If there are any other objects defined in the name list they will be ignored.
-Click to view child attributes
-use 
-string 
-Supported values are **usual** , **official** , **temp** , **nickname** , **old** , and **maiden**.
-family 
-string 
-Family name (often called 'Surname').
-given 
-array[string] 
-Given names (not always 'first'). Includes middle names.  
-This repeating element order: Given Names appear in the correct order for presenting the name.
-prefix 
-array[string] 
-Parts that come before the name (e.g., "Dr.", "Mr.", "Mrs.", "Ms.").
-suffix 
-array[string] 
-Parts that come after the name (e.g., "Jr.", "Sr.", "III", "Esq").
-telecom 
-array[json] 
-Telecom is an optional list of objects where you can provide the child attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
-Click to view child attributes
-id 
-string 
-extension 
-array 
-This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that the patient has consented to receiving text messages or emails to this contact point. This extension is identified with the `url` <https://help.canvasmedical.com/articles/8144965836-manging-patient-consents>. A boolean value can be specified in the `valueBoolean` attribute.  
-**Note:** This will not send a verification email or text as is the Canvas UI does. It will bypass this step and mark the contact as verified.
+Canvas-supported FHIR extensions on this resource. Each entry has a `url` identifying the extension, plus either a `valueX` field or — for compound extensions (**race** , **ethnicity** , **tribal-affiliation** , **preferred-pharmacy**) — a nested `extension` array carrying the value. The `url` is matched as an exact string.   
+The **birthsex** extension (`http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`) is **required** on create and update.
 Click to view child attributes
 url 
-string 
-valueBoolean 
-boolean 
-system 
-string 
-Supported values are **phone** , **fax** , **email** , **pager** , **url** , **sms** , and **other**. If omitted, the default value is **other**.
-value 
 string required
-Free text string of the value for this contact point
-use 
+Identifies the extension. See the value-field descriptions below for which `url` pairs with which `valueX` (or nested `extension`) shape.
+**Value Options Supported:**
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex (Required. Patient's sex assigned at birth, per ONC; aligns with the C-CDA Birth Sex Observation (LOINC 76689-9).)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex (Documented sex, distinct from sex at birth.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity (Gender the patient identifies as. Overrides the root gender field when provided.)
+  - http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation (Patient's sexual orientation.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-race (Patient's races. Compound — uses nested extension.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity (Patient's ethnicities. Compound — uses nested extension.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation (Tribe or band the patient associates with. Compound — uses nested extension.)
+  - http://hl7.org/fhir/StructureDefinition/tz-code (Patient's timezone.)
+  - http://schemas.canvasmedical.com/fhir/extensions/clinical-note (Free-text note shown under the patient's name on the clinical chart.)
+  - http://schemas.canvasmedical.com/fhir/extensions/administrative-note (Free-text note shown under the patient's name on the administrative profile.)
+  - http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy (Patient's preferred pharmacy. Compound — multiple allowed; one may be marked default.)
+  - http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider (Default Practitioner used for eligibility checks.)
+  - http://schemas.canvasmedical.com/fhir/extensions/patient-default-location (Default Location used for eligibility checks.)
+  - http://schemas.canvasmedical.com/fhir/extensions/business-line (Business line the patient belongs to. Requires Business Line functionality on the instance.)
+valueCode 
 string 
-Supported values are **home** , **work** , **temp** , **old** and **mobile**. If omitted, the default value is **home**.
-rank 
-integer 
-An integer representing the preferred order of contact points per system. The default value is 1.
-gender 
-string required
-The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently Canvas accepts the following FHIR values: male, female, other, and unknown.   
-If `unknown` is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If `other` is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
-birthDate 
-date required
-The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
-deceasedDateTime 
-datetime 
-Indicates the decease date of the individual.  
-If this value is not available, `deceasedBoolean` will be provided instead.
-deceasedBoolean 
-boolean 
-Indicates if the individual is deceased or not.  
-This value will only be shown if `deceasedDateTime` is not available.
-address 
-array[json] 
-Address(es) for the individual.
+Used by extensions whose value is a single code.   
+**birthsex** — required when this extension is included.   
+Code | Meaning  
+---|---  
+`M` | Male  
+`F` | Female  
+`OTH` | Other  
+`UNK` | Unknown  
+**sex**   
+Code | Meaning  
+---|---  
+`184115007` | Patient sex unknown  
+`248152002` | Female  
+`248153007` | Male  
+`33791000087105` | Identifies as nonbinary gender  
+`asked-declined` | Asked but declined  
+**sexual-orientation**   
+Code | Meaning  
+---|---  
+`20430005` | Straight or heterosexual  
+`38628009` | Lesbian, gay or homosexual  
+`42035005` | Bisexual  
+`OTH` | Something else, please describe  
+`UNK` | Don't know  
+`ASKU` | Choose not to disclose  
+**tz-code** — any valid timezone code from the [FHIR timezone ValueSet](http://build.fhir.org/valueset-timezones.html), e.g., `America/New_York`.
+valueString 
+string 
+Used by free-text extensions:   
+  - **clinical-note** — displayed under the patient's name on the clinical chart. - **administrative-note** — displayed under the patient's name on the administrative profile.
+valueId 
+string 
+Used by the **business-line** extension. The value is the `externallyExposableId` of the business line in Canvas.
+valueCodeableConcept 
+json 
+Used by the **genderIdentity** extension. When this extension is provided, it overrides the root `gender` field.
 Click to view child attributes
-id 
+coding 
+array[json] required
+Exactly one coding entry is allowed.
+Click to view child attributes
+system 
+string required
+**Value Options Supported:**
+  - http://snomed.info/sct 
+  - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
+code 
+string required
+Gender identity code.
+**Value Options Supported:**
+  - 446151000124109 (Identifies as male gender)
+  - 446141000124107 (Identifies as female gender)
+  - 407377005 (Female-to-male transsexual)
+  - 407376001 (Male-to-female transsexual)
+  - 446131000124102 (Identifies as non-conforming gender)
+  - OTH (Other)
+  - ASKU (Asked but unknown)
+display 
 string 
-use 
+text 
 string 
-Supported values are **home** , **work** , **temp** and **old**. If omitted, the default value is **home**.
+valueReference 
+json 
+Used by **patient-default-provider** (must reference a Practitioner) and **patient-default-location** (must reference a Location). Both set the default used for eligibility checks.
+Click to view child attributes
+reference 
+string required
+Reference string in the form `Practitioner/{id}` or `Location/{id}`.
 type 
 string 
-Supported values are **both** , **physical** and **postal**. If omitted, the default value is **both**.
-line 
-array[string] 
-List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
-city 
+Resource type the reference points to.
+**Value Options Supported:**
+  - Practitioner 
+  - Location 
+extension 
+array[json] 
+Used by compound extensions whose value is itself a list of extensions. The shape of each inner entry depends on the outer `url`:   
+**us-core-race** / **us-core-ethnicity** — one or more inner extensions with `url`: `ombCategory`, `detailed`, or `text`. For `ombCategory` / `detailed`, provide a `valueCoding`. For `text`, provide a `valueString`.   
+**us-core-tribal-affiliation** — exactly one inner extension with `url`: `tribalAffiliation` and a `valueCodeableConcept` containing one or more codings (each requires `system`, `code`, and `display`).   
+**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).
+Click to view child attributes
+url 
+string required
+Identifies the inner extension. See the parent description above for which value applies to which compound extension.
+**Value Options Supported:**
+  - ombCategory (race / ethnicity — coded category (with valueCoding).)
+  - detailed (race / ethnicity — detailed coded value (with valueCoding).)
+  - text (race / ethnicity — free-text representation (with valueString).)
+  - tribalAffiliation (tribal-affiliation — wraps the codings (with valueCodeableConcept).)
+  - ncpdp-id (preferred-pharmacy — required. Pharmacy NCPDP id (with valueIdentifier).)
+  - default (preferred-pharmacy — marks this pharmacy as the default (with valueBoolean).)
+  - name (preferred-pharmacy — pharmacy name (with valueString).)
+  - phone-number (preferred-pharmacy — pharmacy phone number (with valueString).)
+  - address (preferred-pharmacy — pharmacy address (with valueString).)
+  - fax-number (preferred-pharmacy — pharmacy fax (with valueString).)
+  - specialty_type (preferred-pharmacy — pharmacy specialty (with valueString).)
+valueCoding 
+json 
+For race / ethnicity `ombCategory` and `detailed` inner extensions.
+Click to view child attributes
+system 
+string required
+For known race / ethnicity codes use the OID; for `ASKU` use the v3-NullFlavor system.
+**Value Options Supported:**
+  - urn:oid:2.16.840.1.113883.6.238 
+  - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
+code 
+string required
+Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+display 
 string 
-String representing the city of the address.
-state 
+valueCodeableConcept 
+json 
+For the **tribal-affiliation** inner extension. Contains a `coding` list with at least one entry; each coding requires `system`, `code`, and `display`.
+Click to view child attributes
+coding 
+array[json] required
+Click to view child attributes
+system 
+string required
+Typically `http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS`.
+code 
+string required
+display 
+string required
+valueIdentifier 
+json 
+For the **preferred-pharmacy** `ncpdp-id` inner extension.
+Click to view child attributes
+value 
+string required
+NCPDP identifier — must be **exactly 7 digits** , left-padded with zeros if needed.
+system 
+string required
+**Value Options Supported:**
+  - http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber 
+valueBoolean 
+boolean 
+For the **preferred-pharmacy** `default` inner extension. At most one preferred-pharmacy entry per patient may be set to true.
+valueString 
 string 
-2 letter state abbreviation of the address.
-postalCode 
-string 
-The 5 digit postal code of the address.
-country 
-string 
-The ISO 3166 2 letter country code. If not provided, will default to "us".
+Used in two contexts:   
+• For the **race** / **ethnicity** `text` inner extension — a free-text representation of the race or ethnicity.   
+• For the **preferred-pharmacy** metadata inner extensions (`name`, `phone-number`, `address`, `fax-number`, `specialty_type`) — free-text values about the pharmacy.
+identifier 
+array[json] 
+External identifiers for this patient. None of these identifiers are surfaced on the patient chart, but they may help you correlate the Canvas patient with records in your own systems.
+The MRN is auto-issued by Canvas; do not include it on create.
+Click to view child attributes
+use 
+enum [ usual | official | temp | secondary | old ] 
+Purpose of this identifier. Defaults to **usual** if omitted.
+system 
+string required
+Free-text namespace for the value (e.g., "HealthCo", or a URL).
+value 
+string required
+The identifier value. Must be 1–255 characters.
 period 
 json 
+Validity window for this identifier. End-before-start is not validated.
 Click to view child attributes
 start 
 date 
-Starting date with inclusive boundary
+Inclusive start date (YYYY-MM-DD). Defaults to **1970-01-01** if omitted.
 end 
 date 
-End date with inclusive boundary, if not ongoing
+Inclusive end date (YYYY-MM-DD). Defaults to **2100-12-31** if omitted.
+active 
+boolean 
+Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create.
+name 
+array[json] required
+One or more names for the patient. At least one entry is required, and exactly one entry must have `use`: **official** — that entry determines the patient's first/middle/last/prefix/suffix shown across the Canvas UI.   
+Additional entries with `use`: **nickname** , **maiden** , or **old** are accepted: the first item in the `given` list of a **nickname** entry is stored as the patient's preferred name. **maiden** and **old** entries are stored but not displayed in the Canvas UI. Entries with any other `use` value are ignored.   
+In the Canvas UI, patients display as `first last suffix (nickname)`, and search supports first, middle, last, suffix, and nickname.
+Click to view child attributes
+use 
+enum [ official | nickname | old | maiden ] required
+At least one entry with `use`: **official** is required. See the parent description for how each accepted value is handled.
+family 
+string required
+Family name (often called 'Surname'). Required on the **official** entry to populate the patient's last name.
+given 
+array[string] required
+Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+prefix 
+array[string] 
+Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
+suffix 
+array[string] 
+Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+telecom 
+array[json] 
+Patient contact points (phone / email / fax / etc.).   
+Phone and email entries are surfaced in the Canvas UI. Other systems are accepted and stored but are not displayed.
+Click to view child attributes
+extension 
+array[json] 
+Optional flags about the contact point. The `has-consent` extension records that the patient has consented to receive messages at this contact point — set the `url` to **http://schemas.canvasmedical.com/fhir/extensions/has-consent** with `valueBoolean: true`.   
+**Note:** Setting `has-consent` here does not send a verification email or text as the Canvas UI does — it bypasses verification and marks the contact point as verified.
+Click to view child attributes
+url 
+string required
+**Value Options Supported:**
+  - http://schemas.canvasmedical.com/fhir/extensions/has-consent 
+valueBoolean 
+boolean required
+system 
+enum [ phone | fax | email | pager | url | sms | other ] required
+Telecommunications form. `url` is stored internally as **other** , and `sms` is stored as **phone**.
+value 
+string required
+The contact point value (phone number, email address, etc.).
+use 
+enum [ home | work | temp | old | mobile ] 
+Purpose of this contact point. Defaults to **home** if omitted.
+rank 
+integer 
+Preferred order across contact points of the same `system`. Defaults to **1**.
+gender 
+enum [ male | female | other | unknown ] required
+Maps to the gender identity field in the Canvas UI. See the [administrative gender ValueSet](https://hl7.org/fhir/R4/valueset-administrative-gender.html).   
+**unknown** displays as "choose not to disclose" on the patient chart. **other** displays as "Additional gender category or other, please specify".   
+**Note:** If the `genderIdentity` extension is also provided, it overrides this field.
+birthDate 
+date required
+Patient's date of birth, formatted **YYYY-MM-DD**.   
+Canvas also accepts partial dates: **YYYY-MM** defaults to the 1st of the month, and **YYYY** defaults to January 1st.
+deceasedDateTime 
+datetime 
+Date/time the patient died. Mutually exclusive with `deceasedBoolean` — provide one or the other.
+deceasedBoolean 
+boolean 
+Whether the patient is deceased. Use when an exact date/time isn't known.
+address 
+array[json] 
+Address(es) for the patient.
+Click to view child attributes
+use 
+enum [ home | work | temp | old ] 
+Defaults to **home** if omitted.
+type 
+enum [ both | physical | postal ] 
+Defaults to **both** if omitted.
+line 
+array[string] 
+First item populates address line 1; remaining items are concatenated as address line 2.
+city 
+string 
+City of the address.
+state 
+string 
+2-letter state abbreviation.
+postalCode 
+string 
+5-digit postal code.
+country 
+string 
+ISO 3166 2-letter country code. Defaults to **us**.
+period 
+json 
+Validity window for this address.
+Click to view child attributes
+start 
+date 
+Inclusive start date.
+end 
+date 
+Inclusive end date.
 photo 
 array[json] 
-Image of the patient. This image shows on the patient avatar in the Canvas UI.
+Patient photo. Displayed as the avatar in the Canvas UI.
 Click to view child attributes
 data 
-A base64-encoded string of the patient's photo
+string 
+Base64-encoded image content. Use on create or update to upload a photo.
 contact 
 array[json] 
-A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient profile page in the Canvas UI.
+Contact parties (e.g., guardian, partner, friend, emergency contact) for the patient. Contact details display on the Patient profile page in the Canvas UI.
 Click to view child attributes
-id 
-string 
-A Canvas identifier for the contact.
 relationship 
 array[json] 
-This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry contains a coding list. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
+Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
 Click to view child attributes
 coding 
 array[json] 
-Code defined by a terminology system.
+Code(s) defined by a terminology system.
 Click to view child attributes
 system 
-string 
-The system url of the coding.
+string required
+The system URL of the coding. Use **http://terminology.hl7.org/CodeSystem/v3-RoleCode** for relationship-type codings from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), or **http://schemas.canvasmedical.com/fhir/contact-category** for Canvas's configurable contact categories.
 **Value Options Supported:**
   - http://terminology.hl7.org/CodeSystem/v3-RoleCode 
-  - Empty string 
+  - http://schemas.canvasmedical.com/fhir/contact-category 
 code 
-string 
-The code of the relationship.  
-Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+string required
+The code of the relationship or contact category.   
+For the `v3-RoleCode` system, values come from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html).   
+For the `contact-category` system, values are the codes configured under [Contact Categories](https://help.canvasmedical.com/articles/8258338559-contact-categories) on your instance — for example, `EMC` (Emergency contact), `ARI` (Authorized for release of information), `POA` (Power of attorney).
 display 
 string 
-The display name of the coding.  
-Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+Human-readable name of the coding.
 name 
-array[json] required
-A name associated with the contact.
+json required
+A name for the contact.   
+Canvas only stores `name.text`. The structured sub-fields (`family`, `given`, `prefix`, `suffix`) are populated on read **only when the contact is itself a Canvas patient** , and are derived from that patient's record — they are not accepted on create or update.
 Click to view child attributes
 text 
-string 
-Text representation of the full name.  
-If the contact is not a Patient on Canvas, this attribute will be populated.  
-If the contact is a Patient on Canvas, this attribute will not be populated; instead the `family`, `given`, `prefix`, and `suffix` attributes will be provided.
-family 
-string 
-Family name (often called 'Surname').
-given 
-array[string] 
-Given names (not always 'first'). Includes middle names.  
-This repeating element order: Given Names appear in the correct order for presenting the name.
-prefix 
-array[string] 
-Parts that come before the name.
-suffix 
-array[string] 
-Parts that come after the name.
+string required
+Free-text representation of the contact's full name. The only name field stored for a non-patient contact.
 telecom 
 array[json] 
-This is a list of objects where Canvas will take the first system equal to phone and store as the contact's phone number. This value must only be a 10 digit number, no other characters are accepted. Then the first system equal to email will be stored as this contact's email address. The value of the email or phone number is stored in the value field. If any other option is passed in the system field, the data will not be stored.
+Contact points for this contact.   
+Canvas stores at most one phone and one email per contact: the **first** entry with `system`: **phone** is stored as the contact's phone number, and the **first** entry with `system`: **email** is stored as the email. Entries with any other `system` value are ignored.
 Click to view child attributes
 system 
-string 
-Supported values are **phone** , **fax** , **email** , **pager** , **url** , **sms** , and **other**.
+enum [ phone | fax | email | pager | url | sms | other ] required
+Only `phone` and `email` are stored on the contact; other values are ignored.
 value 
-string 
-Free text string of the value for this contact point.
+string required
+The contact point value.   
+For `system: phone`, the value must be **exactly 10 digits** with no other characters (no dashes, spaces, or country code). Phone values that don't match are rejected.
 use 
-string 
-Supported values are **home** , **work** , **temp** , **old** and **mobile**.
-address 
-array[json] 
-Address where the contact can be contacted or visited
-Click to view child attributes
-use 
-string 
-Supported values are **home** , **work** , **temp** and **old**.
-type 
-string 
-Supported values are **both** , **physical** and **postal**.
-line 
-array[string] 
-List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
-city 
-string 
-String representing the city of the address.
-state 
-string 
-2 letter state abbreviation of the address.
-postalCode 
-string 
-The 5 digit postal code of the address.
-country 
-string 
-The ISO 3166 2 letter country code.
-period 
-json 
-Click to view child attributes
-start 
-date 
-Starting date with inclusive boundary
-end 
-date 
-End date with inclusive boundary, if not ongoing
+enum [ home | work | temp | old | mobile ] 
+Purpose of this contact point.
 communication 
 array[json] 
-A language which may be used to communicate with the patient about his or her health.
+Languages used to communicate with the patient.
+Defaults to English if omitted. Currently only English is supported.
 Click to view child attributes
 language 
 json 
-The language which can be used to communicate with the patient about his or her health. [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (Preferred but limited to [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html)).
+A language usable for communicating with the patient. See [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (preferred) or [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html).
+Click to view child attributes
+coding 
+array[json] 
+Exactly one coding entry is allowed.
+Click to view child attributes
+system 
+string required
+**Value Options Supported:**
+  - urn:ietf:bcp:47 
+  - http://hl7.org/fhir/ValueSet/all-languages 
+code 
+string required
+BCP-47 language code (e.g., `en`).
+display 
+string required
+Human-readable language name (e.g., `English`).
+text 
+string 
+Plain-text representation of the language.
 ### Responses
 201 Created 
 The server has successfully processed the request; the new resource has been created and is now ready for interaction.  
@@ -32107,249 +32154,443 @@ string
 The FHIR Resource name.
 id 
 string 
-Unique Canvas identifier for this resource
+Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
 text 
 json 
-A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource.
+A human-readable narrative summarizing the resource. Generated by Canvas; not accepted on create or update.
 extension 
 array[json] 
-Reference the information at the top of this page to see the possible extensions contained in this resource. Please note that the `birthsex` extension is required.
-identifier 
-array[json] 
-The identifier list defines additional identifiers that are able to be stored for a patient.
-Click to view child attributes
-use 
-string 
-Supported values are **usual** , **official** , **temp** , **secondary** and **old**. If omittted, the default value is **usual**.
-system 
-string 
-Free text field to identify what this value represents.
-value 
-string 
-Free text field to store the patient's identifier.
-period 
-date 
-This is used to specify the start and end dates (format YYYY-MM-DD). If period is omitted it will default to `start` = 1970-01-01 and `end` = 2100-12-31. There is currently no validation if the end date is before the start date.
-active 
-boolean 
-A boolean to specify if the patient is active in the healthcare system. If this value is not set, Canvas will default this to true.
-name 
-array[json] 
-A name associated with the patient. Name is a `required` list of objects.  
-One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example:   
-• the `family` attribute will populate the patient's last name.   
-• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space.   
-• the `prefix` list will be stored within Canvas's database but will not be displayed in the Canvas UI.  
-• the `suffix` list will populate the patient's suffix   
-The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.  
-In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.  
-If there are any other objects defined in the name list they will be ignored.
-Click to view child attributes
-use 
-string 
-Supported values are **usual** , **official** , **temp** , **nickname** , **old** , and **maiden**.
-family 
-string 
-Family name (often called 'Surname').
-given 
-array[string] 
-Given names (not always 'first'). Includes middle names.  
-This repeating element order: Given Names appear in the correct order for presenting the name.
-prefix 
-array[string] 
-Parts that come before the name (e.g., "Dr.", "Mr.", "Mrs.", "Ms.").
-suffix 
-array[string] 
-Parts that come after the name (e.g., "Jr.", "Sr.", "III", "Esq").
-telecom 
-array[json] 
-Contact details for the individual.
-Click to view child attributes
-id 
-string 
-extension 
-array 
-This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that the patient has consented to receiving text messages or emails to this contact point. This extension is identified with the `url` <https://help.canvasmedical.com/articles/8144965836-manging-patient-consents>. A boolean value can be specified in the `valueBoolean` attribute.  
-**Note:** This will not send a verification email or text as is the Canvas UI does. It will bypass this step and mark the contact as verified.
+Canvas-supported FHIR extensions on this resource. Each entry has a `url` identifying the extension, plus either a `valueX` field or — for compound extensions (**race** , **ethnicity** , **tribal-affiliation** , **preferred-pharmacy**) — a nested `extension` array carrying the value. The `url` is matched as an exact string.   
+The **birthsex** extension (`http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`) is **required** on create and update.
 Click to view child attributes
 url 
 string 
-valueBoolean 
-boolean 
-system 
+Identifies the extension. See the value-field descriptions below for which `url` pairs with which `valueX` (or nested `extension`) shape.
+**Value Options Supported:**
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex (Required. Patient's sex assigned at birth, per ONC; aligns with the C-CDA Birth Sex Observation (LOINC 76689-9).)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex (Documented sex, distinct from sex at birth.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity (Gender the patient identifies as. Overrides the root gender field when provided.)
+  - http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation (Patient's sexual orientation.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-race (Patient's races. Compound — uses nested extension.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity (Patient's ethnicities. Compound — uses nested extension.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation (Tribe or band the patient associates with. Compound — uses nested extension.)
+  - http://hl7.org/fhir/StructureDefinition/tz-code (Patient's timezone.)
+  - http://schemas.canvasmedical.com/fhir/extensions/clinical-note (Free-text note shown under the patient's name on the clinical chart.)
+  - http://schemas.canvasmedical.com/fhir/extensions/administrative-note (Free-text note shown under the patient's name on the administrative profile.)
+  - http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy (Patient's preferred pharmacy. Compound — multiple allowed; one may be marked default.)
+  - http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider (Default Practitioner used for eligibility checks.)
+  - http://schemas.canvasmedical.com/fhir/extensions/patient-default-location (Default Location used for eligibility checks.)
+  - http://schemas.canvasmedical.com/fhir/extensions/business-line (Business line the patient belongs to. Requires Business Line functionality on the instance.)
+valueCode 
 string 
-Supported values are **phone** , **fax** , **email** , **pager** , **url** , **sms** , and **other**. If omitted, the default value is **other**.
-value 
+Used by extensions whose value is a single code.   
+**birthsex** — required when this extension is included.   
+Code | Meaning  
+---|---  
+`M` | Male  
+`F` | Female  
+`OTH` | Other  
+`UNK` | Unknown  
+**sex**   
+Code | Meaning  
+---|---  
+`184115007` | Patient sex unknown  
+`248152002` | Female  
+`248153007` | Male  
+`33791000087105` | Identifies as nonbinary gender  
+`asked-declined` | Asked but declined  
+**sexual-orientation**   
+Code | Meaning  
+---|---  
+`20430005` | Straight or heterosexual  
+`38628009` | Lesbian, gay or homosexual  
+`42035005` | Bisexual  
+`OTH` | Something else, please describe  
+`UNK` | Don't know  
+`ASKU` | Choose not to disclose  
+**tz-code** — any valid timezone code from the [FHIR timezone ValueSet](http://build.fhir.org/valueset-timezones.html), e.g., `America/New_York`.
+valueString 
 string 
-Free text string of the value for this contact point
-use 
+Used by free-text extensions:   
+  - **clinical-note** — displayed under the patient's name on the clinical chart. - **administrative-note** — displayed under the patient's name on the administrative profile.
+valueId 
 string 
-Supported values are **home** , **work** , **temp** , **old** and **mobile**. If omitted, the default value is **home**.
-rank 
-integer 
-An integer representing the preferred order of contact points per system. The default value is 1.
-gender 
-string 
-A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **male** , **female** , **other** and **unknown**.  
-<https://hl7.org/fhir/R4/valueset-administrative-gender.html>
-birthDate 
-date 
-The date of birth for the individual, formatted as YYYY-MM-DD.
-deceasedDateTime 
-datetime 
-Indicates the decease date of the individual.  
-If this value is not available, `deceasedBoolean` will be provided instead.
-deceasedBoolean 
-boolean 
-Indicates if the individual is deceased or not.  
-This value will only be shown if `deceasedDateTime` is not available.
-address 
-array[json] 
-Address(es) for the individual.
-Click to view child attributes
-id 
-string 
-use 
-string 
-Supported values are **home** , **work** , **temp** and **old**. If omitted, the default value is **home**.
-type 
-string 
-Supported values are **both** , **physical** and **postal**. If omitted, the default value is **both**.
-line 
-array[string] 
-List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
-city 
-string 
-String representing the city of the address.
-state 
-string 
-2 letter state abbreviation of the address.
-postalCode 
-string 
-The 5 digit postal code of the address.
-country 
-string 
-The ISO 3166 2 letter country code. If not provided, will default to "us".
-period 
+Used by the **business-line** extension. The value is the `externallyExposableId` of the business line in Canvas.
+valueCodeableConcept 
 json 
-Click to view child attributes
-start 
-date 
-Starting date with inclusive boundary
-end 
-date 
-End date with inclusive boundary, if not ongoing
-photo 
-array[json] 
-Image of the patient. This image shows on the patient avatar in the Canvas UI.
-Click to view child attributes
-url 
-URI where the image can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
-contact 
-array[json] 
-A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient profile page in the Canvas UI.
-Click to view child attributes
-id 
-string 
-A Canvas identifier for the contact.
-relationship 
-array[json] 
-This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry contains a coding list. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
+Used by the **genderIdentity** extension. When this extension is provided, it overrides the root `gender` field.
 Click to view child attributes
 coding 
 array[json] 
-Code defined by a terminology system.
+Exactly one coding entry is allowed.
 Click to view child attributes
 system 
 string 
-The system url of the coding.
 **Value Options Supported:**
-  - http://terminology.hl7.org/CodeSystem/v3-RoleCode 
-  - Empty string 
+  - http://snomed.info/sct 
+  - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
 code 
 string 
-The code of the relationship.  
-Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+Gender identity code.
+**Value Options Supported:**
+  - 446151000124109 (Identifies as male gender)
+  - 446141000124107 (Identifies as female gender)
+  - 407377005 (Female-to-male transsexual)
+  - 407376001 (Male-to-female transsexual)
+  - 446131000124102 (Identifies as non-conforming gender)
+  - OTH (Other)
+  - ASKU (Asked but unknown)
 display 
 string 
-The display name of the coding.  
-Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+text 
+string 
+valueReference 
+json 
+Used by **patient-default-provider** (must reference a Practitioner) and **patient-default-location** (must reference a Location). Both set the default used for eligibility checks.
+Click to view child attributes
+reference 
+string 
+Reference string in the form `Practitioner/{id}` or `Location/{id}`.
+type 
+string 
+Resource type the reference points to.
+**Value Options Supported:**
+  - Practitioner 
+  - Location 
+extension 
+array[json] 
+Used by compound extensions whose value is itself a list of extensions. The shape of each inner entry depends on the outer `url`:   
+**us-core-race** / **us-core-ethnicity** — one or more inner extensions with `url`: `ombCategory`, `detailed`, or `text`. For `ombCategory` / `detailed`, provide a `valueCoding`. For `text`, provide a `valueString`.   
+**us-core-tribal-affiliation** — exactly one inner extension with `url`: `tribalAffiliation` and a `valueCodeableConcept` containing one or more codings (each requires `system`, `code`, and `display`).   
+**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).
+Click to view child attributes
+url 
+string 
+Identifies the inner extension. See the parent description above for which value applies to which compound extension.
+**Value Options Supported:**
+  - ombCategory (race / ethnicity — coded category (with valueCoding).)
+  - detailed (race / ethnicity — detailed coded value (with valueCoding).)
+  - text (race / ethnicity — free-text representation (with valueString).)
+  - tribalAffiliation (tribal-affiliation — wraps the codings (with valueCodeableConcept).)
+  - ncpdp-id (preferred-pharmacy — required. Pharmacy NCPDP id (with valueIdentifier).)
+  - default (preferred-pharmacy — marks this pharmacy as the default (with valueBoolean).)
+  - name (preferred-pharmacy — pharmacy name (with valueString).)
+  - phone-number (preferred-pharmacy — pharmacy phone number (with valueString).)
+  - address (preferred-pharmacy — pharmacy address (with valueString).)
+  - fax-number (preferred-pharmacy — pharmacy fax (with valueString).)
+  - specialty_type (preferred-pharmacy — pharmacy specialty (with valueString).)
+valueCoding 
+json 
+For race / ethnicity `ombCategory` and `detailed` inner extensions.
+Click to view child attributes
+system 
+string 
+For known race / ethnicity codes use the OID; for `ASKU` use the v3-NullFlavor system.
+**Value Options Supported:**
+  - urn:oid:2.16.840.1.113883.6.238 
+  - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
+code 
+string 
+Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+display 
+string 
+valueCodeableConcept 
+json 
+For the **tribal-affiliation** inner extension. Contains a `coding` list with at least one entry; each coding requires `system`, `code`, and `display`.
+Click to view child attributes
+coding 
+array[json] 
+Click to view child attributes
+system 
+string 
+Typically `http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS`.
+code 
+string 
+display 
+string 
+valueIdentifier 
+json 
+For the **preferred-pharmacy** `ncpdp-id` inner extension.
+Click to view child attributes
+value 
+string 
+NCPDP identifier — must be **exactly 7 digits** , left-padded with zeros if needed.
+system 
+string 
+**Value Options Supported:**
+  - http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber 
+valueBoolean 
+boolean 
+For the **preferred-pharmacy** `default` inner extension. At most one preferred-pharmacy entry per patient may be set to true.
+valueString 
+string 
+Used in two contexts:   
+• For the **race** / **ethnicity** `text` inner extension — a free-text representation of the race or ethnicity.   
+• For the **preferred-pharmacy** metadata inner extensions (`name`, `phone-number`, `address`, `fax-number`, `specialty_type`) — free-text values about the pharmacy.
+identifier 
+array[json] 
+External identifiers for this patient. None of these identifiers are surfaced on the patient chart, but they may help you correlate the Canvas patient with records in your own systems.
+The array always includes the Canvas-issued MRN (an entry with `system`: **http://canvasmedical.com** and a coded `type` of MR). Additional entries are external identifiers added through prior create/update calls or via the Patient profile in the Canvas UI.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this entry. Include on update to target an existing identifier; omit to create a new one.
+use 
+enum [ usual | official | temp | secondary | old ] 
+Purpose of this identifier. Defaults to **usual** if omitted.
+system 
+string 
+Free-text namespace for the value (e.g., "HealthCo", or a URL).
+value 
+string 
+The identifier value. Must be 1–255 characters.
+period 
+json 
+Validity window for this identifier. End-before-start is not validated.
+Click to view child attributes
+start 
+date 
+Inclusive start date (YYYY-MM-DD). Defaults to **1970-01-01** if omitted.
+end 
+date 
+Inclusive end date (YYYY-MM-DD). Defaults to **2100-12-31** if omitted.
+active 
+boolean 
+Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create.
 name 
 array[json] 
-A name associated with the contact.
+One or more names for the patient. At least one entry is required, and exactly one entry must have `use`: **official** — that entry determines the patient's first/middle/last/prefix/suffix shown across the Canvas UI.   
+Additional entries with `use`: **nickname** , **maiden** , or **old** are accepted: the first item in the `given` list of a **nickname** entry is stored as the patient's preferred name. **maiden** and **old** entries are stored but not displayed in the Canvas UI. Entries with any other `use` value are ignored.   
+In the Canvas UI, patients display as `first last suffix (nickname)`, and search supports first, middle, last, suffix, and nickname.
+Click to view child attributes
+use 
+enum [ official | nickname | old | maiden ] 
+At least one entry with `use`: **official** is required. See the parent description for how each accepted value is handled.
+family 
+string 
+Family name (often called 'Surname'). Required on the **official** entry to populate the patient's last name.
+given 
+array[string] 
+Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+prefix 
+array[string] 
+Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
+suffix 
+array[string] 
+Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+telecom 
+array[json] 
+Patient contact points (phone / email / fax / etc.).   
+Phone and email entries are surfaced in the Canvas UI. Other systems are accepted and stored but are not displayed.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this contact point. Include on update to target an existing entry; omit to create a new one.
+extension 
+array[json] 
+Optional flags about the contact point. The `has-consent` extension records that the patient has consented to receive messages at this contact point — set the `url` to **http://schemas.canvasmedical.com/fhir/extensions/has-consent** with `valueBoolean: true`.   
+**Note:** Setting `has-consent` here does not send a verification email or text as the Canvas UI does — it bypasses verification and marks the contact point as verified.
+Click to view child attributes
+url 
+string 
+**Value Options Supported:**
+  - http://schemas.canvasmedical.com/fhir/extensions/has-consent 
+valueBoolean 
+boolean 
+system 
+enum [ phone | fax | email | pager | url | sms | other ] 
+Telecommunications form. `url` is stored internally as **other** , and `sms` is stored as **phone**.
+value 
+string 
+The contact point value (phone number, email address, etc.).
+use 
+enum [ home | work | temp | old | mobile ] 
+Purpose of this contact point. Defaults to **home** if omitted.
+rank 
+integer 
+Preferred order across contact points of the same `system`. Defaults to **1**.
+gender 
+enum [ male | female | other | unknown ] 
+Maps to the gender identity field in the Canvas UI. See the [administrative gender ValueSet](https://hl7.org/fhir/R4/valueset-administrative-gender.html).   
+**unknown** displays as "choose not to disclose" on the patient chart. **other** displays as "Additional gender category or other, please specify".   
+**Note:** If the `genderIdentity` extension is also provided, it overrides this field.
+birthDate 
+date 
+Patient's date of birth, formatted **YYYY-MM-DD**.   
+Canvas also accepts partial dates: **YYYY-MM** defaults to the 1st of the month, and **YYYY** defaults to January 1st.
+deceasedDateTime 
+datetime 
+Date/time the patient died. Mutually exclusive with `deceasedBoolean` — provide one or the other.
+Returned in place of `deceasedBoolean` when an exact datetime is on file.
+deceasedBoolean 
+boolean 
+Whether the patient is deceased. Use when an exact date/time isn't known.
+Returned in place of `deceasedDateTime` when no exact datetime is on file.
+address 
+array[json] 
+Address(es) for the patient.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this address.
+use 
+enum [ home | work | temp | old ] 
+Defaults to **home** if omitted.
+type 
+enum [ both | physical | postal ] 
+Defaults to **both** if omitted.
+line 
+array[string] 
+First item populates address line 1; remaining items are concatenated as address line 2.
+city 
+string 
+City of the address.
+state 
+string 
+2-letter state abbreviation.
+postalCode 
+string 
+5-digit postal code.
+country 
+string 
+ISO 3166 2-letter country code. Defaults to **us**.
+period 
+json 
+Validity window for this address.
+Click to view child attributes
+start 
+date 
+Inclusive start date.
+end 
+date 
+Inclusive end date.
+photo 
+array[json] 
+Patient photo. Displayed as the avatar in the Canvas UI.
+Click to view child attributes
+url 
+string 
+URI where the image can be retrieved. Returned on read/search; requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files).
+contact 
+array[json] 
+Contact parties (e.g., guardian, partner, friend, emergency contact) for the patient. Contact details display on the Patient profile page in the Canvas UI.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one.
+relationship 
+array[json] 
+Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
+Click to view child attributes
+coding 
+array[json] 
+Code(s) defined by a terminology system.
+Click to view child attributes
+system 
+string 
+The system URL of the coding. Use **http://terminology.hl7.org/CodeSystem/v3-RoleCode** for relationship-type codings from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), or **http://schemas.canvasmedical.com/fhir/contact-category** for Canvas's configurable contact categories.
+**Value Options Supported:**
+  - http://terminology.hl7.org/CodeSystem/v3-RoleCode 
+  - http://schemas.canvasmedical.com/fhir/contact-category 
+code 
+string 
+The code of the relationship or contact category.   
+For the `v3-RoleCode` system, values come from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html).   
+For the `contact-category` system, values are the codes configured under [Contact Categories](https://help.canvasmedical.com/articles/8258338559-contact-categories) on your instance — for example, `EMC` (Emergency contact), `ARI` (Authorized for release of information), `POA` (Power of attorney).
+display 
+string 
+Human-readable name of the coding.
+name 
+json 
+A name for the contact.   
+Canvas only stores `name.text`. The structured sub-fields (`family`, `given`, `prefix`, `suffix`) are populated on read **only when the contact is itself a Canvas patient** , and are derived from that patient's record — they are not accepted on create or update.
 Click to view child attributes
 text 
 string 
-Text representation of the full name.  
-If the contact is not a Patient on Canvas, this attribute will be populated.  
-If the contact is a Patient on Canvas, this attribute will not be populated; instead the `family`, `given`, `prefix`, and `suffix` attributes will be provided.
+Free-text representation of the contact's full name. The only name field stored for a non-patient contact.
 family 
 string 
-Family name (often called 'Surname').
+Family name. Populated on read only when the contact is a Canvas patient; derived from that patient's record.
 given 
 array[string] 
-Given names (not always 'first'). Includes middle names.  
-This repeating element order: Given Names appear in the correct order for presenting the name.
+Given names. Populated on read only when the contact is a Canvas patient.
 prefix 
 array[string] 
-Parts that come before the name.
+Parts that come before the name. Populated on read only when the contact is a Canvas patient.
 suffix 
 array[string] 
-Parts that come after the name.
+Parts that come after the name. Populated on read only when the contact is a Canvas patient.
 telecom 
 array[json] 
-This is a list of objects where Canvas will take the first system equal to phone and store as the contact's phone number. This value must only be a 10 digit number, no other characters are accepted. Then the first system equal to email will be stored as this contact's email address. The value of the email or phone number is stored in the value field. If any other option is passed in the system field, the data will not be stored.
+Contact points for this contact.   
+Canvas stores at most one phone and one email per contact: the **first** entry with `system`: **phone** is stored as the contact's phone number, and the **first** entry with `system`: **email** is stored as the email. Entries with any other `system` value are ignored.
 Click to view child attributes
 system 
-string 
-Supported values are **phone** , **fax** , **email** , **pager** , **url** , **sms** , and **other**.
+enum [ phone | fax | email | pager | url | sms | other ] 
+Only `phone` and `email` are stored on the contact; other values are ignored.
 value 
 string 
-Free text string of the value for this contact point.
+The contact point value.   
+For `system: phone`, the value must be **exactly 10 digits** with no other characters (no dashes, spaces, or country code). Phone values that don't match are rejected.
 use 
-string 
-Supported values are **home** , **work** , **temp** , **old** and **mobile**.
+enum [ home | work | temp | old | mobile ] 
+Purpose of this contact point.
 address 
-array[json] 
-Address where the contact can be contacted or visited
+json 
+Address where the contact can be reached. Populated on read only when the contact is itself a Canvas patient (the contact's primary address is surfaced); ignored on create and update.
 Click to view child attributes
 use 
-string 
-Supported values are **home** , **work** , **temp** and **old**.
+enum [ home | work | temp | old ] 
 type 
-string 
-Supported values are **both** , **physical** and **postal**.
+enum [ both | physical | postal ] 
 line 
 array[string] 
-List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
+First item is address line 1; remaining items are concatenated as address line 2.
 city 
 string 
-String representing the city of the address.
 state 
 string 
-2 letter state abbreviation of the address.
+2-letter state abbreviation.
 postalCode 
 string 
-The 5 digit postal code of the address.
+5-digit postal code.
 country 
 string 
-The ISO 3166 2 letter country code.
+ISO 3166 2-letter country code.
 period 
 json 
 Click to view child attributes
 start 
 date 
-Starting date with inclusive boundary
 end 
 date 
-End date with inclusive boundary, if not ongoing
 communication 
 array[json] 
-A language which may be used to communicate with the patient about his or her health.
+Languages used to communicate with the patient.
 Click to view child attributes
 language 
 json 
-The language which can be used to communicate with the patient about his or her health. [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (Preferred but limited to [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html)).
+A language usable for communicating with the patient. See [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (preferred) or [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html).
+Click to view child attributes
+coding 
+array[json] 
+Exactly one coding entry is allowed.
+Click to view child attributes
+system 
+string 
+**Value Options Supported:**
+  - urn:ietf:bcp:47 
+  - http://hl7.org/fhir/ValueSet/all-languages 
+code 
+string 
+BCP-47 language code (e.g., `en`).
+display 
+string 
+Human-readable language name (e.g., `English`).
+text 
+string 
+Plain-text representation of the language.
 ### Responses
 200 OK 
 Request was successful. 
@@ -32363,262 +32604,420 @@ The requested resource was not found.
 put
 /Patient/{id}
 #### Patient update
-**How updates/deletions to the identifier, telecom, address, and contact fields are handled:**  
-Patient Search/Read will include an `id` value for these fields.  
-If the `id` field is included in the iteration, then Canvas will attempt to match to an existing value for that field.  
-If the `id` field is **not** included in the iteration, then Canvas will attempt to create a new entry in the database for that field.  
-If a `telecom`, `address`, or `contact` iteration returned via Search/Read is **not** included in the Update message, then it will be deleted. The same delete behaviour occurs with `preferred-pharmacy`, `default-provider` and `default-location` extensions - their respective values get dropped from the Canvas if those extensions are not present during update.   
-**Other Fields**  
-If a field is required according to Patient Create, it is also required in the update. If the field is not required and is not added to the update request, the saved data will not be changed.
+**How updates and deletions to`identifier`, `telecom`, `address`, and `contact` are handled:**  
+Each entry returned via Search/Read includes an `id`.   
+• If the `id` is included in an entry, Canvas updates the matching record.   
+• If the `id` is omitted, Canvas creates a new record.   
+• If an entry returned via Search/Read is **not** included in the update body, it is deleted (with the exception of `identifier`, which is only deleted when its `period.end` is in the future).   
+The same delete-on-omission behavior applies to the `preferred-pharmacy`, `default-provider`, and `default-location` extensions — their values are dropped if those extensions are not present on update.   
+**Other fields**  
+Any field that is required on create is also required on update. Optional fields that are not included in the update body retain their stored values.
 ### Attributes
 resourceType 
-string 
+string required
 The FHIR Resource name.
 id 
 string 
-Unique Canvas identifier for this resource
-text 
-json 
-A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource.
+Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
+Must match the ID in the path parameter.
 extension 
-array[json] 
-Reference the information at the top of this page to see the possible extensions contained in this resource. Please note that the `birthsex` extension is required.
-identifier 
-array[json] 
-The identifier list defines additional identifiers that are able to be stored for a patient. None of these identifiers will be surfaced on the Patient's chart but may help you to identify the patient in your internal system. If an `identifier` already exists in the Canvas database and is not included in the Update message, it will be deleted if and only if the period.end date is in the future.
-Click to view child attributes
-use 
-string 
-Supported values are **usual** , **official** , **temp** , **secondary** and **old**. If omittted, the default value is **usual**.
-system 
-string 
-Free text field to identify what this value represents.
-value 
-string 
-Free text field to store the patient's identifier.
-period 
-date 
-This is used to specify the start and end dates (format YYYY-MM-DD). If period is omitted it will default to `start` = 1970-01-01 and `end` = 2100-12-31. There is currently no validation if the end date is before the start date.
-active 
-boolean 
-A boolean to specify if the patient is active in the healthcare system. If this value is not set, Canvas will default this to true.
-name 
 array[json] required
-A name associated with the patient. Name is a `required` list of objects.  
-One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example:   
-• the `family` attribute will populate the patient's last name.   
-• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space.   
-• the `prefix` list will be stored within Canvas's database but will not be displayed in the Canvas UI.  
-• the `suffix` list will populate the patient's suffix   
-The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.  
-In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.  
-If there are any other objects defined in the name list they will be ignored.
-Click to view child attributes
-use 
-string 
-Supported values are **usual** , **official** , **temp** , **nickname** , **old** , and **maiden**.
-family 
-string 
-Family name (often called 'Surname').
-given 
-array[string] 
-Given names (not always 'first'). Includes middle names.  
-This repeating element order: Given Names appear in the correct order for presenting the name.
-prefix 
-array[string] 
-Parts that come before the name (e.g., "Dr.", "Mr.", "Mrs.", "Ms.").
-suffix 
-array[string] 
-Parts that come after the name (e.g., "Jr.", "Sr.", "III", "Esq").
-telecom 
-array[json] 
-Telecom is an optional list of objects where you can provide the child attributes listed below. Email and Phone system's will be surfaced in the Canvas UI. Currently Canvas stores the other systems in our database, but does not display them.
-Click to view child attributes
-id 
-string 
-extension 
-array 
-This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that the patient has consented to receiving text messages or emails to this contact point. This extension is identified with the `url` <https://help.canvasmedical.com/articles/8144965836-manging-patient-consents>. A boolean value can be specified in the `valueBoolean` attribute.  
-**Note:** This will not send a verification email or text as is the Canvas UI does. It will bypass this step and mark the contact as verified.
+Canvas-supported FHIR extensions on this resource. Each entry has a `url` identifying the extension, plus either a `valueX` field or — for compound extensions (**race** , **ethnicity** , **tribal-affiliation** , **preferred-pharmacy**) — a nested `extension` array carrying the value. The `url` is matched as an exact string.   
+The **birthsex** extension (`http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`) is **required** on create and update.
+**Replace semantics on update:** the **preferred-pharmacy** , **patient-default-provider** , and **patient-default-location** extensions follow delete-on-omission — if not included in the request, the stored value is dropped.
 Click to view child attributes
 url 
+string required
+Identifies the extension. See the value-field descriptions below for which `url` pairs with which `valueX` (or nested `extension`) shape.
+**Value Options Supported:**
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex (Required. Patient's sex assigned at birth, per ONC; aligns with the C-CDA Birth Sex Observation (LOINC 76689-9).)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex (Documented sex, distinct from sex at birth.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity (Gender the patient identifies as. Overrides the root gender field when provided.)
+  - http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation (Patient's sexual orientation.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-race (Patient's races. Compound — uses nested extension.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity (Patient's ethnicities. Compound — uses nested extension.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation (Tribe or band the patient associates with. Compound — uses nested extension.)
+  - http://hl7.org/fhir/StructureDefinition/tz-code (Patient's timezone.)
+  - http://schemas.canvasmedical.com/fhir/extensions/clinical-note (Free-text note shown under the patient's name on the clinical chart.)
+  - http://schemas.canvasmedical.com/fhir/extensions/administrative-note (Free-text note shown under the patient's name on the administrative profile.)
+  - http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy (Patient's preferred pharmacy. Compound — multiple allowed; one may be marked default.)
+  - http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider (Default Practitioner used for eligibility checks.)
+  - http://schemas.canvasmedical.com/fhir/extensions/patient-default-location (Default Location used for eligibility checks.)
+  - http://schemas.canvasmedical.com/fhir/extensions/business-line (Business line the patient belongs to. Requires Business Line functionality on the instance.)
+valueCode 
 string 
-valueBoolean 
-boolean 
+Used by extensions whose value is a single code.   
+**birthsex** — required when this extension is included.   
+Code | Meaning  
+---|---  
+`M` | Male  
+`F` | Female  
+`OTH` | Other  
+`UNK` | Unknown  
+**sex**   
+Code | Meaning  
+---|---  
+`184115007` | Patient sex unknown  
+`248152002` | Female  
+`248153007` | Male  
+`33791000087105` | Identifies as nonbinary gender  
+`asked-declined` | Asked but declined  
+**sexual-orientation**   
+Code | Meaning  
+---|---  
+`20430005` | Straight or heterosexual  
+`38628009` | Lesbian, gay or homosexual  
+`42035005` | Bisexual  
+`OTH` | Something else, please describe  
+`UNK` | Don't know  
+`ASKU` | Choose not to disclose  
+**tz-code** — any valid timezone code from the [FHIR timezone ValueSet](http://build.fhir.org/valueset-timezones.html), e.g., `America/New_York`.
+valueString 
+string 
+Used by free-text extensions:   
+  - **clinical-note** — displayed under the patient's name on the clinical chart. - **administrative-note** — displayed under the patient's name on the administrative profile.
+valueId 
+string 
+Used by the **business-line** extension. The value is the `externallyExposableId` of the business line in Canvas.
+valueCodeableConcept 
+json 
+Used by the **genderIdentity** extension. When this extension is provided, it overrides the root `gender` field.
+Click to view child attributes
+coding 
+array[json] required
+Exactly one coding entry is allowed.
+Click to view child attributes
 system 
+string required
+**Value Options Supported:**
+  - http://snomed.info/sct 
+  - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
+code 
+string required
+Gender identity code.
+**Value Options Supported:**
+  - 446151000124109 (Identifies as male gender)
+  - 446141000124107 (Identifies as female gender)
+  - 407377005 (Female-to-male transsexual)
+  - 407376001 (Male-to-female transsexual)
+  - 446131000124102 (Identifies as non-conforming gender)
+  - OTH (Other)
+  - ASKU (Asked but unknown)
+display 
 string 
-Supported values are **phone** , **fax** , **email** , **pager** , **url** , **sms** , and **other**. If omitted, the default value is **other**.
+text 
+string 
+valueReference 
+json 
+Used by **patient-default-provider** (must reference a Practitioner) and **patient-default-location** (must reference a Location). Both set the default used for eligibility checks.
+Click to view child attributes
+reference 
+string required
+Reference string in the form `Practitioner/{id}` or `Location/{id}`.
+type 
+string 
+Resource type the reference points to.
+**Value Options Supported:**
+  - Practitioner 
+  - Location 
+extension 
+array[json] 
+Used by compound extensions whose value is itself a list of extensions. The shape of each inner entry depends on the outer `url`:   
+**us-core-race** / **us-core-ethnicity** — one or more inner extensions with `url`: `ombCategory`, `detailed`, or `text`. For `ombCategory` / `detailed`, provide a `valueCoding`. For `text`, provide a `valueString`.   
+**us-core-tribal-affiliation** — exactly one inner extension with `url`: `tribalAffiliation` and a `valueCodeableConcept` containing one or more codings (each requires `system`, `code`, and `display`).   
+**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).
+Click to view child attributes
+url 
+string required
+Identifies the inner extension. See the parent description above for which value applies to which compound extension.
+**Value Options Supported:**
+  - ombCategory (race / ethnicity — coded category (with valueCoding).)
+  - detailed (race / ethnicity — detailed coded value (with valueCoding).)
+  - text (race / ethnicity — free-text representation (with valueString).)
+  - tribalAffiliation (tribal-affiliation — wraps the codings (with valueCodeableConcept).)
+  - ncpdp-id (preferred-pharmacy — required. Pharmacy NCPDP id (with valueIdentifier).)
+  - default (preferred-pharmacy — marks this pharmacy as the default (with valueBoolean).)
+  - name (preferred-pharmacy — pharmacy name (with valueString).)
+  - phone-number (preferred-pharmacy — pharmacy phone number (with valueString).)
+  - address (preferred-pharmacy — pharmacy address (with valueString).)
+  - fax-number (preferred-pharmacy — pharmacy fax (with valueString).)
+  - specialty_type (preferred-pharmacy — pharmacy specialty (with valueString).)
+valueCoding 
+json 
+For race / ethnicity `ombCategory` and `detailed` inner extensions.
+Click to view child attributes
+system 
+string required
+For known race / ethnicity codes use the OID; for `ASKU` use the v3-NullFlavor system.
+**Value Options Supported:**
+  - urn:oid:2.16.840.1.113883.6.238 
+  - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
+code 
+string required
+Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+display 
+string 
+valueCodeableConcept 
+json 
+For the **tribal-affiliation** inner extension. Contains a `coding` list with at least one entry; each coding requires `system`, `code`, and `display`.
+Click to view child attributes
+coding 
+array[json] required
+Click to view child attributes
+system 
+string required
+Typically `http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS`.
+code 
+string required
+display 
+string required
+valueIdentifier 
+json 
+For the **preferred-pharmacy** `ncpdp-id` inner extension.
+Click to view child attributes
 value 
 string required
-Free text string of the value for this contact point
-use 
-string 
-Supported values are **home** , **work** , **temp** , **old** and **mobile**. If omitted, the default value is **home**.
-rank 
-integer 
-An integer representing the preferred order of contact points per system. The default value is 1.
-gender 
+NCPDP identifier — must be **exactly 7 digits** , left-padded with zeros if needed.
+system 
 string required
-The gender attribute is an optional string enum value that maps to our gender identity attribute on our UI. Currently Canvas accepts the following FHIR values: male, female, other, and unknown.   
-If `unknown` is entered at the time of creation, the patient chart will show gender as 'choose not to disclose'. If `other` is selected, the patient chart will display `Additional gender category or other, please specify` in the gender field.
-birthDate 
-date required
-The birthDate field is required in Canvas for a patient. This is a string date format that is defined here. For Canvas it is best to get the format YYYY-MM-DD. If only a month and year is given, the birthdate is set to the 1st of the given month by default. If only a year is given, the birthdate defaults to January 1st of that year. To summarize, Canvas accepts the following formats: YYYY, YYYY-MM, and YYYY-MM-DD.
-deceasedDateTime 
-datetime 
-Indicates the decease date of the individual.  
-If this value is not available, `deceasedBoolean` will be provided instead.
-deceasedBoolean 
+**Value Options Supported:**
+  - http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber 
+valueBoolean 
 boolean 
-Indicates if the individual is deceased or not.  
-This value will only be shown if `deceasedDateTime` is not available.
-address 
+For the **preferred-pharmacy** `default` inner extension. At most one preferred-pharmacy entry per patient may be set to true.
+valueString 
+string 
+Used in two contexts:   
+• For the **race** / **ethnicity** `text` inner extension — a free-text representation of the race or ethnicity.   
+• For the **preferred-pharmacy** metadata inner extensions (`name`, `phone-number`, `address`, `fax-number`, `specialty_type`) — free-text values about the pharmacy.
+identifier 
 array[json] 
-Address(es) for the individual.
+External identifiers for this patient. None of these identifiers are surfaced on the patient chart, but they may help you correlate the Canvas patient with records in your own systems.
+The MRN is managed by Canvas — do not modify it.   
+**Replace semantics:** Each entry returned via Search/Read includes an `id`. Include the `id` to preserve or modify an existing identifier; omit `id` to add a new one. An identifier already in Canvas that is **not** included in the update message will be deleted only if its `period.end` is in the future.
 Click to view child attributes
 id 
 string 
+Canvas-issued identifier for this entry. Include on update to target an existing identifier; omit to create a new one.
 use 
-string 
-Supported values are **home** , **work** , **temp** and **old**. If omitted, the default value is **home**.
-type 
-string 
-Supported values are **both** , **physical** and **postal**. If omitted, the default value is **both**.
-line 
-array[string] 
-List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
-city 
-string 
-String representing the city of the address.
-state 
-string 
-2 letter state abbreviation of the address.
-postalCode 
-string 
-The 5 digit postal code of the address.
-country 
-string 
-The ISO 3166 2 letter country code. If not provided, will default to "us".
+enum [ usual | official | temp | secondary | old ] 
+Purpose of this identifier. Defaults to **usual** if omitted.
+system 
+string required
+Free-text namespace for the value (e.g., "HealthCo", or a URL).
+value 
+string required
+The identifier value. Must be 1–255 characters.
 period 
 json 
+Validity window for this identifier. End-before-start is not validated.
 Click to view child attributes
 start 
 date 
-Starting date with inclusive boundary
+Inclusive start date (YYYY-MM-DD). Defaults to **1970-01-01** if omitted.
 end 
 date 
-End date with inclusive boundary, if not ongoing
-photo 
-array[json] 
-Image of the patient. This image shows on the patient avatar in the Canvas UI.
+Inclusive end date (YYYY-MM-DD). Defaults to **2100-12-31** if omitted.
+active 
+boolean 
+Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create.
+name 
+array[json] required
+One or more names for the patient. At least one entry is required, and exactly one entry must have `use`: **official** — that entry determines the patient's first/middle/last/prefix/suffix shown across the Canvas UI.   
+Additional entries with `use`: **nickname** , **maiden** , or **old** are accepted: the first item in the `given` list of a **nickname** entry is stored as the patient's preferred name. **maiden** and **old** entries are stored but not displayed in the Canvas UI. Entries with any other `use` value are ignored.   
+In the Canvas UI, patients display as `first last suffix (nickname)`, and search supports first, middle, last, suffix, and nickname.
+**Replace semantics:** Names are not addressed by `id` — the `name` array sent in the update replaces the names stored in Canvas (subject to the use-based rules above). To preserve a previously stored name, include it in the update body.
 Click to view child attributes
-data 
-A base64-encoded string of the patient's photo
-contact 
+use 
+enum [ official | nickname | old | maiden ] required
+At least one entry with `use`: **official** is required. See the parent description for how each accepted value is handled.
+family 
+string required
+Family name (often called 'Surname'). Required on the **official** entry to populate the patient's last name.
+given 
+array[string] required
+Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+prefix 
+array[string] 
+Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
+suffix 
+array[string] 
+Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+telecom 
 array[json] 
-A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient profile page in the Canvas UI.
+Patient contact points (phone / email / fax / etc.).   
+Phone and email entries are surfaced in the Canvas UI. Other systems are accepted and stored but are not displayed.
+**Replace semantics:** Each entry returned via Search/Read includes an `id`. Include the `id` to preserve or modify an existing contact point; omit `id` to add a new one. A contact point not included in the update message will be deleted.
 Click to view child attributes
 id 
 string 
-A Canvas identifier for the contact.
+Canvas-issued identifier for this contact point. Include on update to target an existing entry; omit to create a new one.
+extension 
+array[json] 
+Optional flags about the contact point. The `has-consent` extension records that the patient has consented to receive messages at this contact point — set the `url` to **http://schemas.canvasmedical.com/fhir/extensions/has-consent** with `valueBoolean: true`.   
+**Note:** Setting `has-consent` here does not send a verification email or text as the Canvas UI does — it bypasses verification and marks the contact point as verified.
+Click to view child attributes
+url 
+string required
+**Value Options Supported:**
+  - http://schemas.canvasmedical.com/fhir/extensions/has-consent 
+valueBoolean 
+boolean required
+system 
+enum [ phone | fax | email | pager | url | sms | other ] required
+Telecommunications form. `url` is stored internally as **other** , and `sms` is stored as **phone**.
+value 
+string required
+The contact point value (phone number, email address, etc.).
+use 
+enum [ home | work | temp | old | mobile ] 
+Purpose of this contact point. Defaults to **home** if omitted.
+rank 
+integer 
+Preferred order across contact points of the same `system`. Defaults to **1**.
+gender 
+enum [ male | female | other | unknown ] required
+Maps to the gender identity field in the Canvas UI. See the [administrative gender ValueSet](https://hl7.org/fhir/R4/valueset-administrative-gender.html).   
+**unknown** displays as "choose not to disclose" on the patient chart. **other** displays as "Additional gender category or other, please specify".   
+**Note:** If the `genderIdentity` extension is also provided, it overrides this field.
+birthDate 
+date required
+Patient's date of birth, formatted **YYYY-MM-DD**.   
+Canvas also accepts partial dates: **YYYY-MM** defaults to the 1st of the month, and **YYYY** defaults to January 1st.
+deceasedDateTime 
+datetime 
+Date/time the patient died. Mutually exclusive with `deceasedBoolean` — provide one or the other.
+deceasedBoolean 
+boolean 
+Whether the patient is deceased. Use when an exact date/time isn't known.
+Setting this to `false` clears the stored datetime of death; setting to `true` does not modify a previously stored datetime of death.
+address 
+array[json] 
+Address(es) for the patient.
+**Replace semantics:** Each entry returned via Search/Read includes an `id`. Include the `id` to preserve or modify an existing address; omit `id` to add a new one. An address not included in the update message will be deleted.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this address.
+use 
+enum [ home | work | temp | old ] 
+Defaults to **home** if omitted.
+type 
+enum [ both | physical | postal ] 
+Defaults to **both** if omitted.
+line 
+array[string] 
+First item populates address line 1; remaining items are concatenated as address line 2.
+city 
+string 
+City of the address.
+state 
+string 
+2-letter state abbreviation.
+postalCode 
+string 
+5-digit postal code.
+country 
+string 
+ISO 3166 2-letter country code. Defaults to **us**.
+period 
+json 
+Validity window for this address.
+Click to view child attributes
+start 
+date 
+Inclusive start date.
+end 
+date 
+Inclusive end date.
+photo 
+array[json] 
+Patient photo. Displayed as the avatar in the Canvas UI.
+Click to view child attributes
+data 
+string 
+Base64-encoded image content. Use on create or update to upload a photo.
+contact 
+array[json] 
+Contact parties (e.g., guardian, partner, friend, emergency contact) for the patient. Contact details display on the Patient profile page in the Canvas UI.
+**Replace semantics:** Each entry returned via Search/Read includes an `id`. Include the `id` to preserve or modify an existing contact; omit `id` to add a new one. A contact not included in the update message will be deleted.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one.
 relationship 
 array[json] 
-This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry contains a coding list. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
+Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
 Click to view child attributes
 coding 
 array[json] 
-Code defined by a terminology system.
+Code(s) defined by a terminology system.
 Click to view child attributes
 system 
-string 
-The system url of the coding.
+string required
+The system URL of the coding. Use **http://terminology.hl7.org/CodeSystem/v3-RoleCode** for relationship-type codings from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), or **http://schemas.canvasmedical.com/fhir/contact-category** for Canvas's configurable contact categories.
 **Value Options Supported:**
   - http://terminology.hl7.org/CodeSystem/v3-RoleCode 
-  - Empty string 
+  - http://schemas.canvasmedical.com/fhir/contact-category 
 code 
-string 
-The code of the relationship.  
-Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+string required
+The code of the relationship or contact category.   
+For the `v3-RoleCode` system, values come from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html).   
+For the `contact-category` system, values are the codes configured under [Contact Categories](https://help.canvasmedical.com/articles/8258338559-contact-categories) on your instance — for example, `EMC` (Emergency contact), `ARI` (Authorized for release of information), `POA` (Power of attorney).
 display 
 string 
-The display name of the coding.  
-Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+Human-readable name of the coding.
 name 
-array[json] required
-A name associated with the contact.
+json required
+A name for the contact.   
+Canvas only stores `name.text`. The structured sub-fields (`family`, `given`, `prefix`, `suffix`) are populated on read **only when the contact is itself a Canvas patient** , and are derived from that patient's record — they are not accepted on create or update.
 Click to view child attributes
 text 
-string 
-Text representation of the full name.  
-If the contact is not a Patient on Canvas, this attribute will be populated.  
-If the contact is a Patient on Canvas, this attribute will not be populated; instead the `family`, `given`, `prefix`, and `suffix` attributes will be provided.
-family 
-string 
-Family name (often called 'Surname').
-given 
-array[string] 
-Given names (not always 'first'). Includes middle names.  
-This repeating element order: Given Names appear in the correct order for presenting the name.
-prefix 
-array[string] 
-Parts that come before the name.
-suffix 
-array[string] 
-Parts that come after the name.
+string required
+Free-text representation of the contact's full name. The only name field stored for a non-patient contact.
 telecom 
 array[json] 
-This is a list of objects where Canvas will take the first system equal to phone and store as the contact's phone number. This value must only be a 10 digit number, no other characters are accepted. Then the first system equal to email will be stored as this contact's email address. The value of the email or phone number is stored in the value field. If any other option is passed in the system field, the data will not be stored.
+Contact points for this contact.   
+Canvas stores at most one phone and one email per contact: the **first** entry with `system`: **phone** is stored as the contact's phone number, and the **first** entry with `system`: **email** is stored as the email. Entries with any other `system` value are ignored.
 Click to view child attributes
 system 
-string 
-Supported values are **phone** , **fax** , **email** , **pager** , **url** , **sms** , and **other**.
+enum [ phone | fax | email | pager | url | sms | other ] required
+Only `phone` and `email` are stored on the contact; other values are ignored.
 value 
-string 
-Free text string of the value for this contact point.
+string required
+The contact point value.   
+For `system: phone`, the value must be **exactly 10 digits** with no other characters (no dashes, spaces, or country code). Phone values that don't match are rejected.
 use 
-string 
-Supported values are **home** , **work** , **temp** , **old** and **mobile**.
-address 
-array[json] 
-Address where the contact can be contacted or visited
-Click to view child attributes
-use 
-string 
-Supported values are **home** , **work** , **temp** and **old**.
-type 
-string 
-Supported values are **both** , **physical** and **postal**.
-line 
-array[string] 
-List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
-city 
-string 
-String representing the city of the address.
-state 
-string 
-2 letter state abbreviation of the address.
-postalCode 
-string 
-The 5 digit postal code of the address.
-country 
-string 
-The ISO 3166 2 letter country code.
-period 
-json 
-Click to view child attributes
-start 
-date 
-Starting date with inclusive boundary
-end 
-date 
-End date with inclusive boundary, if not ongoing
+enum [ home | work | temp | old | mobile ] 
+Purpose of this contact point.
 communication 
 array[json] 
-`communication.language` is an object that contains a coding and a text description. Currently, Canvas only supports the language being set to English. If no language is added, it will default to English. Currently, it cannot be updated.
+Languages used to communicate with the patient.
+Communication languages cannot currently be modified via this endpoint — the value stored in Canvas is preserved regardless of what's sent.
 Click to view child attributes
 language 
 json 
-The language which can be used to communicate with the patient about his or her health. [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (Preferred but limited to [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html)).
+A language usable for communicating with the patient. See [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (preferred) or [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html).
+Click to view child attributes
+coding 
+array[json] 
+Exactly one coding entry is allowed.
+Click to view child attributes
+system 
+string required
+**Value Options Supported:**
+  - urn:ietf:bcp:47 
+  - http://hl7.org/fhir/ValueSet/all-languages 
+code 
+string required
+BCP-47 language code (e.g., `en`).
+display 
+string required
+Human-readable language name (e.g., `English`).
+text 
+string 
+Plain-text representation of the language.
 ### Responses
 200 OK 
 The server has successfully processed the request.  
@@ -32645,47 +33044,47 @@ Search for patient resources.
 ### Query Parameters
 ****
 _has:CareTeam:participant:member 
-boolean 
-Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. `_has:CareTeam:participant:member=Practitioner/{practitioner_id}`
+string 
+Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. `_has:CareTeam:participant:member=Practitioner/{practitioner_id}`.
 _id 
 string 
-A Canvas-issued unique identifier known as the patient key. This can be found in the url of the patient's chart.
+A Canvas-issued unique identifier known as the patient key. This can be found in the URL of the patient's chart.
 _sort 
 string 
-Triggers sorting of the results by a specific criteria. Supported values are **_id** , **birthdate** , **family** , and **given**. Use **-_id** , **-birthdate** , **-family** , and **-given** to sort in descending order.
+Sort the results by a specific field. Supported values are **_id** , **birthdate** , **family** , and **given**. Prefix with **-** (e.g., **-birthdate**) to sort in descending order.
 active 
 boolean 
-By default, both active and inactive patients are returned. Use this parameter to only return active (true) or inactive (false) patients.
+By default, both active and inactive patients are returned. Use this parameter to return only active (`true`) or only inactive (`false`) patients.
 birthDate 
 date 
-The patient's birthdate
+The patient's birth date.
 email 
 string 
-Patient email address
+Patient email address.
 family 
 string 
-Last name
+Last name.
 gender 
-string 
-The gender of the patient. Supported values are **male** , **female** , **other** and **unknown**.
+enum [ male | female | other | unknown ] 
+The gender of the patient.
 given 
 string 
-First Name
+First name.
 identifier 
 string 
 The Canvas-issued MRN or a saved identifier from an external system.   
 **Examples:**  
-`/Patient?identifier=abc123` will return patients with an identifier of "abc123" issued by any system, including Canvas-issued MRNs  
-`/Patient?identifier=foo|abc123` will return patients with an identifier of "abc123" issued by the system named "foo"   
-`/Patient?identifier=http://canvasmedical.com|012345` will return the patient with the Canvas-issued MRN of "012345"  
-`/Patient?identifier=foo|` will return all patients with an identifier issued by the system named "foo"  
-`/Patient?identifier=|abc123` will return patients with an identifier of "abc123" issued by the system named "" (empty string)
+`/Patient?identifier=abc123` — patients with an identifier of "abc123" issued by any system, including Canvas-issued MRNs.  
+`/Patient?identifier=foo|abc123` — patients with an identifier of "abc123" issued by the system named "foo".  
+`/Patient?identifier=http://canvasmedical.com|012345` — the patient with the Canvas-issued MRN of "012345".  
+`/Patient?identifier=foo|` — all patients with an identifier issued by the system named "foo".  
+`/Patient?identifier=|abc123` — patients with an identifier of "abc123" issued by the system named "" (empty string).
 name 
 string 
-Part of a first or last name
+Part of a first or last name.
 nickname 
 string 
-Preferred or alternate name
+Preferred or alternate name.
 phone 
 string 
 Patient phone number. Expected to be 10 digits.
@@ -32721,249 +33120,443 @@ string
 The FHIR Resource name.
 id 
 string 
-Unique Canvas identifier for this resource
+Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
 text 
 json 
-A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource.
+A human-readable narrative summarizing the resource. Generated by Canvas; not accepted on create or update.
 extension 
 array[json] 
-Reference the information at the top of this page to see the possible extensions contained in this resource. Please note that the `birthsex` extension is required.
-identifier 
-array[json] 
-The identifier list defines additional identifiers that are able to be stored for a patient.
-Click to view child attributes
-use 
-string 
-Supported values are **usual** , **official** , **temp** , **secondary** and **old**. If omittted, the default value is **usual**.
-system 
-string 
-Free text field to identify what this value represents.
-value 
-string 
-Free text field to store the patient's identifier.
-period 
-date 
-This is used to specify the start and end dates (format YYYY-MM-DD). If period is omitted it will default to `start` = 1970-01-01 and `end` = 2100-12-31. There is currently no validation if the end date is before the start date.
-active 
-boolean 
-A boolean to specify if the patient is active in the healthcare system. If this value is not set, Canvas will default this to true.
-name 
-array[json] 
-A name associated with the patient. Name is a `required` list of objects.  
-One iteration must be marked with `use`: `official`. The first object with `use`: `official` will determine the patient's first, last, prefix, suffix or middle name. The first and last name is required within Canvas. For example:   
-• the `family` attribute will populate the patient's last name.   
-• the `given` list will populate the patient's first/middle name. The first item in the list will be the first name, while if more items in the list exists, it will populate the patient's middle name and be joined together with an empty space.   
-• the `prefix` list will be stored within Canvas's database but will not be displayed in the Canvas UI.  
-• the `suffix` list will populate the patient's suffix   
-The example also demonstrates that Canvas ingests a nickname (preferred name) for the Patient. This element is identified by `use = nickname` and the first item in the given list will be the Patient's nickname. Canvas can also ingest old names or maiden names using `use`: `maiden` or `use`: `old`. These will not show up on the Canvas UI but will be stored by Canvas and will be returned via a read request.  
-In the Canvas UI, each patient will be displayed as `first-last-suffix (nickname)`. Searches can be performed using first, middle, last, suffix or nickname.  
-If there are any other objects defined in the name list they will be ignored.
-Click to view child attributes
-use 
-string 
-Supported values are **usual** , **official** , **temp** , **nickname** , **old** , and **maiden**.
-family 
-string 
-Family name (often called 'Surname').
-given 
-array[string] 
-Given names (not always 'first'). Includes middle names.  
-This repeating element order: Given Names appear in the correct order for presenting the name.
-prefix 
-array[string] 
-Parts that come before the name (e.g., "Dr.", "Mr.", "Mrs.", "Ms.").
-suffix 
-array[string] 
-Parts that come after the name (e.g., "Jr.", "Sr.", "III", "Esq").
-telecom 
-array[json] 
-Contact details for the individual.
-Click to view child attributes
-id 
-string 
-extension 
-array 
-This is an optional object that you can specify for a Patient's phone number or email. This tells Canvas that the patient has consented to receiving text messages or emails to this contact point. This extension is identified with the `url` <https://help.canvasmedical.com/articles/8144965836-manging-patient-consents>. A boolean value can be specified in the `valueBoolean` attribute.  
-**Note:** This will not send a verification email or text as is the Canvas UI does. It will bypass this step and mark the contact as verified.
+Canvas-supported FHIR extensions on this resource. Each entry has a `url` identifying the extension, plus either a `valueX` field or — for compound extensions (**race** , **ethnicity** , **tribal-affiliation** , **preferred-pharmacy**) — a nested `extension` array carrying the value. The `url` is matched as an exact string.   
+The **birthsex** extension (`http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`) is **required** on create and update.
 Click to view child attributes
 url 
 string 
-valueBoolean 
-boolean 
-system 
+Identifies the extension. See the value-field descriptions below for which `url` pairs with which `valueX` (or nested `extension`) shape.
+**Value Options Supported:**
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex (Required. Patient's sex assigned at birth, per ONC; aligns with the C-CDA Birth Sex Observation (LOINC 76689-9).)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-sex (Documented sex, distinct from sex at birth.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity (Gender the patient identifies as. Overrides the root gender field when provided.)
+  - http://schemas.canvasmedical.com/fhir/extensions/sexual-orientation (Patient's sexual orientation.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-race (Patient's races. Compound — uses nested extension.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity (Patient's ethnicities. Compound — uses nested extension.)
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation (Tribe or band the patient associates with. Compound — uses nested extension.)
+  - http://hl7.org/fhir/StructureDefinition/tz-code (Patient's timezone.)
+  - http://schemas.canvasmedical.com/fhir/extensions/clinical-note (Free-text note shown under the patient's name on the clinical chart.)
+  - http://schemas.canvasmedical.com/fhir/extensions/administrative-note (Free-text note shown under the patient's name on the administrative profile.)
+  - http://schemas.canvasmedical.com/fhir/extensions/preferred-pharmacy (Patient's preferred pharmacy. Compound — multiple allowed; one may be marked default.)
+  - http://schemas.canvasmedical.com/fhir/extensions/patient-default-provider (Default Practitioner used for eligibility checks.)
+  - http://schemas.canvasmedical.com/fhir/extensions/patient-default-location (Default Location used for eligibility checks.)
+  - http://schemas.canvasmedical.com/fhir/extensions/business-line (Business line the patient belongs to. Requires Business Line functionality on the instance.)
+valueCode 
 string 
-Supported values are **phone** , **fax** , **email** , **pager** , **url** , **sms** , and **other**. If omitted, the default value is **other**.
-value 
+Used by extensions whose value is a single code.   
+**birthsex** — required when this extension is included.   
+Code | Meaning  
+---|---  
+`M` | Male  
+`F` | Female  
+`OTH` | Other  
+`UNK` | Unknown  
+**sex**   
+Code | Meaning  
+---|---  
+`184115007` | Patient sex unknown  
+`248152002` | Female  
+`248153007` | Male  
+`33791000087105` | Identifies as nonbinary gender  
+`asked-declined` | Asked but declined  
+**sexual-orientation**   
+Code | Meaning  
+---|---  
+`20430005` | Straight or heterosexual  
+`38628009` | Lesbian, gay or homosexual  
+`42035005` | Bisexual  
+`OTH` | Something else, please describe  
+`UNK` | Don't know  
+`ASKU` | Choose not to disclose  
+**tz-code** — any valid timezone code from the [FHIR timezone ValueSet](http://build.fhir.org/valueset-timezones.html), e.g., `America/New_York`.
+valueString 
 string 
-Free text string of the value for this contact point
-use 
+Used by free-text extensions:   
+  - **clinical-note** — displayed under the patient's name on the clinical chart. - **administrative-note** — displayed under the patient's name on the administrative profile.
+valueId 
 string 
-Supported values are **home** , **work** , **temp** , **old** and **mobile**. If omitted, the default value is **home**.
-rank 
-integer 
-An integer representing the preferred order of contact points per system. The default value is 1.
-gender 
-string 
-A enum value that maps to the gender identity attribute in the Canvas UI. Supported values are **male** , **female** , **other** and **unknown**.  
-<https://hl7.org/fhir/R4/valueset-administrative-gender.html>
-birthDate 
-date 
-The date of birth for the individual, formatted as YYYY-MM-DD.
-deceasedDateTime 
-datetime 
-Indicates the decease date of the individual.  
-If this value is not available, `deceasedBoolean` will be provided instead.
-deceasedBoolean 
-boolean 
-Indicates if the individual is deceased or not.  
-This value will only be shown if `deceasedDateTime` is not available.
-address 
-array[json] 
-Address(es) for the individual.
-Click to view child attributes
-id 
-string 
-use 
-string 
-Supported values are **home** , **work** , **temp** and **old**. If omitted, the default value is **home**.
-type 
-string 
-Supported values are **both** , **physical** and **postal**. If omitted, the default value is **both**.
-line 
-array[string] 
-List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
-city 
-string 
-String representing the city of the address.
-state 
-string 
-2 letter state abbreviation of the address.
-postalCode 
-string 
-The 5 digit postal code of the address.
-country 
-string 
-The ISO 3166 2 letter country code. If not provided, will default to "us".
-period 
+Used by the **business-line** extension. The value is the `externallyExposableId` of the business line in Canvas.
+valueCodeableConcept 
 json 
-Click to view child attributes
-start 
-date 
-Starting date with inclusive boundary
-end 
-date 
-End date with inclusive boundary, if not ongoing
-photo 
-array[json] 
-Image of the patient. This image shows on the patient avatar in the Canvas UI.
-Click to view child attributes
-url 
-URI where the image can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
-contact 
-array[json] 
-A contact party (e.g. guardian, partner, friend) for the patient. Contact details will display on the Patient profile page in the Canvas UI.
-Click to view child attributes
-id 
-string 
-A Canvas identifier for the contact.
-relationship 
-array[json] 
-This is a list of objects where you can specify a coding representing the relationship of the contact to the patient. Each entry contains a coding list. The coding list can specify the [configurable contact category codings](https://help.canvasmedical.com/articles/8258338559-contact-categories) this contact has to the patient.
+Used by the **genderIdentity** extension. When this extension is provided, it overrides the root `gender` field.
 Click to view child attributes
 coding 
 array[json] 
-Code defined by a terminology system.
+Exactly one coding entry is allowed.
 Click to view child attributes
 system 
 string 
-The system url of the coding.
 **Value Options Supported:**
-  - http://terminology.hl7.org/CodeSystem/v3-RoleCode 
-  - Empty string 
+  - http://snomed.info/sct 
+  - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
 code 
 string 
-The code of the relationship.  
-Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+Gender identity code.
+**Value Options Supported:**
+  - 446151000124109 (Identifies as male gender)
+  - 446141000124107 (Identifies as female gender)
+  - 407377005 (Female-to-male transsexual)
+  - 407376001 (Male-to-female transsexual)
+  - 446131000124102 (Identifies as non-conforming gender)
+  - OTH (Other)
+  - ASKU (Asked but unknown)
 display 
 string 
-The display name of the coding.  
-Values are nominally from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), but custom contact categories can be used as well.
+text 
+string 
+valueReference 
+json 
+Used by **patient-default-provider** (must reference a Practitioner) and **patient-default-location** (must reference a Location). Both set the default used for eligibility checks.
+Click to view child attributes
+reference 
+string 
+Reference string in the form `Practitioner/{id}` or `Location/{id}`.
+type 
+string 
+Resource type the reference points to.
+**Value Options Supported:**
+  - Practitioner 
+  - Location 
+extension 
+array[json] 
+Used by compound extensions whose value is itself a list of extensions. The shape of each inner entry depends on the outer `url`:   
+**us-core-race** / **us-core-ethnicity** — one or more inner extensions with `url`: `ombCategory`, `detailed`, or `text`. For `ombCategory` / `detailed`, provide a `valueCoding`. For `text`, provide a `valueString`.   
+**us-core-tribal-affiliation** — exactly one inner extension with `url`: `tribalAffiliation` and a `valueCodeableConcept` containing one or more codings (each requires `system`, `code`, and `display`).   
+**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).
+Click to view child attributes
+url 
+string 
+Identifies the inner extension. See the parent description above for which value applies to which compound extension.
+**Value Options Supported:**
+  - ombCategory (race / ethnicity — coded category (with valueCoding).)
+  - detailed (race / ethnicity — detailed coded value (with valueCoding).)
+  - text (race / ethnicity — free-text representation (with valueString).)
+  - tribalAffiliation (tribal-affiliation — wraps the codings (with valueCodeableConcept).)
+  - ncpdp-id (preferred-pharmacy — required. Pharmacy NCPDP id (with valueIdentifier).)
+  - default (preferred-pharmacy — marks this pharmacy as the default (with valueBoolean).)
+  - name (preferred-pharmacy — pharmacy name (with valueString).)
+  - phone-number (preferred-pharmacy — pharmacy phone number (with valueString).)
+  - address (preferred-pharmacy — pharmacy address (with valueString).)
+  - fax-number (preferred-pharmacy — pharmacy fax (with valueString).)
+  - specialty_type (preferred-pharmacy — pharmacy specialty (with valueString).)
+valueCoding 
+json 
+For race / ethnicity `ombCategory` and `detailed` inner extensions.
+Click to view child attributes
+system 
+string 
+For known race / ethnicity codes use the OID; for `ASKU` use the v3-NullFlavor system.
+**Value Options Supported:**
+  - urn:oid:2.16.840.1.113883.6.238 
+  - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
+code 
+string 
+Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+display 
+string 
+valueCodeableConcept 
+json 
+For the **tribal-affiliation** inner extension. Contains a `coding` list with at least one entry; each coding requires `system`, `code`, and `display`.
+Click to view child attributes
+coding 
+array[json] 
+Click to view child attributes
+system 
+string 
+Typically `http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS`.
+code 
+string 
+display 
+string 
+valueIdentifier 
+json 
+For the **preferred-pharmacy** `ncpdp-id` inner extension.
+Click to view child attributes
+value 
+string 
+NCPDP identifier — must be **exactly 7 digits** , left-padded with zeros if needed.
+system 
+string 
+**Value Options Supported:**
+  - http://terminology.hl7.org/CodeSystem/NCPDPProviderIdentificationNumber 
+valueBoolean 
+boolean 
+For the **preferred-pharmacy** `default` inner extension. At most one preferred-pharmacy entry per patient may be set to true.
+valueString 
+string 
+Used in two contexts:   
+• For the **race** / **ethnicity** `text` inner extension — a free-text representation of the race or ethnicity.   
+• For the **preferred-pharmacy** metadata inner extensions (`name`, `phone-number`, `address`, `fax-number`, `specialty_type`) — free-text values about the pharmacy.
+identifier 
+array[json] 
+External identifiers for this patient. None of these identifiers are surfaced on the patient chart, but they may help you correlate the Canvas patient with records in your own systems.
+The array always includes the Canvas-issued MRN (an entry with `system`: **http://canvasmedical.com** and a coded `type` of MR). Additional entries are external identifiers added through prior create/update calls or via the Patient profile in the Canvas UI.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this entry. Include on update to target an existing identifier; omit to create a new one.
+use 
+enum [ usual | official | temp | secondary | old ] 
+Purpose of this identifier. Defaults to **usual** if omitted.
+system 
+string 
+Free-text namespace for the value (e.g., "HealthCo", or a URL).
+value 
+string 
+The identifier value. Must be 1–255 characters.
+period 
+json 
+Validity window for this identifier. End-before-start is not validated.
+Click to view child attributes
+start 
+date 
+Inclusive start date (YYYY-MM-DD). Defaults to **1970-01-01** if omitted.
+end 
+date 
+Inclusive end date (YYYY-MM-DD). Defaults to **2100-12-31** if omitted.
+active 
+boolean 
+Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create.
 name 
 array[json] 
-A name associated with the contact.
+One or more names for the patient. At least one entry is required, and exactly one entry must have `use`: **official** — that entry determines the patient's first/middle/last/prefix/suffix shown across the Canvas UI.   
+Additional entries with `use`: **nickname** , **maiden** , or **old** are accepted: the first item in the `given` list of a **nickname** entry is stored as the patient's preferred name. **maiden** and **old** entries are stored but not displayed in the Canvas UI. Entries with any other `use` value are ignored.   
+In the Canvas UI, patients display as `first last suffix (nickname)`, and search supports first, middle, last, suffix, and nickname.
+Click to view child attributes
+use 
+enum [ official | nickname | old | maiden ] 
+At least one entry with `use`: **official** is required. See the parent description for how each accepted value is handled.
+family 
+string 
+Family name (often called 'Surname'). Required on the **official** entry to populate the patient's last name.
+given 
+array[string] 
+Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+prefix 
+array[string] 
+Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
+suffix 
+array[string] 
+Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+telecom 
+array[json] 
+Patient contact points (phone / email / fax / etc.).   
+Phone and email entries are surfaced in the Canvas UI. Other systems are accepted and stored but are not displayed.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this contact point. Include on update to target an existing entry; omit to create a new one.
+extension 
+array[json] 
+Optional flags about the contact point. The `has-consent` extension records that the patient has consented to receive messages at this contact point — set the `url` to **http://schemas.canvasmedical.com/fhir/extensions/has-consent** with `valueBoolean: true`.   
+**Note:** Setting `has-consent` here does not send a verification email or text as the Canvas UI does — it bypasses verification and marks the contact point as verified.
+Click to view child attributes
+url 
+string 
+**Value Options Supported:**
+  - http://schemas.canvasmedical.com/fhir/extensions/has-consent 
+valueBoolean 
+boolean 
+system 
+enum [ phone | fax | email | pager | url | sms | other ] 
+Telecommunications form. `url` is stored internally as **other** , and `sms` is stored as **phone**.
+value 
+string 
+The contact point value (phone number, email address, etc.).
+use 
+enum [ home | work | temp | old | mobile ] 
+Purpose of this contact point. Defaults to **home** if omitted.
+rank 
+integer 
+Preferred order across contact points of the same `system`. Defaults to **1**.
+gender 
+enum [ male | female | other | unknown ] 
+Maps to the gender identity field in the Canvas UI. See the [administrative gender ValueSet](https://hl7.org/fhir/R4/valueset-administrative-gender.html).   
+**unknown** displays as "choose not to disclose" on the patient chart. **other** displays as "Additional gender category or other, please specify".   
+**Note:** If the `genderIdentity` extension is also provided, it overrides this field.
+birthDate 
+date 
+Patient's date of birth, formatted **YYYY-MM-DD**.   
+Canvas also accepts partial dates: **YYYY-MM** defaults to the 1st of the month, and **YYYY** defaults to January 1st.
+deceasedDateTime 
+datetime 
+Date/time the patient died. Mutually exclusive with `deceasedBoolean` — provide one or the other.
+Returned in place of `deceasedBoolean` when an exact datetime is on file.
+deceasedBoolean 
+boolean 
+Whether the patient is deceased. Use when an exact date/time isn't known.
+Returned in place of `deceasedDateTime` when no exact datetime is on file.
+address 
+array[json] 
+Address(es) for the patient.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this address.
+use 
+enum [ home | work | temp | old ] 
+Defaults to **home** if omitted.
+type 
+enum [ both | physical | postal ] 
+Defaults to **both** if omitted.
+line 
+array[string] 
+First item populates address line 1; remaining items are concatenated as address line 2.
+city 
+string 
+City of the address.
+state 
+string 
+2-letter state abbreviation.
+postalCode 
+string 
+5-digit postal code.
+country 
+string 
+ISO 3166 2-letter country code. Defaults to **us**.
+period 
+json 
+Validity window for this address.
+Click to view child attributes
+start 
+date 
+Inclusive start date.
+end 
+date 
+Inclusive end date.
+photo 
+array[json] 
+Patient photo. Displayed as the avatar in the Canvas UI.
+Click to view child attributes
+url 
+string 
+URI where the image can be retrieved. Returned on read/search; requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files).
+contact 
+array[json] 
+Contact parties (e.g., guardian, partner, friend, emergency contact) for the patient. Contact details display on the Patient profile page in the Canvas UI.
+Click to view child attributes
+id 
+string 
+Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one.
+relationship 
+array[json] 
+Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
+Click to view child attributes
+coding 
+array[json] 
+Code(s) defined by a terminology system.
+Click to view child attributes
+system 
+string 
+The system URL of the coding. Use **http://terminology.hl7.org/CodeSystem/v3-RoleCode** for relationship-type codings from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html), or **http://schemas.canvasmedical.com/fhir/contact-category** for Canvas's configurable contact categories.
+**Value Options Supported:**
+  - http://terminology.hl7.org/CodeSystem/v3-RoleCode 
+  - http://schemas.canvasmedical.com/fhir/contact-category 
+code 
+string 
+The code of the relationship or contact category.   
+For the `v3-RoleCode` system, values come from the [PatientRelationshipType ValueSet](https://hl7.org/fhir/R4/valueset-relatedperson-relationshiptype.html).   
+For the `contact-category` system, values are the codes configured under [Contact Categories](https://help.canvasmedical.com/articles/8258338559-contact-categories) on your instance — for example, `EMC` (Emergency contact), `ARI` (Authorized for release of information), `POA` (Power of attorney).
+display 
+string 
+Human-readable name of the coding.
+name 
+json 
+A name for the contact.   
+Canvas only stores `name.text`. The structured sub-fields (`family`, `given`, `prefix`, `suffix`) are populated on read **only when the contact is itself a Canvas patient** , and are derived from that patient's record — they are not accepted on create or update.
 Click to view child attributes
 text 
 string 
-Text representation of the full name.  
-If the contact is not a Patient on Canvas, this attribute will be populated.  
-If the contact is a Patient on Canvas, this attribute will not be populated; instead the `family`, `given`, `prefix`, and `suffix` attributes will be provided.
+Free-text representation of the contact's full name. The only name field stored for a non-patient contact.
 family 
 string 
-Family name (often called 'Surname').
+Family name. Populated on read only when the contact is a Canvas patient; derived from that patient's record.
 given 
 array[string] 
-Given names (not always 'first'). Includes middle names.  
-This repeating element order: Given Names appear in the correct order for presenting the name.
+Given names. Populated on read only when the contact is a Canvas patient.
 prefix 
 array[string] 
-Parts that come before the name.
+Parts that come before the name. Populated on read only when the contact is a Canvas patient.
 suffix 
 array[string] 
-Parts that come after the name.
+Parts that come after the name. Populated on read only when the contact is a Canvas patient.
 telecom 
 array[json] 
-This is a list of objects where Canvas will take the first system equal to phone and store as the contact's phone number. This value must only be a 10 digit number, no other characters are accepted. Then the first system equal to email will be stored as this contact's email address. The value of the email or phone number is stored in the value field. If any other option is passed in the system field, the data will not be stored.
+Contact points for this contact.   
+Canvas stores at most one phone and one email per contact: the **first** entry with `system`: **phone** is stored as the contact's phone number, and the **first** entry with `system`: **email** is stored as the email. Entries with any other `system` value are ignored.
 Click to view child attributes
 system 
-string 
-Supported values are **phone** , **fax** , **email** , **pager** , **url** , **sms** , and **other**.
+enum [ phone | fax | email | pager | url | sms | other ] 
+Only `phone` and `email` are stored on the contact; other values are ignored.
 value 
 string 
-Free text string of the value for this contact point.
+The contact point value.   
+For `system: phone`, the value must be **exactly 10 digits** with no other characters (no dashes, spaces, or country code). Phone values that don't match are rejected.
 use 
-string 
-Supported values are **home** , **work** , **temp** , **old** and **mobile**.
+enum [ home | work | temp | old | mobile ] 
+Purpose of this contact point.
 address 
-array[json] 
-Address where the contact can be contacted or visited
+json 
+Address where the contact can be reached. Populated on read only when the contact is itself a Canvas patient (the contact's primary address is surfaced); ignored on create and update.
 Click to view child attributes
 use 
-string 
-Supported values are **home** , **work** , **temp** and **old**.
+enum [ home | work | temp | old ] 
 type 
-string 
-Supported values are **both** , **physical** and **postal**.
+enum [ both | physical | postal ] 
 line 
 array[string] 
-List of strings. The first item in the list will be address line 1 in Canvas. The rest of the items in the list will be concatenated to be address line 2.
+First item is address line 1; remaining items are concatenated as address line 2.
 city 
 string 
-String representing the city of the address.
 state 
 string 
-2 letter state abbreviation of the address.
+2-letter state abbreviation.
 postalCode 
 string 
-The 5 digit postal code of the address.
+5-digit postal code.
 country 
 string 
-The ISO 3166 2 letter country code.
+ISO 3166 2-letter country code.
 period 
 json 
 Click to view child attributes
 start 
 date 
-Starting date with inclusive boundary
 end 
 date 
-End date with inclusive boundary, if not ongoing
 communication 
 array[json] 
-A language which may be used to communicate with the patient about his or her health.
+Languages used to communicate with the patient.
 Click to view child attributes
 language 
 json 
-The language which can be used to communicate with the patient about his or her health. [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (Preferred but limited to [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html)).
+A language usable for communicating with the patient. See [Common Languages](https://hl7.org/fhir/R4/valueset-languages.html) (preferred) or [AllLanguages](https://hl7.org/fhir/R4/valueset-all-languages.html).
+Click to view child attributes
+coding 
+array[json] 
+Exactly one coding entry is allowed.
+Click to view child attributes
+system 
+string 
+**Value Options Supported:**
+  - urn:ietf:bcp:47 
+  - http://hl7.org/fhir/ValueSet/all-languages 
+code 
+string 
+BCP-47 language code (e.g., `en`).
+display 
+string 
+Human-readable language name (e.g., `English`).
+text 
+string 
+Plain-text representation of the language.
 ### Responses
 200 OK 
 Request was successful. 
