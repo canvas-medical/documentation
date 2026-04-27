@@ -171,15 +171,22 @@ For applications that need to make API calls on behalf of specific Canvas users 
 
 Scopes control which parts of the API the token can access.
 
-- **Client Credentials Flow:** Scopes are optional. If omitted, you'll have full access to the FHIR API.
+- **Client Credentials Flow:** Scopes are optional. If omitted, the token has full access to the FHIR API.
 - **Authorization Code Flow:** Scopes are required and must be passed in the authorize URL.
 
-Scopes follow the [SMART on FHIR Clinical Scope Syntax](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#clinical-scope-syntax). They have the form: `user/(resourceType|*).(c|r|u|s)`, where:
+Canvas implements [SMART on FHIR scopes](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html).
 
-- `resourceType` can be a specific resource (e.g., `Patient`, `Practitioner`) or a wildcard `*`
-- Permissions: `c` (create), `r` (read), `u` (update), `s` (search)
+### Scope syntax
 
-Multiple scopes are separated by spaces. Common examples:
+Most scopes have the form `<context>/<resource>.<permission>`:
+
+- **`<context>`** — `user/` (staff member; mirrors EHR permissions), `patient/` (limited to the launch-context patient), or `system/` (machine-to-machine, used with Client Credentials).
+- **`<resource>`** — a FHIR resource (e.g., `Patient`) or `*` for any supported resource.
+- **`<permission>`** — `read`, `write`, or `*` (v1 / legacy), or `c` (create), `r` (read), `u` (update), `s` (search) (v2 / granular). v2 letters can be combined, e.g., `Patient.crus`.
+
+Separate multiple scopes with spaces, e.g., `user/Patient.read user/Observation.read`. URL-encode `/` as `%2F` and spaces as `%20`.
+
+Common examples:
 
 | Scope | Description |
 |---|---|
@@ -187,10 +194,36 @@ Multiple scopes are separated by spaces. Common examples:
 | `user/*.write` | Write access to all resources |
 | `user/*.*` | Full access to all resources |
 | `user/Patient.read` | Read Patient resources only |
-| `openid` | OpenID Connect scope |
-| `offline_access` | Request a refresh token |
 
-**URL encoding reminder:** When passing scopes in a URL, encode `/` as `%2F` and spaces as `%20`. For example: `scope=user%2F*.read%20user%2F*.write`
+### Launch and OpenID scopes
+
+| Scope | Description |
+|---|---|
+| `launch` | Allows external app launches |
+| `launch/patient` | Allows patient context |
+| `openid` | OpenID Connect scope |
+| `fhirUser` | Returns the authenticated user's FHIR identity |
+| `offline_access` | Requests a refresh token |
+
+### Resources by context
+
+Examples: `user/*.read`, `system/Patient.crus`, `patient/Appointment.write`.
+
+**`user/`** — most clinical resources support `read`, `write`, `*`, and v2 `c r u s`. Read-only: `Coverage`, `MedicationDispense`, `Questionnaire`, `RelatedPerson`, `ServiceRequest`, `Specimen`. `Note` supports `read` and `write` only (no `*`). Resources: `*`, `AllergyIntolerance`, `CarePlan`, `CareTeam`, `Condition`, `Coverage`, `DetectedIssue`, `Device`, `DiagnosticReport`, `DocumentReference`, `Encounter`, `Goal`, `Immunization`, `Location`, `Medication`, `MedicationDispense`, `MedicationRequest`, `Note`, `Observation`, `Organization`, `Patient`, `Practitioner`, `PractitionerRole`, `Procedure`, `Provenance`, `Questionnaire`, `QuestionnaireResponse`, `RelatedPerson`, `ServiceRequest`, `Specimen`.
+
+**`system/`** — same set as `user/` plus `Task` (full access). Read-only resources match `user/`. `system/Plugins.*` grants full access to plugin install/list/management endpoints.
+
+**`patient/`** — restricted to the launch-context patient. Writable: `Appointment`, `Communication`, `Consent`, `Coverage`, `Media`, `MedicationStatement`, `Patient`, `PaymentNotice`, `QuestionnaireResponse`. All others read-only. Additional read-only resources beyond the user/system list: `Appointment`, `Communication`, `Consent`, `Media`, `MedicationStatement`, `PaymentNotice`, `Schedule`, `Slot`.
+
+### Operation scopes
+
+Some FHIR operations require a dedicated scope in addition to the resource scope. Available under both `user/` and `system/`:
+
+| Scope suffix | Operation |
+|---|---|
+| `Claim.add-activity-log-item` | Add an activity log entry to a Claim |
+| `DiagnosticReport.create-lab-report` | Create a lab report |
+| `Practitioner.send-reset-password-email` | Send a password-reset email to a practitioner |
 
 ## Additional reading
 - [Authentication Best Practices](/api/authentication-best-practices)
