@@ -75,6 +75,43 @@ class CustomChartLayout(BaseHandler):
         return [layout.apply()]
 ```
 
+### Async Execution
+
+By default, effects returned from a plugin's `compute` method are executed inline as part of the request that triggered them. Any `Effect` can be opted into asynchronous execution by chaining `.set_async()` on it, in which case the platform will run the effect as an asynchronous task instead of inline. This is useful for effects that should run on a delay, that are tolerant of retries, or that you don't want to block the originating request.
+
+```python
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self):
+        claim_id = self.event.context["claim_id"]
+        return [
+            ClaimEffect(claim_id=claim_id)
+            .add_comment("Reviewed by automation.")
+            .set_async(delay_seconds=60, max_retries=3)
+        ]
+```
+
+`set_async()` returns the same `Effect` so it can be chained directly off any effect-producing call (e.g. `ClaimEffect(...).add_comment(...)`, `Response(...).apply()`, or a manually-constructed `Effect(...)`).
+
+#### Parameters
+
+| Parameter       | Type  | Description                                                                                                                                                                                  | Required |
+| --------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `delay_seconds` | `int` | Number of seconds to wait before running the effect. Must be non-negative. `0` schedules the effect to run asynchronously as soon as possible.                                              | No       |
+| `max_retries`   | `int` | Maximum number of retry attempts on failure. Must be non-negative. When omitted, the platform default is applied. Pass `0` to explicitly disable retries.                                   | No       |
+
+Both parameters are keyword-only. Calling `.set_async()` with neither argument is a no-op and returns the effect unchanged.
+
+#### Implementation Details
+
+- Negative values or non-integer values for `delay_seconds` or `max_retries` raise `TypeError` / `ValueError`.
+
 ### Disallowed Effect/Event Combinations
 
 Canvas prevents certain combinations of events and effects to avoid infinite loops that could occur when an effect triggers the same event that generated it. The following combinations are specifically disallowed:
