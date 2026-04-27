@@ -73,15 +73,16 @@ tests_with_code = LabPartnerTest.objects.filter(order_code="XYZ123")
 
 ### LabPartnerTest Attributes
 
-| Field Name  | Type       | Description                                                                                  |
-| ----------- | ---------- | -------------------------------------------------------------------------------------------- |
-| id          | UUID       | The universally unique identifier for the test record.                                       |
-| dbid        | Integer    | The internal database identifier (primary key) for the test record.                          |
-| lab_partner | ForeignKey | A reference to the related `LabPartner` (accessible via the related name `available_tests`). |
-| order_code  | String     | A code used to identify the test order. May be blank.                                        |
-| order_name  | Text       | The name of the test order.                                                                  |
-| keywords    | Text       | Keywords associated with the test. May be blank.                                             |
-| cpt_code    | String     | The CPT code for the test, if available. Can be blank or null.                               |
+| Field Name  | Type                                                | Description                                                                                  |
+| ----------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| id          | UUID                                                | The universally unique identifier for the test record.                                       |
+| dbid        | Integer                                             | The internal database identifier (primary key) for the test record.                          |
+| lab_partner | [LabPartner](#labpartner)                           | A reference to the related `LabPartner` (accessible via the related name `available_tests`). |
+| order_code  | String                                              | A code used to identify the test order. May be blank.                                        |
+| order_name  | Text                                                | The name of the test order.                                                                  |
+| keywords    | Text                                                | Keywords associated with the test. May be blank.                                             |
+| cpt_code    | String                                              | The CPT code for the test, if available. Can be blank or null.                               |
+| questions   | [LabPartnerTestQuestion](#labpartnertestquestion)[] | AOE questions associated with this test.                                                     |
 
 ---
 
@@ -102,7 +103,7 @@ questions = test.questions.all()
 
 To filter for required questions only:
 
-```python
+```python?partial=true
 required_questions = test.questions.filter(required=True)
 ```
 
@@ -124,7 +125,7 @@ The `LabPartnerTestQuestionChoice` model represents a selectable answer option f
 
 To retrieve choices for a given question:
 
-```python
+```python?partial=true
 question = test.questions.first()
 choices = question.choices.all()
 ```
@@ -133,36 +134,38 @@ choices = question.choices.all()
 
 ```python
 from canvas_sdk.v1.data.lab import LabPartnerTest
+from logger import log
 
 test = LabPartnerTest.objects.get(id="your-uuid-here")
 
 for question in test.questions.all():
-    self.log.info(f"Question: {question.body} (required={question.required})")
+    log.info(f"Question: {question.body} (required={question.required})")
     for choice in question.choices.all():
-        self.log.info(f"  - {choice.label}: {choice.value}")
+        log.info(f"  - {choice.label}: {choice.value}")
 ```
 
 ## Attributes
 
 ### LabPartnerTestQuestion Attributes
 
-| Field Name       | Type       | Description                                                                                         |
-| ---------------- | ---------- | --------------------------------------------------------------------------------------------------- |
-| dbid             | Integer    | The internal database identifier (primary key) for the question.                                    |
-| lab_partner_test | ForeignKey | A reference to the related `LabPartnerTest` (accessible via the related name `questions`).          |
-| required         | Boolean    | Whether this question must be answered when ordering the test.                                      |
-| code             | String     | A code identifying the question (e.g., "FAST" for fasting status).                                 |
-| body             | Text       | The full text of the question displayed to the user.                                                |
-| type             | String     | The question type (e.g., "text", "select", "date", "numeric").                                     |
-| created          | DateTime   | When the record was created.                                                                        |
-| modified         | DateTime   | When the record was last modified.                                                                  |
+| Field Name       | Type                                                            | Description                                                                                         |
+| ---------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| dbid             | Integer                                                         | The internal database identifier (primary key) for the question.                                    |
+| lab_partner_test | [LabPartnerTest](#labpartnertest)                               | A reference to the related `LabPartnerTest` (accessible via the related name `questions`).          |
+| required         | Boolean                                                         | Whether this question must be answered when ordering the test.                                      |
+| code             | String                                                          | A code identifying the question (e.g., "FAST" for fasting status).                                 |
+| body             | Text                                                            | The full text of the question displayed to the user.                                                |
+| type             | String                                                          | The question type (e.g., "text", "select", "date", "numeric").                                     |
+| created          | DateTime                                                        | When the record was created.                                                                        |
+| modified         | DateTime                                                        | When the record was last modified.                                                                  |
+| choices          | [LabPartnerTestQuestionChoice](#labpartnertestquestionchoice)[] | Selectable answer options for this question.                                                        |
 
 ### LabPartnerTestQuestionChoice Attributes
 
-| Field Name                 | Type       | Description                                                                                        |
-| -------------------------- | ---------- | -------------------------------------------------------------------------------------------------- |
-| dbid                       | Integer    | The internal database identifier (primary key) for the choice.                                     |
-| lab_partner_test_question  | ForeignKey | A reference to the related `LabPartnerTestQuestion` (accessible via the related name `choices`).   |
+| Field Name                 | Type                                              | Description                                                                                        |
+| -------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| dbid                       | Integer                                           | The internal database identifier (primary key) for the choice.                                     |
+| lab_partner_test_question  | [LabPartnerTestQuestion](#labpartnertestquestion) | A reference to the related `LabPartnerTestQuestion` (accessible via the related name `choices`).   |
 | label                      | String     | The display label for this choice (shown to the user).                                             |
 | value                      | String     | The value submitted when this choice is selected.                                                  |
 | created                    | DateTime   | When the record was created.                                                                       |
