@@ -539,9 +539,9 @@ guides_list:
     uses:
       - sdk
 
-  - title: "Storing Remote Patient Management Readings"
-    url: /guides/remote-patient-monitoring-with-attribute-hubs/
-    description: Utilize AttributeHubs to store custom data from a variety of RPM devices
+  - title: "Custom Data: Managing Plugin State for Syncing to an External System"
+    url: /guides/using-attribute-hubs-for-plugin-state/
+    description: Utilize AttributeHubs to store custom data describing the status of a data synchronization plugin
     uses:
       - sdk
 

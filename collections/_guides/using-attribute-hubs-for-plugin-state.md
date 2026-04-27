@@ -39,9 +39,9 @@ The hub demonstrates several AttributeHub value types working together:
 
 | Attribute | Type | Purpose |
 |-----------|------|---------|
-| `last_sync_cursor` | string | ISO timestamp of the most recent result fetched |
+| `last_sync_cursor` | datetime | Timestamp of the most recent result fetched |
 | `is_running` | boolean | Lock flag to prevent overlapping runs |
-| `last_run_at` | string | When the sync last completed |
+| `last_run_at` | datetime | When the sync last completed |
 | `results_synced` | integer | Running total of results processed |
 | `batch_size` | integer | How many results to pull per run |
 | `code_mapping` | JSON (dict) | Vendor test codes → LOINC codes |
@@ -135,9 +135,7 @@ def get_sync_state():
 
     if created:
         hub.set_attributes({
-            "last_sync_cursor": "",
             "is_running": False,
-            "last_run_at": "",
             "results_synced": 0,
             "batch_size": 50,
             "code_mapping": DEFAULT_CODE_MAPPING,
@@ -169,7 +167,7 @@ class SyncLabs(CronTask):
             # Always release the lock, even if something fails
             hub.set_attributes({
                 "is_running": False,
-                "last_run_at": self.target,
+                "last_run_at": datetime.fromisoformat(self.target),
             })
 
         return []
@@ -190,7 +188,7 @@ class SyncLabs(CronTask):
         results = []
         for i in range(3):
             code_index = (synced_count + i) % len(DEMO_TEST_CODES)
-            collected_at = (now + timedelta(seconds=i)).replace(microsecond=0).isoformat()
+            collected_at = (now + timedelta(seconds=i)).replace(microsecond=0)
             results.append({
                 "accession_number": f"DEMO-{synced_count + i + 1:04d}",
                 "test_code": DEMO_TEST_CODES[code_index],
@@ -208,7 +206,7 @@ class SyncLabs(CronTask):
         code_mapping = hub.get_attribute("code_mapping") or {}
         failed = hub.get_attribute("failed_accessions") or []
         synced_count = hub.get_attribute("results_synced") or 0
-        latest_cursor = hub.get_attribute("last_sync_cursor") or ""
+        latest_cursor = hub.get_attribute("last_sync_cursor")
 
         for result in results:
             accession = result.get("accession_number", "")
@@ -223,15 +221,15 @@ class SyncLabs(CronTask):
                 failed.append(accession)
                 continue
 
-            # In a real plugin, you would create a FHIR DiagnosticReport here
-            # using the Canvas FHIR API with the mapped LOINC code.
+            # In a real plugin, you would create an Observation here using
+            # canvas_sdk.effects.observation.Observation with the mapped LOINC code.
             log.info(
                 f"Processed result {accession}: {vendor_code} → {loinc_code}"
             )
 
             synced_count += 1
-            result_timestamp = result.get("collected_at", "")
-            if result_timestamp > latest_cursor:
+            result_timestamp = result.get("collected_at")
+            if latest_cursor is None or result_timestamp > latest_cursor:
                 latest_cursor = result_timestamp
 
         hub.set_attributes({
@@ -261,9 +259,7 @@ hub, created = AttributeHub.objects.get_or_create(
 
 if created:
     hub.set_attributes({
-        "last_sync_cursor": "",
         "is_running": False,
-        "last_run_at": "",
         "results_synced": 0,
         "batch_size": 50,
         "code_mapping": DEFAULT_CODE_MAPPING,
@@ -275,10 +271,12 @@ Because this plugin only needs one state hub, we use the fixed id `"singleton"`.
 The `type` and `id` together form a unique key, so every invocation loads the
 same hub.
 
-Notice the variety of types in one hub: empty strings for cursors that haven't
-been set yet, a boolean lock, integer counters and configuration, a dict for
-code mappings, and a list for tracking failures. `set_attributes` maps each
-Python type to the appropriate database column automatically.
+Notice the variety of types in one hub: a boolean lock, integer counters and
+configuration, a dict for code mappings, and a list for tracking failures.
+Timestamp attributes like `last_sync_cursor` and `last_run_at` start as `None`
+(unset) and are populated with `datetime` objects once the first run completes.
+`set_attributes` maps each Python type to the appropriate database column
+automatically.
 
 ### Run lock
 
@@ -298,13 +296,15 @@ try:
 finally:
     hub.set_attributes({
         "is_running": False,
-        "last_run_at": self.target,
+        "last_run_at": datetime.fromisoformat(self.target),
     })
 ```
 
 The `finally` block ensures the lock is released even if processing raises an
 exception. Without it, a crash would leave `is_running` as `True` permanently,
-and the sync would never run again.
+and the sync would never run again. Note that `self.target` is an ISO 8601
+string, so we parse it into a `datetime` before storing it — this way
+AttributeHub stores it in the `timestamp_value` column rather than as text.
 
 ### Cursor-based pagination
 
@@ -373,7 +373,7 @@ canvas logs --host YOUR_INSTANCE
 Within 10 minutes you should see the first run initialize the state hub and
 process the demo batch:
 
-```
+```text
 INFO Initialized lab sync state hub with defaults
 INFO Processed result DEMO-0001: CBC → 58410-2
 INFO Processed result DEMO-0002: HBA1C → 4548-4
@@ -390,10 +390,10 @@ evolve over successive runs.
 ## Inspecting and updating state
 
 Because all sync state lives in a single AttributeHub, you can inspect or
-adjust it through a SimpleAPI endpoint, the Canvas admin, or a one-off script.
+adjust it through a SimpleAPI endpoint or a plugin-based application.
 For example, to reset the cursor and re-sync from scratch:
 
-```python
+```python?partial=true
 hub = AttributeHub.objects.get(type="lab_sync_state", id="singleton")
 hub.set_attributes({
     "last_sync_cursor": "",
@@ -404,7 +404,7 @@ hub.set_attributes({
 
 To add a new code mapping without redeploying:
 
-```python
+```python?partial=true
 hub = AttributeHub.objects.get(type="lab_sync_state", id="singleton")
 mapping = hub.get_attribute("code_mapping")
 mapping["VITAMIN_D"] = "1989-3"
