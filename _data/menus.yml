@@ -682,6 +682,8 @@ sdk_overview:
     url: /sdk/plugin-logs/
   - title: "Protocols Module"
     url: /sdk/protocols/
+  - title: "Provider Companion"
+    url: /sdk/companion/
   - title: "Questionnaires"
     url: /sdk/questionnaires/
   - title: "Sandboxing and Allowed Imports"
