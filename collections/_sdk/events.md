@@ -1189,7 +1189,7 @@ These events fire as a result of records being created, updated, or deleted.
 "timestamp": str
 "payment_method_and_description": str
 "claim_payments": [
-    "claim_externally_exposable_id": str
+    "claim_id": str
     "allocated_cents": str
 ]</pre></td>
     </tr>
