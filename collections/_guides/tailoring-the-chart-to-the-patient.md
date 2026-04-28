@@ -43,7 +43,7 @@ Project created in /Users/andrew/src/canvas-plugins/pediatric-patient-chart-cust
 ```
 
 This output shows the location of our freshly generated plugin project. In this
-directory, you'll see a default class (`pediatric_patient_chart_customizations/handlers/my_protocol.py`) provided as a starting point for your
+directory, you'll see a default class (`pediatric_patient_chart_customizations/handlers/event_handlers.py`) provided as a starting point for your
 code.
 
 ```sh
@@ -53,13 +53,13 @@ pediatric_patient_chart_customizations/
 ├── README.md
 └── handlers
     ├── __init__.py
-    └── my_protocol.py
+    └── event_handlers.py
 
 2 directories, 4 files
 ```
 
 You can use this file as a starting point, or you can start fresh with a new
-file. At minimum, I recommend renaming `my_protocol.py` to something more
+file. At minimum, I recommend renaming `event_handlers.py` to something more
 descriptive, and you'll need to update the references to the file in
 `CANVAS_MANIFEST.json` as well.
 

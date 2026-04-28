@@ -539,6 +539,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Custom Data: Managing Plugin State for Syncing to an External System"
+    url: /guides/using-attribute-hubs-for-plugin-state/
+    description: Utilize AttributeHubs to store custom data describing the status of a data synchronization plugin
+    uses:
+      - sdk
+
   - title: "Embedding a SMART on FHIR App"
     url: /guides/embedding-a-smart-on-fhir-application/
     description: Embed a SMART app into Canvas
