@@ -181,13 +181,14 @@ Check out the [Task Effects](/sdk/effect-tasks/) and [Task Metadata](/sdk/effect
 
 ### Command Metadata & Validation
 
-| Effect | Description |
-|---|---|
-| UPSERT_COMMAND_METADATA | Add or update metadata on a command. Check out [Command Metadata](/sdk/effect-command-metadata/). |
-| COMMAND_AVAILABLE_ACTIONS_RESULTS | Sort or filter command available actions. Check out [Command Actions](/sdk/commands/#command-actions). |
-| COMMAND_VALIDATION_ERRORS | Return validation errors for commands. Check out [Command Validation](/sdk/effect-command-validation/). |
-| EVENT_VALIDATION_ERROR | Return validation errors for events. Check out [Event Validation Error](/sdk/effect-event-validation-error/). |
-| BATCH_ORIGINATE_COMMANDS | Originate multiple commands in a note at once. Check out [Batch Originate](/sdk/effect-batch-originate/). |
+| Effect                                  | Description                                                                                                                                                                 |
+|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| UPSERT_COMMAND_METADATA                 | Add or update metadata on a command. Check out [Command Metadata](/sdk/effect-command-metadata/).                                                                           |
+| COMMAND_AVAILABLE_ACTIONS_RESULTS       | Sort or filter command available actions. Check out [Command Actions](/sdk/commands/#command-actions).                                                                      |
+| COMMAND_VALIDATION_ERRORS               | Return validation errors for commands. Check out [Command Validation](/sdk/effect-command-validation/).                                                                     |
+| EVENT_VALIDATION_ERROR                  | Return validation errors for events. Check out [Event Validation Error](/sdk/effect-event-validation-error/).                                                               |
+| BATCH_ORIGINATE_COMMANDS                | Originate multiple commands in a note at once. Check out [Batch Originate](/sdk/effect-batch-originate/).                                                                   |
+| COMMAND__FORM__CREATE_ADDITIONAL_FIELDS | Returns additional fields to be displayed on a command and stored as command metadata. Check out [Command Metadata Create Form](/sdk/command-metadata-create-form-effect/). |
 
 
 ### Notes

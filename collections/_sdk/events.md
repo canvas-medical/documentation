@@ -21199,9 +21199,11 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>COMMAND__FORM__GET_ADDITIONAL_FIELDS</td>
       <td>Command is originated. See <a href="{% link _sdk/effects/command_metadata_create_form.md %}" target="_blank">Command metadata Create Form</a> for how to use this event.
-      <br />Context object:
-      <pre>"command_uuid": str
-"schema_key": str</pre></td>
+      <br />Target:
+      <pre>"command_uuid": str</pre>
+Context object:
+      <pre>"schema_key": str
+"purpose": "form" | "print"</pre></td>
     </tr>
   </tbody>
 </table>
