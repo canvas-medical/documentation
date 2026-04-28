@@ -105,9 +105,9 @@ After you've [installed your plugin](/sdk/canvas_cli/#canvas-install) and create
     ```sh
     INFO 2024-09-26 17:04:08,396 Starting server, listening on port 50051
     INFO 2024-09-26 17:04:08,396 Loading custom-plugins/task_webhook
-    INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.my_protocol:Protocol'
+    INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.event_handlers:Protocol'
     INFO 2024-09-26 17:04:24,410 A Task was created!
-    INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.my_protocol:Protocol.compute() completed (0 ms)
+    INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.event_handlers:Protocol.compute() completed (0 ms)
     INFO 2024-09-26 17:04:24,411 Responded to Event TASK_CREATED (1 ms)
     ```
 Awesome! But we're not here to log, we need to make an API request. To do that, we need to use the HTTP client found in the Canvas SDK's [Utils module](/sdk/utils/)
@@ -142,9 +142,9 @@ We can use <https://webhook.site/> for a quick way to test our webhook and see t
 After you've [installed your updated plugin](/sdk/canvas_cli/#canvas-install) and created a task, you should see this in your log stream:
     ```sh
     INFO 2024-09-26 17:18:23,206 Loading custom-plugins/task_webhook
-    INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.my_protocol:Protocol'
+    INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.event_handlers:Protocol'
     INFO 2024-09-26 17:18:33,850 Successfully notified API of task creation!
-    INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.my_protocol:Protocol.compute() completed (693 ms)
+    INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.event_handlers:Protocol.compute() completed (693 ms)
     INFO 2024-09-26 17:18:33,851 Responded to Event TASK_CREATED (696 ms)
     ```
 This log output is a great reminder for me to mention that making HTTP requests to external servers will slow plugin execution while it waits on the external server to respond. It's a good idea to make sure the servers you're hitting have a sufficiently quick response time.
@@ -165,7 +165,7 @@ We'll set two secrets, one for the unique id of the webhook, and one for an auth
         "components": {
             "handlers": [
                 {
-                    "class": "task_webhook.handlers.my_protocol:Protocol",
+                    "class": "task_webhook.handlers.event_handlers:Protocol",
                     "description": "Hit an API when a task is created",
                     "data_access": {
                         "event": "",
@@ -1395,7 +1395,7 @@ The Canvas CLI gives you a great head start when creating a plugin. Simply run `
       [1/1] project_name (My Cool Plugin): Pediatric Patient Chart Customizations
     Project created in /Users/andrew/src/canvas-plugins/pediatric-patient-chart-customizations
     ```
-This output shows the location of our freshly generated plugin project. In this directory, you'll see a default class (`pediatric_patient_chart_customizations/handlers/my_protocol.py`) provided as a starting point for your code.
+This output shows the location of our freshly generated plugin project. In this directory, you'll see a default class (`pediatric_patient_chart_customizations/handlers/event_handlers.py`) provided as a starting point for your code.
     ```sh
     $ tree pediatric_patient_chart_customizations/
     pediatric_patient_chart_customizations/
@@ -1403,10 +1403,10 @@ This output shows the location of our freshly generated plugin project. In this 
     ├── README.md
     └── handlers
         ├── __init__.py
-        └── my_protocol.py
+        └── event_handlers.py
     2 directories, 4 files
     ```
-You can use this file as a starting point, or you can start fresh with a new file. At minimum, I recommend renaming `my_protocol.py` to something more descriptive, and you'll need to update the references to the file in `CANVAS_MANIFEST.json` as well.
+You can use this file as a starting point, or you can start fresh with a new file. At minimum, I recommend renaming `event_handlers.py` to something more descriptive, and you'll need to update the references to the file in `CANVAS_MANIFEST.json` as well.
 ###  Move Immunizations to the Top of the Patient Summary 
 I've created a new file, `handlers/pediatric_chart_layout.py`, and I've updated my `CANVAS_MANIFEST.json` to reflect it.
     ```sh
@@ -1926,9 +1926,9 @@ Let's take a look at what was generated for us.
     ├── paperwork_eviscerator
     │    ├── CANVAS_MANIFEST.json
     │    ├── README.md
-    │    └── protocols
+    │    └── handlers
     │         ├── __init__.py
-    │         └── my_protocol.py
+    │         └── event_handlers.py
     ├── pyproject.toml
     └── tests
         ├── __init__.py
@@ -1946,7 +1946,7 @@ The CANVAS_MANIFEST.json is particularly important. It is used during the instal
         "components": {
             "handlers": [
                 {
-                    "class": "paperwork_eviscerator.handlers.my_protocol:Protocol",
+                    "class": "paperwork_eviscerator.handlers.event_handlers:Protocol",
                     "description": "A handler that does xyz...",
                     "data_access": {
                         "event": "",
@@ -1973,7 +1973,7 @@ Only handlers declared here are invoked by the plugin runner. If they are not de
 Secrets can be declared (though not defined) here. Any secrets declared here will be initialized on plugin install, and can be set in the plugin listing in the Settings section of your Canvas instance.
 ###  README.md 
 Share details about the purpose of your plugins and how it works in this README file.
-###  handlers/my_protocol.py 
+###  handlers/event_handlers.py 
 This file contains the handler class declared in the manifest file. We've included some sample content and copious comments for inspiration.
     ```python
     from canvas_sdk.events import EventType
