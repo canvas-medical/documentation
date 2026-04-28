@@ -41135,7 +41135,8 @@ url
 string 
 Source of the definition of the extension code.
 **Value Options Supported:**
-  -   - 
+  - http://hl7.org/fhir/StructureDefinition/display 
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-extension-questionnaire-uri 
 valueString 
 string 
 Display name for the Questionnaire referenced by `questionnaire`
@@ -41336,7 +41337,8 @@ url
 string 
 Source of the definition of the extension code.
 **Value Options Supported:**
-  -   - 
+  - http://hl7.org/fhir/StructureDefinition/display 
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-extension-questionnaire-uri 
 valueString 
 string 
 Display name for the Questionnaire referenced by `questionnaire`
@@ -41500,7 +41502,8 @@ url
 string 
 Source of the definition of the extension code.
 **Value Options Supported:**
-  -   - 
+  - http://hl7.org/fhir/StructureDefinition/display 
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-extension-questionnaire-uri 
 valueString 
 string 
 Display name for the Questionnaire referenced by `questionnaire`
@@ -41740,7 +41743,8 @@ url
 string 
 Source of the definition of the extension code.
 **Value Options Supported:**
-  -   - 
+  - http://hl7.org/fhir/StructureDefinition/display 
+  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-extension-questionnaire-uri 
 valueString 
 string 
 Display name for the Questionnaire referenced by `questionnaire`
