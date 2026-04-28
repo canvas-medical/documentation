@@ -1104,6 +1104,31 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM_QUEUE_MOVED</th></tr>
+    <tr><td colspan="2">Occurs when a claim moves from one queue to another.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"patient":
+  "id": pt_id
+"note":
+  "id": note_id
+"queue_entered":
+  "id": queue_id
+"queue_exited":
+  "id": queue_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Billing Line Items
 
 <table>
@@ -21132,6 +21157,10 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
       <td>A patient chart's summary section is loading.</td>
+    </tr>
+    <tr>
+      <td>PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION</td>
+      <td>Canvas is requesting the content for a custom patient chart summary section. See <a href='/sdk/patient-chart-summary-custom-section-handler/'>Patient Chart Summary Custom Section Handler</a>.</td>
     </tr>
     <tr>
       <td>PANEL_SECTIONS_CONFIGURATION</td>

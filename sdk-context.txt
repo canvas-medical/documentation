@@ -5157,14 +5157,29 @@ All parameters can be set upon initialization, and also updated on the class ins
 All commands have the following methods:
 ####  originate 
 Returns an Effect that originates a new command in the note body.
+**Parameters:**
+Name | Type | Required | Default | Description  
+---|---|---|---|---  
+`commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT.  
+`line_number` | `int` | No | `-1` | The line number in the note where the command should be inserted. By default the command will insert at the bottom of the note.  
 **See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
-**Example** :
+**Examples** :
     ```python
     from canvas_sdk.commands import PlanCommand
     def compute():
         new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
         new_plan.narrative = 'newer'
         return [new_plan.originate()]
+    ```
+To originate and commit in a single effect:
+    ```python
+    from canvas_sdk.commands import DiagnoseCommand
+    def compute():
+        diagnose_command = DiagnoseCommand(
+            note_uuid='550e8400-e29b-41d4-a716-446655440000',
+            icd10_code='E11.9'
+        )
+        return [diagnose_command.originate(commit=True)]
     ```
 ####  edit 
 Returns an Effect that edits an existing command with the values set on the command class instance.
@@ -5441,9 +5456,20 @@ Individual command types have additional actions tailored to their functionality
                 payload=json.dumps(filtered_actions)
             )]
     ```
-##  Chaining Methods with a User-set UUID 
-A common use case is to originate and also commit a command in a single plugin action. However, attempting to commit a command without a `command_uuid` will throw an error. Because the `originate` method executes asynchronously, there is not currently a clean way to get the `command_uuid` back from the originate action and use it for the commit action in the same operation.
-The solution is to set the UUID in the plugin – using a valid Version 4 UUID – and pass it through to both the originate and commit actions. This is accomplished by manually setting the `command_uuid` before calling the methods:
+##  Originating and Committing Together 
+The simplest way to originate and commit a command in a single plugin action is to pass `commit=True` to the `originate()` method:
+    ```python
+    from canvas_sdk.commands import DiagnoseCommand
+    def compute():
+        diagnose_command = DiagnoseCommand(
+            note_uuid='550e8400-e29b-41d4-a716-446655440000',
+            icd10_code='E11.9'
+        )
+        return [diagnose_command.originate(commit=True)]
+    ```
+This handles the origination and commit in a single effect, without needing to manage a `command_uuid` yourself.
+###  Chaining Methods with a User-set UUID 
+If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This is also required for questionnaire-based commands, where `originate()` creates the command but does not add the answers — you must chain an `edit()` to populate the responses (see Usage Example). This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
     ```python
     from uuid import uuid4
     from canvas_sdk.commands import DiagnoseCommand
@@ -10495,6 +10521,7 @@ modified | DateTime
 Defines the metadata for claim queues used in revenue workflows.
 Field Name | Type  
 ---|---  
+id | UUID  
 dbid | Integer  
 queue_sort_ordering | Integer  
 name | String  
@@ -10574,6 +10601,11 @@ provider_tax_id | String
 provider_tax_id_type | String  
 provider_taxonomy | String  
 provider_ptan_identifier | String  
+provider_addr1 | String  
+provider_addr2 | String  
+provider_city | String  
+provider_state | String  
+provider_zip | String  
 referring_provider_id | String  
 referring_provider_first_name | String  
 referring_provider_last_name | String  
@@ -17046,6 +17078,11 @@ Attribute | Type | Description
 `tax_id_type` | `str` or `None` | Tax ID type (max 1 char)  
 `taxonomy` | `str` or `None` | Taxonomy code (max 100 chars)  
 `ptan_identifier` | `str` or `None` | PTAN identifier (max 50 chars)  
+`addr1` | `str` or `None` | Address line 1 (max 255 chars)  
+`addr2` | `str` or `None` | Address line 2 (max 255 chars)  
+`city` | `str` or `None` | City (max 255 chars)  
+`state` | `str` or `None` | State code (max 2 chars)  
+`zip` | `str` or `None` | ZIP code (max 255 chars)  
 ####  ClaimReferringProvider 
 Attribute | Type | Description  
 ---|---|---  
@@ -17247,7 +17284,7 @@ Parameter | Type | Description | Required
 `key` | `str` | Unique identifier for the metadata entry within the command context | Yes  
 `value` | `str` | The metadata value to store | Yes  
 ####  Prerequisites 
-The command effect must be initialized with a `command_uuid` corresponding to an existing command.
+The command effect must be initialized with a `command_uuid`. This can be either the UUID of an existing command or the UUID of a command being originated in the same effect list.
 Attribute | Type | Description | Required  
 ---|---|---|---  
 `command_uuid` | `str` | Id of the command record to associate metadata with | Yes  
@@ -17260,18 +17297,41 @@ An `Effect` object configured for upserting command metadata.
   - Raises `ValueError` if `command_uuid` is not set on the command effect
 ##  Implementation Details 
 ###  Validation 
-The effect performs comprehensive validation before execution:
-  1. **Command Existence Validation** : Verifies that the referenced command exists with the given `command_uuid` and `schema_key`
-     - Returns a descriptive error if the command is not found
-  2. **Field Validation** : Ensures all required fields are provided and properly formatted
+The effect performs validation at two stages:
+  1. **SDK Validation** : Ensures all required fields are provided before the effect is created
      - `command_uuid` must be set on the command effect
      - Both `key` and `value` must be provided
+  2. **Server-Side Validation** : When the effect is processed, the server verifies that the referenced command exists
+     - Returns a descriptive error if the command is not found after all effects in the list have been processed
 ##  Example Usage 
 ###  Basic Usage 
     ```python
     from canvas_sdk.commands import PlanCommand
     plan = PlanCommand(command_uuid="63hdik")
     effect = plan.upsert_metadata(key="my_plugin:priority", value="high")
+    ```
+###  Example: Chaining with originate() 
+You can attach metadata to a command at the same time you originate it by returning both effects in the same list:
+    ```python
+    import uuid
+    from canvas_sdk.commands import PlanCommand
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class OriginateWithMetadata(BaseHandler):
+        """Originates a plan command with metadata attached in a single operation."""
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__SECTION__LOADED)
+        def compute(self) -> list[Effect]:
+            command_uuid = str(uuid.uuid4())
+            plan = PlanCommand(
+                note_uuid=self.context["note_id"],
+                command_uuid=command_uuid,
+                narrative="Follow up in 2 weeks",
+            )
+            return [
+                plan.originate(),
+                plan.upsert_metadata(key="my_plugin:source", value="auto_generated"),
+            ]
     ```
 ###  Example: Tagging a command on commit 
     ```python
@@ -19835,7 +19895,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -19848,6 +19908,7 @@ ADD_OR_UPDATE_PROTOCOL_CARD | Can be used to generate a ProtocolCard in the Canv
 Effect | Description  
 ---|---  
 SHOW_PATIENT_CHART_SUMMARY_SECTIONS | Can be used to reorder or hide the summary sections in a patient chart. Check out [this effect class](/sdk/layout-effect/#patient-summary).  
+PATIENT_CHART_SUMMARY__CUSTOM_SECTION | Can be used to serve content for a custom patient chart summary section. Check out [Patient Chart Summary Custom Section](/sdk/patient-chart-summary-custom-section-effect/).  
 SHOW_PATIENT_PROFILE_SECTIONS | Can be used to reorder or hide sections in the patient profile. Check out [Layout Effects](/sdk/layout-effect/#patient-profile).  
 SHOW_PANEL_SECTIONS | Can be used to reorder or hide sections in the side panel. Check out [Layout Effects](/sdk/layout-effect/#panel-configuration).  
 SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration/).  
@@ -20066,7 +20127,7 @@ Check out the [Commands documentation](/sdk/commands/) for full details.
 Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COMMAND`. The available actions are:
 Action | Description  
 ---|---  
-ORIGINATE | Create and open a new command in a note.  
+ORIGINATE | Create and open a new command in a note. Supports an optional `commit` flag to also commit the command in the same operation if the command is commit-able via SDK.  
 EDIT | Modify field values on an existing command.  
 DELETE | Remove an uncommitted command from a note.  
 COMMIT | Finalize and save a command.  
@@ -20654,6 +20715,21 @@ Target object | Context object
       "id": pt_id
     "note":
       "uuid": note_id  
+CLAIM_QUEUE_MOVED  
+---  
+Occurs when a claim moves from one queue to another.  
+Target object | Context object  
+    "id": claim_id
+    "type": [Claim](/sdk/data-claim/#claim)
+| 
+    "patient":
+      "id": pt_id
+    "note":
+      "id": note_id
+    "queue_entered":
+      "id": queue_id
+    "queue_exited":
+      "id": queue_id  
 ####  Billing Line Items 
 BILLING_LINE_ITEM_CREATED  
 ---  
@@ -32076,6 +32152,7 @@ Event | Occurs when | UNKNOWN | Default event type unlikely to ever be emitted.
 CRON | This event fires regularly and can be used for scheduled tasks. See [CronTask](/sdk/handlers-crontask/).  
 CLAIM__CONDITIONS | The conditions are loaded within the claim summary.  
 PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION | A patient chart's summary section is loading.  
+PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION | Canvas is requesting the content for a custom patient chart summary section. See [Patient Chart Summary Custom Section Handler](/sdk/patient-chart-summary-custom-section-handler/).  
 PANEL_SECTIONS_CONFIGURATION | The panel section is loading.  
 PLUGIN_CREATED | A plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
 PLUGIN_UPDATED | A plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
@@ -35910,9 +35987,9 @@ These properties ensure that the effect integrates seamlessly with the rest of t
 ###  **Attributes**
 Attribute | Type | Description  
 ---|---|---  
-`questionnaire_id` | `str | UUID` | The unique ID of the Questionnaire.  
+`questionnaire_id` | `str` | `UUID` | The unique ID of the Questionnaire.  
 `create_command` | `bool` | If `True`, a Questionnaire Command is created inside a Note.  
-`note_id` | `str | UUID | None` | Associates the response with an existing Note if applicable.  
+`note_id` | `str` | `UUID` | `None` | Associates the response with an existing Note if applicable.  
 ----- END PAGE https://docs.canvasmedical.com/sdk/form-result-effect/
 
 
@@ -37024,6 +37101,8 @@ IMMUNIZATIONS | immunizations
 SURGICAL_HISTORY | surgical_history  
 FAMILY_HISTORY | family_history  
 CODING_GAPS | coding_gaps  
+###  Custom Sections 
+In addition to the built-in sections above, you can add fully custom sections to the chart summary. Custom sections render plugin-provided content in an iframe and are identified by a unique key. See [Patient Chart Summary Custom Section Handler](/sdk/patient-chart-summary-custom-section-handler/) for details on how to implement one.
 ###  Action Buttons 
 Each section of the patient chart can also be customized with action buttons. Please refer to the [Action Buttons](/sdk/handlers-action-buttons/) documentation for more information.
 ##  Patient Profile 
@@ -37416,6 +37495,232 @@ Attribute | Type | Description
 ---|---|---  
 `items` | `dict[str, Group]` | list of Groups  
 ----- END PAGE https://docs.canvasmedical.com/sdk/patient-chart-group-effect/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/patient-chart-summary-custom-section-effect/
+##  Overview 
+The `PatientChartSummaryCustomSection` effect allows plugin developers to supply the content for a custom section in the patient chart summary. It is returned by a [`PatientChartSummaryCustomSectionHandler`](/sdk/patient-chart-summary-custom-section-handler/) in response to a request for the section's content.
+Content can be provided as an inline HTML string or as a URL to a hosted page. An icon must always be supplied — it is shown in the chart summary header when the section is collapsed.
+    ```python
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.templates import render_to_string
+    # Serve content as an inline HTML string
+    PatientChartSummaryCustomSection(
+        content=render_to_string("templates/my_section.html"),
+        icon="📋",
+    )
+    # Serve content from a hosted URL
+    PatientChartSummaryCustomSection(
+        url="/plugin-io/api/my_plugin/my-section",
+        icon_url="/plugin-io/api/my_plugin/icon.png",
+    )
+    ```
+##  Structure 
+###  Attributes 
+Attribute | Required | Type | Description  
+---|---|---|---  
+`content` | required (if `url` is not provided) | `str` | `None` | Inline HTML content to render in the section. Mutually exclusive with `url`.  
+`url` | required (if `content` is not provided) | `str` | `None` | URL of the page to load in the section iframe. Mutually exclusive with `content`.  
+`icon` | required (if `icon_url` is not provided) | `str` | `None` | Text or emoji displayed as the section icon when collapsed. Mutually exclusive with `icon_url`.  
+`icon_url` | required (if `icon` is not provided) | `str` | `None` | URL of an image to use as the section icon when collapsed. Mutually exclusive with `icon`.  
+###  Validation 
+Exactly one of `content` / `url` must be provided, and exactly one of `icon` / `icon_url` must be provided. Providing both fields in a pair or neither will raise a `ValidationError` when `.apply()` is called.
+##  Examples 
+###  Inline HTML content 
+Return a rendered HTML template as the section content.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    from canvas_sdk.templates import render_to_string
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            return [
+                PatientChartSummaryCustomSection(
+                    content=render_to_string("templates/my_section.html"),
+                    icon="📋",
+                ).apply()
+            ]
+    ```
+###  URL-based content 
+Load the section content from a hosted endpoint. This is useful when the section is a standalone page served by a [Simple API](/sdk/simple-api/) handler.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            return [
+                PatientChartSummaryCustomSection(
+                    url="/plugin-io/api/my_plugin/my-section",
+                    icon_url="/plugin-io/api/my_plugin/icon.png",
+                ).apply()
+            ]
+    ```
+###  Passing data to the template 
+Use `render_to_string` with a context dictionary to inject dynamic data into the HTML template.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data.patient import Patient
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            patient = Patient.objects.get(id=self.target)
+            return [
+                PatientChartSummaryCustomSection(
+                    content=render_to_string(
+                        "templates/my_section.html",
+                        {"patient_name": patient.first_name},
+                    ),
+                    icon="📋",
+                ).apply()
+            ]
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/patient-chart-summary-custom-section-effect/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/patient-chart-summary-custom-section-handler/
+The `PatientChartSummaryCustomSectionHandler` is the base class for implementing custom sections in the patient chart summary. When Canvas needs to render a custom section, it fires an event that this handler intercepts, and the handler returns a [`PatientChartSummaryCustomSection`](/sdk/patient-chart-summary-custom-section-effect/) effect with the content to display.
+##  Overview 
+Custom chart summary sections are registered through [`PatientChartSummaryConfiguration`](/sdk/layout-effect/#patient-summary) and served by a `PatientChartSummaryCustomSectionHandler` subclass. Each handler is responsible for exactly one section, identified by its `SECTION_KEY`.
+To implement a custom section you need two things:
+  1. A `PatientChartSummaryConfiguration` handler that includes the section in the layout.
+  2. A `PatientChartSummaryCustomSectionHandler` subclass that returns the section content.
+Both handlers must be registered in `CANVAS_MANIFEST.json`.
+##  Creating a Custom Section Handler 
+Subclass `PatientChartSummaryCustomSectionHandler` and:
+  1. Set `SECTION_KEY` to the unique identifier of your section. This must match the key used in `PatientChartSummaryConfiguration.CustomSection`.
+  2. Implement `handle()` to return a `PatientChartSummaryCustomSection` effect.
+  3. The patient key is available via `self.target`. Use it to scope database queries to the current patient.
+  4. The logged-in user is available via `self.actor`. Use it to tailor the section content to the specific staff member viewing the chart.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data.patient import Patient
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        """Handles the PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION event for 'my_section'.
+        Fetches the current patient and renders a template with their name.
+        """
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            patient = Patient.objects.get(id=self.target)
+            return [
+                PatientChartSummaryCustomSection(
+                    content=render_to_string("templates/my_section.html", { "patient_name": patient.full_name() }),
+                    icon="📋",
+                ).apply()
+            ]
+    ```
+###  Required 
+  - **`SECTION_KEY`** A unique string identifier for the section. Must match the key passed to `PatientChartSummaryConfiguration.CustomSection`. Omitting or leaving it empty will raise an `ImproperlyConfigured` error when the plugin loads.
+  - **`handle()`** Called when Canvas requests the content for this section. Must return a list containing a single [`PatientChartSummaryCustomSection`](/sdk/patient-chart-summary-custom-section-effect/) effect.
+##  Configuring Chart Summary Sections 
+A custom section handler alone is not enough — the section must also be included in the chart summary layout. Use `PatientChartSummaryConfiguration` to declare which sections appear in the chart summary and in what order. For the full list of available built-in sections, see [Patient Summary layout effects](/sdk/layout-effect/#patient-summary).
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_configuration import PatientChartSummaryConfiguration
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MySummaryConfiguration(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION)]
+        def compute(self) -> list[Effect]:
+            return [
+                PatientChartSummaryConfiguration(
+                    sections=[
+                        PatientChartSummaryConfiguration.CustomSection(name="my_section"),
+                        PatientChartSummaryConfiguration.Section.MEDICATIONS,
+                        PatientChartSummaryConfiguration.Section.CONDITIONS,
+                    ]
+                ).apply()
+            ]
+    ```
+##  Full Example 
+The following example shows a complete plugin with a custom section that displays a list of items fetched from command metadata.
+###  `handlers/my_section.py`
+    ```python
+    import json
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
+    from canvas_sdk.effects.patient_chart_summary_configuration import PatientChartSummaryConfiguration
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.handlers.patient_chart_summary_custom_section_handler import PatientChartSummaryCustomSectionHandler
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data.command import CommandMetadata
+    class MySectionHandler(PatientChartSummaryCustomSectionHandler):
+        """Handles the PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION event for 'my_section'.
+        Fetches all 'my_section' command metadata entries for the current patient
+        and renders them as a list in the section template.
+        """
+        SECTION_KEY = "my_section"
+        def handle(self) -> list[Effect]:
+            entries = (
+                CommandMetadata.objects.filter(
+                    key="my_section",
+                    command__patient__id=self.target,
+                )
+                .order_by("created")
+            )
+            items = []
+            for entry in entries:
+                try:
+                    items.append(json.loads(entry.value))
+                except (json.JSONDecodeError, TypeError):
+                    items.append({"title": entry.value})
+            return [
+                PatientChartSummaryCustomSection(
+                    content=render_to_string("templates/my_section.html", {"items": items}),
+                    icon="📋",
+                ).apply()
+            ]
+    class MySummaryConfiguration(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION)]
+        def compute(self) -> list[Effect]:
+            return [
+                PatientChartSummaryConfiguration(
+                    sections=[
+                        PatientChartSummaryConfiguration.CustomSection(name="my_section"),
+                        PatientChartSummaryConfiguration.Section.MEDICATIONS,
+                        PatientChartSummaryConfiguration.Section.CONDITIONS,
+                    ]
+                ).apply()
+            ]
+    ```
+###  `templates/my_section.html`
+    ```html
+    <ul>
+      {% for item in items %}
+        <li>{{ item.title }}</li>
+      {% empty %}
+        <li>No items on record.</li>
+      {% endfor %}
+    </ul>
+    ```
+###  `CANVAS_MANIFEST.json`
+    ```json
+    {
+      "components": {
+        "handlers": [
+          {
+            "class": "my_plugin.handlers.my_section:MySectionHandler",
+            "description": "Serves content for the My Section custom chart section"
+          },
+          {
+            "class": "my_plugin.handlers.my_section:MySummaryConfiguration",
+            "description": "Configures the chart summary layout to include My Section"
+          }
+        ]
+      }
+    }
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/patient-chart-summary-custom-section-handler/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/patient-metadata-create-form-effect/
@@ -38041,11 +38346,14 @@ This module provides a decorator and functions for automatically adding generate
   - `Field`
   - `fields`
   - `InitVar`
+  - `is_dataclass`
+  - `make_dataclass`
   - `replace`
 #####  `datetime`
 Provides classes for working with dates and times, essential for medical applications that need to track appointment schedules and patient timelines. [read more](https://docs.python.org/3/library/datetime.html)
   - `date`
   - `datetime`
+  - `time`
   - `timedelta`
   - `timezone`
   - `UTC`
@@ -38076,12 +38384,18 @@ Provides secure hash and message digest algorithms for data integrity verificati
 Provides hash-based message authentication code (HMAC) functions for secure message authentication. [read more](https://docs.python.org/3/library/hmac.html)
   - `compare_digest`
   - `new`
+#####  `html`
+Provides functions for escaping and unescaping HTML entities. [read more](https://docs.python.org/3/library/html.html)
+  - `escape`
+  - `HTML`
+  - `unescape`
 #####  `http`
 Provides HTTP status codes and related constants for web API development and HTTP response handling. [read more](https://docs.python.org/3/library/http.html)
   - `HTTPStatus`
 #####  `json`
 Provides functions for parsing and generating JSON data, essential for API communication and data serialization. [read more](https://docs.python.org/3/library/json.html)
   - `dumps`
+  - `JSONDecodeError`
   - `loads`
 #####  `operator`
 Provides function equivalents of operators for functional programming and complex data operations. [read more](https://docs.python.org/3/library/operator.html)
@@ -38089,13 +38403,14 @@ Provides function equivalents of operators for functional programming and comple
 #####  `random`
 Provides functions for generating random numbers and making random selections, useful for sampling and testing scenarios. [read more](https://docs.python.org/3/library/random.html)
   - `choices`
-  - `uniform`
   - `randint`
+  - `uniform`
 #####  `re`
 Provides regular expression matching operations for pattern matching and text processing. [read more](https://docs.python.org/3/library/re.html)
   - `compile`
   - `DOTALL`
   - `findall`
+  - `fullmatch`
   - `IGNORECASE`
   - `match`
   - `search`
@@ -38107,8 +38422,12 @@ Provides string constants and template classes for string manipulation and forma
   - `digits`
 #####  `time`
 Provides time-related functions for measuring execution time and adding delays in processing. [read more](https://docs.python.org/3/library/time.html)
-  - `time`
   - `sleep`
+  - `time`
+  - `time_ns`
+#####  `traceback`
+Provides functions for extracting, formatting, and printing stack traces. [read more](https://docs.python.org/3/library/traceback.html)
+  - `format_exc`
 #####  `typing`
 Provides support for type hints and static type checking to improve code clarity and IDE support. [read more](https://docs.python.org/3/library/typing.html)
   - `Any`
@@ -38122,11 +38441,12 @@ Provides support for type hints and static type checking to improve code clarity
   - `Literal`
   - `NamedTuple`
   - `NotRequired`
+  - `Optional`
   - `Pattern`
   - `Protocol`
-  - `Optional`
   - `Sequence`
   - `Tuple`
+  - `TYPE_CHECKING`
   - `Type`
   - `TypedDict`
   - `TypeGuard`
@@ -38136,8 +38456,9 @@ Provides modules for working with URLs, including URL parsing and manipulation. 
   - `parse`
 #####  `urllib.parse`
 Provides URL parsing utilities for breaking apart and constructing URLs and query strings. [read more](https://docs.python.org/3/library/urllib.parse.html)
-  - `urlencode`
   - `quote`
+  - `unquote`
+  - `urlencode`
 #####  `uuid`
 Provides functions for generating universally unique identifiers (UUIDs) for creating unique record identifiers. [read more](https://docs.python.org/3/library/uuid.html)
   - `uuid4`
@@ -38152,25 +38473,50 @@ A human-friendly approach to creating, manipulating, formatting and converting d
   - `get`
   - `now`
   - `utcnow`
+#####  `django.contrib.postgres.indexes`
+Django's PostgreSQL-specific index types for advanced indexing strategies. [read more](https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/)
+  - `GinIndex`
+#####  `django.db`
+Django's database module providing core database exceptions. [read more](https://docs.djangoproject.com/en/stable/ref/exceptions/#database-exceptions)
+  - `IntegrityError`
 #####  `django.db.models`
 Django's database abstraction layer for defining database models and performing queries. [read more](https://docs.djangoproject.com/en/stable/topics/db/models/)
   - `Avg`
   - `BigIntegerField`
+  - `BooleanField`
+  - `CASCADE`
   - `Case`
   - `CharField`
   - `Count`
+  - `DateField`
+  - `DateTimeField`
+  - `DecimalField`
+  - `DO_NOTHING`
   - `Exists`
+  - `F`
+  - `FloatField`
+  - `ForeignKey`
+  - `Func`
+  - `Index`
   - `IntegerField`
+  - `JSONField`
+  - `ManyToManyField`
   - `Max`
   - `Min`
-  - `Model`
+  - `OneToOneField`
   - `OuterRef`
   - `Prefetch`
   - `Q`
+  - `RowRange`
+  - `SET_NULL`
   - `Subquery`
   - `Sum`
+  - `TextField`
+  - `UniqueConstraint`
   - `Value`
+  - `ValueRange`
   - `When`
+  - `Window`
 #####  `django.db.models.expressions`
 Django's database expressions for complex query operations and conditional logic. [read more](https://docs.djangoproject.com/en/stable/ref/models/expressions/)
   - `Case`
@@ -38179,13 +38525,30 @@ Django's database expressions for complex query operations and conditional logic
   - `Subquery`
   - `Value`
   - `When`
+#####  `django.db.models.functions`
+Django's database functions for common SQL operations and window functions. [read more](https://docs.djangoproject.com/en/stable/ref/models/database-functions/)
+  - `Coalesce`
+  - `CumeDist`
+  - `DenseRank`
+  - `FirstValue`
+  - `Lag`
+  - `LastValue`
+  - `Lead`
+  - `NthValue`
+  - `Ntile`
+  - `PercentRank`
+  - `Rank`
+  - `RowNumber`
+  - `Trim`
 #####  `django.db.models.query`
 Django's QuerySet class for database query operations and result handling. [read more](https://docs.djangoproject.com/en/stable/ref/models/querysets/)
   - `Prefetch`
   - `QuerySet`
-#####  `django.db`
-Django's database module providing core database exceptions. [read more](https://docs.djangoproject.com/en/stable/ref/exceptions/#database-exceptions)
-  - `IntegrityError`
+#####  `django.db.transaction`
+Django's transaction management for atomic database operations. [read more](https://docs.djangoproject.com/en/stable/topics/db/transactions/)
+  - `atomic`
+  - `on_commit`
+  - `on_rollback`
 #####  `django.utils.functional`
 Django's functional programming utilities including caching and lazy evaluation tools. [read more](https://docs.djangoproject.com/en/stable/ref/utils/)
   - `cached_property`
@@ -38199,8 +38562,8 @@ A library for encoding and decoding JSON Web Tokens (JWT) for secure data transm
 #####  `pydantic`
 A data validation library using Python type annotations for parsing and validating data structures. [read more](https://docs.pydantic.dev/)
   - `BaseModel`
-  - `conint`
   - `ConfigDict`
+  - `conint`
   - `constr`
   - `Field`
   - `RootModel`
@@ -38210,17 +38573,6 @@ A fast string matching library for fuzzy string comparison and search operations
   - `fuzz`
   - `process`
   - `utils`
-#####  `requests`
-A simple and elegant HTTP library for making web requests and API calls. [read more](https://docs.python-requests.org/en/latest/)
-  - `delete`
-  - `get`
-  - `patch`
-  - `post`
-  - `put`
-  - `request`
-  - `RequestException`
-  - `Response`
-  - `Session`
 ##  Canvas SDK Modules 
 All Canvas SDK modules are available for import and use within your plugins:
   - `canvas_sdk.caching`
@@ -38243,6 +38595,7 @@ The following Python builtin functions are available within the sandbox:
   - `classmethod`
   - `dict`
   - `enumerate`
+  - `extract_exc_frames`
   - `filter`
   - `getattr`
   - `hasattr`
@@ -38259,6 +38612,22 @@ The following Python builtin functions are available within the sandbox:
   - `super`
   - `vars`
 Plus all the standard safe builtins from RestrictedPython including basic types (`bool`, `int`, `float`, `str`, `tuple`, etc.) and safe operations.
+###  `extract_exc_frames()`
+A sandbox-provided function that extracts frame information from the current exception's traceback. Must be called from within an `except` block. Returns an empty list if no exception is active.
+Each frame exposes only safe attributes:
+  - `filename` — the file path
+  - `lineno` — the line number
+  - `name` — the function name
+Source code lines and local variables are not accessible.
+    ```python
+    from logger import log 
+    try:
+        raise Exception("some failed operation")
+    except Exception:
+        frames = extract_exc_frames()
+        for frame in frames:
+            log.info(f"{frame.filename}:{frame.lineno} in {frame.name}")
+    ```
 ##  Requesting Additional Imports 
 If there is a library or function not on this list that you wish to import in your plugin, reach out on the [Canvas developer forum](https://github.com/canvas-medical/canvas-plugins/discussions). Additional imports can often be added after a security review.
 The allowed imports are defined in the [Canvas Plugins repository](https://github.com/canvas-medical/canvas-plugins/blob/main/plugin_runner/sandbox.py) and are regularly updated to support common development needs while maintaining security.

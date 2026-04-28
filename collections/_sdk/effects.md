@@ -125,6 +125,7 @@ The following effects are available to be applied in Canvas.
 | Effect                                      | Description |
 |---------------------------------------------|---|
 | SHOW_PATIENT_CHART_SUMMARY_SECTIONS         | Can be used to reorder or hide the summary sections in a patient chart. Check out [this effect class](/sdk/layout-effect/#patient-summary). |
+| PATIENT_CHART_SUMMARY__CUSTOM_SECTION       | Can be used to serve content for a custom patient chart summary section. Check out [Patient Chart Summary Custom Section](/sdk/patient-chart-summary-custom-section-effect/). |
 | SHOW_PATIENT_PROFILE_SECTIONS               | Can be used to reorder or hide sections in the patient profile. Check out [Layout Effects](/sdk/layout-effect/#patient-profile). |
 | SHOW_PANEL_SECTIONS                         | Can be used to reorder or hide sections in the side panel. Check out [Layout Effects](/sdk/layout-effect/#panel-configuration). |
 | SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS  | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration/).                                    |
@@ -436,7 +437,7 @@ Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COM
 
 | Action | Description |
 |---|---|
-| ORIGINATE | Create and open a new command in a note. |
+| ORIGINATE | Create and open a new command in a note. Supports an optional `commit` flag to also commit the command in the same operation if the command is commit-able via SDK. |
 | EDIT | Modify field values on an existing command. |
 | DELETE | Remove an uncommitted command from a note. |
 | COMMIT | Finalize and save a command. |
