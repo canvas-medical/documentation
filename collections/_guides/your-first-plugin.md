@@ -87,9 +87,9 @@ paperwork-eviscerator/
 ├── paperwork_eviscerator
 │    ├── CANVAS_MANIFEST.json
 │    ├── README.md
-│    └── protocols
+│    └── handlers
 │         ├── __init__.py
-│         └── my_protocol.py
+│         └── event_handlers.py
 ├── pyproject.toml
 └── tests
     ├── __init__.py
@@ -112,7 +112,7 @@ installation of the plugin.
     "components": {
         "handlers": [
             {
-                "class": "paperwork_eviscerator.handlers.my_protocol:Protocol",
+                "class": "paperwork_eviscerator.handlers.event_handlers:Protocol",
                 "description": "A handler that does xyz...",
                 "data_access": {
                     "event": "",
@@ -149,7 +149,7 @@ will be initialized on plugin install, and can be set in the plugin listing in t
 Share details about the purpose of your plugins and how it works in this
 README file.
 
-### handlers/my_protocol.py
+### handlers/event_handlers.py
 
 This file contains the handler class declared in the manifest file. We've included
 some sample content and copious comments for inspiration.
