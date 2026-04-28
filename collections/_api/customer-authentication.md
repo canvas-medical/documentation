@@ -171,7 +171,7 @@ For applications that need to make API calls on behalf of specific Canvas users 
 
 Scopes control which parts of the API the token can access.
 
-- **Client Credentials Flow:** Scopes are optional. If omitted, the token has full access to the FHIR API.
+- **Client Credentials Flow:** Scopes are optional. If omitted, the token is issued with the OAuth application's configured allowed scopes.
 - **Authorization Code Flow:** Scopes are required and must be passed in the authorize URL.
 
 Canvas implements [SMART on FHIR scopes](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html).
