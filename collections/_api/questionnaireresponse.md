@@ -87,8 +87,8 @@ sections:
                     description: Source of the definition of the extension code.
                     type: string
                     enum_options:
-                      - http://hl7.org/fhir/StructureDefinition/display
-                      - http://hl7.org/fhir/us/core/StructureDefinition/us-core-extension-questionnaire-uri
+                      - value: http://hl7.org/fhir/StructureDefinition/display
+                      - value: http://hl7.org/fhir/us/core/StructureDefinition/us-core-extension-questionnaire-uri
                   - name: valueString
                     description: Display name for the Questionnaire referenced by `questionnaire`
                     type: string
