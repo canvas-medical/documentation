@@ -29,7 +29,7 @@ sections:
                 required_in: create, update
                 description: Identifies the meaning of the extension
                 enum_options:
-                  - value: http://schemas.canvasmedical.com/fhir/extensions/username
+                  - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature
@@ -37,7 +37,7 @@ sections:
                   - value: http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex
               - name: valueString
                 type: string
-                description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+                description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
               - name: valueCode
                 type: string
                 description: Value of extension.<br><br> The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`. <br><br> A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC).
