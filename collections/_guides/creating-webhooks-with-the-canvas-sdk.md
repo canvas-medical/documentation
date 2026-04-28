@@ -69,9 +69,9 @@ created a task, you should see this in your log stream:
 ```sh
 INFO 2024-09-26 17:04:08,396 Starting server, listening on port 50051
 INFO 2024-09-26 17:04:08,396 Loading custom-plugins/task_webhook
-INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.my_protocol:Protocol'
+INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.event_handlers:Protocol'
 INFO 2024-09-26 17:04:24,410 A Task was created!
-INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.my_protocol:Protocol.compute() completed (0 ms)
+INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.event_handlers:Protocol.compute() completed (0 ms)
 INFO 2024-09-26 17:04:24,411 Responded to Event TASK_CREATED (1 ms)
 ```
 
@@ -125,9 +125,9 @@ created a task, you should see this in your log stream:
 
 ```sh
 INFO 2024-09-26 17:18:23,206 Loading custom-plugins/task_webhook
-INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.my_protocol:Protocol'
+INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.event_handlers:Protocol'
 INFO 2024-09-26 17:18:33,850 Successfully notified API of task creation!
-INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.my_protocol:Protocol.compute() completed (693 ms)
+INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.event_handlers:Protocol.compute() completed (693 ms)
 INFO 2024-09-26 17:18:33,851 Responded to Event TASK_CREATED (696 ms)
 ```
 
@@ -173,7 +173,7 @@ auth token. Here's what the manifest file looks like with secrets declared:
     "components": {
         "handlers": [
             {
-                "class": "task_webhook.handlers.my_protocol:Protocol",
+                "class": "task_webhook.handlers.event_handlers:Protocol",
                 "description": "Hit an API when a task is created",
                 "data_access": {
                     "event": "",
