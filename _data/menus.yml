@@ -893,6 +893,12 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Staff External ID"
+    url: /sdk/effect-create-staff-external-identifier/
+    description: Create a new external identifier for a staff member.
+  - title: "Staff Metadata"
+    url: /sdk/effect-staff-metadata/
+    description: Interact with staff metadata.
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.

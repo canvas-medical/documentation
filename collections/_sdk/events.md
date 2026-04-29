@@ -2944,6 +2944,105 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
+#### Staff External Identifier
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_EXTERNAL_IDENTIFIER_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an external identifier is created for a staff member.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffexternalidentifier_id
+"type": <a href='/sdk/data-staff/#staffexternalidentifier'>StaffExternalIdentifier</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_EXTERNAL_IDENTIFIER_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when an external identifier for a staff member is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffexternalidentifier_id
+"type": <a href='/sdk/data-staff/#staffexternalidentifier'>StaffExternalIdentifier</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_EXTERNAL_IDENTIFIER_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when an external identifier for a staff member is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffexternalidentifier_id
+"type": <a href='/sdk/data-staff/#staffexternalidentifier'>StaffExternalIdentifier</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Staff Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a staff member's metadata is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffmetadata_id
+"type": <a href='/sdk/data-staff/#staffmetadata'>StaffMetadata</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a staff member's metadata is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffmetadata_id
+"type": <a href='/sdk/data-staff/#staffmetadata'>StaffMetadata</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Vital Signs
 
 <table>
