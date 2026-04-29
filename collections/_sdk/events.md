@@ -1186,11 +1186,7 @@ These events fire as a result of records being created, updated, or deleted.
 "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>"total_amount_cents": str
 "timestamp": str
-"payment_method_and_description": str
-"claim_payments": [
-    "claim_id": str
-    "allocated_cents": str
-]</pre></td>
+"payment_method_and_description": str</pre></td>
     </tr>
   </tbody>
 </table>
