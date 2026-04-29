@@ -7,13 +7,13 @@ hidden: false
 
 The `HttpRequestEffect` lets a plugin ask the Canvas platform to issue an HTTP request on its behalf. Instead of making the request inline from a handler, the plugin returns the effect and the platform performs the call.
 
-`HttpRequestEffect` runs asynchronously only when [`.set_async(...)`](#async-execution) is chained onto the applied effect — that's what hands it off to the platform's async runner with delay, retry, and `retry_on_status_codes` settings. Without `.set_async(...)`, the effect is emitted without async scheduling.
+`HttpRequestEffect` runs asynchronously in two cases: when [`.set_async(...)`](#async-execution) is chained onto the applied effect, or when `retry_on_status_codes` is set on the effect (which automatically implies async execution). Both paths hand the request off to the platform's async runner with delay, retry, and backoff support. Without either, the effect is executed inline.
 
 ## Attributes
 
 | Name                    | Type                          | Required | Description                                                                                                                                                                                       |
 |-------------------------|-------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `url`                   | `str`                         | Yes      | The URL to request. Must be non-empty and must be listed in the plugin's [`url_permissions`](#url-permissions) in `CANVAS_MANIFEST.json`.                                                         |
+| `url`                   | `str`                         | Yes      | The URL to request. Must be non-empty. Cannot resolve to a private or loopback address (see [Security](#security--network-behavior)).                                                             |
 | `method`                | [`HttpMethod`](#httpmethod)   | No       | The HTTP method to use. Defaults to `HttpMethod.GET`.                                                                                                                                             |
 | `headers`               | `dict[str, str]` or `None`    | No       | Request headers. Header values are transmitted as-is — store credentials in the plugin's [`secrets`](/sdk/secrets/) and reference them here rather than hard-coding them.                         |
 | `body`                  | `str` or `None`               | No       | The request body, as a string. For JSON payloads, serialize with `json.dumps(...)` and set the appropriate `Content-Type` header.                                                                 |
@@ -21,7 +21,7 @@ The `HttpRequestEffect` lets a plugin ask the Canvas platform to issue an HTTP r
 
 ## `HttpMethod`
 
-A `StrEnum` of the supported HTTP methods.
+A `StrEnum` of the supported HTTP methods. You can also pass the string value as well.
 
 | Member               | Value      |
 |----------------------|------------|
@@ -31,35 +31,13 @@ A `StrEnum` of the supported HTTP methods.
 | `HttpMethod.PATCH`   | `"PATCH"`  |
 | `HttpMethod.DELETE` | `"DELETE"` |
 
-## URL Permissions
-
-The platform enforces the plugin's `url_permissions` allowlist when executing the request. Any URL passed to `HttpRequestEffect` must be covered by an entry in the `url_permissions` section of your plugin's `CANVAS_MANIFEST.json`. URLs follow the format described in the [Content-Security-Policy host-source spec](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#host-source).
-
-```json
-{
-  "sdk_version": "0.1.4",
-  "plugin_version": "0.0.1",
-  "name": "my_plugin",
-  "description": "...",
-  "url_permissions": [
-    {
-      "url": "https://api.example.com/",
-      "permissions": []
-    }
-  ]
-}
-```
-
-Matching is performed on the request URL's **scheme and host** — the path of the permitted URL is not compared, so a single `url_permissions` entry covers every path on that host. Hosts must match exactly: a permission for `https://api.example.com` does not authorize requests to `https://evil.example.com.attacker.com`.
-
-If the URL's scheme/host is not covered by any `url_permissions` entry, the platform rejects the request before opening a connection.
 
 ## Security & Network Behavior
 
 The platform applies several safeguards before executing the request:
 
 - **SSRF protection.** The host is resolved and rejected if it points at a private (RFC 1918), loopback, link-local (including the `169.254.169.254` cloud metadata address), multicast, reserved, or unspecified address. Both literal IPs (e.g. `http://10.0.0.1/`) and hostnames that resolve to such addresses are blocked.
-- **Redirects are not followed.** The request is made with `allow_redirects=False`, so a `3xx` response is returned as-is rather than chasing the `Location` header into an unallowlisted host.
+- **Redirect behavior.** GET requests follow redirects normally. Non-GET methods (POST, PUT, PATCH, DELETE) are made with `allow_redirects=False`, so a `3xx` response is returned as-is rather than re-posting data to a different host.
 - **Request timeout.** Each request has a 30-second timeout. Requests that exceed it are aborted.
 - **Connection errors are swallowed.** If the upstream service is unreachable or the request fails at the transport layer, the failure is logged and the effect pipeline continues — it does not raise back into your handler.
 - **Redacted logging.** The platform logs the request method, host, path, and final status code. Query strings, fragments, request headers, request bodies, and response bodies are never logged, so credentials passed via query string or `Authorization` headers do not leak into platform logs.
@@ -68,7 +46,7 @@ The platform applies several safeguards before executing the request:
 
 `HttpRequestEffect` is designed to run asynchronously. Chain `.set_async(...)` onto the result of `.apply()` so the platform schedules the request. You can read more about async effect execution [here](/sdk/effects/#async-execution).
 
-When `retry_on_status_codes` is set on the effect, the platform's async runner uses it to decide whether a response should trigger a retry (in combination with `max_retries`).
+When `retry_on_status_codes` is set on the effect, the SDK automatically sets `delay_seconds=0` (async-now) so the request is routed through the platform's async runner — you don't need to call `.set_async()` separately just for retries. The async runner uses `retry_on_status_codes` (in combination with `max_retries`) to decide whether a response should trigger a retry.
 
 ## Handling Credentials
 
