@@ -5,9 +5,11 @@ excerpt: "Have the platform issue an HTTP request on behalf of a plugin."
 hidden: false
 ---
 
-The `HttpRequestEffect` lets a plugin ask the Canvas platform to issue an HTTP request on its behalf. Instead of making the request inline from a handler, the plugin returns the effect and the platform performs the call.
+The `HttpRequestEffect` lets a plugin ask the Canvas platform to issue an HTTP request on its behalf. The plugin returns the effect from a handler and the platform performs the call.
 
-`HttpRequestEffect` runs asynchronously in two cases: when [`.set_async(...)`](#async-execution) is chained onto the applied effect, or when `retry_on_status_codes` is set on the effect (which automatically implies async execution). Both paths hand the request off to the platform's async runner with delay, retry, and backoff support. Without either, the effect is executed inline.
+We recommend running the request asynchronously by chaining [`.set_async(...)`](#async-execution) onto the applied effect. The request is then handed off to the platform's async runner, which manages delay, retries, and backoff so the handler doesn't block on the network. Setting `retry_on_status_codes` automatically opts into async execution (equivalent to `.set_async(delay_seconds=0)`), so you only need to call `.set_async(...)` explicitly to add a delay or set `max_retries`.
+
+Without `.set_async(...)` and without `retry_on_status_codes`, the effect is executed inline.
 
 ## Attributes
 
@@ -17,7 +19,7 @@ The `HttpRequestEffect` lets a plugin ask the Canvas platform to issue an HTTP r
 | `method`                | [`HttpMethod`](#httpmethod)   | No       | The HTTP method to use. Defaults to `HttpMethod.GET`.                                                                                                                                             |
 | `headers`               | `dict[str, str]` or `None`    | No       | Request headers. Header values are transmitted as-is — store credentials in the plugin's [`secrets`](/sdk/secrets/) and reference them here rather than hard-coding them.                         |
 | `body`                  | `str` or `None`               | No       | The request body, as a string. For JSON payloads, serialize with `json.dumps(...)` and set the appropriate `Content-Type` header.                                                                 |
-| `retry_on_status_codes` | `list[int]` or `None`         | No       | HTTP status codes that should trigger a retry. Each value must be in the range `100`–`599`. Surfaced through `async_props` so the platform's async runner picks it up.                            |
+| `retry_on_status_codes` | `list[int]` or `None`         | No       | HTTP status codes that should trigger a retry. Each value must be in the range `100`–`599`. Setting this automatically routes the request through the async runner (equivalent to `.set_async(delay_seconds=0)`); use `.set_async(...)` only to override the delay or set `max_retries`. |
 
 ## `HttpMethod`
 
@@ -44,9 +46,9 @@ The platform applies several safeguards before executing the request:
 
 ## Async Execution
 
-`HttpRequestEffect` is designed to run asynchronously. Chain `.set_async(...)` onto the result of `.apply()` so the platform schedules the request. You can read more about async effect execution [here](/sdk/effects/#async-execution).
+Chain `.set_async(...)` onto the result of `.apply()` to have the platform schedule the request through its async runner instead of running it inline with the handler. You can read more about async effect execution [here](/sdk/effects/#async-execution).
 
-When `retry_on_status_codes` is set on the effect, the SDK automatically sets `delay_seconds=0` (async-now) so the request is routed through the platform's async runner — you don't need to call `.set_async()` separately just for retries. The async runner uses `retry_on_status_codes` (in combination with `max_retries`) to decide whether a response should trigger a retry.
+When `retry_on_status_codes` is set on the effect, the SDK automatically sets `delay_seconds=0` (async-now) so the request is routed through the async runner — you don't need to call `.set_async()` separately just for retries. The async runner uses `retry_on_status_codes` (in combination with `max_retries`) to decide whether a response should trigger a retry.
 
 ## Handling Credentials
 
@@ -79,7 +81,8 @@ class MyHandler(BaseHandler):
             retry_on_status_codes=[500, 502, 503],
         )
 
-        return [http_effect.apply().set_async(delay_seconds=0, max_retries=3)]
+        # retry_on_status_codes already implies async-now; .set_async() is here to add max_retries
+        return [http_effect.apply().set_async(max_retries=3)]
 ```
 
 ### Issue a simple GET request
