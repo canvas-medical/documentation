@@ -473,7 +473,7 @@ This handles the origination and commit in a single effect, without needing to m
 
 ### Chaining Methods with a User-set UUID
 
-If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This is also required for questionnaire-based commands, where `originate()` creates the command but does not add the answers — you must chain an `edit()` to populate the responses (see [Usage Example](#usage-example)). This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
+If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
 
 ```python
 from uuid import uuid4
@@ -1823,8 +1823,7 @@ class MyHandler(BaseHandler):
               question.add_response(option=first_option, selected=True, comment="Don't panic")
               question.add_response(option=last_option, selected=True)
 
-      # Because we're directly setting a command_uuid, we can return both originate and edit.
-      return [command.originate(), command.edit()]
+      return [command.originate()]
 ```
 
 ### Explanation
@@ -1842,13 +1841,8 @@ class MyHandler(BaseHandler):
   - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
 
 
- - **Creating and Editing:**
-   When creating a new questionnaire command, you must explicitly set a unique `command_uuid`. Providing this UUID enables you to originate the command within the note and then subsequently edit it with detailed responses in the same protocol execution.
-
- - This approach is necessary because given the dynamic nature of the questionnaire command, the initial creation (origination) only includes the questionnaire ID. Once the command has been originated, you can immediately follow up with an edit to populate it with the patient's responses.
- - If you are looking to insert a committed questionnaire command, you'll need to return three effects:
-   - An `.originate()` to insert the command and select the questionnaire
-   - An `.edit()` to populate the responses
+ - If you are looking to insert a committed questionnaire command, you'll need to return two effects:
+   - An `.originate()` to insert the command and select the questionnaire with the responses
    - A `.commit()` to commit the command
 
 ---
