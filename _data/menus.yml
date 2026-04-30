@@ -812,6 +812,9 @@ effects_module:
   - title: "Command Metadata"
     url: /sdk/effect-command-metadata/
     description: Attach custom key-value metadata to command records.
+  - title: "Command Metadata Create form"
+    url: /sdk/command-metadata-create-form-effect/
+    description: Adds additional fields to commands that are stored as command metadata.
   - title: "Command Validation"
     url: /sdk/effect-command-validation/
     description: Validate commands and return structured error messages to users.
