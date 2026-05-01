@@ -842,9 +842,6 @@ effects_module:
   - title: "Form Result"
     url: /sdk/form-result-effect/
     description: Effect for dynamically displaying forms in the Patient Portal.
-  - title: "Lab Order Payload Override"
-    url: /sdk/effect-lab-order-payload-override/
-    description: Inject FHIR-shaped values into the outbound Health Gorilla lab-order payload.
   - title: "Layout Effects"
     url: /sdk/layout-effect/
     description: Modify or interact with the layout in Canvas.

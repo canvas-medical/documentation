@@ -1,11 +1,11 @@
 ---
-title: "Lab Order Payload Override"
-slug: "effect-lab-order-payload-override"
+title: "Health Gorilla Lab Order Override"
+slug: "effect-health-gorilla-lab-order-override"
 excerpt: "Inject FHIR-shaped values into the outbound Health Gorilla lab-order payload from a plugin handler."
-hidden: false
+hidden: true
 ---
 
-The `LabOrderPayloadOverride` effect lets a plugin inject FHIR-shaped values
+The `HealthGorillaLabOrderOverride` effect lets a plugin inject FHIR-shaped values
 (account numbers, bill-to, performer organization, sub-tenant, location)
 into Canvas's outbound Health Gorilla lab-order payload at order-send time.
 It is returned from a handler of the
@@ -57,7 +57,7 @@ appropriate `guarantor` reference to the FHIR `Account` automatically.
 
 ```python
 from canvas_generated.messages.events_pb2 import EventType
-from canvas_sdk.effects.lab_order import LabOrderPayloadOverride
+from canvas_sdk.effects.lab_order import HealthGorillaLabOrderOverride
 from canvas_sdk.handlers import BaseHandler
 
 
@@ -72,7 +72,7 @@ class InjectPartnerLabAccount(BaseHandler):
         if account is None:
             return []
 
-        return [LabOrderPayloadOverride(
+        return [HealthGorillaLabOrderOverride(
             practitioner_account_number=account.practitioner_account_number,
             organizational_account_number=account.organizational_account_number,
             hg_organization_id=account.hg_organization_id,
