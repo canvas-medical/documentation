@@ -4969,6 +4969,155 @@ All clients follow a consistent pattern: configure credentials via [plugin secre
 ----- END PAGE https://docs.canvasmedical.com/sdk/clients/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/command-metadata-create-form-effect/
+##  Overview 
+The `CommandMetadataCreateFormEffect` allows developers to dynamically display additional fields with a command in a note. The values entered in these fields are stored as [command metadata](/sdk/data-command/#commandmetadata) against the target `command_uuid`.
+The effect is returned from a handler that responds to the `COMMAND__FORM__GET_ADDITIONAL_FIELDS` event.
+    ```python
+    from canvas_sdk.effects.command_metadata import (
+        CommandMetadataCreateFormEffect,
+        FormField,
+        InputType,
+    )
+    CommandMetadataCreateFormEffect(
+        command_uuid="command-uuid",
+        form_fields=[
+            FormField(
+                key="reason",
+                label="Reason",
+                type=InputType.SELECT,
+                options=["Routine", "Follow-up", "Other"],
+            ),
+        ],
+    )
+    ```
+##  Structure 
+###  **FormField**
+A FormField consists of the following properties:
+####  Attributes 
+Attribute | Type | Description  
+---|---|---  
+`key` | `str` | unique identifier of the field - command metadata key  
+`label` | `str` | the label that will be displayed on the field  
+`type` | `InputType` | the type of the input - TEXT, SELECT, DATE.  
+`required` | `bool` | if the input is required.  
+`editable` | `bool` | if the input can be editabled.  
+`options` | `list[str]` | possible options for when the input type is set to "SELECT"  
+`value` | `str` | default value for the field  
+###  **CommandMetadataCreateFormEffect**
+A CommandMetadataCreateFormEffect consists of the following properties:
+####  Attributes 
+Attribute | Type | Description  
+---|---|---  
+`command_uuid` | `str` | the UUID of the command these fields should be rendered on.  
+`form_fields` | `list[FormField]` | list of fields.  
+##  Validation 
+The effect validates inputs before it is applied:
+  - `command_uuid` is required.
+  - `options` may only be set on fields whose `type` is `InputType.SELECT`; providing `options` on a `TEXT` or `DATE` field raises a validation error.
+  - Every `key` must be unique across `form_fields`. Duplicates raise a validation error per duplicated key.
+##  Example Usage 
+The following handler declares two extra fields on every plan command when the platform requests additional fields for it:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.command_metadata import (
+        CommandMetadataCreateFormEffect,
+        FormField,
+        InputType,
+    )
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class PlanCommandAdditionalFields(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.COMMAND__FORM__GET_ADDITIONAL_FIELDS)
+        def compute(self) -> list[Effect]:
+            # Only respond for plan commands.
+            if self.event.context.get("schema_key") != "plan":
+                return []
+            form = CommandMetadataCreateFormEffect(
+                command_uuid=self.event.target.id,
+                form_fields=[
+                    FormField(
+                        key="priority",
+                        label="Priority",
+                        type=InputType.SELECT,
+                        options=["low", "medium", "high"],
+                    ),
+                    FormField(
+                        key="follow_up_date",
+                        label="Follow-up date",
+                        type=InputType.DATE,
+                        editable=True,
+                    ),
+                ],
+            )
+            return [form.apply()]
+    ```
+Once the user fills out these fields, their values are persisted as command metadata and can be read back through the SDK [command metadata](/sdk/data-command/#commandmetadata) table.
+##  Rendering on the printed note 
+The same `COMMAND__FORM__GET_ADDITIONAL_FIELDS` event fires when a command is rendered for printing (single-command print URL or full note printout). The platform uses the response to label and order the fields shown beneath each command in the printed output.
+Two things differ from the chart-form render path:
+  - **Values come from stored command metadata, not from`FormField.value`.** The platform pairs each field declared in your effect with the matching `CommandMetadata` row by `key`. Whatever value is on `FormField` is ignored during print rendering. You do not need to populate `value` for print.
+  - **Fields with no stored value or a blank value are skipped.** Only fields the user actually filled in will appear in the printout.
+  - **Fields you do not declare are hidden.** A `CommandMetadata` row whose `key` is not in your response will not print, even if it exists in the database. This matches the chart UI: removing or renaming a key in your effect makes the prior data invisible.
+###  Branching on `purpose`
+The event context carries a `purpose` key indicating which call site triggered the request:
+Value | When  
+---|---  
+`"form"` | Chart UI is rendering the command's edit form (default).  
+`"print"` | Single-command printout or note printout is being generated.  
+Read it from the handler context to vary your response — for example, to omit internal fields from print, or shorten labels for a denser layout.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.command_metadata import (
+        CommandMetadataCreateFormEffect,
+        FormField,
+        InputType,
+    )
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class PlanCommandAdditionalFields(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.COMMAND__FORM__GET_ADDITIONAL_FIELDS)
+        def compute(self) -> list[Effect]:
+            if self.event.context.get("schema_key") != "plan":
+                return []
+            is_print = self.event.context.get("purpose") == "print"
+            fields = [
+                FormField(
+                    key="priority",
+                    label="Priority",
+                    type=InputType.SELECT,
+                    options=["low", "medium", "high"],
+                ),
+                FormField(
+                    key="follow_up_date",
+                    label="Follow-up date",
+                    type=InputType.DATE,
+                ),
+            ]
+            if not is_print:
+                # Internal-only: visible on the form, hidden from printouts.
+                fields.append(
+                    FormField(
+                        key="reviewer_notes",
+                        label="Reviewer notes",
+                        type=InputType.TEXT,
+                    )
+                )
+            return [
+                CommandMetadataCreateFormEffect(
+                    command_uuid=self.event.target.id,
+                    form_fields=fields,
+                ).apply()
+            ]
+    ```
+###  Tips for the print path 
+  - **Use clear, human-readable`label` values.** Whatever you put on `FormField.label` is what the printed output shows. The platform does not derive a label from the `key`.
+  - **Use the same`key` you used when persisting metadata.** The print path joins on `key`; mismatches mean nothing renders for that field.
+  - **`type`, `options`, and `required` are ignored at print time.** Only `key` and `label` shape the printout.
+  - **Need to retire a field?** Removing it from the print response hides it for all future prints — including for committed notes. If you need the historical value to keep showing on signed records, keep the field declared (or declare it only when `purpose == "print"`).
+----- END PAGE https://docs.canvasmedical.com/sdk/command-metadata-create-form-effect/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/commands-custom-command/
 ##  Introduction 
 The `CustomCommand` class allows plugins to create custom commands with HTML-rendered content that can be inserted into patient charts. Custom commands are designed for displaying read-only content and do not support user input or interactive forms.
@@ -5469,7 +5618,7 @@ The simplest way to originate and commit a command in a single plugin action is 
     ```
 This handles the origination and commit in a single effect, without needing to manage a `command_uuid` yourself.
 ###  Chaining Methods with a User-set UUID 
-If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This is also required for questionnaire-based commands, where `originate()` creates the command but does not add the answers — you must chain an `edit()` to populate the responses (see Usage Example). This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
+If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
     ```python
     from uuid import uuid4
     from canvas_sdk.commands import DiagnoseCommand
@@ -6498,8 +6647,7 @@ Below is an example that demonstrates how to instantiate a `QuestionnaireCommand
                   last_option = question.options[-1]
                   question.add_response(option=first_option, selected=True, comment="Don't panic")
                   question.add_response(option=last_option, selected=True)
-          # Because we're directly setting a command_uuid, we can return both originate and edit.
-          return [command.originate(), command.edit()]
+          return [command.originate()]
     ```
 ###  Explanation 
   - **Retrieving Questions:** The `questions` property returns a list of question objects created from the questionnaire's data.
@@ -6509,11 +6657,8 @@ Below is an example that demonstrates how to instantiate a `QuestionnaireCommand
     - For **RadioQuestion** , you must pass an `option` parameter (a `ResponseOption` instance) that corresponds to one of the allowed options.
     - For **CheckboxQuestion** , you must pass an `option` parameter along with an optional `selected` flag (defaulting to True) and an optional `comment`. Multiple responses can be recorded for checkbox questions.
     - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
-  - **Creating and Editing:** When creating a new questionnaire command, you must explicitly set a unique `command_uuid`. Providing this UUID enables you to originate the command within the note and then subsequently edit it with detailed responses in the same protocol execution.
-  - This approach is necessary because given the dynamic nature of the questionnaire command, the initial creation (origination) only includes the questionnaire ID. Once the command has been originated, you can immediately follow up with an edit to populate it with the patient's responses.
-  - If you are looking to insert a committed questionnaire command, you'll need to return three effects: 
-    - An `.originate()` to insert the command and select the questionnaire
-    - An `.edit()` to populate the responses
+  - If you are looking to insert a committed questionnaire command, you'll need to return two effects: 
+    - An `.originate()` to insert the command and select the questionnaire with the responses
     - A `.commit()` to commit the command
 * * *
 ##  ReasonForVisit 
@@ -18446,6 +18591,60 @@ ADT^A13 | Cancel Discharge/End Visit
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-external-event/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-order-override/
+The `HealthGorillaLabOrderOverride` effect lets a plugin inject FHIR-shaped values (account numbers, bill-to, performer organization, sub-tenant, location) into Canvas's outbound Health Gorilla lab-order payload at order-send time. It is returned from a handler of the [`LAB_ORDER_COMMAND__PRE_SEND`](/sdk/events/) event, which fires from Canvas right before the FHIR `RequestGroup` is built and POSTed to Health Gorilla.
+This is the supported way to drive lab-order routing from plugin-owned state (for example, a partner-specific lab account selected in a custom chart UI) without putting any partner/tenant concept into Canvas core.
+##  Behavior 
+Each field on the effect is independently optional. A field set to a non-`None` value overrides Canvas's default resolution for that field; a field left as `None` (the default) means **no override** — Canvas falls through to its existing resolution path for that field.
+Multiple plugins may return overrides for the same order. When two effects set the same field, the later one wins.
+##  Attributes 
+Attribute | Type | Description  
+---|---|---  
+practitioner_account_number | str | Stamped on the contained `Practitioner.identifier` (Account Number).  
+organizational_account_number | str | Stamped on the contained authorizing `Organization.identifier` (Account Number).  
+hg_organization_id | str | Health Gorilla facility id (`f-...`) used for the `requestgroup-performer` reference. Skips the lab-name catalog lookup.  
+hg_tenant_id | str | Health Gorilla sub-tenant Organization id. Adds a `requestgroup-authorizedBy` reference to `Organization/t-{tenant_id}`.  
+hg_location_id | str | Optional Location reference for the order.  
+bill_to_code | BillToCode | Explicit `Account.type` coding. Overrides the existing coverage-derived inference.  
+###  BillToCode 
+`bill_to_code` is constrained to one of four Health-Gorilla–recognized codes. It is a Pydantic `Literal`, so attempting to construct the effect with any other value raises a `ValidationError` at construction time.
+Value | HG `Account.type.coding.code` | Display  
+---|---|---  
+`self` | `self` | Client  
+`patient` | `patient` | Patient  
+`guarantor` | `guarantor` | Guarantor  
+`thirdParty` | `thirdParty` | Third Party  
+When `bill_to_code` is `patient` or `guarantor`, Canvas attaches the appropriate `guarantor` reference to the FHIR `Account` automatically.
+##  Example 
+    ```python
+    from canvas_generated.messages.events_pb2 import EventType
+    from canvas_sdk.effects.lab_order import HealthGorillaLabOrderOverride
+    from canvas_sdk.handlers import BaseHandler
+    class InjectPartnerLabAccount(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.LAB_ORDER_COMMAND__PRE_SEND)
+        def compute(self):
+            # Resolve the selected lab account from plugin-owned state — for
+            # example, a custom-model row keyed off the note's partner_slug
+            # stored in note.related_data.
+            account = self.resolve_lab_account_for_note(self.event.target)
+            if account is None:
+                return []
+            return [HealthGorillaLabOrderOverride(
+                practitioner_account_number=account.practitioner_account_number,
+                organizational_account_number=account.organizational_account_number,
+                hg_organization_id=account.hg_organization_id,
+                hg_tenant_id=account.tenant_id or None,
+                hg_location_id=account.location_id or None,
+                bill_to_code="self",
+            ).apply()]
+    ```
+##  Related 
+  - [`LAB_ORDER_COMMAND__PRE_SEND`](/sdk/events/) event — fires this effect's host
+  - [Health Gorilla multi-tenant Organization model](https://developer.healthgorilla.com/docs/organization-2)
+  - [HG `RequestGroup` profile](https://developer.healthgorilla.com/docs/requestgroup)
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-order-override/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-messages/
 The `Message` effect provides a unified way to create, edit, and transmit messages between users (patients or staff) within the Canvas platform. It supports standalone creation, immediate send after creating, edits, and dedicated send operations.
 ##  Attributes 
@@ -20355,6 +20554,31 @@ Some effects have helper classes that assist you by providing payload validation
             ])
             return [layout.apply()]
     ```
+###  Async Execution 
+By default, effects returned from a plugin's `compute` method are executed inline as part of the request that triggered them. Any `Effect` can be opted into asynchronous execution by chaining `.set_async()` on it, in which case the platform will run the effect as an asynchronous task instead of inline. This is useful for effects that should run on a delay, that are tolerant of retries, or that you don't want to block the originating request.
+    ```python
+    from canvas_sdk.effects.claim import ClaimEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self):
+            claim_id = self.event.context["claim_id"]
+            return [
+                ClaimEffect(claim_id=claim_id)
+                .add_comment("Reviewed by automation.")
+                .set_async(delay_seconds=60, max_retries=3)
+            ]
+    ```
+`set_async()` returns the same `Effect` so it can be chained directly off any effect-producing call (e.g. `ClaimEffect(...).add_comment(...)`, `Response(...).apply()`, or a manually-constructed `Effect(...)`).
+####  Parameters 
+Parameter | Type | Description | Required  
+---|---|---|---  
+`delay_seconds` | `int` | Number of seconds to wait before running the effect. Must be non-negative. `0` schedules the effect to run asynchronously as soon as possible. | No  
+`max_retries` | `int` | Maximum number of retry attempts on failure. Must be non-negative. When omitted, the platform default is applied. Pass `0` to explicitly disable retries. | No  
+Both parameters are keyword-only. Calling `.set_async()` with neither argument is a no-op and returns the effect unchanged.
+####  Implementation Details 
+  - Negative values or non-integer values for `delay_seconds` or `max_retries` raise `TypeError` / `ValueError`.
 ###  Disallowed Effect/Event Combinations 
 Canvas prevents certain combinations of events and effects to avoid infinite loops that could occur when an effect triggers the same event that generated it. The following combinations are specifically disallowed:
 Event Type | Disallowed Effect Types  
@@ -20365,7 +20589,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -20423,6 +20647,7 @@ COMMAND_AVAILABLE_ACTIONS_RESULTS | Sort or filter command available actions. Ch
 COMMAND_VALIDATION_ERRORS | Return validation errors for commands. Check out [Command Validation](/sdk/effect-command-validation/).  
 EVENT_VALIDATION_ERROR | Return validation errors for events. Check out [Event Validation Error](/sdk/effect-event-validation-error/).  
 BATCH_ORIGINATE_COMMANDS | Originate multiple commands in a note at once. Check out [Batch Originate](/sdk/effect-batch-originate/).  
+COMMAND__FORM__CREATE_ADDITIONAL_FIELDS | Returns additional fields to be displayed on a command and stored as command metadata. Check out [Command Metadata Create Form](/sdk/command-metadata-create-form-effect/).  
 ###  Notes 
 Check out the [Note Effects](/sdk/effect-notes/) documentation.
 Effect | Description  
@@ -26633,6 +26858,22 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
+LAB_ORDER_COMMAND__PRE_SEND  
+---  
+Fires from Canvas right before a lab order's FHIR `RequestGroup` is built and POSTed to Health Gorilla. Plugins may respond with one or more [HealthGorillaLabOrderOverride](/sdk/effect-health-gorilla-lab-order-override/) effects to inject account numbers, bill-to, performer organization, sub-tenant, or location into the outbound payload.  
+Target object | Context object  
+    "id": laborder_id
+    "type": [LabOrder](/sdk/data-labs/#laborder)
+| 
+    "lab_order":
+      "id": laborder_id
+      "uuid": laborder_id
+    "lab_partner": str
+    "note":
+      "id": note_id
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
 LAB_ORDER_COMMAND__PRE_UPDATE  
 ---  
 Target object | Context object  
@@ -32636,6 +32877,12 @@ Context object:
         "id": str
         "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
 GET_HOMEPAGE_CONFIGURATION | Homepage is loading. See [Set default homepage](/guides/set-default-homepage/) for examples of how to use this event.  
+COMMAND__FORM__GET_ADDITIONAL_FIELDS | Command is originated. See [Command metadata Create Form](/sdk/command-metadata-create-form-effect/) for how to use this event.   
+Target: 
+    "command_uuid": str
+Context object: 
+    "schema_key": str
+    "purpose": "form" | "print"  
 ###  Search Result Data Structures 
 Many event payloads include search results. This section documents the common structures within them.
 ####  MedicationSearchResult 
