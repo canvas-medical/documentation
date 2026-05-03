@@ -10731,6 +10731,32 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_SEND</th></tr>
+    <tr><td colspan="2">Fires from Canvas right before a lab order's FHIR <code>RequestGroup</code> is built and POSTed to Health Gorilla. Plugins may respond with one or more <a href='/sdk/effect-health-gorilla-lab-order-override/'>HealthGorillaLabOrderOverride</a> effects to inject account numbers, bill-to, performer organization, sub-tenant, or location into the outbound payload.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": laborder_id
+"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
+      <td><pre>"lab_order":
+  "id": laborder_id
+  "uuid": laborder_id
+"lab_partner": str
+"note":
+  "id": note_id
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_UPDATE</th></tr>
   </thead>
   <tbody>
