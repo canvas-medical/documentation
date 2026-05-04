@@ -467,6 +467,15 @@ Check out the [HTTP](/sdk/handlers-simple-api-http/) and [WebSocket](/sdk/handle
 | SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. |
 
 
+### Data Integration
+
+Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
+
+| Effect | Description |
+|---|---|
+| LINK_DOCUMENT_TO_PATIENT | Link a document in the Data Integration queue to a patient based on demographics. |
+
+
 ### Commands
 
 Check out the [Commands documentation](/sdk/commands/) for full details.
@@ -527,7 +536,6 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` | |
 | Update Goal | `*_UPDATE_GOAL_COMMAND` | |
 | Vitals | `*_VITALS_COMMAND` | |
-
 
 
 <br/>

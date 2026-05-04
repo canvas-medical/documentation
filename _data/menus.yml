@@ -830,6 +830,9 @@ effects_module:
   - title: "Custom HTML and Django Templates"
     url: /sdk/layout-effect/#custom-html-and-django-templates/
     description: Render custom HTML using Django templates.
+  - title: "Data Integration"
+    url: /sdk/effect-data-integration/
+    description: Manage documents in the Data Integration queue.
   - title: "Default Homepage"
     url: /sdk/default-homepage-effect/
     description: Set a provider's default homepage in Canvas.
