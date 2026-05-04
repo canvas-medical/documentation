@@ -110,6 +110,7 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 **Options**:
 
 - `--secret TEXT`:  Secrets to set, e.g. Key=value
+- `--enable / --disable`: Install the plugin in an enabled or disabled state. Defaults to `--enable`.
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
