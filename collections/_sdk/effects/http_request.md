@@ -61,7 +61,7 @@ Header values are transmitted to the upstream service exactly as provided. Do no
 ```python
 import json
 
-from canvas_sdk.effects import EventType
+from canvas_sdk.events import EventType
 from canvas_sdk.effects.http_request import HttpMethod, HttpRequestEffect
 from canvas_sdk.handlers import BaseHandler
 
