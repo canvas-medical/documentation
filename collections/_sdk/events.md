@@ -1184,9 +1184,14 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td><pre>"id": pt_id
 "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"total_amount_cents": str
-"timestamp": str
-"payment_method_and_description": str</pre></td>
+      <td><pre>"patient_id": str
+"amount": str
+"claim_payments": [
+    {
+        "claim_id": str,
+        "allocated_cents": str
+    }
+]</pre></td>
     </tr>
   </tbody>
 </table>
