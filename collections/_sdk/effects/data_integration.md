@@ -144,6 +144,36 @@ remove_document = RemoveDocumentFromPatient(
 )
 ```
 
+## Marking a Document as Junk
+
+To mark a document in the Data Integration queue as junk (spam), import the `JunkDocument` class and create an instance of it.
+
+| Attribute   |          | Type          | Description                                             |
+|-------------|----------|---------------|---------------------------------------------------------|
+| document_id | required | string        | The ID of the IntegrationTask document to mark as junk  |
+
+An example of marking a document as junk:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.data_integration import JunkDocument
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class JunkDocumentHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.DOCUMENT_RECEIVED)
+
+    def compute(self) -> list[Effect]:
+        document_id = self.event.target.id
+
+        junk_document = JunkDocument(
+            document_id=document_id,
+        )
+
+        return [junk_document.apply()]
+```
+
 <br/>
 <br/>
 <br/>
