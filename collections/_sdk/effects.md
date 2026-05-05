@@ -298,12 +298,10 @@ Check out the [Patient Group](/sdk/effect-patient-group/) documentation.
 
 ### Staff
 
-Check out the [Staff Metadata](/sdk/effect-staff-metadata/) and [Staff External ID](/sdk/effect-create-staff-external-identifier/) documentation.
-
 | Effect | Description |
 |---|---|
-| UPSERT_STAFF_METADATA | Insert or update a key/value metadata entry on a staff member. |
-| CREATE_STAFF_EXTERNAL_IDENTIFIER | Create a new external identifier on a staff member. |
+| [UPSERT_STAFF_METADATA](/sdk/effect-staff-metadata/) | Insert or update a key/value metadata entry on a staff member. |
+| [CREATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-create-staff-external-identifier/) | Create a new external identifier on a staff member. |
 
 
 ### Messages
