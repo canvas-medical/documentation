@@ -31,6 +31,12 @@ effect.create()
 
 This effect creates a new external identifier on the specified staff member.
 
+### Limitations
+
+Only creation is supported via the SDK. There is no effect to update or delete an
+existing `StaffExternalIdentifier` from a plugin — those changes must be made
+through the Canvas UI or the FHIR API.
+
 <br/>
 <br/>
 <br/>
