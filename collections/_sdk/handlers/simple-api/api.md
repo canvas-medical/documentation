@@ -378,6 +378,70 @@ part = form_data["my-part-name"]
 parts_all = form_data.get_list("my-part-name")
 ```
 
+#### File uploads (`upload_files=True`)
+
+For endpoints that accept file uploads, declare the route with `upload_files=True`. Canvas
+will intercept `multipart/form-data` requests on these endpoints, write each file part to S3
+*before* invoking your plugin, and pass your handler an `UploadedFilePart` for each file
+field instead of the raw bytes.
+
+This is the recommended pattern for any endpoint that accepts files larger than a few KB.
+Files never enter the plugin runner, which keeps your plugin light, fast, and out of the
+business of buffering binary data.
+
+```python?partial=true
+from canvas_sdk.handlers.simple_api import api, JSONResponse, Response, UploadedFilePart
+
+class AttachmentApi(api.SimpleAPI):
+    PREFIX = "/attachments"
+
+    def authenticate(self, credentials):
+        return True
+
+    @api.post("/upload", upload_files=True)
+    def upload(self) -> list[Response]:
+        form = self.request.form_data()
+        attachment: UploadedFilePart = form["attachment"]
+        # attachment.key:          "plugin-uploads/your-plugin/<timestamp>-<uuid>-<filename>"
+        # attachment.filename:     original filename (sanitized)
+        # attachment.content_type: MIME type from the multipart part
+        # attachment.size:         number of bytes
+        # NOTE: there is no `.content` attribute. Bytes live in S3 only.
+        return [JSONResponse({"key": attachment.key, "filename": attachment.filename})]
+```
+
+The `UploadedFilePart` returned for file fields exposes `name`, `filename`, `content_type`,
+`size`, and `key`. Plain string fields in the same multipart request are returned as
+`StringFormPart` instances with `name` and `value`, just like in a non-upload endpoint.
+
+The S3 key your plugin receives is a stable, customer-scoped relative path. Reference it in
+subsequent effects (for example, by passing it to a message-attachment effect or storing it
+on a custom data record). When the file later needs to be served, Canvas generates a fresh
+short-lived presigned URL on read.
+
+If a caller posts with a non-multipart content type to an endpoint declared with
+`upload_files=True`, the request is rejected with **400 Bad Request** before the handler
+runs. If the S3 write fails, the caller receives **502 Bad Gateway** and the handler is not
+invoked. The default for `upload_files` is `False`, so existing endpoints are not affected
+by this feature.
+
+For routes defined as `SimpleAPIRoute` subclasses, set `UPLOAD_FILES = True` as a class
+attribute to opt in:
+
+```python?partial=true
+class UploadRoute(api.SimpleAPIRoute):
+    PATH = "/upload"
+    UPLOAD_FILES = True
+
+    def authenticate(self, credentials):
+        return True
+
+    def post(self) -> list[Response]:
+        form = self.request.form_data()
+        attachment: UploadedFilePart = form["file"]
+        return [JSONResponse({"key": attachment.key})]
+```
+
 ### Responses
 
 Endpoint handlers may return zero or one response objects and any number of Effects. Handlers that
