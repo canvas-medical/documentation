@@ -347,6 +347,9 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | deprecated_at                               | DateTime                                           |
 | is_patient_required                         | Boolean                                            |
 | allow_custom_title                          | Boolean                                            |
+| is_scheduleable_via_patient_portal          | Boolean                                            |
+| online_duration                             | Integer                                            |
+| is_sig_required                             | Boolean                                            |
 
 ### NoteMetadata
 
@@ -411,6 +414,7 @@ for metadata in note_metadata:
 | RCL   | Recalled               |                            |
 | UND   | Undeleted              |                            |
 | DSC   | Discharged             |                            |
+| SGN   | Signed                 | Used when the note type's `is_sig_required` is True |
 | SCH   | Scheduling             | Used in appointment notes  |
 | BKD   | Booked                 | Used in appointment notes  |
 | CVD   | Converted              | Used in appointment notes  |
