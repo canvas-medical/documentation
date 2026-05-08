@@ -7,7 +7,7 @@ hidden: false
 
 The `NoteRestrictionsEffect` and `NoteRestrictionsUpdatedEffect` allow plugins to restrict access to notes and push real-time permission updates to connected clients.
 
-- **`NoteRestrictionsEffect`** — returned by a plugin in response to a `GET_NOTE_RESTRICTIONS` event. It tells the Canvas frontend whether the requesting user should see a banner, have the note content blurred, and have editing disabled.
+- **`NoteRestrictionsEffect`** — returned by a plugin in response to a `GET_NOTE_RESTRICTIONS` event. It tells the Canvas UI whether the requesting user should see a banner, have the note content blurred, or have editing disabled.
 - **`NoteRestrictionsUpdatedEffect`** — emitted by a plugin at any time to signal that restrictions for a specific note have changed, causing all connected clients viewing that note to immediately refetch their restrictions.
 
 ---
@@ -24,7 +24,7 @@ If no plugin returns a `NoteRestrictionsEffect`, the note is unrestricted by def
 
 | Property          | Value        | Description                                                                                                                                        |
 |-------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `event.target.id` | `str` (UUID) | The `externally_exposable_id` of the note being accessed. Use this to look up the note or its metadata.                                            |
+| `event.target.id` | `str` (UUID) | The `id` of the note being accessed. Use this to look up the note or its metadata.                                            |
 | `event.actor.id`  | `str` (int)  | The database ID of the authenticated user requesting the note. Use `Staff.objects.filter(user__dbid=event.actor.id)` to resolve to a staff record. |
 | `event.context`   | `{}`         | Empty — no additional context is provided.                                                                                                         |
 
@@ -34,7 +34,7 @@ If no plugin returns a `NoteRestrictionsEffect`, the note is unrestricted by def
 |-------------------|-----------------|---------|--------------------------------------------------------------------------------------------------------|
 | `restrict_access` | `bool`          | `False` | Whether the requesting user is restricted from editing this note.                                      |
 | `blur_content`    | `bool`          | `False` | Whether the note body should be blurred for the requesting user.                                       |
-| `banner_message`  | `str` \| `None` | `None`  | Message shown in the warning banner at the top of the note. Falls back to a default message if `None`. |
+| `banner_message`  | `str` \| `None` | `None`  | Message shown in the warning banner at the top of the note. If `None`, a default "This note is currently restricted." message is displayed. |
 
 ### Example
 
@@ -82,7 +82,7 @@ When a plugin performs an action that changes whether a note is restricted (e.g.
 
 | Field     | Type  | Description                                         |
 |-----------|-------|-----------------------------------------------------|
-| `note_id` | `str` | The id of the note whose restrictions have changed. |
+| `note_id` | `str` (UUID) | The id of the note whose restrictions have changed. |
 
 ### Example
 
