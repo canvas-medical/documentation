@@ -9,25 +9,24 @@ sections:
         description: >-
           Provenance of a resource is a record that describes entities and processes involved in producing and delivering or otherwise influencing that resource. Provenance provides a critical foundation for assessing authenticity, enabling trust, and allowing reproducibility. Provenance assertions are a form of contextual metadata and can themselves become important records with their own provenance. Provenance statement indicates clinical significance in terms of confidence in authenticity, reliability, and trustworthiness, integrity, and stage in lifecycle (e.g. Document Completion - has the artifact been legally authenticated), all of which may impact security, privacy, and trust policies.<br><br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-provenance.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-provenance.html)
-          <br><br>In Canvas a Provenance record is created each time the following data types are create or updated in the Canvas database: 
+          <br><br>In Canvas a Provenance record is created each time the following resources are created or updated in the Canvas database: 
 
             - AllergyIntolerance
             - CarePlan
-            - CareTeamMembership
+            - CareTeam
             - Condition
-            - ConsolidatedImmunization
             - Coverage
             - Device
             - DiagnosticReport
             - DocumentReference
             - Encounter
             - Goal
+            - Immunization
+            - MedicationRequest
             - Observation
             - Patient
-            - Prescription
             - Procedure
             - ServiceRequest
-            - UpdateGoal
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -57,10 +56,11 @@ sections:
                     - value: Encounter
                     - value: Goal
                     - value: Immunization
-                    - value: MedicationDispense
                     - value: MedicationRequest
                     - value: Observation
+                    - value: Organization
                     - value: Patient
+                    - value: Practitioner
                     - value: Procedure
                     - value: ServiceRequest
                 - name: display
@@ -119,7 +119,8 @@ sections:
                         type: array[json]
                         attributes: 
                           - name: system
-                            description: The system url of the coding.
+                            description: >-
+                              The system url of the coding. The system is `http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type` for `transmitter` codes; `http://terminology.hl7.org/CodeSystem/provenance-participant-type` for `author` and `composer` codes.
                             enum_options: 
                               - value: http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type
                               - value: http://terminology.hl7.org/CodeSystem/provenance-participant-type
@@ -130,12 +131,14 @@ sections:
                             enum_options: 
                               - value: author
                               - value: composer
+                              - value: transmitter
                           - name: display
                             description: The display name of the coding.
                             type: string
                             enum_options: 
                                 - value: Author
                                 - value: Composer
+                                - value: Transmitter
                 - name: who
                   type: json
                   attributes:

@@ -11,13 +11,32 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 | Error Code                 | Description                                                            |
 |----------------------------| ---------------------------------------------------------------------- |
 | 200 - OK                   | Everything worked as expected.                                         |
+| 400 - Bad Request          | The request was malformed or rejected by validation; details are provided in the returned OperationOutcome. |
 | 401 - Unauthorized         | No valid Bearer token provided.                                        |
 | 403 - Forbidden            | Token bearer is forbidden from performing the operation.               |
 | 404 - Not Found            | The requested resource doesn't exist.                                  |
-| 422 - Unprocessable Entity | There operation cannot be completed because of an error in the request body; details are provided in the returned OperationOutcome |
+| 412 - Precondition Failed  | A conditional request failed because the resource has been modified since the precondition was specified; details are provided in the returned OperationOutcome. |
+| 422 - Unprocessable Entity | The operation cannot be completed because of an error in the request body; details are provided in the returned OperationOutcome. |
 | 5XX - Server Error         | Something went wrong on Canvas's end.                                  |
 
 
+
+**400**
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "text": "The request was malformed or failed validation."
+      }
+    }
+  ]
+}
+```
+<br>
 
 **401**
 ```json
@@ -71,6 +90,23 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 ```
 <br>
 
+**412**
+```json
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "conflict",
+      "details": {
+        "text": "The resource has been modified since the precondition was specified."
+      }
+    }
+  ]
+}
+```
+<br>
+
 **422**
 
 ```json
@@ -96,7 +132,7 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
   "issue": [
     {
       "severity": "error",
-      "code": "excepetion",
+      "code": "exception",
       "details": {
         "text": "Internal server error"
       }

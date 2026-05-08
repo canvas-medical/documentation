@@ -19,7 +19,7 @@ sections:
             type: string
           - name: status
             description: A code specifying the current state of the order.
-            type: enum [ active | entered-in-error | cancelled ]
+            type: enum [ active | entered-in-error | cancelled | stopped | unknown ]
           - name: intent
             description: Whether the request is a proposal, plan, or an original order. <br><br>A Medication Request that corresponds to a refill in the patient's chart will have an intent of `filler-order` while all other Medication Requests will be `order`.
             type: enum [ order | filler-order ]
@@ -224,6 +224,15 @@ sections:
                 - value: active
                 - value: entered-in-error
                 - value: cancelled
+                - value: stopped
+          - name: _include
+            description: Include referenced resources in the search bundle. The supported value is `MedicationRequest:medication`, which adds the referenced Medication resources to the response.
+            type: string
+            search_options:
+                - value: MedicationRequest:medication
+          - name: _revinclude
+            description: Standard FHIR `_revinclude` parameter; include resources that reference the matched MedicationRequest resources.
+            type: string
         endpoints: [read, search]
         read:
           description: Read a MedicationRequest resource.
@@ -290,6 +299,9 @@ sections:
     "requester": {
         "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
         "type": "Practitioner"
+    },
+    "performer": {
+        "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
     },
     "reasonCode": [
         {
@@ -466,6 +478,9 @@ sections:
                 "requester": {
                     "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
                     "type": "Practitioner"
+                },
+                "performer": {
+                    "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
                 },
                 "reasonCode": [
                     {

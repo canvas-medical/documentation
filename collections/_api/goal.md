@@ -18,15 +18,16 @@ sections:
             type: string
             description: The Canvas identifier of the goal.
           - name: lifecycleStatus
-            type: enum [ active | completed | entered-in-error ]
+            type: enum [ accepted | active | completed | entered-in-error ]
             description: >-
               State the goal is in throughout its lifecycle. <br><br>
-              - Goals that have been closed using a Close Goal Command will have a staus of `completed`. <br>
+              - Goals that have been closed using a Close Goal Command will have a status of `completed`. <br>
               - Goal commands that were entered-in-error will have a status of `entered-in-error`. <br>
-              - All goals that are not closed will have the `active` status.
+              - Goals that are not closed will have the `active` status. <br>
+              - Goals with no lifecycle state set in Canvas will fall back to `accepted`.
           - name: achievementStatus
             type: json
-            description: Describes progress made on goal, from **http://terminology.hl7.org/CodeSystem/goal-achievement**. This correspondes to the `Status` field on the latest committed goal related command.
+            description: Describes progress made on goal, from **http://terminology.hl7.org/CodeSystem/goal-achievement**. This corresponds to the `Status` field on the latest committed goal related command.
             attributes:
               - name: coding
                 description: Code defined by a terminology system.
@@ -56,23 +57,27 @@ sections:
           - name: priority
             type: json
             description: >-
-              Level of importance associated with the reaching/sustaining goal, from **http://terminology.hl7.org/CodeSystem/goal-priority**. This correspondes to the `Priority` field on the latest committed goal related command.
+              Level of importance associated with the reaching/sustaining goal, from **http://terminology.hl7.org/CodeSystem/goal-priority**. This corresponds to the `Priority` field on the latest committed goal related command.
             attributes:
-              - name: system
-                description: The system url of the coding.
-                type: string
-                enum_options:
-                  - value: http://terminology.hl7.org/CodeSystem/goal-achievement
-              - name: code
-                description: The code.
-                type: string
-                enum_options:
-                  - value: high-priority
-                  - value: medium-priority
-                  - value: low-priority
-              - name: display
-                description: The display name of the coding.
-                type: string
+              - name: coding
+                description: Code defined by a terminology system.
+                type: array[json]
+                attributes:
+                  - name: system
+                    description: The system url of the coding.
+                    type: string
+                    enum_options:
+                      - value: http://terminology.hl7.org/CodeSystem/goal-priority
+                  - name: code
+                    description: The code.
+                    type: string
+                    enum_options:
+                      - value: high-priority
+                      - value: medium-priority
+                      - value: low-priority
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
           - name: description
             type: json
             description: Human readable text of the goal.
@@ -95,7 +100,7 @@ sections:
             description: When goal pursuit begins.
           - name: target
             type: array[json]
-            description: A single iteration of this field with the **dueDate**, if available. This correspondes to the `Due date` field on the latest committed goal related command.
+            description: A single iteration of this field with the **dueDate**, if available. This corresponds to the `Due date` field on the latest committed goal related command.
             attributes:
               - name: dueDate
                 type: date
@@ -112,7 +117,7 @@ sections:
                 description: Type the reference refers to (e.g. "Practitioner").
           - name: note
             type: array[json]
-            description: Comments about the goal and who wrote them. Notes correspondes to any progress/barriers submitted on any of goal related commands.
+            description: Comments about the goal and who wrote them. Notes correspond to any progress/barriers submitted on any of goal related commands.
             attributes:
               - name: id
                 type: string

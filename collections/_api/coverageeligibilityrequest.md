@@ -53,7 +53,7 @@ sections:
             required_in: create
             description: Patient insurance information.<br><br>Canvas requires a single coverage resource identifying the insurance to check eligibility against.
             attributes:
-              - value: coverage
+              - name: coverage
                 type: json
                 required_in: create
                 description: Insurance information.

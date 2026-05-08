@@ -34,18 +34,9 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature
                   - value: http://schemas.canvasmedical.com/fhir/extensions/roles
-                  - value: http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex
               - name: valueString
                 type: string
                 description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
-              - name: valueCode
-                type: string
-                description: Value of extension.<br><br> The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`. <br><br> A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC).
-                enum_options:
-                  - value: M
-                  - value: F
-                  - value: OTH
-                  - value: UNK
               - name: valueUrl
                 type: string
                 description: Value of extension.<br><br> The `valueUrl` attribute is needed for the meeting link extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link`. This value will represent the url that will be associated to any telehealth notes in Canvas. 
@@ -126,9 +117,13 @@ sections:
             description: The name associated with the practitioner.
             attributes:
               - name: use
-                type: enum [ ususal ]
+                type: enum [ usual ]
                 description: The 'use' attribute specifies the context in which the name is used. For this API, the only permitted value is 'usual,' which indicates that the name provided is the name typically used to identify the practitioner in daily practice.
                 required_in: create, update
+              - name: text
+                type: string
+                description: The credentialed full name of the practitioner.
+                exclude_in: create, update
               - name: family
                 type: string
                 description: Practitioner's last name.
@@ -137,6 +132,14 @@ sections:
                 type: array[string]
                 required_in: create, update
                 description: Practitioner's first name. Only one first name is allowed.
+              - name: prefix
+                type: array[string]
+                description: Name prefixes (e.g. titles), sourced from the staff record.
+                exclude_in: create, update
+              - name: suffix
+                type: array[string]
+                description: Name suffixes (e.g. credentials), sourced from the staff record.
+                exclude_in: create, update
           - name: telecom
             type: array[json]
             required_in: create, update
@@ -251,21 +254,22 @@ sections:
                     type: string
                     description: The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
               - name: code
-                type: object[json]
+                type: json
                 description: License type coding object. Specifies the type of license that practitioner holds.
                 attributes:
                   - name: text
                     type: string
-                    description: The license type code. This field specifies the type of license that practitioner holds.
+                    description: The license type code. This field specifies the type of license that practitioner holds. On write, any unrecognized value (or `OTHER`) is stored as `License`.
                     enum_options:
                       - value: CLIA
                       - value: DEA
                       - value: PTAN
+                      - value: SPI
                       - value: STATE
                       - value: TAXONOMY
-                      - value: OTHER
+                      - value: OTHER (stored as `License`)
               - name: period
-                type: object[json]
+                type: json
                 required_in: create, update
                 description: A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
                 attributes:
@@ -274,9 +278,9 @@ sections:
                     description: Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
                   - name: end
                     type: string
-                    description: Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
+                    description: End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
               - name: issuer
-                type: object[json]
+                type: json
                 description: A component of the Practitioner's license object that defines the license issuing authority short name.
                 attributes:
                   - name: display
@@ -360,10 +364,6 @@ curl --request POST \
 {
     "resourceType": "Practitioner",
     "extension": [
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
@@ -491,7 +491,7 @@ curl --request POST \
                 }
             ],
             "code": {
-                "text": "License"
+                "text": "CLIA"
             },
             "period": {
                 "start": "2020-01-01",
@@ -538,10 +538,6 @@ headers = {
 payload = {
     "resourceType": "Practitioner",
     "extension": [
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
@@ -673,7 +669,7 @@ payload = {
                 }
             ],
             "code": {
-                "text": "License"
+                "text": "CLIA"
             },
             "period": {
                 "start": "2020-01-01",
@@ -728,10 +724,6 @@ print(response.text)
     "id": "55096fbcdfb240fd8c999c325304de03",
     "extension": [
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
         },
@@ -748,7 +740,7 @@ print(response.text)
             }
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
             "valueAttachment": {
                 "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
             }
@@ -870,7 +862,7 @@ print(response.text)
                 }
             ],
             "code": {
-                "text": "License"
+                "text": "CLIA"
             },
             "period": {
                 "start": "2020-01-01",
@@ -972,10 +964,6 @@ curl --request PUT \
     "resourceType": "Practitioner",
     "extension": [
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
             "valueUrl": "https://meet.google.com/room-001"
         },
@@ -988,13 +976,9 @@ curl --request PUT \
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
-            "extension": [
-                {
-                    "valueAttachment": {
-                        "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
-                    }
-                }
-            ]
+            "valueAttachment": {
+                "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+            }
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
@@ -1113,7 +1097,7 @@ curl --request PUT \
                 }
             ],
             "code": {
-                "text": "License"
+                "text": "CLIA"
             },
             "period": {
                 "start": "2020-01-01",
@@ -1161,10 +1145,6 @@ payload = {
     "resourceType": "Practitioner",
     "extension": [
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
             "valueUrl": "https://meet.google.com/room-001"
         },
@@ -1176,14 +1156,10 @@ payload = {
             }
         },
         {
-            "extension": [
-                {
-                    "valueAttachment": {
-                        "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
-                    }
-                }
-            ],
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
+            "valueAttachment": {
+                "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+            }
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
@@ -1301,7 +1277,7 @@ payload = {
                 }
             ],
             "code": {
-                "text": "License"
+                "text": "CLIA"
             },
             "period": {
                 "start": "2020-01-01",
@@ -1352,172 +1328,191 @@ print(response.text)
 
 ```json
 {
-    "resourceType": "Practitioner",
-    "id": "55096fbcdfb240fd8c999c325304de03",
-    "extension": [
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 1,
+    "link": [
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
+            "relation": "self",
+            "url": "/Practitioner?_count=10&_offset=0"
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
-            "valueString": "username123"
+            "relation": "first",
+            "url": "/Practitioner?_count=10&_offset=0"
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-            "valueUrl": "https://meet.google.com/room-001"
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-            "valueReference": {
-                "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
-                "type": "Location",
-                "display": "Canvas Clinic San Francisco"
-            }
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
-            "valueAttachment": {
-                "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
-            }
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
-            "extension": [
-                {
-                    "url": "code",
-                    "valueCoding": {
-                        "system": "http://schemas.canvasmedical.com/fhir/roles",
-                        "code": "RN"
-                    }
-                },
-                {
-                    "url": "code",
-                    "valueCoding": {
-                        "system": "http://schemas.canvasmedical.com/fhir/roles",
-                        "code": "MA"
-                    }
-                },
-                {
-                    "url": "code",
-                    "valueCoding": {
-                        "system": "http://schemas.canvasmedical.com/fhir/roles",
-                        "code": "CC"
-                    }
-                }
-            ]
+            "relation": "last",
+            "url": "/Practitioner?_count=10&_offset=0"
         }
     ],
-    "identifier": [
+    "entry": [
         {
-            "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1920301155"
-        }
-    ],
-    "active": true,
-    "name": [
-        {
-            "use": "usual",
-            "text": "Samantha Jones",
-            "family": "Jones",
-            "given": [
-                "Samantha"
-            ]
-        }
-    ],
-    "telecom": [
-        {
-            "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
-            "system": "phone",
-            "value": "5554320555",
-            "use": "mobile",
-            "rank": 1
-        },
-        {
-            "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
-            "system": "phone",
-            "value": "333555",
-            "use": "work",
-            "rank": 1
-        },
-        {
-            "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
-            "system": "email",
-            "value": "samantha.jones@example.com",
-            "use": "work",
-            "rank": 1
-        },
-        {
-            "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
-            "system": "email",
-            "value": "samantha.jones2@example.com",
-            "use": "work",
-            "rank": 2
-        }
-    ],
-    "address": [
-        {
-            "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
-            "use": "work",
-            "line": [
-                "1234 Main St"
-            ],
-            "city": "Los Angeles",
-            "state": "CA",
-            "postalCode": "94107",
-            "country": "United States"
-        },
-        {
-            "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
-            "use": "work",
-            "line": [
-                "12 Cesar Chavez St"
-            ],
-            "city": "San Francisco",
-            "state": "CA",
-            "postalCode": "94110",
-            "country": "United States"
-        }
-    ],
-    "birthDate": "1988-10-10",
-    "photo": [
-        {
-            "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
-            "title": "Profile photo 1 -- sample title"
-        },
-        {
-            "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
-        }
-    ],
-    "qualification": [
-        {
-            "identifier": [
-                {
-                    "system": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url",
-                    "value": "PRT-01"
-                }
-            ],
-            "code": {
-                "text": "License"
-            },
-            "period": {
-                "start": "2020-01-01",
-                "end": "2024-05-05"
-            },
-            "issuer": {
-                "display": "MD University Los Angeles",
+            "resource": {
+                "resourceType": "Practitioner",
+                "id": "55096fbcdfb240fd8c999c325304de03",
                 "extension": [
                     {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                        "valueString": "MDU LA"
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+                        "valueString": "username123"
                     },
                     {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
-                        "valueString": "CA"
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
+                        "valueUrl": "https://meet.google.com/room-001"
                     },
                     {
-                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
-                        "valueBoolean": true
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
+                        "valueReference": {
+                            "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                            "type": "Location",
+                            "display": "Canvas Clinic San Francisco"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
+                        "valueAttachment": {
+                            "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
+                        }
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
+                        "extension": [
+                            {
+                                "url": "code",
+                                "valueCoding": {
+                                    "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                    "code": "RN"
+                                }
+                            },
+                            {
+                                "url": "code",
+                                "valueCoding": {
+                                    "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                    "code": "MA"
+                                }
+                            },
+                            {
+                                "url": "code",
+                                "valueCoding": {
+                                    "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                    "code": "CC"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "identifier": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/us-npi",
+                        "value": "1920301155"
+                    }
+                ],
+                "active": true,
+                "name": [
+                    {
+                        "use": "usual",
+                        "text": "Samantha Jones",
+                        "family": "Jones",
+                        "given": [
+                            "Samantha"
+                        ]
+                    }
+                ],
+                "telecom": [
+                    {
+                        "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
+                        "system": "phone",
+                        "value": "5554320555",
+                        "use": "mobile",
+                        "rank": 1
+                    },
+                    {
+                        "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
+                        "system": "phone",
+                        "value": "333555",
+                        "use": "work",
+                        "rank": 1
+                    },
+                    {
+                        "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
+                        "system": "email",
+                        "value": "samantha.jones@example.com",
+                        "use": "work",
+                        "rank": 1
+                    },
+                    {
+                        "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
+                        "system": "email",
+                        "value": "samantha.jones2@example.com",
+                        "use": "work",
+                        "rank": 2
+                    }
+                ],
+                "address": [
+                    {
+                        "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
+                        "use": "work",
+                        "line": [
+                            "1234 Main St"
+                        ],
+                        "city": "Los Angeles",
+                        "state": "CA",
+                        "postalCode": "94107",
+                        "country": "United States"
+                    },
+                    {
+                        "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
+                        "use": "work",
+                        "line": [
+                            "12 Cesar Chavez St"
+                        ],
+                        "city": "San Francisco",
+                        "state": "CA",
+                        "postalCode": "94110",
+                        "country": "United States"
+                    }
+                ],
+                "birthDate": "1988-10-10",
+                "photo": [
+                    {
+                        "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
+                        "title": "Profile photo 1 -- sample title"
+                    },
+                    {
+                        "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
+                    }
+                ],
+                "qualification": [
+                    {
+                        "identifier": [
+                            {
+                                "system": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url",
+                                "value": "PRT-01"
+                            }
+                        ],
+                        "code": {
+                            "text": "CLIA"
+                        },
+                        "period": {
+                            "start": "2020-01-01",
+                            "end": "2024-05-05"
+                        },
+                        "issuer": {
+                            "display": "MD University Los Angeles",
+                            "extension": [
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
+                                    "valueString": "MDU LA"
+                                },
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                                    "valueString": "CA"
+                                },
+                                {
+                                    "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                                    "valueBoolean": true
+                                }
+                            ]
+                        }
                     }
                 ]
             }

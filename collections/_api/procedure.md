@@ -42,7 +42,6 @@ sections:
                     description: The system url of the coding.
                     enum_options: 
                       - value: http://www.ama-assn.org/go/cpt
-                      - value: unstructured
                     type: string
                   - name: code
                     description: The code of the procedure.

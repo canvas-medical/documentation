@@ -14,13 +14,15 @@ sections:
           *Codings*<br><br>
           All questionnaires must have coding, and all response options within a question on a questionnaire must have codings.<br><br>
           *Question Types*<br><br>
-          Canvas supports 3 different type of questions:<br><br>
+          Canvas supports 4 different types of questions:<br><br>
           1. Multi select response questions are denoted with:<br>
           `"type": "choice", "repeats": true`<br><br>  
           2. Single select response questions are denoted with:<br>
           `"type": "choice", "repeats": false`<br><br>  
           3. Free text response questions are denoted with:<br>
           `"type": "text", "repeats": false`<br><br>
+          4. Decimal numeric response questions are denoted with:<br>
+          `"type": "decimal"`<br><br>
           Questions can be reused in multiple questionnaires, but any given question code should only appear once within a particular questionnaire.
         attributes:
           - name: resourceType
@@ -89,6 +91,7 @@ sections:
                     - value: group (for nested groups of items)
                     - value: choice (for multiple or single choice questions)
                     - value: text (for free text questions)
+                    - value: decimal (for decimal numeric questions)
                 - name: repeats
                   type: boolean
                   description: Whether the item may repeat. This value will be true for multiple choice questions and false for single select questions.
@@ -173,8 +176,8 @@ sections:
             type: string
           - name: questionnaire-code
             description: >-
-              The questionnaire the answers are provided for.<br><br>
-              A Questionnaire search of of the form `/Questionnaire?questionnaire-code=711013002` will return Questionnaire resources uploaded to Canvas that have the code **711013002**.
+              A code that matches the Questionnaire's own `code` value.<br><br>
+              A Questionnaire search of the form `/Questionnaire?questionnaire-code=711013002` will return Questionnaire resources uploaded to Canvas that have the code **711013002**.
             type: string
           - name: status
             description: >-

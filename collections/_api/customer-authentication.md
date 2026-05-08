@@ -174,10 +174,12 @@ Scopes control which parts of the API the token can access.
 - **Client Credentials Flow:** Scopes are optional. If omitted, you'll have full access to the FHIR API.
 - **Authorization Code Flow:** Scopes are required and must be passed in the authorize URL.
 
-Scopes follow the [SMART on FHIR Clinical Scope Syntax](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#clinical-scope-syntax). They have the form: `user/(resourceType|*).(c|r|u|s)`, where:
+Scopes follow the [SMART on FHIR Clinical Scope Syntax](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#clinical-scope-syntax). They have the form: `(patient|user|system)/(resourceType|*).(c|r|u|d|s)`, where:
 
-- `resourceType` can be a specific resource (e.g., `Patient`, `Practitioner`) or a wildcard `*`
-- Permissions: `c` (create), `r` (read), `u` (update), `s` (search)
+- The prefix selects the access context: `user/` (current user's permissions), `patient/` (a specific patient's compartment, established at launch), or `system/` (system-level/backend access, used for bulk-data export).
+- `resourceType` can be a specific resource (e.g., `Patient`, `Practitioner`) or a wildcard `*`.
+- Permissions: `c` (create), `r` (read), `u` (update), `d` (delete), `s` (search).
+- Legacy SMART v1 permissions are also accepted and converted internally: `read` → `rs`, `write` → `cud`, and `*` → `cruds`. For example, `user/Patient.read` is equivalent to `user/Patient.rs`.
 
 Multiple scopes are separated by spaces. Common examples:
 
@@ -187,10 +189,23 @@ Multiple scopes are separated by spaces. Common examples:
 | `user/*.write` | Write access to all resources |
 | `user/*.*` | Full access to all resources |
 | `user/Patient.read` | Read Patient resources only |
+| `system/*.read` | System-level read access to all resources (used for bulk-data export, e.g., `Group/{id}/$export`) |
 | `openid` | OpenID Connect scope |
 | `offline_access` | Request a refresh token |
 
 **URL encoding reminder:** When passing scopes in a URL, encode `/` as `%2F` and spaces as `%20`. For example: `scope=user%2F*.read%20user%2F*.write`
+
+## SMART on FHIR discovery
+
+The FHIR API exposes a SMART on FHIR configuration document at `GET {FUMAGE_BASE_URL}/.well-known/smart-configuration`. Clients can fetch this document at runtime to discover the supported authorization endpoints, token endpoint, and capabilities. Returned fields include:
+
+- `issuer` — the issuer URL.
+- `authorization_endpoint` — the URL to send users to for authorization (Authorization Code flow).
+- `token_endpoint` — the URL to exchange an authorization code or client credentials for an access token.
+- `jwks_uri` — the URL of the JSON Web Key Set used to verify tokens.
+- `capabilities` — supported SMART capabilities, including `launch-standalone`, `client-confidential-symmetric`, and supported response types.
+- `grant_types_supported` — the supported OAuth grant types (e.g., `authorization_code`, `client_credentials`, `refresh_token`).
+- `scopes_supported` — the supported scope strings.
 
 ## Additional reading
 - [Authentication Best Practices](/api/authentication-best-practices)

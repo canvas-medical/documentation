@@ -104,6 +104,8 @@ sections:
                 exclude_in: update
               - value: entered-in-error
                 exclude_in: create
+              - value: in-progress
+                exclude_in: create, update
             type: string
           - name: subject
             required_in: create,update
@@ -178,7 +180,7 @@ sections:
                   description: A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
                 - name: text
                   type: string
-                  description: Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
+                  description: Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions. Required for QuestionnaireResponses that target an external questionnaire URL.
                 - name: answer
                   type: array[json]
                   required_in: create,update
@@ -215,12 +217,14 @@ sections:
                           required_in: create, update
                     - name: item
                       description: >-
-                        Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question. 
+                        Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question. Nested items are returned on read only; create and update do not support nested items.
                       type: array[json]
+                      exclude_in: create, update
                 - name: item
                   type: array[json]
+                  exclude_in: create, update
                   description: >-
-                    Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
+                    Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level. Nested items are returned on read only; create and update do not support nested items.
         search_parameters:
           - name: _id
             description: The identifier of the QuestionnaireResponse.
@@ -304,7 +308,7 @@ curl --request POST \
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -388,7 +392,7 @@ payload = {
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -481,7 +485,7 @@ print(response.text)
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
@@ -624,7 +628,7 @@ curl --request PUT \
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -708,7 +712,7 @@ payload = {
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -821,7 +825,7 @@ print(response.text)
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",

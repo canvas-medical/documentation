@@ -75,7 +75,7 @@ sections:
                       description: Value of extension. If the value is set to `True`, it indicates the specific participant as the lead for this care team. Only one active participant can be the lead of a care team. Only practitioners can be designated as the lead.
                 - name: role
                   type: array[json]
-                  description: Type of involvement
+                  description: Type of involvement. Required for Practitioner participants; not present (and ignored) for Organization participants.
                   required_in: update
                   attributes:
                     - name: coding
@@ -124,6 +124,9 @@ sections:
                 - value: suspended
                 - value: inactive
                 - value: entered-in-error
+          - name: _revinclude
+            type: string
+            description: Standard FHIR `_revinclude` parameter.
         endpoints: [read, update, search]
         read:
           description: Read a CareTeam resource.

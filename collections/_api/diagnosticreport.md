@@ -19,21 +19,6 @@ sections:
           - name: id
             description: The identifier of the Diagnostic Report.
             type: string
-          - name: text
-            description: Text summary of the Diagnostic Report, for human interpretation.
-            type: json
-            attributes:
-              - name: status
-                description: All reports returned from this endpoint will show a status of `generated`.
-              - name: div
-                description: Limited xhtml content that contains the human readable text of the Diagnostic Report.
-          - name: identifier
-            description: Business identifier for report.
-            type: array[json]
-            attributes:
-                - name: id 
-                  description: The identifier of the Diagnostic Report.
-                  type: string
           - name: status
             type: enum [ final | entered-in-error ]
             description: >-
@@ -113,9 +98,6 @@ sections:
               - name: reference
                 type: string
                 description: The reference string of the Encounter in the format of `"Encounter/912542cf-3bfb-4609-99f6-26ce94feb70d"`.
-              - name: id
-                type: string
-                description: Unique identifier of the Encounter.
           - name: effectiveDateTime
             type: datetime | date
             description: Clinically relevant date/time for report.
@@ -150,9 +132,6 @@ sections:
                 - name: url
                   type: string
                   description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
-                - name: extension
-                  type: json
-                  description: Extension for backward-compatible URLs 
         search_parameters:
           - name: _id
             type: string
@@ -161,8 +140,8 @@ sections:
             type: string
             description: The DiagnosticReport category. Filters by the code and/or system  under `category.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code`.
             search_options:
-              - value: http://terminology.hl7.org/CodeSystem/v2-0074|code
-              - value: http://loinc.org|code
+              - value: http://terminology.hl7.org/CodeSystem/v2-0074|LAB
+              - value: http://loinc.org|LP29684-5
           - name: code
             type: string
             description: The DiagnosticReport code. Filters by the code and/or system under `code.coding` attribute. You can search by just the code value or you can search by the system and code in the format `system|code`.
@@ -219,7 +198,8 @@ sections:
                 "code": "73562",
                 "display": "XRAY, knee; 3 views"
             }
-        ]
+        ],
+        "text": "XRAY, knee; 3 views"
     },
     "subject":
     {

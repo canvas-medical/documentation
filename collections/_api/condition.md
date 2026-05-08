@@ -69,7 +69,7 @@ sections:
                       enum_options: 
                         - value: active
                         - value: resolved
-                        - value: relapsed
+                        - value: relapse
                           exclude_in: create,update
                         - value: remission
                           exclude_in: create,update
@@ -80,7 +80,7 @@ sections:
                       enum_options: 
                         - value: Active
                         - value: Resolved
-                        - value: Relapsed
+                        - value: Relapse
                           exclude_in: create,update
                         - value: Remission
                           exclude_in: create,update
@@ -91,7 +91,7 @@ sections:
                   enum_options: 
                         - value: Active
                         - value: Resolved
-                        - value: Relapsed
+                        - value: Relapse
                           exclude_in: create,update
                         - value: Remission
                           exclude_in: create,update
@@ -104,17 +104,14 @@ sections:
                 - name: coding
                   description: Identifies where the definition of the code comes from.
                   type: array[json]
-                  required_in: create, update
                   attributes: 
                     - name: system
                       description: The system url of the coding.
-                      required_in: create, update
                       enum_options: 
                         - value: http://terminology.hl7.org/CodeSystem/condition-ver-status
                       type: string
                     - name: code
                       description: The code of the clinical status.
-                      required_in: create, update
                       type: string
                       enum_options: 
                         - value: confirmed
@@ -167,7 +164,7 @@ sections:
                         - value: problem-list-item
                         - value: health-concern
                         - value: sdoh
-                        - value: functional-status
+                        - value: function-status
                         - value: disability-status
                         - value: cognitive-status
                     - name: display
@@ -179,7 +176,7 @@ sections:
                         - value: Problem List Item
                         - value: Health Concern
                         - value: SDOH
-                        - value: Functional Status
+                        - value: Function Status
                         - value: Disability Status
                         - value: Cognitive Status
                 - name: text
@@ -191,7 +188,7 @@ sections:
                         - value: Problem List Item
                         - value: Health Concern
                         - value: SDOH
-                        - value: Functional Status
+                        - value: Function Status
                         - value: Disability Status
                         - value: Cognitive Status
           - name: code
@@ -292,6 +289,7 @@ sections:
             description: The verification status to support the clinical status of the condition.
             type: string
             search_options: 
+              - value: confirmed
               - value: entered-in-error
               - value: provisional
           - name: category
@@ -344,7 +342,7 @@ curl --request POST \
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus": {
@@ -427,7 +425,7 @@ payload = {
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus": {
@@ -520,7 +518,7 @@ print(response.text)
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus":
@@ -670,7 +668,7 @@ curl --request PUT \
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus": {
@@ -753,7 +751,7 @@ payload = {
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus": {
@@ -866,7 +864,7 @@ print(response.text)
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                     }
                 ],
                 "clinicalStatus": {

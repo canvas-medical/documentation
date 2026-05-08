@@ -61,7 +61,7 @@ payload = {
         }
     ]
 }
-response = requests.put(url, json=payload, headers=headers)
+response = requests.post(url, json=payload, headers=headers)
 
 print(response.text)
 ```

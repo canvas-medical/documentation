@@ -45,9 +45,12 @@ sections:
               - value: entered-in-error
               - value: stopped
                 exclude_in: update
-              - value: intented
+              - value: intended
                 exclude_in: create, update
                 description: Medications where the effectivePeriod.start date is in the future
+              - value: unknown
+                exclude_in: create, update
+                description: Returned when the source state cannot be mapped to one of the other values.
             type: string
           - name: medicationReference
             create_and_update_description: What medication was taken. <br><br>
@@ -140,7 +143,7 @@ sections:
             attributes:
                 - name: reference
                   type: string
-                  description: The reference string of the MedicationRequest in the format of `"medicationReference/948b54e2-40b7-4648-bfce-e2373f9802af"`
+                  description: The reference string of the MedicationRequest in the format of `"MedicationRequest/948b54e2-40b7-4648-bfce-e2373f9802af"`
                 - name: type
                   type: string
                   description: Type the reference refers to (e.g. "MedicationRequest")
@@ -317,6 +320,7 @@ print(response.text)
     "context": {
         "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
     },
+    "dateAsserted": "2023-06-15T15:00:00-04:00",
     "effectivePeriod": {
         "start": "2023-06-15T15:00:00-04:00",
         "end": "2023-06-25T15:00:00-04:00"

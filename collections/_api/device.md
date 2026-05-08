@@ -32,7 +32,7 @@ sections:
             description: Status of the Device availability.
             type: enum [ active | inactive ]
           - name: distinctIdentifier
-            description: The distinct identification string. This will match the `id` attribute.
+            description: The distinct identification string parsed from the UDI.
             type: string
           - name: manufacturer
             description: Name of device manufacturer.

@@ -107,7 +107,7 @@ sections:
                 description: Type the reference refers to (e.g. "Patient").
           - name: participant
             type: array[json]
-            description: List of participants involved in the encounter.
+            description: List of participants involved in the encounter. Participants may include Practitioner references and RelatedPerson references for patient contacts associated with the encounter.
             attributes:
                 - name: type
                   type: array[json]
@@ -131,7 +131,7 @@ sections:
                           description: The display name of the coding.
                           type: string
                           enum_options:
-                            - value: Participant
+                            - value: Participation
                 - name: period
                   type: json
                   description: Period of time during the encounter that the participant participated
@@ -144,14 +144,14 @@ sections:
                       description: End time with inclusive boundary, if not ongoing.
                 - name: individual
                   type: json
-                  description: Persons involved in the encounter other than the patient.
+                  description: Persons involved in the encounter other than the patient. May reference a Practitioner or a RelatedPerson.
                   attributes: 
                     - name: reference
                       type: string
-                      description: The reference string of the participant in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
+                      description: The reference string of the participant in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"` or `"RelatedPerson/3fcea5ee-8961-43b4-9d47-3e8a2a625e95"`.
                     - name: type
                       type: string
-                      description: Type the reference refers to (e.g. "Practitioner").
+                      description: Type the reference refers to (e.g. "Practitioner" or "RelatedPerson").
                     - name: display
                       type: string
                       description: Text alternative for the resource (e.g Credendialed name of the Practitioner).
@@ -215,26 +215,30 @@ sections:
           - name: hospitalization
             type: json
             description: Details about the admission to a healthcare service.
-            attributes: 
-                - name: coding
-                  description: Code defined by a terminology system.
-                  type: array[json]
-                  attributes: 
-                    - name: system
-                      description: The system url of the coding.
-                      type: string
-                      enum_options: 
-                        - value: http://terminology.hl7.org/CodeSystem/discharge-disposition
-                    - name: code
-                      description: The code.
-                      type: string
-                      enum_options: 
-                        - value: oth
-                    - name: display
-                      description: The display name of the coding.
-                      type: string
-                      enum_options:
-                        - value: Other
+            attributes:
+                - name: dischargeDisposition
+                  type: json
+                  description: Category or kind of location after discharge.
+                  attributes:
+                      - name: coding
+                        description: Code defined by a terminology system.
+                        type: array[json]
+                        attributes:
+                          - name: system
+                            description: The system url of the coding.
+                            type: string
+                            enum_options:
+                              - value: http://terminology.hl7.org/CodeSystem/discharge-disposition
+                          - name: code
+                            description: The code.
+                            type: string
+                            enum_options:
+                              - value: oth
+                          - name: display
+                            description: The display name of the coding.
+                            type: string
+                            enum_options:
+                              - value: Other
           - name: location
             type: array[json]
             description: List of locations where the patient has been during the encounter.
@@ -292,7 +296,7 @@ sections:
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "identifier": [
@@ -312,7 +316,7 @@ sections:
                 {
                     "system": "http://snomed.info/sct",
                     "code": "308335008",
-                    "display": "Office Visit"
+                    "display": "Patient encounter procedure (procedure)"
                 }
             ]
         }
@@ -479,7 +483,7 @@ sections:
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                     }
                 ],
                 "identifier": [
@@ -499,7 +503,7 @@ sections:
                             {
                                 "system": "http://snomed.info/sct",
                                 "code": "308335008",
-                                "display": "Office Visit"
+                                "display": "Patient encounter procedure (procedure)"
                             }
                         ]
                     }

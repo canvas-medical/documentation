@@ -14,10 +14,10 @@ sections:
             - [US Core Observation Occupation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-occupation.html)
             - [US Core Observation Pregnancy Intent Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancyintent.html)
             - [US Core Observation Pregnancy Status Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
-            - [US Core Observation Screening Assessment Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
+            - [US Core Observation Screening Assessment Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-screening-assessment.html)
             - [US Core Observation Sexual Orientation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-sexual-orientation.html)
             - [US Core Simple Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
-            - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
+            - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-smokingstatus.html)
             - [US Core Vital Signs Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-vital-signs.html)
             - [US Core Pediatric Head Occipital-frontal Circumference Percentile Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-head-occipital-frontal-circumference-percentile.html)
             - [US Core Pediatric BMI for Age Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-pediatric-bmi-for-age.html)
@@ -45,8 +45,8 @@ sections:
             2. Submitting a Questionnaire, Review Of System (ROS), Structured Assessment (SA), or a Physical Exam will result in an observation for each question answered if the question's code system is LOINC or SNOMED (category coding will be `social-history`). <br>
             3. There is a specific Physical Exam to capture Pediatric Vitals. Upon submission of the Exam, associated observations for Body Length, Head Circumference, and Head Occipital-Frontal Circumference Percentile (category coding will be `vital-signs`) will be created along with the observations for the answers of the exam (category coding will be `social-history`). Please contact Customer Support for help loading this Exam into your instance if you want to utilize it. <br>
             4. Once weight and either height or pediatric body length is entered on a patients chart, the vital observations of BMI for Age Percentile (for patients 2 years or older) and Weight-for-Length Percentile will be calculated (category coding will be `vital-signs`). 
-            4. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`). <br>
-            5. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`).
+            5. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`). <br>
+            6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`).
               
         attributes:
           - name: resourceType
@@ -59,7 +59,7 @@ sections:
           - name: status
             type: enum [ final | unknown | entered-in-error ]
             description: The status of the result value. 
-            create_description: The status of the result value. In Canvas only `final` committed vitals can be created.
+            create_description: The status of the result value. In Canvas only `final` committed vitals (or `unknown`) can be created.
             required_in: create
           - name: category
             type: array[json]
@@ -99,7 +99,6 @@ sections:
                     enum_options: 
                       - value: Vital Signs
                       - value: Social History
-                      - value: Vital Signs
                       - value: Imaging
                       - value: Laboratory
                       - value: Procedure
@@ -155,7 +154,7 @@ sections:
                     required_in: create
           - name: code
             type: json
-            exclude_in: create, update
+            exclude_in: create
             description: Describes what was observed.
             attributes: 
               - name: extension
@@ -166,8 +165,8 @@ sections:
                       description: Reference that defines the content of this object.
                       enum_options:
                         - value: http://hl7.org/fhir/StructureDefinition/data-absent-reason
-                    - name: valueString
-                      type: string
+                    - name: valueCode
+                      type: code
                       description: The reason the Observation.coding attribute is missing. 
                       enum_options:
                         - value: unsupported
@@ -218,7 +217,7 @@ sections:
               If omitted from create, Canvas will save a default value of the current datetime.
           - name: effectivePeriod
             type: json
-            exclude_in: create, update
+            exclude_in: create
             description: Clinically relevant time/time-period for observation.
             read_and_search_description: >-
               Clinically relevant time/time-period for observation.<br><br>
@@ -237,10 +236,10 @@ sections:
             attributes:
               - name: reference
                 type: string
-                description: The reference string of the patient or practitioner (e.g. `"Practitioner/4150cd20de8a470aa570a852859ac87e"`).
+                description: The reference string of the performer in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"` or `"Patient/a39cafb9d1b445be95a2e2548e12a787"`. Performer can be a Practitioner or a Patient.
               - name: type
                 type: string
-                description: Type the reference refers to (e.g. "Practitioner").
+                description: Type the reference refers to (e.g. "Practitioner" or "Patient").
           - name: issued
             type: datetime
             exclude_in: create
@@ -270,7 +269,9 @@ sections:
                 description: Numerical value (with implicit precision).
               - name: unit
                 type: string
-                description: Unit representation.
+                description: >-
+                  Unit representation.<br><br>
+                  For laboratory observations, the `unit` value is passed through verbatim from the source system and may be any string. The `system` and `code` fields are populated only when the unit maps to a known UCUM code.
                 create_description: Unit representation. If omitted, it will default to the values in the table defined above. For the submitted `code`, only units from the table above can be sent. Sending a different unit will result in a 422 error.
               - name: system
                 type: string
@@ -289,7 +290,6 @@ sections:
                   - value: "[degF]"
                   - value: "mm[Hg]"
                   - value: "%"
-                  - value: "[in_i]"
                   - value: "/min"
                   - value: "kg/m2"
                   - value: "L/min"
@@ -388,7 +388,7 @@ sections:
                 description: Type the reference refers to (e.g. "Observation", "QuestionnaireResponse").
           - name: specimen
             type: json
-            exclude_in: create, update
+            exclude_in: create
             description: >-
               Reference to the Specimen resource that was used for this observation.<br><br>
               This field is populated for laboratory observations that have an associated specimen from a lab order. The specimen reference includes the specimen's externally exposable ID.
@@ -401,7 +401,7 @@ sections:
                 description: Type the reference refers to (e.g. "Specimen").
           - name: component
             type: array[json]
-            description: Component results. <br><br> Currently only used for blood pressure observations to display the systolic and diastolic components.
+            description: Component results. <br><br> Used for observations that have sub-measurements, such as blood pressure (systolic / diastolic) and oxygen saturation (which carries inhaled oxygen concentration and flow rate as components).
             create_description: >-
               Component results<br><br>
               This attribute is only used for blood pressure, as it has two components (systolic and diastolic). <br>
@@ -442,7 +442,7 @@ sections:
                           - value: Diastolic blood pressure
               - name: valueCodeableConcept
                 type: json
-                exclude_in: create, update
+                exclude_in: create
                 description: >-
                   Actual component result.<br><br>
                   Used when a component is represented by a value that is a reference to one or more terminologies or ontologies.
@@ -492,6 +492,10 @@ sections:
                     description: Coded form of the unit
                     enum_options:
                       - value: "mm[Hg]"
+              - name: valueString
+                type: string
+                exclude_in: create
+                description: Actual component result, when the value is non-numeric and not coded.
               - name: dataAbsentReason
                 type: json
                 exclude_in: create
@@ -538,8 +542,8 @@ sections:
 
               Use this search parameter to find all observations of a specific vital panel or questionnaire response observations from the same interview.
             search_options: 
-              - value: QuestionnaireResponse/_id
-              - value: Observation/_id
+              - value: QuestionnaireResponse/{id}
+              - value: Observation/{id}
           - name: patient
             type: string
             description: The patient reference associated to the observation in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
@@ -833,7 +837,7 @@ print(response.text)
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown coverage resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown Observation resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
       }
     }
   ]
@@ -1174,7 +1178,6 @@ print(response.text)
                     }
                 ],
                 "issued": "2024-04-09T18:35:35.716508+00:00",
-                "valueString": "120/80 mmHg",
                 "derivedFrom": [
                     {
                         "reference": "Observation/378d88eb-cbfc-4668-a96e-c1e011f9f015",

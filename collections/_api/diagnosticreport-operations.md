@@ -13,14 +13,14 @@ In the example below, the first object in the parameter array is a named paramet
 
 The subsequent parameters in the array must be named `labTestCollection`. These represent the lab tests performed and associated result values. Each `labTestCollection` has a `part` array with `labTest` and `labValue` parameters. Only one `labTest` parameter is allowed per `labTestCollection`. Multiple `labValue` parameters are allowed per `labTestCollection`. Both resources must be represented as `Observation` resources.
 
-To mark a lab value as abnormal, an optional `interpretation` attribute can be added to a `labValue` `Observation` resource. <b>Only abnormal interpretations (`"code": "A"`)</b> are currently supported, and the payload must match the structure shown in the example below.
+To mark a lab value as abnormal, an optional `interpretation` attribute can be added to a `labValue` `Observation` resource. <b>Only abnormal interpretations (`"code": "A"`)</b> are currently supported, and the `interpretation` payload must match the exact structure shown in the example below (`text`, `coding[0].system`, `coding[0].code`, and `coding[0].display` are all required and must match).
 
-For the values/units in each `labValue` object, either a `valueQuantity` or `valueString` can be supplied in the payload. For example:
+For the values/units in each `labValue` object, a `valueQuantity`, `valueString`, or `valueCodeableConcept` can be supplied in the payload. For example:
 
 ```json
 ...,
 "valueQuantity": {
-    "value": "0.7",
+    "value": 0.7,
     "unit": "mg/dL",
     "system": "http://unitsofmeasure.org",
 },
@@ -35,12 +35,28 @@ or
 ...
 ```
 
+or
+
+```json
+...,
+"valueCodeableConcept": {
+    "coding": [
+        {
+            "system": "http://snomed.info/sct",
+            "code": "260385009",
+            "display": "Negative"
+        }
+    ]
+},
+...
+```
+
 If using `valueQuantity` and a comparator value is needed (i.e. `<1.0`), the comparator value can be passed in a `comparator` key like so:
 
 ```json
 ...,
 "valueQuantity": {
-    "value": "1.0",
+    "value": 1.0,
     "unit": "mg/dL",
     "system": "http://unitsofmeasure.org",
     "comparator": "<"
@@ -49,6 +65,18 @@ If using `valueQuantity` and a comparator value is needed (i.e. `<1.0`), the com
 ```
 
 Supported `comparator` values are `<`, `<=`, `>=`, and `>`.
+
+A `referenceRange` array may also be supplied on each `labValue` `Observation`. Only `referenceRange[0].text` is persisted in Canvas; `low` and `high` are accepted by the API but are not stored.
+
+### Validation requirements
+
+The following constraints are enforced when creating a lab report:
+
+- `labReport.presentedForm` must contain exactly one entry.
+- `labReport.presentedForm[0].contentType` must be `application/pdf`.
+- `labReport.presentedForm[0].data` is required and must contain a base64-encoded PDF.
+- `labReport.effectiveDateTime` must be a full ISO 8601 datetime (a date alone is not accepted).
+- Each `labTest` and `labValue` `Observation.code.coding` must contain exactly one entry, the `system` must be `http://loinc.org`, and `code` is required.
 
 {% include alert.html type="warning" content="While lab tests can be posted and are visible in the Canvas UI, they are not currently available to be read through the FHIR API. Only lab values can be read through the Observation resource." %}
 
@@ -152,7 +180,7 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity":
                         {
-                            "value": "9.6",
+                            "value": 9.6,
                             "unit": "g/dL",
                             "system": "http://unitsofmeasure.org"
                         },
@@ -161,11 +189,11 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                             {
                                 "low":
                                 {
-                                    "value": "6.0"
+                                    "value": 6.0
                                 },
                                 "high":
                                 {
-                                    "value": "8.5"
+                                    "value": 8.5
                                 },
                                 "text": "6.0-8.5"
                             }
@@ -207,7 +235,7 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                         "valueQuantity":
                         {
                             "unit": "g/dL",
-                            "value": "3.8",
+                            "value": 3.8,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange":
@@ -215,11 +243,11 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                             {
                                 "low":
                                 {
-                                    "value": "3.6"
+                                    "value": 3.6
                                 },
                                 "high":
                                 {
-                                    "value": "4.6"
+                                    "value": 4.6
                                 },
                                 "text": "3.6-4.6"
                             }
@@ -248,7 +276,7 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                         "valueQuantity":
                         {
                             "unit": "mg/dL",
-                            "value": "0.3",
+                            "value": 0.3,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange":
@@ -256,11 +284,11 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                             {
                                 "low":
                                 {
-                                    "value": "0.0"
+                                    "value": 0.0
                                 },
                                 "high":
                                 {
-                                    "value": "1.2"
+                                    "value": 1.2
                                 },
                                 "text": "0.0-1.2"
                             }
@@ -289,7 +317,7 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                         "valueQuantity":
                         {
                             "unit": "IU/L",
-                            "value": "83.6",
+                            "value": 83.6,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange":
@@ -297,11 +325,11 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                             {
                                 "low":
                                 {
-                                    "value": "44.0"
+                                    "value": 44.0
                                 },
                                 "high":
                                 {
-                                    "value": "121.0"
+                                    "value": 121.0
                                 },
                                 "text": "44-121"
                             }
@@ -330,7 +358,7 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                         "valueQuantity":
                         {
                             "unit": "IU/L",
-                            "value": "19.4",
+                            "value": 19.4,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange":
@@ -338,11 +366,11 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                             {
                                 "low":
                                 {
-                                    "value": "0.0"
+                                    "value": 0.0
                                 },
                                 "high":
                                 {
-                                    "value": "40.0"
+                                    "value": 40.0
                                 },
                                 "text": "0-40"
                             }
@@ -371,7 +399,7 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                         "valueQuantity":
                         {
                             "unit": "IU/L",
-                            "value": "13.5",
+                            "value": 13.5,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange":
@@ -379,11 +407,11 @@ curl -X POST "https://fumage-example.canvasmedical.com/DiagnosticReport/\$create
                             {
                                 "low":
                                 {
-                                    "value": "0.0"
+                                    "value": 0.0
                                 },
                                 "high":
                                 {
-                                    "value": "44.0"
+                                    "value": 44.0
                                 },
                                 "text": "0-44"
                             }
@@ -483,17 +511,17 @@ payload = {
                         },
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
-                            "value": "9.6",
+                            "value": 9.6,
                             "unit": "g/dL",
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "6.0"
+                                    "value": 6.0
                                 },
                                 "high": {
-                                    "value": "8.5"
+                                    "value": 8.5
                                 },
                                 "text": "6.0-8.5"
                             }
@@ -529,16 +557,16 @@ payload = {
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "g/dL",
-                            "value": "3.8",
+                            "value": 3.8,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "3.6"
+                                    "value": 3.6
                                 },
                                 "high": {
-                                    "value": "4.6"
+                                    "value": 4.6
                                 },
                                 "text": "3.6-4.6"
                             }
@@ -563,16 +591,16 @@ payload = {
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "mg/dL",
-                            "value": "0.3",
+                            "value": 0.3,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "0.0"
+                                    "value": 0.0
                                 },
                                 "high": {
-                                    "value": "1.2"
+                                    "value": 1.2
                                 },
                                 "text": "0.0-1.2"
                             }
@@ -597,16 +625,16 @@ payload = {
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "IU/L",
-                            "value": "83.6",
+                            "value": 83.6,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "44.0"
+                                    "value": 44.0
                                 },
                                 "high": {
-                                    "value": "121.0"
+                                    "value": 121.0
                                 },
                                 "text": "44-121"
                             }
@@ -631,16 +659,16 @@ payload = {
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "IU/L",
-                            "value": "19.4",
+                            "value": 19.4,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "0.0"
+                                    "value": 0.0
                                 },
                                 "high": {
-                                    "value": "40.0"
+                                    "value": 40.0
                                 },
                                 "text": "0-40"
                             }
@@ -665,16 +693,16 @@ payload = {
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "IU/L",
-                            "value": "13.5",
+                            "value": 13.5,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "0.0"
+                                    "value": 0.0
                                 },
                                 "high": {
-                                    "value": "44.0"
+                                    "value": 44.0
                                 },
                                 "text": "0-44"
                             }
@@ -691,6 +719,28 @@ print(response.text)
 ```
 {% endtab %}
 {% endtabs %}
+
+<br>
+
+### Response
+
+A successful request returns `201 Created` with a `Parameters` resource containing a `valueReference` to the newly created `DiagnosticReport`:
+
+```json
+{
+    "resourceType": "Parameters",
+    "parameter": [
+        {
+            "name": "return",
+            "valueReference": {
+                "reference": "DiagnosticReport/9b90621b-059f-4f6e-9ef5-58171098e424"
+            }
+        }
+    ]
+}
+```
+
+Standard error responses (`400 Bad Request`, `401 Unauthorized`, `403 Forbidden`) follow the FHIR `OperationOutcome` shape described in [Errors](/api/errors).
 
 <br>
 
@@ -771,17 +821,17 @@ print(response.text)
                         },
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
-                            "value": "9.6",
+                            "value": 9.6,
                             "unit": "g/dL",
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "6.0"
+                                    "value": 6.0
                                 },
                                 "high": {
-                                    "value": "8.5"
+                                    "value": 8.5
                                 },
                                 "text": "6.0-8.5"
                             }
@@ -817,16 +867,16 @@ print(response.text)
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "g/dL",
-                            "value": "3.8",
+                            "value": 3.8,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "3.6"
+                                    "value": 3.6
                                 },
                                 "high": {
-                                    "value": "4.6"
+                                    "value": 4.6
                                 },
                                 "text": "3.6-4.6"
                             }
@@ -851,16 +901,16 @@ print(response.text)
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "mg/dL",
-                            "value": "0.3",
+                            "value": 0.3,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "0.0"
+                                    "value": 0.0
                                 },
                                 "high": {
-                                    "value": "1.2"
+                                    "value": 1.2
                                 },
                                 "text": "0.0-1.2"
                             }
@@ -885,16 +935,16 @@ print(response.text)
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "IU/L",
-                            "value": "83.6",
+                            "value": 83.6,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "44.0"
+                                    "value": 44.0
                                 },
                                 "high": {
-                                    "value": "121.0"
+                                    "value": 121.0
                                 },
                                 "text": "44-121"
                             }
@@ -919,16 +969,16 @@ print(response.text)
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "IU/L",
-                            "value": "19.4",
+                            "value": 19.4,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "0.0"
+                                    "value": 0.0
                                 },
                                 "high": {
-                                    "value": "40.0"
+                                    "value": 40.0
                                 },
                                 "text": "0-40"
                             }
@@ -953,16 +1003,16 @@ print(response.text)
                         "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                         "valueQuantity": {
                             "unit": "IU/L",
-                            "value": "13.5",
+                            "value": 13.5,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "0.0"
+                                    "value": 0.0
                                 },
                                 "high": {
-                                    "value": "44.0"
+                                    "value": 44.0
                                 },
                                 "text": "0-44"
                             }
@@ -1009,16 +1059,16 @@ print(response.text)
                         "effectiveDateTime": "2024-02-25T15:10:56.296677",
                         "valueQuantity": {
                             "unit": "ng/mL",
-                            "value": "41.0",
+                            "value": 41.0,
                             "system": "http://unitsofmeasure.org"
                         },
                         "referenceRange": [
                             {
                                 "low": {
-                                    "value": "30.0"
+                                    "value": 30.0
                                 },
                                 "high": {
-                                    "value": "100.0"
+                                    "value": 100.0
                                 },
                                 "text": "30.0-100.0"
                             }

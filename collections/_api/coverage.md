@@ -21,17 +21,21 @@ sections:
           - name: identifier
             description: An identifier for the insured of an insurance policy, usually assigned by the insurance carrier.
             type: array[json]
+            required_in: create,update
             attributes:
               - name: type
                 description: Insurance member ID description
                 type: json
+                required_in: create,update
                 attributes:
                   - name: system
                     description: The system url of the coding.
+                    required_in: create,update
                     enum_options:
                       - value: http://terminology.hl7.org/CodeSystem/v2-0203
                   - name: code
                     description: The code of the insurance member ID description.
+                    required_in: create,update
                     enum_options:
                       - value: MB
                   - name: display
@@ -39,6 +43,7 @@ sections:
               - name: value
                 description: Insurance member ID value
                 type: string
+                required_in: create,update
           - name: status
             type: enum [ active | cancelled ]
             description_for_all_endpoints: The status of the Coverage. <br><br>In Canvas, the status of `active` means it appears in the Patient's Profile page either under the main or other coverage sections, while a status of `cancelled` means it was removed and no longer appears on the page. An expired coverage will still show as `active`, so be sure to set/read the `period.end` attribute.
@@ -59,6 +64,7 @@ sections:
                     description: The system url of the coding.
                     required_in: create,update
                     enum_options:
+                      - value: http://hl7.org/fhir/ValueSet/coverage-type
                       - value: http://terminology.hl7.org/CodeSystem/coverage-selfpay
                       - value: http://terminology.hl7.org/CodeSystem/v3-ActCode
                     type: string
@@ -180,8 +186,7 @@ sections:
               - name: text
                 exclude_in: create, update
                 type: string
-                description: The 2 character code that represents the patient relationship to the insured as defined by CMS.
-                enum_options:
+                description: Plain text representation of the coverage type.
           - name: subscriber
             description: Who was signed up for or 'owns' the Coverage.
             type: json
@@ -224,6 +229,7 @@ sections:
                     description: The system url of the coding.
                     required_in: create,update
                     enum_options:
+                      - value: http://hl7.org/fhir/ValueSet/subscriber-relationship
                       - value: http://terminology.hl7.org/CodeSystem/subscriber-relationship
                     type: string
                   - name: code
@@ -359,6 +365,7 @@ sections:
                         description: The system url of the coding.
                         required_in: create,update
                         enum_options:
+                          - value: http://hl7.org/fhir/ValueSet/coverage-class
                           - value: http://terminology.hl7.org/CodeSystem/coverage-class
                         type: string
                       - name: code
@@ -1101,15 +1108,15 @@ print(response.text)
   "link": [
     {
         "relation": "self",
-        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd&_count=10&_offset=0"
     },
     {
         "relation": "first",
-        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd&_count=10&_offset=0"
     },
     {
         "relation": "last",
-        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+        "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd&_count=10&_offset=0"
     }
   ],
   "entry": [

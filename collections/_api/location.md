@@ -39,7 +39,7 @@ sections:
             description: A list of alternate names that the location is known as, or was known as, in the past. This is the practice location's short name in Canvas.
             type: array[string]
           - name: description
-            description: "Additional details about the location that could be displayed as further information to identify the location beyond its name. Canvas will produce this in the format `Organization full name: Location full name`"
+            description: Additional details about the location, derived from the practice location's title in Canvas.
             type: string
           - name: address
             description: Physical location.
@@ -48,6 +48,9 @@ sections:
               - name: use
                 type: enum [ home | work | temp | old | billing ]
                 description: Purpose of this address
+              - name: type
+                type: enum [ both | physical | postal ]
+                description: Distinguishes between physical and postal addresses.
               - name: line
                 type: array[string]
                 description: "Street name, number, direction & P.O. Box etc. This repeating element order: The order in which lines should appear in an address label."

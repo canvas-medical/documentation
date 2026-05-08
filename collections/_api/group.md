@@ -11,7 +11,14 @@ sections:
           [https://hl7.org/fhir/R4/group.html](https://hl7.org/fhir/R4/group.html)<br><br>
           In Canvas Teams and Patient Groups are mapped to the FHIR Group resource. <br>
           See this [Pylon article](https://canvas-medical.help.usepylon.com/articles/5123845479-teams) for information about creating teams in Canvas.<br>
-          See this [Pylon article](https://help.canvasmedical.com/articles/8319995182-patient-groups) for information about patient groups in Canvas.
+          See this [Pylon article](https://help.canvasmedical.com/articles/8319995182-patient-groups) for information about patient groups in Canvas.<br><br>
+
+          <b>Bulk data export ($export)</b><br><br>
+          A FHIR Bulk Data Access (Flat FHIR) `$export` operation is supported on Group resources at `Group/{id}/$export`. <br><br>
+          - The request must include the header `Prefer: respond-async`. <br>
+          - The optional `_outputFormat` query parameter accepts `application/fhir+ndjson`, `application/ndjson`, or `ndjson`. <br>
+          - A successful request returns `202 Accepted` with a `Content-Location` header pointing to a status endpoint at `bulkstatus/{id}`, which can be polled to retrieve the generated NDJSON files when the export completes. <br><br>
+          See the [FHIR Bulk Data Access specification](https://hl7.org/fhir/uv/bulkdata/OperationDefinition/group-export) for details.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -249,6 +256,7 @@ print(response.text)
     "type": "practitioner",
     "actual": true,
     "name": "A Test Team",
+    "quantity": 1,
     "characteristic": [
         {
             "code": {
@@ -456,6 +464,7 @@ print(response.text)
                 "type": "practitioner",
                 "actual": true,
                 "name": "A Test Team",
+                "quantity": 1,
                 "characteristic": [
                     {
                         "code": {

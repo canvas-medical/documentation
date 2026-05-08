@@ -35,7 +35,7 @@ sections:
               - name: id
                 required_in: create, update
                 type: string
-                description: The `id` of the contained entry. This needs to be `appointment-meeting-endpoint-0` and the SupportingInformation.reference will be `#appointment-meeting-endpoint-0`.
+                description: The `id` of the contained entry. Either `appointment-meeting-endpoint` or `appointment-meeting-endpoint-0` is accepted on create and update; read responses always return `appointment-meeting-endpoint-0`. The SupportingInformation.reference must match this id (e.g., `#appointment-meeting-endpoint-0`).
               - name: status
                 type: enum [ active ]
                 exclude_in: create, update
@@ -113,10 +113,10 @@ sections:
                     type: datetime
                     description: End time with inclusive boundary, if not ongoing. If ommitted this will default to `2100-12-31`.
           - name: status
-            type: enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed | entered-in-error ]
+            type: enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed ]
             required_in: create,update
             description_for_all_endpoints: >-
-              The status of the appointment. <br><br>
+              The status of the appointment. The status `entered-in-error` may also be returned on read but is not accepted on create or update. <br><br>
 
               This table shows the mappings of statuses/states an appointment is in within Canvas to the FHIR status attribute. <br>
 
@@ -129,7 +129,7 @@ sections:
                 | arrived          | arrived       |
                 | checked-in       | roomed        |
                 | fulfilled        | exited        |
-                | noshow           | no-showed     |
+                | noshow           | noshowed      |
                 | cancelled        | cancelled     |
                 | entered-in-error | deleted       |
 
@@ -167,8 +167,11 @@ sections:
                 attributes:
                   - name: system
                     description: >-
-                      The system of the appointment
+                      The system of the appointment. On create and update, only `http://snomed.info/sct` and `INTERNAL` are accepted; other systems will be rejected.
                     type: string
+                    enum_options:
+                      - value: http://snomed.info/sct
+                      - value: INTERNAL
                   - name: code
                     description: >-
                       The code of the appointment. <br><br>
@@ -407,7 +410,7 @@ sections:
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "identifier": [
@@ -610,7 +613,7 @@ sections:
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                     }
                 ],
                 "identifier": [

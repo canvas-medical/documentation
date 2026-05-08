@@ -158,6 +158,7 @@ sections:
                             description: Asked but unknown
                       - name: display
                         type: string
+                        description: Returned by Canvas with a trailing `(finding)` suffix for SNOMED-coded values (e.g., "Identifies as male gender (finding)").
                   - name: text
                     type: string
               - name: valueReference
@@ -304,6 +305,14 @@ sections:
                   - name: end
                     type: date
                     description: Inclusive end date (YYYY-MM-DD). Defaults to **2100-12-31** if omitted.
+              - name: type
+                type: json
+                exclude_in: create, update
+                description: Codeable concept identifying the kind of identifier. Returned only on the Canvas-issued MRN entry, with system `http://terminology.hl7.org/CodeSystem/v2-0203` and code `MR`.
+              - name: assigner
+                type: json
+                exclude_in: create, update
+                description: Reference describing the organization that assigned the identifier. Returned only on the Canvas-issued MRN entry, with `display` set to `Canvas Medical`.
           - name: active
             type: boolean
             description: Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create.
@@ -338,6 +347,10 @@ sections:
               - name: suffix
                 type: array[string]
                 description: Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+              - name: period
+                type: json
+                exclude_in: create, update
+                description: Validity window for the name. Returned with sentinel values when no period is on file (`start`: `0001-01-01T00:00:00+00:00`, `end`: `9999-12-31T23:59:59.999999+00:00`). Not consumed on create or update.
           - name: telecom
             type: array[json]
             description_for_all_endpoints: >-
@@ -353,14 +366,17 @@ sections:
               - name: extension
                 type: array[json]
                 description: >-
-                  Optional flags about the contact point. The `has-consent` extension records that the patient has consented to receive messages at this contact point — set the `url` to **http://schemas.canvasmedical.com/fhir/extensions/has-consent** with `valueBoolean: true`. <br><br>
-                  <b>Note:</b> Setting `has-consent` here does not send a verification email or text as the Canvas UI does — it bypasses verification and marks the contact point as verified.
+                  Optional flags about the contact point. <br><br>
+                  The `has-consent` extension (URL **http://schemas.canvasmedical.com/fhir/extensions/has-consent**, `valueBoolean: true`) records that the patient has consented to receive messages at this contact point. Setting `has-consent` here does not send a verification email or text as the Canvas UI does — it bypasses verification and marks the contact point as verified. <br><br>
+                  The `authorized-for-release-of-information` extension (URL **http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information**, `valueBoolean`) and the `emergency-contact` extension (URL **http://schemas.canvasmedical.com/fhir/extensions/emergency-contact**, `valueBoolean`) are accepted on create and update. They are not echoed back on read.
                 attributes:
                   - name: url
                     type: string
                     required_in: create, update
                     enum_options:
                       - value: http://schemas.canvasmedical.com/fhir/extensions/has-consent
+                      - value: http://schemas.canvasmedical.com/fhir/extensions/authorized-for-release-of-information
+                      - value: http://schemas.canvasmedical.com/fhir/extensions/emergency-contact
                   - name: valueBoolean
                     type: boolean
                     required_in: create, update
@@ -430,7 +446,7 @@ sections:
                 description: 5-digit postal code.
               - name: country
                 type: string
-                description: ISO 3166 2-letter country code. Defaults to **us**.
+                description: Country. Whatever value is stored in Canvas is returned; no enforced format.
               - name: period
                 type: json
                 description: Validity window for this address.
@@ -552,6 +568,9 @@ sections:
                     description: First item is address line 1; remaining items are concatenated as address line 2.
                   - name: city
                     type: string
+                  - name: district
+                    type: string
+                    description: District (e.g., county) for the address.
                   - name: state
                     type: string
                     description: 2-letter state abbreviation.
@@ -560,7 +579,7 @@ sections:
                     description: 5-digit postal code.
                   - name: country
                     type: string
-                    description: ISO 3166 2-letter country code.
+                    description: Country. Whatever value is stored in Canvas is returned; no enforced format.
                   - name: period
                     type: json
                     attributes:
@@ -607,6 +626,9 @@ sections:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier known as the patient key. This can be found in the URL of the patient's chart.
+          - name: _revinclude
+            type: string
+            description: Standard FHIR `_revinclude` parameter.
           - name: _sort
             type: string
             description: >-
@@ -614,7 +636,7 @@ sections:
           - name: active
             type: boolean
             description: By default, both active and inactive patients are returned. Use this parameter to return only active (`true`) or only inactive (`false`) patients.
-          - name: birthDate
+          - name: birthdate
             type: date
             description: The patient's birth date.
           - name: email
@@ -897,7 +919,7 @@ curl --request POST \
                             "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
                             "code": "SPS",
                             "display": "spouse"
-                        }
+                        },
                         {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
@@ -913,7 +935,7 @@ curl --request POST \
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ],
+                    ]
                 }
             ],
             "telecom":
@@ -1621,7 +1643,7 @@ print(response.text)
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ],
+                    ]
                 }
             ],
             "name":
@@ -2313,7 +2335,7 @@ payload = {
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ],
+                    ]
                 }
             ],
             "telecom":
@@ -2743,7 +2765,7 @@ print(response.text)
                         ]
                     },
                     {
-                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3"
+                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
                         "relationship":
                         [
                             {

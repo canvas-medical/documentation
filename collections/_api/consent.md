@@ -17,23 +17,24 @@ sections:
             type: string
           - name: id
             type: string
-            required_in: update
             exclude_in: create
             description: The identifier of the Consent.
           - name: status
             type: string
             required_in: create
-            description: Indicates the current state of this consent.
+            description: Indicates the current state of this consent. Read interactions may also return `inactive` for consents whose `period.end` has passed.
             enum_options:
               - value: active
               - value: rejected
+              - value: inactive
+                exclude_in: create
           - name: scope
             type: json
             required_in: create
             description: Type of consent being presented (e.g. ADR, Privacy, Treatment, Research).
             create_description: For create interactions, this field is required by FHIR but ignored by Canvas, so {} is an accepted value.
             attributes:
-              - value: text
+              - name: text
                 type: string
                 description: Plain text representation of the concept
                 enum_options:
@@ -88,23 +89,23 @@ sections:
               The source on which this consent is based.<br><br>
               For create interactions, `sourceAttachment.title`, `sourceAttachment.contentType`, and `sourceAttachment.data` are required.
             attributes:
-              - value: url
+              - name: url
                 exclude_in: create
                 type: url
                 description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
-              - value: title
+              - name: title
                 required_in: create
                 exclude_in: read,search
                 type: string
                 description:  Label to display in place of the data.
-              - value: contentType
+              - name: contentType
                 required_in: create
                 exclude_in: read,search
                 type: string
                 description:  Mime type of the content, with charset etc.
                 enum_options:
                   - value: application/pdf
-              - value: data
+              - name: data
                 required_in: create
                 exclude_in: read,search
                 type: string
@@ -119,16 +120,16 @@ sections:
               For create interactions, `period.start` is required with a **YYYY-MM-DD** format.<br><br>
               A `period.end` with a past date will mark the consent as Expired in the UI.
             attributes:
-              - value: period
+              - name: period
                 type: json
                 required_in: create
                 description: Timeframe for this rule
                 attributes:
-                  - value: start
+                  - name: start
                     type: date
                     required_in: create
                     description: Starting time with inclusive boundary
-                  - value: end
+                  - name: end
                     type: date
                     description: End time with inclusive boundary, if not ongoing.
         search_parameters:
