@@ -41,6 +41,7 @@ The actor is available in the following contexts:
 - [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
 - [**Application**](/sdk/handlers-applications/) handlers
 - **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+- **Note UI events** — `NOTE_OPENED`, `NOTE_CLOSED`
 - **Appointment scheduling events** — all `APPOINTMENT__*` events
 - **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
 - **Claim events** — `CLAIM__CONDITIONS`
@@ -2500,6 +2501,44 @@ The following events fire when a prescription's status changes during the e-pres
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
 "state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_OPENED</th></tr>
+    <tr><td colspan="2">Fires when a provider expands a note in the patient chart. The context includes the note's ID.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_key
+"type": Patient</pre></td>
+      <td><pre>"note": {"id": note_uuid},
+"user": {...}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_CLOSED</th></tr>
+    <tr><td colspan="2">Fires when a provider collapses a note that was previously open. The context includes the note's ID.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_key
+"type": Patient</pre></td>
+      <td><pre>"note": {"id": note_uuid},
+"user": {...}</pre></td>
     </tr>
   </tbody>
 </table>
