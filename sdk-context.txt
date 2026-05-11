@@ -5003,7 +5003,7 @@ Attribute | Type | Description
 `required` | `bool` | if the input is required.  
 `editable` | `bool` | if the input can be editabled.  
 `options` | `list[str]` | possible options for when the input type is set to "SELECT"  
-`value` | `str` | default value for the field  
+`value` | `str` | default value used only when no CommandMetadata row exists for this key. If the user has previously saved a value (including a cleared/empty value) the stored row wins and this field is ignored.  
 ###  **CommandMetadataCreateFormEffect**
 A CommandMetadataCreateFormEffect consists of the following properties:
 ####  Attributes 
@@ -18763,6 +18763,88 @@ pdf_base64 | str | one of | PDF bytes inline as base64. Use only for small PDFs.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-report-ingest/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-http-request/
+The `HttpRequestEffect` lets a plugin ask the Canvas platform to issue an HTTP request on its behalf. The plugin returns the effect from a handler and the platform performs the call.
+We recommend running the request asynchronously by chaining `.set_async(...)` onto the applied effect. The request is then handed off to the platform's async runner, which manages delay, retries, and backoff so the handler doesn't block on the network. Setting `retry_on_status_codes` automatically opts into async execution (equivalent to `.set_async(delay_seconds=0)`), so you only need to call `.set_async(...)` explicitly to add a delay or set `max_retries`.
+Without `.set_async(...)` and without `retry_on_status_codes`, the effect is executed inline.
+##  Attributes 
+Name | Type | Required | Description  
+---|---|---|---  
+`url` | `str` | Yes | The URL to request. Must be non-empty. Cannot resolve to a private or loopback address (see Security).  
+`method` | `HttpMethod` | No | The HTTP method to use. Defaults to `HttpMethod.GET`.  
+`headers` | `dict[str, str]` or `None` | No | Request headers. Header values are transmitted as-is — store credentials in the plugin's [`secrets`](/sdk/secrets/) and reference them here rather than hard-coding them.  
+`body` | `str` or `None` | No | The request body, as a string. For JSON payloads, serialize with `json.dumps(...)` and set the appropriate `Content-Type` header.  
+`retry_on_status_codes` | `list[int]` or `None` | No | HTTP status codes that should trigger a retry. Each value must be in the range `100`–`599`. Setting this automatically routes the request through the async runner (equivalent to `.set_async(delay_seconds=0)`); use `.set_async(...)` only to override the delay or set `max_retries`.  
+##  `HttpMethod`
+A `StrEnum` of the supported HTTP methods. You can also pass the string value as well.
+Member | Value  
+---|---  
+`HttpMethod.GET` | `"GET"`  
+`HttpMethod.POST` | `"POST"`  
+`HttpMethod.PUT` | `"PUT"`  
+`HttpMethod.PATCH` | `"PATCH"`  
+`HttpMethod.DELETE` | `"DELETE"`  
+##  Security & Network Behavior 
+The platform applies several safeguards before executing the request:
+  - **SSRF protection.** The host is resolved and rejected if it points at a private (RFC 1918), loopback, link-local (including the `169.254.169.254` cloud metadata address), multicast, reserved, or unspecified address. Both literal IPs (e.g. `http://10.0.0.1/`) and hostnames that resolve to such addresses are blocked.
+  - **Redirect behavior.** GET requests follow redirects normally. Non-GET methods (POST, PUT, PATCH, DELETE) are made with `allow_redirects=False`, so a `3xx` response is returned as-is rather than re-posting data to a different host.
+  - **Request timeout.** Each request has a 30-second timeout. Requests that exceed it are aborted.
+  - **Connection errors are swallowed.** If the upstream service is unreachable or the request fails at the transport layer, the failure is logged and the effect pipeline continues — it does not raise back into your handler.
+  - **Redacted logging.** The platform logs the request method, host, path, and final status code. Query strings, fragments, request headers, request bodies, and response bodies are never logged, so credentials passed via query string or `Authorization` headers do not leak into platform logs.
+##  Async Execution 
+Chain `.set_async(...)` onto the result of `.apply()` to have the platform schedule the request through its async runner instead of running it inline with the handler. You can read more about async effect execution [here](/sdk/effects/#async-execution).
+When `retry_on_status_codes` is set on the effect, the SDK automatically sets `delay_seconds=0` (async-now) so the request is routed through the async runner — you don't need to call `.set_async()` separately just for retries. The async runner uses `retry_on_status_codes` (in combination with `max_retries`) to decide whether a response should trigger a retry.
+##  Handling Credentials 
+Header values are transmitted to the upstream service exactly as provided. Do not hard-code API tokens or other credentials into your plugin source. Instead, declare them as [secrets](/sdk/secrets/) in `CANVAS_MANIFEST.json` and read them at runtime via `self.secrets` on the handler.
+##  Example Usage 
+###  Send a POST request asynchronously 
+    ```python
+    import json
+    from canvas_sdk.events import EventType
+    from canvas_sdk.effects.http_request import HttpMethod, HttpRequestEffect
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_CREATED)
+        def compute(self):
+            http_effect = HttpRequestEffect(
+                url="https://api.example.com/submit",
+                method=HttpMethod.POST,
+                headers={
+                    "Authorization": f"Bearer {self.secrets['MY_API_TOKEN']}",
+                    "Content-Type": "application/json",
+                },
+                body=json.dumps({"patient_id": self.target}),
+                retry_on_status_codes=[500, 502, 503],
+            )
+            # retry_on_status_codes already implies async-now; .set_async() is here to add max_retries
+            return [http_effect.apply().set_async(max_retries=3)]
+    ```
+###  Issue a simple GET request 
+    ```python
+    http_effect = HttpRequestEffect(
+        url="https://api.example.com/status",
+    )
+    return [http_effect.apply().set_async(delay_seconds=0)]
+    ```
+###  Schedule a delayed request 
+    ```python
+    # Run the request 60 seconds from now
+    http_effect = HttpRequestEffect(
+        url="https://api.example.com/sync",
+        method=HttpMethod.PUT,
+        body=json.dumps({"status": "ready"}),
+        headers={"Content-Type": "application/json"},
+    )
+    return [http_effect.apply().set_async(delay_seconds=60)]
+    ```
+##  Validation 
+Construction is validated by Pydantic and will raise a `ValidationError` for:
+  - An empty `url`.
+  - A `method` that is not a member of `HttpMethod`.
+  - A `retry_on_status_codes` entry that is not an integer or falls outside the `100`–`599` range.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-http-request/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-messages/
 The `Message` effect provides a unified way to create, edit, and transmit messages between users (patients or staff) within the Canvas platform. It supports standalone creation, immediate send after creating, edits, and dedicated send operations.
 ##  Attributes 
@@ -20707,7 +20789,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -20920,6 +21002,11 @@ Effect | Description
 ---|---  
 SIMPLE_API_RESPONSE | Return a response from a SimpleAPI HTTP endpoint.  
 SIMPLE_API_WEBSOCKET_BROADCAST | Broadcast a message to WebSocket connections.  
+###  HTTP Requests 
+Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
+Effect | Description  
+---|---  
+HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior.  
 ###  Revenue / Payment Processor 
 Effect | Description  
 ---|---  
@@ -21716,7 +21803,7 @@ Target object | Context object
       "id": pt_id  
 DOCUMENT_REVIEWED  
 ---  
-Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Review or Imaging Review command is completed.  
+Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Results Review, Imaging Report Review, Consult Report Review, or Uncategorized Document Review command is committed.  
 Target object | Context object  
     "id": document_id
     "type": [IntegrationTask](/sdk/data-integration-task/)
