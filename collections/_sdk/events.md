@@ -2385,6 +2385,32 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
+#### Surescripts
+
+Surescripts response events fire when the platform receives a response from Surescripts after a corresponding request effect is executed. These events let plugins react to insurance eligibility checks and other Surescripts services.
+
+<table>
+  <thead>
+    <tr><th colspan="2">SURESCRIPTS_ELIGIBILITY_RESPONSE</th></tr>
+    <tr><td colspan="2">Occurs when Surescripts returns an eligibility response after a <code>SendSurescriptsEligibilityRequestEffect</code> is executed. The response contains the patient's insurance plan information and coverage details. See <a href='/sdk/effect-surescripts/'>Surescripts Effects</a> for the request effect and typed response data classes.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>empty</pre></td>
+      <td><pre>"correlation_id": str
+"patient_id": str
+"plans": list[dict]
+"error": str or None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+The `correlation_id` in the context matches the ID from the originating `SendSurescriptsEligibilityRequestEffect`, enabling you to match responses to requests. Use the typed `SurescriptsEligibilityResponse` and `EligibilityPlan` classes from `canvas_sdk.events.surescripts` to parse the context into structured data.
+
 #### Messaging
 
 <table>

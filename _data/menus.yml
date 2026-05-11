@@ -896,6 +896,9 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Surescripts"
+    url: /sdk/effect-surescripts/
+    description: Query insurance eligibility, medication history, and benefits through Surescripts.
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.
