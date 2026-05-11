@@ -14255,6 +14255,9 @@ unique_identifier | UUID
 deprecated_at | DateTime  
 is_patient_required | Boolean  
 allow_custom_title | Boolean  
+is_scheduleable_via_patient_portal | Boolean  
+online_duration | Integer  
+is_sig_required | Boolean  
 ###  NoteMetadata 
 Field Name | Type  
 ---|---  
@@ -14307,6 +14310,7 @@ RST | Restored |
 RCL | Recalled |   
 UND | Undeleted |   
 DSC | Discharged |   
+SGN | Signed | Used when the note type's `is_sig_required` is True  
 SCH | Scheduling | Used in appointment notes  
 BKD | Booked | Used in appointment notes  
 CVD | Converted | Used in appointment notes  
@@ -18591,6 +18595,59 @@ ADT^A13 | Cancel Discharge/End Visit
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-external-event/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-order-ingest/
+The `HealthGorillaLabOrderIngest` effect creates a Canvas `LabOrder` plus its `LabTest` rows for an order that was placed outside Canvas — for example, by a partner on its own Health Gorilla tenant. Canvas records the order so it shows up in the chart, but the order's `hg_request_result` field is set to a partner-supplied skip-send marker so Canvas's send-to-Health-Gorilla worker treats the order as already-sent and never forwards it.
+Typical use is from a SimpleAPI route the partner POSTs to when they place a standing or recurring order on their side.
+##  Behavior 
+The effect targets the home-app `HealthGorillaLabOrderIngest` interpreter, which in a single transaction:
+  1. Resolves `Patient` (by `key`), `Staff` (by NPI), and `Note` (by external id).
+  2. Creates a `LabOrder` with `hg_request_result` set non-empty so the send-to-HG worker leaves it alone.
+  3. Creates one `LabTest` row per HG order code in `test_codes`. Test names are filled from the HG ontology when available.
+Each `LabTest` is created with status `RECEIVED`, since externally-originated orders are past the Canvas send pipeline.
+##  Attributes 
+Attribute | Type | Required | Description  
+---|---|---|---  
+patient_id | str | yes | Canvas Patient `key` (uuid).  
+ordering_provider_npi | str | yes | NPI used to look up the Staff record.  
+note_id | str | yes | Canvas Note `externally_exposable_id` (uuid). LabOrders require a Note FK in home-app.  
+ontology_lab_partner | str | yes | Ontology lab partner name (e.g. `"Quest Diagnostics"`, `"LabCorp"`).  
+date_ordered | datetime | yes | When the order was authored on the partner side.  
+hg_request_result | str | yes | Skip-send marker. Convention is the partner's HG `RequestGroup` URL or id so Canvas can correlate later. Any non-empty value works.  
+test_codes | list[str] | yes | One or more HG order codes. One `LabTest` row is created per entry.  
+external_id | str | no | Stored on `LabOrder.healthgorilla_id`; useful for partner-side dedup.  
+comment | str | no | Stored on `LabOrder.comment`.  
+##  Example 
+    ```python
+    from datetime import datetime, UTC
+    from canvas_sdk.effects.lab_order import HealthGorillaLabOrderIngest
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+    class StandingLabOrdersAPI(SimpleAPIRoute):
+        PATH = "/standing-lab-orders"
+        def authenticate(self, credentials: APIKeyCredentials) -> bool:
+            return credentials.key == self.secrets["ingest-api-key"]
+        def post(self) -> list[Response]:
+            body = self.request.json()
+            return [
+                HealthGorillaLabOrderIngest(
+                    patient_id=body["patient_id"],
+                    ordering_provider_npi=body["ordering_provider_npi"],
+                    note_id=body["note_id"],
+                    ontology_lab_partner=body["ontology_lab_partner"],
+                    date_ordered=datetime.fromisoformat(body["date_ordered"]),
+                    hg_request_result=body["hg_request_result"],
+                    test_codes=body["test_codes"],
+                    external_id=body.get("external_id", ""),
+                ).apply(),
+                JSONResponse({"external_id": body["external_id"]}, status_code=201),
+            ]
+    ```
+##  Related 
+  - [`HealthGorillaLabReportIngest`](/sdk/effects/) — the matching effect for inbound lab reports
+  - [`HealthGorillaLabOrderOverride`](/sdk/effects/) — for orders Canvas itself sends to HG
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-order-ingest/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-order-override/
 The `HealthGorillaLabOrderOverride` effect lets a plugin inject FHIR-shaped values (account numbers, bill-to, performer organization, sub-tenant, location) into Canvas's outbound Health Gorilla lab-order payload at order-send time. It is returned from a handler of the [`LAB_ORDER_COMMAND__PRE_SEND`](/sdk/events/) event, which fires from Canvas right before the FHIR `RequestGroup` is built and POSTed to Health Gorilla.
 This is the supported way to drive lab-order routing from plugin-owned state (for example, a partner-specific lab account selected in a custom chart UI) without putting any partner/tenant concept into Canvas core.
@@ -18603,8 +18660,9 @@ Attribute | Type | Description
 practitioner_account_number | str | Stamped on the contained `Practitioner.identifier` (Account Number).  
 organizational_account_number | str | Stamped on the contained authorizing `Organization.identifier` (Account Number).  
 hg_organization_id | str | Health Gorilla facility id (`f-...`) used for the `requestgroup-performer` reference. Skips the lab-name catalog lookup.  
-hg_tenant_id | str | Health Gorilla sub-tenant Organization id. Adds a `requestgroup-authorizedBy` reference to `Organization/t-{tenant_id}`.  
-hg_location_id | str | Optional Location reference for the order.  
+hg_tenant_id | str | Health Gorilla sub-tenant Organization id. With `hg_tenant_id` alone, adds a `requestgroup-authorizedBy` reference to `Organization/t-{tenant_id}`. With both `hg_tenant_id` and `hg_location_id` set, the reference is `Organization/tl-{tenant_id}-{location_id}` (the HG sub-tenant location form).  
+hg_location_id | str | Health Gorilla tenant-location id. Combined with `hg_tenant_id` to produce a `tl-` `requestgroup-authorizedBy` reference. Has no effect on its own.  
+hg_practitioner_id | str | Health Gorilla Practitioner id, appended as an additional identifier on the contained Practitioner with system `https://www.healthgorilla.com`. Use when the ordering provider is registered with HG and you want to surface that registration on the outbound order alongside the NPI.  
 bill_to_code | BillToCode | Explicit `Account.type` coding. Overrides the existing coverage-derived inference.  
 ###  BillToCode 
 `bill_to_code` is constrained to one of four Health-Gorilla–recognized codes. It is a Pydantic `Literal`, so attempting to construct the effect with any other value raises a `ValidationError` at construction time.
@@ -18643,6 +18701,66 @@ When `bill_to_code` is `patient` or `guarantor`, Canvas attaches the appropriate
   - [Health Gorilla multi-tenant Organization model](https://developer.healthgorilla.com/docs/organization-2)
   - [HG `RequestGroup` profile](https://developer.healthgorilla.com/docs/requestgroup)
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-order-override/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-report-ingest/
+The `HealthGorillaLabReportIngest` effect creates a Canvas `LabReport` plus its `LabValue` rows and attaches a PDF for a result that was received outside Canvas — for example, by a partner on its own Health Gorilla tenant or any upstream lab interface. It is the inbound counterpart to [`HealthGorillaLabOrderIngest`](/sdk/effects/).
+The home-app interpreter is equivalent to what `LabEngineInboundService.process_and_store_report` does for HG-pull ingest, minus the HG fetch — the partner provides the PDF and Canvas stores it through the existing S3 + `ElectronicLabIntegrationTask` path.
+##  Dedup 
+Reports are deduped server-side on `(external_id, version)`:
+State | Result  
+---|---  
+New `external_id` | Create new `LabReport`.  
+Same `external_id`, higher `version` | Replace values, bump version on existing record, re-store PDF.  
+Same `external_id`, same or lower `version` | No-op; existing record kept, no PDF fetch.  
+This matches the version-bump contract in `LabEngineInboundService.process_and_store_report`, so partners can safely replay events.
+##  PDF handling 
+Exactly one of `pdf_url` or `pdf_base64` must be set. The home-app interpreter fetches the PDF (or decodes the inline base64) **outside** the `LabReport` transaction so a slow partner bucket cannot hold row locks. Limits:
+  - `pdf_base64` capped at 1 MB encoded (~750 KB binary). Use `pdf_url` for larger PDFs.
+  - `pdf_url` fetch capped at 10 MB.
+##  Attributes 
+Attribute | Type | Required | Description  
+---|---|---|---  
+lab_order_id | str | yes | Canvas LabOrder `externally_exposable_id` (uuid) the report belongs to.  
+patient_id | str | yes | Canvas Patient `key` (uuid).  
+external_id | str | yes | Partner-side report id. Used for dedup.  
+version | int | yes | Report version, monotonically increasing per `external_id`. Must be `>= 1`.  
+status | str | no | Report status; defaults to `"final"`.  
+date_performed | datetime | yes | When the report was generated on the partner side.  
+lab_values | list[dict] | yes | Per-test results. Each entry: `ontology_test_code`, `ontology_test_name`, `value`, `units`, `reference_range`, `abnormal_flag`, `observation_status`, `comment`.  
+pdf_url | str | one of | URL the home-app interpreter can GET the PDF from (typically a partner's presigned URL).  
+pdf_base64 | str | one of | PDF bytes inline as base64. Use only for small PDFs.  
+##  Example 
+    ```python
+    from datetime import datetime, UTC
+    from canvas_sdk.effects.lab_order import HealthGorillaLabReportIngest
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+    class ExternalLabReportsAPI(SimpleAPIRoute):
+        PATH = "/external-lab-reports"
+        def authenticate(self, credentials: APIKeyCredentials) -> bool:
+            return credentials.key == self.secrets["ingest-api-key"]
+        def post(self) -> list[Response]:
+            body = self.request.json()
+            return [
+                HealthGorillaLabReportIngest(
+                    lab_order_id=body["lab_order_id"],
+                    patient_id=body["patient_id"],
+                    external_id=body["external_id"],
+                    version=body.get("version", 1),
+                    date_performed=datetime.fromisoformat(body["date_performed"]),
+                    lab_values=body["lab_values"],
+                    pdf_url=body["pdf_url"],
+                ).apply(),
+                JSONResponse(
+                    {"external_id": body["external_id"], "version": body.get("version", 1)},
+                    status_code=202,
+                ),
+            ]
+    ```
+##  Related 
+  - [`HealthGorillaLabOrderIngest`](/sdk/effects/) — the matching effect for inbound lab orders
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-report-ingest/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-messages/
@@ -20873,6 +20991,41 @@ Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` |
 Update Goal | `*_UPDATE_GOAL_COMMAND` |   
 Vitals | `*_VITALS_COMMAND` |   
 ----- END PAGE https://docs.canvasmedical.com/sdk/effects/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/event-health-gorilla-lab-order-prepared/
+`HEALTH_GORILLA_LAB_ORDER_PREPARED` fires from Canvas right after the outbound Health Gorilla FHIR `RequestGroup` dict is constructed and right before it is POSTed to Health Gorilla. Plugin handlers receive the prepared dict via the event context and can store it, forward it to a partner backend, or surface it in the chart.
+The event is **read-only** : it has no associated effect type, and any effects a handler returns are discarded. It does not affect the send path.
+This complements [`LAB_ORDER_COMMAND__PRE_SEND`](/sdk/events/), which fires _before_ the build and lets a plugin inject overrides via [`HealthGorillaLabOrderOverride`](/sdk/effects/health-gorilla-lab-order-override). The pair gives a plugin both an inject hook and a verify hook on every outbound HG order.
+##  Event context 
+The plugin handler receives `self.event.context` as a JSON-serialized dict with the following keys:
+Key | Type | Description  
+---|---|---  
+lab_order | dict | `{"id": "<uuid>", "uuid": "<uuid>"}` — the LabOrder external id.  
+lab_partner | str | Ontology lab partner name (`order.ontology_lab_partner`).  
+patient | dict | `{"id": "<key>"}` if the order has a patient, else `{}`.  
+note | dict | `{"id": "<uuid>", "uuid": "<uuid>"}` — only present when the order has a Note FK.  
+request_group | dict | The full FHIR `RequestGroup` as it will be POSTed to HG, including all overrides applied by `LAB_ORDER_COMMAND__PRE_SEND` handlers.  
+##  Example 
+    ```python
+    import json
+    from canvas_generated.messages.events_pb2 import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    class LogHGPayload(BaseHandler):
+        """Capture every outbound HG RequestGroup for partner verification."""
+        RESPONDS_TO = EventType.Name(EventType.HEALTH_GORILLA_LAB_ORDER_PREPARED)
+        def compute(self):
+            context = json.loads(self.event.context)
+            request_group = context["request_group"]
+            lab_order_id = context["lab_order"]["id"]
+            # store / forward / display the dict however you need
+            return []  # no effect type associated with this event
+    ```
+##  Related 
+  - [`LAB_ORDER_COMMAND__PRE_SEND`](/sdk/events/) — fires _before_ the build, accepts override effects
+  - [`HealthGorillaLabOrderOverride`](/sdk/effects/health-gorilla-lab-order-override) — the override effect returned from PRE_SEND
+  - [HG `RequestGroup` profile](https://developer.healthgorilla.com/docs/requestgroup)
+----- END PAGE https://docs.canvasmedical.com/sdk/event-health-gorilla-lab-order-prepared/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/events/
