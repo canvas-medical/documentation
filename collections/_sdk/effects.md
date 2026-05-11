@@ -446,6 +446,15 @@ Check out the [HTTP](/sdk/handlers-simple-api-http/) and [WebSocket](/sdk/handle
 | SIMPLE_API_WEBSOCKET_BROADCAST | Broadcast a message to WebSocket connections. |
 
 
+### HTTP Requests
+
+Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
+
+| Effect | Description |
+|---|---|
+| HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior. |
+
+
 ### Revenue / Payment Processor
 
 | Effect | Description |
