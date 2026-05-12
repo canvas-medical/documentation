@@ -34,18 +34,9 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature
                   - value: http://schemas.canvasmedical.com/fhir/extensions/roles
-                  - value: http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex
               - name: valueString
                 type: string
                 description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
-              - name: valueCode
-                type: string
-                description: Value of extension.<br><br> The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`. <br><br> A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC).
-                enum_options:
-                  - value: M
-                  - value: F
-                  - value: OTH
-                  - value: UNK
               - name: valueUrl
                 type: string
                 description: Value of extension.<br><br> The `valueUrl` attribute is needed for the meeting link extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link`. This value will represent the url that will be associated to any telehealth notes in Canvas. 
@@ -361,10 +352,6 @@ curl --request POST \
     "resourceType": "Practitioner",
     "extension": [
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
         },
@@ -538,10 +525,6 @@ headers = {
 payload = {
     "resourceType": "Practitioner",
     "extension": [
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
@@ -727,10 +710,6 @@ print(response.text)
     "resourceType": "Practitioner",
     "id": "55096fbcdfb240fd8c999c325304de03",
     "extension": [
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
@@ -972,10 +951,6 @@ curl --request PUT \
     "resourceType": "Practitioner",
     "extension": [
         {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
             "valueUrl": "https://meet.google.com/room-001"
         },
@@ -1160,10 +1135,6 @@ headers = {
 payload = {
     "resourceType": "Practitioner",
     "extension": [
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
             "valueUrl": "https://meet.google.com/room-001"
@@ -1355,10 +1326,6 @@ print(response.text)
     "resourceType": "Practitioner",
     "id": "55096fbcdfb240fd8c999c325304de03",
     "extension": [
-        {
-            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-            "valueCode": "F"
-        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
