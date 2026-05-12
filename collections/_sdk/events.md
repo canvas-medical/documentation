@@ -1332,7 +1332,7 @@ These events fire during the lifecycle of documents in the <a href="https://canv
 <table>
   <thead>
     <tr><th colspan="2">DOCUMENT_REVIEWED</th></tr>
-    <tr><td colspan="2">Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Review or Imaging Review command is completed.</td></tr>
+    <tr><td colspan="2">Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Results Review, Imaging Report Review, Consult Report Review, or Uncategorized Document Review command is committed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -10811,6 +10811,32 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "fasting_status": bool
   "comment": str
 "note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_SEND</th></tr>
+    <tr><td colspan="2">Fires from Canvas right before a lab order's FHIR <code>RequestGroup</code> is built and POSTed to Health Gorilla. Plugins may respond with one or more <a href='/sdk/effect-health-gorilla-lab-order-override/'>HealthGorillaLabOrderOverride</a> effects to inject account numbers, bill-to, performer organization, sub-tenant, or location into the outbound payload.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": laborder_id
+"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
+      <td><pre>"lab_order":
+  "id": laborder_id
+  "uuid": laborder_id
+"lab_partner": str
+"note":
+  "id": note_id
   "uuid": note_id
 "patient":
   "id": pt_id</pre></td>
@@ -21294,6 +21320,15 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>GET_HOMEPAGE_CONFIGURATION</td>
       <td>Homepage is loading. See <a href="{% link _guides/set-default-homepage.md %}" target="_blank">Set default homepage</a> for examples of how to use this event.</td>
+    </tr>
+    <tr>
+      <td>COMMAND__FORM__GET_ADDITIONAL_FIELDS</td>
+      <td>Command is originated. See <a href="{% link _sdk/effects/command_metadata_create_form.md %}" target="_blank">Command metadata Create Form</a> for how to use this event.
+      <br />Target:
+      <pre>"command_uuid": str</pre>
+Context object:
+      <pre>"schema_key": str
+"purpose": "form" | "print"</pre></td>
     </tr>
   </tbody>
 </table>

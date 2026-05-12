@@ -812,6 +812,9 @@ effects_module:
   - title: "Command Metadata"
     url: /sdk/effect-command-metadata/
     description: Attach custom key-value metadata to command records.
+  - title: "Command Metadata Create form"
+    url: /sdk/command-metadata-create-form-effect/
+    description: Adds additional fields to commands that are stored as command metadata.
   - title: "Command Validation"
     url: /sdk/effect-command-validation/
     description: Validate commands and return structured error messages to users.
@@ -839,6 +842,9 @@ effects_module:
   - title: "Form Result"
     url: /sdk/form-result-effect/
     description: Effect for dynamically displaying forms in the Patient Portal.
+  - title: "HTTP Request"
+    url: /sdk/effect-http-request/
+    description: Have the platform issue an HTTP request on behalf of a plugin.
   - title: "Layout Effects"
     url: /sdk/layout-effect/
     description: Modify or interact with the layout in Canvas.
