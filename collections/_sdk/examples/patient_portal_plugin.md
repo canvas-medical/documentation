@@ -67,9 +67,9 @@ In order to deal with `SECRETS` take a look at the
         "effects": [],
         "views": []
     },
-    "secrets": [
-        "BACKGROUND_COLOR",
-        "EMERGENCY_CONTACT"
+    "variables": [
+        {"name": "BACKGROUND_COLOR", "sensitive": false},
+        {"name": "EMERGENCY_CONTACT", "sensitive": false}
     ],
     "tags": {},
     "references": [],
