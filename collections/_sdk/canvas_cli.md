@@ -245,7 +245,7 @@ $ canvas logs [OPTIONS]
 
 ### `canvas config list`
 
-List plugin variables on a Canvas instance. Sensitive variables display as `[set]` or `[not set]` without revealing their values, while non-sensitive variables display their actual values.
+List plugin variables on a Canvas instance. Variables display as `[set]` or `[not set]` to indicate whether a value has been configured. Actual values are never shown through the CLI for security reasons. To view variable values, use the Django admin interface (requires managing user permissions).
 
 **Usage**:
 
@@ -267,7 +267,7 @@ $ canvas config list [OPTIONS] PLUGIN
 ```console
 $ canvas config list my_plugin
   API_TOKEN = [set]  (sensitive)
-  WEBHOOK_URL = https://example.com/webhook
+  WEBHOOK_URL = [set]
   DEBUG_MODE = [not set]
 ```
 

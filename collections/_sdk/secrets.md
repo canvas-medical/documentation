@@ -4,7 +4,7 @@ slug: "secrets"
 hidden: false
 ---
 
-Canvas provides a key-value store that lets your plugins access configuration without hardcoding values into source files. Variables can be sensitive (like API tokens, which are write-only) or non-sensitive (for regular configuration). This guide covers how to define, configure, and access variables in your plugins.
+Canvas provides a key-value store that lets your plugins access configuration without hardcoding values into source files. Variables can be marked as sensitive (for values like API tokens) or non-sensitive (for regular configuration). All variable values are write-only through the CLI and API. This guide covers how to define, configure, and access variables in your plugins.
 
 
 ### Declaring Variables in `CANVAS_MANIFEST.json`
@@ -36,7 +36,7 @@ Variables are declared in your plugin's `CANVAS_MANIFEST.json` file under the to
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `name` | string | Yes | The variable name used in your plugin code |
-| `sensitive` | boolean | No | When `true`, the variable is write-only (default: `false`) |
+| `sensitive` | boolean | No | When `true`, marks the variable as sensitive for display purposes (default: `false`) |
 
 {% include alert.html type="warning" content="<b>Deprecation Notice:</b> The legacy <code>secrets</code> array format is deprecated. Use the <code>variables</code> format shown above instead. The legacy format will continue to work but displays a deprecation warning during <code>canvas validate-manifest</code>." %}
 
@@ -85,10 +85,10 @@ You can also use `--secret` for all variables if you prefer a single flag—valu
 ```console
 $ canvas config list <plugin_name>
   API_TOKEN = [set]  (sensitive)
-  WEBHOOK_URL = https://example.com
+  WEBHOOK_URL = [set]
 ```
 
-Sensitive variables display as `[set]` or `[not set]` without revealing their values. Non-sensitive variables display their actual values.
+All variables display as `[set]` or `[not set]` to indicate whether a value has been configured. Actual values are never returned through the CLI or API for security reasons. To view variable values, use the Django admin interface (requires managing user permissions).
 
 ### Accessing Variables in Your Plugin
 
