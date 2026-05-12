@@ -2519,7 +2519,10 @@ The following events fire when a prescription's status changes during the e-pres
       <td><pre>"id": patient_key
 "type": Patient</pre></td>
       <td><pre>"note": {"id": note_uuid},
-"user": {...}</pre></td>
+"user": {
+  "type": str,
+  "id": user_id
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2538,7 +2541,10 @@ The following events fire when a prescription's status changes during the e-pres
       <td><pre>"id": patient_key
 "type": Patient</pre></td>
       <td><pre>"note": {"id": note_uuid},
-"user": {...}</pre></td>
+"user": {
+  "type": str,
+  "id": user_id
+}</pre></td>
     </tr>
   </tbody>
 </table>
