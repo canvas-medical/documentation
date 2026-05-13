@@ -69,6 +69,10 @@ Before any effect is emitted, the model runs these checks:
 - All other fields are optional; only dirty (modified) fields are updated
 - If **is_member_of_id** is provided, the parent observation must exist
 
+### Enter in Error Validation
+- **observation_id** is **required** and must reference an existing observation
+- All other fields must **not** be set (only `observation_id` is allowed)
+
 ## Effect Methods
 
 ### `create()`
@@ -85,6 +89,14 @@ Update an existing observation.
 - **Effect Type:** `UPDATE_OBSERVATION`
 - **Payload:** `{ "data": { observation_id, <dirty_fields> } }`
 - Only fields marked dirty (modified on the model) are included in the update.
+
+### `enter_in_error()`
+
+Marks an existing observation as entered in error. Use this when an observation was recorded incorrectly and should be flagged rather than deleted.
+
+- **Effect Type:** `ENTER_IN_ERROR_OBSERVATION`
+- **Payload:** `{ "data": { observation_id } }`
+- Only `observation_id` is allowed; setting any other field will raise a validation error.
 
 ## Example Usage
 
@@ -241,6 +253,18 @@ comprehensive_assessment = Observation(
 )
 
 effect_create_multi = comprehensive_assessment.create()
+```
+
+### Mark an Observation as Entered in Error
+
+```python?partial=True
+# Find an observation that was recorded incorrectly
+erroneous_obs = ObservationModel.objects.filter(patient_id=patient.id).first()
+
+# Mark it as entered in error
+error_observation = Observation(observation_id=erroneous_obs.id)
+
+effect_error = error_observation.enter_in_error()
 ```
 
 <br/>
