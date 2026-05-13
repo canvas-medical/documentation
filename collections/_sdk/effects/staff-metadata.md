@@ -9,7 +9,7 @@ The `StaffMetadata` effect provides a flexible key-value storage system for staf
 
 ## Overview
 
-`StaffMetadata` uses an `.upsert(value)` method to apply a value to the key attributed with the metadata effect object. The same key may be used across many staff members; the `(staff, key)` pair is unique per staff member.
+`StaffMetadata` exposes `.upsert(value)` to write or replace a metadata entry, and `.delete()` to remove one. The same key may be used across many staff members; the `(staff, key)` pair is unique per staff member.
 
 ## Attributes
 
@@ -39,6 +39,19 @@ An `Effect` object configured for upserting staff metadata.
 - If a metadata entry with the specified key already exists for the staff member, it will be updated with the new value.
 - If no entry exists, a new metadata entry will be created.
 - The operation is idempotent — repeated calls with the same key and value will not change the row.
+
+### delete() → Effect
+
+Removes the metadata entry identified by `(staff_id, key)`.
+
+#### Returns
+
+An `Effect` object configured for deleting staff metadata.
+
+#### Behavior
+
+- Removes the row that matches both `staff_id` and `key`. Returns success even if no row was present (idempotent).
+- Does not affect other metadata entries for the same staff member with different keys.
 
 ## Implementation Details
 
@@ -77,6 +90,18 @@ metadata = StaffMetadata(
 )
 
 effect = metadata.upsert("cardiology")
+```
+
+### Removing an Entry
+
+```python
+from canvas_sdk.effects.staff_metadata import StaffMetadata
+
+# Clear the department tag for a staff member
+effect = StaffMetadata(
+    staff_id="4150cd20de8a470aa570a852859ac87e",
+    key="department",
+).delete()
 ```
 
 ### Mirroring an HR System

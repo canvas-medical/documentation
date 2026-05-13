@@ -3043,6 +3043,25 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_METADATA_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a staff member's metadata is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffmetadata_id
+"type": <a href='/sdk/data-staff/#staffmetadata'>StaffMetadata</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Vital Signs
 
 <table>
