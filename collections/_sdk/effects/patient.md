@@ -24,6 +24,11 @@ The `Patient` effect enables the creation and updating of patient records within
 | `clinical_note`          | `str` or `None`                             | Clinical notes about the patient            | No       |
 | `default_location_id`    | `str` or `None`                             | ID of patient's default practice location   | No       |
 | `default_provider_id`    | `str` or `None`                             | ID of patient's default healthcare provider | No       |
+| `active`                 | `bool` or `None`                            | Whether the patient record is active        | No       |
+| `deceased`               | `bool` or `None`                            | Whether the patient is deceased             | No       |
+| `deceased_datetime`      | `datetime.datetime` or `None`               | Date and time of patient's death            | No       |
+| `deceased_cause`         | `str` or `None`                             | Cause of patient's death                    | No       |
+| `deceased_comment`       | `str` or `None`                             | Additional comments about patient's death   | No       |
 | `previous_names`         | `list[str]` or `None`                       | List of patient's previous names            | No       |
 | `contact_points`         | `list[PatientContactPoint]` or `None`       | Patient's contact information               | No       |
 | `external_identifiers`   | `list[PatientExternalIdentifier]` or `None` | Patient's external identifiers              | No       |
@@ -190,6 +195,39 @@ class MyHandler(BaseHandler):
         )
 
         return [updated_patient.update()]
+```
+
+# Marking a Patient as Inactive or Deceased
+
+```python
+from canvas_sdk.effects.patient import Patient
+from canvas_sdk.handlers.base import BaseHandler
+import datetime
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        # Mark a patient as inactive
+        inactive_patient = Patient(
+            patient_id="existing-patient-uuid",
+            active=False
+        )
+
+        return [inactive_patient.update()]
+
+
+class DeceasedPatientHandler(BaseHandler):
+    def compute(self):
+        # Record a patient's death
+        deceased_patient = Patient(
+            patient_id="existing-patient-uuid",
+            deceased=True,
+            deceased_datetime=datetime.datetime(2025, 3, 14, 12, 0, 0),
+            deceased_cause="Natural causes",
+            deceased_comment="Pronounced at home."
+        )
+
+        return [deceased_patient.update()]
 ```
 
 ## Validation
