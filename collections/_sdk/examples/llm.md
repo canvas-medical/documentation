@@ -15,10 +15,10 @@ Plugin that provides a SimpleAPI for interacting with multiple LLM providers (An
 This example plugin defines the following "secrets" in the manifest file:
 
 ```
-    "secrets": [
-        "AnthropicKey",
-        "GoogleKey",
-        "OpenaiKey"
+    "variables": [
+        {"name": "AnthropicKey", "sensitive": true},
+        {"name": "GoogleKey", "sensitive": true},
+        {"name": "OpenaiKey", "sensitive": true}
     ],
 ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -62,10 +62,10 @@ Your [OpenAI API key](https://platform.openai.com/api-keys).
     "effects": [],
     "views": []
   },
-  "secrets": [
-    "AnthropicKey",
-    "GoogleKey",
-    "OpenaiKey"
+  "variables": [
+    {"name": "AnthropicKey", "sensitive": true},
+    {"name": "GoogleKey", "sensitive": true},
+    {"name": "OpenaiKey", "sensitive": true}
   ],
   "tags": {},
   "references": [],
