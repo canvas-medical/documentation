@@ -175,13 +175,16 @@ We'll set two secrets, one for the unique id of the webhook, and one for an auth
                 }
            ]
         },
-        "secrets": ["WEBHOOK_ID", "AUTH_TOKEN"],
+        "variables": [
+            {"name": "WEBHOOK_ID", "sensitive": true},
+            {"name": "AUTH_TOKEN", "sensitive": true}
+        ],
         "tags": {},
         "license": "",
         "readme": "./README.md"
     }
     ```
-The line `"secrets": ["WEBHOOK_ID", "AUTH_TOKEN"],` declares two secrets, `WEBHOOK_ID` and `AUTH_TOKEN`. After we update the plugin, we can set values for these in the plugin configuration page. This allows for different values to be used across different installations.
+The `variables` array declares two sensitive variables, `WEBHOOK_ID` and `AUTH_TOKEN`. After we update the plugin, we can set values for these in the plugin configuration page. This allows for different values to be used across different installations. Marking each entry with `"sensitive": true` means the values will be masked in the Admin UI and listed only as `[set]` or `[not set]` by `canvas config list`.
 Here's how that configuration looks:
 ![Plugin secrets
 configuration](/assets/images/webhook-guide/webhook-guide-secrets.png)
@@ -1567,7 +1570,7 @@ And here's the updated `CANVAS_MANIFEST.json`:
             "effects": [],
             "views": []
         },
-        "secrets": [],
+        "variables": [],
         "tags": {},
         "references": [],
         "license": "",
@@ -1778,7 +1781,7 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
             "effects": [],
             "views": []
         },
-        "secrets": [],
+        "variables": [],
         "tags": {},
         "references": [],
         "license": "",
@@ -1960,7 +1963,9 @@ The CANVAS_MANIFEST.json is particularly important. It is used during the instal
             "effects": [],
             "views": []
         },
-        "secrets": ["my_secret_code"],
+        "variables": [
+            {"name": "my_secret_code", "sensitive": true}
+        ],
         "tags": {},
         "references": [],
         "license": "",
@@ -2335,6 +2340,8 @@ Install a plugin into a Canvas instance.
   - `PLUGIN_NAME`: Path to plugin to install [required]
 **Options** :
   - `--secret TEXT`: Secrets to set, e.g. Key=value
+  - `--variable TEXT`: Variables to set, e.g. Key=value. Use `--variable` for non-sensitive configuration and `--secret` for sensitive values.
+  - `--enable / --disable`: Install the plugin in an enabled or disabled state. Defaults to `--enable`.
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
 **Notes** :
@@ -2419,28 +2426,44 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
   - `--cursor TEXT`: Resume token from a previous run.
   - `--help`: Show this message and exit.
 ###  `canvas config list`
-List all secrets from a plugin.
+List the variables configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
 **Usage** :
     ```console
     $ canvas config list [OPTIONS] PLUGIN
     ```
+**Example output** :
+    ```console
+    $ canvas config list my_plugin
+      API_TOKEN  [set]  (sensitive)
+      LOG_LEVEL  [not set]
+    ```
 **Arguments** :
-  - `PLUGIN`: Plugin name to list secrets for
+  - `PLUGIN`: Plugin name to list variables for
 **Options** :
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
 ###  `canvas config set`
-Configure plugin secrets.
+Set (or update) one or more variables on an installed plugin. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
 **Usage** :
     ```console
-    $ canvas config set [OPTIONS] PLUGIN
+    $ canvas config set [OPTIONS] PLUGIN KEY=value [KEY=value ...]
+    ```
+**Examples** :
+Set a single variable:
+    ```console
+    $ canvas config set my_plugin API_TOKEN=your_api_token_value
+    ```
+Set multiple variables in one call:
+    ```console
+    $ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
     ```
 **Arguments** :
-  - `PLUGIN`: Plugin name to list secrets for
-  - `SECRETS...`: Secrets to set, e.g. Key=value
+  - `PLUGIN`: Plugin name to configure
+  - `KEY=value ...`: One or more variables to set
 **Options** :
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
+> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag.
 ----- END PAGE https://docs.canvasmedical.com/sdk/canvas_cli/
 
 
@@ -7183,7 +7206,7 @@ Global-scope apps appear in the companion's launcher on the main page. They run 
         "effects": [],
         "views": []
       },
-      "secrets": [],
+      "variables": [],
       "tags": {},
       "references": [],
       "license": "",
@@ -7246,7 +7269,7 @@ Patient-scope apps appear as tabs on the patient page. Your tab sits next to the
         "effects": [],
         "views": []
       },
-      "secrets": [],
+      "variables": [],
       "tags": {},
       "references": [],
       "license": "",
@@ -7313,7 +7336,7 @@ Note-scope apps appear as tabs inside an opened note on the patient page. Use th
         "effects": [],
         "views": []
       },
-      "secrets": [],
+      "variables": [],
       "tags": {},
       "references": [],
       "license": "",
@@ -7388,7 +7411,7 @@ The task dashboard is a natural example. The global view and the patient-scoped 
         "effects": [],
         "views": []
       },
-      "secrets": [],
+      "variables": [],
       "tags": {},
       "references": [],
       "license": "",
@@ -8939,7 +8962,9 @@ To use custom data in your plugin, declare a `custom_data` section in your `CANV
       "sdk_version": "0.1.4",
       "plugin_version": "1.0.0",
       "name": "my_plugin",
-      "secrets": ["namespace_read_write_access_key"],
+      "variables": [
+        {"name": "namespace_read_write_access_key", "sensitive": false}
+      ],
       "custom_data": {
         "namespace": "acme_corp__shared_data",
         "access": "read_write"
@@ -9058,17 +9083,20 @@ Share these keys securely with developers of other plugins that need access:
 ###  Configuring Plugin Access 
 Each plugin that joins a namespace must:
   1. **Declare the namespace** in `CANVAS_MANIFEST.json`
-  2. **Include the secret name** in the manifest's `secrets` array
+  2. **Include the access key name** in the manifest's `variables` array
   3. **Provide the access key** during installation
     ```json
     {
-      "secrets": ["namespace_read_write_access_key"],
+      "variables": [
+        {"name": "namespace_read_write_access_key", "sensitive": false}
+      ],
       "custom_data": {
         "namespace": "acme_corp__shared_data",
         "access": "read_write"
       }
     }
     ```
+> Namespace access keys are declared with `"sensitive": false` so the value remains readable in the Admin UI's Secrets inline — that's the surface developers use to copy a key into a sibling plugin that joins the same namespace.
 **Installing with the Canvas CLI (recommended):**
 Provide the access key using the `--secret` flag:
     ```bash
@@ -9087,7 +9115,9 @@ If you've already installed the plugin without the secret:
       "sdk_version": "0.1.4",
       "plugin_version": "1.0.0",
       "name": "my_plugin",
-      "secrets": ["namespace_read_write_access_key"],
+      "variables": [
+        {"name": "namespace_read_write_access_key", "sensitive": false}
+      ],
       "custom_data": {
         "namespace": "acme_corp__shared_data",
         "access": "read_write"
@@ -13244,6 +13274,29 @@ Or query the `LabValueCoding` model directly:
         lab_value_codings = LabValueCoding.objects.filter(value=value)
         log.info(lab_value_codings)
     ```
+###  Ordered vs. result tests 
+A `LabReport` references two kinds of `LabTest` rows, and `LabReport` exposes each as its own property:
+  - **`ordered_tests`** : `LabTest` rows created when a `LabOrder` is placed. These represent the tests that were requested and are not associated with any `LabValue` records.
+  - **`result_tests`** : `LabTest` rows created for the results themselves. For FHIR `DiagnosticReport` and Health Gorilla ingested reports, `LabValue` records are attached to these tests.
+    ```python
+    from canvas_sdk.v1.data.lab import LabReport
+    lab_report = LabReport.objects.get(id="bcd287b7-8b04-4540-a1ea-6529eb576565")
+    for test in lab_report.ordered_tests:
+        print(f"Ordered: {test.ontology_test_name}")
+    for test in lab_report.result_tests:
+        print(f"Result: {test.ontology_test_name}")
+        for value in test.values.all():
+            print(f"  {value.value} {value.units}")
+    ```
+When iterating many reports at once, the `LabReport` queryset exposes `with_result_tests_and_values()` to prefetch each report's result tests (with their values) and the report's full value list in bulk:
+    ```python
+    from canvas_sdk.v1.data.lab import LabReport
+    reports = (
+        LabReport.objects
+        .filter(patient__id="patient-id")
+        .with_result_tests_and_values()
+    )
+    ```
 To query all lab reports for a particular patient, the `patient` argument can be used:
     ```python
     from logger import log
@@ -13415,6 +13468,7 @@ committer | [CanvasUser](/sdk/data-canvasuser)
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 deleted | Boolean  
 values | LabValue[]  
+tests | LabTest[]  
 ###  LabReview 
 Field Name | Type  
 ---|---  
@@ -13450,6 +13504,7 @@ low_threshold | String
 high_threshold | String  
 comment | String  
 observation_status | String  
+test | LabTest  
 codings | LabValueCoding[]  
 ###  LabValueCoding 
 Field Name | Type  
@@ -13538,6 +13593,7 @@ specimen_source_coding_system | String
 order | LabOrder  
 aoe_code | String  
 procedure_class | String  
+values | LabValue[]  
 ##  Enumeration types 
 ###  TransmissionType 
 Value | Label  
@@ -16035,6 +16091,14 @@ To get `Staff` licenses.
     staff.licenses.all()
     # <QuerySet [<StaffLicense: CA License for Larry Weed>]>
     ```
+##  Accessing the staff signature 
+The `signature_url` property returns a presigned S3 URL for securely accessing the staff member's signature file, when one is on file. If no signature has been uploaded, the property returns `None`.
+    ```python
+    from canvas_sdk.v1.data.staff import Staff
+    staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+    # Returns a presigned S3 URL (valid for 1 hour) or None
+    url = staff.signature_url
+    ```
 ##  Attributes 
 ###  Staff 
 Field Name | Type  
@@ -16075,6 +16139,7 @@ spi_number | String
 personal_meeting_room_link | URL  
 state | JSON  
 user | [CanvasUser](/sdk/data-canvasuser)  
+signature | String  
 supervising_team | Staff[]  
 notes | Note[]  
 creator_tasks | [Task](/sdk/data-task/#task)[]  
@@ -16175,6 +16240,7 @@ LICENSED | Licensed
 PROVIDER | Provider  
 ##  Computed Properties 
   - `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
+  - `signature_url`: A presigned S3 URL for the staff member's signature file (valid for 1 hour), or `None` if no signature is on file.
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-staff/
 
 
@@ -21685,6 +21751,24 @@ Target object | Context object
 | 
     "patient":
         "id": pt_id  
+####  Patient Payments 
+PATIENT_PAYMENT_PROCESSED  
+---  
+Occurs when a patient payment is processed in Canvas.  
+Target object | Context object  
+    "id": pt_id
+    "type": [Patient](/sdk/data-patient/)
+| 
+    "patient_id": str
+    "total_amount_cents": str
+    "timestamp": str
+    "payment_method_and_description": str
+    "claim_payments": [
+        {
+            "claim_id": str,
+            "allocated_cents": str
+        }
+    ]  
 ####  Clinical Documents 
 These events fire during the lifecycle of documents in the [Data Integration](https://canvas-medical.help.usepylon.com/articles/4617508394-data-integration) module — including inbound faxes, uploaded documents, and electronic transmissions. Each event's context includes document metadata from the underlying [IntegrationTask](/sdk/data-integration-task/).
 DOCUMENT_RECEIVED  
@@ -33251,7 +33335,7 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
             "views": []
         },
         "tags": ["lab", "notifications", "tasks"],
-        "secrets": [],
+        "variables": [],
         "license": "NONE",
         "readme": "This plugin monitors incoming lab reports and creates task notifications for any abnormal lab values, ensuring they are flagged for prompt review."
     }
@@ -33345,8 +33429,8 @@ Plugin that renames Notes when locked using OpenAI and the contents of the Note.
 ##  Configuration 
 This example plugin defines the following "secrets" in the manifest file:
     ```plaintext
-        "secrets": [
-            "OPENAI_API_KEY"
+        "variables": [
+            {"name": "OPENAI_API_KEY", "sensitive": true}
         ],
     ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -33371,7 +33455,9 @@ Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admi
             "effects": [],
             "views": []
         },
-        "secrets": ["OPENAI_API_KEY"],
+        "variables": [
+            {"name": "OPENAI_API_KEY", "sensitive": true}
+        ],
         "tags": {},
         "references": [],
         "license": "",
@@ -33522,7 +33608,9 @@ Once installed, see the plugin configuration page to set credentials to make aut
             "effects": [],
             "views": []
         },
-        "secrets": ["my-api-key"],
+        "variables": [
+            {"name": "my-api-key", "sensitive": true}
+        ],
         "tags": {},
         "references": [],
         "license": "",
@@ -33611,11 +33699,11 @@ Plugin that provides a SimpleAPI for managing AWS S3 objects, including listing,
 ##  Configuration 
 This example plugin defines the following "secrets" in the manifest file:
     ```plaintext
-        "secrets": [
-            "S3Key",
-            "S3Secret",
-            "S3Region",
-            "S3Bucket"
+        "variables": [
+            {"name": "S3Key", "sensitive": true},
+            {"name": "S3Secret", "sensitive": true},
+            {"name": "S3Region", "sensitive": false},
+            {"name": "S3Bucket", "sensitive": false}
         ],
     ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -33656,11 +33744,11 @@ The name of your S3 bucket.
         "effects": [],
         "views": []
       },
-      "secrets": [
-        "S3Key",
-        "S3Secret",
-        "S3Region",
-        "S3Bucket"
+      "variables": [
+        {"name": "S3Key", "sensitive": true},
+        {"name": "S3Secret", "sensitive": true},
+        {"name": "S3Region", "sensitive": false},
+        {"name": "S3Bucket", "sensitive": false}
       ],
       "tags": {},
       "references": [],
@@ -33986,7 +34074,9 @@ Filter to notes occurring at or before the given datetime.
             "effects": [],
             "views": []
         },
-        "secrets": ["simpleapi-api-key"],
+        "variables": [
+            {"name": "simpleapi-api-key", "sensitive": true}
+        ],
         "tags": {},
         "references": [],
         "license": "",
@@ -34461,7 +34551,7 @@ The `CANVAS_MANIFEST.json` file defines attributes specific to the Application, 
             "effects": [],
             "views": []
         },
-        "secrets": [],
+        "variables": [],
         "tags": {},
         "references": [],
         "license": "",
@@ -34560,8 +34650,8 @@ Plugin that provides a SimpleAPI for intelligent document processing using the E
 ##  Configuration 
 This example plugin defines the following "secrets" in the manifest file:
     ```plaintext
-        "secrets": [
-            "ExtendAiKey"
+        "variables": [
+            {"name": "ExtendAiKey", "sensitive": true}
         ],
     ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -34596,8 +34686,8 @@ Your Extend AI API key.
         "effects": [],
         "views": []
       },
-      "secrets": [
-        "ExtendAiKey"
+      "variables": [
+        {"name": "ExtendAiKey", "sensitive": true}
       ],
       "tags": {},
       "references": [],
@@ -34780,10 +34870,10 @@ Plugin that provides a SimpleAPI for interacting with multiple LLM providers (An
 ##  Configuration 
 This example plugin defines the following "secrets" in the manifest file:
     ```plaintext
-        "secrets": [
-            "AnthropicKey",
-            "GoogleKey",
-            "OpenaiKey"
+        "variables": [
+            {"name": "AnthropicKey", "sensitive": true},
+            {"name": "GoogleKey", "sensitive": true},
+            {"name": "OpenaiKey", "sensitive": true}
         ],
     ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -34822,10 +34912,10 @@ Your [OpenAI API key](https://platform.openai.com/api-keys).
         "effects": [],
         "views": []
       },
-      "secrets": [
-        "AnthropicKey",
-        "GoogleKey",
-        "OpenaiKey"
+      "variables": [
+        {"name": "AnthropicKey", "sensitive": true},
+        {"name": "GoogleKey", "sensitive": true},
+        {"name": "OpenaiKey", "sensitive": true}
       ],
       "tags": {},
       "references": [],
@@ -35025,11 +35115,11 @@ Once the API endpoint POST action is created, test it is working with the follow
 ##  Defining and Setting Secrets 
 This example plugin defines four "secrets" in the manifest file:
     ```plaintext
-        "secrets": [
-            "PARTNER_URL_BASE",
-            "PARTNER_API_BASE_URL",
-            "PARTNER_SECRET_API_KEY",
-            "simpleapi-api-key"
+        "variables": [
+            {"name": "PARTNER_URL_BASE", "sensitive": false},
+            {"name": "PARTNER_API_BASE_URL", "sensitive": false},
+            {"name": "PARTNER_SECRET_API_KEY", "sensitive": true},
+            {"name": "simpleapi-api-key", "sensitive": true}
         ],
     ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -35064,11 +35154,11 @@ This is the authorization needed for Canvas when using APIKeyAuthMixin. [Read mo
             "effects": [],
             "views": []
         },
-        "secrets": [
-            "PARTNER_URL_BASE",
-            "PARTNER_API_BASE_URL",
-            "PARTNER_SECRET_API_KEY",
-            "simpleapi-api-key"
+        "variables": [
+            {"name": "PARTNER_URL_BASE", "sensitive": false},
+            {"name": "PARTNER_API_BASE_URL", "sensitive": false},
+            {"name": "PARTNER_SECRET_API_KEY", "sensitive": true},
+            {"name": "simpleapi-api-key", "sensitive": true}
         ],
         "tags": {},
         "references": [],
@@ -35340,7 +35430,7 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
             "effects": [],
             "views": []
         },
-        "secrets": [],
+        "variables": [],
         "tags": {},
         "references": [],
         "license": "",
@@ -35465,7 +35555,7 @@ This plugin demonstrates how to embed custom patient facing content and tools to
             "effects": [],
             "views": []
         },
-        "secrets": [],
+        "variables": [],
         "tags": {},
         "references": [],
         "license": "",
@@ -35623,9 +35713,9 @@ In order to deal with `SECRETS` take a look at the [SDK documentation](https://d
             "effects": [],
             "views": []
         },
-        "secrets": [
-            "BACKGROUND_COLOR",
-            "EMERGENCY_CONTACT"
+        "variables": [
+            {"name": "BACKGROUND_COLOR", "sensitive": false},
+            {"name": "EMERGENCY_CONTACT", "sensitive": false}
         ],
         "tags": {},
         "references": [],
@@ -35799,7 +35889,7 @@ A Canvas plugin that adds a "Send Prescriptions" button to note footers, allowin
             "effects": [],
             "views": []
         },
-        "secrets": [],
+        "variables": [],
         "tags": {},
         "references": ["https://docs.canvasmedical.com/sdk/handlers-action-buttons/", "https://docs.canvasmedical.com/sdk/commands/#prescribe"],
         "license": "",
@@ -35860,8 +35950,8 @@ Plugin that provides a SimpleAPI for sending emails, querying sent emails, manag
 ##  Configuration 
 This example plugin defines the following "secrets" in the manifest file:
     ```plaintext
-        "secrets": [
-            "SendgridAPIKey"
+        "variables": [
+            {"name": "SendgridAPIKey", "sensitive": true}
         ],
     ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -35896,8 +35986,8 @@ Your [SendGrid API key](https://docs.sendgrid.com/ui/account-and-settings/api-ke
         "effects": [],
         "views": []
       },
-      "secrets": [
-        "SendgridAPIKey"
+      "variables": [
+        {"name": "SendgridAPIKey", "sensitive": true}
       ],
       "tags": {},
       "references": [],
@@ -36294,10 +36384,10 @@ Plugin that provides a SimpleAPI for sending and receiving SMS/MMS messages usin
 ##  Configuration 
 This example plugin defines the following "secrets" in the manifest file:
     ```plaintext
-        "secrets": [
-            "TwilioAccountSID",
-            "TwilioAPIKey",
-            "TwilioAPISecret"
+        "variables": [
+            {"name": "TwilioAccountSID", "sensitive": true},
+            {"name": "TwilioAPIKey", "sensitive": true},
+            {"name": "TwilioAPISecret", "sensitive": true}
         ],
     ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -36336,10 +36426,10 @@ Your [Twilio API Key Secret](https://www.twilio.com/docs/iam/api-keys).
         "effects": [],
         "views": []
       },
-      "secrets": [
-        "TwilioAccountSID",
-        "TwilioAPIKey",
-        "TwilioAPISecret"
+      "variables": [
+        {"name": "TwilioAccountSID", "sensitive": true},
+        {"name": "TwilioAPIKey", "sensitive": true},
+        {"name": "TwilioAPISecret", "sensitive": true}
       ],
       "tags": {},
       "references": [],
@@ -36640,7 +36730,7 @@ In this example, we extract key-value pairs from a plan command's narrative and 
             "effects": [],
             "views": []
         },
-        "secrets": [],
+        "variables": [],
         "tags": {},
         "references": [],
         "license": "",
@@ -36752,7 +36842,7 @@ This SimpleAPI endpoint uses the [StaffSessionAuthMixin](/sdk/handlers-simple-ap
             "effects": [],
             "views": []
         },
-        "secrets": [],
+        "variables": [],
         "tags": [],
         "license": "NONE",
         "readme": "./README.md"
@@ -37405,7 +37495,7 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
         "effects": [],
         "views": []
       },
-      "secrets": [],
+      "variables": [],
       "tags": {},
       "references": [],
       "license": "",
@@ -38018,7 +38108,10 @@ All handlers inherit from [BaseHandler](/sdk/handlers-basehandler/), which means
     - Configuration key-value store for your plugin
     - Secrets have their keys defined in the `CANVAS_MANIFEST.json` and their values are set by the Canvas instance administrator after installing your plugin via the Canvas UI on your plugin's configuration page
   - `self.environment`
-    - Information about the Canvas instance your plugin is being executed on, like the subdomain, which we refer to as the customer identifier.
+    - Information about the Canvas instance your plugin is being executed on.
+    - Available keys: 
+      - `CUSTOMER_IDENTIFIER` — the instance's subdomain (e.g. `acme` for `acme.canvasmedical.com`).
+      - `INSTALLATION_TIME_ZONE` — the instance's configured time zone as an IANA name (e.g. `America/Los_Angeles`). Useful for rendering times to the customer's clinicians, scheduling work in their local day, or formatting dates in user-facing output.
     - Example: `self.environment['CUSTOMER_IDENTIFIER']`
 ## [ Action Button  Add a button that executes your custom code when clicked. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/ActionButton.png) ![Image of an action button in a note header.](/assets/images/sdk/handlers/action-button-in-action.png) ](/sdk/handlers-action-buttons/) ## [ Application  Launch an iframe when your icon is clicked in the app drawer. ![Abridged source code of an application implementation.](/assets/images/sdk/handlers/Application-cropped.png) ![Image of application icons in the app drawer.](/assets/images/sdk/handlers/application-applied.png) ](/sdk/handlers-applications/) ## [ Cron Task  Execute your code on a cron-like schedule. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/CronTask-cropped.png) ![Picture of Mr. Cron, the little time monster that remembers which tasks should be executed at any given time.](/assets/images/sdk/handlers/mr-cron.png) ](/sdk/handlers-crontask/) ## [ Base Handler  Respond to events with your custom code. ![Abridged source code of a base handler implementation.](/assets/images/sdk/handlers/BaseHandler-cropped.png) ![Stylized text that reads 'When X occurs, under Y conditions, I want Z to happen'.](/assets/images/sdk/handlers/base-handler-can-lend-a-hand.png) ](/sdk/handlers-basehandler/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/handlers/
@@ -39103,7 +39196,7 @@ To include a questionnaire in your plugin, add a reference to its YAML template 
                 }
             ]
         },
-        "secrets": [],
+        "variables": [],
         "tags": {},
         "references": [],
         "license": "",
@@ -39605,9 +39698,10 @@ Given these considerations, the platform maintains a strict and judicious approa
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/secrets/
-Canvas provides a secure key-value secret store that allows your plugins to access sensitive information (such as API tokens) without hardcoding them into source files. This guide explains how to define, configure, and access secrets within your plugins.
-###  Declaring Secrets in `CANVAS_MANIFEST.json`
-Secrets are declared in your plugin's `CANVAS_MANIFEST.json` file under the top-level `secrets` field. These declared secrets become available for configuration in the Canvas Admin UI when the plugin is installed.
+Canvas provides a secure key-value store that lets your plugins access configuration data — including sensitive secrets such as API tokens — without hardcoding values into source files. Configuration values are declared in your plugin's `CANVAS_MANIFEST.json` as **variables** , set at install time or through the Admin UI, and read from `self.secrets` at runtime.
+Each variable can be marked **sensitive** (treated like a secret: not displayed in admin or CLI listings) or **non-sensitive** (a regular configuration value, displayed in plaintext for verification).
+###  Declaring variables in `CANVAS_MANIFEST.json`
+Declare each variable as an object with a `name` and an optional `sensitive` flag (defaults to `false`):
     ```json
     {
       "sdk_version": "0.1.4",
@@ -39622,47 +39716,66 @@ Secrets are declared in your plugin's `CANVAS_MANIFEST.json` file under the top-
           }
         ]
       },
-      "secrets": ["API_TOKEN"],
+      "variables": [
+        {"name": "API_TOKEN", "sensitive": true},
+        {"name": "LOG_LEVEL", "sensitive": false}
+      ],
       "tags": {}
     }
     ```
-###  Configuring Secrets in the Admin UI 
-Once your plugin is installed, you can update secret values through the Admin interface:
+####  Legacy `secrets` array (deprecated) 
+The flat `secrets` array is still accepted for backwards compatibility:
+    ```json
+    "secrets": ["API_TOKEN"]
+    ```
+It emits a deprecation warning during `canvas validate-manifest` and is mapped internally to `variables` entries with `sensitive: false`. To preserve sensitive treatment, migrate to the `variables` schema with `sensitive: true` and re-install the plugin.
+> ⚠️ **Pre-existing values default to non-sensitive.** Any plugin secret that existed before Canvas 1.305.0 — or any value configured via the legacy `secrets:` array — is stored with `sensitive: false`. It will appear in plain text in the Admin UI until the owning plugin is migrated to the `variables` schema with `sensitive: true` and re-installed.
+###  Configuring values from the CLI 
+Set values during install or update them later. Use `--variable` for non-sensitive values and `--secret` for sensitive values; both flags accept `KEY=value` pairs.
+Provide values during install:
+    ```console
+    $ canvas install <plugin_name> --secret API_TOKEN=your_api_token_value --variable LOG_LEVEL=info
+    ```
+Update values on an installed plugin:
+    ```console
+    $ canvas config set <plugin_name> API_TOKEN=abc123 LOG_LEVEL=warn
+    ```
+Pass multiple values by repeating the flag:
+    ```console
+    $ canvas install <plugin_name> \
+      --secret API_TOKEN=abc123 \
+      --secret WEBHOOK_SECRET=xyz \
+      --variable LOG_LEVEL=info
+    ```
+####  Listing configured values 
+Run `canvas config list <plugin_name>` to see which variables are configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed in the listing.
+    ```console
+    $ canvas config list my_plugin
+      API_TOKEN  [set]  (sensitive)
+      LOG_LEVEL  [not set]
+    ```
+To read a value, use the Django Admin UI (access is gated by managing-user permissions).
+> _The`--variable` flag, `canvas config list` sensitive marking, and Admin UI masking require Canvas CLI 0.146.0 or newer. Upgrade with `pip install --upgrade canvas`._
+###  Configuring values in the Admin UI 
+After install you can also set values through the Admin interface.
 Navigation path: `Home` › `Plugin_IO` › `Plugins` › `(your plugin)`
 Or, go directly to:
     https://<your_canvas_instance>/admin/plugin_io/plugin/<plugin_id>/change/
-On this page, you will find input fields for each secret defined in your manifest.
+On this page, you will find input fields for each variable declared in your manifest. Sensitive values display as `SENSITIVE` and are no longer rendered in the form HTML — submit a new value to overwrite, or leave the field blank to keep the existing value. Non-sensitive values display their current value and can be edited inline.
 ![Setting plugin secrets](/assets/images/sdk/secrets/plugins_secrets_settings_with_permissions.png)
-Plugin secrets can be protected by managing user permissions. Only users explicitly assigned as "managing users" for a plugin can view or modify its secrets (as well as other sensitive settings like the plugin package file download link). Other users can see basic plugin details and enable or disable plugins, but they will not be able to access or change secret values. To add or remove managing users for a plugin, use the "Managing users" section on the plugin detail page in the Admin UI. This ensures that sensitive configuration, such as API tokens, remains visible only to authorized personnel.
-###  Configuring Secrets in the CLI 
-You can set secrets either after a plugin is installed or as part of the install. Secrets must be listed under the secrets field in the plugin's `CANVAS_MANIFEST.json`.
-Set (or update) secrets on an installed plugin:
-    ```console
-    $ canvas config set <plugin_name> API_TOKEN=your_api_token_value
-    ```
-Provide secrets during install:
-    ```console
-    $ canvas install <plugin_name> --secret API_TOKEN=your_api_token_value
-    ```
-Set multiple secrets:
-    ```console
-    # Pass multiple key=value pairs. 
-    $ canvas config set <plugin_name> API_TOKEN=abc123 OTHER_KEY=xyz
-    # For installs, repeat --secret
-    $ canvas install <plugin_name> \
-      --secret API_TOKEN=abc123 \
-      --secret OTHER_KEY=xyz
-    ```
-###  Accessing Secrets in Your Plugin 
-Secrets defined in your manifest and configured in the admin UI are exposed to your plugin code through the `self.secrets`. This is a Python dictionary containing all secret values.
+Plugin secret access can be protected by managing user permissions. Only users explicitly assigned as "managing users" for a plugin can view or modify its values (as well as other sensitive settings like the plugin package file download link). Other users can see basic plugin details and enable or disable plugins, but they will not be able to access or change values. To add or remove managing users for a plugin, use the "Managing users" section on the plugin detail page in the Admin UI.
+###  Accessing values in your plugin 
+All variables and secrets — sensitive and non-sensitive alike — are exposed to your plugin code through `self.secrets`, a Python dictionary keyed by variable name:
     ```python
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects import Effect
     class MyHandler(BaseHandler):
         def compute(self) -> list[Effect]:
             api_token = self.secrets["API_TOKEN"]
+            log_level = self.secrets["LOG_LEVEL"]
             ...
     ```
+This access pattern is unchanged from earlier Canvas versions, so migrating a plugin from the legacy `secrets:` array to the new `variables:` schema requires no handler code changes.
 ----- END PAGE https://docs.canvasmedical.com/sdk/secrets/
 
 
