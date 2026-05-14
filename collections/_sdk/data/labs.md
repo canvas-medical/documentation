@@ -70,6 +70,39 @@ for value in lab_values:
     log.info(lab_value_codings)
 ```
 
+### Ordered vs. result tests
+
+A `LabReport` references two kinds of `LabTest` rows, and `LabReport` exposes each as its own property:
+
+- **`ordered_tests`**: `LabTest` rows created when a `LabOrder` is placed. These represent the tests that were requested and are not associated with any `LabValue` records.
+- **`result_tests`**: `LabTest` rows created for the results themselves. For FHIR `DiagnosticReport` and Health Gorilla ingested reports, `LabValue` records are attached to these tests.
+
+```python
+from canvas_sdk.v1.data.lab import LabReport
+
+lab_report = LabReport.objects.get(id="bcd287b7-8b04-4540-a1ea-6529eb576565")
+
+for test in lab_report.ordered_tests:
+    print(f"Ordered: {test.ontology_test_name}")
+
+for test in lab_report.result_tests:
+    print(f"Result: {test.ontology_test_name}")
+    for value in test.values.all():
+        print(f"  {value.value} {value.units}")
+```
+
+When iterating many reports at once, the `LabReport` queryset exposes `with_result_tests_and_values()` to prefetch each report's result tests (with their values) and the report's full value list in bulk:
+
+```python
+from canvas_sdk.v1.data.lab import LabReport
+
+reports = (
+    LabReport.objects
+    .filter(patient__id="patient-id")
+    .with_result_tests_and_values()
+)
+```
+
 To query all lab reports for a particular patient, the `patient` argument can be used:
 
 ```python
@@ -294,6 +327,7 @@ for report in lab_reports:
 | entered_in_error     | [CanvasUser](/sdk/data-canvasuser)    |
 | deleted              | Boolean                               |
 | values               | [LabValue](#labvalue)[]               |
+| tests                | [LabTest](#labtest)[]                 |
 
 ### LabReview
 
@@ -333,6 +367,7 @@ for report in lab_reports:
 | high_threshold     | String                              |
 | comment            | String                              |
 | observation_status | String                              |
+| test               | [LabTest](#labtest)                 |
 | codings            | [LabValueCoding](#labvaluecoding)[] |
 
 ### LabValueCoding
@@ -432,6 +467,7 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 | order                       | [LabOrder](#laborder)                     |
 | aoe_code                    | String                                    |
 | procedure_class             | String                                    |
+| values                      | [LabValue](#labvalue)[]                   |
 
 ## Enumeration types
 
