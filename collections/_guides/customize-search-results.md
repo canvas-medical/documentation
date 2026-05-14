@@ -50,7 +50,7 @@ from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
     def compute(self):
@@ -99,7 +99,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
     def compute(self):
