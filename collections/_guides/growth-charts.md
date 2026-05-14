@@ -225,7 +225,7 @@ from canvas_sdk.templates import render_to_string
 who_boys_length_age = ... # from growth_charts.graphs.who_boys_length_age
 
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     def compute(self):
         # list of graphs
         length_for_age = {} # filled in the actual implementation, see linked GitHub repository
