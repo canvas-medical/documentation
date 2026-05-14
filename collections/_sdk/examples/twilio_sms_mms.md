@@ -15,10 +15,10 @@ Plugin that provides a SimpleAPI for sending and receiving SMS/MMS messages usin
 This example plugin defines the following "secrets" in the manifest file:
 
 ```
-    "secrets": [
-        "TwilioAccountSID",
-        "TwilioAPIKey",
-        "TwilioAPISecret"
+    "variables": [
+        {"name": "TwilioAccountSID", "sensitive": true},
+        {"name": "TwilioAPIKey", "sensitive": true},
+        {"name": "TwilioAPISecret", "sensitive": true}
     ],
 ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -62,10 +62,10 @@ Your [Twilio API Key Secret](https://www.twilio.com/docs/iam/api-keys).
     "effects": [],
     "views": []
   },
-  "secrets": [
-    "TwilioAccountSID",
-    "TwilioAPIKey",
-    "TwilioAPISecret"
+  "variables": [
+    {"name": "TwilioAccountSID", "sensitive": true},
+    {"name": "TwilioAPIKey", "sensitive": true},
+    {"name": "TwilioAPISecret", "sensitive": true}
   ],
   "tags": {},
   "references": [],
