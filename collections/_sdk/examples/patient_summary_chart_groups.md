@@ -38,7 +38,7 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
         "effects": [],
         "views": []
     },
-    "secrets": [],
+    "variables": [],
     "tags": {},
     "references": [],
     "license": "",

@@ -183,17 +183,22 @@ auth token. Here's what the manifest file looks like with secrets declared:
             }
        ]
     },
-    "secrets": ["WEBHOOK_ID", "AUTH_TOKEN"],
+    "variables": [
+        {"name": "WEBHOOK_ID", "sensitive": true},
+        {"name": "AUTH_TOKEN", "sensitive": true}
+    ],
     "tags": {},
     "license": "",
     "readme": "./README.md"
 }
 ```
 
-The line `"secrets": ["WEBHOOK_ID", "AUTH_TOKEN"],` declares two secrets,
-`WEBHOOK_ID` and `AUTH_TOKEN`. After we update the plugin, we can set values
-for these in the plugin configuration page. This allows for different values
-to be used across different installations.
+The `variables` array declares two sensitive variables, `WEBHOOK_ID` and
+`AUTH_TOKEN`. After we update the plugin, we can set values for these in
+the plugin configuration page. This allows for different values to be used
+across different installations. Marking each entry with `"sensitive": true`
+means the values will be masked in the Admin UI and listed only as `[set]`
+or `[not set]` by `canvas config list`.
 
 Here's how that configuration looks:
 
