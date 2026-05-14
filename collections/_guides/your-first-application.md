@@ -59,7 +59,7 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
         "effects": [],
         "views": []
     },
-    "secrets": [],
+    "variables": [],
     "tags": {},
     "references": [],
     "license": "",
