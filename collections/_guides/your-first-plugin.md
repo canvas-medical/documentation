@@ -126,7 +126,9 @@ installation of the plugin.
         "effects": [],
         "views": []
     },
-    "secrets": ["my_secret_code"],
+    "variables": [
+        {"name": "my_secret_code", "sensitive": true}
+    ],
     "tags": {},
     "references": [],
     "license": "",
