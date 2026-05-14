@@ -39,8 +39,8 @@ INTAKE_QUESTIONNAIRES = [
 ]
 
 
-class Protocol(BaseHandler):
-  """Protocol for processing Patient Portal form requests and generating form effects."""
+class Handler(BaseHandler):
+  """Handler for processing Patient Portal form requests and generating form effects."""
 
   RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_FORMS)
 
@@ -97,9 +97,9 @@ class Protocol(BaseHandler):
 3. If applicable, the response can create a Questionnaire Command inside a Note using the [form result effect](/sdk/form-result-effect/).
 4. The developer is responsible for ensuring that forms do not persist unnecessarily.
 
-## Adding Form Logic in a Protocol Handler
+## Adding Form Logic in a Handler
 
-We define a **Protocol** that listens for `PATIENT_PORTAL__GET_FORMS` events and determines which forms need to be
+We define a **Handler** that listens for `PATIENT_PORTAL__GET_FORMS` events and determines which forms need to be
 displayed.
 
 
