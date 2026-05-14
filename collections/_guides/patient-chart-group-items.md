@@ -32,7 +32,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.commands.constants import CodeSystems
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__CONDITIONS)
 
     def compute(self) -> list[Effect]:
