@@ -41,7 +41,7 @@ Here's an example of a complete plugin showcasing the different input types.
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
     # Inherit from BaseHandler to properly get registered for events
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.APPOINTMENT__FORM__GET_ADDITIONAL_FIELDS)
         def compute(self) -> list[Effect]:
             form = AppointmentsMetadataCreateFormEffect(form_fields=[
@@ -88,7 +88,7 @@ The code below listens for the `TASK_CREATED` event and logs the string "A Task 
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
     from logger import log
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         """
         When a task is created, log a message
         """
@@ -105,9 +105,9 @@ After you've [installed your plugin](/sdk/canvas_cli/#canvas-install) and create
     ```sh
     INFO 2024-09-26 17:04:08,396 Starting server, listening on port 50051
     INFO 2024-09-26 17:04:08,396 Loading custom-plugins/task_webhook
-    INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.event_handlers:Protocol'
+    INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
     INFO 2024-09-26 17:04:24,410 A Task was created!
-    INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.event_handlers:Protocol.compute() completed (0 ms)
+    INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.event_handlers:Handler.compute() completed (0 ms)
     INFO 2024-09-26 17:04:24,411 Responded to Event TASK_CREATED (1 ms)
     ```
 Awesome! But we're not here to log, we need to make an API request. To do that, we need to use the HTTP client found in the Canvas SDK's [Utils module](/sdk/utils/)
@@ -118,7 +118,7 @@ We can use <https://webhook.site/> for a quick way to test our webhook and see t
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.utils import Http
     from logger import log
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         """
         When a task is created, hit a webhook
         """
@@ -142,9 +142,9 @@ We can use <https://webhook.site/> for a quick way to test our webhook and see t
 After you've [installed your updated plugin](/sdk/canvas_cli/#canvas-install) and created a task, you should see this in your log stream:
     ```sh
     INFO 2024-09-26 17:18:23,206 Loading custom-plugins/task_webhook
-    INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.event_handlers:Protocol'
+    INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
     INFO 2024-09-26 17:18:33,850 Successfully notified API of task creation!
-    INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.event_handlers:Protocol.compute() completed (693 ms)
+    INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.event_handlers:Handler.compute() completed (693 ms)
     INFO 2024-09-26 17:18:33,851 Responded to Event TASK_CREATED (696 ms)
     ```
 This log output is a great reminder for me to mention that making HTTP requests to external servers will slow plugin execution while it waits on the external server to respond. It's a good idea to make sure the servers you're hitting have a sufficiently quick response time.
@@ -153,7 +153,7 @@ request](/assets/images/webhook-guide/webhook-guide-first-request.png)
 Awesome, but you aren't sending these requests to a server that allows unauthenticated requests! And this request doesn't even tell you anything about the task it's notifying you about. This isn't useful at all!
 Let's do another iteration, this time using the information provided along with the event so that we can send a usable message, securely. We're specifically going to incorporate the event's `target` and `secrets`.
 ###  Make an authenticated HTTP request that includes the newly created Task's ID 
-Within your `Protocol` class, you have access to `self.target`, which represents the ID of the subject of the event. In our case, it will be the Task's ID. This is the same ID used in the [FHIR Task endpoints](/api/task/), so you can use it to make FHIR API requests.
+Within your `Handler` class, you have access to `self.target`, which represents the ID of the subject of the event. In our case, it will be the Task's ID. This is the same ID used in the [FHIR Task endpoints](/api/task/), so you can use it to make FHIR API requests.
 You also have access to `self.secrets`, which is a python dictionary containing the key-value pairs from your plugins configuration page. You declare the keys in your `CANVAS_MANIFEST.json`, and can then set the values after the plugin is installed.
 We'll set two secrets, one for the unique id of the webhook, and one for an auth token. Here's what the manifest file looks like with secrets declared:
     ```json
@@ -165,7 +165,7 @@ We'll set two secrets, one for the unique id of the webhook, and one for an auth
         "components": {
             "handlers": [
                 {
-                    "class": "task_webhook.handlers.event_handlers:Protocol",
+                    "class": "task_webhook.handlers.event_handlers:Handler",
                     "description": "Hit an API when a task is created",
                     "data_access": {
                         "event": "",
@@ -194,7 +194,7 @@ With those values set, we can use them in our code:
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.utils import Http
     from logger import log
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         """
         When a task is created, hit a webhook
         """
@@ -229,7 +229,7 @@ A single plugin handler can listen for multiple event types. The event type will
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.utils import Http
     from logger import log
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         """
         When a task is created or updated, hit a webhook
         """
@@ -285,7 +285,7 @@ Modify your handler to handle the widget configuration event. For example:
     from canvas_sdk.effects.widgets import PortalWidget
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
         def compute(self):
             widget = PortalWidget(
@@ -448,7 +448,7 @@ Update your plugin's `compute` method to pass the desired values for medication 
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.templates import render_to_string
     from canvas_sdk.v1.data import Patient
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
         def compute(self):
             patient = Patient.objects.get(id=self.target)
@@ -641,7 +641,7 @@ Here's the code in its entirety:
     from canvas_sdk.events import EventType
     from canvas_sdk.effects import Effect, EffectType
     from canvas_sdk.handlers import BaseHandler
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
         def compute(self):
             results = self.context.get("results")
@@ -680,7 +680,7 @@ This code can be broken down into the following sections:
     ```python
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
         def compute(self):
             results = self.context.get("results")
@@ -899,7 +899,7 @@ Finally, we create a list of graphs with the necessary variables and data, which
     from canvas_sdk.handlers.base import BaseHandler
     from canvas_sdk.templates import render_to_string
     who_boys_length_age = ... # from growth_charts.graphs.who_boys_length_age
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         def compute(self):
             # list of graphs
             length_for_age = {} # filled in the actual implementation, see linked GitHub repository
@@ -945,7 +945,7 @@ Here's an example of a plugin that groups conditions based on their codes - here
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.commands.constants import CodeSystems
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_CHART__CONDITIONS)
         def compute(self) -> list[Effect]:
             groups: dict[str, Group] = {}
@@ -1011,8 +1011,8 @@ This example assigns intake questionnaires based on the presence of upcoming app
       "Preferred Pharmacy Details",
       "Social History",
     ]
-    class Protocol(BaseHandler):
-      """Protocol for processing Patient Portal form requests and generating form effects."""
+    class Handler(BaseHandler):
+      """Handler for processing Patient Portal form requests and generating form effects."""
       RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_FORMS)
       def _get_upcoming_appointment_note_id(self, appointments, note_type_names):
         """Retrieve the note_id for the first confirmed future appointment matching given note type names."""
@@ -1055,8 +1055,8 @@ This example assigns intake questionnaires based on the presence of upcoming app
      - **Previously completed forms**
   3. If applicable, the response can create a Questionnaire Command inside a Note using the [form result effect](/sdk/form-result-effect/).
   4. The developer is responsible for ensuring that forms do not persist unnecessarily.
-##  Adding Form Logic in a Protocol Handler 
-We define a **Protocol** that listens for `PATIENT_PORTAL__GET_FORMS` events and determines which forms need to be displayed.
+##  Adding Form Logic in a Handler 
+We define a **Handler** that listens for `PATIENT_PORTAL__GET_FORMS` events and determines which forms need to be displayed.
 ##  Best Practices 
   - **Prevent Duplicate Forms:** Since this logic runs on every page load, check **existing responses** before assigning new forms.
 ##  Summary 
@@ -1108,7 +1108,7 @@ Here's an example of a complete plugin showcasing the different input types.
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
     # Inherit from BaseHandler to properly get registered for events
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_METADATA__GET_ADDITIONAL_FIELDS)
         def compute(self) -> list[Effect]:
             form = PatientMetadataCreateFormEffect(form_fields=[
@@ -1217,13 +1217,13 @@ Each section contains specific information that can be parsed. For example:
 ###  AI Scribe Plugin Architecture 
 Once the content is pasted in, the plugin does the rest. Here's how.
 ####  1\. Handler Class 
-The `Protocol` class intercepts events and processes the transcript using a parser.
+The `Handler` class intercepts events and processes the transcript using a parser.
     ```python
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
     class ScribeParser: ...  # explained in section 2 below, "ScribeParser"
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         """A Plugin for interpreting transcripts."""
         RESPONDS_TO = EventType.Name(EventType.CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE)
         def compute(self) -> list[Effect]:
@@ -1320,13 +1320,13 @@ To replace `ScribeParser`, define your custom parser.
             # Implement custom parsing logic
             ...
     ```
-Replace the parser in the `Protocol` class:
+Replace the parser in the `Handler` class:
     ```python
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects import Effect
     class CustomParser: ... # defined above
-    class Protocol(BaseHandler):
-        """Protocol using a custom parser."""
+    class Handler(BaseHandler):
+        """Handler using a custom parser."""
         def compute(self) -> list[Effect]:
             transcript = self.context["fields"]["text"]
             parser = CustomParser()  # Use custom parser
@@ -1949,7 +1949,7 @@ The CANVAS_MANIFEST.json is particularly important. It is used during the instal
         "components": {
             "handlers": [
                 {
-                    "class": "paperwork_eviscerator.handlers.event_handlers:Protocol",
+                    "class": "paperwork_eviscerator.handlers.event_handlers:Handler",
                     "description": "A handler that does xyz...",
                     "data_access": {
                         "event": "",
@@ -1985,7 +1985,7 @@ This file contains the handler class declared in the manifest file. We've includ
     from canvas_sdk.handlers import BaseHandler
     from logger import log
     # Inherit from BaseHandler to properly get registered for events
-    class Protocol(BaseHandler):
+    class Handler(BaseHandler):
         """
         You should put a helpful description of this handler's behavior here.
         """
@@ -35439,7 +35439,7 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
     }
     ```
 ##  handlers/ 
-###  my_protocol.py 
+###  my_handler.py 
 This file defines two custom handlers, `Conditions` and `Medications`, using the Canvas SDK. These handlers listen for specific events related to a patient's medical chart and group relevant diagnoses or medications into a "Psychiatry" category, returning these as effects for further processing or display in the Canvas UI.
 **Section:`Conditions` Handler**
   - Inherits from `BaseHandler`.
@@ -37573,9 +37573,9 @@ The Canvas SDK provides a way to define an HTTP API with any number of endpoints
 This feature allows developers to create endpoints that can receive webhook events from other services. An endpoint receiving a request can invoke Effects in a Canvas instance, send another request to a different service, or simply return a response back to the requester.
 ##  Quickstart 
 Follow the instructions in [Your First Plugin (with Claude Code)](https://docs.canvasmedical.com/guides/your-first-plugin-with-claude-code/) to create a plugins project. For this exercise, use `my_api` as your project (i.e. plugin) name.
-Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and class names as you see fit in your project, but for this exercise, we are just going to set the value at `components -> handlers -> 0 -> class` to be `my_api.handlers.my_protocol:MyAPI`.
+Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and class names as you see fit in your project, but for this exercise, we are just going to set the value at `components -> handlers -> 0 -> class` to be `my_api.handlers.my_handler:MyAPI`.
 We're going to need a secret value for authentication. The instructions for declaring secrets are outlined on the [Your First Plugin (Manual)](https://docs.canvasmedical.com/guides/your-first-plugin/) page. Declare a secret in `CANVAS_MANIFEST.json` named `my-api-key`.
-Open `my_api/handlers/my_protocol.py` and replace the contents of the file with this code:
+Open `my_api/handlers/my_handler.py` and replace the contents of the file with this code:
     ```python
     from hmac import compare_digest
     from canvas_sdk.effects import Effect
