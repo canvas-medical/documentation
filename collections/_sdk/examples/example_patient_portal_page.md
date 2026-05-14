@@ -42,7 +42,7 @@ This plugin demonstrates how to embed custom patient facing content and tools to
         "effects": [],
         "views": []
     },
-    "secrets": [],
+    "variables": [],
     "tags": {},
     "references": [],
     "license": "",
