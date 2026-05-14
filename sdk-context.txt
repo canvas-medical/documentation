@@ -5302,6 +5302,7 @@ Name | Type | Required | Description
 `note_uuid` | _string_ | `true` if creating a new command | The externally exposable id of the note in which to insert the command.  
 `command_uuid` | _string_ | `true` if updating an existing command | The externally exposable id of the command which is being referenced.  
 All parameters can be set upon initialization, and also updated on the class instance.
+The **Required to** column (depending on the command's terminal action) in each command's parameter table below indicates whether a field must be set in order for the server to accept that terminal action. It does **not** mean the field is required to instantiate the class or to call `.originate()` or `.edit()`. You can create a command with every other field empty and the command appears in the note as fresh command, mirroring how a clinician picks a command from the menu in the UI and leaves it unfilled until they're ready to finalize it.
 ###  Methods 
 All commands have the following methods:
 ####  originate 
@@ -5648,7 +5649,7 @@ Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 * * *
 ##  AdjustPrescription 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to review / send | Description  
 ---|---|---|---  
 `new_fdb_code` | _string_ | `true` | The [FDB code](/sdk/utils/#fdb_code) of the new medication.  
 Check the Prescribe command for the other parameters used in the Adjust Prescription command.
@@ -5677,7 +5678,7 @@ Check the Prescribe command for the other parameters used in the Adjust Prescrip
 * * *
 ##  Allergy 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `allergy` | _Allergen_ | `false` | Represents the allergen. See details in the Allergen type below.  
 `severity` | _Severity enum_ | `false` | The severity of the allergic reaction. Must be one of `AllergyCommand.Severity`.  
@@ -5714,7 +5715,7 @@ Severity | Description
 * * *
 ##  Assess 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `condition_id` | _string_ | `true` | The externally exposable id of the condition being assessed.  
 `background` | _string_ | `false` | Background information about the diagnosis.  
@@ -5739,7 +5740,7 @@ DETERIORATED | "deteriorated"
 * * *
 ##  ChangeMedication 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `medication_id` | _string_ | `true` | Externally exposable id of the patient's medication being changed.  
 `sig` | _string_ | `false` | Administration details of the medication.  
@@ -5755,7 +5756,7 @@ Name | Type | Required | Description
 * * *
 ##  CloseGoal 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `goal_id` | _int_ | `true` | The externally exposable ID of the goal being closed.  
 `achievement_status` | _AchievementStatus enum_ | `false` | The final achievement status of the goal. Must be one of `GoalCommand.AchievementStatus`.  
@@ -5772,7 +5773,7 @@ Name | Type | Required | Description
     ```
 ##  Diagnose 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `icd10_code` | _string_ | `true` | ICD-10 code of the condition being diagnosed.  
 `background` | _string_ | `false` | Background information about the diagnosis.  
@@ -5793,7 +5794,7 @@ Name | Type | Required | Description
 * * *
 ##  FamilyHistory 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `family_history` | _string_ or _Coding_ | `true` | A description of the family history being documented.  
 `relative` | _string_ | `false` | A description of the relative (e.g., mother, uncle).  
@@ -5841,7 +5842,7 @@ The `relative` parameter also searches and selects the first result when a strin
 * * *
 ##  FollowUp 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `structured` | _boolean_ | `false` | Whether the RFV is structured or not. Defaults to False.  
 `requested_date` | _date_ | `false` | The desired follow up date.  
@@ -5879,7 +5880,7 @@ Name | Type | Required | Description
 * * *
 ##  Goal 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `goal_statement` | _string_ | `true` | Description of the goal.  
 `start_date` | _datetime_ | `false` | The date the goal begins.  
@@ -5920,7 +5921,7 @@ LOW | "low-priority"
 * * *
 ##  HistoryOfPresentIllness 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `narrative` | _string_ | `true` | The narrative of the patient's history of present illness.  
 **Example** :
@@ -5934,7 +5935,7 @@ Name | Type | Required | Description
 * * *
 ##  ImagingOrder 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to delegate / sign | Description  
 ---|---|---|---  
 `image_code` | _string_ | `true` | Code identifier of the imaging order.  
 `diagnosis_codes` | _list[string]_ | `true` | ICD-10 Diagnosis codes justifying the imaging order.  
@@ -5984,7 +5985,7 @@ Priority | Description
 * * *
 ##  ImagingReview 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `report_ids` | _list[string]_ | `true` | List of imaging report IDs to review.  
 `message_to_patient` | _string_ | `false` | Message to communicate findings to the patient.  
@@ -6020,7 +6021,7 @@ Communication Method | Value | Description
 * * *
 ##  ImmunizationStatement 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `cpt_code` | _string_ or _Coding_ | `false`* | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation.  
 `cvx_code` | _string_ or _Coding_ | `false`* | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation.  
@@ -6077,7 +6078,7 @@ The `unstructured` parameter:
 * * *
 ##  Instruct 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `coding` | **Coding** | `true` | The SNOMED code or UNSTRUCTURED code that represents the instruction.  
 `comment` | _string_ | `false` | Additional comments related to the instruction.  
@@ -6106,7 +6107,7 @@ The `LabOrderCommand` is used to initiate a lab order through the Canvas system.
   - Only lab partners with electronic ordering enabled support the `send()` method.
   - The command must be committed/signed before it can be sent electronically.
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to send | Description  
 ---|---|---|---  
 `lab_partner` | _string_ | `true` | The lab partner processing the order. Accepts either the lab partner's name or its unique identifier (ID).  
 `tests_order_codes` | _list[string]_ | `true` | A list of codes or IDs for the tests being ordered. The system verifies that each provided value corresponds to an available test for the specified lab partner.  
@@ -6150,7 +6151,7 @@ Action Name | Available When | Description
 * * *
 ##  LabReview 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `report_ids` | _list[string]_ | `true` | List of lab report IDs to review.  
 `message_to_patient` | _string_ | `false` | Message to communicate findings to the patient.  
@@ -6186,7 +6187,7 @@ Communication Method | Value | Description
 * * *
 ##  MedicalHistory 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `past_medical_history` | _string_ | `true` | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below).  
 `approximate_start_date` | _date_ | `false` | Approximate start date of the condition.  
@@ -6216,7 +6217,7 @@ Name | Type | Required | Description
 * * *
 ##  MedicationStatement 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `fdb_code` | _string_ or _Coding_ | `true` | The [FDB code](/sdk/utils/#fdb_code) of the medication  
 `sig` | _string_ | `false` | Administration details of the medication.  
@@ -6259,7 +6260,7 @@ The `fdb_code` parameter accepts either:
 * * *
 ##  SurgicalHistory 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `past_surgical_history` | _string_ or _Coding_ | `true` | A description of the past surgical procedure.  
 `approximate_date` | _date_ | `false` | Approximate date of the surgery.  
@@ -6304,7 +6305,7 @@ The `past_surgical_history` parameter accepts either:
 * * *
 ##  Perform 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `cpt_code` | _string_ or _Coding_ | `true` | The CPT code of the procedure or action performed.  
 `notes` | _string_ | `false` | Additional notes related to the performed procedure.  
@@ -6345,7 +6346,7 @@ The `cpt_code` parameter accepts either:
 * * *
 ##  Plan 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `narrative` | _string_ | `true` | The narrative of the patient's plan.  
 **Example** :
@@ -6362,7 +6363,7 @@ Name | Type | Required | Description
   - A pharmacy must be specified on the command before it can be sent.
   - The command must be committed/signed before it can be sent electronically.
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to review / send | Description  
 ---|---|---|---  
 `fdb_code` | _string_ | `false`* | The [FDB code](/sdk/utils/#fdb_code) of the medication.  
 `compound_medication_id` | _string_ | `false`* | The ID of an existing compound medication to prescribe.  
@@ -6489,7 +6490,7 @@ Note: `type_to_dispense` should not be provided for compound medications as this
 * * *
 ##  PhysicalExam 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The externally exposable id of the questionnaire being answered by the patient.  
 ###  Toggle Questions Feature 
@@ -6598,7 +6599,7 @@ In addition to the basic parameters, this command supports a dynamic response in
   - **Radio questions (TYPE_RADIO):** Accept a keyword argument `option` (a `ResponseOption` instance); only one option may be selected.
   - **Checkbox questions (TYPE_CHECKBOX):** Accept a keyword argument `option` (a `ResponseOption` instance) along with an optional boolean `selected` (defaulting to True) and an optional string `comment`. Multiple responses can be recorded.
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The externally exposable id of the questionnaire being answered by the patient.  
 **Example** :
@@ -6691,7 +6692,7 @@ Name | Type | Required | Description
     ```
 ##  Refer 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to delegate / sign | Description  
 ---|---|---|---  
 `service_provider` | _ServiceProvider_ | `true` | The service provider associated with the referral command.  
 `diagnosis_codes` | _list[string]_ | `true` | A list of relevant ICD-10 Diagnosis.  
@@ -6748,7 +6749,7 @@ DIAGNOSTIC_UNCERTAINTY | Diagnostic Uncertainty
 * * *
 ##  ReferralReview 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `report_ids` | _list[string]_ | `true` | List of referral report IDs to review.  
 `message_to_patient` | _string_ | `false` | Message to communicate findings to the patient.  
@@ -6810,7 +6811,7 @@ Check the Prescribe command for the parameters used in the Refill command.
 * * *
 ##  RemoveAllergy 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `allergy_id` | _string_ | `true` | The external ID of the allergy to remove.  
 `narrative` | _string_ | `false` | Additional context or narrative for the removal.  
@@ -6825,7 +6826,7 @@ Name | Type | Required | Description
 * * *
 ##  Resolve Condition 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `condition_id` | _string_ | `true` | The externally exposable id of the condition being resolved.  
 `show_in_condition_list` | _boolean_ | `false` | Determines whether the condition remains visible in patient chart summary.  
@@ -6845,7 +6846,7 @@ Name | Type | Required | Description
 * * *
 ##  Review of Systems 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The externally exposable id of the questionnaire being answered by the patient.  
 ###  Toggle Questions Feature 
@@ -6895,7 +6896,7 @@ Method | Parameters | Returns | Description
 * * *
 ##  StopMedication 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `medication_id` | _string_ | `true` | Externally exposable id of the patient's medication being stopped.  
 `rationale` | _string_ | `false` | The reason for stopping the medication.  
@@ -6911,7 +6912,7 @@ Name | Type | Required | Description
 * * *
 ##  StructuredAssessment 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The externally exposable id of the questionnaire being answered by the patient.  
 **Example** :
@@ -6926,7 +6927,7 @@ Name | Type | Required | Description
 * * *
 ##  Task 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `title` | _string_ | `true` | The title or summary of the task.  
 `assign_to` | _TaskAssigner_ | `true` | Specifies the assignee (role, team, or individual).  
@@ -6963,7 +6964,7 @@ AssigneeType | Value | Description
 * * *
 ##  UncategorizedDocumentReview 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `report_ids` | _list[string]_ | `true` | List of uncategorized document IDs to review.  
 `message_to_patient` | _string_ | `false` | Message to communicate findings to the patient.  
@@ -6999,7 +7000,7 @@ Communication Method | Value | Description
 * * *
 ##  UpdateDiagnosis 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `condition_code` | _string_ | `true` | The ICD-10 code of the existing diagnosis to update.  
 `new_condition_code` | _string_ | `true` | The new condition ICD-10 code to replace the existing diagnosis.  
@@ -7019,7 +7020,7 @@ Name | Type | Required | Description
 * * *
 ##  UpdateGoal 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `goal_id` | _string_ | `true` | Externally exposable id of the goal being updated.  
 `due_date` | _datetime_ | `false` | The date the goal is due.  
@@ -7058,7 +7059,7 @@ LOW | "low-priority"
 * * *
 ##  Vitals 
 **Command-specific parameters** :
-Name | Type | Required | Description  
+Name | Type | Required to commit | Description  
 ---|---|---|---  
 `height` | _integer_ | `false` | Height in inches.  
 `weight_lbs` | _integer_ | `false` | Weight in pounds.  
