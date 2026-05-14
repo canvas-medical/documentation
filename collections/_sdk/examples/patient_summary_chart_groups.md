@@ -49,7 +49,7 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
 
 ## handlers/
 
-### my_protocol.py
+### my_handler.py
 
 This file defines two custom handlers, `Conditions` and `Medications`, using the Canvas SDK. These handlers listen for specific events related to a patient's medical chart and group relevant diagnoses or medications into a "Psychiatry" category, returning these as effects for further processing or display in the Canvas UI.
 
