@@ -37,11 +37,11 @@ curl --request POST \
 This example plugin defines four "secrets" in the manifest file:
 
 ```
-    "secrets": [
-        "PARTNER_URL_BASE",
-        "PARTNER_API_BASE_URL",
-        "PARTNER_SECRET_API_KEY",
-        "simpleapi-api-key"
+    "variables": [
+        {"name": "PARTNER_URL_BASE", "sensitive": false},
+        {"name": "PARTNER_API_BASE_URL", "sensitive": false},
+        {"name": "PARTNER_SECRET_API_KEY", "sensitive": true},
+        {"name": "simpleapi-api-key", "sensitive": true}
     ],
 ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -84,11 +84,11 @@ This is the authorization needed for Canvas when using APIKeyAuthMixin. [Read mo
         "effects": [],
         "views": []
     },
-    "secrets": [
-        "PARTNER_URL_BASE",
-        "PARTNER_API_BASE_URL",
-        "PARTNER_SECRET_API_KEY",
-        "simpleapi-api-key"
+    "variables": [
+        {"name": "PARTNER_URL_BASE", "sensitive": false},
+        {"name": "PARTNER_API_BASE_URL", "sensitive": false},
+        {"name": "PARTNER_SECRET_API_KEY", "sensitive": true},
+        {"name": "simpleapi-api-key", "sensitive": true}
     ],
     "tags": {},
     "references": [],

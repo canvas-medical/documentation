@@ -28,8 +28,14 @@ following accessors:
     values are set by the Canvas instance administrator after installing your
 plugin via the Canvas UI on your plugin's configuration page
 - `self.environment`
-  - Information about the Canvas instance your plugin is being executed on,
-    like the subdomain, which we refer to as the customer identifier.
+  - Information about the Canvas instance your plugin is being executed on.
+  - Available keys:
+    - `CUSTOMER_IDENTIFIER` — the instance's subdomain (e.g. `acme` for
+      `acme.canvasmedical.com`).
+    - `INSTALLATION_TIME_ZONE` — the instance's configured time zone as an
+      IANA name (e.g. `America/Los_Angeles`). Useful for rendering times to
+      the customer's clinicians, scheduling work in their local day, or
+      formatting dates in user-facing output.
   - Example: `self.environment['CUSTOMER_IDENTIFIER']`
 
 <div class="handler-cards">
