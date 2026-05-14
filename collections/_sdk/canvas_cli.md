@@ -109,16 +109,9 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Options**:
 
-<<<<<<< HEAD
 - `--variable TEXT`: Non-sensitive variables to set, e.g. Key=value
 - `--secret TEXT`: Sensitive variables to set (treated as sensitive=true), e.g. Key=value
-||||||| 49203add
-- `--secret TEXT`:  Secrets to set, e.g. Key=value
-=======
-- `--secret TEXT`:  Secrets to set, e.g. Key=value
-- `--variable TEXT`: Variables to set, e.g. Key=value. Use `--variable` for non-sensitive configuration and `--secret` for sensitive values.
 - `--enable / --disable`: Install the plugin in an enabled or disabled state. Defaults to `--enable`.
->>>>>>> main
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
@@ -253,13 +246,7 @@ $ canvas logs [OPTIONS]
 
 ### `canvas config list`
 
-<<<<<<< HEAD
-List plugin variables on a Canvas instance. Variables display as `[set]` or `[not set]` to indicate whether a value has been configured. Actual values are never shown through the CLI for security reasons. To view variable values, use the Django admin interface (requires managing user permissions).
-||||||| 49203add
-List all secrets from a plugin.
-=======
-List the variables configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
->>>>>>> main
+List plugin variables on a Canvas instance. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
 
 **Usage**:
 
@@ -296,23 +283,12 @@ $ canvas config list my_plugin
 
 ### `canvas config set`
 
-<<<<<<< HEAD
-Set plugin variables on a Canvas instance.
-||||||| 49203add
-Configure plugin secrets.
-=======
-Set (or update) one or more variables on an installed plugin. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
->>>>>>> main
+Set (or update) one or more plugin variables on a Canvas instance. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
 
 **Usage**:
 
 ```console
-<<<<<<< HEAD
 $ canvas config set [OPTIONS] PLUGIN VARIABLES...
-||||||| 49203add
-$ canvas config set [OPTIONS] PLUGIN
-=======
-$ canvas config set [OPTIONS] PLUGIN KEY=value [KEY=value ...]
 ```
 
 **Examples**:
@@ -327,21 +303,12 @@ Set multiple variables in one call:
 
 ```console
 $ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
->>>>>>> main
 ```
 
 **Arguments**:
 
-<<<<<<< HEAD
  - `PLUGIN`:  Plugin name to set variables for
  - `VARIABLES...`: Variables to set, e.g. Key=value
-||||||| 49203add
- - `PLUGIN`:  Plugin name to list secrets for
- - `SECRETS...`: Secrets to set, e.g. Key=value 
-=======
- - `PLUGIN`:  Plugin name to configure
- - `KEY=value ...`: One or more variables to set
->>>>>>> main
 
 **Options**:
 
