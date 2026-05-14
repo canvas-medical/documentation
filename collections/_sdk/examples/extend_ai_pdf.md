@@ -15,8 +15,8 @@ Plugin that provides a SimpleAPI for intelligent document processing using the E
 This example plugin defines the following "secrets" in the manifest file:
 
 ```
-    "secrets": [
-        "ExtendAiKey"
+    "variables": [
+        {"name": "ExtendAiKey", "sensitive": true}
     ],
 ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -54,8 +54,8 @@ Your Extend AI API key.
     "effects": [],
     "views": []
   },
-  "secrets": [
-    "ExtendAiKey"
+  "variables": [
+    {"name": "ExtendAiKey", "sensitive": true}
   ],
   "tags": {},
   "references": [],

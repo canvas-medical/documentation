@@ -1169,6 +1169,34 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Patient Payments
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_PAYMENT_PROCESSED</th></tr>
+    <tr><td colspan="2">Occurs when a patient payment is processed in Canvas.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": pt_id
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"patient_id": str
+"total_amount_cents": str
+"timestamp": str
+"payment_method_and_description": str
+"claim_payments": [
+    {
+        "claim_id": str,
+        "allocated_cents": str
+    }
+]</pre></td>
+    </tr>
+  </tbody>
+</table>
 
 #### Clinical Documents
 
