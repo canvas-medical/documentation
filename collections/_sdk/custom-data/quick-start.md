@@ -16,7 +16,9 @@ and `namespace_read_write_access_key` secrets that control access for other plug
   "sdk_version": "0.1.4",
   "plugin_version": "1.0.0",
   "name": "my_plugin",
-  "secrets": ["namespace_read_write_access_key"],
+  "variables": [
+    {"name": "namespace_read_write_access_key", "sensitive": false}
+  ],
   "custom_data": {
     "namespace": "acme_corp__shared_data",
     "access": "read_write"

@@ -420,7 +420,7 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
     "effects": [],
     "views": []
   },
-  "secrets": [],
+  "variables": [],
   "tags": {},
   "references": [],
   "license": "",

@@ -15,8 +15,8 @@ Plugin that provides a SimpleAPI for sending emails, querying sent emails, manag
 This example plugin defines the following "secrets" in the manifest file:
 
 ```
-    "secrets": [
-        "SendgridAPIKey"
+    "variables": [
+        {"name": "SendgridAPIKey", "sensitive": true}
     ],
 ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -54,8 +54,8 @@ Your [SendGrid API key](https://docs.sendgrid.com/ui/account-and-settings/api-ke
     "effects": [],
     "views": []
   },
-  "secrets": [
-    "SendgridAPIKey"
+  "variables": [
+    {"name": "SendgridAPIKey", "sensitive": true}
   ],
   "tags": {},
   "references": [],

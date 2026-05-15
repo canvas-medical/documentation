@@ -69,7 +69,7 @@ example_chart_app/
         "effects": [],
         "views": []
     },
-    "secrets": [],
+    "variables": [],
     "tags": {},
     "references": [],
     "license": "",

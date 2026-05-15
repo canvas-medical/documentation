@@ -44,7 +44,7 @@ This Canvas EMR plugin automatically creates task notifications whenever lab res
         "views": []
     },
     "tags": ["lab", "notifications", "tasks"],
-    "secrets": [],
+    "variables": [],
     "license": "NONE",
     "readme": "This plugin monitors incoming lab reports and creates task notifications for any abnormal lab values, ensuring they are flagged for prompt review."
 }

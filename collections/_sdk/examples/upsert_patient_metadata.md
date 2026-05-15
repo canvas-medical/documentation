@@ -29,7 +29,7 @@ In this example, we extract key-value pairs from a plan command's narrative and 
         "effects": [],
         "views": []
     },
-    "secrets": [],
+    "variables": [],
     "tags": {},
     "references": [],
     "license": "",

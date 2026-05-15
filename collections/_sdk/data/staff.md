@@ -73,6 +73,19 @@ staff.licenses.all()
 
 ```
 
+## Accessing the staff signature
+
+The `signature_url` property returns a presigned S3 URL for securely accessing the staff member's signature file, when one is on file. If no signature has been uploaded, the property returns `None`.
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+
+# Returns a presigned S3 URL (valid for 1 hour) or None
+url = staff.signature_url
+```
+
 ## Attributes
 
 ### Staff
@@ -115,6 +128,7 @@ staff.licenses.all()
 | personal_meeting_room_link | URL                                                             |
 | state                      | JSON                                                            |
 | user                       | [CanvasUser](/sdk/data-canvasuser)                              |
+| signature                  | String                                                          |
 | supervising_team           | [Staff](#staff)[]                                               |
 | notes                      | Note[]                                                          |
 | creator_tasks              | [Task](/sdk/data-task/#task)[]                                  |
@@ -237,6 +251,7 @@ staff.licenses.all()
 ## Computed Properties
 
 - `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
+- `signature_url`: A presigned S3 URL for the staff member's signature file (valid for 1 hour), or `None` if no signature is on file.
 
 
 <br/>
