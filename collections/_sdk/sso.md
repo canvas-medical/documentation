@@ -99,7 +99,7 @@ from canvas_sdk.handlers.base import BaseHandler
 
 
 class RouteSSOByGroup(BaseHandler):
-    """Send admins to the admin app and everyone else to the inbox."""
+    """Send admins to the admin app and everyone else to the schedule."""
 
     RESPONDS_TO = EventType.Name(EventType.SSO__GET_POST_LOGIN_REDIRECT)
 
@@ -110,7 +110,7 @@ class RouteSSOByGroup(BaseHandler):
         if "canvas-admins" in groups:
             url = "/admin/"
         else:
-            url = "/inbox/"
+            url = "/schedule/"
 
         return [
             Effect(
@@ -129,7 +129,7 @@ meaningful when returned from a `SSO__GET_POST_LOGIN_REDIRECT` handler.
 
 | Key | Type | Description |
 |---|---|---|
-| `url` | str | The URL Canvas should redirect the user to after SSO login. Relative paths (e.g. `/inbox/`) and absolute URLs are both accepted. |
+| `url` | str | The URL Canvas should redirect the user to after SSO login. Relative paths (e.g. `/schedule/`) and absolute URLs are both accepted. |
 
 There is no SDK helper class for this effect — construct it directly with
 `Effect(type=EffectType.REDIRECT_CONTEXT, payload=json.dumps({"url": ...}))`
