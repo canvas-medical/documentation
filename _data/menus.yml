@@ -693,6 +693,8 @@ sdk_overview:
   - title: "SimpleAPI"
     url: /sdk/handlers-simple-api/
     identifier: simple_api_handlers
+  - title: "SSO Capabilities"
+    url: /sdk/sso/
   - title: "Testing Utilities"
     url: /sdk/testing-utils/
   - title: "Utils Module"
