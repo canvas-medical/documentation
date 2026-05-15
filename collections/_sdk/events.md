@@ -21184,6 +21184,31 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 </table>
 
 
+### SSO Events
+
+For more information on these events, see <a href="/sdk/sso/" target="_blank">SSO Capabilities</a>.
+
+<table>
+  <colgroup>
+    <col width="30%"/>
+    <col width="70%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Occurs when</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SSO__PROCESS_ADDITIONAL_REQUEST_DATA</td>
+      <td>A user has just authenticated via SAML SSO. Read-only access to the SAML response. See <a href="/sdk/sso/#sso__process_additional_request_data">SSO Capabilities</a>.</td>
+    </tr>
+    <tr>
+      <td>SSO__GET_POST_LOGIN_REDIRECT</td>
+      <td>A user has just authenticated via SAML SSO and Canvas is deciding where to send them. Return a <a href="/sdk/effects/#redirect_context">REDIRECT_CONTEXT</a> effect to override the destination. See <a href="/sdk/sso/#sso__get_post_login_redirect">SSO Capabilities</a>.</td>
+    </tr>
+  </tbody>
+</table>
+
 ### Other Events
 
 <table>
