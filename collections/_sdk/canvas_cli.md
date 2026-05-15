@@ -4,9 +4,17 @@ title: "Canvas CLI"
 
 ## Getting Started
 
-### Installation
+### Installation using `pip`
 
-To install the Canvas CLI, simply `pip install canvas`. Python 3.11 or 3.12 is required.
+To install the Canvas CLI using `pip`, execute `pip install canvas`. Python 3.11, 3.12, or 3.13 is required.
+
+To upgrade the Canvas CLI if you installed using `pip`, execute `pip install --upgrade canvas`.
+
+### Installation using `uv`
+
+To install the Canvas CLI using `uv`, execute `uv tool install canvas`. `uv` will find or procure an acceptable Python version.
+
+To upgrade the Canvas CLI if you installed using `uv`, execute `uv tool upgrade canvas`.
 
 ### Configuration and Authenticating to Your Canvas Instance
 
@@ -35,6 +43,18 @@ You can define your default host with `is_default=true`. If no default is explic
 
 **You are now ready to use the Canvas CLI**
 
+## Update Notifications
+
+The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for newer versions. If an update is available, a notice is printed to standard error after the command output:
+
+```shell
+[notice] A newer version of canvas is available (0.112.0 → 0.113.0). Upgrade with: pip install --upgrade canvas
+```
+
+- The check runs at most once every 12 hours; the result is cached locally to avoid unnecessary network requests.
+- Because the notice is printed to standard error, it will not interfere with piped or redirected command output.
+- To disable update checks, set the environment variable `CANVAS_NO_UPDATE_CHECK=1`.
+
 ## Usage
 
 ```console
@@ -56,6 +76,8 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `list`: List all plugins from a Canvas instance
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
+- `config list`: List all secrets from a plugin
+- `config set`: Configure plugin secrets
 
 ### `canvas init`
 
@@ -87,6 +109,9 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Options**:
 
+- `--secret TEXT`:  Secrets to set, e.g. Key=value
+- `--variable TEXT`: Variables to set, e.g. Key=value. Use `--variable` for non-sensitive configuration and `--secret` for sensitive values.
+- `--enable / --disable`: Install the plugin in an enabled or disabled state. Defaults to `--enable`.
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
@@ -116,6 +141,7 @@ $ canvas uninstall [OPTIONS] NAME
 
 **Options**:
 
+- `--force`: Force uninstallation of the plugin
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
@@ -192,7 +218,7 @@ $ canvas validate-manifest [OPTIONS] PLUGIN_NAME
 
 ### `canvas logs`
 
-Subscribes to a log stream and prints to your console.
+Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
 
 **Usage**:
 
@@ -202,5 +228,82 @@ $ canvas logs [OPTIONS]
 
 **Options**:
 
+- `--host TEXT`:           Canvas instance to connect to
+- `--help`:                Show this message and exit.
+-  `--since TEXT`:         Lookback window (e.g. '24h', '2h30m'). Mutually exclusive with --start/--end.
+-  `--start TEXT`:         Start time (ISO/RFC3339) or 'now'.
+-  `--end TEXT`:           End time (ISO/RFC3339) or 'now'. Defaults to now if start is provided.
+-  `--no-follow`:          Historical only; do not stream live logs.
+-  `--level TEXT`:         Repeatable. --level ERROR --level WARN
+-  `--source TEXT`:        Filter by source/service.
+-  `--page-size INTEGER`:  Fetch size per page (historical).  \[default: 200]
+-  `--limit INTEGER`:      Max historical logs to print.
+-  `--all`:                Fetch all pages until exhausted (historical).
+-  `--interactive`:        After each page, prompt to load more.
+-  `--cursor TEXT`:        Resume token from a previous run.
+-  `--help`:               Show this message and exit.
+
+
+### `canvas config list`
+
+List the variables configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
+
+**Usage**:
+
+```console
+$ canvas config list [OPTIONS] PLUGIN
+```
+
+**Example output**:
+
+```console
+$ canvas config list my_plugin
+  API_TOKEN  [set]  (sensitive)
+  LOG_LEVEL  [not set]
+```
+
+**Arguments**:
+
+ - `PLUGIN`:  Plugin name to list variables for
+
+**Options**:
+
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
+
+
+### `canvas config set`
+
+Set (or update) one or more variables on an installed plugin. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
+
+**Usage**:
+
+```console
+$ canvas config set [OPTIONS] PLUGIN KEY=value [KEY=value ...]
+```
+
+**Examples**:
+
+Set a single variable:
+
+```console
+$ canvas config set my_plugin API_TOKEN=your_api_token_value
+```
+
+Set multiple variables in one call:
+
+```console
+$ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
+```
+
+**Arguments**:
+
+ - `PLUGIN`:  Plugin name to configure
+ - `KEY=value ...`: One or more variables to set
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag.

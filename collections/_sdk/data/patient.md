@@ -40,7 +40,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 ### Patient
 
 | Field Name               | Type                                                                      |
-| ------------------------ | ------------------------------------------------------------------------- |
+|--------------------------|---------------------------------------------------------------------------|
 | id                       | String                                                                    |
 | dbid                     | Integer                                                                   |
 | first_name               | String                                                                    |
@@ -60,6 +60,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | gender_identity_code     | String                                                                    |
 | preferred_pronouns       | String                                                                    |
 | biological_race_codes    | Array[String]                                                             |
+| cultural_ethnicity_codes | Array[String]                                                             |
 | last_known_timezone      | String                                                                    |
 | mrn                      | String                                                                    |
 | active                   | Boolean                                                                   |
@@ -76,14 +77,18 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | birth_order              | Integer                                                                   |
 | default_location_id      | Integer                                                                   |
 | default_provider_id      | Integer                                                                   |
+| addresses                | [PatientAddress](#patientaddress)[]                                       |
 | allergy_intolerances     | [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance)[] |
-| billing_line_items       | BillingLineItem[]                                                         |
+| billing_line_items       | [BillingLineItem](/sdk/data-billing-line-item/)                           |
+| business_line            | [BusinessLine](/sdk/data-business-line/)                                  |
 | care_team_memberships    | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]           |
 | conditions               | [Condition](/sdk/data-condition/#condition)[]                             |
 | coverages                | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | dependent_coverages      | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | detected_issues          | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[]                |
 | devices                  | [Device](/sdk/data-device/#device)[]                                      |
+| external_identifiers     | [PatientExternalIdentifier](#patientexternalidentifier)[]                 |
+| identification_cards     | [PatientIdentificationCard](#patientidentificationcard)[]                 |
 | imaging_orders           | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                         |
 | imaging_reports          | [ImagingReport](/sdk/data-imaging/#imagingreport)[]                       |
 | imaging_reviews          | [ImagingReview](/sdk/data-imaging/#imagingreview)[]                       |
@@ -92,17 +97,16 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | lab_reports              | [LabReport](/sdk/data-labs/#labreport)[]                                  |
 | lab_reviews              | [LabReview](/sdk/data-labs/#labreview)[]                                  |
 | medications              | [Medication](/sdk/data-medication/#medication)[]                          |
+| metadata                 | [PatientMetadata](#patientmetadata)[]                                     |
 | observations             | [Observation](/sdk/data-observation/#observation)[]                       |
-| external_identifiers     | [PatientExternalIdentifier](#patientexternalidentifier)[]                 |
 | preferred_pharmacy       | JSON                                                                      |
 | protocol_overrides       | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]       |
 | settings                 | [PatientSetting](#patientsetting)                                         |
 | subscribed_coverages     | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | tasks                    | [Task](/sdk/data-task/#task)[]                                            |
 | telecom                  | [PatientContactPoint](#patientcontactpoint)[]                             |
-| metadata                 | [PatientMetadata](#patientmetadata)[]                                     |
-| user                     | [CanvasUser](/sdk/data-user/)[]                                           |
-| business_line            | [BusinessLine](/sdk/data-business-line/)                                  |
+| user                     | [CanvasUser](/sdk/data-canvasuser/)[]                                     |
+| patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
 
 ### PatientAddress
 
@@ -126,6 +130,18 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | state       | String                                                  |
 | patient     | [Patient](#patient)                                     |
 
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+patient_addresses = patient.addresses.all()
+
+for addr in patient_addresses:
+  log.info(f"Patient address: {addr.city}, {addr.state_code}, {addr.postal_code}") # Seattle, WA, 98118
+```
+
 ### PatientContactPoint
 
 | Field Name         | Type                                                                  |
@@ -144,6 +160,18 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | verification_token | String                                                                |
 | opted_out          | Boolean                                                               |
 
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+patient_contacts = patient.telecom.all()
+
+for contact in patient_contacts:
+   log.info(f"Patient contact: {contact.system} - {contact.value}") # phone - 5555555555
+```
+
 ### PatientExternalIdentifier
 
 | Field Name      | Type                |
@@ -160,6 +188,18 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | issued_date     | Date                |
 | expiration_date | Date                |
 
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+patient_external_identifiers = patient.external_identifiers.all()
+
+for identifier in patient_external_identifiers:
+   log.info(f"Patient external identifier: {identifier.system}, {identifier.value}")  # https://www.example.com - abc123
+```
+
 ### PatientSetting
 
 | Field Name | Type                |
@@ -175,10 +215,58 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 
 | Field Name | Type                |
 | ---------- | ------------------- |
+| id         | UUID                |
 | dbid       | Integer             |
+| created    | DateTime            |
+| modified   | DateTime            |
 | patient    | [Patient](#patient) |
 | key        | String              |
 | value      | String              |
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+patient_metadata = patient.metadata.all()
+
+for metadata in patient_metadata:
+   log.info(f"Patient metadata: {metadata.key}, {metadata.value}") # favorite_color - red
+```
+
+### PatientIdentificationCard
+
+Represents a patient identification card image (e.g., driver's license, insurance card).
+
+| Field Name | Type                      |
+|------------|---------------------------|
+| dbid       | Integer                   |
+| created    | DateTime                  |
+| modified   | DateTime                  |
+| patient    | [Patient](#patient)       |
+| image      | String                    |
+| title      | String                    |
+| active     | Boolean                   |
+| image_url  | String (property) — presigned S3 URL |
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+for card in patient.identification_cards.filter(active=True):
+    log.info(f"ID card: {card.title}, URL: {card.image_url}")
+```
+
+### PatientFacilityAddress
+
+| Field Name     | Type                              |
+| -------------- | --------------------------------- |
+| patientaddress | [PatientAddress](#PatientAddress) |
+| facility       | [Facility](#facility)             |
+| room_number    | String                            |
 
 ## Enumeration types
 
@@ -191,6 +279,16 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | O                 | other   |
 | UNK               | unknown |
 | "" (empty string) | ""      |
+
+## Computed Properties
+
+### Patient
+
+- `full_name`: The full name of the patient, combining first, middle, and last names.
+- `preferred_pharmacy`: The patient's preferred pharmacy for medication fulfillment.
+- `preferred_full_name`: The patient's preferred full name, if different from the legal name.
+- `preferred_first_name`: The patient's preferred first name, if different from the legal first name.
+- `primary_phone_number`: The patient's primary contact number.
 
 <br/>
 <br/>

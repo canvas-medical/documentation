@@ -1,7 +1,7 @@
 ---
-title: "Value Sets"
+title: "ValueSets"
 slug: "data-value-sets"
-excerpt: "Canvas SDK Value Sets"
+excerpt: "Canvas SDK ValueSets"
 hidden: false
 ---
 
@@ -39,6 +39,7 @@ Similar to the `Condition` example above, the `find` method can also utilize Val
 ```python
 from canvas_sdk.v1.data.patient import Patient
 from canvas_sdk.value_set.v2022.medication import DementiaMedications
+from logger import log
 
 patient = Patient.objects.get(id="6cbc40b408294a5f9b41f57ba1b2b487")
 patient_dementia_medications = patient.medications.find(DementiaMedications)
@@ -48,14 +49,14 @@ if patient_dementia_medications:
         log.info(medication.codings.all().values())
 ```
 
-
 **Filtering with more than one Value Set**
 
-Sometimes it may be desirable to filter using more than one Value Set. For example, finding all of a patient's conditions that belong within `EssentialHypertension` *or* `DiagnosisOfHypertension`. In this case, the `find` supports the pipe (`|`) operator to filter conditions that match the codings in either Value Set:
+Sometimes it may be desirable to filter using more than one Value Set. For example, finding all of a patient's conditions that belong within `EssentialHypertension` _or_ `DiagnosisOfHypertension`. In this case, the `find` supports the pipe (`|`) operator to filter conditions that match the codings in either Value Set:
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
 from canvas_sdk.value_set.v2022.condition import EssentialHypertension, DiagnosisOfHypertension
+from logger import log
 
 patient = Patient.objects.get(id="6cbc40b408294a5f9b41f57ba1b2b487")
 patient_hypertension_conditions = patient.conditions.find(EssentialHypertension | DiagnosisOfHypertension)
@@ -76,6 +77,8 @@ from canvas_sdk.value_set.value_set import ValueSet
 A new class containing Python sets of coding values can be defined like so:
 
 ```python
+from canvas_sdk.value_set.value_set import ValueSet
+
 class MyCustomValueSet(ValueSet):
     VALUE_SET_NAME = "My Custom Value Set"
 
@@ -91,8 +94,8 @@ class MyCustomValueSet(ValueSet):
 The valid code system constants that can be used to define sets of codes in Value Sets are:
 
 | Name           | URL                                           |
-|:---------------|:----------------------------------------------|
-| `CPT`          |  `http://www.ama-assn.org/go/cpt`             |
+| :------------- | :-------------------------------------------- |
+| `CPT`          | `http://www.ama-assn.org/go/cpt`              |
 | `HCPCSLEVELII` | `https://coder.aapc.com/hcpcs-codes`          |
 | `CVX`          | `http://hl7.org/fhir/sid/cvx`                 |
 | `LOINC`        | `http://loinc.org`                            |
@@ -109,7 +112,7 @@ The following code is an example of a custom `ValueSet` in use within a plugin:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 from canvas_sdk.v1.data.patient import Patient
@@ -127,7 +130,7 @@ class MyCustomValueSet(ValueSet):
     }
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self):

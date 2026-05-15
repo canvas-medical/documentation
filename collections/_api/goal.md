@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           Describes the intended objective(s) for a patient, group or organization<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-goal.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-goal.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-goal.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-goal.html)<br><br>
           To learn more about how to create goals within the Canvas UI see this [Zendesk article](https://canvas-medical.help.usepylon.com/articles/6744190871-goals-command).
         attributes:
           - name: resourceType

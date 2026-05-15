@@ -1,7 +1,7 @@
 ---
-title: "Payor Specific Charge"
+title: "PayorSpecificCharge"
 slug: "data-payor-specific-charge"
-excerpt: "Canvas SDK Payor Specific Charge"
+excerpt: "Canvas SDK PayorSpecificCharge"
 hidden: false
 ---
 

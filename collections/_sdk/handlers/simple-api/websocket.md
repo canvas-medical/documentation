@@ -6,6 +6,11 @@ excerpt: "Framework for defining HTTP APIs with the Canvas SDK."
 
 WebSocket APIs in Canvas let you define **channels** that clients can connect to. These APIs support one-way, server-to-client communication, and are designed for use cases such as real-time notifications.
 
+To use websockets in a Canvas plugin, you must define the WebSocketAPI auth
+handler to manage access to your channel, use the `Broadcast` effect to
+publish messages to that channel, and create client code to manage the
+connection, handle new messages, and gracefully reconnect.
+
 ### Defining a WebSocket API
 
 To define a WebSocket handler, subclass `WebSocketAPI`. You must implement an `authenticate` method that determines whether the connection should be accepted.
@@ -38,11 +43,13 @@ When a handler is invoked, the `websocket` object is available as an attribute o
 
 You can access this object within your handler methods using `self.websocket`.
 
+{% include alert.html type="info" content="Channel names may only contain alphanumeric, hyphen, and underscore characters." %}
+
 ### Authentication
 
 You must implement the `authenticate()` method in your handler class. Two authentication methods are supported:
 
-##### Session-Based (Internal Clients)
+#### Session-Based (Internal Clients)
 For connections initiated from within the Canvas browser UI by a logged-in user:
 
 ```python
@@ -59,7 +66,7 @@ def authenticate(self) -> bool:
     ...
 ```
 
-##### APIKey-Based (External Clients)
+#### APIKey-Based (External Clients)
 For external tools or scripts, pass an auth key as a query parameter:
 
 ```generic
@@ -107,3 +114,6 @@ class WebhookAPI(SimpleAPI):
 In this example, when the `/callback` endpoint receives a POST request, it broadcasts the request body as a message to all clients subscribed to the `notifications` channel.
 
 
+<br/>
+<br/>
+<br/>

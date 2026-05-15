@@ -15,7 +15,7 @@ The [AI Scribe Parser Plugin](https://github.com/Medical-Software-Foundation/can
   - Add or replace section parsers for custom sections.
   - Implement a fully custom parser for alternate formats.
 
-## Understanding the Transcript Parsing Flow. 
+## Understanding the Transcript Parsing Flow.
 The workflow is triggered by pasting a transcript into a note. Doing so will automatically insert the content in the form of a clipboard command. We can then respond to that event and transform the content into the appropriate commands. 
 
 ### Input Transcript Example
@@ -38,7 +38,7 @@ Each section contains specific information that can be parsed. For example:
     Chief complaint
     - Concern about potential diabetes
     - Hypertension
-    
+
     History of present illness
     - Patient named Ken, age and gender not mentioned
     - Has sleep apnea, uses CPAP machine
@@ -102,12 +102,20 @@ Each section contains specific information that can be parsed. For example:
 ### AI Scribe Plugin Architecture
 Once the content is pasted in, the plugin does the rest. Here's how. 
 
-#### 1. Protocol Class
+#### 1. Handler Class
 
-The `Protocol` class intercepts events and processes the transcript using a parser.
+The `Handler` class intercepts events and processes the transcript using a parser.
 
 ```python
-class Protocol(BaseProtocol):
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+
+
+class ScribeParser: ...  # explained in section 2 below, "ScribeParser"
+
+
+class Handler(BaseHandler):
     """A Plugin for interpreting transcripts."""
 
     RESPONDS_TO = EventType.Name(EventType.CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE)
@@ -134,6 +142,17 @@ class Protocol(BaseProtocol):
 The `ScribeParser` delegates the parsing of each transcript section to specific section parsers.
 
 ```python
+from ai_scribe.parsers.base import TranscriptParser
+
+
+# explained in section 3 below, "Section Parsers"
+class ChiefComplaintParser: ...
+class HistoryOfPresentIllnessParser: ...
+class PastMedicalHistoryParser: ...
+class PlanParser: ...
+class VitalsParser: ...
+
+
 class ScribeParser(TranscriptParser):
     """A parser for scribe transcripts."""
 
@@ -198,16 +217,13 @@ class AppointmentsParser(CommandParser):
 Add the `AppointmentsParser` to the `section_parsers` dictionary.
 
 ```python
+class AppointmentsParser: ... # defined above
+
+
 class ScribeParser:
     """A parser for transcripts."""
-    
+
     section_parsers = {
-        "plan": PlanParser(),
-        "vitals": VitalsParser(),
-        "chief_complaint": ReasonForVisitParser(),
-        "history_of_present_illness": HistoryPresentIllnessParser(),
-        "past_medical_history": PastMedicalHistoryParser(),
-        "assessment": AssessmentParser(),
         "appointments": AppointmentsParser()
     }
 ```
@@ -232,11 +248,18 @@ class CustomParser(TranscriptParser):
         ...
 ```
 
-Replace the parser in the `Protocol` class:
+Replace the parser in the `Handler` class:
 
 ```python
-class Protocol(BaseProtocol):
-    """Protocol using a custom parser."""
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects import Effect
+
+
+class CustomParser: ... # defined above
+
+
+class Handler(BaseHandler):
+    """Handler using a custom parser."""
 
     def compute(self) -> list[Effect]:
         transcript = self.context["fields"]["text"]
@@ -260,8 +283,3 @@ class Protocol(BaseProtocol):
 ## Conclusion
 
 With robust parsing capabilities and extensibility, this example plugin equips developers to support clinicians in reclaiming their time for what matters most: patient care. By following the steps in this guide, developers can ensure seamless integration into clinical workflows, while also tailoring the tool to suit specific needs.
-
-
-
-
-

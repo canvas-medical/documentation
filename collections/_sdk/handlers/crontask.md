@@ -60,4 +60,3 @@ Here's what this scheduled task would output in the logs:
 <br/>
 <br/>
 <br/>
-<br/>

@@ -17,21 +17,21 @@ instance of it.
 | patient_id     | required (if patient_filter is not provided) | String                        | The id of the [patient](/sdk/data-patient/) the alert should be associated with.                                                                   |
 | patient_filter | required (if patient_id is not provided)     | String                        | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients |
 | key            | required                                     | String                        | An identifier that categorizes the alert.                                                                                                          |
-| narrative      | required                                     | String                        | The content of the alert.                                                                                                                          |
+| narrative      | required                                     | String                        | The content of the alert. Maximum 90 characters.                                                                                                   |
 | placement      | required                                     | list[[Placement](#placement)] | List of areas the alert should show.                                                                                                               |
 | intent         | optional                                     | [Intent](#intent)             | Affects the styling of the alert.                                                                                                                  |
 | href           | optional                                     | String                        | If given, the alert will appear as a link to this URL.                                                                                             |
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.banner_alert import AddBannerAlert
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self):
@@ -56,14 +56,14 @@ To apply the effect to all active patients when a plugin is created or updated, 
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.banner_alert import AddBannerAlert
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.PATIENT_UPDATED),
         EventType.Name(EventType.PLUGIN_CREATED),

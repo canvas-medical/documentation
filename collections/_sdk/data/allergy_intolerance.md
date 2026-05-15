@@ -1,7 +1,7 @@
 ---
-title: "Allergy Intolerance"
+title: "AllergyIntolerance"
 slug: "data-allergy-intolerance"
-excerpt: "Canvas SDK Allergy Intolerance"
+excerpt: "Canvas SDK AllergyIntolerance"
 hidden: false
 ---
 
@@ -85,7 +85,7 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 ### AllergyIntolerance
 
 | Field Name                     | Type                                                    |
-|--------------------------------|---------------------------------------------------------|
+| ------------------------------ | ------------------------------------------------------- |
 | id                             | UUID                                                    |
 | dbid                           | Integer                                                 |
 | created                        | DateTime                                                |
@@ -110,7 +110,7 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 ### AllergyIntoleranceCoding
 
 | Field Name          | Type                                      |
-|---------------------|-------------------------------------------|
+| ------------------- | ----------------------------------------- |
 | dbid                | Integer                                   |
 | system              | String                                    |
 | version             | String                                    |

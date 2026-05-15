@@ -1,7 +1,7 @@
 ---
-title: "Charge Description Master"
+title: "ChargeDescriptionMaster"
 slug: "data-charge-description-master"
-excerpt: "Canvas SDK Charge Description Master"
+excerpt: "Canvas SDK ChargeDescriptionMaster"
 hidden: false
 ---
 

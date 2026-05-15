@@ -14,18 +14,18 @@ request to a different service, or simply return a response back to the requeste
 ## Quickstart
 
 Follow the instructions in
-[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) to create a plugins
+[Your First Plugin (with Claude Code)](https://docs.canvasmedical.com/guides/your-first-plugin-with-claude-code/) to create a plugins
 project. For this exercise, use `my_api` as your project (i.e. plugin) name.
 
 Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
 class names as you see fit in your project, but for this exercise, we are just going to set the
-value at `components -> protocols -> 0 -> class` to be `my_api.protocols.my_protocol:MyAPI`.
+value at `components -> handlers -> 0 -> class` to be `my_api.handlers.my_handler:MyAPI`.
 
 We're going to need a secret value for authentication. The instructions for declaring secrets are
-outlined on the [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
+outlined on the [Your First Plugin (Manual)](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 Declare a secret in `CANVAS_MANIFEST.json` named `my-api-key`.
 
-Open `my_api/protocols/my_protocol.py` and replace the contents of the file with this code:
+Open `my_api/handlers/my_handler.py` and replace the contents of the file with this code:
 
 ```python
 from hmac import compare_digest
@@ -52,7 +52,7 @@ class MyAPI(SimpleAPIRoute):
 ```
 
 The next step is to deploy your plugin; the instructions for doing so are on the
-[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
+[Your First Plugin (Manual)](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 
 You can see in the code above that the `authenticate` method is going to authenticate using API key
 authentication. We've already declared the secret, so now we need to generate a value and set it on
@@ -247,9 +247,12 @@ attribute on the handler. The request method, path, query parameters, content ty
 available as attributes on the request object:
 
 ```python
+
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+
+from logger import log
 
 
 class MyAPI(SimpleAPIRoute):
@@ -290,7 +293,7 @@ class MyAPI(SimpleAPIRoute):
 
         # Body parsed as form data
         form_data = request.form_data()
-        
+
         return [
             JSONResponse({"message": "Hello world!"})
         ]
@@ -309,7 +312,7 @@ key. If you want the other values, you will need to use different methods to acc
 
 Here is an example showing how to access the additional values:
 
-```python
+```python?partial=true
 # Request sent to /route?value1=a&value1=b&value2=c
 query_params = request.query_params
 
@@ -344,7 +347,7 @@ each `FormPart` object may represent either a simple string value or a file.
 Here is an example of how to use the `form_data` method to iterate over the subparts of a request
 body with form data:
 
-```python
+```python?partial=true
 form_data = request.form_data()
 
 # To iterate over all parts, we have to use the multi_items method because there may be more than
@@ -365,7 +368,7 @@ for name, part in form_data.multi_items():
 If you know the name of the subparts you are looking for, you can also access the subparts directly
 by looking up the name in the mapping returned by `form_data`:
 
-```python
+```python?partial=true
 form_data = request.form_data()
 
 # Get the first part named "my-part-name"
@@ -453,6 +456,25 @@ class MyAPI(SimpleAPIRoute):
 
 Any effects present in the list returned by an endpoint will be processed by your Canvas instance,
 and the response object, if provided, will be sent back to the original requester.
+
+### Asynchronous requests
+
+By default, **SimpleAPI** requests are processed synchronously—the caller waits for the plugin to
+finish executing before receiving a response. If you prefer an immediate acknowledgement instead,
+include the `Prefer: respond-async` header in your request:
+
+```bash
+curl --location 'https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/<route>' \
+     --header 'Authorization: <api-key>' \
+     --header 'Prefer: respond-async'
+```
+
+When this header is present, Canvas will return a **202 Accepted** response right away and continue
+executing the plugin in the background. Any effects returned by the handler will still be processed
+by your Canvas instance; however, no response body from the handler will be delivered to the caller.
+
+Note that authentication failures and plugin-not-found errors are always returned synchronously,
+regardless of this header.
 
 ### Authentication
 
@@ -618,6 +640,7 @@ authentication values out of the request headers:
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import Response
 from canvas_sdk.handlers.simple_api import Credentials, SimpleAPIRoute
+from canvas_sdk.handlers.simple_api.api import Request
 
 
 class MyCredentials(Credentials):
@@ -657,7 +680,7 @@ manifest file, and then set the secrets on your instance after you deploy your p
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import BasicAuthMixin, SimpleAPIRoute
 
 
@@ -688,7 +711,7 @@ After you set your secret, you can use the `APIKeyAuthMixin`:
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
 
 
@@ -709,7 +732,7 @@ staff member, just that they are staff, and that they are logged in.
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import StaffSessionAuthMixin, SimpleAPIRoute
 
 
@@ -730,7 +753,7 @@ patient, just that they are a patient, and that they are logged in.
 
 ```python
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.simple_api import Response
+from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
 
 

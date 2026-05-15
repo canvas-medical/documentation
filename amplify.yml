@@ -1,6 +1,11 @@
 version: 1
 frontend:
   phases:
+    preBuild:
+      commands:
+        - rvm install $(cat .ruby-version)
+        - rvm use $(cat .ruby-version)
+        - gem install bundler -v 2.4.12
     build:
       commands:
         - bundle install

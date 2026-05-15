@@ -168,7 +168,7 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | code_system               | String                                                         |
 | code                      | String                                                         |
 | search_tags               | String                                                         |
-| questions                 | Question                                                       |
+| questions                 | [Question](#question)[]                                        |
 | use_in_shx                | Boolean                                                        |
 | carry_forward             | String                                                         |
 | interview_responses       | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
@@ -200,7 +200,7 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | patient              | [Patient](/sdk/data-patient/#patient)                          |
 | note_id              | Integer                                                        |
 | appointment_id       | Integer                                                        |
-| questionnaires       | Questionnaire                                                  |
+| questionnaires       | [Questionnaire](#questionnaire)[]                              |
 | progress_status      | String                                                         |
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |

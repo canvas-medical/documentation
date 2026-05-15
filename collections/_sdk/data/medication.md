@@ -84,28 +84,30 @@ medications = Medication.objects.find(AdhdMedications)
 
 ### Medication
 
-| Field Name                     | Type                                    |
-|--------------------------------|-----------------------------------------|
-| id                             | UUID                                    |
-| dbid                           | Integer                                 |
-| patient                        | [Patient](/sdk/data-patient/#patient)   |
-| deleted                        | Boolean                                 |
-| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)      |
-| committer                      | [CanvasUser](/sdk/data-canvasuser)      |
-| status                         | String                                  |
-| start_date                     | Date                                    |
-| end_date                       | Date                                    |
-| quantity_qualifier_description | String                                  |
-| clinical_quantity_description  | String                                  |
-| potency_unit_code              | String                                  |
-| national_drug_code             | String                                  |
-| erx_quantity                   | String                                  |
-| codings                        | [MedicationCoding](#medicationcoding)[] |
+| Field Name                     | Type                                                     |
+| ------------------------------ | -------------------------------------------------------- |
+| id                             | UUID                                                     |
+| dbid                           | Integer                                                  |
+| patient                        | [Patient](/sdk/data-patient/#patient)                    |
+| deleted                        | Boolean                                                  |
+| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                       |
+| committer                      | [CanvasUser](/sdk/data-canvasuser)                       |
+| status                         | String                                                   |
+| start_date                     | Date                                                     |
+| end_date                       | Date                                                     |
+| quantity_qualifier_description | String                                                   |
+| clinical_quantity_description  | String                                                   |
+| potency_unit_code              | String                                                   |
+| national_drug_code             | String                                                   |
+| erx_quantity                   | String                                                   |
+| codings                        | [MedicationCoding](#medicationcoding)[]                  |
+| medication_statements          | [MedicationStatement](/sdk/data-medication-statement)[]  |
+| stopmedicationevent_set        | [StopMedicationEvent](/sdk/data-stop-medication-event)[] |
 
 ### MedicationCoding
 
 | Field Name    | Type                      |
-|---------------|---------------------------|
+| ------------- | ------------------------- |
 | dbid          | Integer                   |
 | system        | String                    |
 | version       | String                    |

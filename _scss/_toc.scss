@@ -63,6 +63,7 @@
 
         a {
             color: $text-color;
+            font-weight: normal;
         }
 
         .toc__submenu a {
@@ -87,6 +88,20 @@
                 position: absolute;
                 left: -1px;
             }
+        }
+    }
+
+    &__header {
+        margin-top: 20px;
+        margin-bottom: 5px;
+
+        .toc__header-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+            font-weight: 600;
+            cursor: default;
         }
     }
 }

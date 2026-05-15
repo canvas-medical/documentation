@@ -1,7 +1,7 @@
 ---
-title: "Business Line"
+title: "BusinessLine"
 slug: "data-business-line"
-excerpt: "Canvas SDK Business Line"
+excerpt: "Canvas SDK BusinessLine"
 hidden: false
 ---
 

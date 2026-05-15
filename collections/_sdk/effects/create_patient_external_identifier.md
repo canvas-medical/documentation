@@ -5,8 +5,6 @@ excerpt: "Effect to create a new external identifier for a patient."
 hidden: false
 ---
 
-## CreatePatientExternalIdentifier
-
 Creates a new external identifier for a patient.
 
 ### Parameters
@@ -32,3 +30,7 @@ effect.create()
 ```
 
 This effect will create a new external identifier for the specified patient.
+
+<br/>
+<br/>
+<br/>

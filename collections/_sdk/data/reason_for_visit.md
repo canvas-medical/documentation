@@ -1,7 +1,7 @@
 ---
-title: "Reason For Visit"
+title: "ReasonForVisit"
 slug: "data-reason-for-visit"
-excerpt: "Canvas SDK Reason For Visit and its codings"
+excerpt: "Canvas SDK ReasonForVisit and its codings"
 hidden: false
 ---
 
@@ -23,6 +23,8 @@ rfv_coding = ReasonForVisitSettingCoding.objects.get(id="e2b1e1e3-3f52-4a0a-bb3a
 You can also filter records by attributes. For example, to get all codings from a specific coding system:
 
 ```python
+from canvas_sdk.v1.data import ReasonForVisitSettingCoding
+
 codings = ReasonForVisitSettingCoding.objects.filter(system="http://snomed.info/sct")
 ```
 
@@ -31,7 +33,7 @@ codings = ReasonForVisitSettingCoding.objects.filter(system="http://snomed.info/
 ### ReasonForVisitSettingCoding
 
 | Field Name | Type              | Description                                                                       |
-|------------|-------------------|-----------------------------------------------------------------------------------|
+| ---------- | ----------------- | --------------------------------------------------------------------------------- |
 | id         | UUID              | The universally unique identifier for this coding record.                         |
 | dbid       | Integer           | The database identifier for this coding record.                                   |
 | code       | String            | The code representing the concept.                                                |

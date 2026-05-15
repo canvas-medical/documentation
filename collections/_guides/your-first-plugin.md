@@ -1,5 +1,5 @@
 ---
-title: "Your First Plugin"
+title: "Your First Plugin (Manual)"
 guide_for:
 - /sdk/quickstart/
 - /sdk/canvas_cli/
@@ -10,6 +10,8 @@ guide_for:
 Plugins are your tool for customizing the Canvas experience. By using the
 modules of the Canvas SDK, you can react to [events](/sdk/events/) emitted from the EHR,
 request additional [data](/sdk/data/) if needed, and respond with [effects](/sdk/effects/) that alter workflows and add or change data in Canvas. You can also use [utils](/sdk/utils/) to do things like call out to web services with our provided HTTP client.
+
+{% include alert.html type="warning" content="This guide is for manual coding. Want a faster, AI-assisted approach? Check out <a href='/guides/your-first-plugin-with-claude-code/'>Your First Plugin (with Claude Code)</a>, which uses an AI assistant to guide you through building and deploying your plugin." %}
 
 ## Video
 
@@ -70,25 +72,30 @@ run `canvas init`, and answer the prompt to name your plugin.
 ```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Paperwork Eviscerator
-Project created in /Users/andrew/src/canvas-plugins/paperwork_eviscerator
+Project created in /Users/andrew/src/canvas-plugins/paperwork-eviscerator
 ```
 
-This output shows the location of our freshly generated plugin.
+This output shows the location of our freshly generated plugin project.
 
 ## 4. Navigate the structure of a plugin
 
 Let's take a look at what was generated for us.
 
 ```sh
-$ tree paperwork_eviscerator/
-paperwork_eviscerator/
-|-- CANVAS_MANIFEST.json
-|-- README.md
-`-- protocols
-    |-- __init__.py
-    `-- my_protocol.py
+$ tree paperwork-eviscerator/
+paperwork-eviscerator/
+├── paperwork_eviscerator
+│    ├── CANVAS_MANIFEST.json
+│    ├── README.md
+│    └── handlers
+│         ├── __init__.py
+│         └── event_handlers.py
+├── pyproject.toml
+└── tests
+    ├── __init__.py
+    └── test_models.py
 
-2 directories, 4 files
+5 directories, 9 files
 ```
 
 ### CANVAS_MANIFEST.json
@@ -103,10 +110,10 @@ installation of the plugin.
     "name": "paperwork_eviscerator",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
-        "protocols": [
+        "handlers": [
             {
-                "class": "paperwork_eviscerator.protocols.my_protocol:Protocol",
-                "description": "A protocol that does xyz...",
+                "class": "paperwork_eviscerator.handlers.event_handlers:Handler",
+                "description": "A handler that does xyz...",
                 "data_access": {
                     "event": "",
                     "read": [],
@@ -119,7 +126,9 @@ installation of the plugin.
         "effects": [],
         "views": []
     },
-    "secrets": ["my_secret_code"],
+    "variables": [
+        {"name": "my_secret_code", "sensitive": true}
+    ],
     "tags": {},
     "references": [],
     "license": "",
@@ -131,7 +140,7 @@ installation of the plugin.
 The name, plugin version, and description are all surfaced in your Canvas
 instance when viewing installed plugins.
 
-Only protocols declared here are invoked by the plugin runner. If they are
+Only handlers declared here are invoked by the plugin runner. If they are
 not declared, they will be ignored.
 
 Secrets can be declared (though not defined) here. Any secrets declared here
@@ -142,27 +151,27 @@ will be initialized on plugin install, and can be set in the plugin listing in t
 Share details about the purpose of your plugins and how it works in this
 README file.
 
-### protocols/my_protocol.py
+### handlers/event_handlers.py
 
-This file contains the protocol class declared in the manifest file. We've included
+This file contains the handler class declared in the manifest file. We've included
 some sample content and copious comments for inspiration.
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-# Inherit from BaseProtocol to properly get registered for events
-class Protocol(BaseProtocol):
+# Inherit from BaseHandler to properly get registered for events
+class Handler(BaseHandler):
     """
-    You should put a helpful description of this protocol's behavior here.
+    You should put a helpful description of this handler's behavior here.
     """
 
     # Name the event type you wish to run in response to
     RESPONDS_TO = EventType.Name(EventType.ASSESS_COMMAND__CONDITION_SELECTED)
 
-    NARRATIVE_STRING = "I was inserted from my plugin's protocol."
+    NARRATIVE_STRING = "I was inserted from my plugin's handler."
 
     def compute(self):
         """
@@ -216,10 +225,14 @@ instance.
 
 ## 7. Deploy and use your plugin
 
-When your plugin is just the way you'd like it, deploying is simple. Simply
-run `canvas install <path/to/plugin>` and your plugin will be packaged,
+When your plugin is just the way you'd like it, deploying is simple. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and
+run `canvas install <path/to/plugin_package>` (i.e. `canvas install paperwork_eviscerator`) and your plugin will be packaged,
 uploaded, installed, and enabled. As you make changes to your plugin, run the
 same command to update the code of the installed plugin.
+
+## 8. Tail the logs
+
+To view logs and to surface any errors with your plugin, run `canvas logs --host buttered-popcorn-dev` (replace with your Canvas instance name). This will tail the logs for all plugins installed on that instance.
 
 <br/>
 <br/>

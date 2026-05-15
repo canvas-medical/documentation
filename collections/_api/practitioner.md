@@ -7,7 +7,9 @@ sections:
         name: Practitioner
         article: "a"
         description: >-
-         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>[https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-practitioner.html)<br><br>To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).<br><br>
+         A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>
+         [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html)<br><br>
+          To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).<br><br>
           
         attributes:
           - name: id
@@ -27,14 +29,23 @@ sections:
                 required_in: create, update
                 description: Identifies the meaning of the extension
                 enum_options:
-                  - value: http://schemas.canvasmedical.com/fhir/extensions/username
+                  - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location
                   - value: http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature
                   - value: http://schemas.canvasmedical.com/fhir/extensions/roles
+                  - value: http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex
               - name: valueString
                 type: string
-                description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+                description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+              - name: valueCode
+                type: string
+                description: Value of extension.<br><br> The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`. <br><br> A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC).
+                enum_options:
+                  - value: M
+                  - value: F
+                  - value: OTH
+                  - value: UNK
               - name: valueUrl
                 type: string
                 description: Value of extension.<br><br> The `valueUrl` attribute is needed for the meeting link extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link`. This value will represent the url that will be associated to any telehealth notes in Canvas. 
@@ -67,7 +78,7 @@ sections:
                     exclude_in: create, update
                   - name: url
                     type: string
-                    description: Uri where the data can be found.
+                    description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
                     exclude_in: create, update
               - name: extension
                 type: array[json]
@@ -241,13 +252,18 @@ sections:
                     description: The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
               - name: code
                 type: object[json]
-                description: License coding object. This attribute has no effect.
+                description: License type coding object. Specifies the type of license that practitioner holds.
                 attributes:
                   - name: text
                     type: string
-                    description: This field has no effect. Provide **"License"** as value.
+                    description: The license type code. This field specifies the type of license that practitioner holds.
                     enum_options:
-                      - value: License
+                      - value: CLIA
+                      - value: DEA
+                      - value: PTAN
+                      - value: STATE
+                      - value: TAXONOMY
+                      - value: OTHER
               - name: period
                 type: object[json]
                 required_in: create, update
@@ -274,9 +290,14 @@ sections:
                         description: Reference that defines the content of this object.
                         enum_options:
                           - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name
+                          - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state
+                          - value: http://schemas.canvasmedical.com/fhir/extensions/license-primary
                       - name: valueString
                         type: string
-                        description: The issuing authority short name.
+                        description: The string value for the extension. Used for issuing authority short name and state extensions.
+                      - name: valueBoolean
+                        type: boolean
+                        description: The boolean value for the extension. Used for the license-primary extension to indicate if this is the practitioner's primary license.
                   
         search_parameters:
           - name: _id
@@ -339,6 +360,10 @@ curl --request POST \
 {
     "resourceType": "Practitioner",
     "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
@@ -478,6 +503,14 @@ curl --request POST \
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": true
                     }
                 ]
             }
@@ -505,6 +538,10 @@ headers = {
 payload = {
     "resourceType": "Practitioner",
     "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
@@ -648,6 +685,14 @@ payload = {
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": True
                     }
                 ]
             }
@@ -682,6 +727,10 @@ print(response.text)
     "resourceType": "Practitioner",
     "id": "55096fbcdfb240fd8c999c325304de03",
     "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
@@ -833,6 +882,14 @@ print(response.text)
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": true
                     }
                 ]
             }
@@ -914,6 +971,10 @@ curl --request PUT \
 {
     "resourceType": "Practitioner",
     "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
             "valueUrl": "https://meet.google.com/room-001"
@@ -1064,6 +1125,14 @@ curl --request PUT \
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": true
                     }
                 ]
             }
@@ -1091,6 +1160,10 @@ headers = {
 payload = {
     "resourceType": "Practitioner",
     "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
             "valueUrl": "https://meet.google.com/room-001"
@@ -1240,6 +1313,14 @@ payload = {
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": True
                     }
                 ]
             }
@@ -1274,6 +1355,10 @@ print(response.text)
     "resourceType": "Practitioner",
     "id": "55096fbcdfb240fd8c999c325304de03",
     "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "username123"
@@ -1425,6 +1510,14 @@ print(response.text)
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
                         "valueString": "MDU LA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                        "valueString": "CA"
+                    },
+                    {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                        "valueBoolean": true
                     }
                 ]
             }

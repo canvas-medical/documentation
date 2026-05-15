@@ -52,6 +52,9 @@ sections:
             type: date
             description: >-
               If included, the request will search for available appointment slots on or after this date. If not included, the current UTC date will be used.
+          - name: appointment-type
+            description: Filters by the code and system of the allowed appointment type (if specificied in admin). Use the format `system|code` (e.g `http://snomed.info/sct|185418009`).
+            type: string
         endpoints: [search]
         search:
           responses: [200, 400, 401, 403]

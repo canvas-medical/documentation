@@ -5,18 +5,21 @@ excerpt: "Effects for creating notes, appointments, and schedule events."
 hidden: false
 ---
 
-# Note Effects
-
 The Canvas SDK provides effects to facilitate creating, updating, and managing **visit notes**, **appointments**, and **schedule events**. Below you'll find detailed documentation for each effect type and their operations.
 
 ## Note Effect
 
 The `Note` effect facilitates the creation and updating of visit notes for patients.
 
-### Attributes
+### Create Note
+
+Creates a new note. Can be passed an optional UUID as `instance_id` from the `uuid.uuid4` library, or will be assigned one if not present. Passing a user-set UUID as the `instance_id` allows for [assigning commands to the note](/sdk/commands/#chaining-methods-with-a-user-set-uuid) in the same plugin action.
+
+#### Attributes
 
 | Attribute              | Type                | Description                          | Required |
 |------------------------|---------------------|--------------------------------------|----------|
+| `instance_id`          | `UUID` or `str`     | Identifier for the note              | No       |
 | `note_type_id`         | `UUID` or `str`     | Identifier for the note type         | Yes      |
 | `datetime_of_service`  | `datetime.datetime` | When the service was provided        | Yes      |
 | `patient_id`           | `str`               | Identifier for the patient           | Yes      |
@@ -24,13 +27,13 @@ The `Note` effect facilitates the creation and updating of visit notes for patie
 | `provider_id`          | `str`               | Identifier for the provider          | Yes      |
 | `title`                | `str` or `None`     | Optional title for the note          | No       |
 
-### Implementation Details
+#### Implementation Details
 
 - Validates that the note type exists and has an appropriate category
 - Ensures the patient exists in the system
 - Verifies that the practice location and provider are valid
 
-### Example Usage
+#### Example Usage
 
 ```python
 import datetime
@@ -39,7 +42,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(
             note_type_id="note-type-uuid",
@@ -77,7 +80,7 @@ from canvas_sdk.effects.note.note import Note
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         note_effect.title = "Updated Consultation Notes"
@@ -86,7 +89,261 @@ class Protocol(BaseHandler):
         return [note_effect.update()]
 ```
 
----
+### Fax Note
+
+Sends an existing note via fax to a specified recipient. This effect allows you to transmit patient notes to external healthcare providers or facilities.
+
+#### Attributes
+
+| Attribute               | Type            | Description                                                      | Required |
+|-------------------------|-----------------|------------------------------------------------------------------|----------|
+| `note_id`               | `UUID` or `str` | Identifier of the note to fax                                    | Yes      |
+| `recipient_name`        | `str`           | Name of the fax recipient                                        | Yes      |
+| `recipient_fax_number`  | `str`           | Fax number of the recipient. Should include the country code     | Yes      |
+| `include_coversheet`    | `bool`          | Whether to include a coversheet with the fax                     | No       |
+| `subject`               | `str` or `None` | Subject line for the coversheet (required if coversheet used)    | No       |
+| `comment`               | `str` or `None` | Additional comments for coversheet (required if coversheet used) | No    |
+| `location_id`           | `UUID` or `str` or `None` | Practice location ID (required if coversheet used)               | No       |
+
+#### Implementation Details
+
+- Validates that the note exists in the system
+- If `include_coversheet` is `True`, the following fields become required:
+  - `subject`: The subject line for the coversheet
+  - `comment`: Additional comments to include on the coversheet
+  - `location_id`: The practice location identifier (must exist in the system)
+- Validates that the practice location exists if provided
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.fax.note import FaxNoteEffect
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        # Basic fax without coversheet
+        fax_effect = FaxNoteEffect(
+            note_id="existing-note-uuid",
+            recipient_name="Dr. Jane Smith",
+            recipient_fax_number="15551234567"
+        )
+
+        return [fax_effect.apply()]
+```
+
+#### Example with Coversheet
+
+```python
+from canvas_sdk.effects.fax.note import FaxNoteEffect
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        # Fax with coversheet
+        fax_effect = FaxNoteEffect(
+            note_id="existing-note-uuid",
+            recipient_name="Dr. Jane Smith",
+            recipient_fax_number="15551234567",
+            include_coversheet=True,
+            subject="Patient Referral - Follow-up Care",
+            comment="Please review attached consultation notes for continuing care.",
+            location_id="practice-location-uuid"
+        )
+
+        return [fax_effect.apply()]
+```
+
+### Push Charges
+
+Pushes the charges from the Note to its associated Claim in the Revenue module. Has the exact same effect as clicking on the `Push charges` button in the Note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to update | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note, and its NoteTypeVersion must have `is_billable` = True.
+
+#### Example Usage
+
+```python
+import datetime
+
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.push_charges()]
+```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
+### Lock
+
+Locks an existing note, preventing further modifications. Has the exact same effect as clicking on the `Lock` button in the Note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to lock   | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note that is not already locked.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.lock()]
+```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
+### Sign
+
+Signs an existing note, marking it as reviewed and approved by the provider. Has the exact same effect as clicking on the `Sign` button in the Note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to sign   | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note that is not already signed.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.sign()]
+```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
+### Unlock
+
+Unlocks a previously locked/signed note, allowing modifications again. Has the exact same effect as clicking on the `Unlock/Amend` button in the Note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to unlock | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note that is currently locked.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.unlock()]
+```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
+### Check In
+
+Marks a patient as checked in for their appointment. Has the exact same effect as clicking on the `Check In` button in the Appointment note.
+
+#### Attributes
+
+| Attribute     | Type            | Description                            | Required |
+| ------------- | --------------- | -------------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note for check-in    | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note associated with an appointment.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.check_in()]
+```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
+### No Show
+
+Marks an appointment as a no-show when the patient does not arrive. Has the exact same effect as marking an appointment as `No Show` in the Appointment note.
+
+#### Attributes
+
+| Attribute     | Type            | Description                            | Required |
+| ------------- | --------------- | -------------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to mark no-show | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note associated with an appointment.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.no_show()]
+```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
+### Upsert Metadata
+
+Creates or updates a metadata entry for the specified note. For detailed documentation on note metadata management, see [NoteMetadata Effect](/sdk/effect-note-metadata/).
+
+#### Parameters
+
+| Parameter     | Type            | Description                                                      | Required |
+|---------------|-----------------|------------------------------------------------------------------|----------|
+| `instance_id` | `UUID` or `str` | Identifier of the note (set on the `Note` effect)                | Yes      |
+| `key`         | `str`           | Unique identifier for the metadata entry within the note context | Yes      |
+| `value`       | `str`           | The metadata value to store                                      | Yes      |
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note = Note(instance_id="existing-note-uuid")
+        return [note.upsert_metadata(key="my_plugin:custom_key", value="custom_value")]
+```
 
 ## ScheduleEvent Effect
 
@@ -122,7 +379,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(
             note_type_id="schedule-event-note-type-uuid",
@@ -139,7 +396,7 @@ class Protocol(BaseHandler):
 
 ### Update Schedule Event
 
-Updates an existing schedule event by creating a new event and cancelling the original.
+Updates an existing schedule event in place.
 
 #### Attributes
 
@@ -158,18 +415,60 @@ Updates an existing schedule event by creating a new event and cancelling the or
 ```python
 import datetime
 
+from canvas_sdk.effects.note import AppointmentIdentifier
 from canvas_sdk.effects.note.appointment import ScheduleEvent
+from canvas_sdk.effects.note.base import AppointmentIdentifier
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
         schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
         schedule_event_effect.duration_minutes = 60
         schedule_event_effect.description = "Rescheduled team meeting"
+        schedule_event_effect.external_identifiers = [
+            AppointmentIdentifier(system="test_system", value="123TEST")
+        ]
 
         return [schedule_event_effect.update()]
+```
+
+### Reschedule Schedule Event
+
+Reschedules an existing schedule event by creating a new event and cancelling the original. This maintains the event history and ensures proper tracking of rescheduled events.
+
+#### Attributes
+
+| Attribute              | Type                                    | Description                             | Required |
+|------------------------|-----------------------------------------|-----------------------------------------|----------|
+| `instance_id`          | `UUID` or `str`                         | Identifier of the event to reschedule   | Yes      |
+| `start_time`           | `datetime.datetime`                     | New start time                          | No       |
+| `duration_minutes`     | `int`                                   | New duration in minutes                 | No       |
+| `description`          | `str` or `None`                         | Updated description                     | No       |
+| `practice_location_id` | `UUID` or `str`                         | New practice location                   | No       |
+| `provider_id`          | `str`                                   | New provider                            | No       |
+| `status`               | `AppointmentProgressStatus` or `None`   | Updated status                          | No       |
+| `external_identifiers` | `list[AppointmentIdentifier]` or `None` | Updated external identifiers            | No       |
+
+**Note**: At least one field (besides `instance_id`) must be modified.
+
+#### Example Usage
+
+```python
+import datetime
+
+from canvas_sdk.effects.note.appointment import ScheduleEvent
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
+        schedule_event_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=3)
+        schedule_event_effect.duration_minutes = 45
+
+        return [schedule_event_effect.reschedule()]
 ```
 
 ### Delete Schedule Event
@@ -185,7 +484,7 @@ from canvas_sdk.effects.note.appointment import ScheduleEvent
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         schedule_event_effect = ScheduleEvent(instance_id="existing-event-uuid")
 
@@ -226,7 +525,7 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(
             appointment_note_type_id="appointment-note-type-uuid",
@@ -243,7 +542,7 @@ class Protocol(BaseHandler):
 
 ### Update Appointment
 
-Updates an existing appointment by creating a new appointment and cancelling the original. This maintains the appointment history and ensures proper tracking of rescheduled appointments.
+Updates an existing appointment in place.
 
 #### Attributes
 
@@ -263,11 +562,13 @@ Updates an existing appointment by creating a new appointment and cancelling the
 #### Example Usage
 
 ```python
+import datetime
+
 from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
         appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=2)
@@ -275,6 +576,43 @@ class Protocol(BaseHandler):
         appointment_effect.meeting_link = "https://new-meeting-link.com"
 
         return appointment_effect.update()
+```
+
+### Reschedule Appointment
+
+Reschedules an existing appointment by creating a new appointment and cancelling the original. This maintains the appointment history and ensures proper tracking of rescheduled appointments.
+
+#### Attributes
+
+| Attribute                  | Type                                    | Description                          | Required |
+|----------------------------|-----------------------------------------|--------------------------------------|----------|
+| `instance_id`              | `UUID` or `str`                         | Identifier of appointment to reschedule | Yes   |
+| `start_time`               | `datetime.datetime`                     | New start time                       | No       |
+| `duration_minutes`         | `int`                                   | New duration in minutes              | No       |
+| `meeting_link`             | `str` or `None`                         | Updated meeting link                 | No       |
+| `practice_location_id`     | `UUID` or `str`                         | New practice location                | No       |
+| `provider_id`              | `str`                                   | New provider                         | No       |
+| `status`                   | `AppointmentProgressStatus` or `None`   | Updated status                       | No       |
+| `external_identifiers`     | `list[AppointmentIdentifier]` or `None` | Updated external identifiers         | No       |
+
+**Note**: At least one field (besides `instance_id`) must be modified. `patient_id` cannot be updated after creation.
+
+#### Example Usage
+
+```python
+import datetime
+
+from canvas_sdk.effects.note.appointment import Appointment
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        appointment_effect = Appointment(instance_id="existing-appointment-uuid")
+        appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(days=1)
+        appointment_effect.duration_minutes = 60
+
+        return appointment_effect.reschedule()
 ```
 
 ### Cancel Appointment
@@ -288,11 +626,44 @@ from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
     def compute(self):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
 
         return appointment_effect.cancel()
+```
+
+## Managing Appointment Labels
+
+Canvas supports adding up to 3 labels per appointment for categorization and workflow automation. Labels can be managed programmatically using the appointment label effects.
+
+For detailed documentation on appointment label management, see [Appointment Label Effects](/sdk/effect-appointment-labels/).
+
+### Quick Example
+
+```python?partial=true
+from canvas_sdk.effects.note.appointment import AddAppointmentLabel, RemoveAppointmentLabel
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+
+class MyHandler(BaseHandler):
+
+    RESPONDS_TO = [EventType.Name(EventType.APPOINTMENT_LABEL_ADDED), EventType.Name(EventType.APPOINTMENT_LABEL_REMOVED)]
+
+    def compute(self):
+        # Add labels to an appointment
+        add_effect = AddAppointmentLabel(
+            appointment_id="appointment-uuid",
+            labels={"URGENT", "FOLLOW_UP"}
+        )
+        
+        # Remove labels from an appointment
+        remove_effect = RemoveAppointmentLabel(
+            appointment_id="appointment-uuid",
+            labels={"CANCELLED"}
+        )
+        
+        return [add_effect.apply(), remove_effect.apply()]
 ```
 
 ---
@@ -314,3 +685,7 @@ All effects perform comprehensive validation before execution:
    - **Notes**: `patient_id` and `note_type_id` are immutable
    - **Appointments**: `patient_id` is immutable
    - **All Effects**: At least one field must be modified for an update operation to succeed
+
+<br/>
+<br/>
+<br/>

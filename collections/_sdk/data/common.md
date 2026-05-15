@@ -13,57 +13,77 @@ This page shows common enumeration types that are used in multiple models.
 
 ### AddressState
 
-| Value      | Label   |
-|------------|---------|
-| active     | Active  |
-| deleted    | Deleted |
+| Value   | Label   |
+| ------- | ------- |
+| active  | Active  |
+| deleted | Deleted |
 
 ### AddressType
 
-| Value      | Label    |
-|------------|----------|
-| postal     | Postal   |
-| physical   | Physical |
-| both       | Both     |
+| Value    | Label    |
+| -------- | -------- |
+| postal   | Postal   |
+| physical | Physical |
+| both     | Both     |
 
 ### AddressUse
 
-| Value      | Label |
-|------------|-------|
-| home       | Home  |
-| work       | Work  |
-| temp       | Temp  |
-| old        | Old   |
+| Value | Label |
+| ----- | ----- |
+| home  | Home  |
+| work  | Work  |
+| temp  | Temp  |
+| old   | Old   |
+
+### AddressUseWithBilling
+
+| Value   | Label   |
+| ------- | ------- |
+| home    | Home    |
+| work    | Work    |
+| temp    | Temp    |
+| old     | Old     |
+| billing | Billing |
 
 ### ColorEnum
 
-| Value    | Label    |
-|----------|----------|
-| red      | Red      |
-| orange   | Orange   |
-| yellow   | Yellow   |
-| olive    | Olive    |
-| green    | Green    |
-| teal     | Teal     |
-| blue     | Blue     |
-| violet   | Violet   |
-| purple   | Purple   |
-| pink     | Pink     |
-| brown    | Brown    |
-| grey     | Grey     |
-| black    | Black    |
+| Value  | Label  |
+| ------ | ------ |
+| red    | Red    |
+| orange | Orange |
+| yellow | Yellow |
+| olive  | Olive  |
+| green  | Green  |
+| teal   | Teal   |
+| blue   | Blue   |
+| violet | Violet |
+| purple | Purple |
+| pink   | Pink   |
+| brown  | Brown  |
+| grey   | Grey   |
+| black  | Black  |
 
 ### ContactPointState
 
-| Value      | Label   |
-|------------|---------|
-| active     | Active  |
-| deleted    | Deleted |
+| Value   | Label   |
+| ------- | ------- |
+| active  | Active  |
+| deleted | Deleted |
+
+### ContactPointSystem
+
+| Value | Label |
+| ----- | ----- |
+| phone | phone |
+| fax   | fax   |
+| email | email |
+| pager | pager |
+| other | other |
 
 ### ContactPointUse
 
 | Value      | Label      |
-|------------|------------|
+| ---------- | ---------- |
 | home       | Home       |
 | work       | Work       |
 | temp       | Temp       |
@@ -75,7 +95,7 @@ This page shows common enumeration types that are used in multiple models.
 ### DocumentReviewMode
 
 | Value | Label                    |
-|-------|--------------------------|
+| ----- | ------------------------ |
 | RR    | Review required          |
 | AR    | Already reviewed offline |
 | RN    | Review not required      |
@@ -83,7 +103,7 @@ This page shows common enumeration types that are used in multiple models.
 ### OrderStatus
 
 | Value       | Description      |
-|-------------|------------------|
+| ----------- | ---------------- |
 | proposed    | Proposed         |
 | draft       | Draft            |
 | planned     | Planned          |
@@ -101,36 +121,36 @@ This page shows common enumeration types that are used in multiple models.
 
 ### Origin
 
-| Value           | Label                               |
-|-----------------|-------------------------------------|
-| REF_CMD         | Referral command                    |
-| CMP_IMG_ORD     | Completing image orders             |
-| IMG_REP_REV     | Imaging report review               |
-| LAB_RES_REV     | Lab results review                  |
-| CON_REP_REV     | Consult report review               |
-| UNC_DOC_REP_REV |Uncategorized document report review |
-| ASN_NOT_PHN_REV | Assigned note/phone call for review |
-| POP_HLT_OUT     | Population health outreach          |
-| CMP_LAB_ORD     | Completing lab orders               |
-| CHT_PDF         | Chart PDF                           |
-| EXP_CLM_SNO     | Expired claim snoozed               |
-| FLG_PST_REV     | Flagged posting review              |
-| BAT_PTN_STA     | Batch patient statements            |
-| INC_COV         | Incomplete Coverage                 |
+| Value           | Label                                |
+| --------------- | ------------------------------------ |
+| REF_CMD         | Referral command                     |
+| CMP_IMG_ORD     | Completing image orders              |
+| IMG_REP_REV     | Imaging report review                |
+| LAB_RES_REV     | Lab results review                   |
+| CON_REP_REV     | Consult report review                |
+| UNC_DOC_REP_REV | Uncategorized document report review |
+| ASN_NOT_PHN_REV | Assigned note/phone call for review  |
+| POP_HLT_OUT     | Population health outreach           |
+| CMP_LAB_ORD     | Completing lab orders                |
+| CHT_PDF         | Chart PDF                            |
+| EXP_CLM_SNO     | Expired claim snoozed                |
+| FLG_PST_REV     | Flagged posting review               |
+| BAT_PTN_STA     | Batch patient statements             |
+| INC_COV         | Incomplete Coverage                  |
 
 ### PersonSex
 
-| Value | Label     |
-|-------|-----------|
-| F   | female      |
-| M   | male        |
-| O   | other       |
-| UNK | unknown     |
+| Value | Label   |
+| ----- | ------- |
+| F     | female  |
+| M     | male    |
+| O     | other   |
+| UNK   | unknown |
 
 ### ReviewPatientCommunicationMethod
 
 | Value | Description                           |
-|-------|---------------------------------------|
+| ----- | ------------------------------------- |
 | DM    | delegate call, can leave message      |
 | DA    | delegate call, need patient to answer |
 | DL    | delegate letter                       |
@@ -141,13 +161,13 @@ This page shows common enumeration types that are used in multiple models.
 ### ReviewStatus
 
 | Value     | Label     |
-|-----------|-----------|
+| --------- | --------- |
 | reviewing | reviewing |
 | reviewed  | reviewed  |
 
 ### TaxIDType
 
-| Value | Label      |
-|-------|------------|
-| E     | EIN text   |
-| S     | SSN        |
+| Value | Label    |
+| ----- | -------- |
+| E     | EIN text |
+| S     | SSN      |
