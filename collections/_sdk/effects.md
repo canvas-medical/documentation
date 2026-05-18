@@ -232,37 +232,6 @@ Check out the [Task Effects](/sdk/effect-tasks/) and [Task Metadata](/sdk/effect
 
 Check out the [Note Effects](/sdk/effect-notes/) documentation.
 
-<<<<<<< HEAD
-| Effect | Description |
-|---|---|
-| CREATE_NOTE | Create a note. |
-| UPDATE_NOTE | Update a note. |
-| LOCK_NOTE | Lock a note. |
-| UNLOCK_NOTE | Unlock a note. |
-| SIGN_NOTE | Sign a note. |
-| CHECK_IN_NOTE | Check in a note. |
-| NO_SHOW_NOTE | Mark a note as no-show. |
-| FAX_NOTE | Fax a note to an external recipient. |
-| PUSH_NOTE_CHARGES | Push note charges for billing. |
-| UPSERT_NOTE_METADATA | Add or update metadata on a note. |
-| GENERATE_FULL_CHART_PDF | Generate a full chart PDF for a patient. |
-| FREEZE_NOTE | Temporarily freeze a note from concurrent edits with optional content blur. Check out [Note Effects](/sdk/effect-notes/#freeze-note). |
-| UNFREEZE_NOTE | Remove a freeze from a previously frozen note. Check out [Note Effects](/sdk/effect-notes/#unfreeze-note). |
-||||||| d3c0253a
-| Effect | Description |
-|---|---|
-| CREATE_NOTE | Create a note. |
-| UPDATE_NOTE | Update a note. |
-| LOCK_NOTE | Lock a note. |
-| UNLOCK_NOTE | Unlock a note. |
-| SIGN_NOTE | Sign a note. |
-| CHECK_IN_NOTE | Check in a note. |
-| NO_SHOW_NOTE | Mark a note as no-show. |
-| FAX_NOTE | Fax a note to an external recipient. |
-| PUSH_NOTE_CHARGES | Push note charges for billing. |
-| UPSERT_NOTE_METADATA | Add or update metadata on a note. |
-| GENERATE_FULL_CHART_PDF | Generate a full chart PDF for a patient. |
-=======
 | Effect                    | Description                                                                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | CREATE_NOTE               | Create a note.                                                                                                                                                                                        |
@@ -276,9 +245,10 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | PUSH_NOTE_CHARGES         | Push note charges for billing.                                                                                                                                                                        |
 | UPSERT_NOTE_METADATA      | Add or update metadata on a note.                                                                                                                                                                     |
 | GENERATE_FULL_CHART_PDF   | Generate a full chart PDF for a patient.                                                                                                                                                              |
+| FREEZE_NOTE               | Temporarily freeze a note from concurrent edits with optional content blur. Check out [Note Effects](/sdk/effect-notes/#freeze-note).                                                                 |
+| UNFREEZE_NOTE             | Remove a freeze from a previously frozen note. Check out [Note Effects](/sdk/effect-notes/#unfreeze-note).                                                                                            |
 | NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
-| NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
->>>>>>> main
+| NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/).  |
 
 
 ### Appointments

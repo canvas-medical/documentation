@@ -2563,7 +2563,6 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
-<<<<<<< HEAD
 <table>
   <thead>
     <tr><th colspan="2">NOTE_CREATED</th></tr>
@@ -2625,8 +2624,6 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
-||||||| d3c0253a
-=======
 <table>
   <thead>
     <tr><th colspan="2">GET_NOTE_RESTRICTIONS</th></tr>
@@ -2645,7 +2642,7 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
->>>>>>> main
+
 #### Letters
 
 <table>
