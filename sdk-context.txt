@@ -11610,6 +11610,7 @@ resolution_date | Date
 clinical_status | ClinicalStatus  
 codings | ConditionCoding[]  
 lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[]  
+notes | String  
 surgical | Boolean  
 ###  ConditionCoding 
 Field Name | Type  
@@ -19113,6 +19114,90 @@ The effect performs comprehensive validation before execution:
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-note-metadata/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-note-restrictions/
+The `NoteRestrictionsEffect` and `NoteRestrictionsUpdatedEffect` allow plugins to restrict access to notes and push real-time permission updates to connected clients.
+  - **`NoteRestrictionsEffect`** — returned by a plugin in response to a `GET_NOTE_RESTRICTIONS` event. It tells the Canvas UI whether the requesting user should see a banner, have the note content blurred, or have editing disabled.
+  - **`NoteRestrictionsUpdatedEffect`** — emitted by a plugin at any time to signal that restrictions for a specific note have changed, causing all connected clients viewing that note to immediately refetch their restrictions.
+* * *
+##  NoteRestrictionsEffect 
+###  How it works 
+Every time a note is opened (or its restrictions are refetched), Canvas fires a `GET_NOTE_RESTRICTIONS` event targeting that note's external ID. Plugins that subscribe to this event can return a `NoteRestrictionsEffect` to control what the user sees.
+If no plugin returns a `NoteRestrictionsEffect`, the note is unrestricted by default.
+###  Event payload 
+Property | Value | Description  
+---|---|---  
+`event.target.id` | `str` (UUID) | The `id` of the note being accessed. Use this to look up the note or its metadata.  
+`event.actor.id` | `str` (int) | The database ID of the authenticated user requesting the note. Use `Staff.objects.filter(user__dbid=event.actor.id)` to resolve to a staff record.  
+`event.context` | `{}` | Empty — no additional context is provided.  
+###  Fields 
+Field | Type | Default | Description  
+---|---|---|---  
+`restrict_access` | `bool` | `False` | Whether the requesting user is restricted from editing this note.  
+`blur_content` | `bool` | `False` | Whether the note body should be blurred for the requesting user.  
+`banner_message` | `str` | `None` | `None` | Message shown in the warning banner at the top of the note. If `None`, a default "This note is currently restricted." message is displayed.  
+###  Example 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.note.restrictions import NoteRestrictionsEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class NoteAccessHandler(BaseHandler):
+        """Restrict access to notes based on custom business logic."""
+        RESPONDS_TO = EventType.Name(EventType.GET_NOTE_RESTRICTIONS)
+        def compute(self) -> list[Effect]:
+            note_id = self.event.target.id
+            actor_id = self.event.actor.id
+            if not self.user_can_access(note_id, actor_id):
+                return [
+                    NoteRestrictionsEffect(
+                        restrict_access=True,
+                        blur_content=True,
+                        banner_message="You do not have permission to view this note.",
+                    ).apply()
+                ]
+            return []
+        def user_can_access(self, note_id: str, actor_id: str) -> bool:
+            # Custom access logic here
+            ...
+    ```
+* * *
+##  NoteRestrictionsUpdatedEffect 
+###  How it works 
+When a plugin performs an action that changes whether a note is restricted (e.g. writing an edit lock to `NoteMetadata`, updating an access rule), it can emit a `NoteRestrictionsUpdatedEffect`. Canvas will broadcast a WebSocket notification to all clients currently viewing that note, causing them to refetch their restrictions immediately — no page reload required.
+###  Fields 
+Field | Type | Description  
+---|---|---  
+`note_id` | `str` (UUID) | The id of the note whose restrictions have changed.  
+###  Example 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.note.restrictions import NoteRestrictionsUpdatedEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import NoteMetadata
+    class NoteAccessChangedHandler(BaseHandler):
+        """Broadcast a real-time restriction update after note metadata changes."""
+        RESPONDS_TO = EventType.Name(EventType.NOTE_METADATA_UPDATED)
+        def compute(self) -> list[Effect]:
+            note_id = (
+                NoteMetadata.objects
+                .filter(id=self.event.target.id)
+                .values_list("note__id", flat=True)
+                .first()
+            )
+            if not note_id:
+                return []
+            return [NoteRestrictionsUpdatedEffect(note_id=str(note_id)).apply()]
+    ```
+* * *
+##  Common use cases 
+  - **Concurrent edit protection** — prevent multiple providers from editing the same note simultaneously; the second user sees a banner and disabled inputs until the first provider's session expires.
+  - **Role-based note type access** — restrict certain note types (e.g. sensitive clinical notes) to a specific set of staff members.
+  - **Sensitive note hiding** — blur the content of notes containing sensitive information for users who should not see the full details.
+For full working implementations of these patterns, see the [**note-timeline-restrictions**](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/note-timeline-restrictions) example plugin, which covers concurrent edit locking, role-based access via a dashboard, automatic lock expiry via a cron job, and real-time updates.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-note-restrictions/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-notes/
 The Canvas SDK provides effects to facilitate creating, updating, and managing **visit notes** , **appointments** , and **schedule events**. Below you'll find detailed documentation for each effect type and their operations.
 ##  Note Effect 
@@ -20856,7 +20941,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -20930,6 +21015,8 @@ FAX_NOTE | Fax a note to an external recipient.
 PUSH_NOTE_CHARGES | Push note charges for billing.  
 UPSERT_NOTE_METADATA | Add or update metadata on a note.  
 GENERATE_FULL_CHART_PDF | Generate a full chart PDF for a patient.  
+NOTE_RESTRICTIONS | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/).  
+NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/).  
 ###  Appointments 
 Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [Appointment Labels](/sdk/effect-appointment-labels/), and [Appointment Metadata](/sdk/effect-appointment-metadata/) documentation.
 Effect | Description  
@@ -21206,9 +21293,15 @@ The actor is available in the following contexts:
   - [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
   - [**Application**](/sdk/handlers-applications/) handlers
   - **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+  - **Note restrictions events** — `GET_NOTE_RESTRICTIONS`
   - **Appointment scheduling events** — all `APPOINTMENT__*` events
   - **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
+  - **Patient timeline events** — `PATIENT_TIMELINE__GET_CONFIGURATION`
+  - **Homepage events** — `GET_HOMEPAGE_CONFIGURATION`
+  - **Command additional-fields events** — `COMMAND__FORM__GET_ADDITIONAL_FIELDS`
+  - **Lab order command events** — `LAB_ORDER_COMMAND__PRE_SEND`, `HEALTH_GORILLA_LAB_ORDER_PREPARED`
   - **Claim events** — `CLAIM__CONDITIONS`
+  - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
   - **Patient portal events** — all `PATIENT_PORTAL__*` events
     ```python
     from canvas_sdk.effects import Effect
@@ -21732,6 +21825,21 @@ Target object | Context object
       "id": queue_id
     "queue_exited":
       "id": queue_id  
+CLAIM__CONDITIONS  
+---  
+Fires when the conditions list is loaded inside the claim summary view. Plugins can use this event to surface plugin-specific diagnosis information alongside the existing diagnosis codes on the claim.  
+Target object | Context object  
+    "id": claim_id
+    "type": [Claim](/sdk/data-claim/#claim)
+| 
+    [
+      "id": str,
+      "codings": [
+        "code": str,
+        "system": str,
+        "display": str
+      ]
+    ]  
 ####  Billing Line Items 
 BILLING_LINE_ITEM_CREATED  
 ---  
@@ -22464,6 +22572,14 @@ Target object | Context object
     "note_id": note_id,
     "patient_id": pt_id,
     "state": [str](/sdk/data-note/#notestates)  
+GET_NOTE_RESTRICTIONS  
+---  
+Fires every time a note is opened or its restrictions are refetched. Plugins respond with a [`NoteRestrictionsEffect`](/sdk/effect-note-restrictions/) to control whether the user can edit the note, whether the content is blurred, and what banner message is displayed. If no plugin responds, the note is unrestricted by default.  
+Target object | Context object  
+    "id": note.id
+    "type": [Note](/sdk/data-note/)
+| 
+    empty  
 ####  Letters 
 LETTER_CREATED  
 ---  
@@ -27199,6 +27315,23 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
+HEALTH_GORILLA_LAB_ORDER_PREPARED  
+---  
+Fires from Canvas right after the outbound Health Gorilla FHIR `RequestGroup` dict is constructed and right before it is POSTed to Health Gorilla. Read-only — any effects returned by handlers are discarded. Complements `LAB_ORDER_COMMAND__PRE_SEND`, which fires before the build and accepts override effects.  
+Target object | Context object  
+    "id": laborder_id
+    "type": [LabOrder](/sdk/data-labs/#laborder)
+| 
+    "lab_order":
+      "id": laborder_id
+      "uuid": laborder_id
+    "lab_partner": str
+    "note":
+      "id": note_id
+      "uuid": note_id
+    "patient":
+      "id": pt_id
+    "request_group": dict  
 LAB_ORDER_COMMAND__PRE_UPDATE  
 ---  
 Target object | Context object  
@@ -32459,6 +32592,213 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
+####  Visual Exam Finding 
+VISUAL_EXAM_FINDING_COMMAND__PRE_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__AVAILABLE_ACTIONS  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "actions":
+      "name": string
+    "user":
+      "staff": staff_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_VALIDATION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_INSERTED_INTO_NOTE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
 ####  Vitals Command 
 VITALS_COMMAND__POST_COMMIT  
 ---  
@@ -33191,7 +33531,6 @@ SSO__GET_POST_LOGIN_REDIRECT | A user has just authenticated via SAML SSO and Ca
 Event | Occurs when | UNKNOWN | Default event type unlikely to ever be emitted.  
 ---|---  
 CRON | This event fires regularly and can be used for scheduled tasks. See [CronTask](/sdk/handlers-crontask/).  
-CLAIM__CONDITIONS | The conditions are loaded within the claim summary.  
 PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION | A patient chart's summary section is loading.  
 PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION | Canvas is requesting the content for a custom patient chart summary section. See [Patient Chart Summary Custom Section Handler](/sdk/patient-chart-summary-custom-section-handler/).  
 PANEL_SECTIONS_CONFIGURATION | The panel section is loading.  
