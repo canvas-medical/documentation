@@ -7,6 +7,7 @@ window.addEventListener('load', () => {
     const search = instantsearch({
         indexName: algoliaIndex,
         searchClient,
+        insights: true,
 
         searchFunction(helper) {
             const searchResults = document.getElementById('search_container');
