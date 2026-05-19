@@ -823,6 +823,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Coverage"
+    url: /sdk/effect-coverage/
+    description: Create, update, expire, remove, reorder, and remove photos from patient insurance coverages.
   - title: "Create Calendar"
     url: /sdk/calendar-create-effect/
     description: Create a calendar for a provider.
