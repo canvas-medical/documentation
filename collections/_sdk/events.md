@@ -13841,6 +13841,262 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+#### POC Lab Test Command
+
+POC Lab Test commands carry a `test_values|<label>` field per template field — those labels
+are determined dynamically by the selected template, so the `fields` block below shows the static
+shape only; dynamic per-field entries appear alongside.
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str   # one per template field
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Prescribe Command
 
 <table>
